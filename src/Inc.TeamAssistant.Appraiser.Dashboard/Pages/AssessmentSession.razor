@@ -1,0 +1,133 @@
+@page "/en/assessment-session/{id:guid}"
+@page "/ru/assessment-session/{id:guid}"
+
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.Appraiser.Dashboard.Pages.Annotations
+
+@inject IAssessmentSessionsService Service
+@inject IEventsProvider EventsProvider
+@inject LanguageManager LanguageManager
+
+<PageTitle>@PageTitle</PageTitle>
+
+<div class="assessment-session">
+    <div class="assessment-session__container">
+        <div class="assessment-session__body">
+            <div class="assessment-session__card">
+                @if (_model.State == ServiceResultState.Success && _model.Result is not null)
+                {
+                    <div class="assessment-session__details">
+                        <span class="assessment-session__subtitle">@_model.Result.AssessmentSessionTitle</span>
+
+                        @if (_model.Result.StorySelected)
+                        {
+                            <h1 class="assessment-session__title">@_annotation.GetTitle(_model.Result.Story.Title)</h1>
+
+                            if (_model.Result.Story.Links.Any())
+                            {
+                                <ul class="assessment-session__items">
+                                    @foreach (var link in _model.Result.Story.Links)
+                                    {
+                                        <li class="assessment-session__item">
+                                            <a class="assessment-session__link" href="@link" target="_blank">@link</a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        }
+                        else
+                        {
+                            <p class="assessment-session__text">@_annotation.CardNotSelected</p>
+                        }
+
+                        <ul class="assessment-session__participants">
+                            @foreach (var storyForEstimate in _model.Result.StoryForEstimates)
+                            {
+                                <li class="assessment-session__participant">
+                                    @storyForEstimate.ParticipantName
+                                    <span class="assessment-session__value">@storyForEstimate.DisplayValue</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="assessment-session__summary">
+                        <span class="assessment-session__total-value">@_model.Result.Total SP</span> @_annotation.AverageRating
+                    </div>
+                }
+                else
+                {
+                    <p class="assessment-session__text">@StateMessage</p>
+                }
+            </div>
+            <div class="phone phone_hidden-on-tablet">
+                <div class="phone__screen">
+                    <div class="phone__content">
+                        <div class="qr-code">
+                            @if (_model.State == ServiceResultState.Success && _model.Result is not null)
+                            {
+                                <div class="qr-code__content">
+                                    @((MarkupString) _model.Result.CodeForConnect)
+                                </div>
+                                <span class="qr-code__text">@_annotation.Scan</span>
+                                <span class="qr-code__text qr-code__text_sub">@_annotation.ToConnect</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="phone__mockup"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private AssessmentSessionAnnotation _annotation = AssessmentSessionAnnotation.Empty;
+
+    private MarkupString PageTitle => _model.State == ServiceResultState.Success && _model.Result is not null
+        ? (MarkupString)_model.Result.AssessmentSessionTitle
+        : _annotation.AssessmentSessionCard;
+
+    private MarkupString StateMessage => _model.State switch
+    {
+        ServiceResultState.NotFound => _annotation.AssessmentSessionNotFound,
+        ServiceResultState.Failed => (MarkupString)_model.ErrorMessage,
+        _ => _annotation.Loading
+    };
+
+    private ServiceResult<GetStoryDetailsResult?> _model = ServiceResult<GetStoryDetailsResult?>.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_TaskAssess],
+            resources[Messages.GUI_CardNotSelected],
+            resources[Messages.GUI_AverageRating],
+            resources[Messages.GUI_Scan],
+            resources[Messages.GUI_ToConnect],
+            resources[Messages.GUI_AssessmentSessionCard],
+            resources[Messages.GUI_AssessmentSessionNotFound],
+            resources[Messages.GUI_Loading]);
+
+        await EventsProvider.OnStoryChanged(Id, StoryChanged);
+
+        await StoryChanged();
+    }
+
+    private async Task StoryChanged()
+    {
+        _model = await Service.GetStoryDetails(
+            new(Id),
+            QrCode.DefaultWidth,
+            QrCode.DefaultHeight,
+            QrCode.DefaultDrawQuietZones);
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

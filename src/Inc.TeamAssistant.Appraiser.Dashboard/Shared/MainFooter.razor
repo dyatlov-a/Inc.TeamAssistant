@@ -1,0 +1,86 @@
+@using Inc.TeamAssistant.Appraiser.Dashboard.Shared.ViewModels
+@using Inc.TeamAssistant.Appraiser.Dashboard.Shared.Annotations
+@using System.Reflection
+
+@inject LanguageManager LanguageManager
+
+<div class="footer__body">
+    <div class="footer__items">
+        <h5 class="footer__title">@_annotation.Appraiser</h5>
+        <p>@_annotation.TelegramBotToEvaluateTasks<br> @_annotation.EvaluateTool</p>
+    </div>
+    <div class="footer__items">
+        <h5 class="footer__title">@_annotation.AboutBot</h5>
+        <ul>
+            @foreach (var item in _aboutItems)
+            {
+                <li><a class="footer__link" href="@item.Url" target="@item.Target">@item.Title</a></li>
+            }
+        </ul>
+    </div>
+    <div class="footer__items">
+        <h5 class="footer__title">@_annotation.Development</h5>
+        <ul>
+            @foreach (var item in _developmentItems)
+            {
+                <li><a class="footer__link" href="@item.Url" target="@item.Target">@item.Title</a></li>
+            }
+        </ul>
+    </div>
+    <div class="footer__items">
+        <h5 class="footer__title">@_annotation.Resources</h5>
+        <ul>
+            @foreach (var item in _resourcesItems)
+            {
+                <li><a class="footer__link" href="@item.Url" target="@item.Target">@item.Title</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    private LinkViewModel[] _aboutItems = Array.Empty<LinkViewModel>();
+    private LinkViewModel[] _developmentItems = Array.Empty<LinkViewModel>();
+    private LinkViewModel[] _resourcesItems = Array.Empty<LinkViewModel>();
+    private MainFooterAnnotation _annotation = MainFooterAnnotation.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+        var resources = await LanguageManager.GetResource();
+        var linkBuilder = LanguageManager.CreateLinkBuilder();
+
+        _annotation = new(
+            $"{resources[Messages.GUI_Appraiser]} v{appVersion}",
+            resources[Messages.GUI_TelegramBotToEvaluateTasks],
+            resources[Messages.GUI_EvaluateTool],
+            resources[Messages.GUI_AboutBot],
+            resources[Messages.GUI_Development],
+            resources[Messages.GUI_Resources]);
+
+        _aboutItems = new[]
+        {
+            new LinkViewModel(resources[Messages.GUI_Features], linkBuilder("#features"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_LinkDevelopment], linkBuilder("#development"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_Feedback], linkBuilder("#feedback"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_LinkMoveToBot], "https://t.me/ocs_teamassistant_appraiser_bot/", "_blank")
+        };
+        _developmentItems = new[]
+        {
+            new LinkViewModel(resources[Messages.GUI_LinkSourceCode], "https://github.com/OCS-Distribution/OCS.TeamAssistant.Appraiser/", "_blank"),
+            new LinkViewModel("Fluent Validation", "https://docs.fluentvalidation.net/", "_blank"),
+            new LinkViewModel("MediatR", "https://github.com/jbogard/MediatR/", "_blank"),
+            new LinkViewModel("Telegram.Bot", "https://github.com/TelegramBots/Telegram.Bot/", "_blank"),
+            new LinkViewModel("QR Coder", "https://github.com/codebude/QRCoder/", "_blank"),
+            new LinkViewModel("Nuke", "https://nuke.build/", "_blank")
+        };
+        _resourcesItems = new[]
+        {
+            new LinkViewModel("Telegram", "https://telegram.org/", "_blank"),
+            new LinkViewModel(resources[Messages.GUI_LinkWebVersion], "https://web.telegram.org/", "_blank"),
+            new LinkViewModel("FreePik", "https://www.freepik.com/", "_blank")
+        };
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

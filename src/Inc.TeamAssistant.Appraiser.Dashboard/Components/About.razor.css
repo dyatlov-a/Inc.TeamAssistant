@@ -1,0 +1,30 @@
+.about__body {
+    display: flex;
+    align-items: center;
+    min-height: 200px;
+}
+.about-text {
+	position: relative;
+	flex: 1 1 auto;
+}
+.about-text__title {
+	font-size: 3.6rem;
+	line-height: 4.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .0625rem;
+}
+.about-text__description {
+	font-size: 1.5rem;
+	line-height: 2rem;
+}
+@media (max-width: 479.98px) {
+    .about-text__title {
+        font-size: 2.6rem;
+        line-height: 3.6rem;
+    }
+    .about-text__description {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+}

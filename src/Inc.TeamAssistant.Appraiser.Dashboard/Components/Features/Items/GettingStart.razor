@@ -1,0 +1,31 @@
+@using Inc.TeamAssistant.Appraiser.Dashboard.Components.Features.Annotations
+
+@inject LanguageManager LanguageManager
+
+<h3 class="features__title">@_annotation.EasyStart</h3>
+<p class="features__description">@_annotation.StepsToStart:</p>
+<ul class="features__list">
+    <li class="features__item">@_annotation.StepCreateChat</li>
+    <li class="features__item">@_annotation.StepInviteMembers <span class="cmd">ocs_teamassistant_appraiser_bot</span></li>
+    <li class="features__item"><span class="cmd">/new</span> @_annotation.StepCreateAssessmentSession</li>
+    <li class="features__item"><span class="cmd">/start</span> @_annotation.StepFollowTheLink</li>
+    <li class="features__item"><span class="cmd">/add</span> @_annotation.StepAddTask</li>
+</ul>
+
+@code {
+    private GettingStartAnnotation _annotation = GettingStartAnnotation.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_EasyStart],
+            resources[Messages.GUI_StepsToStart],
+            resources[Messages.GUI_StepCreateChat],
+            resources[Messages.GUI_StepInviteMembers],
+            resources[Messages.GUI_StepCreateAssessmentSession],
+            resources[Messages.GUI_StepFollowTheLink],
+            resources[Messages.GUI_StepAddTask]);
+    }
+}

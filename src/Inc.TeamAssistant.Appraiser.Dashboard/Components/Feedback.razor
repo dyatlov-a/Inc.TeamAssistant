@@ -1,0 +1,34 @@
+@using Inc.TeamAssistant.Appraiser.Dashboard.Components.Annotations
+@inject LanguageManager LanguageManager
+
+<div class="feedback__body">
+    <div class="feedback-text">
+        <p class="feedback-text__description">@_annotation.AskQuestion<br/> @_annotation.WhatYouThink</p>
+    </div>
+    <div class="feedback__form">
+        <input type="text" @bind="_subject" class="feedback__subject" placeholder="@_annotation.FeedbackSubject" />
+        <textarea @bind="_value" class="feedback__value" placeholder="@_annotation.FeedbackQuestion"></textarea>
+        <a href="mailto:@(Settings.FeedbackTo)?body=@(_value)&subject=@(_subject)" class="button button_white">@_annotation.FeedbackSend</a>
+    </div>
+</div>
+
+@code {
+    private string _subject = string.Empty;
+    private string _value = string.Empty;
+
+    private FeedbackAnnotation _annotation = FeedbackAnnotation.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_AskQuestion],
+            resources[Messages.GUI_WhatYouThink],
+            resources[Messages.GUI_FeedbackSubject],
+            resources[Messages.GUI_FeedbackQuestion],
+            resources[Messages.GUI_FeedbackSend]);
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

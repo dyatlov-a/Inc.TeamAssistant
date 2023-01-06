@@ -1,0 +1,46 @@
+.features__body {
+    display: flex;
+}
+.features__content {
+	flex: 1 1 auto;
+	margin: 0 0 0 5rem;
+}
+.features__buttons {
+	margin: 2.5rem 0 2.5rem 0;
+}
+.features__button {
+	height: 20px;
+	width: 20px;
+	border-radius: 50%;
+	border: #616161 solid 3px;
+	display: inline-block;
+	background-color: #fff;
+	cursor: pointer;
+	margin-right: .625rem;
+}
+.features__button:last-child {
+	margin-right: 0;
+}
+.features__button_active {
+	background-color: #616161;
+}
+@media (max-width: 991.98px) {
+	.features__content {
+		margin: 0 0 0 2.5rem;
+	}
+}
+@media (max-width: 767.98px) {
+    .features__body {
+        display: block;
+    }
+	.features__content {
+        margin: 0;
+	}
+    .phone_move-on-mobile {
+        display: flex;
+        justify-content: center;
+    }
+    .features__buttons {
+        text-align: center;
+    }
+}
