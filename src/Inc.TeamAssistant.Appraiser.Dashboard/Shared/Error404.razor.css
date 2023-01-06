@@ -1,0 +1,11 @@
+.error-404 {
+    margin: 12.5rem 0 0 0;
+}
+.error-404__text {
+    font-size: 1.2rem;
+}
+.error-404__title {
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 0 1.25rem 0 0;
+}

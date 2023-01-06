@@ -1,0 +1,40 @@
+@inject ICookieService CookieService
+@inject LanguageManager LanguageManager
+
+@if (_isShow)
+{
+    <div class="inline-dialog cookie-warning">
+        <div class="inline-dialog__content">
+            <p>
+                @_text
+            </p>
+        </div>
+        <div class="inline-dialog__actions">
+            <a href="#" class="button button_white" @onclick:preventDefault="true" @onclick="Accept">@_buttonText</a>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _isShow = false;
+    private string _text = string.Empty;
+    private string _buttonText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _text = resources[Messages.GUI_AcceptCookieText];
+        _buttonText = resources[Messages.GUI_AcceptCookieButton];
+
+        var rightsValue = await CookieService.GetValue("rights");
+        if (!"accept".Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
+            _isShow = true;
+    }
+
+    private async Task Accept()
+    {
+        await CookieService.SetValue("rights", "accept", 365);
+        _isShow = false;
+    }
+}

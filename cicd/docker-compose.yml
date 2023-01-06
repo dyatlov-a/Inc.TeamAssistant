@@ -1,0 +1,66 @@
+version: "3.3"
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.23.1
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - appraiser_backend
+    networks:
+      - team_assistant
+    restart: unless-stopped
+    volumes:
+      - /home/inc_teamassistant_appraiser/nginx.conf:/etc/nginx/nginx.conf
+      - /home/inc_teamassistant_appraiser/ssl/:/ssl/
+
+  appraiser_backend:
+    image: dyatlovhome/inc.teamassistant.appraiser:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TelegramBotOptions__AccessToken=
+    container_name: appraiser_backend
+    expose:
+      - 8080
+#    ports:
+#      - 80:8080
+    networks:
+      - team_assistant
+    restart: unless-stopped
+
+  migrate:
+    image: dyatlovhome/inc.teamassistant.appraiser.migrationsrunner:latest
+    container_name: migrate
+    command: [ "migrate", "Host=database;Port=5432;Database=appraiser;User Id=postgres;Password=[hidden]" ]
+    depends_on:
+      - database
+#      - create
+    networks:
+      - team_assistant
+
+#  create:
+#    image: dyatlovhome/inc.teamassistant.appraiser.migrationsrunner:latest
+#    container_name: create
+#    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=[hidden]", "[hidden]" ]
+#    depends_on:
+#      - database
+#    networks:
+#      - team_assistant
+
+  database:
+    container_name: database
+    image: postgres:14.5
+    hostname: postgres
+    environment:
+      POSTGRES_PASSWORD: pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /home/inc_teamassistant_appraiser/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - team_assistant
+
+networks:
+  team_assistant: {}

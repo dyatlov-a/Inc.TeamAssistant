@@ -1,0 +1,54 @@
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.Appraiser.Dashboard.Components.Annotations
+
+@inject IAssessmentSessionsService Service
+@inject LanguageManager LanguageManager
+
+<div class="about__body">
+    <div class="about-text">
+        <h1 class="about-text__title">@_annotation.Appraiser</h1>
+        <p class="about-text__description">@_annotation.TelegramBotToEvaluateTasks<br> @_annotation.EvaluateTool</p>
+    </div>
+    <div class="phone phone_hidden-on-tablet">
+        <div class="phone__screen">
+            <div class="phone__content">
+                <div class="qr-code">
+                    @if (_model.State == ServiceResultState.Success)
+                    {
+                        <div class="qr-code__content">
+                            @((MarkupString) _model.Result.Code)
+                        </div>
+                        <span class="qr-code__text">@_annotation.Scan</span>
+                        <span class="qr-code__text qr-code__text_sub">@_annotation.ToStart</span>
+                    }
+                </div>
+            </div>
+            <div class="phone__mockup"></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AboutAnnotation _annotation = AboutAnnotation.Empty;
+    private ServiceResult<GetLinkForConnectResult> _model = ServiceResult<GetLinkForConnectResult>.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_Appraiser],
+            resources[Messages.GUI_TelegramBotToEvaluateTasks],
+            resources[Messages.GUI_EvaluateTool],
+            resources[Messages.GUI_Scan],
+            resources[Messages.GUI_ToStart]);
+
+        _model = await Service.GetLinkForConnect(
+            QrCode.DefaultWidth,
+            QrCode.DefaultHeight,
+            QrCode.DefaultDrawQuietZones);
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

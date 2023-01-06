@@ -1,0 +1,34 @@
+@using Inc.TeamAssistant.Appraiser.Dashboard.Components.Annotations
+
+@inject LanguageManager LanguageManager
+
+<div class="development__items">
+    <div class="development__item">
+        <img class="development__logo" src="/main/development/dotnet/development__logo.svg" alt="NET6">
+        <p class="development__title">@_annotation.UseModernTechnologies</p>
+    </div>
+    <div class="development__item">
+        <img class="development__logo" src="/main/development/blazor/development__logo.svg" alt="Blazor WebAssembly">
+        <p class="development__title">@_annotation.ReuseCode</p>
+    </div>
+    <div class="development__item">
+        <img class="development__logo" src="/main/development/github/development__logo.svg" alt="Open source">
+        <p class="development__title">@_annotation.OpenSource</p>
+    </div>
+</div>
+
+@code {
+    private DevelopmentAnnotation _annotation = DevelopmentAnnotation.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_UseModernTechnologies],
+            resources[Messages.GUI_ReuseCode],
+            resources[Messages.GUI_OpenSource]);
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

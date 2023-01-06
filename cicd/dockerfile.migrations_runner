@@ -1,0 +1,25 @@
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal-amd64
+
+# VARS
+ENV APP_DIR="/app" \
+    APP_USER=app
+
+# create app user and ko
+RUN mkdir -p ${APP_DIR} \
+  && useradd -s /bin/bash -u 1000 -d ${APP_DIR} ${APP_USER} \
+  && chown -R ${APP_USER} ${APP_DIR} \
+  && chmod 700 ${APP_DIR}
+
+# copy already builded project
+COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Appraiser.MigrationsRunner ${APP_DIR}
+WORKDIR ${APP_DIR}
+
+# post install commands
+RUN rm -f *.sh \
+  && find /bin /lib /sbin /usr -xdev -name chmod -delete
+
+# Run app as non root user
+USER ${APP_USER}
+
+ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Appraiser.MigrationsRunner.dll"]
+CMD []

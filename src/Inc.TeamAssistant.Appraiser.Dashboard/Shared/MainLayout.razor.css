@@ -1,0 +1,21 @@
+.wrapper {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+}
+.main {
+	flex: 1 1 auto;
+}
+.footer {
+    min-height: 7.5rem;
+    padding: 2.5rem;
+    font-size: .75rem;
+}
+.header {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 101;
+}
