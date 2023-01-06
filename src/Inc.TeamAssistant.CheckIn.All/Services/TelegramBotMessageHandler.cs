@@ -41,7 +41,7 @@ internal sealed class TelegramBotMessageHandler
 
         try
         {
-            if (update.Message?.From is null || update.Message.From.IsBot || string.IsNullOrWhiteSpace(update.Message.Text))
+            if (update.Message?.From is null || update.Message.From.IsBot)
                 return;
 
             using var scope = _serviceProvider.CreateScope();
