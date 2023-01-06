@@ -1,0 +1,18 @@
+name: app deploy
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x']
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Run './build.sh Deploy'
+        run: ./build.sh Deploy --hubusername ${{ secrets.HUB_USERNAME }} --hubpassword ${{ secrets.HUB_PASSWORD }} --servername ${{ secrets.SERVER_NAME }} --serverusername ${{ secrets.SERVER_USERNAME }} --serverpassword ${{ secrets.SERVER_PASSWORD }}
