@@ -1,23 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\..\src\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
     </ItemGroup>
-
     <ItemGroup>
         <PackageReference Include="AutoFixture" Version="4.17.0" />
-        <PackageReference Include="coverlet.collector" Version="3.1.2">
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="JunitXml.TestLogger" Version="3.0.114" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <PrivateAssets>all</PrivateAssets>
@@ -25,5 +17,4 @@
         </PackageReference>
         <PackageReference Include="NSubstitute" Version="4.4.0" />
     </ItemGroup>
-
 </Project>

@@ -1,0 +1,23 @@
+@using Inc.TeamAssistant.WebUI.Components.Features.Annotations
+
+@inject LanguageManager LanguageManager
+
+<h3 class="features__title">@_annotation.ResponsiveInterface</h3>
+<p class="features__description">@_annotation.UserActionsDisplayedInTelegram</p>
+<ul class="features__list">
+    <li class="features__item">@_annotation.UseHelp <span class="cmd">/help</span></li>
+</ul>
+
+@code {
+    private UserFriendlyAnnotation _annotation = UserFriendlyAnnotation.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _annotation = new(
+            resources[Messages.GUI_ResponsiveInterface],
+            resources[Messages.GUI_UserActionsDisplayedInTelegram],
+            resources[Messages.GUI_UseHelp]);
+    }
+}

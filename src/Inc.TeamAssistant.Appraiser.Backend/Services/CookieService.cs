@@ -16,7 +16,7 @@ internal sealed class CookieService : ICookieService
         var httpContext = _httpContextAccessor.HttpContext;
 
         if (httpContext is { } && httpContext.Request.Cookies.TryGetValue(name, out var value))
-            return Task.FromResult(value);
+            return Task.FromResult<string?>(value);
 
         return Task.FromResult(default(string?));
     }

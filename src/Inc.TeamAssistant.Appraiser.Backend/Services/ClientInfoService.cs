@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Dashboard;
+using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Primitives;
 

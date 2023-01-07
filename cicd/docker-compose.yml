@@ -20,6 +20,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - TelegramBotOptions__AccessToken=
+      - CheckInOptions__AccessToken=
+      - ReviewerOptions__AccessToken=
     container_name: appraiser_backend
     expose:
       - 8080
