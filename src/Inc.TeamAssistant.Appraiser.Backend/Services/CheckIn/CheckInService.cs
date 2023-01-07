@@ -10,10 +10,12 @@ namespace Inc.TeamAssistant.Appraiser.Backend.Services.CheckIn;
 internal sealed class CheckInService : ICheckInService
 {
     private readonly ILocationsRepository _locationsRepository;
+    private readonly ILogger<CheckInService> _logger;
 
-    public CheckInService(ILocationsRepository locationsRepository)
+    public CheckInService(ILocationsRepository locationsRepository, ILogger<CheckInService> logger)
     {
         _locationsRepository = locationsRepository ?? throw new ArgumentNullException(nameof(locationsRepository));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ServiceResult<GetLocationsResult?>> GetLocations(Guid mapId, CancellationToken cancellationToken)
@@ -42,9 +44,23 @@ internal sealed class CheckInService : ICheckInService
         if (location is null)
             throw new ArgumentNullException(nameof(location));
 
-        var timeZoneId = TimeZoneLookup.GetTimeZone(location.Latitude, location.Longitude).Result;
-        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+        TimeSpan? baseUtcOffset = null;
 
-        return new(location.DisplayName, location.Longitude, location.Latitude, timeZone.BaseUtcOffset);
+        try
+        {
+            var timeZoneId = TimeZoneLookup.GetTimeZone(location.Latitude, location.Longitude).Result;
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            baseUtcOffset = timeZone.BaseUtcOffset;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Can not detect time zone for location (Latitude: {Latitude}, Longitude: {Longitude})",
+                location.Latitude,
+                location.Longitude);
+        }
+
+        return new(location.DisplayName, location.Longitude, location.Latitude, baseUtcOffset);
     }
 }

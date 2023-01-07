@@ -3,6 +3,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0.1-jammy-amd64
 # VARS
 ENV APP_DIR="/app" \
     APP_USER=app
+    
+# Add timezones
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 
 # create app user and ko
 RUN mkdir -p ${APP_DIR} \

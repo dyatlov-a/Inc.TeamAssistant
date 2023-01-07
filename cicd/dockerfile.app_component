@@ -8,6 +8,9 @@ ENV APP_DIR="/app" \
     APP_USER=app \
     # set environtent for aspnetcore
     ASPNETCORE_URLS=http://+:8080
+    
+# Add timezones
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 
 # create app user and ko
 RUN mkdir -p ${APP_DIR} \

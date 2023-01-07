@@ -22,8 +22,10 @@ internal sealed class LocationBuilder : ILocationBuilder
     {
         if (location is null)
             throw new ArgumentNullException(nameof(location));
-
-        var sign = location.UtcOffset < TimeSpan.Zero ? "-" : "+";
+        
+        var timeOffset = location.UtcOffset.HasValue
+            ? $"{(location.UtcOffset.Value < TimeSpan.Zero ? "-" : "+")}{location.UtcOffset.Value:hh\\:mm}"
+            : "?";
 
         await _jsRuntime.InvokeVoidAsync(
             "locations.builder.addMarker",
@@ -31,7 +33,7 @@ internal sealed class LocationBuilder : ILocationBuilder
             location.DisplayName,
             location.Longitude,
             location.Latitude,
-            $"{sign}{location.UtcOffset:hh\\:mm}",
+            timeOffset,
             index,
             isActual,
             hasHistory);
