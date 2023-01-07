@@ -19,8 +19,8 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(configuration));
 
         var addStoryOptions = configuration
-            .GetSection(nameof(AddStoryToAssessmentSessionOptions))
-            .Get<AddStoryToAssessmentSessionOptions>();
+            .GetRequiredSection(nameof(AddStoryToAssessmentSessionOptions))
+            .Get<AddStoryToAssessmentSessionOptions>()!;
 
         ValidatorOptions.Global.LanguageManager.Culture = new("en");
         ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;

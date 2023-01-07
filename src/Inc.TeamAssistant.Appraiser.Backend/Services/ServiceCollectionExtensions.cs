@@ -1,10 +1,9 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
 using Inc.TeamAssistant.Appraiser.Backend.Services.MessageProviders;
-using Inc.TeamAssistant.Appraiser.Dashboard;
+using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
@@ -37,8 +36,8 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(new MessageProvider(webRootPath))
-            .AddSingleton<IMessageProvider>(sp => new MessageProviderCached(
-                sp.GetRequiredService<IMemoryCache>(),
+            .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
+                sp,
                 sp.GetRequiredService<MessageProvider>(),
                 options.CacheAbsoluteExpiration));
 
@@ -64,8 +63,8 @@ public static class ServiceCollectionExtensions
                 options.ConnectToDashboardLinkTemplate))
 
             .AddSingleton<QuickResponseCodeGenerator>()
-            .AddSingleton<IQuickResponseCodeGenerator>(sp => new QuickResponseCodeGeneratorCached(
-                sp.GetRequiredService<IMemoryCache>(),
+            .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
+                sp,
                 sp.GetRequiredService<QuickResponseCodeGenerator>(),
                 options.CacheAbsoluteExpiration))
 

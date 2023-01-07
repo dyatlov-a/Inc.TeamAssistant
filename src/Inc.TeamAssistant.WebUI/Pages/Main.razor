@@ -1,0 +1,56 @@
+﻿@page "/"
+@page "/en"
+@page "/ru"
+
+@using Inc.TeamAssistant.WebUI.Pages.Annotations
+
+@inject LanguageManager LanguageManager
+
+<section id="about" class="about">
+    <div class="dark"></div>
+    <div class="about__container">
+        <About/>
+        <a href="@_moveToFeaturesUrl" target="_top" class="move-to"><span class="move-to__button"></span></a>
+    </div>
+</section>
+<section id="features" class="features white">
+    <div class="features__container"
+         @ontouchstart="e => _features?.SwipeStarting(e)"
+         @ontouchmove="e => _features?.SwipeEnded(e)">
+        <h2 class="title title_dark">@_annotation.Features</h2>
+        <Features @ref="_features"/>
+    </div>
+</section>
+<section id="development" class="development">
+    <div class="development__container">
+        <h2 class="title">@_annotation.Tools</h2>
+        <Development/>
+    </div>
+</section>
+<section id="feedback" class="feedback white">
+    <div class="feedback__container title_dark">
+        <h2 class="title">@_annotation.Feedback</h2>
+        <Feedback/>
+    </div>
+</section>
+
+@code{
+    private Features? _features;
+
+    private MainPageAnnotation _annotation = MainPageAnnotation.Empty;
+    private string _moveToFeaturesUrl = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        var linkBuilder = LanguageManager.CreateLinkBuilder();
+
+        _annotation = new(
+            resources[Messages.GUI_Features],
+            resources[Messages.GUI_Tools],
+            resources[Messages.GUI_Feedback]);
+        _moveToFeaturesUrl = linkBuilder("#features");
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

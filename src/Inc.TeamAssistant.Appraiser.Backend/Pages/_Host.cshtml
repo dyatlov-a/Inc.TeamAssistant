@@ -38,7 +38,7 @@
     @{ await Html.RenderPartialAsync("OpenGraphStatic", Model.OpenGraphStaticViewModel); }
 
     <link href="~/css/main.css?v=@Model.AppVersion" rel="stylesheet"/>
-    <link href="~/Inc.TeamAssistant.Appraiser.Dashboard.styles.css?v=@Model.AppVersion" rel="stylesheet"/>
+    <link href="~/Inc.TeamAssistant.WebUI.styles.css?v=@Model.AppVersion" rel="stylesheet"/>
 
     <base href="~/"/>
 
@@ -155,7 +155,7 @@
 </head>
 
 <body>
-    <component type="typeof(Dashboard.App)" render-mode="WebAssemblyPrerendered"/>
+    <component type="typeof(WebUI.App)" render-mode="WebAssemblyPrerendered"/>
 
     <script src="~/_framework/blazor.webassembly.js"></script>
 </body>
