@@ -79,9 +79,8 @@
 
     @if (Model.HasMap)
     {
-        <link rel="stylesheet" href="~/leaflet/leaflet.css"/>
-
-        <script src="~/leaflet/leaflet.js"></script>
+        <link rel="stylesheet" href="~/leaflet/leaflet.css?v=@Model.AppVersion"/>
+        <script src="~/leaflet/leaflet.js?v=@Model.AppVersion"></script>
 
         <script>
             (function() {
@@ -157,7 +156,7 @@
 <body>
     <component type="typeof(WebUI.App)" render-mode="WebAssemblyPrerendered"/>
 
-    <script src="~/_framework/blazor.webassembly.js"></script>
+    <script src="~/_framework/blazor.webassembly.js?v=@Model.AppVersion"></script>
 </body>
 
 </html>
