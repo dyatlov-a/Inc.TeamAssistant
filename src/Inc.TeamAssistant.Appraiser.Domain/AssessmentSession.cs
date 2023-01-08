@@ -15,7 +15,7 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
     public Story CurrentStory { get; private set; }
 	IStoryAccessor IAssessmentSessionAccessor.Story => CurrentStory;
 
-    private readonly List<Participant> _participants;
+    private readonly List<Participant> _participants = new();
     public IReadOnlyCollection<Participant> Participants => _participants;
 
     public AssessmentSession(long chatId, Participant moderator, LanguageId languageId)
@@ -24,8 +24,7 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
         LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
 		Id = new(Guid.NewGuid());
 		ChatId = chatId;
-		_participants = new() { moderator };
-        _state = new Draft(this);
+		_state = new Draft(this);
 		CurrentStory = Story.Empty;
 		Title = string.Empty;
 	}

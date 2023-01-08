@@ -33,7 +33,9 @@ internal sealed class AssessmentSessionInMemoryRepository : IAssessmentSessionRe
         if (participantId is null)
             throw new ArgumentNullException(nameof(participantId));
 
-        var assessmentSessions = _store.Where(i => i.Participants.Any(a => a.Id.Equals(participantId))).ToArray();
+        var assessmentSessions = _store
+            .Where(i => i.Participants.Any(a => a.Id.Equals(participantId)) || i.Moderator.Id.Equals(participantId))
+            .ToArray();
 
         return assessmentSessions.Length switch
         {

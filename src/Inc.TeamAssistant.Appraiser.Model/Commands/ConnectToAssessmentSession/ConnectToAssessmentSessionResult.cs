@@ -7,5 +7,6 @@ public sealed record ConnectToAssessmentSessionResult(
     AssessmentSessionId AssessmentSessionId,
     LanguageId AssessmentSessionLanguageId,
 	string AssessmentSessionTitle,
+	ParticipantId AppraiserId,
 	string AppraiserName,
 	bool StoryInProgress);
