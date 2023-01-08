@@ -78,7 +78,7 @@
   "GUI_TelegramBotToEvaluateTasks": "Телеграм бот для оценки задач",
   "GUI_EvaluateTool": "через planning poker",
   "GUI_ToStart": "чтобы начать",
-  "GUI_UseModernTechnologies": "Используем современные технологии .NET6",
+  "GUI_UseModernTechnologies": "Используем современные технологии .NET7",
   "GUI_ReuseCode": "Переиспользуем код между клиентом и сервером Blazor WebAssembly",
   "GUI_OpenSource": "Весь исходный код открыт, каждый может принять участие в развитии продукта",
   "GUI_AskQuestion": "Задай вопрос или оставь пожелание",
