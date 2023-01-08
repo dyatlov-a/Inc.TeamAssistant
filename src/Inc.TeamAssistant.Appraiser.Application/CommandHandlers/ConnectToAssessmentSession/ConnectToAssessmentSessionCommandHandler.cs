@@ -25,7 +25,7 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
             throw new ArgumentNullException(nameof(toAssessmentSessionCommand));
 
         var existSessionAssessmentSession = _repository.Find(toAssessmentSessionCommand.AppraiserId);
-        if (existSessionAssessmentSession is not null)
+        if (existSessionAssessmentSession?.Participants.Any(p => p.Id == toAssessmentSessionCommand.AppraiserId) == true)
         {
             var messageId = existSessionAssessmentSession.Id == toAssessmentSessionCommand.AssessmentSessionId
                 ? Messages.AppraiserConnectWithError
@@ -49,6 +49,7 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
             assessmentSession.Id,
             assessmentSession.LanguageId,
             assessmentSession.Title,
+            toAssessmentSessionCommand.AppraiserId,
             toAssessmentSessionCommand.AppraiserName,
             StoryInProgress: assessmentSession.CurrentStory != Story.Empty);
 

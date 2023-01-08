@@ -20,7 +20,9 @@ internal sealed class ConnectToAssessmentSessionNotificationBuilder
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-    public async IAsyncEnumerable<NotificationMessage> Build(ConnectToAssessmentSessionResult commandToAssessmentSessionResult, long fromId)
+    public async IAsyncEnumerable<NotificationMessage> Build(
+	    ConnectToAssessmentSessionResult commandToAssessmentSessionResult,
+	    long fromId)
 	{
 		if (commandToAssessmentSessionResult is null)
 			throw new ArgumentNullException(nameof(commandToAssessmentSessionResult));
@@ -31,17 +33,20 @@ internal sealed class ConnectToAssessmentSessionNotificationBuilder
             commandToAssessmentSessionResult.AssessmentSessionLanguageId,
             commandToAssessmentSessionResult.AssessmentSessionTitle,
             allowUseUsernameCommand);
-        var appraiserAddedMessage = await _messageBuilder.Build(
-            Messages.AppraiserAdded,
-            commandToAssessmentSessionResult.AssessmentSessionLanguageId,
-            commandToAssessmentSessionResult.AppraiserName,
-            commandToAssessmentSessionResult.AssessmentSessionTitle);
-
         yield return NotificationMessage.Create(fromId, connectedSuccessMessage);
-        yield return NotificationMessage.Create(
-            commandToAssessmentSessionResult.ModeratorId.Value,
-            appraiserAddedMessage);
 
+        if (commandToAssessmentSessionResult.ModeratorId != commandToAssessmentSessionResult.AppraiserId)
+        {
+	        var appraiserAddedMessage = await _messageBuilder.Build(
+		        Messages.AppraiserAdded,
+		        commandToAssessmentSessionResult.AssessmentSessionLanguageId,
+		        commandToAssessmentSessionResult.AppraiserName,
+		        commandToAssessmentSessionResult.AssessmentSessionTitle);
+	        yield return NotificationMessage.Create(
+		        commandToAssessmentSessionResult.ModeratorId.Value,
+		        appraiserAddedMessage);
+        }
+        
         if (commandToAssessmentSessionResult.StoryInProgress)
         {
             var loadingMessage = await _messageBuilder.Build(Messages.Loading, commandToAssessmentSessionResult.AssessmentSessionLanguageId);
