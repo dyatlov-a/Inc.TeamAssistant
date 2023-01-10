@@ -8,8 +8,9 @@ public sealed class TaskForReview
     public Guid ReviewerId { get; private set; }
     public PlayerAsReviewer Reviewer { get; private set; } = default!;
     public string Description { get; private set; } = default!;
-    public bool IsActive { get; private set; }
+    public TaskForReviewState State { get; private set; }
     public DateTimeOffset NextNotification { get; private set; }
+    public DateTimeOffset? AcceptDate { get; private set; }
 
     private TaskForReview()
     {
@@ -27,7 +28,7 @@ public sealed class TaskForReview
         Reviewer = reviewer ?? throw new ArgumentNullException(nameof(reviewer));
         ReviewerId = reviewer.Id;
         Description = description;
-        IsActive = true;
+        State = TaskForReviewState.InProgress;
         NextNotification = DateTimeOffset.UtcNow;
     }
 
@@ -51,5 +52,21 @@ public sealed class TaskForReview
     public void SetNextNotificationTime(TimeSpan notificationInterval)
         => NextNotification = DateTimeOffset.UtcNow.Add(notificationInterval);
 
-    public void MoveToFinish() => IsActive = false;
+    public void Accept()
+    {
+        State = TaskForReviewState.IsArchived;
+        AcceptDate = DateTimeOffset.UtcNow;
+    }
+
+    public void Decline()
+    {
+        State = TaskForReviewState.OnCorrection;
+        NextNotification = DateTimeOffset.UtcNow;
+    }
+
+    public void MoveToNextRound()
+    {
+        State = TaskForReviewState.InProgress;
+        NextNotification = DateTimeOffset.UtcNow;
+    }
 }

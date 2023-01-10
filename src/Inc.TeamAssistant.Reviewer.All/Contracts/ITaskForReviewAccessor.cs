@@ -6,6 +6,7 @@ public interface ITaskForReviewAccessor
 {
     Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
         DateTimeOffset now,
+        IReadOnlyCollection<TaskForReviewState> states,
         int limit,
         CancellationToken cancellationToken);
 
