@@ -16,4 +16,7 @@ internal static class Messages
     public static MessageId Reviewer_TeamNotFoundError = new(nameof(Reviewer_TeamNotFoundError));
     public static MessageId Reviewer_NeedReview = new(nameof(Reviewer_NeedReview));
     public static MessageId Reviewer_NewTaskForReview = new(nameof(Reviewer_NewTaskForReview));
+    public static MessageId Reviewer_CancelHelp = new(nameof(Reviewer_CancelHelp));
+    public static MessageId Reviewer_CancelDialogFail = new(nameof(Reviewer_CancelDialogFail));
+    public static MessageId Reviewer_BeginDialogFail = new(nameof(Reviewer_BeginDialogFail));
 }

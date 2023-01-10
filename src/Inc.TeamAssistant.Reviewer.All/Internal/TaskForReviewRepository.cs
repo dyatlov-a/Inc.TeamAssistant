@@ -82,7 +82,7 @@ is_active = excluded.is_active,
 next_notification = excluded.next_notification;
 
 UPDATE review.players
-SET last_reviewer_id = @last_reviewer_id
+SET last_reviewer_id = @owner_last_reviewer_id
 WHERE id = @owner_id;
 
 UPDATE review.players

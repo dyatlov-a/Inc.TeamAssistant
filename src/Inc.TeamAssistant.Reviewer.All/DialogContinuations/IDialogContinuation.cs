@@ -5,6 +5,6 @@ namespace Inc.TeamAssistant.Reviewer.All.DialogContinuations;
 internal interface IDialogContinuation
 {
     DialogState? Find(long userId);
-    DialogState Begin(long userId, string continuationState, int messageId);
+    DialogState? TryBegin(long userId, string continuationState, int messageId);
     void End(long userId, string continuationState, int messageId);
 }

@@ -60,7 +60,9 @@ internal sealed class TelegramBotMessageHandler
         var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
         var languageId = update.Message.From.GetLanguageId();
 
-        if (update.Message.From.Id == update.Message.Chat.Id && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase))
+        if (update.Message.From.Id == update.Message.Chat.Id
+            && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
+            && !update.Message.Text.StartsWith(CommandList.Finish, StringComparison.InvariantCultureIgnoreCase))
         {
             var messageText = await translateProvider.Get(Messages.Reviewer_GetStarted, languageId);
             await client.SendTextMessageAsync(update.Message.From.Id, messageText, cancellationToken: cancellationToken);
@@ -80,8 +82,14 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.Chat.Id,
                 update.Message.Text);
             var currentDialog = _dialogContinuation.Find(update.Message.From.Id);
-            var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
 
+            if (update.Message.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
+            {
+                await CancelDialog(context, currentDialog, cancellationToken);
+                return;
+            }
+            
+            var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
             switch (command)
             {
                 case CommandList.CreateTeam when currentDialog is null:
@@ -113,7 +121,7 @@ internal sealed class TelegramBotMessageHandler
 
             foreach (var activeTask in await _taskForReviewRepository.GetActive(cancellationToken))
             {
-                var finishCommand = string.Format(CommandList.Finish, activeTask.ToString("N"));
+                var finishCommand = $"{CommandList.Finish}_{activeTask:N}";
                 if (update.Message.Text.StartsWith(finishCommand, StringComparison.InvariantCultureIgnoreCase))
                     await MoveToFinish(activeTask, cancellationToken);
             }
@@ -127,6 +135,27 @@ internal sealed class TelegramBotMessageHandler
             _logger.LogError(exception, "Unhandled exception");
 
             await TrySend(client, update.Message.Chat.Id, exception.Message, cancellationToken);
+        }
+    }
+
+    private async Task CancelDialog(
+        CommandContext context,
+        DialogState? currentDialog,
+        CancellationToken cancellationToken)
+    {
+        if (context is null)
+            throw new ArgumentNullException(nameof(context));
+        
+        if (currentDialog is { })
+        {
+            _dialogContinuation.End(context.UserId, currentDialog.ContinuationState, context.MessageId);
+            foreach (var currentMessageId in currentDialog.MessageIds)
+                await context.Client.DeleteMessageAsync(context.ChatId, currentMessageId, cancellationToken);
+        }
+        else
+        {
+            var messageText = await context.TranslateProvider.Get(Messages.Reviewer_CancelDialogFail, context.LanguageId);
+            await context.Client.SendTextMessageAsync(context.ChatId, messageText, cancellationToken: cancellationToken);
         }
     }
 
@@ -144,6 +173,10 @@ internal sealed class TelegramBotMessageHandler
             Messages.Reviewer_MoveToReviewHelp,
             context.LanguageId,
             CommandList.MoveToReview));
+        messageBuilder.AppendLine(await context.TranslateProvider.Get(
+            Messages.Reviewer_CancelHelp,
+            context.LanguageId,
+            CommandList.Cancel));
 
         await context.Client.SendTextMessageAsync(context.ChatId, messageBuilder.ToString());
     }
@@ -153,13 +186,22 @@ internal sealed class TelegramBotMessageHandler
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var dialogState = _dialogContinuation.Begin(context.UserId, CommandList.CreateTeam, context.MessageId);
-        var message = await context.Client.SendTextMessageAsync(
-            context.ChatId,
-            await context.TranslateProvider.Get(Messages.Reviewer_EnterTeamName, context.LanguageId),
-            cancellationToken: cancellationToken);
+        var dialogState = _dialogContinuation.TryBegin(context.UserId, CommandList.CreateTeam, context.MessageId);
 
-        dialogState.AttachMessage(message.MessageId);
+        if (dialogState is { })
+        {
+            var message = await context.Client.SendTextMessageAsync(
+                context.ChatId,
+                await context.TranslateProvider.Get(Messages.Reviewer_EnterTeamName, context.LanguageId),
+                cancellationToken: cancellationToken);
+
+            dialogState.AttachMessage(message.MessageId);
+        }
+        else
+            await context.Client.SendTextMessageAsync(
+                context.ChatId,
+                await context.TranslateProvider.Get(Messages.Reviewer_BeginDialogFail, context.LanguageId),
+                cancellationToken: cancellationToken);
     }
 
     private async Task ContinueCreateTeam(
@@ -194,20 +236,29 @@ internal sealed class TelegramBotMessageHandler
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
+        
+        var dialogState = _dialogContinuation.TryBegin(context.UserId, CommandList.MoveToReview, context.MessageId);
 
-        var teams = (await _teamRepository.GetTeams(context.ChatId, cancellationToken)).OrderBy(t => t.Name).ToArray();
-        var dialogState = _dialogContinuation.Begin(context.UserId, CommandList.MoveToReview, context.MessageId);
+        if (dialogState is { })
+        {
+            var teams = (await _teamRepository.GetTeams(context.ChatId, cancellationToken)).OrderBy(t => t.Name).ToArray();
+            
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine(await context.TranslateProvider.Get(Messages.Reviewer_SelectTeam, context.LanguageId));
+            for (var index = 0; index < teams.Length; index++)
+                messageBuilder.AppendLine($"{index + 1}. {teams[index].Name} /{teams[index].Id.ToString("N")}");
 
-        var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(await context.TranslateProvider.Get(Messages.Reviewer_SelectTeam, context.LanguageId));
-        for (var index = 0; index < teams.Length; index++)
-            messageBuilder.AppendLine($"{index + 1}. {teams[index].Name} /{teams[index].Id.ToString("N")}");
-
-        var message = await context.Client.SendTextMessageAsync(
-            context.ChatId,
-            messageBuilder.ToString(),
-            cancellationToken: cancellationToken);
-        dialogState.AttachMessage(message.MessageId);
+            var message = await context.Client.SendTextMessageAsync(
+                context.ChatId,
+                messageBuilder.ToString(),
+                cancellationToken: cancellationToken);
+            dialogState.AttachMessage(message.MessageId);
+        }
+        else
+            await context.Client.SendTextMessageAsync(
+                context.ChatId,
+                await context.TranslateProvider.Get(Messages.Reviewer_BeginDialogFail, context.LanguageId),
+                cancellationToken: cancellationToken);
     }
 
     private async Task ContinueMoveToReview(

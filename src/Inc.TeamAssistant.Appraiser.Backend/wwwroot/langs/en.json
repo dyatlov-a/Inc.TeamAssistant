@@ -123,5 +123,8 @@
   "Reviewer_JoinToTeamSuccess": "Connection to team \"{0}\" successed",
   "Reviewer_TeamNotFoundError": "No team found",
   "Reviewer_NeedReview": "Task \"{0}\" needs to be revisited. To complete {1}",
-  "Reviewer_NewTaskForReview": "New task \"{0}\" for review. Assigned to {1}"
+  "Reviewer_NewTaskForReview": "New task \"{0}\" for review. Assigned to {1}",
+  "Reviewer_CancelHelp": "{0} - cancel current command",
+  "Reviewer_CancelDialogFail": "No active command to cancel",
+  "Reviewer_BeginDialogFail": "Cannot start a command. End active commands before starting a new command."
 }

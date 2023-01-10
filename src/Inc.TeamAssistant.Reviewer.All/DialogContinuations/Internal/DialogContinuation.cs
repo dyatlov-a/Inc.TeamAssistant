@@ -1,22 +1,25 @@
+using System.Collections.Concurrent;
 using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
 
 namespace Inc.TeamAssistant.Reviewer.All.DialogContinuations.Internal;
 
 internal sealed class DialogContinuation : IDialogContinuation
 {
-    private readonly Dictionary<long, DialogState> _store = new();
+    private readonly ConcurrentDictionary<long, DialogState> _store = new();
 
     public DialogState? Find(long userId) => _store.TryGetValue(userId, out var value) ? value : null;
 
-    public DialogState Begin(long userId, string continuationState, int messageId)
+    public DialogState? TryBegin(long userId, string continuationState, int messageId)
     {
         if (string.IsNullOrWhiteSpace(continuationState))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(continuationState));
 
-        var dialogState = new DialogState(continuationState);
-        dialogState.AttachMessage(messageId);
-        _store.Add(userId, dialogState);
-        return dialogState;
+        var dialogState = new DialogState(continuationState).AttachMessage(messageId);
+
+        if (_store.TryAdd(userId, dialogState))
+            return dialogState;
+
+        return null;
     }
 
     public void End(long userId, string continuationState, int messageId)
@@ -31,6 +34,6 @@ internal sealed class DialogContinuation : IDialogContinuation
             throw new ApplicationException($"Trying ({userId}, {continuationState}) End other operation.");
 
         value.AttachMessage(messageId);
-        _store.Remove(userId);
+        _store.Remove(userId, out _);
     }
 }
