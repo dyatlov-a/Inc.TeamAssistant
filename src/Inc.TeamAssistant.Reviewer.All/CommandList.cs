@@ -7,4 +7,5 @@ internal static class CommandList
     public const string MoveToReview = "/need_review";
     public const string Finish = "/finish_{0}";
     public const string Help = "/help";
+    public const string Cancel = "/cancel";
 }

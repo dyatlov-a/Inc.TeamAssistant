@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
 
 namespace Inc.TeamAssistant.Reviewer.All.DialogContinuations.Internal;
 
 internal sealed class DialogContinuation : IDialogContinuation
 {
-    private readonly Dictionary<long, DialogState> _store = new();
+    private readonly ConcurrentDictionary<long, DialogState> _store = new();
 
     public DialogState? Find(long userId) => _store.TryGetValue(userId, out var value) ? value : null;
 
@@ -15,7 +16,7 @@ internal sealed class DialogContinuation : IDialogContinuation
 
         var dialogState = new DialogState(continuationState);
         dialogState.AttachMessage(messageId);
-        _store.Add(userId, dialogState);
+        _store.AddOrUpdate(userId, u => dialogState, (u, s) => dialogState);
         return dialogState;
     }
 
@@ -31,6 +32,6 @@ internal sealed class DialogContinuation : IDialogContinuation
             throw new ApplicationException($"Trying ({userId}, {continuationState}) End other operation.");
 
         value.AttachMessage(messageId);
-        _store.Remove(userId);
+        _store.Remove(userId, out _);
     }
 }

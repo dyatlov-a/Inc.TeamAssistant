@@ -81,7 +81,7 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.Text);
             var currentDialog = _dialogContinuation.Find(update.Message.From.Id);
             var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
-
+            
             switch (command)
             {
                 case CommandList.CreateTeam when currentDialog is null:
@@ -95,6 +95,9 @@ internal sealed class TelegramBotMessageHandler
                     return;
                 case CommandList.MoveToReview:
                     await ContinueMoveToReview(context, currentDialog, cancellationToken);
+                    return;
+                case CommandList.Cancel:
+                    await CancelDialog(context, currentDialog, cancellationToken);
                     return;
                 case CommandList.Help:
                     await ShowHelp(context);
@@ -130,6 +133,29 @@ internal sealed class TelegramBotMessageHandler
         }
     }
 
+    private async Task CancelDialog(
+        CommandContext context,
+        DialogState? currentDialog,
+        CancellationToken cancellationToken)
+    {
+        if (context is null)
+            throw new ArgumentNullException(nameof(context));
+
+        var cancelActionAvailable = currentDialog is { };
+        if (cancelActionAvailable)
+        {
+            _dialogContinuation.End(context.UserId, currentDialog!.ContinuationState, context.MessageId);
+            foreach (var currentMessageId in currentDialog.MessageIds)
+                await context.Client.DeleteMessageAsync(context.ChatId, currentMessageId, cancellationToken);
+        }
+
+        var messageId = cancelActionAvailable
+            ? Messages.Reviewer_CancelDialogSuccess
+            : Messages.Reviewer_CancelDialogFail;
+        var messageText = await context.TranslateProvider.Get(messageId, context.LanguageId);
+        await context.Client.SendTextMessageAsync(context.ChatId, messageText, cancellationToken: cancellationToken);
+    }
+
     private async Task ShowHelp(CommandContext context)
     {
         if (context is null)
@@ -144,6 +170,10 @@ internal sealed class TelegramBotMessageHandler
             Messages.Reviewer_MoveToReviewHelp,
             context.LanguageId,
             CommandList.MoveToReview));
+        messageBuilder.AppendLine(await context.TranslateProvider.Get(
+            Messages.Reviewer_CancelHelp,
+            context.LanguageId,
+            CommandList.Cancel));
 
         await context.Client.SendTextMessageAsync(context.ChatId, messageBuilder.ToString());
     }
