@@ -9,15 +9,17 @@ internal sealed class DialogContinuation : IDialogContinuation
 
     public DialogState? Find(long userId) => _store.TryGetValue(userId, out var value) ? value : null;
 
-    public DialogState Begin(long userId, string continuationState, int messageId)
+    public DialogState? TryBegin(long userId, string continuationState, int messageId)
     {
         if (string.IsNullOrWhiteSpace(continuationState))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(continuationState));
 
-        var dialogState = new DialogState(continuationState);
-        dialogState.AttachMessage(messageId);
-        _store.AddOrUpdate(userId, u => dialogState, (u, s) => dialogState);
-        return dialogState;
+        var dialogState = new DialogState(continuationState).AttachMessage(messageId);
+
+        if (_store.TryAdd(userId, dialogState))
+            return dialogState;
+
+        return null;
     }
 
     public void End(long userId, string continuationState, int messageId)

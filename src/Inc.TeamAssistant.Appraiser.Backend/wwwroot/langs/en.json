@@ -126,5 +126,6 @@
   "Reviewer_NewTaskForReview": "New task \"{0}\" for review. Assigned to {1}",
   "Reviewer_CancelHelp": "{0} - cancel current command",
   "Reviewer_CancelDialogSuccess": "Command canceled",
-  "Reviewer_CancelDialogFail": "No active command to cancel"
+  "Reviewer_CancelDialogFail": "No active command to cancel",
+  "Reviewer_BeginDialogFail": "Cannot start a command. End active commands before starting a new command."
 }

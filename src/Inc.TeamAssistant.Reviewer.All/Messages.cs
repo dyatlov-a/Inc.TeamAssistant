@@ -19,4 +19,5 @@ internal static class Messages
     public static MessageId Reviewer_CancelHelp = new(nameof(Reviewer_CancelHelp));
     public static MessageId Reviewer_CancelDialogSuccess = new(nameof(Reviewer_CancelDialogSuccess));
     public static MessageId Reviewer_CancelDialogFail = new(nameof(Reviewer_CancelDialogFail));
+    public static MessageId Reviewer_BeginDialogFail = new(nameof(Reviewer_BeginDialogFail));
 }
