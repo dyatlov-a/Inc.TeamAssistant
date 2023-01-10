@@ -125,7 +125,6 @@
   "Reviewer_NeedReview": "Необходимо провести ревью задачи «0». Для завершения {1}",
   "Reviewer_NewTaskForReview": "Новая задача для ревью «{0}». Назначена на {1}",
   "Reviewer_CancelHelp": "{0} - отменить текущую команду",
-  "Reviewer_CancelDialogSuccess": "Команда отменена",
   "Reviewer_CancelDialogFail": "Нет активной команды для отмены",
   "Reviewer_BeginDialogFail": "Не удается начать выполнение команды. Завершите активные команды перед началом новой."
 }

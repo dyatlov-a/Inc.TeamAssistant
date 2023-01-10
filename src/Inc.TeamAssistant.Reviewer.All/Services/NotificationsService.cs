@@ -60,7 +60,7 @@ internal sealed class NotificationsService : BackgroundService
                         Messages.Reviewer_NeedReview,
                         tasksForNotification.Reviewer.LanguageId,
                         tasksForNotification.Description,
-                        string.Format(CommandList.Finish, tasksForNotification.Id.ToString("N")));
+                        $"{CommandList.Finish}_{tasksForNotification.Id:N}");
                     await _client.SendTextMessageAsync(
                         new(tasksForNotification.Reviewer.UserId),
                         messageText,

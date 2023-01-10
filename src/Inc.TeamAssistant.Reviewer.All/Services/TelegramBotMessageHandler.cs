@@ -60,7 +60,9 @@ internal sealed class TelegramBotMessageHandler
         var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
         var languageId = update.Message.From.GetLanguageId();
 
-        if (update.Message.From.Id == update.Message.Chat.Id && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase))
+        if (update.Message.From.Id == update.Message.Chat.Id
+            && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
+            && !update.Message.Text.StartsWith(CommandList.Finish, StringComparison.InvariantCultureIgnoreCase))
         {
             var messageText = await translateProvider.Get(Messages.Reviewer_GetStarted, languageId);
             await client.SendTextMessageAsync(update.Message.From.Id, messageText, cancellationToken: cancellationToken);
@@ -80,8 +82,14 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.Chat.Id,
                 update.Message.Text);
             var currentDialog = _dialogContinuation.Find(update.Message.From.Id);
-            var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
+
+            if (update.Message.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
+            {
+                await CancelDialog(context, currentDialog, cancellationToken);
+                return;
+            }
             
+            var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
             switch (command)
             {
                 case CommandList.CreateTeam when currentDialog is null:
@@ -95,9 +103,6 @@ internal sealed class TelegramBotMessageHandler
                     return;
                 case CommandList.MoveToReview:
                     await ContinueMoveToReview(context, currentDialog, cancellationToken);
-                    return;
-                case CommandList.Cancel:
-                    await CancelDialog(context, currentDialog, cancellationToken);
                     return;
                 case CommandList.Help:
                     await ShowHelp(context);
@@ -116,7 +121,7 @@ internal sealed class TelegramBotMessageHandler
 
             foreach (var activeTask in await _taskForReviewRepository.GetActive(cancellationToken))
             {
-                var finishCommand = string.Format(CommandList.Finish, activeTask.ToString("N"));
+                var finishCommand = $"{CommandList.Finish}_{activeTask:N}";
                 if (update.Message.Text.StartsWith(finishCommand, StringComparison.InvariantCultureIgnoreCase))
                     await MoveToFinish(activeTask, cancellationToken);
             }
@@ -140,20 +145,18 @@ internal sealed class TelegramBotMessageHandler
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
-
-        var cancelActionAvailable = currentDialog is { };
-        if (cancelActionAvailable)
+        
+        if (currentDialog is { })
         {
-            _dialogContinuation.End(context.UserId, currentDialog!.ContinuationState, context.MessageId);
+            _dialogContinuation.End(context.UserId, currentDialog.ContinuationState, context.MessageId);
             foreach (var currentMessageId in currentDialog.MessageIds)
                 await context.Client.DeleteMessageAsync(context.ChatId, currentMessageId, cancellationToken);
         }
-
-        var messageId = cancelActionAvailable
-            ? Messages.Reviewer_CancelDialogSuccess
-            : Messages.Reviewer_CancelDialogFail;
-        var messageText = await context.TranslateProvider.Get(messageId, context.LanguageId);
-        await context.Client.SendTextMessageAsync(context.ChatId, messageText, cancellationToken: cancellationToken);
+        else
+        {
+            var messageText = await context.TranslateProvider.Get(Messages.Reviewer_CancelDialogFail, context.LanguageId);
+            await context.Client.SendTextMessageAsync(context.ChatId, messageText, cancellationToken: cancellationToken);
+        }
     }
 
     private async Task ShowHelp(CommandContext context)
