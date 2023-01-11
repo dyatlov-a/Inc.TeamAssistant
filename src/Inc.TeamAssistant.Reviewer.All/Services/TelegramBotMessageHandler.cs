@@ -124,11 +124,24 @@ internal sealed class TelegramBotMessageHandler
             foreach (var activeTask in await _taskForReviewRepository.Get(TaskForReviewStateRules.ActiveStates, cancellationToken))
             {
                 if (update.Message.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, t => t.Accept(), cancellationToken);
+                    await MoveToState(activeTask, async (t, c) =>
+                    {
+                        var messageText = await translateProvider.Get(Messages.Reviewer_Accepted, t.Owner.LanguageId, t.Description);
+                        await client.SendTextMessageAsync(t.Owner.UserId, messageText, cancellationToken: cancellationToken);
+                        t.Accept();
+                    }, cancellationToken);
                 if (update.Message.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, t => t.Decline(), cancellationToken);
+                    await MoveToState(activeTask, (t, c) =>
+                    {
+                        t.Decline();
+                        return Task.CompletedTask;
+                    }, cancellationToken);
                 if (update.Message.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, t => t.MoveToNextRound(), cancellationToken);
+                    await MoveToState(activeTask, (t, c) =>
+                    {
+                        t.MoveToNextRound();
+                        return Task.CompletedTask;
+                    }, cancellationToken);
             }
         }
         catch (ApiRequestException ex)
@@ -353,13 +366,16 @@ internal sealed class TelegramBotMessageHandler
                 cancellationToken: cancellationToken);
     }
 
-    private async Task MoveToState(Guid activeTask, Action<TaskForReview> action, CancellationToken cancellationToken)
+    private async Task MoveToState(
+        Guid activeTask,
+        Func<TaskForReview, CancellationToken, Task> action,
+        CancellationToken cancellationToken)
     {
         if (action is null)
             throw new ArgumentNullException(nameof(action));
         
         var targetTaskForReview = await _taskForReviewRepository.GetById(activeTask, cancellationToken);
-        action(targetTaskForReview);
+        await action(targetTaskForReview, cancellationToken);
         await _taskForReviewRepository.Upsert(targetTaskForReview, cancellationToken);
     }
 

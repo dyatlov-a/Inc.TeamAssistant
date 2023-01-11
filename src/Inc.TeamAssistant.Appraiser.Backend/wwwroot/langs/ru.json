@@ -127,5 +127,6 @@
   "Reviewer_CancelHelp": "{0} - отменить текущую команду",
   "Reviewer_CancelDialogFail": "Нет активной команды для отмены",
   "Reviewer_BeginDialogFail": "Не удается начать выполнение команды. Завершите активные команды перед началом новой.",
-  "Reviewer_ReviewDeclined": "Задача «{0}» отклонена"
+  "Reviewer_ReviewDeclined": "Задача «{0}» отклонена",
+  "Reviewer_Accepted": "Ревью задачи «{0}» завершено"
 }
