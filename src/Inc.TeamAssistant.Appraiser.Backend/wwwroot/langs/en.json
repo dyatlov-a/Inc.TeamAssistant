@@ -127,5 +127,6 @@
   "Reviewer_CancelHelp": "{0} - cancel current command",
   "Reviewer_CancelDialogFail": "No active command to cancel",
   "Reviewer_BeginDialogFail": "Cannot start a command. End active commands before starting a new command.",
-  "Reviewer_ReviewDeclined": "Task \"{0}\" is declined"
+  "Reviewer_ReviewDeclined": "Task \"{0}\" is declined",
+  "Reviewer_Accepted": "Task \"{0}\" review completed"
 }
