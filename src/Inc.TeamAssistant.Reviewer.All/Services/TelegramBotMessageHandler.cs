@@ -21,6 +21,7 @@ internal sealed class TelegramBotMessageHandler
     private readonly IServiceProvider _serviceProvider;
     private readonly string _botLink;
     private readonly string _linkForConnectTemplate;
+    private readonly string _botName;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
@@ -29,12 +30,15 @@ internal sealed class TelegramBotMessageHandler
         IDialogContinuation dialogContinuation,
         IServiceProvider serviceProvider,
         string botLink,
-        string linkForConnectTemplate)
+        string linkForConnectTemplate,
+        string botName)
     {
         if (string.IsNullOrWhiteSpace(botLink))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botLink));
         if (string.IsNullOrWhiteSpace(linkForConnectTemplate))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(linkForConnectTemplate));
+        if (string.IsNullOrWhiteSpace(botName))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botName));
 
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
@@ -44,6 +48,7 @@ internal sealed class TelegramBotMessageHandler
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _botLink = botLink;
         _linkForConnectTemplate = linkForConnectTemplate;
+        _botName = botName;
     }
 
     public async Task Handle(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
@@ -59,12 +64,13 @@ internal sealed class TelegramBotMessageHandler
         using var scope = _serviceProvider.CreateScope();
         var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
         var languageId = update.Message.From.GetLanguageId();
+        var commandText = update.Message.Text.TrimEnd($"@{_botName}".ToCharArray());
 
         if (update.Message.From.Id == update.Message.Chat.Id
-            && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
-            && !update.Message.Text.StartsWith(CommandList.Accept, StringComparison.InvariantCultureIgnoreCase)
-            && !update.Message.Text.StartsWith(CommandList.Decline, StringComparison.InvariantCultureIgnoreCase)
-            && !update.Message.Text.StartsWith(CommandList.MoveToNextRound, StringComparison.InvariantCultureIgnoreCase))
+            && !commandText.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
+            && !commandText.StartsWith(CommandList.Accept, StringComparison.InvariantCultureIgnoreCase)
+            && !commandText.StartsWith(CommandList.Decline, StringComparison.InvariantCultureIgnoreCase)
+            && !commandText.StartsWith(CommandList.MoveToNextRound, StringComparison.InvariantCultureIgnoreCase))
         {
             var messageText = await translateProvider.Get(Messages.Reviewer_GetStarted, languageId);
             await client.SendTextMessageAsync(update.Message.From.Id, messageText, cancellationToken: cancellationToken);
@@ -82,16 +88,16 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.From.Username,
                 languageId,
                 update.Message.Chat.Id,
-                update.Message.Text);
+                commandText);
             var currentDialog = _dialogContinuation.Find(update.Message.From.Id);
 
-            if (update.Message.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
+            if (context.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
             {
                 await CancelDialog(context, currentDialog, cancellationToken);
                 return;
             }
             
-            var command = currentDialog?.ContinuationState ?? update.Message.Text.Trim();
+            var command = currentDialog?.ContinuationState ?? context.Text.Trim();
             switch (command)
             {
                 case CommandList.CreateTeam when currentDialog is null:
@@ -111,9 +117,9 @@ internal sealed class TelegramBotMessageHandler
                     return;
             }
 
-            if (update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase))
+            if (context.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase))
             {
-                var token = update.Message.Text.ToLower().TrimStart(CommandList.Start.ToCharArray()).Trim();
+                var token = context.Text.ToLower().TrimStart(CommandList.Start.ToCharArray()).Trim();
                 if (Guid.TryParse(token, out var teamId))
                 {
                     await ConnectToTeam(context, teamId, cancellationToken);
@@ -123,20 +129,20 @@ internal sealed class TelegramBotMessageHandler
 
             foreach (var activeTask in await _taskForReviewRepository.Get(TaskForReviewStateRules.ActiveStates, cancellationToken))
             {
-                if (update.Message.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                if (context.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
                     await MoveToState(activeTask, async (t, c) =>
                     {
                         var messageText = await translateProvider.Get(Messages.Reviewer_Accepted, t.Owner.LanguageId, t.Description);
                         await client.SendTextMessageAsync(t.Owner.UserId, messageText, cancellationToken: cancellationToken);
                         t.Accept();
                     }, cancellationToken);
-                if (update.Message.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                if (context.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
                     await MoveToState(activeTask, (t, c) =>
                     {
                         t.Decline();
                         return Task.CompletedTask;
                     }, cancellationToken);
-                if (update.Message.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                if (context.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
                     await MoveToState(activeTask, (t, c) =>
                     {
                         t.MoveToNextRound();

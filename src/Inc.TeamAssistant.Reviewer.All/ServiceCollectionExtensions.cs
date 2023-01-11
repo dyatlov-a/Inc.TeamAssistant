@@ -33,7 +33,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<TelegramBotMessageHandler>(
                 sp,
                 options.BotLink,
-                options.LinkForConnectTemplate));
+                options.LinkForConnectTemplate,
+                options.BotName));
 
         if (!string.IsNullOrWhiteSpace(options.AccessToken))
         {
