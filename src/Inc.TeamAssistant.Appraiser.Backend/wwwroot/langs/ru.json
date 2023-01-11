@@ -122,10 +122,10 @@
   "Reviewer_TeamMinError": "Для передачи задачи на ревью в команде должно быть минимум {0} участника",
   "Reviewer_JoinToTeamSuccess": "Вы успешно подключились к команде «{0}»",
   "Reviewer_TeamNotFoundError": "Команда для подключения не найдена",
-  "Reviewer_NeedReview": "Необходимо провести ревью задачи «{0}». {1}",
+  "Reviewer_NeedReview": "Необходимо провести ревью задачи «{0}»",
   "Reviewer_NewTaskForReview": "Новая задача для ревью «{0}». Назначена на {1}",
   "Reviewer_CancelHelp": "{0} - отменить текущую команду",
   "Reviewer_CancelDialogFail": "Нет активной команды для отмены",
   "Reviewer_BeginDialogFail": "Не удается начать выполнение команды. Завершите активные команды перед началом новой.",
-  "Reviewer_ReviewDeclined": "Задача «{0}» отклонена. {1}"
+  "Reviewer_ReviewDeclined": "Задача «{0}» отклонена"
 }
