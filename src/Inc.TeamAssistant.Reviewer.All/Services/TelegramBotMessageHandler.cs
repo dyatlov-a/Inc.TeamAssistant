@@ -62,7 +62,9 @@ internal sealed class TelegramBotMessageHandler
 
         if (update.Message.From.Id == update.Message.Chat.Id
             && !update.Message.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
-            && !update.Message.Text.StartsWith(CommandList.Finish, StringComparison.InvariantCultureIgnoreCase))
+            && !update.Message.Text.StartsWith(CommandList.Accept, StringComparison.InvariantCultureIgnoreCase)
+            && !update.Message.Text.StartsWith(CommandList.Decline, StringComparison.InvariantCultureIgnoreCase)
+            && !update.Message.Text.StartsWith(CommandList.MoveToNextRound, StringComparison.InvariantCultureIgnoreCase))
         {
             var messageText = await translateProvider.Get(Messages.Reviewer_GetStarted, languageId);
             await client.SendTextMessageAsync(update.Message.From.Id, messageText, cancellationToken: cancellationToken);
@@ -119,11 +121,14 @@ internal sealed class TelegramBotMessageHandler
                 }
             }
 
-            foreach (var activeTask in await _taskForReviewRepository.GetActive(cancellationToken))
+            foreach (var activeTask in await _taskForReviewRepository.Get(TaskForReviewStateRules.ActiveStates, cancellationToken))
             {
-                var finishCommand = $"{CommandList.Finish}_{activeTask:N}";
-                if (update.Message.Text.StartsWith(finishCommand, StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToFinish(activeTask, cancellationToken);
+                if (update.Message.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                    await MoveToState(activeTask, t => t.Accept(), cancellationToken);
+                if (update.Message.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                    await MoveToState(activeTask, t => t.Decline(), cancellationToken);
+                if (update.Message.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                    await MoveToState(activeTask, t => t.MoveToNextRound(), cancellationToken);
             }
         }
         catch (ApiRequestException ex)
@@ -246,7 +251,10 @@ internal sealed class TelegramBotMessageHandler
             var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine(await context.TranslateProvider.Get(Messages.Reviewer_SelectTeam, context.LanguageId));
             for (var index = 0; index < teams.Length; index++)
+            {
+                messageBuilder.AppendLine();
                 messageBuilder.AppendLine($"{index + 1}. {teams[index].Name} /{teams[index].Id.ToString("N")}");
+            }
 
             var message = await context.Client.SendTextMessageAsync(
                 context.ChatId,
@@ -345,10 +353,13 @@ internal sealed class TelegramBotMessageHandler
                 cancellationToken: cancellationToken);
     }
 
-    private async Task MoveToFinish(Guid activeTask, CancellationToken cancellationToken)
+    private async Task MoveToState(Guid activeTask, Action<TaskForReview> action, CancellationToken cancellationToken)
     {
+        if (action is null)
+            throw new ArgumentNullException(nameof(action));
+        
         var targetTaskForReview = await _taskForReviewRepository.GetById(activeTask, cancellationToken);
-        targetTaskForReview.MoveToFinish();
+        action(targetTaskForReview);
         await _taskForReviewRepository.Upsert(targetTaskForReview, cancellationToken);
     }
 

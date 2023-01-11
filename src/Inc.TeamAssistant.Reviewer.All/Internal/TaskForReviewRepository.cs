@@ -17,12 +17,19 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionString = connectionString;
     }
 
-    public async Task<IReadOnlyCollection<Guid>> GetActive(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Guid>> Get(
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken cancellationToken)
     {
+        if (states is null)
+            throw new ArgumentNullException(nameof(states));
+
+        var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(@"
 SELECT id AS id
 FROM review.task_for_reviews
-WHERE is_active;",
+WHERE state = ANY(@states);",
+            new { states = targetStates },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
 
@@ -40,10 +47,13 @@ SELECT
     t.owner_id AS ownerid,
     t.reviewer_id AS reviewerid,
     t.description AS description,
-    t.is_active AS isactive,
+    t.state AS state,
     t.next_notification AS nextnotification,
+    t.accept_date AS acceptdate,
     o.id AS id,
     o.last_reviewer_id AS lastreviewerid,
+    o.language_id AS languageid,
+    o.user_id AS userid,
     r.id AS id,
     r.user_id AS userid,
     r.name AS name,
@@ -72,17 +82,21 @@ WHERE t.id = @id;",
             throw new ArgumentNullException(nameof(taskForReview));
 
         var command = new CommandDefinition(@"
-INSERT INTO review.task_for_reviews (id, owner_id, reviewer_id, description, is_active, next_notification)
-VALUES (@id, @owner_id, @reviewer_id, @description, @is_active, @next_notification)
+INSERT INTO review.task_for_reviews (id, owner_id, reviewer_id, description, state, next_notification, accept_date)
+VALUES (@id, @owner_id, @reviewer_id, @description, @state, @next_notification, @accept_date)
 ON CONFLICT (id) DO UPDATE SET
 owner_id = excluded.owner_id,
 reviewer_id = excluded.reviewer_id,
 description = excluded.description,
-is_active = excluded.is_active,
-next_notification = excluded.next_notification;
+state = excluded.state,
+next_notification = excluded.next_notification,
+accept_date = excluded.accept_date;
 
 UPDATE review.players
-SET last_reviewer_id = @owner_last_reviewer_id
+SET
+    last_reviewer_id = @owner_last_reviewer_id,
+    user_id = @owner_user_id,
+    language_id = @owner_language_id
 WHERE id = @owner_id;
 
 UPDATE review.players
@@ -98,10 +112,13 @@ WHERE id = @reviewer_id;",
                 owner_id = taskForReview.OwnerId,
                 reviewer_id = taskForReview.ReviewerId,
                 description = taskForReview.Description,
-                is_active = taskForReview.IsActive,
+                state = taskForReview.State,
                 next_notification = taskForReview.NextNotification,
+                accept_date = taskForReview.AcceptDate,
 
                 owner_last_reviewer_id = taskForReview.Owner.LastReviewerId,
+                owner_user_id = taskForReview.Owner.UserId,
+                owner_language_id = taskForReview.Owner.LanguageId,
 
                 reviewer_user_id = taskForReview.Reviewer.UserId,
                 reviewer_language_id = taskForReview.Reviewer.LanguageId,

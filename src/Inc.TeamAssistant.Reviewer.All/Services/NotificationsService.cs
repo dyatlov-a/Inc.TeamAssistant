@@ -1,5 +1,7 @@
+using System.Text;
 using Inc.TeamAssistant.Reviewer.All.Contracts;
 using Inc.TeamAssistant.Reviewer.All.Holidays;
+using Inc.TeamAssistant.Reviewer.All.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
@@ -49,22 +51,22 @@ internal sealed class NotificationsService : BackgroundService
             {
                 var tasksForNotifications = await _accessor.GetTasksForNotifications(
                     now,
+                    TaskForReviewStateRules.ActiveStates,
                     _notificationsBatch,
                     stoppingToken);
 
-                foreach (var tasksForNotification in tasksForNotifications)
+                foreach (var task in tasksForNotifications)
                 {
-                    tasksForNotification.SetNextNotificationTime(_options.NotificationInterval);
+                    task.SetNextNotificationTime(_options.NotificationInterval);
 
-                    var messageText = await translateProvider.Get(
-                        Messages.Reviewer_NeedReview,
-                        tasksForNotification.Reviewer.LanguageId,
-                        tasksForNotification.Description,
-                        $"{CommandList.Finish}_{tasksForNotification.Id:N}");
-                    await _client.SendTextMessageAsync(
-                        new(tasksForNotification.Reviewer.UserId),
-                        messageText,
-                        cancellationToken: stoppingToken);
+                    var message = task.State switch
+                    {
+                        TaskForReviewState.InProgress => await CreateNeedReviewMessage(translateProvider, task),
+                        TaskForReviewState.OnCorrection => await CreateMoveToNextRoundMessage(translateProvider, task),
+                        _ => throw new ArgumentOutOfRangeException($"Value {task.State} OutOfRange for {nameof(TaskForReviewState)}")
+                    };
+
+                    await _client.SendTextMessageAsync(new(message.UserId), message.Text, cancellationToken: stoppingToken);
                 }
 
                 await _accessor.Update(tasksForNotifications, stoppingToken);
@@ -72,6 +74,48 @@ internal sealed class NotificationsService : BackgroundService
 
             await Task.Delay(_notificationsDelay, stoppingToken);
         }
+    }
+
+    private async Task<(long UserId, string Text)> CreateNeedReviewMessage(
+        ITranslateProvider translateProvider,
+        TaskForReview task)
+    {
+        if (translateProvider is null)
+            throw new ArgumentNullException(nameof(translateProvider));
+        if (task is null)
+            throw new ArgumentNullException(nameof(task));
+        
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await translateProvider.Get(
+            Messages.Reviewer_NeedReview,
+            task.Reviewer.LanguageId,
+            task.Description));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"1. {CommandList.Accept}_{task.Id:N}");
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"2. {CommandList.Decline}_{task.Id:N}");
+
+        return (task.Reviewer.UserId, messageBuilder.ToString());
+    }
+    
+    private async Task<(long UserId, string Text)> CreateMoveToNextRoundMessage(
+        ITranslateProvider translateProvider,
+        TaskForReview task)
+    {
+        if (translateProvider is null)
+            throw new ArgumentNullException(nameof(translateProvider));
+        if (task is null)
+            throw new ArgumentNullException(nameof(task));
+        
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await translateProvider.Get(
+            Messages.Reviewer_ReviewDeclined,
+            task.Owner.LanguageId,
+            task.Description));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"1. {CommandList.MoveToNextRound}_{task.Id:N}");
+
+        return (task.Owner.UserId, messageBuilder.ToString());
     }
 
     private async Task<bool> IsWorkTime(DateTimeOffset dateTimeOffset, CancellationToken cancellationToken)

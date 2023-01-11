@@ -67,7 +67,7 @@ public sealed class Team
         var nextReviewer = otherPlayers.Where(p => p.UserId > lastReviewerId).MinBy(p => p.UserId)
             ?? otherPlayers.MinBy(p => p.UserId)!;
 
-        var owner = new PlayerAsOwner(player.Id, nextReviewer.UserId);
+        var owner = new PlayerAsOwner(player, nextReviewer.UserId);
         var reviewer = new PlayerAsReviewer(nextReviewer);
         return new(owner, reviewer, description);
     }
