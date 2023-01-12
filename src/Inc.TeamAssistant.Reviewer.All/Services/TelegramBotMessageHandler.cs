@@ -99,6 +99,38 @@ internal sealed class TelegramBotMessageHandler
                 return;
             }
             
+            foreach (var activeTask in await _taskForReviewRepository.Get(TaskForReviewStateRules.ActiveStates, cancellationToken))
+            {
+                if (context.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await MoveToState(activeTask, async (t, c) =>
+                    {
+                        var messageText = await translateProvider.Get(Messages.Reviewer_Accepted, t.Owner.LanguageId, t.Description);
+                        await client.SendTextMessageAsync(t.Owner.UserId, messageText, cancellationToken: c);
+                        t.Accept();
+                    }, cancellationToken);
+                    return;
+                }
+                if (context.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await MoveToState(activeTask, (t, c) =>
+                    {
+                        t.Decline();
+                        return Task.CompletedTask;
+                    }, cancellationToken);
+                    return;
+                }
+                if (context.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await MoveToState(activeTask, (t, c) =>
+                    {
+                        t.MoveToNextRound();
+                        return Task.CompletedTask;
+                    }, cancellationToken);
+                    return;
+                }
+            }
+            
             var command = currentDialog?.ContinuationState ?? context.Text;
             switch (command)
             {
@@ -126,33 +158,7 @@ internal sealed class TelegramBotMessageHandler
                     .Trim();
                 
                 if (Guid.TryParse(token, out var teamId))
-                {
                     await ConnectToTeam(context, teamId, cancellationToken);
-                    return;
-                }
-            }
-
-            foreach (var activeTask in await _taskForReviewRepository.Get(TaskForReviewStateRules.ActiveStates, cancellationToken))
-            {
-                if (context.Text.StartsWith($"{CommandList.Accept}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, async (t, c) =>
-                    {
-                        var messageText = await translateProvider.Get(Messages.Reviewer_Accepted, t.Owner.LanguageId, t.Description);
-                        await client.SendTextMessageAsync(t.Owner.UserId, messageText, cancellationToken: cancellationToken);
-                        t.Accept();
-                    }, cancellationToken);
-                if (context.Text.StartsWith($"{CommandList.Decline}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, (t, c) =>
-                    {
-                        t.Decline();
-                        return Task.CompletedTask;
-                    }, cancellationToken);
-                if (context.Text.StartsWith($"{CommandList.MoveToNextRound}_{activeTask:N}", StringComparison.InvariantCultureIgnoreCase))
-                    await MoveToState(activeTask, (t, c) =>
-                    {
-                        t.MoveToNextRound();
-                        return Task.CompletedTask;
-                    }, cancellationToken);
             }
         }
         catch (ApiRequestException ex)
