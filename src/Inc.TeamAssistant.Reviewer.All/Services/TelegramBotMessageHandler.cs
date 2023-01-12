@@ -64,7 +64,9 @@ internal sealed class TelegramBotMessageHandler
         using var scope = _serviceProvider.CreateScope();
         var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
         var languageId = update.Message.From.GetLanguageId();
-        var commandText = update.Message.Text.TrimEnd($"@{_botName}".ToCharArray());
+        var commandText = update.Message.Text
+            .Replace($"@{_botName}", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+            .Trim();
 
         if (update.Message.From.Id == update.Message.Chat.Id
             && !commandText.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase)
@@ -97,7 +99,7 @@ internal sealed class TelegramBotMessageHandler
                 return;
             }
             
-            var command = currentDialog?.ContinuationState ?? context.Text.Trim();
+            var command = currentDialog?.ContinuationState ?? context.Text;
             switch (command)
             {
                 case CommandList.CreateTeam when currentDialog is null:
@@ -119,7 +121,10 @@ internal sealed class TelegramBotMessageHandler
 
             if (context.Text.StartsWith(CommandList.Start, StringComparison.InvariantCultureIgnoreCase))
             {
-                var token = context.Text.ToLower().TrimStart(CommandList.Start.ToCharArray()).Trim();
+                var token = context.Text
+                    .Replace(CommandList.Start, string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                    .Trim();
+                
                 if (Guid.TryParse(token, out var teamId))
                 {
                     await ConnectToTeam(context, teamId, cancellationToken);
