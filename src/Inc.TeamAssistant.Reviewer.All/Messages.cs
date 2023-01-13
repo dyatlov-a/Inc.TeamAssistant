@@ -21,4 +21,9 @@ internal static class Messages
     public static MessageId Reviewer_CancelDialogFail = new(nameof(Reviewer_CancelDialogFail));
     public static MessageId Reviewer_BeginDialogFail = new(nameof(Reviewer_BeginDialogFail));
     public static MessageId Reviewer_Accepted = new(nameof(Reviewer_Accepted));
+    public static MessageId Reviewer_MoveToInProgress = new(nameof(Reviewer_MoveToInProgress));
+    public static MessageId Reviewer_MoveToAccept = new(nameof(Reviewer_MoveToAccept));
+    public static MessageId Reviewer_MoveToDecline = new(nameof(Reviewer_MoveToDecline));
+    public static MessageId Reviewer_MoveToNextRound = new(nameof(Reviewer_MoveToNextRound));
+    public static MessageId Reviewer_OperationApplied = new(nameof(Reviewer_OperationApplied));
 }
