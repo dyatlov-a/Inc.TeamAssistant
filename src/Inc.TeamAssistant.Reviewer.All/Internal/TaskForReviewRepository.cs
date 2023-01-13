@@ -50,14 +50,17 @@ SELECT
     t.state AS state,
     t.next_notification AS nextnotification,
     t.accept_date AS acceptdate,
+    t.message_id AS messageid,
+    t.chat_id AS chatid,
     o.id AS id,
     o.last_reviewer_id AS lastreviewerid,
-    o.language_id AS languageid,
     o.user_id AS userid,
+    o.language_id AS languageid,
+    o.name AS name,
     r.id AS id,
     r.user_id AS userid,
-    r.name AS name,
     r.language_id AS languageid,
+    r.name AS name,
     r.login AS login
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
@@ -82,21 +85,24 @@ WHERE t.id = @id;",
             throw new ArgumentNullException(nameof(taskForReview));
 
         var command = new CommandDefinition(@"
-INSERT INTO review.task_for_reviews (id, owner_id, reviewer_id, description, state, next_notification, accept_date)
-VALUES (@id, @owner_id, @reviewer_id, @description, @state, @next_notification, @accept_date)
+INSERT INTO review.task_for_reviews (id, owner_id, reviewer_id, description, state, next_notification, accept_date, message_id, chat_id)
+VALUES (@id, @owner_id, @reviewer_id, @description, @state, @next_notification, @accept_date, @message_id, @chat_id)
 ON CONFLICT (id) DO UPDATE SET
 owner_id = excluded.owner_id,
 reviewer_id = excluded.reviewer_id,
 description = excluded.description,
 state = excluded.state,
 next_notification = excluded.next_notification,
-accept_date = excluded.accept_date;
+accept_date = excluded.accept_date,
+message_id = excluded.message_id,
+chat_id = excluded.chat_id;
 
 UPDATE review.players
 SET
     last_reviewer_id = @owner_last_reviewer_id,
     user_id = @owner_user_id,
-    language_id = @owner_language_id
+    language_id = @owner_language_id,
+    name = @owner_name
 WHERE id = @owner_id;
 
 UPDATE review.players
@@ -115,10 +121,13 @@ WHERE id = @reviewer_id;",
                 state = taskForReview.State,
                 next_notification = taskForReview.NextNotification,
                 accept_date = taskForReview.AcceptDate,
+                message_id = taskForReview.MessageId,
+                chat_id = taskForReview.ChatId,
 
                 owner_last_reviewer_id = taskForReview.Owner.LastReviewerId,
                 owner_user_id = taskForReview.Owner.UserId,
                 owner_language_id = taskForReview.Owner.LanguageId,
+                owner_name = taskForReview.Owner.Name,
 
                 reviewer_user_id = taskForReview.Reviewer.UserId,
                 reviewer_language_id = taskForReview.Reviewer.LanguageId,

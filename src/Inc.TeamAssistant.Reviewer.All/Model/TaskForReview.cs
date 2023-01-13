@@ -7,16 +7,18 @@ public sealed class TaskForReview
     public PlayerAsOwner Owner { get; private set; } = default!;
     public Guid ReviewerId { get; private set; }
     public PlayerAsReviewer Reviewer { get; private set; } = default!;
+    public long ChatId { get; private set; }
     public string Description { get; private set; } = default!;
     public TaskForReviewState State { get; private set; }
     public DateTimeOffset NextNotification { get; private set; }
     public DateTimeOffset? AcceptDate { get; private set; }
+    public int? MessageId { get; private set; }
 
     private TaskForReview()
     {
     }
 
-    public TaskForReview(PlayerAsOwner owner, PlayerAsReviewer reviewer, string description)
+    public TaskForReview(PlayerAsOwner owner, PlayerAsReviewer reviewer, long chatId, string description)
         : this()
     {
         if (string.IsNullOrWhiteSpace(description))
@@ -26,9 +28,10 @@ public sealed class TaskForReview
         Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         OwnerId = owner.Id;
         Reviewer = reviewer ?? throw new ArgumentNullException(nameof(reviewer));
+        ChatId = chatId;
         ReviewerId = reviewer.Id;
         Description = description;
-        State = TaskForReviewState.InProgress;
+        State = TaskForReviewState.New;
         NextNotification = DateTimeOffset.UtcNow;
     }
 
@@ -49,8 +52,13 @@ public sealed class TaskForReview
         return this;
     }
 
+    public void AttachMessage(int messageId) => MessageId = messageId;
+
     public void SetNextNotificationTime(TimeSpan notificationInterval)
-        => NextNotification = DateTimeOffset.UtcNow.Add(notificationInterval);
+    {
+        var interval = State == TaskForReviewState.InProgress ? notificationInterval * 2 : notificationInterval;
+        NextNotification = DateTimeOffset.UtcNow.Add(interval);
+    }
 
     public void Accept()
     {
@@ -66,7 +74,13 @@ public sealed class TaskForReview
 
     public void MoveToNextRound()
     {
-        State = TaskForReviewState.InProgress;
+        State = TaskForReviewState.New;
         NextNotification = DateTimeOffset.UtcNow;
+    }
+
+    public void MoveToInProgress(TimeSpan notificationInterval)
+    {
+        State = TaskForReviewState.InProgress;
+        SetNextNotificationTime(notificationInterval);
     }
 }

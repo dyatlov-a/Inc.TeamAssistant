@@ -123,7 +123,7 @@
   "Reviewer_JoinToTeamSuccess": "Вы успешно подключились к команде «{0}»",
   "Reviewer_TeamNotFoundError": "Команда для подключения не найдена",
   "Reviewer_NeedReview": "Необходимо провести ревью задачи «{0}»",
-  "Reviewer_NewTaskForReview": "Новая задача для ревью «{0}». Назначена на {1}",
+  "Reviewer_NewTaskForReview": "Новая задача для ревью «{0}». Автор {1}. Назначена на {2}",
   "Reviewer_CancelHelp": "{0} - отменить текущую команду",
   "Reviewer_CancelDialogFail": "Нет активной команды для отмены",
   "Reviewer_BeginDialogFail": "Не удается начать выполнение команды. Завершите активные команды перед началом новой.",

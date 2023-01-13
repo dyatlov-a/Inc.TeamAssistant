@@ -8,6 +8,7 @@ public sealed class PlayerAsOwner
     public long LastReviewerId { get; private set; }
     public LanguageId LanguageId { get; private set; } = default!;
     public long UserId { get; private set; }
+    public string Name { get; private set; } = default!;
 
     private PlayerAsOwner()
     {
@@ -23,5 +24,6 @@ public sealed class PlayerAsOwner
         LanguageId = player.LanguageId;
         UserId = player.UserId;
         LastReviewerId = lastReviewerId;
+        Name = player.Name;
     }
 }
