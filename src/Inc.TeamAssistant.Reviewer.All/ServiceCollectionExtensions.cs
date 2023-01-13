@@ -34,7 +34,8 @@ public static class ServiceCollectionExtensions
                 sp,
                 options.BotLink,
                 options.LinkForConnectTemplate,
-                options.BotName));
+                options.BotName,
+                options.Workday.NotificationInterval));
 
         if (!string.IsNullOrWhiteSpace(options.AccessToken))
         {

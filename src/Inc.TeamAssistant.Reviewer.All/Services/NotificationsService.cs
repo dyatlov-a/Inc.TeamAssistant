@@ -61,7 +61,7 @@ internal sealed class NotificationsService : BackgroundService
 
                     var message = task.State switch
                     {
-                        TaskForReviewState.InProgress => await CreateNeedReviewMessage(translateProvider, task),
+                        TaskForReviewState.New or TaskForReviewState.InProgress => await CreateNeedReviewMessage(translateProvider, task),
                         TaskForReviewState.OnCorrection => await CreateMoveToNextRoundMessage(translateProvider, task),
                         _ => throw new ArgumentOutOfRangeException($"Value {task.State} OutOfRange for {nameof(TaskForReviewState)}")
                     };
@@ -91,9 +91,11 @@ internal sealed class NotificationsService : BackgroundService
             task.Reviewer.LanguageId,
             task.Description));
         messageBuilder.AppendLine();
-        messageBuilder.AppendLine($"1. {CommandList.Accept}_{task.Id:N}");
+        messageBuilder.AppendLine($"1. {CommandList.MoveToInProgress}_{task.Id:N}");
         messageBuilder.AppendLine();
-        messageBuilder.AppendLine($"2. {CommandList.Decline}_{task.Id:N}");
+        messageBuilder.AppendLine($"2. {CommandList.Accept}_{task.Id:N}");
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"3. {CommandList.Decline}_{task.Id:N}");
 
         return (task.Reviewer.UserId, messageBuilder.ToString());
     }

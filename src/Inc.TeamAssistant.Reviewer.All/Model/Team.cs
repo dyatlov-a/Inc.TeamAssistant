@@ -69,6 +69,6 @@ public sealed class Team
 
         var owner = new PlayerAsOwner(player, nextReviewer.UserId);
         var reviewer = new PlayerAsReviewer(nextReviewer);
-        return new(owner, reviewer, description);
+        return new(owner, reviewer, ChatId, description);
     }
 }

@@ -36,14 +36,17 @@ SELECT
     t.state AS state,
     t.next_notification AS nextnotification,
     t.accept_date AS acceptdate,
+    t.message_id AS messageid,
+    t.chat_id AS chatid,
     o.id AS id,
     o.last_reviewer_id AS lastreviewerid,
-    o.language_id AS languageid,
     o.user_id AS userid,
+    o.language_id AS languageid,
+    o.name AS name,
     r.id AS id,
     r.user_id AS userid,
-    r.name AS name,
     r.language_id AS languageid,
+    r.name AS name,
     r.login AS login
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
