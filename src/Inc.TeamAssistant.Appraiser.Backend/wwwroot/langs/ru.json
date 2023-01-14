@@ -111,15 +111,14 @@
   "CheckIn_PageTitle": "Наше местоположение",
   "CheckIn_DefaultLayerTitle": "Все",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",
-
-  "Reviewer_GetStarted": "Добавьте бота в чат для начала работы",
+  
   "Reviewer_CreateTeamHelp": "{0} - создать команду",
   "Reviewer_MoveToReviewHelp": "{0} - передать задачу на ревью",
   "Reviewer_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Reviewer_ConnectToTeam": "Для подключения к команде «{0}» пройдите по ссылке {1} и нажмите Start.",
   "Reviewer_SelectTeam": "Выберите команду:",
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",
-  "Reviewer_TeamMinError": "Для передачи задачи на ревью в команде должно быть минимум {0} участника",
+  "Reviewer_TeamMinError": "В команде недостаточно участников для начала ревью",
   "Reviewer_JoinToTeamSuccess": "Вы успешно подключились к команде «{0}»",
   "Reviewer_TeamNotFoundError": "Команда для подключения не найдена",
   "Reviewer_NeedReview": "Необходимо провести ревью задачи «{0}»",
@@ -133,5 +132,6 @@
   "Reviewer_MoveToAccept": "Принять",
   "Reviewer_MoveToDecline": "Отклонить",
   "Reviewer_MoveToNextRound": "Попробовать снова",
-  "Reviewer_OperationApplied": "Операция применена"
+  "Reviewer_OperationApplied": "Операция применена",
+  "Reviewer_HasNotTeamsForPlayer": "Не найдены команды для пользователя"
 }

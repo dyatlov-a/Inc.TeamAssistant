@@ -56,9 +56,14 @@ public sealed class TaskForReview
 
     public void SetNextNotificationTime(TimeSpan notificationInterval)
     {
-        var interval = State == TaskForReviewState.InProgress ? notificationInterval * 2 : notificationInterval;
+        const int inProgressIndex = 2;
+        var interval = State == TaskForReviewState.InProgress
+            ? notificationInterval * inProgressIndex
+            : notificationInterval;
         NextNotification = DateTimeOffset.UtcNow.Add(interval);
     }
+
+    public bool CanAccept() => State == TaskForReviewState.New || State == TaskForReviewState.InProgress;
 
     public void Accept()
     {
@@ -66,17 +71,23 @@ public sealed class TaskForReview
         AcceptDate = DateTimeOffset.UtcNow;
     }
 
+    public bool CanDecline() => State == TaskForReviewState.New || State == TaskForReviewState.InProgress;
+
     public void Decline()
     {
         State = TaskForReviewState.OnCorrection;
         NextNotification = DateTimeOffset.UtcNow;
     }
 
+    public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
+
     public void MoveToNextRound()
     {
         State = TaskForReviewState.New;
         NextNotification = DateTimeOffset.UtcNow;
     }
+
+    public bool CanMoveToInProgress() => State == TaskForReviewState.New;
 
     public void MoveToInProgress(TimeSpan notificationInterval)
     {

@@ -48,6 +48,7 @@
   "JoinToAssessmentSessionHelp": "{0} - join to exists assessment session by ID",
   "UnhandledError": "An unhandled exception has occurred. Try running the command again.",
   "InvalidFormatAssessmentSessionId": "Incorrect format of the evaluation session identifier",
+  
   "GUI_Tools": "Tools",
   "GUI_Feedback": "Feedback",
   "GUI_TaskAssess": "Task \"{0}\" needs to be estimated",
@@ -111,15 +112,14 @@
   "CheckIn_PageTitle": "Our locations",
   "CheckIn_DefaultLayerTitle": "All",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
-
-  "Reviewer_GetStarted": "Add the bot to the chat room to get started",
+  
   "Reviewer_CreateTeamHelp": "{0} - create new team",
   "Reviewer_MoveToReviewHelp": "{0} - move task for review",
   "Reviewer_EnterTeamName": "Reply this message with team name",
   "Reviewer_ConnectToTeam": "Follow link {1} and then press START for connection to team \"{0}\"",
   "Reviewer_SelectTeam": "Select the team:",
   "Reviewer_EnterRequestForReview": "Reply this message with link to MR and description",
-  "Reviewer_TeamMinError": "There must be at least {0} participants in a team in order to submit a task for review",
+  "Reviewer_TeamMinError": "There are not enough members on the team to start the review",
   "Reviewer_JoinToTeamSuccess": "Connection to team \"{0}\" successed",
   "Reviewer_TeamNotFoundError": "No team found",
   "Reviewer_NeedReview": "Task \"{0}\" needs review",
@@ -133,5 +133,6 @@
   "Reviewer_MoveToAccept": "Accept",
   "Reviewer_MoveToDecline": "Decline",
   "Reviewer_MoveToNextRound": "Try again",
-  "Reviewer_OperationApplied": "Operation is applied"
+  "Reviewer_OperationApplied": "Operation is applied",
+  "Reviewer_HasNotTeamsForPlayer": "No teams found for the user"
 }

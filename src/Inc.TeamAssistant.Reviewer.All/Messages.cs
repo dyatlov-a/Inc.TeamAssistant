@@ -4,7 +4,6 @@ namespace Inc.TeamAssistant.Reviewer.All;
 
 internal static class Messages
 {
-    public static MessageId Reviewer_GetStarted = new(nameof(Reviewer_GetStarted));
     public static MessageId Reviewer_CreateTeamHelp = new(nameof(Reviewer_CreateTeamHelp));
     public static MessageId Reviewer_MoveToReviewHelp = new(nameof(Reviewer_MoveToReviewHelp));
     public static MessageId Reviewer_EnterTeamName = new(nameof(Reviewer_EnterTeamName));
@@ -26,4 +25,5 @@ internal static class Messages
     public static MessageId Reviewer_MoveToDecline = new(nameof(Reviewer_MoveToDecline));
     public static MessageId Reviewer_MoveToNextRound = new(nameof(Reviewer_MoveToNextRound));
     public static MessageId Reviewer_OperationApplied = new(nameof(Reviewer_OperationApplied));
+    public static MessageId Reviewer_HasNotTeamsForPlayer = new(nameof(Reviewer_HasNotTeamsForPlayer));
 }

@@ -47,13 +47,11 @@ WHERE p.team_id = @team_id;",
 
         var team = await query.ReadSingleOrDefaultAsync<Team>();
         var players = await query.ReadAsync<Player>();
-        team?.MapPlayers(players.ToArray());
-
-        return team;
+        return team?.Build(players.ToArray());
     }
 
     public async Task<IReadOnlyCollection<(Guid Id, string Name)>> GetTeams(
-        long chatId,
+        long userId,
         CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(@"
@@ -61,8 +59,10 @@ SELECT
     t.id AS id,
     t.name AS name
 FROM review.teams AS t
-WHERE t.chat_id = @chat_id;",
-            new { chat_id = chatId },
+JOIN review.players AS p ON p.team_id = t.id
+WHERE p.user_id = @user_id
+ORDER BY t.name;",
+            new { user_id = userId },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
 

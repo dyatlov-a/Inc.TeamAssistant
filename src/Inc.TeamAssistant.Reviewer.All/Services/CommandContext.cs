@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
 using Inc.TeamAssistant.Reviewer.All.Extensions;
 using Telegram.Bot.Types;
 
@@ -65,4 +66,6 @@ public sealed record CommandContext(
             update.CallbackQuery.Message.Chat.Id,
             commandText);
     }
+
+    public ChatMessage? ToChatMessage() => MessageId.HasValue ? new ChatMessage(ChatId, MessageId.Value) : null;
 }

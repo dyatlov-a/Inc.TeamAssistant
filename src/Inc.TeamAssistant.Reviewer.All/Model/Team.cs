@@ -4,11 +4,13 @@ namespace Inc.TeamAssistant.Reviewer.All.Model;
 
 public sealed class Team
 {
+    private const int MinPlayersCount = 2;
+    
     public Guid Id { get; private set; }
     public long ChatId { get; private set; }
     public string Name { get; private set; } = default!;
 
-    private List<Player> _players = new();
+    private readonly List<Player> _players = new();
     public IReadOnlyCollection<Player> Players => _players;
 
     private Team()
@@ -38,7 +40,7 @@ public sealed class Team
         _players.Add(new(languageId, userId, Id, name, login));
     }
 
-    public Team MapPlayers(IReadOnlyCollection<Player> players)
+    public Team Build(IReadOnlyCollection<Player> players)
     {
         if (players is null)
             throw new ArgumentNullException(nameof(players));
@@ -53,12 +55,14 @@ public sealed class Team
         return this;
     }
 
+    public bool CanStartReview() => _players.Count >= MinPlayersCount;
+
     public TaskForReview CreateTaskForReview(long playerId, string description)
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
-        if (!_players.Any())
-            throw new ApplicationException("Team has not contains players.");
+        if (_players.Count < MinPlayersCount)
+            throw new ApplicationException($"Team has not {MinPlayersCount} players.");
 
         var player = _players.Single(p => p.UserId == playerId);
         var lastReviewerId = player.LastReviewerId ?? long.MaxValue;
