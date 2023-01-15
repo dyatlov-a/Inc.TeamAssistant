@@ -69,7 +69,7 @@ public sealed class Team
         return new(owner, reviewer, ChatId, description);
     }
 
-    private INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch
+    internal INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch
     {
         NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(this),
         NextReviewerType.Random => new RandomReviewerStrategy(this, MinPlayersCount),
