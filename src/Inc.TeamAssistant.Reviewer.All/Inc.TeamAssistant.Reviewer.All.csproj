@@ -11,4 +11,9 @@
       <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Primitives\Inc.TeamAssistant.Appraiser.Primitives.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Inc.TeamAssistant.Reviewer.AllTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>
