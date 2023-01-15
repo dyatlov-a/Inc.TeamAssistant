@@ -115,6 +115,9 @@
   
   "Reviewer_CreateTeamHelp": "{0} - to create a new team",
   "Reviewer_MoveToReviewHelp": "{0} - to send task for review",
+  "Reviewer_EnterNextReviewerType": "Select the algorithm for selecting a reviewer:",
+  "Reviewer_NextReviewerType_RoundRobin": "Round robin",
+  "Reviewer_NextReviewerType_Random": "Random",
   "Reviewer_EnterTeamName": "Reply to this message with team name",
   "Reviewer_ConnectToTeam": "Open the link {1}, then press START to connect team \"{0}\"",
   "Reviewer_SelectTeam": "Select the team:",

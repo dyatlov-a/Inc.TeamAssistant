@@ -23,7 +23,8 @@ internal sealed class TeamRepository : ITeamRepository
 SELECT
     t.id AS id,
     t.chat_id AS chatid,
-    t.name AS name
+    t.name AS name,
+    t.next_reviewer_type AS nextreviewertype
 FROM review.teams AS t
 WHERE t.id = @team_id;
 
@@ -108,11 +109,12 @@ ORDER BY t.name;",
         }
 
         var command = new CommandDefinition(@"
-INSERT INTO review.teams (id, chat_id, name)
-VALUES (@id, @chat_id, @name)
+INSERT INTO review.teams (id, chat_id, name, next_reviewer_type)
+VALUES (@id, @chat_id, @name, @next_reviewer_type)
 ON CONFLICT (id) DO UPDATE SET
 chat_id = excluded.chat_id,
-name = excluded.name;
+name = excluded.name,
+next_reviewer_type = excluded.next_reviewer_type;
 
 INSERT INTO review.players (
     id, team_id,
@@ -162,6 +164,7 @@ person__username = excluded.person__username;",
                 id = team.Id,
                 chat_id = team.ChatId,
                 name = team.Name,
+                next_reviewer_type = team.NextReviewerType,
                 
                 player_ids = playerIds,
                 player_team_ids = playerTeamIds,

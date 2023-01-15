@@ -37,10 +37,23 @@ public sealed class AddPerson : Migration
             .InSchema("review")
             .AsString()
             .Nullable();
+
+        Create
+            .Column("next_reviewer_type")
+            .OnTable("teams")
+            .InSchema("review")
+            .AsInt32()
+            .NotNullable()
+            .SetExistingRowsTo(1);
     }
 
     public override void Down()
     {
+        Delete
+            .Column("next_reviewer_type")
+            .FromTable("teams")
+            .InSchema("review");
+        
         Delete
             .Column("person__last_name")
             .FromTable("players")

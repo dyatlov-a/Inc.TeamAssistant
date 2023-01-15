@@ -7,6 +7,7 @@ public sealed class Team
     public Guid Id { get; private set; }
     public long ChatId { get; private set; }
     public string Name { get; private set; } = default!;
+    public NextReviewerType NextReviewerType { get; private set; }
 
     private readonly List<Player> _players = new();
     public IReadOnlyCollection<Player> Players => _players;
@@ -15,7 +16,7 @@ public sealed class Team
     {
     }
 
-    public Team(long chatId, string name)
+    public Team(long chatId, string name, NextReviewerType nextReviewerType)
         : this()
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -24,6 +25,7 @@ public sealed class Team
         Id = Guid.NewGuid();
         ChatId = chatId;
         Name = name;
+        NextReviewerType = nextReviewerType;
     }
 
     public void AddPlayer(Person person)
@@ -61,14 +63,16 @@ public sealed class Team
             throw new ApplicationException($"Team has not {MinPlayersCount} players.");
 
         var player = _players.Single(p => p.Person.Id == userId);
-        var lastReviewerId = player.LastReviewerId ?? long.MaxValue;
-
-        var otherPlayers = _players.Where(p => p.Person.Id != player.Person.Id).ToArray();
-        var nextReviewer = otherPlayers.Where(p => p.Person.Id > lastReviewerId).MinBy(p => p.Person.Id)
-            ?? otherPlayers.MinBy(p => p.Person.Id)!;
-
+        var nextReviewer = NextReviewerStrategy.Next(player);
         var owner = new PlayerAsOwner(player, nextReviewer.Person.Id);
         var reviewer = new PlayerAsReviewer(nextReviewer);
         return new(owner, reviewer, ChatId, description);
     }
+
+    private INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch
+    {
+        NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(this),
+        NextReviewerType.Random => new RandomReviewerStrategy(this, MinPlayersCount),
+        _ => throw new ApplicationException($"NextReviewerType for team {Id} was not valid.")
+    };
 }

@@ -222,10 +222,16 @@ internal sealed class TelegramBotMessageHandler
                 cancellationToken: cancellationToken);
             return;
         }
-        
+
+        var buttons = new List<InlineKeyboardButton>();
+        foreach (var nextReviewerType in Enum.GetValues<NextReviewerType>().Where(t => t != NextReviewerType.None))
+            buttons.Add(InlineKeyboardButton.WithCallbackData(
+                await translateProvider.Get(Messages.Reviewer_NextReviewerType(nextReviewerType), context.Person.LanguageId),
+                $"{nextReviewerType}"));
         var message = await client.SendTextMessageAsync(
             context.ChatId,
-            await translateProvider.Get(Messages.Reviewer_EnterTeamName, context.Person.LanguageId),
+            await translateProvider.Get(Messages.Reviewer_EnterNextReviewerType, context.Person.LanguageId),
+            replyMarkup: new InlineKeyboardMarkup(buttons),
             cancellationToken: cancellationToken);
         dialogState.TryAttachMessage(new ChatMessage(message.Chat.Id, message.MessageId));
     }
@@ -244,21 +250,32 @@ internal sealed class TelegramBotMessageHandler
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var newTeam = new Team(context.ChatId, context.Text);
-        await _teamRepository.Upsert(newTeam, cancellationToken);
+        if (currentDialog.Data.Any() && Enum.TryParse<NextReviewerType>(currentDialog.Data.Last(), out var value))
+        {
+            var newTeam = new Team(context.ChatId, context.Text, value);
+            await _teamRepository.Upsert(newTeam, cancellationToken);
 
-        var link = string.Format(_linkForConnectTemplate, _botLink, newTeam.Id.ToString("N"));
-        var message = await client.SendTextMessageAsync(
-            context.ChatId,
-            await translateProvider.Get(Messages.Reviewer_ConnectToTeam, context.Person.LanguageId, newTeam.Name, link),
-            cancellationToken: cancellationToken);
-        
-        if (!context.IsPrivate())
+            var link = string.Format(_linkForConnectTemplate, _botLink, newTeam.Id.ToString("N"));
+            var message = await client.SendTextMessageAsync(
+                context.ChatId,
+                await translateProvider.Get(Messages.Reviewer_ConnectToTeam, context.Person.LanguageId, newTeam.Name, link),
+                cancellationToken: cancellationToken);
             await client.PinChatMessageAsync(context.ChatId, message.MessageId, cancellationToken: cancellationToken);
 
-        _dialogContinuation.End(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
-        foreach (var currentMessage in currentDialog.ChatMessages)
-            await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
+            _dialogContinuation.End(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
+            foreach (var currentMessage in currentDialog.ChatMessages)
+                await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
+        }
+        else if (Enum.TryParse<NextReviewerType>(context.Text.TrimStart('/'), out var nextReviewerType))
+        {
+            currentDialog.AddItem(nextReviewerType.ToString());
+            
+            var message = await client.SendTextMessageAsync(
+                context.ChatId,
+                await translateProvider.Get(Messages.Reviewer_EnterTeamName, context.Person.LanguageId),
+                cancellationToken: cancellationToken);
+            currentDialog.TryAttachMessage(new ChatMessage(message.Chat.Id, message.MessageId));
+        }
     }
 
     private async Task MoveToReview(
@@ -381,7 +398,7 @@ internal sealed class TelegramBotMessageHandler
 
             var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
             var message = await client.SendTextMessageAsync(
-                context.ChatId,
+                currentTeam.ChatId,
                 newTaskForReview.Text,
                 entities: newTaskForReview.Entities,
                 cancellationToken: cancellationToken);

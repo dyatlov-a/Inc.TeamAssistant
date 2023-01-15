@@ -114,6 +114,9 @@
   
   "Reviewer_CreateTeamHelp": "{0} - создать команду",
   "Reviewer_MoveToReviewHelp": "{0} - передать задачу на ревью",
+  "Reviewer_EnterNextReviewerType": "Выберите алгоритм выбора ревьера:",
+  "Reviewer_NextReviewerType_RoundRobin": "Круговой турнир",
+  "Reviewer_NextReviewerType_Random": "Случайный",
   "Reviewer_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Reviewer_ConnectToTeam": "Для подключения к команде «{0}» пройдите по ссылке {1} и нажмите Start.",
   "Reviewer_SelectTeam": "Выберите команду:",
