@@ -54,14 +54,17 @@ SELECT
     t.chat_id AS chatid,
     o.id AS id,
     o.last_reviewer_id AS lastreviewerid,
-    o.user_id AS userid,
-    o.language_id AS languageid,
-    o.name AS name,
+    o.person__id AS id,
+    o.person__language_id AS languageid,
+    o.person__first_name AS firstname,
+    o.person__last_name AS lastname,
+    o.person__username AS username,
     r.id AS id,
-    r.user_id AS userid,
-    r.language_id AS languageid,
-    r.name AS name,
-    r.login AS login
+    r.person__id AS id,
+    r.person__language_id AS languageid,
+    r.person__first_name AS firstname,
+    r.person__last_name AS lastname,
+    r.person__username AS username
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
 JOIN review.players AS r ON r.id = t.reviewer_id
@@ -72,9 +75,9 @@ WHERE t.id = @id;",
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, PlayerAsOwner, PlayerAsReviewer, TaskForReview>(
+        var results = await connection.QueryAsync<TaskForReview, PlayerAsOwner, Person, PlayerAsReviewer, Person, TaskForReview>(
             command,
-            (t, o, r) => t.Build(o, r),
+            (t, o, op, r, rp) => t.Build(o.Build(op), r.Build(rp)),
             splitOn: "id");
         return results.Single();
     }
@@ -99,18 +102,21 @@ chat_id = excluded.chat_id;
 
 UPDATE review.players
 SET
-    last_reviewer_id = @owner_last_reviewer_id,
-    user_id = @owner_user_id,
-    language_id = @owner_language_id,
-    name = @owner_name
+    last_reviewer_id = @owner__last_reviewer_id,
+    person__id = @owner_person__id,
+    person__language_id = @owner_person__language_id,
+    person__first_name = @owner_person__first_name,
+    person__last_name = @owner_person__last_name,
+    person__username = @owner_person__username
 WHERE id = @owner_id;
 
 UPDATE review.players
 SET
-    user_id = @reviewer_user_id,
-    language_id = @reviewer_language_id,
-    name = @reviewer_name,
-    login = @reviewer_login
+    person__id = @reviewer_person__id,
+    person__language_id = @reviewer_person__language_id,
+    person__first_name = @reviewer_person__first_name,
+    person__last_name = @reviewer_person__last_name,
+    person__username = @reviewer_person__username
 WHERE id = @reviewer_id;",
             new
             {
@@ -124,15 +130,18 @@ WHERE id = @reviewer_id;",
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
 
-                owner_last_reviewer_id = taskForReview.Owner.LastReviewerId,
-                owner_user_id = taskForReview.Owner.UserId,
-                owner_language_id = taskForReview.Owner.LanguageId,
-                owner_name = taskForReview.Owner.Name,
-
-                reviewer_user_id = taskForReview.Reviewer.UserId,
-                reviewer_language_id = taskForReview.Reviewer.LanguageId,
-                reviewer_name = taskForReview.Reviewer.Name,
-                reviewer_login = taskForReview.Reviewer.Login
+                owner__last_reviewer_id = taskForReview.Owner.LastReviewerId,
+                owner_person__id = taskForReview.Owner.Person.Id,
+                owner_person__language_id = taskForReview.Owner.Person.LanguageId,
+                owner_person__first_name = taskForReview.Owner.Person.FirstName,
+                owner_person__last_name = taskForReview.Owner.Person.LastName,
+                owner_person__username = taskForReview.Owner.Person.Username,
+                
+                reviewer_person__id = taskForReview.Reviewer.Person.Id,
+                reviewer_person__language_id = taskForReview.Reviewer.Person.LanguageId,
+                reviewer_person__first_name = taskForReview.Reviewer.Person.FirstName,
+                reviewer_person__last_name = taskForReview.Reviewer.Person.LastName,
+                reviewer_person__username = taskForReview.Reviewer.Person.Username
             },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);

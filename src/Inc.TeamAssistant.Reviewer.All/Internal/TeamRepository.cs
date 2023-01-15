@@ -29,12 +29,18 @@ WHERE t.id = @team_id;
 
 SELECT
     p.id AS id,
-    p.user_id AS userid,
     p.team_id AS teamid,
-    p.name AS name,
-    p.last_reviewer_id AS lastreviewerid,
-    p.language_id AS languageid,
-    p.login AS login
+    p.last_reviewer_id AS lastreviewerid
+FROM review.players AS p
+WHERE p.team_id = @team_id;
+
+SELECT
+    p.id AS playerid,
+    p.person__id AS id,
+    p.person__language_id AS languageid,
+    p.person__first_name AS firstname,
+    p.person__last_name AS lastname,
+    p.person__username AS username
 FROM review.players AS p
 WHERE p.team_id = @team_id;",
             new { team_id = teamId },
@@ -47,7 +53,10 @@ WHERE p.team_id = @team_id;",
 
         var team = await query.ReadSingleOrDefaultAsync<Team>();
         var players = await query.ReadAsync<Player>();
-        return team?.Build(players.ToArray());
+        var personsLookup = (await query.ReadAsync<DbPerson>()).ToDictionary(
+            p => p.PlayerId,
+            p => new Person(p.Id, p.LanguageId, p.FirstName, p.LastName, p.Username));
+        return team?.Build(players.Select(p => p.Build(personsLookup[p.Id])).ToArray());
     }
 
     public async Task<IReadOnlyCollection<(Guid Id, string Name)>> GetTeams(
@@ -60,9 +69,9 @@ SELECT
     t.name AS name
 FROM review.teams AS t
 JOIN review.players AS p ON p.team_id = t.id
-WHERE p.user_id = @user_id
+WHERE p.person__id = @person__id
 ORDER BY t.name;",
-            new { user_id = userId },
+            new { person__id = userId },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
 
@@ -78,22 +87,24 @@ ORDER BY t.name;",
             throw new ArgumentNullException(nameof(team));
 
         var playerIds = new List<Guid>(team.Players.Count);
-        var playerUserIds = new List<long>(team.Players.Count);
         var playerTeamIds = new List<Guid>(team.Players.Count);
-        var playerNames = new List<string>(team.Players.Count);
         var playerLastReviewerIds = new List<long?>(team.Players.Count);
-        var playerLanguageIds = new List<string>(team.Players.Count);
-        var playerLogins = new List<string?>(team.Players.Count);
+        var personIds = new List<long>(team.Players.Count);
+        var personLanguageIds = new List<string>(team.Players.Count);
+        var personFirstNames = new List<string>(team.Players.Count);
+        var personLastNames = new List<string?>(team.Players.Count);
+        var personUsernames = new List<string?>(team.Players.Count);
 
         foreach (var player in team.Players)
         {
             playerIds.Add(player.Id);
-            playerUserIds.Add(player.UserId);
             playerTeamIds.Add(player.TeamId);
-            playerNames.Add(player.Name);
             playerLastReviewerIds.Add(player.LastReviewerId);
-            playerLanguageIds.Add(player.LanguageId.Value);
-            playerLogins.Add(player.Login);
+            personIds.Add(player.Person.Id);
+            personLanguageIds.Add(player.Person.LanguageId.Value);
+            personFirstNames.Add(player.Person.FirstName);
+            personLastNames.Add(player.Person.LastName);
+            personUsernames.Add(player.Person.Username);
         }
 
         var command = new CommandDefinition(@"
@@ -103,29 +114,64 @@ ON CONFLICT (id) DO UPDATE SET
 chat_id = excluded.chat_id,
 name = excluded.name;
 
-INSERT INTO review.players (id, user_id, team_id, name, last_reviewer_id, language_id, login)
-SELECT p.id, p.user_id, p.team_id, p.name, p.last_reviewer_id, p.player_language_id, p.player_login
-FROM UNNEST(@player_ids, @player_user_ids, @player_team_ids, @player_names, @player_last_reviewer_ids, @player_language_ids, @player_logins)
-AS p(id, user_id, team_id, name, last_reviewer_id, player_language_id, player_login)
+INSERT INTO review.players (
+    id, team_id,
+    last_reviewer_id,
+    person__id,
+    person__language_id,
+    person__first_name,
+    person__last_name,
+    person__username)
+SELECT
+    p.id,
+    p.team_id,
+    p.last_reviewer_id,
+    p.person__id,
+    p.person__language_id,
+    p.person__first_name,
+    p.person__last_name,
+    p.person__username
+FROM UNNEST(
+    @player_ids,
+    @player_team_ids,
+    @player_last_reviewer_ids,
+    @person__ids,
+    @person__language_ids,
+    @person__first_names,
+    @person__last_names,
+    @person__usernames)
+AS p(
+    id,
+    team_id,
+    last_reviewer_id,
+    person__id,
+    person__language_id,
+    person__first_name,
+    person__last_name,
+    person__username)
 ON CONFLICT (id) DO UPDATE SET
-user_id = excluded.user_id,
 team_id = excluded.team_id,
-name = excluded.name,
 last_reviewer_id = excluded.last_reviewer_id,
-language_id = excluded.language_id,
-login = excluded.login;",
+person__id = excluded.person__id,
+person__language_id = excluded.person__language_id,
+person__first_name = excluded.person__first_name,
+person__last_name = excluded.person__last_name,
+person__username = excluded.person__username;",
             new
             {
                 id = team.Id,
                 chat_id = team.ChatId,
                 name = team.Name,
+                
                 player_ids = playerIds,
-                player_user_ids = playerUserIds,
                 player_team_ids = playerTeamIds,
-                player_names = playerNames,
                 player_last_reviewer_ids = playerLastReviewerIds,
-                player_language_ids = playerLanguageIds,
-                player_logins = playerLogins
+                
+                person__ids = personIds,
+                person__language_ids = personLanguageIds,
+                person__first_names = personFirstNames,
+                person__last_names = personLastNames,
+                person__usernames = personUsernames
             },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);

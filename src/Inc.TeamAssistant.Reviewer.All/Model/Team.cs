@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
-
 namespace Inc.TeamAssistant.Reviewer.All.Model;
 
 public sealed class Team
@@ -28,16 +26,14 @@ public sealed class Team
         Name = name;
     }
 
-    public void AddPlayer(LanguageId languageId, long userId, string name, string? login)
+    public void AddPlayer(Person person)
     {
-        if (languageId is null)
-            throw new ArgumentNullException(nameof(languageId));
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
-        if (_players.Any(p => p.UserId == userId))
-            throw new ApplicationException($"User {name} already exists in team {Name}.");
+        if (person is null)
+            throw new ArgumentNullException(nameof(person));
+        if (_players.Any(p => p.Person.Id == person.Id))
+            throw new ApplicationException($"User {person} already exists in team {Name}.");
 
-        _players.Add(new(languageId, userId, Id, name, login));
+        _players.Add(new(person, Id));
     }
 
     public Team Build(IReadOnlyCollection<Player> players)
@@ -57,21 +53,21 @@ public sealed class Team
 
     public bool CanStartReview() => _players.Count >= MinPlayersCount;
 
-    public TaskForReview CreateTaskForReview(long playerId, string description)
+    public TaskForReview CreateTaskForReview(long userId, string description)
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
         if (_players.Count < MinPlayersCount)
             throw new ApplicationException($"Team has not {MinPlayersCount} players.");
 
-        var player = _players.Single(p => p.UserId == playerId);
+        var player = _players.Single(p => p.Person.Id == userId);
         var lastReviewerId = player.LastReviewerId ?? long.MaxValue;
 
-        var otherPlayers = _players.Where(p => p.UserId != player.UserId).ToArray();
-        var nextReviewer = otherPlayers.Where(p => p.UserId > lastReviewerId).MinBy(p => p.UserId)
-            ?? otherPlayers.MinBy(p => p.UserId)!;
+        var otherPlayers = _players.Where(p => p.Person.Id != player.Person.Id).ToArray();
+        var nextReviewer = otherPlayers.Where(p => p.Person.Id > lastReviewerId).MinBy(p => p.Person.Id)
+            ?? otherPlayers.MinBy(p => p.Person.Id)!;
 
-        var owner = new PlayerAsOwner(player, nextReviewer.UserId);
+        var owner = new PlayerAsOwner(player, nextReviewer.Person.Id);
         var reviewer = new PlayerAsReviewer(nextReviewer);
         return new(owner, reviewer, ChatId, description);
     }

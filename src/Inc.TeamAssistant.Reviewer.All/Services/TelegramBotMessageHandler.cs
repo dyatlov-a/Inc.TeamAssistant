@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Reviewer.All.Services;
@@ -70,7 +71,7 @@ internal sealed class TelegramBotMessageHandler
         {
             using var scope = _serviceProvider.CreateScope();
             var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
-            var currentDialog = _dialogContinuation.Find(context.UserId);
+            var currentDialog = _dialogContinuation.Find(context.Person.Id);
 
             if (context.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -105,10 +106,10 @@ internal sealed class TelegramBotMessageHandler
             var command = currentDialog?.ContinuationState ?? context.Text;
             switch (command)
             {
-                case CommandList.CreateTeam when currentDialog is null:
+                case CommandList.CreateTeam when !context.IsPrivate() && currentDialog is null:
                     await CreateTeam(client, translateProvider, context, cancellationToken);
                     return;
-                case CommandList.CreateTeam:
+                case CommandList.CreateTeam when !context.IsPrivate() && currentDialog is not null:
                     await ContinueCreateTeam(client, translateProvider, context, currentDialog, cancellationToken);
                     return;
                 case CommandList.MoveToReview when currentDialog is null:
@@ -162,12 +163,12 @@ internal sealed class TelegramBotMessageHandler
         {
             await client.SendTextMessageAsync(
                 context.ChatId,
-                await translateProvider.Get(Messages.Reviewer_CancelDialogFail, context.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_CancelDialogFail, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
             return;
         }
         
-        _dialogContinuation.End(context.UserId, currentDialog.ContinuationState, context.ToChatMessage());
+        _dialogContinuation.End(context.Person.Id, currentDialog.ContinuationState, context.ToChatMessage());
         foreach (var currentMessage in currentDialog.ChatMessages)
             await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
     }
@@ -182,17 +183,18 @@ internal sealed class TelegramBotMessageHandler
             throw new ArgumentNullException(nameof(context));
 
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(await translateProvider.Get(
-            Messages.Reviewer_CreateTeamHelp,
-            context.LanguageId,
-            CommandList.CreateTeam));
+        if (!context.IsPrivate())
+            messageBuilder.AppendLine(await translateProvider.Get(
+                Messages.Reviewer_CreateTeamHelp,
+                context.Person.LanguageId,
+                CommandList.CreateTeam));
         messageBuilder.AppendLine(await translateProvider.Get(
             Messages.Reviewer_MoveToReviewHelp,
-            context.LanguageId,
+            context.Person.LanguageId,
             CommandList.MoveToReview));
         messageBuilder.AppendLine(await translateProvider.Get(
             Messages.Reviewer_CancelHelp,
-            context.LanguageId,
+            context.Person.LanguageId,
             CommandList.Cancel));
 
         await client.SendTextMessageAsync(context.ChatId, messageBuilder.ToString());
@@ -211,19 +213,19 @@ internal sealed class TelegramBotMessageHandler
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var dialogState = _dialogContinuation.TryBegin(context.UserId, CommandList.CreateTeam, context.ToChatMessage());
+        var dialogState = _dialogContinuation.TryBegin(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
         if (dialogState is null)
         {
             await client.SendTextMessageAsync(
                 context.ChatId,
-                await translateProvider.Get(Messages.Reviewer_BeginDialogFail, context.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_BeginDialogFail, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
             return;
         }
         
         var message = await client.SendTextMessageAsync(
             context.ChatId,
-            await translateProvider.Get(Messages.Reviewer_EnterTeamName, context.LanguageId),
+            await translateProvider.Get(Messages.Reviewer_EnterTeamName, context.Person.LanguageId),
             cancellationToken: cancellationToken);
         dialogState.TryAttachMessage(new ChatMessage(message.Chat.Id, message.MessageId));
     }
@@ -248,13 +250,13 @@ internal sealed class TelegramBotMessageHandler
         var link = string.Format(_linkForConnectTemplate, _botLink, newTeam.Id.ToString("N"));
         var message = await client.SendTextMessageAsync(
             context.ChatId,
-            await translateProvider.Get(Messages.Reviewer_ConnectToTeam, context.LanguageId, newTeam.Name, link),
+            await translateProvider.Get(Messages.Reviewer_ConnectToTeam, context.Person.LanguageId, newTeam.Name, link),
             cancellationToken: cancellationToken);
         
-        if (context.UserId != context.ChatId)
+        if (!context.IsPrivate())
             await client.PinChatMessageAsync(context.ChatId, message.MessageId, cancellationToken: cancellationToken);
 
-        _dialogContinuation.End(context.UserId, CommandList.CreateTeam, context.ToChatMessage());
+        _dialogContinuation.End(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
         foreach (var currentMessage in currentDialog.ChatMessages)
             await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
     }
@@ -272,21 +274,21 @@ internal sealed class TelegramBotMessageHandler
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var teams = await _teamRepository.GetTeams(context.UserId, cancellationToken);
+        var teams = await _teamRepository.GetTeams(context.Person.Id, cancellationToken);
         if (!teams.Any())
         {
             await client.SendTextMessageAsync(
                 context.ChatId,
-                await translateProvider.Get(Messages.Reviewer_HasNotTeamsForPlayer, context.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_HasNotTeamsForPlayer, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
         }
         
-        var dialogState = _dialogContinuation.TryBegin(context.UserId, CommandList.MoveToReview, context.ToChatMessage());
+        var dialogState = _dialogContinuation.TryBegin(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
         if (dialogState is null)
         {
             await client.SendTextMessageAsync(
                 context.ChatId,
-                await translateProvider.Get(Messages.Reviewer_BeginDialogFail, context.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_BeginDialogFail, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
             return;
         }
@@ -294,13 +296,13 @@ internal sealed class TelegramBotMessageHandler
         var buttons = teams.Select(t => InlineKeyboardButton.WithCallbackData(t.Name, $"/{t.Id:N}"));
         var message = await client.SendTextMessageAsync(
             context.ChatId,
-            await translateProvider.Get(Messages.Reviewer_SelectTeam, context.LanguageId),
+            await translateProvider.Get(Messages.Reviewer_SelectTeam, context.Person.LanguageId),
             replyMarkup: new InlineKeyboardMarkup(buttons),
             cancellationToken: cancellationToken);
         dialogState.TryAttachMessage(new ChatMessage(message.Chat.Id, message.MessageId));
     }
 
-    private async Task<string> NewTaskForReviewBuild(
+    private async Task<(string Text, IReadOnlyCollection<MessageEntity> Entities)> NewTaskForReviewBuild(
         ITranslateProvider translateProvider,
         CommandContext context,
         TaskForReview taskForReview)
@@ -311,16 +313,35 @@ internal sealed class TelegramBotMessageHandler
             throw new ArgumentNullException(nameof(context));
         if (taskForReview is null)
             throw new ArgumentNullException(nameof(taskForReview));
-        
-        var messageBuilder = new StringBuilder();
+
+        var reviewerLink = taskForReview.Reviewer.Person.GetPersonLink();
         var messageText = await translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,
-            context.LanguageId,
+            context.Person.LanguageId,
             taskForReview.Description,
-            taskForReview.Owner.Name,
-            taskForReview.Reviewer.GetLogin());
+            taskForReview.Owner.Person.GetFullName(),
+            reviewerLink);
+        var entities = taskForReview.Reviewer.Person.HasUsername()
+            ? Array.Empty<MessageEntity>()
+            : new[]
+            {
+                new MessageEntity
+                {
+                    Type = MessageEntityType.TextMention,
+                    Offset = messageText.IndexOf(reviewerLink, StringComparison.InvariantCultureIgnoreCase),
+                    Length = reviewerLink.Length,
+                    User = new User
+                    {
+                        Id = taskForReview.Reviewer.Person.Id,
+                        LanguageCode = taskForReview.Reviewer.Person.LanguageId.Value,
+                        FirstName = taskForReview.Reviewer.Person.FirstName,
+                        LastName = taskForReview.Reviewer.Person.LastName,
+                        Username = taskForReview.Reviewer.Person.Username
+                    }
+                }
+            };
+        var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(messageText);
-        messageBuilder.AppendLine();
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
@@ -331,7 +352,7 @@ internal sealed class TelegramBotMessageHandler
         };
         messageBuilder.AppendLine(state);
 
-        return messageBuilder.ToString();
+        return (messageBuilder.ToString(), entities);
     }
 
     private async Task ContinueMoveToReview(
@@ -356,16 +377,18 @@ internal sealed class TelegramBotMessageHandler
             if (currentTeam is null)
                 throw new ApplicationException($"Team {teamId} was not found.");
             
-            var taskForReview = currentTeam.CreateTaskForReview(context.UserId, context.Text);
-            
+            var taskForReview = currentTeam.CreateTaskForReview(context.Person.Id, context.Text);
+
+            var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
             var message = await client.SendTextMessageAsync(
                 context.ChatId,
-                await NewTaskForReviewBuild(translateProvider, context, taskForReview),
+                newTaskForReview.Text,
+                entities: newTaskForReview.Entities,
                 cancellationToken: cancellationToken);
             taskForReview.AttachMessage(message.MessageId);
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
 
-            _dialogContinuation.End(context.UserId, CommandList.MoveToReview, context.ToChatMessage());
+            _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
             foreach (var currentMessage in currentDialog.ChatMessages)
                 await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
         }
@@ -376,16 +399,16 @@ internal sealed class TelegramBotMessageHandler
             {
                 await client.SendTextMessageAsync(
                     context.ChatId,
-                    await translateProvider.Get(Messages.Reviewer_TeamNotFoundError, context.LanguageId),
+                    await translateProvider.Get(Messages.Reviewer_TeamNotFoundError, context.Person.LanguageId),
                     cancellationToken: cancellationToken);
-                _dialogContinuation.End(context.UserId, CommandList.MoveToReview, context.ToChatMessage());
+                _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
                 return;
             }
             if (currentTeam.CanStartReview())
             {
                 var message = await client.SendTextMessageAsync(
                     context.ChatId,
-                    await translateProvider.Get(Messages.Reviewer_EnterRequestForReview, context.LanguageId),
+                    await translateProvider.Get(Messages.Reviewer_EnterRequestForReview, context.Person.LanguageId),
                     cancellationToken: cancellationToken);
                 currentDialog
                     .AddItem(value.ToString())
@@ -396,9 +419,9 @@ internal sealed class TelegramBotMessageHandler
             
             await client.SendTextMessageAsync(
                 context.ChatId,
-                await translateProvider.Get(Messages.Reviewer_TeamMinError, context.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_TeamMinError, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
-            _dialogContinuation.End(context.UserId, CommandList.MoveToReview, context.ToChatMessage());
+            _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
         }
     }
 
@@ -419,21 +442,21 @@ internal sealed class TelegramBotMessageHandler
         var team = await _teamRepository.Find(teamId, cancellationToken);
         if (team is { })
         {
-            if (team.Players.All(p => p.UserId != context.UserId))
+            if (team.Players.All(p => p.Person.Id != context.Person.Id))
             {
-                team.AddPlayer(context.LanguageId, context.UserId, context.UserName, context.UserLogin);
+                team.AddPlayer(context.Person);
                 await _teamRepository.Upsert(team, cancellationToken);
             }
             
             await client.SendTextMessageAsync(
-                context.UserId,
-                await translateProvider.Get(Messages.Reviewer_JoinToTeamSuccess, context.LanguageId, team.Name),
+                context.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_JoinToTeamSuccess, context.Person.LanguageId, team.Name),
                 cancellationToken: cancellationToken);
         }
         else
             await client.SendTextMessageAsync(
-                context.UserId,
-                await translateProvider.Get(Messages.Reviewer_TeamNotFoundError, context.LanguageId),
+                context.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_TeamNotFoundError, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
     }
 
@@ -455,16 +478,21 @@ internal sealed class TelegramBotMessageHandler
         if (taskForReview.CanMoveToInProgress())
         {
             taskForReview.MoveToInProgress(_notificationInterval);
-        
+
             if (taskForReview.MessageId.HasValue)
+            {
+                var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
                 await client.EditMessageTextAsync(
                     taskForReview.ChatId,
                     taskForReview.MessageId.Value,
-                    await NewTaskForReviewBuild(translateProvider, context, taskForReview),
+                    newTaskForReview.Text,
+                    entities: newTaskForReview.Entities,
                     cancellationToken: cancellationToken);
+            }
+                
             await client.SendTextMessageAsync(
-                taskForReview.Reviewer.UserId,
-                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.LanguageId, cancellationToken),
+                taskForReview.Reviewer.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.Person.LanguageId, cancellationToken),
                 cancellationToken: cancellationToken);
 
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
@@ -489,20 +517,25 @@ internal sealed class TelegramBotMessageHandler
         if (taskForReview.CanAccept())
         {
             taskForReview.Accept();
-        
+
             if (taskForReview.MessageId.HasValue)
+            {
+                var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
                 await client.EditMessageTextAsync(
                     taskForReview.ChatId,
                     taskForReview.MessageId.Value,
-                    await NewTaskForReviewBuild(translateProvider, context, taskForReview),
+                    newTaskForReview.Text,
+                    entities: newTaskForReview.Entities,
                     cancellationToken: cancellationToken);
+            }
+                
             await client.SendTextMessageAsync(
-                taskForReview.Owner.UserId,
-                await translateProvider.Get(Messages.Reviewer_Accepted, taskForReview.Owner.LanguageId, taskForReview.Description),
+                taskForReview.Owner.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_Accepted, taskForReview.Owner.Person.LanguageId, taskForReview.Description),
                 cancellationToken: cancellationToken);
             await client.SendTextMessageAsync(
-                taskForReview.Reviewer.UserId,
-                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.LanguageId, cancellationToken),
+                taskForReview.Reviewer.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.Person.LanguageId, cancellationToken),
                 cancellationToken: cancellationToken);
 
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
@@ -529,14 +562,19 @@ internal sealed class TelegramBotMessageHandler
             taskForReview.Decline();
 
             if (taskForReview.MessageId.HasValue)
+            {
+                var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
                 await client.EditMessageTextAsync(
                     taskForReview.ChatId,
                     taskForReview.MessageId.Value,
-                    await NewTaskForReviewBuild(translateProvider, context, taskForReview),
+                    newTaskForReview.Text,
+                    entities: newTaskForReview.Entities,
                     cancellationToken: cancellationToken);
+            }
+                
             await client.SendTextMessageAsync(
-                taskForReview.Reviewer.UserId,
-                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.LanguageId, cancellationToken),
+                taskForReview.Reviewer.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Reviewer.Person.LanguageId, cancellationToken),
                 cancellationToken: cancellationToken);
 
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
@@ -561,16 +599,21 @@ internal sealed class TelegramBotMessageHandler
         if (taskForReview.CanMoveToNextRound())
         {
             taskForReview.MoveToNextRound();
-        
+
             if (taskForReview.MessageId.HasValue)
+            {
+                var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
                 await client.EditMessageTextAsync(
                     taskForReview.ChatId,
                     taskForReview.MessageId.Value,
-                    await NewTaskForReviewBuild(translateProvider, context, taskForReview),
+                    newTaskForReview.Text,
+                    entities: newTaskForReview.Entities,
                     cancellationToken: cancellationToken);
+            }
+                
             await client.SendTextMessageAsync(
-                taskForReview.Owner.UserId,
-                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Owner.LanguageId, cancellationToken),
+                taskForReview.Owner.Person.Id,
+                await translateProvider.Get(Messages.Reviewer_OperationApplied, taskForReview.Owner.Person.LanguageId, cancellationToken),
                 cancellationToken: cancellationToken);
 
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);

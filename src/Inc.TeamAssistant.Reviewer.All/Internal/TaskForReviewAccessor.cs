@@ -40,14 +40,17 @@ SELECT
     t.chat_id AS chatid,
     o.id AS id,
     o.last_reviewer_id AS lastreviewerid,
-    o.user_id AS userid,
-    o.language_id AS languageid,
-    o.name AS name,
+    o.person__id AS id,
+    o.person__language_id AS languageid,
+    o.person__first_name AS firstname,
+    o.person__last_name AS lastname,
+    o.person__username AS username,
     r.id AS id,
-    r.user_id AS userid,
-    r.language_id AS languageid,
-    r.name AS name,
-    r.login AS login
+    r.person__id AS id,
+    r.person__language_id AS languageid,
+    r.person__first_name AS firstname,
+    r.person__last_name AS lastname,
+    r.person__username AS username
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
 JOIN review.players AS r ON r.id = t.reviewer_id
@@ -60,9 +63,9 @@ LIMIT @limit;",
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, PlayerAsOwner, PlayerAsReviewer, TaskForReview>(
+        var results = await connection.QueryAsync<TaskForReview, PlayerAsOwner, Person, PlayerAsReviewer, Person, TaskForReview>(
             command,
-            (t, o, r) => t.Build(o, r),
+            (t, o, op, r, rp) => t.Build(o.Build(op), r.Build(rp)),
             splitOn: "id");
 
         return results.ToArray();

@@ -1,14 +1,10 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
-
 namespace Inc.TeamAssistant.Reviewer.All.Model;
 
 public sealed class PlayerAsOwner
 {
     public Guid Id { get; private set; }
+    public Person Person { get; private set; } = default!;
     public long LastReviewerId { get; private set; }
-    public LanguageId LanguageId { get; private set; } = default!;
-    public long UserId { get; private set; }
-    public string Name { get; private set; } = default!;
 
     private PlayerAsOwner()
     {
@@ -21,9 +17,14 @@ public sealed class PlayerAsOwner
             throw new ArgumentNullException(nameof(player));
         
         Id = player.Id;
-        LanguageId = player.LanguageId;
-        UserId = player.UserId;
+        Person = player.Person;
         LastReviewerId = lastReviewerId;
-        Name = player.Name;
+    }
+    
+    public PlayerAsOwner Build(Person person)
+    {
+        Person = person ?? throw new ArgumentNullException(nameof(person));
+
+        return this;
     }
 }

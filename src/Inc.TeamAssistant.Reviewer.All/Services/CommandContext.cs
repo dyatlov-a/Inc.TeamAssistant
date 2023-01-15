@@ -1,18 +1,15 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
 using Inc.TeamAssistant.Reviewer.All.Extensions;
+using Inc.TeamAssistant.Reviewer.All.Model;
 using Telegram.Bot.Types;
 
 namespace Inc.TeamAssistant.Reviewer.All.Services;
 
 public sealed record CommandContext(
     int? MessageId,
-    long UserId,
-    string UserName,
-    string? UserLogin,
-    LanguageId LanguageId,
     long ChatId,
-    string Text)
+    string Text,
+    Person Person)
 {
     public static CommandContext? TryCreateFromMessage(Update update, string botName)
     {
@@ -32,12 +29,14 @@ public sealed record CommandContext(
         
         return new CommandContext(
             update.Message.MessageId,
-            update.Message.From.Id,
-            update.Message.From.GetUserName(),
-            update.Message.From.Username,
-            update.Message.From.GetLanguageId(),
             update.Message.Chat.Id,
-            commandText);
+            commandText,
+            new Person(
+                update.Message.From.Id,
+                update.Message.From.GetLanguageId(),
+                update.Message.From.FirstName,
+                update.Message.From.LastName,
+                update.Message.From.Username));
     }
 
     public static CommandContext? TryCreateFromQuery(Update update, string botName)
@@ -59,13 +58,17 @@ public sealed record CommandContext(
         
         return new CommandContext(
             MessageId: null,
-            update.CallbackQuery.From.Id,
-            update.CallbackQuery.From.GetUserName(),
-            update.CallbackQuery.From.Username,
-            update.CallbackQuery.From.GetLanguageId(),
             update.CallbackQuery.Message.Chat.Id,
-            commandText);
+            commandText,
+            new Person(
+                update.CallbackQuery.From.Id,
+                update.CallbackQuery.From.GetLanguageId(),
+                update.CallbackQuery.From.FirstName,
+                update.CallbackQuery.From.LastName,
+                update.CallbackQuery.From.Username));
     }
 
     public ChatMessage? ToChatMessage() => MessageId.HasValue ? new ChatMessage(ChatId, MessageId.Value) : null;
+
+    public bool IsPrivate() => ChatId == Person.Id;
 }
