@@ -18,6 +18,7 @@ internal sealed class TelegramBotMessageHandler
     private readonly ILogger<TelegramBotMessageHandler> _logger;
     private readonly ITeamRepository _teamRepository;
     private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly IPlayersReader _playersReader;
     private readonly IDialogContinuation _dialogContinuation;
     private readonly IServiceProvider _serviceProvider;
     private readonly string _botLink;
@@ -29,6 +30,7 @@ internal sealed class TelegramBotMessageHandler
         ILogger<TelegramBotMessageHandler> logger,
         ITeamRepository teamRepository,
         ITaskForReviewRepository taskForReviewRepository,
+        IPlayersReader playersReader,
         IDialogContinuation dialogContinuation,
         IServiceProvider serviceProvider,
         string botLink,
@@ -47,6 +49,7 @@ internal sealed class TelegramBotMessageHandler
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _playersReader = playersReader ?? throw new ArgumentNullException(nameof(playersReader));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _botLink = botLink;
@@ -394,14 +397,28 @@ internal sealed class TelegramBotMessageHandler
             if (currentTeam is null)
                 throw new ApplicationException($"Team {teamId} was not found.");
             
-            var lastReviewer = await _teamRepository.FindLastReviewer(currentTeam.Id, cancellationToken);
-            var taskForReview = currentTeam.CreateTaskForReview(context.Person.Id, context.Text, lastReviewer);
+            var owner = currentTeam.Players.SingleOrDefault(p => p.Person.Id == context.Person.Id)
+                        ?? await _playersReader.Find(UserIdentity.Create(context.Person.Id), cancellationToken: cancellationToken);
+            if (owner is null)
+                throw new ApplicationException($"User {context.Person.FirstName} was not found.");
+            
+            var lastReviewer = await _playersReader.FindLastReviewer(currentTeam.Id, cancellationToken);
+            var targetPlayer = context.TargetUser is { }
+                ? await _playersReader.Find(context.TargetUser, currentTeam.Id, cancellationToken)
+                : null;
+            var reviewer = targetPlayer ?? currentTeam.GetNextReviewer(owner.Person, lastReviewer?.Person);
+            var taskForReview = new TaskForReview(
+                currentTeam.Id,
+                owner,
+                reviewer,
+                currentTeam.ChatId,
+                context.Text);
 
-            var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
+            var taskForReviewMessage = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
             var message = await client.SendTextMessageAsync(
                 currentTeam.ChatId,
-                newTaskForReview.Text,
-                entities: newTaskForReview.Entities,
+                taskForReviewMessage.Text,
+                entities: taskForReviewMessage.Entities,
                 cancellationToken: cancellationToken);
             taskForReview.AttachMessage(message.MessageId);
             await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);

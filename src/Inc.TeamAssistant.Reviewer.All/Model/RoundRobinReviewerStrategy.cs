@@ -14,9 +14,14 @@ internal sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
         if (owner is null)
             throw new ArgumentNullException(nameof(owner));
         
-        var lastReviewerId = lastReviewer?.Id ?? long.MinValue;
         var otherPlayers = _team.Players.Where(p => p.Person.Id != owner.Id).ToArray();
-        var nextReviewer = otherPlayers.Where(p => p.Person.Id > lastReviewerId).MinBy(p => p.Person.Id);
+
+        if (!otherPlayers.Any())
+            return _team.Players.First();
+        
+        var nextReviewer = otherPlayers
+            .Where(p => lastReviewer is null || p.Person.Id > lastReviewer.Id)
+            .MinBy(p => p.Person.Id);
         return nextReviewer ?? otherPlayers.MinBy(p => p.Person.Id)!;
     }
 }

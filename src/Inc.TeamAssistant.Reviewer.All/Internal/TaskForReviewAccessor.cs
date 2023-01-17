@@ -48,7 +48,7 @@ SELECT
     o.person__last_name AS personlastname,
     o.person__username AS personusername,
     r.id AS id,
-    o.team_id AS teamid,
+    r.team_id AS teamid,
     r.person__id AS personid,
     r.person__language_id AS personlanguageid,
     r.person__first_name AS personfirstname,

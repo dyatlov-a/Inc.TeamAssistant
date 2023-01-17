@@ -56,18 +56,18 @@ SELECT
     t.chat_id AS chatid,
     o.id AS id,
     o.team_id AS teamid,
-    o.person__id AS id,
-    o.person__language_id AS languageid,
-    o.person__first_name AS firstname,
-    o.person__last_name AS lastname,
-    o.person__username AS username,
+    o.person__id AS personid,
+    o.person__language_id AS personlanguageid,
+    o.person__first_name AS personfirstname,
+    o.person__last_name AS personlastname,
+    o.person__username AS personusername,
     r.id AS id,
-    o.team_id AS teamid,
-    r.person__id AS id,
-    r.person__language_id AS languageid,
-    r.person__first_name AS firstname,
-    r.person__last_name AS lastname,
-    r.person__username AS username
+    r.team_id AS teamid,
+    r.person__id AS personid,
+    r.person__language_id AS personlanguageid,
+    r.person__first_name AS personfirstname,
+    r.person__last_name AS personlastname,
+    r.person__username AS personusername
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
 JOIN review.players AS r ON r.id = t.reviewer_id

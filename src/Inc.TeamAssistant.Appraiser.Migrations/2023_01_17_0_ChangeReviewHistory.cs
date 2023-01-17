@@ -29,7 +29,7 @@ public class ChangeReviewHistory : Migration
         
         Execute.Sql(@"
             UPDATE review.task_for_reviews AS tt
-            SET tt.team_id = p.team_id
+            SET team_id = p.team_id
             FROM review.task_for_reviews AS st
             JOIN review.players p ON p.id = st.owner_id
             WHERE tt.id = st.id;");

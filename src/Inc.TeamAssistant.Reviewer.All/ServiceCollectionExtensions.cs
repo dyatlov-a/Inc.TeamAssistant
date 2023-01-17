@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
                 sp => ActivatorUtilities.CreateInstance<TeamRepository>(sp, connectionString))
             .AddSingleton<ITaskForReviewAccessor>(
                 sp => ActivatorUtilities.CreateInstance<TaskForReviewAccessor>(sp, connectionString))
+            .AddSingleton<IPlayersReader>(sp => ActivatorUtilities.CreateInstance<PlayersReader>(sp, connectionString))
 
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<TelegramBotMessageHandler>(
                 sp,

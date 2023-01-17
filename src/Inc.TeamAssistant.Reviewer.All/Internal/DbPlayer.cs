@@ -2,11 +2,13 @@ using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Reviewer.All.Internal;
 
-internal sealed record DbPlayer(
-    Guid Id,
-    Guid TeamId,
-    long PersonId,
-    LanguageId PersonLanguageId,
-    string PersonFirstName,
-    string? PersonLastName,
-    string? PersonUsername);
+internal sealed record DbPlayer
+{
+    public Guid Id { get; init; }
+    public Guid TeamId { get; init; }
+    public long PersonId { get; init; }
+    public LanguageId PersonLanguageId { get; init; } = default!;
+    public string PersonFirstName { get; init; } = default!;
+    public string? PersonLastName { get; init; }
+    public string? PersonUsername { get; init; }
+}

@@ -2,8 +2,6 @@ namespace Inc.TeamAssistant.Reviewer.All.Model;
 
 public sealed class Team
 {
-    private const int MinPlayersCount = 2;
-    
     public Guid Id { get; private set; }
     public long ChatId { get; private set; }
     public string Name { get; private set; } = default!;
@@ -53,24 +51,15 @@ public sealed class Team
         return this;
     }
 
-    public bool CanStartReview() => _players.Count >= MinPlayersCount;
+    public bool CanStartReview() => _players.Any();
 
-    public TaskForReview CreateTaskForReview(long userId, string description, Player? lastReviewer)
-    {
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
-        if (_players.Count < MinPlayersCount)
-            throw new ApplicationException($"Team has not {MinPlayersCount} players.");
-
-        var owner = _players.Single(p => p.Person.Id == userId);
-        var nextReviewer = NextReviewerStrategy.Next(owner.Person, lastReviewer?.Person);
-        return new(Id, owner, nextReviewer, ChatId, description);
-    }
+    public Player GetNextReviewer(Person owner, Person? lastReviewer = null)
+        => NextReviewerStrategy.Next(owner, lastReviewer);
 
     internal INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch
     {
         NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(this),
-        NextReviewerType.Random => new RandomReviewerStrategy(this, MinPlayersCount),
+        NextReviewerType.Random => new RandomReviewerStrategy(this),
         _ => throw new ApplicationException($"NextReviewerType for team {Id} was not valid.")
     };
 }

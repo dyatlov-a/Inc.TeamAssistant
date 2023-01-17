@@ -23,7 +23,7 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(team: null!, _fixture.Create<int>());
+        RandomReviewerStrategy Action() => new(team: null!);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -31,7 +31,7 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Next_OwnerIsNull_ThrowsException()
     {
-        Player Action() => _target.Next(owner: null!);
+        Player Action() => _target.Next(owner: null!, lastReviewer: null);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -41,7 +41,7 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var owner = _team.Players.First();
 
-        var reviewer = _target.Next(owner.Person);
+        var reviewer = _target.Next(owner.Person, lastReviewer: null);
         
         Assert.NotEqual(owner.Id, reviewer.Id);
     }
