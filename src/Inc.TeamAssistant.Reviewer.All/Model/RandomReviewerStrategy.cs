@@ -13,14 +13,14 @@ internal sealed class RandomReviewerStrategy : INextReviewerStrategy
         _minPlayersCount = minPlayersCount;
     }
     
-    public Player Next(Player owner)
+    public Player Next(Person owner, Person? lastReviewer)
     {
         if (owner is null)
             throw new ArgumentNullException(nameof(owner));
         
-        var excludedPlayers = owner.LastReviewerId.HasValue && _team.Players.Count > _minPlayersCount
-            ? new[] { owner.Person.Id, owner.LastReviewerId.Value }
-            : new[] { owner.Person.Id };
+        var excludedPlayers = lastReviewer is {} && _team.Players.Count > _minPlayersCount
+            ? new[] { owner.Id, lastReviewer.Id }
+            : new[] { owner.Id };
 
         var targetPlayers = _team.Players
             .Where(p => !excludedPlayers.Contains(p.Person.Id))

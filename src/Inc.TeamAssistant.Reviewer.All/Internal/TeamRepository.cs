@@ -31,17 +31,11 @@ WHERE t.id = @team_id;
 SELECT
     p.id AS id,
     p.team_id AS teamid,
-    p.last_reviewer_id AS lastreviewerid
-FROM review.players AS p
-WHERE p.team_id = @team_id;
-
-SELECT
-    p.id AS playerid,
-    p.person__id AS id,
-    p.person__language_id AS languageid,
-    p.person__first_name AS firstname,
-    p.person__last_name AS lastname,
-    p.person__username AS username
+    p.person__id AS personid,
+    p.person__language_id AS personlanguageid,
+    p.person__first_name AS personfirstname,
+    p.person__last_name AS personlastname,
+    p.person__username AS personusername
 FROM review.players AS p
 WHERE p.team_id = @team_id;",
             new { team_id = teamId },
@@ -53,11 +47,51 @@ WHERE p.team_id = @team_id;",
         var query = await connection.QueryMultipleAsync(command);
 
         var team = await query.ReadSingleOrDefaultAsync<Team>();
-        var players = await query.ReadAsync<Player>();
-        var personsLookup = (await query.ReadAsync<DbPerson>()).ToDictionary(
-            p => p.PlayerId,
-            p => new Person(p.Id, p.LanguageId, p.FirstName, p.LastName, p.Username));
-        return team?.Build(players.Select(p => p.Build(personsLookup[p.Id])).ToArray());
+        var players = await query.ReadAsync<DbPlayer>();
+
+        return team?.Build(players.Select(p => Player.Build(
+                p.Id,
+                p.TeamId,
+                new Person(p.PersonId, p.PersonLanguageId, p.PersonFirstName, p.PersonLastName, p.PersonUsername)))
+            .ToArray());
+    }
+
+    public async Task<Player?> FindLastReviewer(Guid teamId, CancellationToken cancellationToken)
+    {
+        var command = new CommandDefinition(@"
+SELECT
+    p.id AS id,
+    p.team_id AS teamid,
+    p.person__id AS personid,
+    p.person__language_id AS personlanguageid,
+    p.person__first_name AS personfirstname,
+    p.person__last_name AS personlastname,
+    p.person__username AS personusername
+FROM 
+    review.task_for_reviews AS t
+    review.players AS p ON p.id = t.reviewer_id
+WHERE t.team_id = @team_id
+ORDER BY t.created DESC
+OFFSET 0
+LIMIT 1;",
+            new { team_id = teamId },
+            flags: CommandFlags.None,
+            cancellationToken: cancellationToken);
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        var result = await connection.QuerySingleOrDefaultAsync<DbPlayer>(command);
+        return result is {}
+            ? Player.Build(
+                result.Id,
+                result.TeamId,
+                new Person(
+                    result.PersonId,
+                    result.PersonLanguageId,
+                    result.PersonFirstName,
+                    result.PersonLastName,
+                    result.PersonUsername))
+            : null;
     }
 
     public async Task<IReadOnlyCollection<(Guid Id, string Name)>> GetTeams(
@@ -65,13 +99,14 @@ WHERE p.team_id = @team_id;",
         CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    t.name AS name
-FROM review.teams AS t
-JOIN review.players AS p ON p.team_id = t.id
+SELECT DISTINCT ON (ot.id)
+    ot.id AS id,
+    ot.name AS name
+FROM review.teams AS pt
+JOIN review.players AS p ON p.team_id = pt.id
+JOIN review.teams AS ot ON ot.chat_id = pt.chat_id
 WHERE p.person__id = @person__id
-ORDER BY t.name;",
+ORDER BY ot.id, ot.name;",
             new { person__id = userId },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
@@ -89,7 +124,6 @@ ORDER BY t.name;",
 
         var playerIds = new List<Guid>(team.Players.Count);
         var playerTeamIds = new List<Guid>(team.Players.Count);
-        var playerLastReviewerIds = new List<long?>(team.Players.Count);
         var personIds = new List<long>(team.Players.Count);
         var personLanguageIds = new List<string>(team.Players.Count);
         var personFirstNames = new List<string>(team.Players.Count);
@@ -100,7 +134,6 @@ ORDER BY t.name;",
         {
             playerIds.Add(player.Id);
             playerTeamIds.Add(player.TeamId);
-            playerLastReviewerIds.Add(player.LastReviewerId);
             personIds.Add(player.Person.Id);
             personLanguageIds.Add(player.Person.LanguageId.Value);
             personFirstNames.Add(player.Person.FirstName);
@@ -117,8 +150,8 @@ name = excluded.name,
 next_reviewer_type = excluded.next_reviewer_type;
 
 INSERT INTO review.players (
-    id, team_id,
-    last_reviewer_id,
+    id,
+    team_id,
     person__id,
     person__language_id,
     person__first_name,
@@ -127,7 +160,6 @@ INSERT INTO review.players (
 SELECT
     p.id,
     p.team_id,
-    p.last_reviewer_id,
     p.person__id,
     p.person__language_id,
     p.person__first_name,
@@ -136,7 +168,6 @@ SELECT
 FROM UNNEST(
     @player_ids,
     @player_team_ids,
-    @player_last_reviewer_ids,
     @person__ids,
     @person__language_ids,
     @person__first_names,
@@ -145,7 +176,6 @@ FROM UNNEST(
 AS p(
     id,
     team_id,
-    last_reviewer_id,
     person__id,
     person__language_id,
     person__first_name,
@@ -153,7 +183,6 @@ AS p(
     person__username)
 ON CONFLICT (id) DO UPDATE SET
 team_id = excluded.team_id,
-last_reviewer_id = excluded.last_reviewer_id,
 person__id = excluded.person__id,
 person__language_id = excluded.person__language_id,
 person__first_name = excluded.person__first_name,
@@ -168,8 +197,6 @@ person__username = excluded.person__username;",
                 
                 player_ids = playerIds,
                 player_team_ids = playerTeamIds,
-                player_last_reviewer_ids = playerLastReviewerIds,
-                
                 person__ids = personIds,
                 person__language_ids = personLanguageIds,
                 person__first_names = personFirstNames,

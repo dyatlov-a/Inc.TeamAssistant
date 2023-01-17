@@ -394,7 +394,8 @@ internal sealed class TelegramBotMessageHandler
             if (currentTeam is null)
                 throw new ApplicationException($"Team {teamId} was not found.");
             
-            var taskForReview = currentTeam.CreateTaskForReview(context.Person.Id, context.Text);
+            var lastReviewer = await _teamRepository.FindLastReviewer(currentTeam.Id, cancellationToken);
+            var taskForReview = currentTeam.CreateTaskForReview(context.Person.Id, context.Text, lastReviewer);
 
             var newTaskForReview = await NewTaskForReviewBuild(translateProvider, context, taskForReview);
             var message = await client.SendTextMessageAsync(

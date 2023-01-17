@@ -3,13 +3,15 @@ namespace Inc.TeamAssistant.Reviewer.All.Model;
 public sealed class TaskForReview
 {
     public Guid Id { get; private set; }
+    public Guid TeamId { get; private set; }
     public Guid OwnerId { get; private set; }
-    public PlayerAsOwner Owner { get; private set; } = default!;
+    public Player Owner { get; private set; } = default!;
     public Guid ReviewerId { get; private set; }
-    public PlayerAsReviewer Reviewer { get; private set; } = default!;
+    public Player Reviewer { get; private set; } = default!;
     public long ChatId { get; private set; }
     public string Description { get; private set; } = default!;
     public TaskForReviewState State { get; private set; }
+    public DateTimeOffset Created { get; private set; }
     public DateTimeOffset NextNotification { get; private set; }
     public DateTimeOffset? AcceptDate { get; private set; }
     public int? MessageId { get; private set; }
@@ -18,13 +20,15 @@ public sealed class TaskForReview
     {
     }
 
-    public TaskForReview(PlayerAsOwner owner, PlayerAsReviewer reviewer, long chatId, string description)
+    public TaskForReview(Guid teamId, Player owner, Player reviewer, long chatId, string description)
         : this()
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
 
         Id = Guid.NewGuid();
+        Created = DateTimeOffset.UtcNow;
+        TeamId = teamId;
         Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         OwnerId = owner.Id;
         Reviewer = reviewer ?? throw new ArgumentNullException(nameof(reviewer));
@@ -35,7 +39,7 @@ public sealed class TaskForReview
         NextNotification = DateTimeOffset.UtcNow;
     }
 
-    public TaskForReview Build(PlayerAsOwner owner, PlayerAsReviewer reviewer)
+    public TaskForReview Build(Player owner, Player reviewer)
     {
         if (owner is null)
             throw new ArgumentNullException(nameof(owner));

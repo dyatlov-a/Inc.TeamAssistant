@@ -4,7 +4,6 @@ public sealed class Player
 {
     public Guid Id { get; private set; }
     public Guid TeamId { get; private set; }
-    public long? LastReviewerId { get; private set; }
     public Person Person { get; private set; } = default!;
 
     private Player()
@@ -19,10 +18,13 @@ public sealed class Player
         TeamId = teamId;
     }
 
-    public Player Build(Person person)
+    public static Player Build(Guid id, Guid teamId, Person person)
     {
-        Person = person ?? throw new ArgumentNullException(nameof(person));
-
-        return this;
+        return new()
+        {
+            Id = id,
+            TeamId = teamId,
+            Person = person ?? throw new ArgumentNullException(nameof(person))
+        };
     }
 }

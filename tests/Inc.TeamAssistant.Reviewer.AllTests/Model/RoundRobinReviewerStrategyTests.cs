@@ -41,7 +41,7 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var owner = _team.Players.First();
 
-        var reviewer = _target.Next(owner);
+        var reviewer = _target.Next(owner.Person);
         
         Assert.NotEqual(owner.Id, reviewer.Id);
     }
@@ -50,10 +50,9 @@ public sealed class RoundRobinReviewerStrategyTests
     public void Next_Team_ShouldNotLastReviewerId()
     {
         var owner = _team.Players.First();
-        var lastReviewer = _target.Next(owner);
-        typeof(Player).GetProperty(nameof(Player.LastReviewerId))!.SetValue(owner, lastReviewer.Person.Id);
+        var lastReviewer = _team.Players.Skip(1).First();
         
-        var reviewer = _target.Next(owner);
+        var reviewer = _target.Next(owner.Person, lastReviewer.Person);
         
         Assert.NotEqual(lastReviewer.Id, reviewer.Id);
     }
@@ -67,10 +66,11 @@ public sealed class RoundRobinReviewerStrategyTests
             .OrderBy(p => p.Person.Id)
             .ToArray();
 
+        Person? lastReviewer = null;
         foreach (var otherPlayer in otherPlayers.Concat(otherPlayers))
         {
-            var reviewer = _target.Next(owner);
-            typeof(Player).GetProperty(nameof(Player.LastReviewerId))!.SetValue(owner, reviewer.Person.Id);
+            var reviewer = _target.Next(owner.Person, lastReviewer);
+            lastReviewer = reviewer.Person;
             Assert.Equal(otherPlayer.Person.Id, reviewer.Person.Id);
         }
     }

@@ -44,22 +44,25 @@ WHERE state = ANY(@states);",
         var command = new CommandDefinition(@"
 SELECT
     t.id AS id,
+    t.team_id AS teamid,
     t.owner_id AS ownerid,
     t.reviewer_id AS reviewerid,
     t.description AS description,
     t.state AS state,
+    t.created AS created,
     t.next_notification AS nextnotification,
     t.accept_date AS acceptdate,
     t.message_id AS messageid,
     t.chat_id AS chatid,
     o.id AS id,
-    o.last_reviewer_id AS lastreviewerid,
+    o.team_id AS teamid,
     o.person__id AS id,
     o.person__language_id AS languageid,
     o.person__first_name AS firstname,
     o.person__last_name AS lastname,
     o.person__username AS username,
     r.id AS id,
+    o.team_id AS teamid,
     r.person__id AS id,
     r.person__language_id AS languageid,
     r.person__first_name AS firstname,
@@ -75,9 +78,17 @@ WHERE t.id = @id;",
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, PlayerAsOwner, Person, PlayerAsReviewer, Person, TaskForReview>(
+        var results = await connection.QueryAsync<TaskForReview, DbPlayer, DbPlayer, TaskForReview>(
             command,
-            (t, o, op, r, rp) => t.Build(o.Build(op), r.Build(rp)),
+            (t, o, r) => t.Build(
+                Player.Build(
+                    o.Id,
+                    o.TeamId,
+                    new Person(o.PersonId, o.PersonLanguageId, o.PersonFirstName, o.PersonLastName, o.PersonUsername)),
+                Player.Build(
+                    r.Id,
+                    r.TeamId,
+                    new Person(r.PersonId, r.PersonLanguageId, r.PersonFirstName, r.PersonLastName, r.PersonUsername))),
             splitOn: "id");
         return results.Single();
     }
@@ -88,21 +99,45 @@ WHERE t.id = @id;",
             throw new ArgumentNullException(nameof(taskForReview));
 
         var command = new CommandDefinition(@"
-INSERT INTO review.task_for_reviews (id, owner_id, reviewer_id, description, state, next_notification, accept_date, message_id, chat_id)
-VALUES (@id, @owner_id, @reviewer_id, @description, @state, @next_notification, @accept_date, @message_id, @chat_id)
+INSERT INTO review.task_for_reviews (
+    id,
+    team_id,
+    owner_id,
+    reviewer_id,
+    description,
+    state,
+    created,
+    next_notification,
+    accept_date,
+    message_id,
+    chat_id)
+VALUES (
+    @id,
+    @team_id,
+    @owner_id,
+    @reviewer_id,
+    @description,
+    @state,
+    @created,
+    @next_notification,
+    @accept_date,
+    @message_id,
+    @chat_id)
 ON CONFLICT (id) DO UPDATE SET
-owner_id = excluded.owner_id,
-reviewer_id = excluded.reviewer_id,
-description = excluded.description,
-state = excluded.state,
-next_notification = excluded.next_notification,
-accept_date = excluded.accept_date,
-message_id = excluded.message_id,
-chat_id = excluded.chat_id;
+    team_id = excluded.team_id,
+    owner_id = excluded.owner_id,
+    reviewer_id = excluded.reviewer_id,
+    description = excluded.description,
+    state = excluded.state,
+    created = excluded.created,
+    next_notification = excluded.next_notification,
+    accept_date = excluded.accept_date,
+    message_id = excluded.message_id,
+    chat_id = excluded.chat_id;
 
 UPDATE review.players
 SET
-    last_reviewer_id = @owner__last_reviewer_id,
+    team_id = @owner_person__team_id,
     person__id = @owner_person__id,
     person__language_id = @owner_person__language_id,
     person__first_name = @owner_person__first_name,
@@ -112,6 +147,7 @@ WHERE id = @owner_id;
 
 UPDATE review.players
 SET
+    team_id = @reviewer_person__team_id,
     person__id = @reviewer_person__id,
     person__language_id = @reviewer_person__language_id,
     person__first_name = @reviewer_person__first_name,
@@ -121,22 +157,25 @@ WHERE id = @reviewer_id;",
             new
             {
                 id = taskForReview.Id,
+                team_id = taskForReview.TeamId,
                 owner_id = taskForReview.OwnerId,
                 reviewer_id = taskForReview.ReviewerId,
                 description = taskForReview.Description,
                 state = taskForReview.State,
+                created = taskForReview.Created,
                 next_notification = taskForReview.NextNotification,
                 accept_date = taskForReview.AcceptDate,
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
-
-                owner__last_reviewer_id = taskForReview.Owner.LastReviewerId,
+                
+                owner_person__team_id = taskForReview.Owner.TeamId,
                 owner_person__id = taskForReview.Owner.Person.Id,
                 owner_person__language_id = taskForReview.Owner.Person.LanguageId,
                 owner_person__first_name = taskForReview.Owner.Person.FirstName,
                 owner_person__last_name = taskForReview.Owner.Person.LastName,
                 owner_person__username = taskForReview.Owner.Person.Username,
                 
+                reviewer_person__team_id = taskForReview.Reviewer.TeamId,
                 reviewer_person__id = taskForReview.Reviewer.Person.Id,
                 reviewer_person__language_id = taskForReview.Reviewer.Person.LanguageId,
                 reviewer_person__first_name = taskForReview.Reviewer.Person.FirstName,

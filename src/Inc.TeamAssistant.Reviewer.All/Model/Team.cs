@@ -55,18 +55,16 @@ public sealed class Team
 
     public bool CanStartReview() => _players.Count >= MinPlayersCount;
 
-    public TaskForReview CreateTaskForReview(long userId, string description)
+    public TaskForReview CreateTaskForReview(long userId, string description, Player? lastReviewer)
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
         if (_players.Count < MinPlayersCount)
             throw new ApplicationException($"Team has not {MinPlayersCount} players.");
 
-        var player = _players.Single(p => p.Person.Id == userId);
-        var nextReviewer = NextReviewerStrategy.Next(player);
-        var owner = new PlayerAsOwner(player, nextReviewer.Person.Id);
-        var reviewer = new PlayerAsReviewer(nextReviewer);
-        return new(owner, reviewer, ChatId, description);
+        var owner = _players.Single(p => p.Person.Id == userId);
+        var nextReviewer = NextReviewerStrategy.Next(owner.Person, lastReviewer?.Person);
+        return new(Id, owner, nextReviewer, ChatId, description);
     }
 
     internal INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch
