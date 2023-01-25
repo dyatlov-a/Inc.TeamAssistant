@@ -17,7 +17,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionString = connectionString;
     }
 
-    public async Task<IReadOnlyCollection<Guid>> Get(
+    public async Task<IReadOnlyCollection<Guid>> GetTaskIds(
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken cancellationToken)
     {
@@ -63,8 +63,8 @@ SELECT
     r.last_name AS lastname,
     r.username AS username
 FROM review.task_for_reviews AS t
-JOIN review.players AS o ON o.id = t.owner_id
-JOIN review.players AS r ON r.id = t.reviewer_id
+JOIN review.persons AS o ON o.id = t.owner_id
+JOIN review.persons AS r ON r.id = t.reviewer_id
 WHERE t.id = @id;",
             new { id = taskForReviewId },
             flags: CommandFlags.Buffered,

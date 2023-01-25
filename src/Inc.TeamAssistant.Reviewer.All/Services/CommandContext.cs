@@ -6,13 +6,18 @@ using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Reviewer.All.Services;
 
-public sealed record CommandContext(
-    int? MessageId,
-    long ChatId,
-    string Text,
-    Person Person,
-    UserIdentity? TargetUser = null)
+public sealed record CommandContext
 {
+    private int? MessageId { get; init; }
+    public long ChatId { get; private init; }
+    public string Text { get; private init; } = default!;
+    public Person Person { get; private init; } = default!;
+    public UserIdentity? TargetUser  { get; private init; }
+
+    private CommandContext()
+    {
+    }
+    
     public static CommandContext? TryCreateFromMessage(Update update, string botName)
     {
         if (update is null)
@@ -49,17 +54,19 @@ public sealed record CommandContext(
                 ? null
                 : UserIdentity.Create(username);
 
-        return new CommandContext(
-            update.Message.MessageId,
-            update.Message.Chat.Id,
-            cleanCommandText,
-            new Person(
+        return new CommandContext
+        {
+            MessageId = update.Message.MessageId,
+            ChatId = update.Message.Chat.Id,
+            Text = cleanCommandText,
+            Person = new Person(
                 update.Message.From.Id,
                 update.Message.From.GetLanguageId(),
                 update.Message.From.FirstName,
                 update.Message.From.LastName,
                 update.Message.From.Username),
-            userIdentity);
+            TargetUser = userIdentity
+        };
     }
 
     public static CommandContext? TryCreateFromQuery(Update update, string botName)
@@ -79,16 +86,17 @@ public sealed record CommandContext(
             .Replace($"@{botName}", string.Empty, StringComparison.InvariantCultureIgnoreCase)
             .Trim();
         
-        return new CommandContext(
-            MessageId: null,
-            update.CallbackQuery.Message.Chat.Id,
-            commandText,
-            new Person(
+        return new CommandContext
+        {
+            ChatId = update.CallbackQuery.Message.Chat.Id,
+            Text = commandText,
+            Person = new Person(
                 update.CallbackQuery.From.Id,
                 update.CallbackQuery.From.GetLanguageId(),
                 update.CallbackQuery.From.FirstName,
                 update.CallbackQuery.From.LastName,
-                update.CallbackQuery.From.Username));
+                update.CallbackQuery.From.Username)
+        };
     }
 
     public ChatMessage? ToChatMessage() => MessageId.HasValue ? new ChatMessage(ChatId, MessageId.Value) : null;

@@ -50,27 +50,34 @@ JOIN review.players AS tp ON tp.team_id = @team_id AND tp.person_id = p.id;",
         return team?.Build(players.ToArray());
     }
 
-    public async Task<IReadOnlyCollection<(Guid Id, string Name)>> GetTeams(
+    public async Task<IReadOnlyCollection<(Guid Id, string Name)>> GetTeamNames(
         long userId,
+        long chatId,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(@"
-SELECT DISTINCT ON (ot.id)
-    ot.id AS id,
-    ot.name AS name
-FROM review.teams AS pt
-JOIN review.players AS p ON p.team_id = pt.id
-JOIN review.teams AS ot ON ot.chat_id = pt.chat_id
-WHERE pt.person_id = @person_id
-ORDER BY ot.id, ot.name;",
+        await using var connection = new NpgsqlConnection(_connectionString);
+        
+        var chatsCommand = new CommandDefinition(@"
+            SELECT DISTINCT t.chat_id AS chatid
+            FROM review.players AS p
+            JOIN review.teams AS t ON t.id = p.team_id
+            WHERE p.person_id = @person_id;",
             new { person_id = userId },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        var results = await connection.QueryAsync<(Guid Id, string Name)>(command);
-        return results.ToArray();
+        var chats = await connection.QueryAsync<long>(chatsCommand);
+        
+        var chatIds = chats.Append(chatId).Distinct().ToArray();
+        var teamsCommand = new CommandDefinition(@"
+            SELECT t.id AS id, t.name AS name
+            FROM review.teams AS t
+            WHERE t.chat_Id = ANY(@chat_ids);",
+            new { chat_ids = chatIds },
+            flags: CommandFlags.None,
+            cancellationToken: cancellationToken);
+        var teams = await connection.QueryAsync<(Guid Id, string Name)>(teamsCommand);
+        
+        return teams.ToArray();
     }
 
     public async Task Upsert(Team team, CancellationToken cancellationToken)

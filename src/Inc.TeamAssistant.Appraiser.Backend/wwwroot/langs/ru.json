@@ -123,6 +123,7 @@
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",
   "Reviewer_TeamMinError": "В команде недостаточно участников для начала ревью",
   "Reviewer_JoinToTeamSuccess": "Вы успешно подключились к команде «{0}»",
+  "Reviewer_JoinSuccess": "Вы успешно подключились",
   "Reviewer_TeamNotFoundError": "Команда для подключения не найдена",
   "Reviewer_NeedReview": "Необходимо провести ревью задачи «{0}»",
   "Reviewer_NewTaskForReview": "Новая задача для ревью «{0}». Автор {1}. Назначена на {2}",

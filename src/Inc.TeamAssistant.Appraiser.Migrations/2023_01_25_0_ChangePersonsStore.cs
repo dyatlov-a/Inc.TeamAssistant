@@ -72,24 +72,6 @@ public class ChangePersonsStore : Migration
             .OnTable("task_for_reviews")
             .InSchema("review")
             .To("reviewer_id");
-        
-        Create
-            .ForeignKey("task_for_reviews__persons__fk__owner_id__id")
-            .FromTable("task_for_reviews")
-            .InSchema("review")
-            .ForeignColumn("owner_id")
-            .ToTable("persons")
-            .InSchema("review")
-            .PrimaryColumn("id");
-        
-        Create
-            .ForeignKey("task_for_reviews__persons__fk__reviewer_id__id")
-            .FromTable("task_for_reviews")
-            .InSchema("review")
-            .ForeignColumn("")
-            .ToTable("persons")
-            .InSchema("review")
-            .PrimaryColumn("id");
 
         Create
             .Table("persons")
@@ -147,6 +129,24 @@ public class ChangePersonsStore : Migration
             .FromTable("players")
             .InSchema("review")
             .ForeignColumn("person_id")
+            .ToTable("persons")
+            .InSchema("review")
+            .PrimaryColumn("id");
+        
+        Create
+            .ForeignKey("task_for_reviews__persons__fk__owner_id__id")
+            .FromTable("task_for_reviews")
+            .InSchema("review")
+            .ForeignColumn("owner_id")
+            .ToTable("persons")
+            .InSchema("review")
+            .PrimaryColumn("id");
+        
+        Create
+            .ForeignKey("task_for_reviews__persons__fk__reviewer_id__id")
+            .FromTable("task_for_reviews")
+            .InSchema("review")
+            .ForeignColumn("reviewer_id")
             .ToTable("persons")
             .InSchema("review")
             .PrimaryColumn("id");
