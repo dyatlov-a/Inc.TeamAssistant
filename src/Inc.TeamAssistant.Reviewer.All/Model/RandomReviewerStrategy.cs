@@ -11,14 +11,14 @@ internal sealed class RandomReviewerStrategy : INextReviewerStrategy
         _team = team ?? throw new ArgumentNullException(nameof(team));
     }
     
-    public Player Next(Person owner, Person? lastReviewer)
+    public Person Next(Person owner, Person? lastReviewer)
     {
         if (owner is null)
             throw new ArgumentNullException(nameof(owner));
 
         var excludedPlayers = lastReviewer is null ? new[] { owner.Id } : new[] { owner.Id, lastReviewer.Id };
         var targetPlayers = _team.Players
-            .Where(p => !excludedPlayers.Contains(p.Person.Id))
+            .Where(p => !excludedPlayers.Contains(p.Id))
             .OrderBy(p => p.Id)
             .ToArray();
 

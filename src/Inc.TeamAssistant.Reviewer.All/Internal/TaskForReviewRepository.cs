@@ -45,8 +45,6 @@ WHERE state = ANY(@states);",
 SELECT
     t.id AS id,
     t.team_id AS teamid,
-    t.owner_id AS ownerid,
-    t.reviewer_id AS reviewerid,
     t.description AS description,
     t.state AS state,
     t.created AS created,
@@ -55,19 +53,15 @@ SELECT
     t.message_id AS messageid,
     t.chat_id AS chatid,
     o.id AS id,
-    o.team_id AS teamid,
-    o.person__id AS personid,
-    o.person__language_id AS personlanguageid,
-    o.person__first_name AS personfirstname,
-    o.person__last_name AS personlastname,
-    o.person__username AS personusername,
+    o.language_id AS languageid,
+    o.first_name AS firstname,
+    o.last_name AS lastname,
+    o.username AS username,
     r.id AS id,
-    r.team_id AS teamid,
-    r.person__id AS personid,
-    r.person__language_id AS personlanguageid,
-    r.person__first_name AS personfirstname,
-    r.person__last_name AS personlastname,
-    r.person__username AS personusername
+    r.language_id AS languageid,
+    r.first_name AS firstname,
+    r.last_name AS lastname,
+    r.username AS username
 FROM review.task_for_reviews AS t
 JOIN review.players AS o ON o.id = t.owner_id
 JOIN review.players AS r ON r.id = t.reviewer_id
@@ -78,17 +72,9 @@ WHERE t.id = @id;",
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, DbPlayer, DbPlayer, TaskForReview>(
+        var results = await connection.QueryAsync<TaskForReview, Person, Person, TaskForReview>(
             command,
-            (t, o, r) => t.Build(
-                Player.Build(
-                    o.Id,
-                    o.TeamId,
-                    new Person(o.PersonId, o.PersonLanguageId, o.PersonFirstName, o.PersonLastName, o.PersonUsername)),
-                Player.Build(
-                    r.Id,
-                    r.TeamId,
-                    new Person(r.PersonId, r.PersonLanguageId, r.PersonFirstName, r.PersonLastName, r.PersonUsername))),
+            (t, o, r) => t.Build(o, r),
             splitOn: "id");
         return results.Single();
     }
@@ -133,33 +119,11 @@ ON CONFLICT (id) DO UPDATE SET
     next_notification = excluded.next_notification,
     accept_date = excluded.accept_date,
     message_id = excluded.message_id,
-    chat_id = excluded.chat_id;
-
-UPDATE review.players
-SET
-    team_id = @owner_person__team_id,
-    person__id = @owner_person__id,
-    person__language_id = @owner_person__language_id,
-    person__first_name = @owner_person__first_name,
-    person__last_name = @owner_person__last_name,
-    person__username = @owner_person__username
-WHERE id = @owner_id;
-
-UPDATE review.players
-SET
-    team_id = @reviewer_person__team_id,
-    person__id = @reviewer_person__id,
-    person__language_id = @reviewer_person__language_id,
-    person__first_name = @reviewer_person__first_name,
-    person__last_name = @reviewer_person__last_name,
-    person__username = @reviewer_person__username
-WHERE id = @reviewer_id;",
+    chat_id = excluded.chat_id;",
             new
             {
                 id = taskForReview.Id,
                 team_id = taskForReview.TeamId,
-                owner_id = taskForReview.OwnerId,
-                reviewer_id = taskForReview.ReviewerId,
                 description = taskForReview.Description,
                 state = taskForReview.State,
                 created = taskForReview.Created,
@@ -167,20 +131,8 @@ WHERE id = @reviewer_id;",
                 accept_date = taskForReview.AcceptDate,
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
-                
-                owner_person__team_id = taskForReview.Owner.TeamId,
-                owner_person__id = taskForReview.Owner.Person.Id,
-                owner_person__language_id = taskForReview.Owner.Person.LanguageId,
-                owner_person__first_name = taskForReview.Owner.Person.FirstName,
-                owner_person__last_name = taskForReview.Owner.Person.LastName,
-                owner_person__username = taskForReview.Owner.Person.Username,
-                
-                reviewer_person__team_id = taskForReview.Reviewer.TeamId,
-                reviewer_person__id = taskForReview.Reviewer.Person.Id,
-                reviewer_person__language_id = taskForReview.Reviewer.Person.LanguageId,
-                reviewer_person__first_name = taskForReview.Reviewer.Person.FirstName,
-                reviewer_person__last_name = taskForReview.Reviewer.Person.LastName,
-                reviewer_person__username = taskForReview.Reviewer.Person.Username
+                owner_id = taskForReview.Owner.Id,
+                reviewer_id = taskForReview.Reviewer.Id
             },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);

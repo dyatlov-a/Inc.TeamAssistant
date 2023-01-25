@@ -31,7 +31,7 @@ public sealed class RandomReviewerStrategyTests
     [Fact]
     public void Next_OwnerIsNull_ThrowsException()
     {
-        Player Action() => _target.Next(owner: null!, lastReviewer: null);
+        Person Action() => _target.Next(owner: null!, lastReviewer: null);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -41,7 +41,7 @@ public sealed class RandomReviewerStrategyTests
     {
         var owner = _team.Players.First();
 
-        var reviewer = _target.Next(owner.Person, lastReviewer: null);
+        var reviewer = _target.Next(owner, lastReviewer: null);
         
         Assert.NotEqual(owner.Id, reviewer.Id);
     }
@@ -52,7 +52,7 @@ public sealed class RandomReviewerStrategyTests
         var owner = _team.Players.First();
         var lastReviewer = _team.Players.Skip(1).First();
 
-        var reviewer = _target.Next(owner.Person, lastReviewer.Person);
+        var reviewer = _target.Next(owner, lastReviewer);
         
         Assert.NotEqual(lastReviewer.Id, reviewer.Id);
     }
@@ -64,7 +64,7 @@ public sealed class RandomReviewerStrategyTests
         var owner = _team.Players.First();
 
         var reviewers = Enumerable.Range(0, iterationCount)
-            .Select(_ => _target.Next(owner.Person, lastReviewer: null).Person.Id)
+            .Select(_ => _target.Next(owner, lastReviewer: null).Id)
             .GroupBy(i => i)
             .ToDictionary(i => i, i => i.Count());
         

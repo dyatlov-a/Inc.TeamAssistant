@@ -7,8 +7,8 @@ public sealed class Team
     public string Name { get; private set; } = default!;
     public NextReviewerType NextReviewerType { get; private set; }
 
-    private readonly List<Player> _players = new();
-    public IReadOnlyCollection<Player> Players => _players;
+    private readonly List<Person> _players = new();
+    public IReadOnlyCollection<Person> Players => _players;
 
     private Team()
     {
@@ -30,20 +30,18 @@ public sealed class Team
     {
         if (person is null)
             throw new ArgumentNullException(nameof(person));
-        if (_players.Any(p => p.Person.Id == person.Id))
+        if (_players.Any(p => p.Id == person.Id))
             throw new ApplicationException($"User {person} already exists in team {Name}.");
 
-        _players.Add(new(person, Id));
+        _players.Add(person);
     }
 
-    public Team Build(IReadOnlyCollection<Player> players)
+    public Team Build(IReadOnlyCollection<Person> players)
     {
         if (players is null)
             throw new ArgumentNullException(nameof(players));
         if (_players.Any())
             throw new ApplicationException("Map failed. Team already has players.");
-        if (players.Any(p => p.TeamId != Id))
-            throw new ApplicationException("Map failed. Players from other team.");
 
         foreach (var player in players)
             _players.Add(player);
@@ -53,7 +51,7 @@ public sealed class Team
 
     public bool CanStartReview() => _players.Any();
 
-    public Player GetNextReviewer(Person owner, Person? lastReviewer = null)
+    public Person GetNextReviewer(Person owner, Person? lastReviewer = null)
         => NextReviewerStrategy.Next(owner, lastReviewer);
 
     internal INextReviewerStrategy NextReviewerStrategy => NextReviewerType switch

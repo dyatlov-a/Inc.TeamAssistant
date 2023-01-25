@@ -31,8 +31,6 @@ internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
 SELECT
     t.id AS id,
     t.team_id AS teamid,
-    t.owner_id AS ownerid,
-    t.reviewer_id AS reviewerid,
     t.description AS description,
     t.state AS state,
     t.created AS created,
@@ -41,22 +39,18 @@ SELECT
     t.message_id AS messageid,
     t.chat_id AS chatid,
     o.id AS id,
-    o.team_id AS teamid,
-    o.person__id AS personid,
-    o.person__language_id AS personlanguageid,
-    o.person__first_name AS personfirstname,
-    o.person__last_name AS personlastname,
-    o.person__username AS personusername,
+    o.language_id AS languageid,
+    o.first_name AS firstname,
+    o.last_name AS lastname,
+    o.username AS username,
     r.id AS id,
-    r.team_id AS teamid,
-    r.person__id AS personid,
-    r.person__language_id AS personlanguageid,
-    r.person__first_name AS personfirstname,
-    r.person__last_name AS personlastname,
-    r.person__username AS personusername
+    r.language_id AS languageid,
+    r.first_name AS firstname,
+    r.last_name AS lastname,
+    r.username AS username
 FROM review.task_for_reviews AS t
-JOIN review.players AS o ON o.id = t.owner_id
-JOIN review.players AS r ON r.id = t.reviewer_id
+JOIN review.persons AS o ON o.id = t.owner_id
+JOIN review.persons AS r ON r.id = t.reviewer_id
 WHERE t.state = ANY(@states) AND t.next_notification < @now
 ORDER BY t.next_notification
 LIMIT @limit;",
@@ -66,17 +60,9 @@ LIMIT @limit;",
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, DbPlayer, DbPlayer, TaskForReview>(
+        var results = await connection.QueryAsync<TaskForReview, Person, Person, TaskForReview>(
             command,
-            (t, o, r) => t.Build(
-                Player.Build(
-                    o.Id,
-                    o.TeamId,
-                    new Person(o.PersonId, o.PersonLanguageId, o.PersonFirstName, o.PersonLastName, o.PersonUsername)),
-                Player.Build(
-                    r.Id,
-                    r.TeamId,
-                    new Person(r.PersonId, r.PersonLanguageId, r.PersonFirstName, r.PersonLastName, r.PersonUsername))),
+            (t, o, r) => t.Build(o, r),
             splitOn: "id");
 
         return results.ToArray();
