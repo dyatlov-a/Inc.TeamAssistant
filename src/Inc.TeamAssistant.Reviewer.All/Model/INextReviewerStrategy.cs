@@ -2,5 +2,5 @@ namespace Inc.TeamAssistant.Reviewer.All.Model;
 
 public interface INextReviewerStrategy
 {
-    Player Next(Player owner);
+    Person Next(Person owner, Person? lastReviewer);
 }

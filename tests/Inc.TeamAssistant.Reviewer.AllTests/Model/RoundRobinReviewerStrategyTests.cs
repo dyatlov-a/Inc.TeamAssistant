@@ -23,7 +23,7 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(team: null!, _fixture.Create<int>());
+        RandomReviewerStrategy Action() => new(team: null!);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -31,7 +31,7 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Next_OwnerIsNull_ThrowsException()
     {
-        Player Action() => _target.Next(owner: null!);
+        Person Action() => _target.Next(owner: null!, lastReviewer: null);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -41,7 +41,7 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var owner = _team.Players.First();
 
-        var reviewer = _target.Next(owner);
+        var reviewer = _target.Next(owner, lastReviewer: null);
         
         Assert.NotEqual(owner.Id, reviewer.Id);
     }
@@ -50,10 +50,9 @@ public sealed class RoundRobinReviewerStrategyTests
     public void Next_Team_ShouldNotLastReviewerId()
     {
         var owner = _team.Players.First();
-        var lastReviewer = _target.Next(owner);
-        typeof(Player).GetProperty(nameof(Player.LastReviewerId))!.SetValue(owner, lastReviewer.Person.Id);
+        var lastReviewer = _team.Players.Skip(1).First();
         
-        var reviewer = _target.Next(owner);
+        var reviewer = _target.Next(owner, lastReviewer);
         
         Assert.NotEqual(lastReviewer.Id, reviewer.Id);
     }
@@ -63,15 +62,16 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var owner = _team.Players.First();
         var otherPlayers = _team.Players
-            .Where(p => p.Person.Id != owner.Person.Id)
-            .OrderBy(p => p.Person.Id)
+            .Where(p => p.Id != owner.Id)
+            .OrderBy(p => p.Id)
             .ToArray();
 
+        Person? lastReviewer = null;
         foreach (var otherPlayer in otherPlayers.Concat(otherPlayers))
         {
-            var reviewer = _target.Next(owner);
-            typeof(Player).GetProperty(nameof(Player.LastReviewerId))!.SetValue(owner, reviewer.Person.Id);
-            Assert.Equal(otherPlayer.Person.Id, reviewer.Person.Id);
+            var reviewer = _target.Next(owner, lastReviewer);
+            lastReviewer = reviewer;
+            Assert.Equal(otherPlayer.Id, reviewer.Id);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Reviewer.All.Contracts;
 
 public interface ITaskForReviewRepository
 {
-    Task<IReadOnlyCollection<Guid>> Get(
+    Task<IReadOnlyCollection<Guid>> GetTaskIds(
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken cancellationToken);
 

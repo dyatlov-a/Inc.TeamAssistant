@@ -92,19 +92,19 @@ internal sealed class NotificationsService : BackgroundService
         var buttons = new[]
         {
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToInProgress, task.Reviewer.Person.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_MoveToInProgress, task.Reviewer.LanguageId),
                 $"{CommandList.MoveToInProgress}_{task.Id:N}"),
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToAccept, task.Reviewer.Person.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_MoveToAccept, task.Reviewer.LanguageId),
                 $"{CommandList.Accept}_{task.Id:N}"),
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToDecline, task.Reviewer.Person.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_MoveToDecline, task.Reviewer.LanguageId),
                 $"{CommandList.Decline}_{task.Id:N}")
         };
 
         return (
-            task.Reviewer.Person.Id,
-            await translateProvider.Get(Messages.Reviewer_NeedReview, task.Reviewer.Person.LanguageId, task.Description),
+            task.Reviewer.Id,
+            await translateProvider.Get(Messages.Reviewer_NeedReview, task.Reviewer.LanguageId, task.Description),
             new InlineKeyboardMarkup(buttons));
     }
     
@@ -120,13 +120,13 @@ internal sealed class NotificationsService : BackgroundService
         var buttons = new[]
         {
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToNextRound, task.Owner.Person.LanguageId),
+                await translateProvider.Get(Messages.Reviewer_MoveToNextRound, task.Owner.LanguageId),
                 $"{CommandList.MoveToNextRound}_{task.Id:N}")
         };
 
         return (
-            task.Owner.Person.Id,
-            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, task.Owner.Person.LanguageId, task.Description),
+            task.Owner.Id,
+            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, task.Owner.LanguageId, task.Description),
             new InlineKeyboardMarkup(buttons));
     }
 
