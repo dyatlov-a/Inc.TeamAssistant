@@ -18,6 +18,6 @@ internal sealed class HolidayService : IHolidayService
         if (holidays.TryGetValue(date, out var holidayType))
             return holidayType == HolidayType.Workday;
 
-        return date.DayOfWeek is not DayOfWeek.Saturday or DayOfWeek.Sunday;
+        return date.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday;
     }
 }
