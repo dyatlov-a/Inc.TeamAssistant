@@ -2,10 +2,9 @@ using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -20,7 +19,7 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
     };
 
     private readonly Fixture _fixture = new();
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
     private readonly IMessageBuilder _messageBuilder;
     private readonly ICommandProvider _commandProvider;
     private readonly ConnectToAssessmentSessionCommand _validToAssessmentSessionCommand;
@@ -28,8 +27,8 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
 
     public ConnectToAssessmentSessionCommandValidatorTests()
     {
-        _messageProvider = Substitute.For<IMessageProvider>();
-        _messageProvider.Get().Returns(ServiceResult.Success(_languages));
+        _messageService = Substitute.For<IMessageService>();
+        _messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
 
         _messageBuilder = Substitute.For<IMessageBuilder>();
         _messageBuilder.Build(Arg.Any<MessageId>(), Arg.Any<LanguageId>(), Arg.Any<object[]>()).Returns(_fixture.Create<string>());
@@ -42,7 +41,7 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
         };
         _target = new(
             new AppraiserValidator(),
-            new LanguageValidator(_messageProvider),
+            new LanguageValidator(_messageService),
             _messageBuilder,
             _commandProvider);
     }
@@ -52,7 +51,7 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
     {
         ConnectToAssessmentSessionCommandValidator Actual() => new(
             null!,
-            new LanguageValidator(_messageProvider),
+            new LanguageValidator(_messageService),
             _messageBuilder,
             _commandProvider);
 
@@ -76,7 +75,7 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
     {
         ConnectToAssessmentSessionCommandValidator Actual() => new(
             new AppraiserValidator(),
-            new LanguageValidator(_messageProvider),
+            new LanguageValidator(_messageService),
             null!,
             _commandProvider);
 
@@ -88,7 +87,7 @@ public sealed class ConnectToAssessmentSessionCommandValidatorTests : IClassFixt
     {
         ConnectToAssessmentSessionCommandValidator Actual() => new(
             new AppraiserValidator(),
-            new LanguageValidator(_messageProvider),
+            new LanguageValidator(_messageService),
             _messageBuilder,
             null!);
 

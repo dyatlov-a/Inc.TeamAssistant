@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Telegram.Bot.Types;
 
 namespace Inc.TeamAssistant.Reviewer.All.Extensions;

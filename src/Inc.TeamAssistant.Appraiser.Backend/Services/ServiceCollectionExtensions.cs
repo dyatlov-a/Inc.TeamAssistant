@@ -1,45 +1,28 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
-using Inc.TeamAssistant.Appraiser.Backend.Services.MessageProviders;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection AddServices(
-        this IServiceCollection services,
-        TelegramBotOptions options,
-        string webRootPath)
+	public static IServiceCollection AddServices(this IServiceCollection services, TelegramBotOptions options)
 	{
 		if (services is null)
 			throw new ArgumentNullException(nameof(services));
         if (options is null)
             throw new ArgumentNullException(nameof(options));
-        if (string.IsNullOrWhiteSpace(webRootPath))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
 
         foreach (var languageId in Settings.LanguageIds)
             services.AddSingleton(new LanguageContext(languageId, string.Format(CommandList.ChangeLanguageForAssessmentSession, languageId.Value)));
-
-        services
-            .AddMemoryCache()
-            .AddHttpContextAccessor();
 
         services
             .AddSingleton<ICommandProvider, CommandProvider>()
 			.AddSingleton<StaticCommandFactory>()
 			.AddScoped<DynamicCommandFactory>()
 			.AddScoped<ICommandFactory, ComplexCommandFactory>();
-
-        services
-            .AddSingleton(new MessageProvider(webRootPath))
-            .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
-                sp,
-                sp.GetRequiredService<MessageProvider>(),
-                options.CacheAbsoluteExpiration));
 
         if (!string.IsNullOrWhiteSpace(options.AccessToken))
         {
@@ -66,9 +49,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
                 sp,
                 sp.GetRequiredService<QuickResponseCodeGenerator>(),
-                options.CacheAbsoluteExpiration))
-
-            .AddScoped<IMessageBuilder, MessageBuilder>();
+                options.CacheAbsoluteExpiration));
 
         return services;
 	}

@@ -1,11 +1,11 @@
 using System.Text;
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using Inc.TeamAssistant.Appraiser.Notifications.Services;
+using Inc.TeamAssistant.Common.Messages;
 
 namespace Inc.TeamAssistant.Appraiser.Notifications.Builders;
 

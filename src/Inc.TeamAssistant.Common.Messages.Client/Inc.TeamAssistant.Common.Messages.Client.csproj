@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Common.Messages\Inc.TeamAssistant.Common.Messages.csproj" />
+  </ItemGroup>
+</Project>

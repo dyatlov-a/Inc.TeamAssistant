@@ -2,7 +2,9 @@ using System.Reflection;
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.WebUI.Services.CheckIn;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
+using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Common.Messages.Client;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -22,13 +24,12 @@ public static class ServiceCollectionExtensions
             .AddScoped<IClientInfoService, ClientInfoClient>()
             .AddSingleton<IEventsProvider, EventsProviderClient>()
             .AddSingleton<ICookieService, CookieServiceClient>()
-            .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<ILocationBuilder, LocationBuilder>()
 
-            .AddSingleton<MessageProviderClient>()
-            .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
+            .AddSingleton<MessageServiceClient>()
+            .AddSingleton<IMessageService>(sp => new MessageServiceCached(
                 sp.GetRequiredService<ILocalStorageService>(),
-                sp.GetRequiredService<MessageProviderClient>(),
+                sp.GetRequiredService<MessageServiceClient>(),
                 appVersion));
 
         return services;

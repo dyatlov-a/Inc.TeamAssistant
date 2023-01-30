@@ -1,13 +1,13 @@
 @page "/en/map/{id:guid}"
 @page "/ru/map/{id:guid}"
 
-@using Inc.TeamAssistant.Appraiser.Model.CheckIn.Queries.GetLocations
-@using Inc.TeamAssistant.Appraiser.Model.Common
-@using Inc.TeamAssistant.Appraiser.Model.CheckIn
+@using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
+@using Inc.TeamAssistant.CheckIn.Model
+@using Inc.TeamAssistant.Primitives
 @using Inc.TeamAssistant.WebUI.Pages.Annotations
 
 @inject ICheckInService CheckInService
-@inject ILocationBuilder LocationBuilder
+@inject IServiceProvider ServiceProvider
 @inject LanguageManager LanguageManager
 
 @layout MapLayout
@@ -22,7 +22,7 @@
 
     private MapAnnotation _annotation = MapAnnotation.Empty;
 
-    private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
+    private ServiceResult<GetLocationsResult> _model = ServiceResult<GetLocationsResult>.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,28 +44,33 @@
         if (data is null)
             throw new ArgumentNullException(nameof(data));
 
-        var index = 0;
-        foreach (var locations in data.OrderedLocations())
+        var locationBuilder = ServiceProvider.GetService<ILocationBuilder>();
+
+        if (locationBuilder is {})
         {
-            index++;
-            await LocationBuilder.AddMarker(locations.Value.First(), data.HasHistory(locations.Value), index);
+            var index = 0;
+            foreach (var locations in data.OrderedLocations())
+            {
+                index++;
+                await locationBuilder.AddMarker(locations.Value.First(), data.HasHistory(locations.Value), index);
+            }
+
+            await locationBuilder.AddLayer(_annotation.DefaultLayerTitle);
+
+            foreach (var locations in data.OrderedLocations())
+            {
+                using var source = locations.Value.GetEnumerator();
+
+                source.MoveNext();
+                await locationBuilder.AddMarker(source.Current, data.HasHistory(locations.Value));
+
+                while (source.MoveNext())
+                    await locationBuilder.AddMarker(source.Current, data.HasHistory(locations.Value), isActual: false);
+
+                await locationBuilder.AddRoute(locations.Key);
+            }
+
+            await locationBuilder.Build();
         }
-
-        await LocationBuilder.AddLayer(_annotation.DefaultLayerTitle);
-
-        foreach (var locations in data.OrderedLocations())
-        {
-            using var source = locations.Value.GetEnumerator();
-
-            source.MoveNext();
-            await LocationBuilder.AddMarker(source.Current, data.HasHistory(locations.Value));
-
-            while (source.MoveNext())
-                await LocationBuilder.AddMarker(source.Current, data.HasHistory(locations.Value), isActual: false);
-
-            await LocationBuilder.AddRoute(locations.Key);
-        }
-
-        await LocationBuilder.Build();
     }
 }

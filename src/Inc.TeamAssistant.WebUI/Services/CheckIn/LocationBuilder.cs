@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
-using Inc.TeamAssistant.Appraiser.Model.CheckIn.Queries.GetLocations;
+using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 using Microsoft.JSInterop;
 
 namespace Inc.TeamAssistant.WebUI.Services.CheckIn;

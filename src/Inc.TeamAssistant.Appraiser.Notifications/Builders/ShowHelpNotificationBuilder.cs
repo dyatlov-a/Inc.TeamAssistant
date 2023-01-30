@@ -1,7 +1,7 @@
 using System.Text;
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+using Inc.TeamAssistant.Common.Messages;
 
 namespace Inc.TeamAssistant.Appraiser.Notifications.Builders;
 

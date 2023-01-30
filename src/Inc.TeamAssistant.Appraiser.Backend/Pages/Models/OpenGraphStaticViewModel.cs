@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.WebUI;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Pages.Models;
 

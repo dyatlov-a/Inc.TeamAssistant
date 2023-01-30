@@ -1,23 +1,23 @@
 using System.Reflection;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Pages.Models;
 
 internal sealed class HostPageModel : PageModel
 {
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IClientInfoService _clientInfoService;
 
     public HostPageModel(
-        IMessageProvider messageProvider,
+        IMessageService messageService,
         IWebHostEnvironment webHostEnvironment,
         IClientInfoService clientInfoService)
     {
-        _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
+        _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
         _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         _clientInfoService = clientInfoService ?? throw new ArgumentNullException(nameof(clientInfoService));
     }
@@ -30,7 +30,7 @@ internal sealed class HostPageModel : PageModel
 
     public async Task OnGetAsync()
     {
-        var resources = await _messageProvider.Get();
+        var resources = await _messageService.GetAll();
         var currentLanguage = await _clientInfoService.GetCurrentLanguageId();
         var resourcesByLanguage = resources.Result.TryGetValue(currentLanguage.Value, out var data)
             ? data

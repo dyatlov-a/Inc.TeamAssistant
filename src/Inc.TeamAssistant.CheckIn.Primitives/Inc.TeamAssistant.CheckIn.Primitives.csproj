@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Common.Primitives\Inc.TeamAssistant.Common.Primitives.csproj" />
+    </ItemGroup>
+</Project>

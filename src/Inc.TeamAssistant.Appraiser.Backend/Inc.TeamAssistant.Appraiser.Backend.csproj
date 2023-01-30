@@ -10,16 +10,16 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess.InMemory\Inc.TeamAssistant.Appraiser.DataAccess.InMemory.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess.Postgres\Inc.TeamAssistant.Appraiser.DataAccess.Postgres.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Notifications\Inc.TeamAssistant.Appraiser.Notifications.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.All\Inc.TeamAssistant.CheckIn.All.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.All\Inc.TeamAssistant.Reviewer.All.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="GeoTimeZone" Version="5.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.2" />
       <PackageReference Include="QRCoder" Version="1.4.1" />
       <PackageReference Include="Telegram.Bot" Version="18.0.0" />
       <PackageReference Include="prometheus-net.AspNetCore" Version="7.0.0" />
       <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="7.0.0" />
       <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
+      <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0" />
     </ItemGroup>
 </Project>

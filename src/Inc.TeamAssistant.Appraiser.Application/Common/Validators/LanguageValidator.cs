@@ -1,17 +1,17 @@
 using FluentValidation;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Common.Validators;
 
 internal sealed class LanguageValidator : AbstractValidator<IWithLanguage>
 {
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
 
-    public LanguageValidator(IMessageProvider messageProvider)
+    public LanguageValidator(IMessageService messageService)
     {
-        _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
+        _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
 
         RuleFor(e => e.LanguageId)
             .NotEmpty()
@@ -20,7 +20,7 @@ internal sealed class LanguageValidator : AbstractValidator<IWithLanguage>
 
     private async Task<bool> LanguageIsValid(LanguageId languageId, CancellationToken cancellationToken)
     {
-        var languages = await _messageProvider.Get();
+        var languages = await _messageService.GetAll(cancellationToken);
 
         return languages.Result.ContainsKey(languageId.Value);
     }

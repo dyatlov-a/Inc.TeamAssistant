@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+    </ItemGroup>
+</Project>

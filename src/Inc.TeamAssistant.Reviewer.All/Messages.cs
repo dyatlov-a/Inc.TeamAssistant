@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.All.Model;
 
 namespace Inc.TeamAssistant.Reviewer.All;

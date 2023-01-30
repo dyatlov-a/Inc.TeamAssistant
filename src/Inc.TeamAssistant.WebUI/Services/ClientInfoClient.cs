@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 

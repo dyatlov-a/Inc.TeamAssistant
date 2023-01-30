@@ -3,10 +3,9 @@ using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessme
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -22,7 +21,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
 
     private readonly AddStoryToAssessmentSessionOptions _options;
     private readonly Fixture _fixture = new();
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
     private readonly IMessageBuilder _messageBuilder;
     private readonly AddStoryToAssessmentSessionCommand _validCommand;
     private readonly AddStoryToAssessmentSessionCommandValidator _target;
@@ -34,8 +33,8 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             LinksPrefix = new [] { "http://", "https://" }
         };
 
-        _messageProvider = Substitute.For<IMessageProvider>();
-        _messageProvider.Get().Returns(ServiceResult.Success(_languages));
+        _messageService = Substitute.For<IMessageService>();
+        _messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
 
         _messageBuilder = Substitute.For<IMessageBuilder>();
         _messageBuilder.Build(Arg.Any<MessageId>(), Arg.Any<LanguageId>(), Arg.Any<object[]>()).Returns(_fixture.Create<string>());
@@ -51,7 +50,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             new ModeratorValidator(),
             _messageBuilder,
             Substitute.For<IAssessmentSessionRepository>(),
-            new LanguageValidator(_messageProvider));
+            new LanguageValidator(_messageService));
     }
 
     [Fact]
@@ -62,7 +61,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             new ModeratorValidator(),
             _messageBuilder,
             Substitute.For<IAssessmentSessionRepository>(),
-            new LanguageValidator(_messageProvider));
+            new LanguageValidator(_messageService));
 
         Assert.Throws<ArgumentNullException>(Actual);
     }
@@ -75,7 +74,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             null!,
             _messageBuilder,
             Substitute.For<IAssessmentSessionRepository>(),
-            new LanguageValidator(_messageProvider));
+            new LanguageValidator(_messageService));
 
         Assert.Throws<ArgumentNullException>(Actual);
     }
@@ -88,7 +87,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             new ModeratorValidator(),
             null!,
             Substitute.For<IAssessmentSessionRepository>(),
-            new LanguageValidator(_messageProvider));
+            new LanguageValidator(_messageService));
 
         Assert.Throws<ArgumentNullException>(Actual);
     }
@@ -101,7 +100,7 @@ public sealed class AddStoryToAssessmentSessionCommandValidatorTests : IClassFix
             new ModeratorValidator(),
             _messageBuilder,
             null!,
-            new LanguageValidator(_messageProvider));
+            new LanguageValidator(_messageService));
 
         Assert.Throws<ArgumentNullException>(Actual);
     }

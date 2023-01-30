@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Extensions;
 

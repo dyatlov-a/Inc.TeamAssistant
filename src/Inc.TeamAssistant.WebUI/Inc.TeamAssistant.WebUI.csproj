@@ -3,12 +3,14 @@
         <ScopedCssEnabled>true</ScopedCssEnabled>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.8" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.1" PrivateAssets="all" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" PrivateAssets="all" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Common.Messages.Client\Inc.TeamAssistant.Common.Messages.Client.csproj" />
     </ItemGroup>
 </Project>

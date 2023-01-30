@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Reviewer.All.Internal;
 

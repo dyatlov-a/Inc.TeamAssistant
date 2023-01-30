@@ -6,6 +6,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession.Validators;
 

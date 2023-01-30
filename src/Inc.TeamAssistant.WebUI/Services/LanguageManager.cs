@@ -1,23 +1,24 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
 internal sealed class LanguageManager
 {
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
     private readonly IClientInfoService _clientInfoService;
 
-    public LanguageManager(IMessageProvider messageProvider, IClientInfoService clientInfoService)
+    public LanguageManager(IMessageService messageService, IClientInfoService clientInfoService)
     {
-        _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
+        _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
         _clientInfoService = clientInfoService ?? throw new ArgumentNullException(nameof(clientInfoService));
     }
 
     public async Task<Dictionary<string, string>> GetResource()
     {
         var currentLanguage = await _clientInfoService.GetCurrentLanguageId();
-        var resources = await _messageProvider.Get();
+        var resources = await _messageService.GetAll();
 
         return resources.Result.TryGetValue(currentLanguage.Value, out var result)
             ? result

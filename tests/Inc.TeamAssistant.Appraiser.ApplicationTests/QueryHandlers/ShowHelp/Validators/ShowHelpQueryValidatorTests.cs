@@ -1,11 +1,9 @@
 using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Application.QueryHandlers.ShowHelp.Validators;
-using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -20,21 +18,21 @@ public sealed class ShowHelpQueryValidatorTests
     };
 
     private readonly Fixture _fixture = new();
-    private readonly IMessageProvider _messageProvider;
-    private readonly IMessageBuilder _messageBuilder;
     private readonly ShowHelpQuery _validQuery;
     private readonly ShowHelpQueryValidator _target;
 
     public ShowHelpQueryValidatorTests()
     {
-        _messageProvider = Substitute.For<IMessageProvider>();
-        _messageProvider.Get().Returns(ServiceResult.Success(_languages));
+        var messageService = Substitute.For<IMessageService>();
+        messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
 
-        _messageBuilder = Substitute.For<IMessageBuilder>();
-        _messageBuilder.Build(Arg.Any<MessageId>(), Arg.Any<LanguageId>(), Arg.Any<object[]>()).Returns(_fixture.Create<string>());
+        var messageBuilder = Substitute.For<IMessageBuilder>();
+        messageBuilder
+            .Build(Arg.Any<MessageId>(), Arg.Any<LanguageId>(), Arg.Any<object[]>())
+            .Returns(_fixture.Create<string>());
 
         _validQuery = new(new("en"));
-        _target = new ShowHelpQueryValidator(new LanguageValidator(_messageProvider));
+        _target = new ShowHelpQueryValidator(new LanguageValidator(messageService));
     }
 
     [Fact]

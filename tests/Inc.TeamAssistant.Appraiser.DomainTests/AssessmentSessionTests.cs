@@ -2,6 +2,7 @@ using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Xunit;
 
 namespace Inc.TeamAssistant.Appraiser.DomainTests;

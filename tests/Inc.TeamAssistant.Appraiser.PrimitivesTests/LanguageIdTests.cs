@@ -1,5 +1,5 @@
 using AutoFixture;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Xunit;
 
 namespace Inc.TeamAssistant.Appraiser.PrimitivesTests;

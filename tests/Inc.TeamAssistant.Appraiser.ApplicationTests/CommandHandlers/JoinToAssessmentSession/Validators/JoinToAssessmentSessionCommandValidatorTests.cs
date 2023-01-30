@@ -1,10 +1,9 @@
 using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.JoinToAssessmentSession.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -24,10 +23,10 @@ public sealed class JoinToAssessmentSessionCommandValidatorTests
 
     public JoinToAssessmentSessionCommandValidatorTests()
     {
-        var messageProvider = Substitute.For<IMessageProvider>();
-        messageProvider.Get().Returns(ServiceResult.Success(_languages));
+        var messageService = Substitute.For<IMessageService>();
+        messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
         _validCommand = _fixture.Create<JoinToAssessmentSessionCommand>() with { LanguageId = new("en") };
-        _target = new(new LanguageValidator(messageProvider));
+        _target = new(new LanguageValidator(messageService));
     }
 
     [Fact]

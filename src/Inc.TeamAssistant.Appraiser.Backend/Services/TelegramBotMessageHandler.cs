@@ -6,6 +6,7 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Backend.Extensions;
+using Inc.TeamAssistant.Common.Messages;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;

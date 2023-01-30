@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Notifications.Builders;

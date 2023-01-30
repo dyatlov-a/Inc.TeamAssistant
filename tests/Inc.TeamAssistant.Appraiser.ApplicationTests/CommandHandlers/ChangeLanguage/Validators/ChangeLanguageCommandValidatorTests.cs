@@ -1,10 +1,9 @@
 using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ChangeLanguage.Validators;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -19,16 +18,16 @@ public sealed class ChangeLanguageCommandValidatorTests : IClassFixture<Validato
     };
 
     private readonly Fixture _fixture = new();
-    private readonly IMessageProvider _messageProvider;
+    private readonly IMessageService _messageService;
     private readonly ChangeLanguageCommand _validCommand;
     private readonly ChangeLanguageCommandValidator _target;
 
     public ChangeLanguageCommandValidatorTests()
     {
-        _messageProvider = Substitute.For<IMessageProvider>();
-        _messageProvider.Get().Returns(ServiceResult.Success(_languages));
+        _messageService = Substitute.For<IMessageService>();
+        _messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
         _validCommand = _fixture.Create<ChangeLanguageCommand>() with {LanguageId = new("en")};
-        _target = new(new LanguageValidator(_messageProvider), new ModeratorValidator());
+        _target = new(new LanguageValidator(_messageService), new ModeratorValidator());
     }
 
     [Fact]
@@ -42,7 +41,7 @@ public sealed class ChangeLanguageCommandValidatorTests : IClassFixture<Validato
     [Fact]
     public void Constructor_ModeratorValidatorIsNull_ThrowsException()
     {
-        ChangeLanguageCommandValidator Actual() => new(new LanguageValidator(_messageProvider), null!);
+        ChangeLanguageCommandValidator Actual() => new(new LanguageValidator(_messageService), null!);
 
         Assert.Throws<ArgumentNullException>(Actual);
     }

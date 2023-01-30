@@ -1,9 +1,9 @@
 using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Common.Messages;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -22,9 +22,9 @@ public sealed class LanguageValidatorTests : IClassFixture<ValidatorOptionsFixtu
 
     public LanguageValidatorTests()
     {
-        var messageProvider = Substitute.For<IMessageProvider>();
-        messageProvider.Get().Returns(ServiceResult.Success(_languages));
-        _target = new(messageProvider);
+        var messageService = Substitute.For<IMessageService>();
+        messageService.GetAll(Arg.Any<CancellationToken>()).Returns(ServiceResult.Success(_languages));
+        _target = new(messageService);
     }
 
     [Fact]
