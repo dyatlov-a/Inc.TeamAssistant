@@ -56,7 +56,10 @@ if (builder.Environment.IsDevelopment())
 }
 
 app
-	.UseStaticFiles()
+	.UseStaticFiles(new StaticFileOptions
+	{
+		ServeUnknownFileTypes = true
+	})
 	.UseBlazorFrameworkFiles()
 	.UseRouting()
 	.UseEndpoints(e =>
