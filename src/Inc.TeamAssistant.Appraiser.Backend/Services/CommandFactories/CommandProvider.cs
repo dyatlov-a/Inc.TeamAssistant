@@ -9,7 +9,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
-using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
@@ -28,8 +27,7 @@ internal sealed class CommandProvider : ICommandProvider
         [typeof(AcceptEstimateCommand)] = CommandList.AcceptEstimate,
         [typeof(FinishAssessmentSessionCommand)] = CommandList.FinishAssessmentSession,
         [typeof(ShowParticipantsQuery)] = CommandList.ShowParticipants,
-        [typeof(ExitFromAssessmentSessionCommand)] = CommandList.ExitFromAssessmentSession,
-        [typeof(SetEstimateForStoryCommand)] = CommandList.SetEstimateForStory
+        [typeof(ExitFromAssessmentSessionCommand)] = CommandList.ExitFromAssessmentSession
     };
 
     public string GetCommand(Type commandType) => _commands[commandType];

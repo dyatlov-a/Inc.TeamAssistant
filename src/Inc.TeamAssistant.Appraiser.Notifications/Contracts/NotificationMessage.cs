@@ -4,11 +4,14 @@ namespace Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 
 public sealed class NotificationMessage
 {
+    private readonly List<Button> _buttons = new();
+    
 	public delegate IBaseRequest ResponseHandler(long chatId, string userName, int messageId);
 
 	public string Text { get; }
     public IReadOnlyCollection<long>? TargetChatIds { get; }
     public IReadOnlyCollection<(long ChatId, int MessageId)>? TargetMessages { get; }
+    public IReadOnlyCollection<Button> Buttons => _buttons;
     public ResponseHandler? Handler { get; private set; }
 
     private NotificationMessage(
@@ -27,6 +30,16 @@ public sealed class NotificationMessage
     public NotificationMessage AddHandler(ResponseHandler handler)
     {
         Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+
+        return this;
+    }
+
+    public NotificationMessage WithButton(Button button)
+    {
+        if (button is null)
+            throw new ArgumentNullException(nameof(button));
+        
+        _buttons.Add(button);
 
         return this;
     }

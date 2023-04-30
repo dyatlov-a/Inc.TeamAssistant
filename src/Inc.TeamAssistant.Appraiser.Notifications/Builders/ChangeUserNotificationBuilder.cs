@@ -96,8 +96,7 @@ internal sealed class ChangeUserNotificationBuilder :
             assessmentSessionDetails.LanguageId,
             assessmentSessionDetails.Story);
         _summaryByStoryBuilder.AddEstimates(stringBuilder, assessmentSessionDetails.Items, estimateEnded: false);
-        await _summaryByStoryBuilder.AddAssessments(stringBuilder, assessmentSessionDetails.LanguageId);
 
-        return NotificationMessage.Edit(targets, stringBuilder.ToString());
+        return _summaryByStoryBuilder.AddAssessments(NotificationMessage.Edit(targets, stringBuilder.ToString()));
     }
 }

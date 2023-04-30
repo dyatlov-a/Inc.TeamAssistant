@@ -32,9 +32,10 @@ internal sealed class ReVoteEstimateNotificationBuilder : INotificationBuilder<R
             Messages.EstimateRepeated,
             commandResult.AssessmentSessionLanguageId,
             commandResult.Summary.Story);
-		await _summaryByStoryBuilder.AddAssessments(stringBuilder, commandResult.AssessmentSessionLanguageId);
-
-		yield return NotificationMessage.Create(appraiserIds, stringBuilder.ToString());
+        
+		yield return _summaryByStoryBuilder.AddAssessments(NotificationMessage.Create(
+			appraiserIds,
+			stringBuilder.ToString()));
 
 		yield return await _summaryByStoryBuilder.Build(
             commandResult.AssessmentSessionLanguageId,

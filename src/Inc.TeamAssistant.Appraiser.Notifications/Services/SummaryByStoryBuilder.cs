@@ -10,20 +10,11 @@ namespace Inc.TeamAssistant.Appraiser.Notifications.Services;
 internal sealed class SummaryByStoryBuilder
 {
 	private readonly IMessageBuilder _messageBuilder;
-	private readonly string _setCommand;
-	private readonly string _noIdeaCommand;
 
-	public SummaryByStoryBuilder(IMessageBuilder messageBuilder, string setCommand, string noIdeaCommand)
+    public SummaryByStoryBuilder(IMessageBuilder messageBuilder)
 	{
-		if (string.IsNullOrWhiteSpace(setCommand))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(setCommand));
-		if (string.IsNullOrWhiteSpace(noIdeaCommand))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(noIdeaCommand));
-
-		_messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-		_setCommand = setCommand;
-		_noIdeaCommand = noIdeaCommand;
-	}
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+    }
 
 	public async Task<NotificationMessage> Build(LanguageId languageId, bool estimateEnded, SummaryByStory summary)
     {
@@ -43,33 +34,34 @@ internal sealed class SummaryByStoryBuilder
 
         if (estimateEnded)
             await AddTotalEstimate(builder, languageId, summary);
-        else
-            await AddAssessments(builder, languageId);
-
-		var messageText = builder.ToString();
-
-        return estimateEnded
+        
+        var messageText = builder.ToString();
+        
+        var message = estimateEnded
             ? NotificationMessage.Create(summary.ChatId, messageText)
-            : NotificationMessage.Edit(
+            : AddAssessments(NotificationMessage.Edit(
                 summary.Items.Select(i => (i.AppraiserId.Value, i.StoryExternalId)).ToArray(),
-                messageText);
+                messageText));
+
+        return message;
     }
 
-	public async Task AddAssessments(StringBuilder stringBuilder, LanguageId languageId)
+	public NotificationMessage AddAssessments(NotificationMessage notificationMessage)
 	{
-		if (stringBuilder is null)
-			throw new ArgumentNullException(nameof(stringBuilder));
-        if (languageId is null)
-            throw new ArgumentNullException(nameof(languageId));
+		if (notificationMessage is null)
+			throw new ArgumentNullException(nameof(notificationMessage));
 
-        stringBuilder.AppendLine();
-        stringBuilder.Append(await _messageBuilder.Build(Messages.EnterEstimate, languageId));
-
-		foreach (var assessment in AssessmentValue.GetAssessments)
-			stringBuilder.Append($" {_setCommand}{(int)assessment}");
-
-		stringBuilder.Append($" {_noIdeaCommand}");
-	}
+        foreach (var assessment in AssessmentValue.GetAssessments)
+        {
+            var value = assessment.ToString();
+            
+            notificationMessage.WithButton(
+                new Button(value.Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase),
+                    value));
+        }
+        
+        return notificationMessage;
+    }
 
     public async Task AddStoryDetails(
         StringBuilder stringBuilder,

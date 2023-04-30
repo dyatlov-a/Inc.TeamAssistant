@@ -36,7 +36,7 @@ public sealed class Story : IStoryAccessor
 	public decimal? GetTotal()
 	{
 		var values = _storyForEstimates
-			.Where(i => AssessmentValue.GetAssessments.Contains(i.Value))
+			.Where(i => i.Value > 0)
 			.Select(i => (int)i.Value)
 			.ToArray();
 

@@ -8,8 +8,9 @@ public static class AssessmentValueExtensions
 	{
 		return value switch
 		{
-			AssessmentValue.Value.Unknown => "?",
-			AssessmentValue.Value.None => "-",
+			AssessmentValue.Value.None => "?",
+			AssessmentValue.Value.NoIdea => "-",
+			AssessmentValue.Value.More => "21+",
 			_ => ((int)value).ToString()
 		};
 	}

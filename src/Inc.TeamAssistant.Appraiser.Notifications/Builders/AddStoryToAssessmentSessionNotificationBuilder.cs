@@ -14,14 +14,17 @@ internal sealed class AddStoryToAssessmentSessionNotificationBuilder
     private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
 	private readonly IMessagesSender _messagesSender;
 
-	public AddStoryToAssessmentSessionNotificationBuilder(SummaryByStoryBuilder summaryByStoryBuilder, IMessagesSender messagesSender)
+	public AddStoryToAssessmentSessionNotificationBuilder(
+		SummaryByStoryBuilder summaryByStoryBuilder,
+		IMessagesSender messagesSender)
 	{
-        _summaryByStoryBuilder =
-			summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+        _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
 		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
     }
 
-	public async IAsyncEnumerable<NotificationMessage> Build(AddStoryToAssessmentSessionResult commandToAssessmentSessionResult, long fromId)
+	public async IAsyncEnumerable<NotificationMessage> Build(
+		AddStoryToAssessmentSessionResult commandToAssessmentSessionResult,
+		long fromId)
 	{
 		if (commandToAssessmentSessionResult is null)
 			throw new ArgumentNullException(nameof(commandToAssessmentSessionResult));
@@ -31,13 +34,20 @@ internal sealed class AddStoryToAssessmentSessionNotificationBuilder
 		var appraiserIds = commandToAssessmentSessionResult.Items.Select(i => i.AppraiserId.Value).ToArray();
 		var stringBuilder = new StringBuilder();
 
-        await _summaryByStoryBuilder.AddStoryDetails(stringBuilder, Messages.NeedEstimate, commandToAssessmentSessionResult.AssessmentSessionLanguageId, commandToAssessmentSessionResult.Story);
+        await _summaryByStoryBuilder.AddStoryDetails(
+	        stringBuilder,
+	        Messages.NeedEstimate,
+	        commandToAssessmentSessionResult.AssessmentSessionLanguageId,
+	        commandToAssessmentSessionResult.Story);
         _summaryByStoryBuilder.AddEstimates(stringBuilder, commandToAssessmentSessionResult.Items, estimateEnded: false);
-        await _summaryByStoryBuilder.AddAssessments(stringBuilder, commandToAssessmentSessionResult.AssessmentSessionLanguageId);
 
-		yield return NotificationMessage
+        yield return _summaryByStoryBuilder.AddAssessments(NotificationMessage
 			.Create(appraiserIds, stringBuilder.ToString())
-			.AddHandler((cId, uName, mId) => AddStoryForEstimate(commandToAssessmentSessionResult.AssessmentSessionId, cId, uName, mId));
+			.AddHandler((cId, uName, mId) => AddStoryForEstimate(
+				commandToAssessmentSessionResult.AssessmentSessionId,
+				cId,
+				uName,
+				mId)));
 	}
 
 	private IBaseRequest AddStoryForEstimate(

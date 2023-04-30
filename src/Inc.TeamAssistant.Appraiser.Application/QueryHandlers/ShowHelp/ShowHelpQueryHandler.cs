@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
@@ -10,7 +9,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
-using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using MediatR;
@@ -109,14 +107,6 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Show
             Messages.ExitFromAssessmentSessionHelp,
             query.LanguageId,
             exitFromAssessmentSessionCommand));
-
-        var setEstimateForStoryCommand = _commandProvider.GetCommand(typeof(SetEstimateForStoryCommand));
-        foreach (var item in AssessmentValue.GetAssessments)
-            commandsHelp.Add(await _messageBuilder.Build(
-                Messages.SetEstimateForStoryHelp,
-                query.LanguageId,
-                setEstimateForStoryCommand,
-                (int)item));
 
         return new(query.LanguageId, commandsHelp);
     }

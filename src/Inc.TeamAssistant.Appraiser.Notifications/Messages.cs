@@ -19,10 +19,7 @@ internal static class Messages
     public static readonly MessageId EndEstimate = new(nameof(EndEstimate));
     public static readonly MessageId NeedEstimate = new(nameof(NeedEstimate));
     public static readonly MessageId TotalEstimate = new(nameof(TotalEstimate));
-    public static readonly MessageId EnterEstimate = new(nameof(EnterEstimate));
     public static readonly MessageId AppraiserList = new(nameof(AppraiserList));
     public static readonly MessageId Loading = new(nameof(Loading));
     public static readonly MessageId EnterSessionId = new(nameof(EnterSessionId));
-
-    public static readonly MessageId NoIdeaHelp = new(nameof(NoIdeaHelp));
 }

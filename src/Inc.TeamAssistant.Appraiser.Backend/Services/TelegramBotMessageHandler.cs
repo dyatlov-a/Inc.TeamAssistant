@@ -9,6 +9,8 @@ using Inc.TeamAssistant.Appraiser.Backend.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
+using Inc.TeamAssistant.WebUI;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
@@ -35,35 +37,37 @@ internal sealed class TelegramBotMessageHandler
         if (update is null)
             throw new ArgumentNullException(nameof(update));
 
-        if (update.Message?.From is null || update.Message.From.IsBot)
-            return;
-
+        var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.From?.Id;
+        if (!chatId.HasValue)
+	        return;
+        
+        var userLanguageId = Settings.DefaultLanguageId;
         using var scope = _serviceProvider.CreateScope();
         var commandFactory = scope.ServiceProvider.GetRequiredService<ICommandFactory>();
         var messageBuilder = scope.ServiceProvider.GetRequiredService<IMessageBuilder>();
 
-        var userName = await _userSettingsProvider.GetUserName(new(update.Message.From!.Id), cancellationToken);
-        var userLanguageId = update.Message.From.GetLanguageId();
-
         try
         {
-            var command = !string.IsNullOrWhiteSpace(update.Message!.Text)
-                ? commandFactory.TryCreate(new(
-                    update.Message.Text,
-                    update.Message.Chat.Id,
-                    new(update.Message.From!.Id),
-                    userName,
-                    update.Message.From.GetUserName(),
-                    userLanguageId))
-                : null;
+	        var commandContext = await TryCreateCommandContext(update, cancellationToken);
+	        if (commandContext is null)
+		        return;
+
+	        userLanguageId = commandContext.LanguageId;
+	        var command = commandFactory.TryCreate(commandContext);
             if (command is null)
                 return;
 
-            await ProcessCommand(client, update.Message.Chat.Id, userName, command, scope, cancellationToken);
+            await ProcessCommand(
+	            client,
+	            commandContext.ChatId,
+	            commandContext.UserName,
+	            command,
+	            scope,
+	            cancellationToken);
         }
         catch (ValidationException validationException)
         {
-            await TrySend(client, update.Message.Chat.Id, validationException.ToMessage(), cancellationToken);
+            await TrySend(client, chatId.Value, validationException.ToMessage(), cancellationToken);
         }
 		catch (AppraiserUserException appraiserException)
 		{
@@ -72,7 +76,7 @@ internal sealed class TelegramBotMessageHandler
                 userLanguageId,
                 appraiserException.Values);
 
-            await TrySend(client, update.Message.Chat.Id, message, cancellationToken);
+            await TrySend(client, chatId.Value, message, cancellationToken);
 		}
 		catch (ApiRequestException ex)
         {
@@ -84,8 +88,48 @@ internal sealed class TelegramBotMessageHandler
 
             var message = await messageBuilder.Build(Messages.UnhandledError, userLanguageId);
 
-            await TrySend(client, update.Message.Chat.Id, message, cancellationToken);
+            await TrySend(client, chatId.Value, message, cancellationToken);
         }
+    }
+    
+    private async Task<CommandContext?> TryCreateCommandContext(Update update, CancellationToken cancellationToken)
+    {
+	    if (update is null)
+		    throw new ArgumentNullException(nameof(update));
+
+	    if (!string.IsNullOrWhiteSpace(update.Message?.Text)
+	        && update.Message.From is not null
+	        && !update.Message.From.IsBot)
+	    {
+		    var userName = await _userSettingsProvider.GetUserName(new(update.Message.From.Id), cancellationToken);
+		    var userLanguageId = update.Message.From.GetLanguageId();
+		    
+		    return new(
+			    update.Message.Text,
+			    update.Message.Chat.Id,
+			    new(update.Message.From.Id),
+			    userName,
+			    update.Message.From.GetUserName(),
+			    userLanguageId);
+	    }
+
+	    if (!string.IsNullOrWhiteSpace(update.CallbackQuery?.Data)
+	        && update.CallbackQuery.Message is not null
+	        && !update.CallbackQuery.From.IsBot)
+	    {
+		    var userName = await _userSettingsProvider.GetUserName(new(update.CallbackQuery.From.Id), cancellationToken);
+		    var userLanguageId = update.CallbackQuery.From.GetLanguageId();
+		    
+		    return new CommandContext(
+			    update.CallbackQuery.Data,
+			    update.CallbackQuery.Message.Chat.Id,
+			    new(update.CallbackQuery.From.Id),
+			    userName,
+			    update.CallbackQuery.From.GetUserName(),
+			    userLanguageId);
+	    }
+
+	    return null;
     }
 
     private async Task TrySend(ITelegramBotClient client, long chatId, string message, CancellationToken token)
@@ -141,6 +185,17 @@ internal sealed class TelegramBotMessageHandler
 			await ProcessNotification(client, notification, userName, scope, cancellationToken);
 	}
 
+	private InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
+	{
+		const int rowCapacity = 7;
+		
+		return message.Buttons.Any()
+			? new InlineKeyboardMarkup(message.Buttons
+				.Select(b => InlineKeyboardButton.WithCallbackData(b.Text, b.Data))
+				.Chunk(rowCapacity))
+			: null;
+	}
+
 	private async Task ProcessNotification(
 		ITelegramBotClient client,
 		NotificationMessage notificationMessage,
@@ -163,6 +218,7 @@ internal sealed class TelegramBotMessageHandler
 				var message = await client.SendTextMessageAsync(
 					targetChatId,
                     notificationMessage.Text,
+					replyMarkup: ToReplyMarkup(notificationMessage),
 					cancellationToken: cancellationToken);
 
 				if (notificationMessage.Handler is not null)
@@ -183,6 +239,7 @@ internal sealed class TelegramBotMessageHandler
 					new(message.ChatId),
 					message.MessageId,
                     notificationMessage.Text,
+					replyMarkup: ToReplyMarkup(notificationMessage),
 					cancellationToken: cancellationToken);
 			}
 	}
