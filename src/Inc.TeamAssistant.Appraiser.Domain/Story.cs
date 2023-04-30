@@ -9,6 +9,7 @@ public sealed class Story : IStoryAccessor
 	public static readonly Story Empty = new(nameof(Story), Array.Empty<string>());
 
 	public string Title { get; }
+	public int? ExternalId { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates;
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -31,12 +32,14 @@ public sealed class Story : IStoryAccessor
             _links.Add(link);
 	}
 
-	public bool EstimateEnded() => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
+    public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
+
+    public bool EstimateEnded() => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
 
 	public decimal? GetTotal()
 	{
 		var values = _storyForEstimates
-			.Where(i => i.Value > 0)
+			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
 			.Select(i => (int)i.Value)
 			.ToArray();
 

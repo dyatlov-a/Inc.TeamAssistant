@@ -27,9 +27,7 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 
 		var items = assessmentSession.CurrentStory.StoryForEstimates
 			.Select(s => new EstimateItemDetails(
-			    s.Participant.Id,
-			    s.Participant.Name,
-			    s.StoryExternalId,
+				s.Participant.Name,
 			    s.Value.ToDisplayHasValue(),
 			    s.Value.ToDisplayValue()))
 			.ToArray();

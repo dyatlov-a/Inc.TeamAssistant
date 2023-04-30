@@ -36,14 +36,13 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
 
         var items = assessmentSession.Participants
             .Select(a => new EstimateItemDetails(
-                a.Id,
                 a.Name,
-                0,
                 AssessmentValue.Value.None.ToDisplayHasValue(),
                 AssessmentValue.Value.None.ToDisplayValue()))
             .ToArray();
         var result = new AddStoryToAssessmentSessionResult(
             assessmentSession.Id,
+            assessmentSession.ChatId,
             assessmentSession.LanguageId,
             StoryConverter.ConvertTo(assessmentSession.CurrentStory),
             items);

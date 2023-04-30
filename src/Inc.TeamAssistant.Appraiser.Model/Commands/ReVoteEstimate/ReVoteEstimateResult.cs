@@ -6,4 +6,5 @@ namespace Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 public sealed record ReVoteEstimateResult(
     AssessmentSessionId AssessmentSessionId,
     LanguageId AssessmentSessionLanguageId,
-    SummaryByStory Summary);
+    SummaryByStory Summary,
+    bool EstimateEnded);

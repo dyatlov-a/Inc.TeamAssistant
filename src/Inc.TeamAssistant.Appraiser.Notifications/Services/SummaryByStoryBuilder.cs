@@ -16,7 +16,7 @@ internal sealed class SummaryByStoryBuilder
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-	public async Task<NotificationMessage> Build(LanguageId languageId, bool estimateEnded, SummaryByStory summary)
+	public async Task<NotificationMessage> Build(LanguageId languageId, SummaryByStory summary, bool estimateEnded)
     {
         if (languageId is null)
             throw new ArgumentNullException(nameof(languageId));
@@ -40,7 +40,7 @@ internal sealed class SummaryByStoryBuilder
         var message = estimateEnded
             ? NotificationMessage.Create(summary.ChatId, messageText)
             : AddAssessments(NotificationMessage.Edit(
-                summary.Items.Select(i => (i.AppraiserId.Value, i.StoryExternalId)).ToArray(),
+                new [] { (summary.ChatId, summary.Story.ExternalId) },
                 messageText));
 
         return message;

@@ -25,11 +25,10 @@ internal sealed class ReVoteEstimateCommandHandler : IRequestHandler<ReVoteEstim
 
 		assessmentSession.Reset(command.ModeratorId);
 
+        var estimateEnded = false;
         var items = assessmentSession.CurrentStory.StoryForEstimates
             .Select(s => new EstimateItemDetails(
-                s.Participant.Id,
                 s.Participant.Name,
-                s.StoryExternalId,
                 s.Value.ToDisplayHasValue(),
                 s.Value.ToDisplayValue()))
             .ToArray();
@@ -39,8 +38,9 @@ internal sealed class ReVoteEstimateCommandHandler : IRequestHandler<ReVoteEstim
             new(
                 assessmentSession.ChatId,
                 StoryConverter.ConvertTo(assessmentSession.CurrentStory),
-                assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded: false),
-                items));
+                assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded),
+                items),
+            estimateEnded);
 
         return Task.FromResult(result);
     }

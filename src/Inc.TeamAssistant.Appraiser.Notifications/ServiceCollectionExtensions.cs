@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
@@ -45,7 +44,6 @@ public static class ServiceCollectionExtensions
 			.AddScoped<INotificationBuilder<ShowParticipantsResult>, ShowParticipantsNotificationBuilder>()
 			.AddScoped<INotificationBuilder<StartStorySelectionResult>, StartStorySelectionNotificationBuilder>()
             .AddScoped<INotificationBuilder<ExitFromAssessmentSessionResult>, ChangeUserNotificationBuilder>()
-			.AddScoped<INotificationBuilder<AddStoryForEstimateResult>, ChangeUserNotificationBuilder>()
             .AddScoped<INotificationBuilder<AllowUseNameResult>, ChangeUserNotificationBuilder>()
             .AddScoped<INotificationBuilder<ShowHelpResult>, ShowHelpNotificationBuilder>()
             .AddScoped<INotificationBuilder<JoinToAssessmentSessionResult>, JoinToAssessmentSessionNotificationBuilder>();

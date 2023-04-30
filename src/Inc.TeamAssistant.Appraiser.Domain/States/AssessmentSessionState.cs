@@ -16,7 +16,6 @@ internal abstract class AssessmentSessionState
 	public virtual void StartStorySelection(ParticipantId moderatorId) => Throw();
 	public virtual void StorySelected(ParticipantId moderatorId, string storyTitle, IReadOnlyCollection<string> links)
         => Throw();
-	public virtual void AddStoryForEstimate(StoryForEstimate storyForEstimate) => Throw();
 	public virtual void Estimate(Participant participant, AssessmentValue.Value value) => Throw();
 	public virtual void CompleteEstimate(ParticipantId moderatorId) => Throw();
 	public virtual void Reset(ParticipantId moderatorId) => Throw();

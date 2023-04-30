@@ -23,14 +23,14 @@ internal sealed class AcceptEstimateNotificationBuilder : INotificationBuilder<A
 
 		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
 
-        yield return await _summaryByStoryBuilder.Build(
-            commandResult.AssessmentSessionLanguageId,
-            estimateEnded: true,
-            commandResult.Summary);
-
 		yield return await _summaryByStoryBuilder.Build(
-            commandResult.AssessmentSessionLanguageId,
-            estimateEnded: false,
-            commandResult.Summary);
+	        commandResult.AssessmentSessionLanguageId,
+	        commandResult.Summary,
+	        estimateEnded: true);
+		
+		yield return await _summaryByStoryBuilder.Build(
+			commandResult.AssessmentSessionLanguageId,
+			commandResult.Summary,
+			estimateEnded: false);
 	}
 }

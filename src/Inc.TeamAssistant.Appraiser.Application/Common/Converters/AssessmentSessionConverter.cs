@@ -13,15 +13,14 @@ internal static class AssessmentSessionConverter
 
         var items = assessmentSession.CurrentStory.StoryForEstimates
             .Select(s => new EstimateItemDetails(
-                s.Participant.Id,
                 s.Participant.Name,
-                s.StoryExternalId,
                 s.Value.ToDisplayHasValue(),
                 s.Value.ToDisplayValue()))
             .ToArray();
 
         return new(
             assessmentSession.Id,
+            assessmentSession.ChatId,
             assessmentSession.Title,
             assessmentSession.LanguageId,
             StoryConverter.ConvertTo(assessmentSession.CurrentStory),

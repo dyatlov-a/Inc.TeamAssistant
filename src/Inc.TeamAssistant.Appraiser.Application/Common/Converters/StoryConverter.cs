@@ -10,6 +10,7 @@ internal static class StoryConverter
         if (story is null)
             throw new ArgumentNullException(nameof(story));
 
-        return new(story.Title, story.Links);
+        // TODO: remove set 0
+        return new(story.ExternalId ?? 0, story.Title, story.Links);
     }
 }

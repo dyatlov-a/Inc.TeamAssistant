@@ -30,8 +30,7 @@ internal sealed class AddStoryToAssessmentSessionNotificationBuilder
 			throw new ArgumentNullException(nameof(commandToAssessmentSessionResult));
 
 		await _messagesSender.StoryChanged(commandToAssessmentSessionResult.AssessmentSessionId);
-
-		var appraiserIds = commandToAssessmentSessionResult.Items.Select(i => i.AppraiserId.Value).ToArray();
+		
 		var stringBuilder = new StringBuilder();
 
         await _summaryByStoryBuilder.AddStoryDetails(
@@ -42,18 +41,16 @@ internal sealed class AddStoryToAssessmentSessionNotificationBuilder
         _summaryByStoryBuilder.AddEstimates(stringBuilder, commandToAssessmentSessionResult.Items, estimateEnded: false);
 
         yield return _summaryByStoryBuilder.AddAssessments(NotificationMessage
-			.Create(appraiserIds, stringBuilder.ToString())
-			.AddHandler((cId, uName, mId) => AddStoryForEstimate(
+			.Create(commandToAssessmentSessionResult.ChatId, stringBuilder.ToString())
+			.AddHandler((_, uName, mId) => AddStoryForEstimate(
 				commandToAssessmentSessionResult.AssessmentSessionId,
-				cId,
 				uName,
 				mId)));
 	}
 
 	private IBaseRequest AddStoryForEstimate(
         AssessmentSessionId assessmentSessionId,
-		long chatId,
-		string userName,
+        string userName,
 		int messageId)
 	{
         if (assessmentSessionId is null)
@@ -61,6 +58,6 @@ internal sealed class AddStoryToAssessmentSessionNotificationBuilder
         if (string.IsNullOrWhiteSpace(userName))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(userName));
 
-        return new AddStoryForEstimateCommand(assessmentSessionId, chatId, userName, messageId, IsUpdate: false);
+        return new AddStoryForEstimateCommand(assessmentSessionId, userName, messageId);
 	}
 }

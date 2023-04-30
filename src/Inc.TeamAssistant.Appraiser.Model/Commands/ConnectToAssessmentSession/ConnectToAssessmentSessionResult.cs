@@ -4,9 +4,7 @@ namespace Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 
 public sealed record ConnectToAssessmentSessionResult(
 	ParticipantId ModeratorId,
-    AssessmentSessionId AssessmentSessionId,
-    LanguageId AssessmentSessionLanguageId,
+	LanguageId AssessmentSessionLanguageId,
 	string AssessmentSessionTitle,
 	ParticipantId AppraiserId,
-	string AppraiserName,
-	bool StoryInProgress);
+	string AppraiserName);

@@ -3,13 +3,11 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 public sealed class StoryForEstimate
 {
     public Participant Participant { get; }
-    public int StoryExternalId { get; }
     public AssessmentValue.Value Value { get; private set; }
 
-    public StoryForEstimate(Participant participant, int storyExternalId)
+    public StoryForEstimate(Participant participant)
     {
 		Participant = participant ?? throw new ArgumentNullException(nameof(participant));
-		StoryExternalId = storyExternalId;
 		Value = AssessmentValue.Value.None;
 	}
 

@@ -25,15 +25,15 @@ internal sealed class SetEstimateForStoryNotificationBuilder : INotificationBuil
 
 		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
 
-        yield return await _summaryByStoryBuilder.Build(
+		yield return await _summaryByStoryBuilder.Build(
             commandResult.AssessmentSessionLanguageId,
-            estimateEnded: false,
-            commandResult.Summary);
-
+            commandResult.Summary,
+            commandResult.EstimateEnded);
+		
 		if (commandResult.EstimateEnded)
 			yield return await _summaryByStoryBuilder.Build(
-                commandResult.AssessmentSessionLanguageId,
-                estimateEnded: true,
-                commandResult.Summary);
+				commandResult.AssessmentSessionLanguageId,
+				commandResult.Summary,
+				estimateEnded: false);
 	}
 }
