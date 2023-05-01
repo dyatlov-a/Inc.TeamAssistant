@@ -36,7 +36,6 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
 	public void StartStorySelection(ParticipantId moderatorId) => _state.StartStorySelection(moderatorId);
 	public void StorySelected(ParticipantId moderatorId, string storyTitle, IReadOnlyCollection<string> links)
 		=> _state.StorySelected(moderatorId, storyTitle, links);
-	public void AddStoryForEstimate(StoryForEstimate storyForEstimate) => _state.AddStoryForEstimate(storyForEstimate);
 	public void Estimate(Participant participant, AssessmentValue.Value value) => _state.Estimate(participant, value);
 	public void CompleteEstimate(ParticipantId moderatorId) => _state.CompleteEstimate(moderatorId);
 	public void Disconnect(ParticipantId participantId) => _state.Disconnect(participantId);

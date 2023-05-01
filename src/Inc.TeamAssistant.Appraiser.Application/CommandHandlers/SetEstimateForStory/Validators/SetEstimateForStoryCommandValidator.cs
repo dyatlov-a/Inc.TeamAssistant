@@ -14,8 +14,6 @@ internal sealed class SetEstimateForStoryCommandValidator : AbstractValidator<Se
 
         RuleFor(e => e).SetValidator(appraiserValidator);
 
-        RuleFor(e => e.Value)
-            .Must(i => Enum.IsDefined((AssessmentValue.Value) i!.Value))
-            .When(e => e.Value.HasValue);
+        RuleFor(e => e.Value).Must(i => Enum.IsDefined(typeof(AssessmentValue.Value), i));
     }
 }

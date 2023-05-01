@@ -6,5 +6,5 @@ namespace Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 public sealed record SetEstimateForStoryResult(
     AssessmentSessionId AssessmentSessionId,
     LanguageId AssessmentSessionLanguageId,
-    bool EstimateEnded,
-    SummaryByStory Summary);
+    SummaryByStory Summary,
+    bool EstimateEnded);

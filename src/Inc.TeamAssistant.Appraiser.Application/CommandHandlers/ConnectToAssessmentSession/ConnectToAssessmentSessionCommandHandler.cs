@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using MediatR;
@@ -46,12 +45,10 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
 
         var result = new ConnectToAssessmentSessionResult(
             assessmentSession.Moderator.Id,
-            assessmentSession.Id,
             assessmentSession.LanguageId,
             assessmentSession.Title,
             toAssessmentSessionCommand.AppraiserId,
-            toAssessmentSessionCommand.AppraiserName,
-            StoryInProgress: assessmentSession.CurrentStory != Story.Empty);
+            toAssessmentSessionCommand.AppraiserName);
 
         return Task.FromResult(result);
     }

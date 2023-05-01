@@ -26,7 +26,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
 
 	public StaticCommandFactory()
     {
-        _targets = new(AssessmentValue.GetAssessments.Select(a => ((int)a).ToString()));
+        _targets = new(AssessmentValue.GetAssessments.Select(a => a.ToString()));
         _commandList = BuildCommands();
     }
 
@@ -63,9 +63,8 @@ internal sealed class StaticCommandFactory : ICommandFactory
         }
 
         foreach (var target in _targets)
-            commands.Add(CommandList.SetEstimateForStory + target, CreateEstimateStoryCommand);
-
-        commands.Add(CommandList.NoIdea, c => new SetEstimateForStoryCommand(c.UserId, c.UserName, Value: null));
+            commands.Add(target, CreateEstimateStoryCommand);
+        
         commands.Add(CommandList.AcceptEstimate, c => new AcceptEstimateCommand(c.UserId, c.UserName));
         commands.Add(CommandList.ReVoteEstimate, c => new ReVoteEstimateCommand(c.UserId, c.UserName));
         commands.Add(CommandList.FinishAssessmentSession, c => new FinishAssessmentSessionCommand(c.UserId, c.UserName));
@@ -87,9 +86,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var parameter = new string(context.Cmd.Where(Char.IsDigit).ToArray());
-
-        return new SetEstimateForStoryCommand(context.UserId, context.UserName, int.Parse(parameter));
+        return new SetEstimateForStoryCommand(context.UserId, context.UserName, context.Cmd);
     }
 
     private IBaseRequest CreateConnectAppraiserCommand(CommandContext context)

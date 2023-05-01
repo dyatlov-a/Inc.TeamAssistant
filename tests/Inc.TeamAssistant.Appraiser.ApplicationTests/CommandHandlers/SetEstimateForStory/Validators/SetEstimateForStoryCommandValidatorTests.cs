@@ -17,7 +17,7 @@ public sealed class SetEstimateForStoryCommandValidatorTests : IClassFixture<Val
     {
         _validCommand = _fixture.Create<SetEstimateForStoryCommand>() with
         {
-            Value = (int?) AssessmentValue.Value.Sp1
+            Value = AssessmentValue.Value.Sp1.ToString()
         };
         _target = new(new AppraiserValidator());
     }
@@ -53,7 +53,7 @@ public sealed class SetEstimateForStoryCommandValidatorTests : IClassFixture<Val
 
     [Theory]
     [MemberData(nameof(CreateValues))]
-    public void Validate_SetValue_ShouldBe(int? value, bool isValid)
+    public void Validate_SetValue_ShouldBe(string value, bool isValid)
     {
         var command = _validCommand with
         {
@@ -68,9 +68,9 @@ public sealed class SetEstimateForStoryCommandValidatorTests : IClassFixture<Val
     public static IEnumerable<object[]> CreateValues()
     {
         foreach (var value in Enum.GetValues<AssessmentValue.Value>())
-            yield return new object[] { (int?)value, true};
+            yield return new object[] { value.ToString(), true};
 
-        yield return  new object[] { (int?)AssessmentValue.Value.Unknown - 1, false};
-        yield return  new object[] { (int?)AssessmentValue.Value.Sp21 + 1, false};
+        yield return  new object[] { (AssessmentValue.Value.None - 1).ToString(), false};
+        yield return  new object[] { (AssessmentValue.Value.Sp21 + 1).ToString(), false};
     }
 }

@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using MediatR;
@@ -25,18 +24,10 @@ internal sealed class AddStoryForEstimateCommandHandler
 
 		var assessmentSession = _repository
 			.Find(command.AssessmentSessionId)
-			.EnsureForAppraiser(command.AppraiserName);
+			.EnsureForModerator(command.ModeratorName);
 
-		var appraiser = assessmentSession.Participants.SingleOrDefault(a => a.Id.Value == command.TargetChatId);
-        if (appraiser is null)
-            throw new ApplicationException($"Participant was not found by ChatId {command.TargetChatId}");
+		assessmentSession.CurrentStory.SetExternalId(command.StoryExternalId);
 
-        assessmentSession.AddStoryForEstimate(new(appraiser, command.StoryExternalId));
-
-        var result = new AddStoryForEstimateResult(
-            AssessmentSessionConverter.ConvertTo(assessmentSession),
-            command.IsUpdate);
-
-        return Task.FromResult(result);
+        return Task.FromResult<AddStoryForEstimateResult>(new());
     }
 }

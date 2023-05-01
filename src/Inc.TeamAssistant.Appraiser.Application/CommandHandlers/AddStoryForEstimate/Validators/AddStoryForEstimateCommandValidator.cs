@@ -6,12 +6,12 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryForEst
 
 internal sealed class AddStoryForEstimateCommandValidator : AbstractValidator<AddStoryForEstimateCommand>
 {
-    public AddStoryForEstimateCommandValidator(IValidator<IWithAppraiser> appraiserValidator)
+    public AddStoryForEstimateCommandValidator(IValidator<IWithModerator> moderatorValidator)
     {
-        if (appraiserValidator is null)
-            throw new ArgumentNullException(nameof(appraiserValidator));
+        if (moderatorValidator is null)
+            throw new ArgumentNullException(nameof(moderatorValidator));
 
-        RuleFor(e => e).SetValidator(appraiserValidator);
+        RuleFor(e => e).SetValidator(moderatorValidator);
 
         RuleFor(e => e.AssessmentSessionId).NotEmpty();
     }

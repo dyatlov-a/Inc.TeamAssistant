@@ -15,7 +15,5 @@ internal static class CommandList
     public const string FinishAssessmentSession = "/finish";
 
     public const string Help = "/help";
-    public const string SetEstimateForStory = "/sp";
-    public const string NoIdea = "/noidea";
     public const string ExitFromAssessmentSession = "/exit";
 }

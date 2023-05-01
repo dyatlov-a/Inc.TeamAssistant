@@ -21,7 +21,9 @@ internal sealed class ExitFromAssessmentSessionCommandHandler
         if (sessionCommand is null)
             throw new ArgumentNullException(nameof(sessionCommand));
 
-        var assessmentSession = _repository.Find(sessionCommand.AppraiserId).EnsureForAppraiser(sessionCommand.AppraiserName);
+        var assessmentSession = _repository
+            .Find(sessionCommand.AppraiserId)
+            .EnsureForAppraiser(sessionCommand.AppraiserName);
 
 		assessmentSession.Disconnect(sessionCommand.AppraiserId);
 

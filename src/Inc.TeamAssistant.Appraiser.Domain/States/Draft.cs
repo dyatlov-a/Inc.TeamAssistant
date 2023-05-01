@@ -20,16 +20,7 @@ internal sealed class Draft : AssessmentSessionState
             .ChangeLanguage(languageId);
     }
 
-    public override void AddStoryForEstimate(StoryForEstimate storyForEstimate)
-    {
-        if (storyForEstimate is null)
-            throw new ArgumentNullException(nameof(storyForEstimate));
-
-        if (AssessmentSession.Story != Story.Empty)
-            AssessmentSession.Story.AddStoryForEstimate(storyForEstimate);
-    }
-
-	public override void Activate(ParticipantId moderatorId, string title)
+    public override void Activate(ParticipantId moderatorId, string title)
 	{
 		if (moderatorId is null)
 			throw new ArgumentNullException(nameof(moderatorId));

@@ -15,11 +15,11 @@ public sealed class AddStoryForEstimateCommandValidatorTests : IClassFixture<Val
     public AddStoryForEstimateCommandValidatorTests()
     {
         _validCommand = _fixture.Create<AddStoryForEstimateCommand>();
-        _target = new(new AppraiserValidator());
+        _target = new(new ModeratorValidator());
     }
 
     [Fact]
-    public void Constructor_AppraiserValidatorIsNull_ThrowsException()
+    public void Constructor_ModeratorValidatorIsNull_ThrowsException()
     {
         AddStoryForEstimateCommandValidator Actual() => new(null!);
 
@@ -35,11 +35,11 @@ public sealed class AddStoryForEstimateCommandValidatorTests : IClassFixture<Val
     }
 
     [Fact]
-    public void Validate_SetAppraiserValidator_ShouldBeCalled()
+    public void Validate_SetModeratorValidator_ShouldBeCalled()
     {
         var command = _validCommand with
         {
-            AppraiserName = string.Empty
+            ModeratorName = string.Empty
         };
 
         var actual = _target.Validate(command);

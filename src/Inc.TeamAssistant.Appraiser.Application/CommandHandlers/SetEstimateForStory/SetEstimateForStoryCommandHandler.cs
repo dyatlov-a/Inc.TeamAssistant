@@ -29,9 +29,7 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 
         var items = assessmentSession.CurrentStory.StoryForEstimates
             .Select(s => new EstimateItemDetails(
-                s.Participant.Id,
                 s.Participant.Name,
-                s.StoryExternalId,
                 s.Value.ToDisplayHasValue(),
                 s.Value.ToDisplayValue()))
             .ToArray();
@@ -41,12 +39,12 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
         var result = new SetEstimateForStoryResult(
             assessmentSession.Id,
             assessmentSession.LanguageId,
-            estimateEnded,
             new(
                 assessmentSession.ChatId,
                 StoryConverter.ConvertTo(assessmentSession.CurrentStory),
                 assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded),
-                items));
+                items),
+            estimateEnded);
 
 		return Task.FromResult(result);
 	}

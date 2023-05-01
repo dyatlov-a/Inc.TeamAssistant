@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
@@ -24,22 +23,14 @@ namespace Inc.TeamAssistant.Appraiser.Notifications;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection AddNotifications(
-		this IServiceCollection services,
-        string setCommand,
-		string noIdeaCommand)
+	public static IServiceCollection AddNotifications(this IServiceCollection services)
 	{
 		if (services is null)
 			throw new ArgumentNullException(nameof(services));
-        if (string.IsNullOrWhiteSpace(setCommand))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(setCommand));
-		if (string.IsNullOrWhiteSpace(noIdeaCommand))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(noIdeaCommand));
-
-        services
-            .AddScoped(sp => ActivatorUtilities.CreateInstance<SummaryByStoryBuilder>(sp, setCommand, noIdeaCommand));
 
 		services
+			.AddScoped<SummaryByStoryBuilder>()
+			
             .AddScoped<INotificationBuilder<ChangeLanguageResult>, ChangeLanguageNotificationBuilder>()
 			.AddScoped<INotificationBuilder<ActivateAssessmentResult>, ActivateAssessmentNotificationBuilder>()
 			.AddScoped<INotificationBuilder<ConnectToDashboardResult>, ConnectToDashboardNotificationBuilder>()
@@ -53,10 +44,8 @@ public static class ServiceCollectionExtensions
 			.AddScoped<INotificationBuilder<ShowParticipantsResult>, ShowParticipantsNotificationBuilder>()
 			.AddScoped<INotificationBuilder<StartStorySelectionResult>, StartStorySelectionNotificationBuilder>()
             .AddScoped<INotificationBuilder<ExitFromAssessmentSessionResult>, ChangeUserNotificationBuilder>()
-			.AddScoped<INotificationBuilder<AddStoryForEstimateResult>, ChangeUserNotificationBuilder>()
             .AddScoped<INotificationBuilder<AllowUseNameResult>, ChangeUserNotificationBuilder>()
-            .AddScoped<INotificationBuilder<ShowHelpResult>>(
-                sp => ActivatorUtilities.CreateInstance<ShowHelpNotificationBuilder>(sp, noIdeaCommand))
+            .AddScoped<INotificationBuilder<ShowHelpResult>, ShowHelpNotificationBuilder>()
             .AddScoped<INotificationBuilder<JoinToAssessmentSessionResult>, JoinToAssessmentSessionNotificationBuilder>();
 
 		return services;

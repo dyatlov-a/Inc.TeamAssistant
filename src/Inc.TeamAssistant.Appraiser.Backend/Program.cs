@@ -28,7 +28,7 @@ builder.Services
     .AddApplication(builder.Configuration)
     .AddInMemoryDataAccess()
     .AddPostgresDataAccess(connectionString, Settings.AnonymousUser)
-	.AddNotifications(CommandList.SetEstimateForStory, CommandList.NoIdea)
+	.AddNotifications()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
 
     .AddSingleton<ICheckInService, CheckInService>()

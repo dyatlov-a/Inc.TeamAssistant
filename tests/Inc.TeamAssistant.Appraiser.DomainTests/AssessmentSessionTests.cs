@@ -31,8 +31,8 @@ public sealed class AssessmentSessionTests
 		_target.Activate(_moderator.Id, _fixture.Create<string>());
 
 		_target.StartStorySelection(_moderator.Id);
+		_target.Connect(_moderator.Id, _moderator.Name);
 		_target.StorySelected(_moderator.Id, _fixture.Create<string>(), _fixture.Create<string[]>());
-		_target.AddStoryForEstimate(new(_moderator, _fixture.Create<int>()));
 		_target.Estimate(_moderator, value);
 
 		var actual = _target.CurrentStory.GetTotal();
@@ -56,9 +56,9 @@ public sealed class AssessmentSessionTests
 		_target.Activate(_moderator.Id, _fixture.Create<string>());
 
 		_target.StartStorySelection(_moderator.Id);
+		_target.Connect(_moderator.Id, _moderator.Name);
+		_target.Connect(participant.Id, participant.Name);
 		_target.StorySelected(_moderator.Id, _fixture.Create<string>(), _fixture.Create<string[]>());
-		_target.AddStoryForEstimate(new(_moderator, _fixture.Create<int>()));
-		_target.AddStoryForEstimate(new(participant, _fixture.Create<int>()));
 		_target.Estimate(_moderator, firstValue);
 
 		_target.Estimate(_moderator, secondValue);
@@ -83,8 +83,8 @@ public sealed class AssessmentSessionTests
 		_target.Activate(_moderator.Id, _fixture.Create<string>());
 
 		_target.StartStorySelection(_moderator.Id);
+		_target.Connect(_moderator.Id, _moderator.Name);
 		_target.StorySelected(_moderator.Id, _fixture.Create<string>(), _fixture.Create<string[]>());
-		_target.AddStoryForEstimate(new(_moderator, _fixture.Create<int>()));
 		_target.Estimate(_moderator, firstValue);
 
 		_target.Reset(_moderator.Id);
@@ -108,14 +108,13 @@ public sealed class AssessmentSessionTests
 		_target.Activate(_moderator.Id, _fixture.Create<string>());
 
 		_target.StartStorySelection(_moderator.Id);
+		_target.Connect(_moderator.Id, _moderator.Name);
 		_target.StorySelected(_moderator.Id, _fixture.Create<string>(), _fixture.Create<string[]>());
-		_target.AddStoryForEstimate(new(_moderator, _fixture.Create<int>()));
 		_target.Estimate(_moderator, value);
 
 		var secondStory = _fixture.Create<string>();
 		_target.StartStorySelection(_moderator.Id);
 		_target.StorySelected(_moderator.Id, secondStory, _fixture.Create<string[]>());
-		_target.AddStoryForEstimate(new(_moderator, _fixture.Create<int>()));
 		_target.Estimate(_moderator, value);
 
 		var actual = _target.CurrentStory.GetTotal();
@@ -177,21 +176,6 @@ public sealed class AssessmentSessionTests
         var otherParticipantId = _fixture.Create<ParticipantId>();
         _target.Activate(_moderator.Id, _fixture.Create<string>());
         _target.Connect(otherParticipantId, _fixture.Create<string>());
-
-        _target.Disconnect(otherParticipantId);
-
-        Assert.DoesNotContain(_target.Participants, p => p.Id == otherParticipantId);
-    }
-
-    [Fact]
-    public void Disconnect_InProgressAssessmentSession_ShouldBeDisconnected()
-    {
-        var otherParticipantId = _fixture.Create<ParticipantId>();
-        _target.Activate(_moderator.Id, _fixture.Create<string>());
-        _target.Connect(otherParticipantId, _fixture.Create<string>());
-        _target.StartStorySelection(_moderator.Id);
-        _target.StorySelected(_moderator.Id, _fixture.Create<string>(), _fixture.Create<string[]>());
-        _target.AddStoryForEstimate(new(new(otherParticipantId, _fixture.Create<string>()), _fixture.Create<int>()));
 
         _target.Disconnect(otherParticipantId);
 
