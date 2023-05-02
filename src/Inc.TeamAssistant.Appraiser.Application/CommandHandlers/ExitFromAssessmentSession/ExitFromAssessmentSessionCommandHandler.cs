@@ -16,21 +16,25 @@ internal sealed class ExitFromAssessmentSessionCommandHandler
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 	}
 
-    public Task<ExitFromAssessmentSessionResult> Handle(ExitFromAssessmentSessionCommand sessionCommand, CancellationToken cancellationToken)
+    public Task<ExitFromAssessmentSessionResult> Handle(
+        ExitFromAssessmentSessionCommand command,
+        CancellationToken cancellationToken)
     {
-        if (sessionCommand is null)
-            throw new ArgumentNullException(nameof(sessionCommand));
+        if (command is null)
+            throw new ArgumentNullException(nameof(command));
 
         var assessmentSession = _repository
-            .Find(sessionCommand.AppraiserId)
-            .EnsureForAppraiser(sessionCommand.AppraiserName);
+            .Find(command.AppraiserId)
+            .EnsureForAppraiser(command.AppraiserName);
 
-		assessmentSession.Disconnect(sessionCommand.AppraiserId);
+		assessmentSession.Disconnect(command.AppraiserId);
 
         var result = new ExitFromAssessmentSessionResult(
-            AssessmentSessionConverter.ConvertTo(assessmentSession),
             assessmentSession.Moderator.Id,
-            sessionCommand.AppraiserName);
+            command.AppraiserName,
+            assessmentSession.Title,
+            assessmentSession.InProgress(),
+            SummaryByStoryConverter.ConvertTo(assessmentSession));
 
         return Task.FromResult(result);
     }

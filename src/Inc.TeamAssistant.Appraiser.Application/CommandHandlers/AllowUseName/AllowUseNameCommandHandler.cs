@@ -33,9 +33,9 @@ internal sealed class AllowUseNameCommandHandler : IRequestHandler<AllowUseNameC
         {
             assessmentSession.SetAppraiserName(command.AppraiserId, command.AppraiserName);
 
-            return new(AssessmentSessionConverter.ConvertTo(assessmentSession));
+            return new(assessmentSession.InProgress(), SummaryByStoryConverter.ConvertTo(assessmentSession));
         }
 
-        return new(null);
+        return new(InProgress: false, null);
     }
 }

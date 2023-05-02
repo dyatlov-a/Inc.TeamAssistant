@@ -1,9 +1,11 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
+using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Notifications.Services;
 
@@ -16,105 +18,72 @@ internal sealed class SummaryByStoryBuilder
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-	public async Task<NotificationMessage> Build(LanguageId languageId, SummaryByStory summary, bool estimateEnded)
+    public async Task<NotificationMessage> Build(SummaryByStory summary)
     {
-        if (languageId is null)
-            throw new ArgumentNullException(nameof(languageId));
-		if (summary is null)
-			throw new ArgumentNullException(nameof(summary));
-
-		var builder = new StringBuilder();
-
-        await AddStoryDetails(
-            builder,
-            estimateEnded ? Messages.EndEstimate : Messages.NeedEstimate,
-            languageId,
-            summary.Story);
-        AddEstimates(builder, summary.Items, estimateEnded);
-
-        if (estimateEnded)
-            await AddTotalEstimate(builder, languageId, summary);
-        
-        var messageText = builder.ToString();
-        
-        var message = estimateEnded
-            ? NotificationMessage.Create(summary.ChatId, messageText)
-            : AddAssessments(NotificationMessage.Edit(
-                new [] { (summary.ChatId, summary.Story.ExternalId) },
-                messageText));
-
-        return message;
-    }
-
-	public NotificationMessage AddAssessments(NotificationMessage notificationMessage)
-	{
-		if (notificationMessage is null)
-			throw new ArgumentNullException(nameof(notificationMessage));
-
-        foreach (var assessment in AssessmentValue.GetAssessments)
-        {
-            var value = assessment.ToString();
-            
-            notificationMessage.WithButton(
-                new Button(value.Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase),
-                    value));
-        }
-        
-        return notificationMessage;
-    }
-
-    public async Task AddStoryDetails(
-        StringBuilder stringBuilder,
-        MessageId titleTemplate,
-        LanguageId languageId,
-        StoryDetails story)
-    {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
-        if (titleTemplate is null)
-            throw new ArgumentNullException(nameof(titleTemplate));
-        if (languageId is null)
-            throw new ArgumentNullException(nameof(languageId));
-        if (story is null)
-            throw new ArgumentNullException(nameof(story));
-
-        stringBuilder.AppendLine(await _messageBuilder.Build(titleTemplate, languageId, story.Title));
-
-        if (story.Links.Any())
-        {
-            foreach (var link in story.Links)
-                stringBuilder.AppendLine(link);
-        }
-    }
-
-    public void AddEstimates(
-        StringBuilder stringBuilder,
-        IReadOnlyCollection<EstimateItemDetails> items,
-        bool estimateEnded)
-    {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
-        if (items is null)
-            throw new ArgumentNullException(nameof(items));
-
-        string AddEstimate(EstimateItemDetails item) => estimateEnded ? item.DisplayValue : item.HasValue;
-
-        stringBuilder.AppendLine();
-
-        foreach (var item in items)
-            stringBuilder.AppendLine($"{item.AppraiserName} {AddEstimate(item)}");
-    }
-
-    private async Task AddTotalEstimate(StringBuilder stringBuilder, LanguageId languageId, SummaryByStory summary)
-    {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
-        if (languageId is null)
-            throw new ArgumentNullException(nameof(languageId));
         if (summary is null)
             throw new ArgumentNullException(nameof(summary));
 
-        stringBuilder.AppendLine();
-        stringBuilder.AppendLine(await _messageBuilder.Build(Messages.TotalEstimate, languageId, summary.Total));
+        var builder = new StringBuilder();
+
+        builder.AppendLine(await _messageBuilder.Build(
+            summary.EstimateEnded ? Messages.EndEstimate : Messages.NeedEstimate,
+            summary.AssessmentSessionLanguageId,
+            summary.StoryTitle));
+
+        if (summary.StoryLinks.Any())
+            foreach (var link in summary.StoryLinks)
+                builder.AppendLine(link);
+
+        builder.AppendLine();
+        foreach (var item in summary.Items)
+            builder.AppendLine($"{item.AppraiserName} {AddEstimate(summary.EstimateEnded, item)}");
+
+        if (summary.EstimateEnded)
+        {
+            builder.AppendLine();
+            builder.AppendLine(await _messageBuilder.Build(
+                Messages.TotalEstimate,
+                summary.AssessmentSessionLanguageId,
+                summary.Total));
+        }
+        
+        var notification = summary.StoryExternalId.HasValue
+            ? NotificationMessage.Edit(new[] { (summary.ChatId, summary.StoryExternalId.Value) }, builder.ToString())
+            : NotificationMessage
+                .Create(summary.ChatId, builder.ToString())
+                .AddHandler((_, uName, mId) => AddStoryForEstimate(summary.AssessmentSessionId, uName, mId));
+
+        if (!summary.EstimateEnded)
+            foreach (var assessment in AssessmentValue.GetAssessments)
+            {
+                var value = assessment.ToString();
+            
+                notification.WithButton(
+                    new Button(value.Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase),
+                        value));
+            }
+
+        return notification;
+    }
+
+    private IBaseRequest AddStoryForEstimate(
+        AssessmentSessionId assessmentSessionId,
+        string userName,
+        int messageId)
+    {
+        if (assessmentSessionId is null)
+            throw new ArgumentNullException(nameof(assessmentSessionId));
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(userName));
+
+        return new AddStoryForEstimateCommand(assessmentSessionId, userName, messageId);
+    }
+
+    private string AddEstimate(bool estimateEnded, EstimateItemDetails item)
+    {
+        if (item is null)
+            throw new ArgumentNullException(nameof(item));
+        
+        return estimateEnded ? item.DisplayValue : item.HasValue;
     }
 }

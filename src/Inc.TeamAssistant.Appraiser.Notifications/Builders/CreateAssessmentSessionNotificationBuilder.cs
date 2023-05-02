@@ -17,19 +17,19 @@ internal sealed class CreateAssessmentSessionNotificationBuilder : INotification
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-	public async IAsyncEnumerable<NotificationMessage> Build(CreateAssessmentSessionResult commandSessionResult, long fromId)
+	public async IAsyncEnumerable<NotificationMessage> Build(CreateAssessmentSessionResult commandResult, long fromId)
 	{
-		if (commandSessionResult is null)
-			throw new ArgumentNullException(nameof(commandSessionResult));
+		if (commandResult is null)
+			throw new ArgumentNullException(nameof(commandResult));
 
-        var otherLanguages = _languageContextList.Where(c => c.LanguageId != commandSessionResult.LanguageId);
+        var otherLanguages = _languageContextList.Where(c => c.LanguageId != commandResult.LanguageId);
         var setLanguageCommands = string.Join(' ', otherLanguages.Select(l => l.Command));
 
-        if (commandSessionResult.IsCreated)
+        if (commandResult.IsCreated)
         {
             var enterSessionNameMessage = await _messageBuilder.Build(
                 Messages.EnterSessionName,
-                commandSessionResult.LanguageId,
+                commandResult.LanguageId,
                 setLanguageCommands);
 
             yield return NotificationMessage.Create(fromId, enterSessionNameMessage);
@@ -38,7 +38,7 @@ internal sealed class CreateAssessmentSessionNotificationBuilder : INotification
         {
             var createAssessmentSessionFailedMessage = await _messageBuilder.Build(
                 Messages.CreateAssessmentSessionFailed,
-                commandSessionResult.LanguageId);
+                commandResult.LanguageId);
 
             yield return NotificationMessage.Create(fromId, createAssessmentSessionFailedMessage);
         }

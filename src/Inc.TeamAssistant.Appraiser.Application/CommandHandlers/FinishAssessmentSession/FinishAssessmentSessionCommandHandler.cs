@@ -12,32 +12,33 @@ internal sealed class FinishAssessmentSessionCommandHandler
     private readonly IAssessmentSessionRepository _repository;
     private readonly IAssessmentSessionMetrics _metrics;
 
-	public FinishAssessmentSessionCommandHandler(IAssessmentSessionRepository repository, IAssessmentSessionMetrics metrics)
+	public FinishAssessmentSessionCommandHandler(
+        IAssessmentSessionRepository repository,
+        IAssessmentSessionMetrics metrics)
 	{
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
 	}
 
-    public Task<FinishAssessmentSessionResult> Handle(FinishAssessmentSessionCommand sessionCommand, CancellationToken cancellationToken)
+    public Task<FinishAssessmentSessionResult> Handle(
+        FinishAssessmentSessionCommand command,
+        CancellationToken cancellationToken)
     {
-        if (sessionCommand is null)
-            throw new ArgumentNullException(nameof(sessionCommand));
+        if (command is null)
+            throw new ArgumentNullException(nameof(command));
 
-        var assessmentSession = _repository.Find(sessionCommand.ModeratorId).EnsureForModerator(sessionCommand.ModeratorName);
+        var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
-		if (assessmentSession.Moderator.Id != sessionCommand.ModeratorId)
+		if (assessmentSession.Moderator.Id != command.ModeratorId)
 			throw new AppraiserUserException(Messages.EndAssessmentWithError);
 
         _repository.Remove(assessmentSession);
         _metrics.Ended();
 
-		var appraiserIds = assessmentSession.Participants.Select(a => a.Id).ToArray();
-        var result = new FinishAssessmentSessionResult(
+        return Task.FromResult<FinishAssessmentSessionResult>(new(
             assessmentSession.Id,
             assessmentSession.LanguageId,
             assessmentSession.Title,
-            appraiserIds);
-
-        return Task.FromResult(result);
+            assessmentSession.Participants.Select(a => a.Id).ToArray()));
     }
 }

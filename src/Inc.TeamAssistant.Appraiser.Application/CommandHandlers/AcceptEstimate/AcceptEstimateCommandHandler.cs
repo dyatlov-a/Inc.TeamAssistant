@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 
@@ -24,23 +23,7 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 		var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
 		assessmentSession.CompleteEstimate(command.ModeratorId);
-
-		var items = assessmentSession.CurrentStory.StoryForEstimates
-			.Select(s => new EstimateItemDetails(
-				s.Participant.Name,
-			    s.Value.ToDisplayHasValue(),
-			    s.Value.ToDisplayValue()))
-			.ToArray();
-
-        var result = new AcceptEstimateResult(
-            assessmentSession.Id,
-            assessmentSession.LanguageId,
-            new(
-                assessmentSession.ChatId,
-                StoryConverter.ConvertTo(assessmentSession.CurrentStory),
-                assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded: true),
-                items));
-
-        return Task.FromResult(result);
+		
+        return Task.FromResult<AcceptEstimateResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
     }
 }

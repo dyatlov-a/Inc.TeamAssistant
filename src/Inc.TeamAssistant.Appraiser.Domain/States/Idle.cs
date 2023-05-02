@@ -42,9 +42,12 @@ internal sealed class Idle : AssessmentSessionState
         if (AssessmentSession.Moderator.Id == participantId)
             throw new AppraiserUserException(Messages.ModeratorCannotDisconnectedFromSession, AssessmentSession.Title);
 
-		var appraiser = AssessmentSession.Participants.Single(a => a.Id == participantId);
-
-		AssessmentSession.RemoveParticipant(appraiser);
+        var participant = AssessmentSession.Participants.Single(a => a.Id == participantId);
+        
+        if (AssessmentSession.Story != Story.Empty)
+			AssessmentSession.Story.RemoveStoryForEstimate(participant.Id);
+        
+        AssessmentSession.RemoveParticipant(participant);
 	}
 
 	public override void StartStorySelection(ParticipantId moderatorId)

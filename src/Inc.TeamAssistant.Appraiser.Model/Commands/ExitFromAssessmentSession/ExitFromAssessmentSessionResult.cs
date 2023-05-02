@@ -4,6 +4,8 @@ using Inc.TeamAssistant.Appraiser.Primitives;
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 
 public sealed record ExitFromAssessmentSessionResult(
-    AssessmentSessionDetails AssessmentSessionDetails,
-    ParticipantId ModeratorId,
-	string AppraiserName);
+	ParticipantId ModeratorId,
+	string AppraiserName,
+	string AssessmentSessionTitle,
+	bool InProgress,
+	SummaryByStory SummaryByStory);
