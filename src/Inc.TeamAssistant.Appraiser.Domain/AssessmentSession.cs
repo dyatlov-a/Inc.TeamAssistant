@@ -40,6 +40,7 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
 	public void CompleteEstimate(ParticipantId moderatorId) => _state.CompleteEstimate(moderatorId);
 	public void Disconnect(ParticipantId participantId) => _state.Disconnect(participantId);
 	public void Reset(ParticipantId moderatorId) => _state.Reset(moderatorId);
+	public bool InProgress() => _state.IsProgress();
     public bool EstimateEnded() => _state.EstimateEnded();
 
     public void SetAppraiserName(ParticipantId participantId, string userName)

@@ -1,8 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 
@@ -34,19 +32,6 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
         assessmentSession.StorySelected(command.ModeratorId, command.Title.Trim(), command.Links);
         _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterStory);
 
-        var items = assessmentSession.Participants
-            .Select(a => new EstimateItemDetails(
-                a.Name,
-                AssessmentValue.Value.None.ToDisplayHasValue(),
-                AssessmentValue.Value.None.ToDisplayValue()))
-            .ToArray();
-        var result = new AddStoryToAssessmentSessionResult(
-            assessmentSession.Id,
-            assessmentSession.ChatId,
-            assessmentSession.LanguageId,
-            StoryConverter.ConvertTo(assessmentSession.CurrentStory),
-            items);
-
-        return Task.FromResult(result);
+        return Task.FromResult<AddStoryToAssessmentSessionResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
     }
 }

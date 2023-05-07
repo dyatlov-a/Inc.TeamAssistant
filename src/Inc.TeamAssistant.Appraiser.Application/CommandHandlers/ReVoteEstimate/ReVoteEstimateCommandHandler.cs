@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 
@@ -25,23 +24,6 @@ internal sealed class ReVoteEstimateCommandHandler : IRequestHandler<ReVoteEstim
 
 		assessmentSession.Reset(command.ModeratorId);
 
-        var estimateEnded = false;
-        var items = assessmentSession.CurrentStory.StoryForEstimates
-            .Select(s => new EstimateItemDetails(
-                s.Participant.Name,
-                s.Value.ToDisplayHasValue(),
-                s.Value.ToDisplayValue()))
-            .ToArray();
-        var result = new ReVoteEstimateResult(
-            assessmentSession.Id,
-            assessmentSession.LanguageId,
-            new(
-                assessmentSession.ChatId,
-                StoryConverter.ConvertTo(assessmentSession.CurrentStory),
-                assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded),
-                items),
-            estimateEnded);
-
-        return Task.FromResult(result);
+        return Task.FromResult<ReVoteEstimateResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
     }
 }

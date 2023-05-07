@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 using Inc.TeamAssistant.Appraiser.Domain;
@@ -17,7 +16,9 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 	}
 
-    public Task<SetEstimateForStoryResult> Handle(SetEstimateForStoryCommand command, CancellationToken cancellationToken)
+    public Task<SetEstimateForStoryResult> Handle(
+	    SetEstimateForStoryCommand command,
+	    CancellationToken cancellationToken)
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
@@ -27,25 +28,6 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 		var appraiser = assessmentSession.Participants.Single(a => a.Id == command.AppraiserId);
         assessmentSession.Estimate(appraiser, command.Value.ToAssessmentValue());
 
-        var items = assessmentSession.CurrentStory.StoryForEstimates
-            .Select(s => new EstimateItemDetails(
-                s.Participant.Name,
-                s.Value.ToDisplayHasValue(),
-                s.Value.ToDisplayValue()))
-            .ToArray();
-
-		var estimateEnded = assessmentSession.EstimateEnded();
-
-        var result = new SetEstimateForStoryResult(
-            assessmentSession.Id,
-            assessmentSession.LanguageId,
-            new(
-                assessmentSession.ChatId,
-                StoryConverter.ConvertTo(assessmentSession.CurrentStory),
-                assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded),
-                items),
-            estimateEnded);
-
-		return Task.FromResult(result);
+        return Task.FromResult<SetEstimateForStoryResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
 	}
 }

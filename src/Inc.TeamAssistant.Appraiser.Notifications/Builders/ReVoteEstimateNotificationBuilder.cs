@@ -20,11 +20,8 @@ internal sealed class ReVoteEstimateNotificationBuilder : INotificationBuilder<R
 		if (commandResult is null)
 			throw new ArgumentNullException(nameof(commandResult));
 
-		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
+		await _messagesSender.StoryChanged(commandResult.SummaryByStory.AssessmentSessionId);
 
-		yield return await _summaryByStoryBuilder.Build(
-            commandResult.AssessmentSessionLanguageId,
-            commandResult.Summary,
-            commandResult.EstimateEnded);
+		yield return await _summaryByStoryBuilder.Build(commandResult.SummaryByStory);
 	}
 }

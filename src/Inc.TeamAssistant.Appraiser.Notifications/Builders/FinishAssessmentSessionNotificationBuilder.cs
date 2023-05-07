@@ -15,18 +15,18 @@ internal sealed class FinishAssessmentSessionNotificationBuilder : INotification
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-	public async IAsyncEnumerable<NotificationMessage> Build(FinishAssessmentSessionResult commandSessionResult, long fromId)
+	public async IAsyncEnumerable<NotificationMessage> Build(FinishAssessmentSessionResult commandResult, long fromId)
 	{
-		if (commandSessionResult is null)
-			throw new ArgumentNullException(nameof(commandSessionResult));
+		if (commandResult is null)
+			throw new ArgumentNullException(nameof(commandResult));
 
-		await _messagesSender.StoryChanged(commandSessionResult.AssessmentSessionId);
+		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
 
-        var targets = commandSessionResult.AppraiserIds.Select(a => a.Value).Append(fromId).Distinct().ToArray();
+        var targets = commandResult.AppraiserIds.Select(a => a.Value).Append(fromId).Distinct().ToArray();
         var message = await _messageBuilder.Build(
             Messages.SessionEnded,
-            commandSessionResult.AssessmentSessionLanguageId,
-            commandSessionResult.AssessmentSessionTitle);
+            commandResult.AssessmentSessionLanguageId,
+            commandResult.AssessmentSessionTitle);
 
 		yield return NotificationMessage.Create(targets, message);
 	}

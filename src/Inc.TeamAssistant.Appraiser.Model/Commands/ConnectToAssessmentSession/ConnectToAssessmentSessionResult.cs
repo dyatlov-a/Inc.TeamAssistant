@@ -1,10 +1,12 @@
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 
 public sealed record ConnectToAssessmentSessionResult(
 	ParticipantId ModeratorId,
-	LanguageId AssessmentSessionLanguageId,
+	string AppraiserName,
+	bool IsModerator,
 	string AssessmentSessionTitle,
-	ParticipantId AppraiserId,
-	string AppraiserName);
+	bool InProgress,
+	SummaryByStory SummaryByStory);

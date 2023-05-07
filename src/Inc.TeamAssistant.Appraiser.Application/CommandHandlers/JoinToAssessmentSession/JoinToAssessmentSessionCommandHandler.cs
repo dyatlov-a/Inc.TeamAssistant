@@ -14,13 +14,15 @@ internal sealed class JoinToAssessmentSessionCommandHandler
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
 
-    public Task<JoinToAssessmentSessionResult> Handle(JoinToAssessmentSessionCommand command, CancellationToken cancellationToken)
+    public Task<JoinToAssessmentSessionResult> Handle(
+        JoinToAssessmentSessionCommand command,
+        CancellationToken cancellationToken)
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
 
         _dialogContinuation.Begin(command.AppraiserId, ContinuationState.EnterSessionId);
 
-        return Task.FromResult(new JoinToAssessmentSessionResult(command.LanguageId));
+        return Task.FromResult<JoinToAssessmentSessionResult>(new(command.LanguageId));
     }
 }

@@ -13,8 +13,7 @@ internal sealed class SetEstimateForStoryNotificationBuilder : INotificationBuil
 		SummaryByStoryBuilder summaryByStoryBuilder,
 		IMessagesSender messagesSender)
 	{
-		_summaryByStoryBuilder =
-			summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+		_summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
 		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
 	}
 
@@ -23,17 +22,8 @@ internal sealed class SetEstimateForStoryNotificationBuilder : INotificationBuil
 		if (commandResult is null)
 			throw new ArgumentNullException(nameof(commandResult));
 
-		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
+		await _messagesSender.StoryChanged(commandResult.SummaryByStory.AssessmentSessionId);
 
-		yield return await _summaryByStoryBuilder.Build(
-            commandResult.AssessmentSessionLanguageId,
-            commandResult.Summary,
-            commandResult.EstimateEnded);
-		
-		if (commandResult.EstimateEnded)
-			yield return await _summaryByStoryBuilder.Build(
-				commandResult.AssessmentSessionLanguageId,
-				commandResult.Summary,
-				estimateEnded: false);
+		yield return await _summaryByStoryBuilder.Build(commandResult.SummaryByStory);
 	}
 }

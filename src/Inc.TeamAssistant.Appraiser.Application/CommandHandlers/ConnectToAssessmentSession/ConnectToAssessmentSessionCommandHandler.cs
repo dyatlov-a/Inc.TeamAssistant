@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
@@ -12,43 +13,48 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
     private readonly IAssessmentSessionRepository _repository;
     private readonly IDialogContinuation _dialogContinuation;
 
-    public ConnectToAssessmentSessionCommandHandler(IAssessmentSessionRepository repository, IDialogContinuation dialogContinuation)
+    public ConnectToAssessmentSessionCommandHandler(
+        IAssessmentSessionRepository repository,
+        IDialogContinuation dialogContinuation)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
 
-    public Task<ConnectToAssessmentSessionResult> Handle(ConnectToAssessmentSessionCommand toAssessmentSessionCommand, CancellationToken cancellationToken)
+    public Task<ConnectToAssessmentSessionResult> Handle(
+        ConnectToAssessmentSessionCommand command,
+        CancellationToken cancellationToken)
     {
-        if (toAssessmentSessionCommand is null)
-            throw new ArgumentNullException(nameof(toAssessmentSessionCommand));
+        if (command is null)
+            throw new ArgumentNullException(nameof(command));
 
-        var existSessionAssessmentSession = _repository.Find(toAssessmentSessionCommand.AppraiserId);
-        if (existSessionAssessmentSession?.Participants.Any(p => p.Id == toAssessmentSessionCommand.AppraiserId) == true)
+        var existSessionAssessmentSession = _repository.Find(command.AppraiserId);
+        if (existSessionAssessmentSession?.Participants.Any(p => p.Id == command.AppraiserId) == true)
         {
-            var messageId = existSessionAssessmentSession.Id == toAssessmentSessionCommand.AssessmentSessionId
+            var messageId = existSessionAssessmentSession.Id == command.AssessmentSessionId
                 ? Messages.AppraiserConnectWithError
                 : Messages.AppraiserConnectedToOtherSession;
 
-            throw new AppraiserUserException(messageId, toAssessmentSessionCommand.AppraiserName, existSessionAssessmentSession.Title);
+            throw new AppraiserUserException(messageId, command.AppraiserName, existSessionAssessmentSession.Title);
         }
 
-        if (toAssessmentSessionCommand.AssessmentSessionId is null)
+        if (command.AssessmentSessionId is null)
             throw new ApplicationException("AssessmentSessionId is empty.");
 
         var assessmentSession = _repository
-			.Find(toAssessmentSessionCommand.AssessmentSessionId)
-			.EnsureForAppraiser(toAssessmentSessionCommand.AppraiserName);
+			.Find(command.AssessmentSessionId)
+			.EnsureForAppraiser(command.AppraiserName);
 
-		assessmentSession.Connect(toAssessmentSessionCommand.AppraiserId, toAssessmentSessionCommand.AppraiserName);
-        _dialogContinuation.End(toAssessmentSessionCommand.AppraiserId, ContinuationState.EnterSessionId);
+		assessmentSession.Connect(command.AppraiserId, command.AppraiserName);
+        _dialogContinuation.End(command.AppraiserId, ContinuationState.EnterSessionId);
 
         var result = new ConnectToAssessmentSessionResult(
             assessmentSession.Moderator.Id,
-            assessmentSession.LanguageId,
+            command.AppraiserName,
+            IsModerator: command.AppraiserId != assessmentSession.Moderator.Id,
             assessmentSession.Title,
-            toAssessmentSessionCommand.AppraiserId,
-            toAssessmentSessionCommand.AppraiserName);
+            assessmentSession.InProgress(),
+            SummaryByStoryConverter.ConvertTo(assessmentSession));
 
         return Task.FromResult(result);
     }

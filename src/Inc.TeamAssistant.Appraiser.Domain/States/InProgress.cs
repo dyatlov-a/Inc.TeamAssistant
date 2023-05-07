@@ -8,6 +8,34 @@ internal sealed class InProgress : AssessmentSessionState
 	public InProgress(IAssessmentSessionAccessor assessmentSession) : base(assessmentSession)
 	{
 	}
+	
+	public override void Connect(ParticipantId participantId, string name)
+	{
+		if (participantId is null)
+			throw new ArgumentNullException(nameof(participantId));
+		if (string.IsNullOrWhiteSpace(name))
+			throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+
+		if (AssessmentSession.Participants.Any(p => p.Id == participantId))
+			throw new AppraiserUserException(Messages.AppraiserConnectWithError, name, AssessmentSession.Title);
+
+		var participant = new Participant(participantId, name);
+		AssessmentSession.AddParticipant(participant);
+		AssessmentSession.Story.AddStoryForEstimate(new(participant));
+	}
+	
+	public override void Disconnect(ParticipantId participantId)
+	{
+		if (participantId is null)
+			throw new ArgumentNullException(nameof(participantId));
+
+		if (AssessmentSession.Moderator.Id == participantId)
+			throw new AppraiserUserException(Messages.ModeratorCannotDisconnectedFromSession, AssessmentSession.Title);
+
+		var participant = AssessmentSession.Participants.Single(a => a.Id == participantId);
+		AssessmentSession.Story.RemoveStoryForEstimate(participant.Id);
+		AssessmentSession.RemoveParticipant(participant);
+	}
 
 	public override void Estimate(Participant participant, AssessmentValue.Value value)
 	{
@@ -31,6 +59,8 @@ internal sealed class InProgress : AssessmentSessionState
 			.AsModerator(moderatorId)
 			.MoveToState(a => new Idle(a));
     }
+
+	public override bool IsProgress() => true;
 
 	public override bool EstimateEnded() => AssessmentSession.Story.EstimateEnded();
 }

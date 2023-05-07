@@ -21,16 +21,8 @@ internal sealed class AcceptEstimateNotificationBuilder : INotificationBuilder<A
 		if (commandResult is null)
 			throw new ArgumentNullException(nameof(commandResult));
 
-		await _messagesSender.StoryChanged(commandResult.AssessmentSessionId);
+		await _messagesSender.StoryChanged(commandResult.SummaryByStory.AssessmentSessionId);
 
-		yield return await _summaryByStoryBuilder.Build(
-	        commandResult.AssessmentSessionLanguageId,
-	        commandResult.Summary,
-	        estimateEnded: true);
-		
-		yield return await _summaryByStoryBuilder.Build(
-			commandResult.AssessmentSessionLanguageId,
-			commandResult.Summary,
-			estimateEnded: false);
+		yield return await _summaryByStoryBuilder.Build(commandResult.SummaryByStory);
 	}
 }

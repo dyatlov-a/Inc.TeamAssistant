@@ -31,6 +31,6 @@ internal sealed class StartStorySelectionCommandHandler
 		assessmentSession.StartStorySelection(command.ModeratorId);
         _dialogContinuation.Begin(command.ModeratorId, ContinuationState.EnterStory);
 
-        return Task.FromResult(new StartStorySelectionResult(assessmentSession.LanguageId.Value));
+        return Task.FromResult<StartStorySelectionResult>(new(assessmentSession.LanguageId.Value));
     }
 }

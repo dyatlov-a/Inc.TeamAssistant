@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
@@ -56,7 +55,7 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
             assessmentSession.Title,
             code,
             StorySelected: assessmentSession.CurrentStory != Story.Empty,
-            StoryConverter.ConvertTo(assessmentSession.CurrentStory),
+            new StoryDetails(assessmentSession.CurrentStory.Title, assessmentSession.CurrentStory.Links),
             items,
             assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded));
     }

@@ -21,6 +21,7 @@ internal abstract class AssessmentSessionState
 	public virtual void Reset(ParticipantId moderatorId) => Throw();
 	public virtual void Disconnect(ParticipantId participantId) => Throw();
 	public virtual bool EstimateEnded() => true;
+	public virtual bool IsProgress() => false;
 
 	private void Throw() => throw new AppraiserUserException(Messages.NotValidState, GetType().Name);
 }

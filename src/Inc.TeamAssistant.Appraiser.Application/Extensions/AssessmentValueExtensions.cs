@@ -9,7 +9,7 @@ public static class AssessmentValueExtensions
 		return value switch
 		{
 			AssessmentValue.Value.None => "?",
-			AssessmentValue.Value.NoIdea => "-",
+			AssessmentValue.Value.NoIdea => "?",
 			AssessmentValue.Value.More => "21+",
 			_ => ((int)value).ToString()
 		};
