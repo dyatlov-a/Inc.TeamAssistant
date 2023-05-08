@@ -11,4 +11,11 @@ public interface ITaskForReviewRepository
     Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken cancellationToken);
 
     Task Upsert(TaskForReview taskForReview, CancellationToken cancellationToken);
+
+    Task RetargetAndLeave(
+        Guid teamId,
+        Person from,
+        Person to,
+        DateTimeOffset nextNotification,
+        CancellationToken cancellationToken);
 }

@@ -141,4 +141,40 @@ ON CONFLICT (id) DO UPDATE SET
 
         await connection.ExecuteAsync(command);
     }
+
+    public async Task RetargetAndLeave(
+        Guid teamId,
+        Person from,
+        Person to,
+        DateTimeOffset nextNotification,
+        CancellationToken cancellationToken)
+    {
+        if (from is null)
+            throw new ArgumentNullException(nameof(from));
+        if (to is null)
+            throw new ArgumentNullException(nameof(to));
+
+        var command = new CommandDefinition(@"
+            UPDATE review.task_for_reviews
+            SET
+                reviewer_id = @to_person_id,
+                next_notification = @next_notification
+            WHERE reviewer_id = @from_person_id AND team_id = @team_id;
+
+            DELETE FROM review.players
+            WHERE person_id = @from_person_id AND team_id = @team_id;",
+            new
+            {
+                team_id = teamId,
+                from_person_id = from.Id,
+                to_person_id = to.Id,
+                next_notification = nextNotification
+            },
+            flags: CommandFlags.None,
+            cancellationToken: cancellationToken);
+        
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await connection.ExecuteAsync(command);
+    }
 }
