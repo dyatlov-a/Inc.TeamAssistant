@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Inc.TeamAssistant.WebUI.Components.Features.ViewModels;
+namespace Inc.TeamAssistant.WebUI.ViewModels;
 
 internal sealed record ImageViewModel
 {

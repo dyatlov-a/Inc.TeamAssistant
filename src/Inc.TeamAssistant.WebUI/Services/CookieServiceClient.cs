@@ -12,6 +12,8 @@ internal sealed class CookieServiceClient : ICookieService
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
     }
 
+    public bool IsServerRender => false;
+
     public async Task<string?> GetValue(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

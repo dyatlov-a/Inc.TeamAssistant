@@ -11,6 +11,8 @@ internal sealed class CookieService : ICookieService
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
+    public bool IsServerRender => true;
+    
     public Task<string?> GetValue(string name)
     {
         var httpContext = _httpContextAccessor.HttpContext;

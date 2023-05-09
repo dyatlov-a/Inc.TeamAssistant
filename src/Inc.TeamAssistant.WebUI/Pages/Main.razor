@@ -3,54 +3,72 @@
 @page "/ru"
 
 @using Inc.TeamAssistant.WebUI.Pages.Annotations
+@using Inc.TeamAssistant.WebUI.Pages.ViewModels
+@using Inc.TeamAssistant.WebUI.ViewModels
 
 @inject LanguageManager LanguageManager
 
-<section id="about" class="about">
-    <div class="dark"></div>
-    <div class="about__container">
-        <About/>
-        <a href="@_moveToFeaturesUrl" target="_top" class="move-to"><span class="move-to__button"></span></a>
+@layout DefaultLayout
+
+<section id="header" class="header">
+    <div class="header__container">
+        <h1 class="header__title">@_annotation.MainTitle</h1>
+        <p class="header__description">@_annotation.MainDescription</p>
     </div>
 </section>
-<section id="features" class="features white">
-    <div class="features__container"
-         @ontouchstart="e => _features?.SwipeStarting(e)"
-         @ontouchmove="e => _features?.SwipeEnded(e)">
-        <h2 class="title title_dark">@_annotation.Features</h2>
-        <Features @ref="_features"/>
-    </div>
-</section>
-<section id="development" class="development">
-    <div class="development__container">
-        <h2 class="title">@_annotation.Tools</h2>
-        <Development/>
-    </div>
-</section>
-<section id="feedback" class="feedback white">
-    <div class="feedback__container title_dark">
-        <h2 class="title">@_annotation.Feedback</h2>
-        <Feedback/>
+<section id="products" class="products">
+    <div class="products__container">
+        <div class="product__items">
+            @foreach (var product in _products)
+            {
+                <div class="product__item">
+                    <a href="@product.PageUrl" class="product__link">
+                        <img src="@product.Image.Path" alt="@product.Image.Alt" class="product__image" />
+                        <div class="product__about">
+                            <a href="@product.LinkUrl" class="bot__link" target="_blank">@product.LinkText</a>
+                            <span class="product__description">@product.Description</span>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
     </div>
 </section>
 
-@code{
-    private Features? _features;
-
+@code
+{
     private MainPageAnnotation _annotation = MainPageAnnotation.Empty;
-    private string _moveToFeaturesUrl = string.Empty;
+    private IEnumerable<ProductViewModel> _products = Array.Empty<ProductViewModel>();
 
     protected override async Task OnInitializedAsync()
     {
         var resources = await LanguageManager.GetResource();
         var linkBuilder = LanguageManager.CreateLinkBuilder();
 
-        _annotation = new(
-            resources[Messages.GUI_Features],
-            resources[Messages.GUI_Tools],
-            resources[Messages.GUI_Feedback]);
-        _moveToFeaturesUrl = linkBuilder("#features");
+        _products = new[]
+        {
+            new ProductViewModel(
+                resources[Messages.GUI_AppraiserDescription],
+                "@inc_teamassistant_appraiser_bot",
+                "https://t.me/inc_teamassistant_appraiser_bot",
+                new ImageViewModel("/appaiser/preview.png", resources[Messages.GUI_AppraiserImageAlt]),
+                linkBuilder("appraiser")),
+            new ProductViewModel(
+                resources[Messages.GUI_ReviewerDescription],
+                "@inc_teamassistant_reviewer_bot",
+                "https://t.me/inc_teamassistant_reviewer_bot",
+                new ImageViewModel("/reviewer/preview.png", resources[Messages.GUI_ReviewerImageAlt])),
+            new ProductViewModel(
+                resources[Messages.GUI_CheckInDescription],
+                "@inc_teamassistant_checkin_bot",
+                "https://t.me/inc_teamassistant_checkin_bot",
+                new ImageViewModel("/checkin/preview.png", resources[Messages.GUI_CheckInImageAlt])),
+        };
 
+        _annotation = new MainPageAnnotation(
+            resources[Messages.GUI_MainTitle],
+            resources[Messages.GUI_MainDescription]);
+        
         await InvokeAsync(StateHasChanged);
     }
 }

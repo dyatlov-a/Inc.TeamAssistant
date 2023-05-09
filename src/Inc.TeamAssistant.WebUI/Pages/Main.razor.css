@@ -1,55 +1,74 @@
-.about {
-    padding: 8.5rem 0 1rem 0;
-    background: url('main/about/about__bg.jpg') 0 0/cover no-repeat;
-    position: relative;
+.header {
+    text-align: center;
 }
-.development, .features, .feedback {
-    padding: 5rem 0;
+.header__title {
+    font-size: 3.6rem;
+    line-height: 1.5;
+    margin-top: 1.6rem;
 }
-.white {
+.header__description {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    margin: 1rem 0 3.6rem 0;
+}
+.product__items {
+    display: flex;
+    margin-bottom: 3.75rem;
+}
+.product__item {
+    flex: 0 1 33.333%;
+    padding: 1.25rem;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    margin: 0 3.75rem 0 0;
     background-color: #fff;
-    color: #616161
+    color: #000;
 }
-.move-to__button {
-    width: 40px;
-    height: 40px;
-    border: .1875rem solid #fff;
-    border-radius: 20px;
+.product__link {
+    color: #000;
+}
+.product__item:last-child {
+    margin: 0;
+}
+.product__about {
+    text-align: center;
+    margin-top: 1rem;
+}
+.bot__link {
+    font-size: .75rem;
     display: block;
-    position: relative;
-    margin: 1rem auto;
-    transition: background-color 0.3s ease 0s;
+    color: #000;
 }
-.move-to__button::after {
-    content: ' ';
-    border: solid #fff;
-    border-width: 0 0.1875rem 0.1875rem 0;
-    transform: rotate(45deg);
-    position: absolute;
-    left: 10px;
-    top: 8px;
-    width: 14px;
-    height: 14px;
+.product__description {
+    display: block;
+    padding: 10px 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
 }
-.move-to:hover .move-to__button {
-    background-color: #fff;
-}
-.move-to:hover .move-to__button::after {
-    border: solid #000;
-    border-width: 0 0.1875rem 0.1875rem 0;
+.product__image {
+    width: 100%;
+    background-color: #000;
 }
 @media (max-width: 991.98px) {
-    .about {
-        padding: 6rem 0 1rem 0;
+    .product__items {
+        flex-direction: column;
     }
-}
-@media (max-width: 767.98px) {
-    .about {
-        padding: 7rem 0 1rem 0;
+    .product__item {
+        margin: 0 3.75rem 3.75rem 3.75rem;
+    }
+    .product__item:last-child {
+        margin: 0 3.75rem 0 3.75rem;
     }
 }
 @media (max-width: 479.98px) {
-    .features, .development, .feedback {
-        padding: 2rem 0;
+    .header__title {
+        font-size: 2.3rem;
+    }
+    .product__item {
+        margin: 0 0 2rem 0;
+    }
+    .product__item:last-child {
+        margin: 0;
     }
 }

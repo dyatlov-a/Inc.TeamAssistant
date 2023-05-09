@@ -22,6 +22,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (CookieService.IsServerRender)
+            return;
+        
         var resources = await LanguageManager.GetResource();
 
         _text = resources[Messages.GUI_AcceptCookieText];

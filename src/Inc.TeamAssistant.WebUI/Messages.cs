@@ -60,4 +60,13 @@ internal sealed class Messages
 
     public static readonly string GUI_AcceptCookieButton = new(nameof(GUI_AcceptCookieButton));
     public static readonly string GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
+
+    public static readonly string GUI_MainTitle = new(nameof(GUI_MainTitle));
+    public static readonly string GUI_MainDescription = new(nameof(GUI_MainDescription));
+    public static readonly string GUI_AppraiserDescription = new(nameof(GUI_AppraiserDescription));
+    public static readonly string GUI_AppraiserImageAlt = new(nameof(GUI_AppraiserImageAlt));
+    public static readonly string GUI_ReviewerDescription = new(nameof(GUI_ReviewerDescription));
+    public static readonly string GUI_ReviewerImageAlt = new(nameof(GUI_ReviewerImageAlt));
+    public static readonly string GUI_CheckInDescription = new(nameof(GUI_CheckInDescription));
+    public static readonly string GUI_CheckInImageAlt = new(nameof(GUI_CheckInImageAlt));
 }

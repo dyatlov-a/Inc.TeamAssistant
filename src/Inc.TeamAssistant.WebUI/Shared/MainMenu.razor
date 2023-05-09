@@ -53,6 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var appraiserPageUrl = "appraiser";
         var currentLanguageId = await ClientInfoService.GetCurrentLanguageId();
         var resources = await LanguageManager.GetResource();
         var linkBuilder = LanguageManager.CreateLinkBuilder();
@@ -60,19 +61,19 @@
         _languageItems = Settings.LanguageIds
             .Select(l => new LinkViewModel(
                 l.Value.ToUpper(),
-                l.Value.ToLower(),
+                $"{l.Value.ToLower()}/{appraiserPageUrl}",
                 selected: currentLanguageId.Equals(l)))
             .ToArray();
-        _logoUrl = linkBuilder(string.Empty);
+        _logoUrl = linkBuilder(appraiserPageUrl);
         _annotation = new(
             resources[Messages.GUI_Appraiser],
             resources[Messages.GUI_LinkMoveToBot],
             resources[Messages.GUI_Logo]);
         _menuItems = new[]
         {
-            new LinkViewModel(resources[Messages.GUI_Features], linkBuilder("#features"), "_top"),
-            new LinkViewModel(resources[Messages.GUI_LinkDevelopment], linkBuilder("#development"), "_top"),
-            new LinkViewModel(resources[Messages.GUI_Feedback], linkBuilder("#feedback"), "_top")
+            new LinkViewModel(resources[Messages.GUI_Features], linkBuilder($"{appraiserPageUrl}#features"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_LinkDevelopment], linkBuilder($"{appraiserPageUrl}#development"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_Feedback], linkBuilder($"{appraiserPageUrl}#feedback"), "_top")
         };
 
         await InvokeAsync(StateHasChanged);
