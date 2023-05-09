@@ -15,11 +15,13 @@ internal static class Messages
     public static MessageId Reviewer_EnterRequestForReview = new(nameof(Reviewer_EnterRequestForReview));
     public static MessageId Reviewer_TeamMinError = new(nameof(Reviewer_TeamMinError));
     public static MessageId Reviewer_JoinToTeamSuccess = new(nameof(Reviewer_JoinToTeamSuccess));
+    public static MessageId Reviewer_LeaveTeamSuccess = new(nameof(Reviewer_LeaveTeamSuccess));
     public static MessageId Reviewer_JoinSuccess = new(nameof(Reviewer_JoinSuccess));
     public static MessageId Reviewer_TeamNotFoundError = new(nameof(Reviewer_TeamNotFoundError));
     public static MessageId Reviewer_NeedReview = new(nameof(Reviewer_NeedReview));
     public static MessageId Reviewer_ReviewDeclined = new(nameof(Reviewer_ReviewDeclined));
     public static MessageId Reviewer_NewTaskForReview = new(nameof(Reviewer_NewTaskForReview));
+    public static MessageId Reviewer_LeaveHelp = new(nameof(Reviewer_LeaveHelp));
     public static MessageId Reviewer_CancelHelp = new(nameof(Reviewer_CancelHelp));
     public static MessageId Reviewer_CancelDialogFail = new(nameof(Reviewer_CancelDialogFail));
     public static MessageId Reviewer_BeginDialogFail = new(nameof(Reviewer_BeginDialogFail));
