@@ -159,7 +159,7 @@ ON CONFLICT (id) DO UPDATE SET
             SET
                 reviewer_id = @to_person_id,
                 next_notification = @next_notification
-            WHERE reviewer_id = @from_person_id AND team_id = @team_id;
+            WHERE reviewer_id = @from_person_id AND team_id = @team_id AND state != @is_archived;
 
             DELETE FROM review.players
             WHERE person_id = @from_person_id AND team_id = @team_id;",
@@ -168,7 +168,8 @@ ON CONFLICT (id) DO UPDATE SET
                 team_id = teamId,
                 from_person_id = from.Id,
                 to_person_id = to.Id,
-                next_notification = nextNotification
+                next_notification = nextNotification,
+                is_archived = (int)TaskForReviewState.IsArchived
             },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);
