@@ -21,14 +21,24 @@ internal sealed class ActivateAssessmentNotificationBuilder
 		if (commandResult is null)
 			throw new ArgumentNullException(nameof(commandResult));
 
+        var linkForDashboard = _linkBuilder.BuildLinkForDashboard(
+            commandResult.AssessmentSessionId,
+            commandResult.AssessmentSessionLanguageId);
+        var connectToDashboardMessage = await _messageBuilder.Build(
+            Messages.ConnectToDashboard,
+            commandResult.AssessmentSessionLanguageId,
+            commandResult.AssessmentSessionTitle,
+            linkForDashboard);
+        
         var linkForConnect = _linkBuilder.BuildLinkForConnect(commandResult.AssessmentSessionId);
-        var message = await _messageBuilder.Build(
+        var connectToSessionMessage = await _messageBuilder.Build(
             Messages.ConnectToSession,
             commandResult.AssessmentSessionLanguageId,
-            commandResult.Title,
+            commandResult.AssessmentSessionTitle,
             linkForConnect,
             commandResult.AssessmentSessionId.Value.ToString("N"));
 
-        yield return NotificationMessage.Create(fromId, message);
+        yield return NotificationMessage.Create(fromId, connectToDashboardMessage);
+        yield return NotificationMessage.Create(fromId, connectToSessionMessage);
     }
 }

@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
-using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToDashboard;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
@@ -59,12 +58,6 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Show
                 changeLanguageCommand,
                 languageInfo.LanguageId.Value));
         }
-
-        var connectToDashboardCommand = _commandProvider.GetCommand(typeof(ConnectToDashboardCommand));
-        commandsHelp.Add(await _messageBuilder.Build(
-            Messages.ConnectToDashboardHelp,
-            query.LanguageId,
-            connectToDashboardCommand));
 
         var addStoryToAssessmentSessionCommand = _commandProvider.GetCommand(typeof(AddStoryToAssessmentSessionCommand));
         commandsHelp.Add(await _messageBuilder.Build(

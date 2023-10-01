@@ -33,7 +33,6 @@
   "ExitFromAssessmentSessionHelp": "{0} - disconnect from current assessment session",
   "CreateAssessmentSessionHelp": "{0} - create new session",
   "AllowUseNameHelp": "{0} - allow to use username",
-  "ConnectToDashboardHelp": "{0} - get assessment session dashboard link",
   "ShowParticipantsHelp": "{0} - show list of users",
   "AddStoryToAssessmentSessionHelp": "{0} - add task for estimating",
   "ChangeLanguageHelp": "{0} - change {1} language",

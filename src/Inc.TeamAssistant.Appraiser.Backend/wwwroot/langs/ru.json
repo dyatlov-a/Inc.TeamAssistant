@@ -33,7 +33,6 @@
   "ExitFromAssessmentSessionHelp": "{0} - отключиться от сессии оценки",
   "CreateAssessmentSessionHelp": "{0} - создать сессию",
   "AllowUseNameHelp": "{0} - разрешить использовать имя пользователя",
-  "ConnectToDashboardHelp": "{0} - получить ссылку на доску сессии оценки",
   "ShowParticipantsHelp": "{0} - список пользователей",
   "AddStoryToAssessmentSessionHelp": "{0} - добавление задачи для оценки",
   "ChangeLanguageHelp": "{0} - set the {1} language",

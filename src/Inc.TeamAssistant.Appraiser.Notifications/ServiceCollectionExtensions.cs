@@ -4,7 +4,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToDashboard;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
@@ -33,7 +32,6 @@ public static class ServiceCollectionExtensions
 			
             .AddScoped<INotificationBuilder<ChangeLanguageResult>, ChangeLanguageNotificationBuilder>()
 			.AddScoped<INotificationBuilder<ActivateAssessmentResult>, ActivateAssessmentNotificationBuilder>()
-			.AddScoped<INotificationBuilder<ConnectToDashboardResult>, ConnectToDashboardNotificationBuilder>()
 			.AddScoped<INotificationBuilder<AddStoryToAssessmentSessionResult>, AddStoryToAssessmentSessionNotificationBuilder>()
 			.AddScoped<INotificationBuilder<ConnectToAssessmentSessionResult>, ConnectToAssessmentSessionNotificationBuilder>()
 			.AddScoped<INotificationBuilder<CreateAssessmentSessionResult>, CreateAssessmentSessionNotificationBuilder>()
