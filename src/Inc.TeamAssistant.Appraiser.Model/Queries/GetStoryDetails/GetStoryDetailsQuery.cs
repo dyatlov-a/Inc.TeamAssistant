@@ -3,9 +3,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 
-public sealed record GetStoryDetailsQuery(
-        AssessmentSessionId AssessmentSessionId,
-        int Width,
-        int Height,
-        bool DrawQuietZones)
+public sealed record GetStoryDetailsQuery(AssessmentSessionId AssessmentSessionId)
     : IRequest<GetStoryDetailsResult?>;

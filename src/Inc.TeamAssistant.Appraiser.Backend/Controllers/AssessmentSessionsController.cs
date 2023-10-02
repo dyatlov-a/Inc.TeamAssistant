@@ -15,19 +15,10 @@ public sealed class AssessmentSessionsController : ControllerBase
     }
 
     [HttpGet("story/{assessmentSessionId}")]
-	public async Task<IActionResult> GetStoryDetails(
-        Guid assessmentSessionId,
-        int width,
-        int height,
-        bool drawQuietZones,
-        CancellationToken cancellationToken)
-		=> Ok(await _service.GetStoryDetails(new(assessmentSessionId), width, height, drawQuietZones, cancellationToken));
+	public async Task<IActionResult> GetStoryDetails(Guid assessmentSessionId, CancellationToken cancellationToken)
+		=> Ok(await _service.GetStoryDetails(new(assessmentSessionId), cancellationToken));
 
     [HttpGet("link-for-connect")]
-    public async Task<IActionResult> LinkForConnect(
-        int width,
-        int height,
-        bool drawQuietZones,
-        CancellationToken cancellationToken)
-        => Ok(await _service.GetLinkForConnect(width, height, drawQuietZones, cancellationToken));
+    public async Task<IActionResult> LinkForConnect(CancellationToken cancellationToken)
+        => Ok(await _service.GetLinkForConnect(cancellationToken));
 }

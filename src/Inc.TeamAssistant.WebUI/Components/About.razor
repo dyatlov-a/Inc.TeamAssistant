@@ -44,10 +44,7 @@
             resources[Messages.GUI_Scan],
             resources[Messages.GUI_ToStart]);
 
-        _model = await Service.GetLinkForConnect(
-            QrCode.DefaultWidth,
-            QrCode.DefaultHeight,
-            QrCode.DefaultDrawQuietZones);
+        _model = await Service.GetLinkForConnect();
 
         await InvokeAsync(StateHasChanged);
     }

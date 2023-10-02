@@ -21,7 +21,7 @@ internal sealed class GetLinkForConnectQueryHandler : IRequestHandler<GetLinkFor
             throw new ArgumentNullException(nameof(query));
 
         var link = _linkBuilder.BuildLinkMoveToBot();
-        var code = _codeGenerator.Generate(link, query.Width, query.Height, query.DrawQuietZones);
+        var code = _codeGenerator.Generate(link);
 
         return Task.FromResult(new GetLinkForConnectResult(code));
     }

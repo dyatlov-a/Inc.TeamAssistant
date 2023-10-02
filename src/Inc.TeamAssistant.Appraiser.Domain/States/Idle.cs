@@ -31,7 +31,12 @@ internal sealed class Idle : AssessmentSessionState
 		if (AssessmentSession.Participants.Any(p => p.Id == participantId))
 			throw new AppraiserUserException(Messages.AppraiserConnectWithError, name, AssessmentSession.Title);
 
-		AssessmentSession.AddParticipant(new(participantId, name));
+		var participant = new Participant(participantId, name);
+		
+		AssessmentSession.AddParticipant(participant);
+		
+		if (AssessmentSession.Story != Story.Empty)
+			AssessmentSession.Story.AddStoryForEstimate(new (participant));
 	}
 
 	public override void Disconnect(ParticipantId participantId)

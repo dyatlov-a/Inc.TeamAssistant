@@ -18,15 +18,12 @@ internal sealed class AssessmentSessionsClient : IAssessmentSessionsService
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
         AssessmentSessionId assessmentSessionId,
-        int width,
-        int height,
-        bool drawQuietZones,
 		CancellationToken cancellationToken)
 	{
 		try
 		{
 			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoryDetailsResult?>>(
-				$"sessions/story/{assessmentSessionId.Value}?width={width}&height={height}&drawQuietZones={drawQuietZones}",
+				$"sessions/story/{assessmentSessionId.Value}",
 				cancellationToken);
 
 			if (result is null)
@@ -40,16 +37,12 @@ internal sealed class AssessmentSessionsClient : IAssessmentSessionsService
 		}
 	}
 
-    public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(
-        int width,
-        int height,
-        bool drawQuietZones,
-        CancellationToken cancellationToken)
+    public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken cancellationToken)
     {
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetLinkForConnectResult>>(
-                $"sessions/link-for-connect?width={width}&height={height}&drawQuietZones={drawQuietZones}",
+                "sessions/link-for-connect",
                 cancellationToken);
 
             if (result is null)
