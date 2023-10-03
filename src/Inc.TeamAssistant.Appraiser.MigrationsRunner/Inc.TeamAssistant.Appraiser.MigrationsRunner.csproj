@@ -3,7 +3,7 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Migrations\Inc.TeamAssistant.Appraiser.Migrations.csproj" />

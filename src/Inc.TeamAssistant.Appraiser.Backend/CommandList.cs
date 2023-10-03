@@ -7,7 +7,6 @@ internal static class CommandList
     public const string AllowUseName = "/allow_use_name";
     public const string CreateAssessmentSession = "/new";
     public const string ChangeLanguageForAssessmentSession = "/{0}";
-    public const string ConnectToDashboard = "/dashboard";
     public const string ShowParticipants = "/users";
     public const string AddStoryToAssessmentSession = "/add";
     public const string AcceptEstimate = "/accept";

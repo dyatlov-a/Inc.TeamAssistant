@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.IO;
@@ -11,7 +12,6 @@ using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
 using Renci.SshNet;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.Docker.DockerTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -52,16 +52,16 @@ public sealed class Build : NukeBuild
     [Solution]
     private readonly Solution Solution;
 
-    [GitVersion(Framework = "net6.0")]
+    [GitVersion(Framework = "net7.0")]
     private readonly GitVersion GitVersion;
 
     Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(OutputDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.DeleteDirectory());
+            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.DeleteDirectory());
+            OutputDirectory.CreateOrCleanDirectory();
         });
 
     Target Restore => _ => _
@@ -95,7 +95,7 @@ public sealed class Build : NukeBuild
                 .When(IsServerBuild, c => c.EnableUseSourceLink())
                 .EnableNoRestore()
                 .EnableNoBuild()
-                .CombineWith(Solution.GetProjects("*Tests"), (_, p) => _
+                .CombineWith(Solution.GetAllProjects("*Tests"), (_, p) => _
                     .SetProjectFile(p)
                     .SetLoggers($"junit;LogFileName={p.Name}-results.xml;MethodFormat=Class;FailureBodyFormat=Verbose")));
         });
@@ -109,7 +109,7 @@ public sealed class Build : NukeBuild
                 .EnableNoBuild()
                 .EnableNoRestore()
                 .CombineWith(ProjectsForPublish, (ss, p) => ss
-                    .SetProject(Solution.GetProject(p))
+                    .SetProject(Solution.GetAllProjects(p).SingleOrDefault())
                     .SetOutput(OutputDirectory / p)));
         });
 

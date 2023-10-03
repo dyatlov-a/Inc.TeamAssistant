@@ -27,20 +27,27 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
-
+        
         var existSessionAssessmentSession = _repository.Find(command.AppraiserId);
-        if (existSessionAssessmentSession?.Participants.Any(p => p.Id == command.AppraiserId) == true)
+        if (existSessionAssessmentSession is not null)
         {
-            var messageId = existSessionAssessmentSession.Id == command.AssessmentSessionId
-                ? Messages.AppraiserConnectWithError
-                : Messages.AppraiserConnectedToOtherSession;
+            if (existSessionAssessmentSession.Participants.Any(p => p.Id == command.AppraiserId))
+            {
+                var messageId = existSessionAssessmentSession.Id == command.AssessmentSessionId
+                    ? Messages.AppraiserConnectWithError
+                    : Messages.AppraiserConnectedToOtherSession;
 
-            throw new AppraiserUserException(messageId, command.AppraiserName, existSessionAssessmentSession.Title);
+                throw new AppraiserUserException(messageId, command.AppraiserName, existSessionAssessmentSession.Title);
+            }
+
+            if (existSessionAssessmentSession.Moderator.Id == command.AppraiserId
+                && existSessionAssessmentSession.Id != command.AssessmentSessionId)
+                throw new AppraiserUserException(Messages.AppraiserConnectedToOtherSession, command.AppraiserName, existSessionAssessmentSession.Title);
         }
-
+        
+        // TODO: remove nullable check
         if (command.AssessmentSessionId is null)
             throw new ApplicationException("AssessmentSessionId is empty.");
-
         var assessmentSession = _repository
 			.Find(command.AssessmentSessionId)
 			.EnsureForAppraiser(command.AppraiserName);

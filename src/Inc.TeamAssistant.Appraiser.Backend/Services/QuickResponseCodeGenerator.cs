@@ -1,20 +1,16 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using QRCoder;
+using Net.Codecrete.QrCodeGenerator;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
 internal sealed class QuickResponseCodeGenerator : IQuickResponseCodeGenerator
 {
-    public string Generate(string data, int width, int height, bool drawQuietZones)
+    public string Generate(string data)
     {
         if (string.IsNullOrWhiteSpace(data))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(data));
-
-        var eccLevel = QRCodeGenerator.ECCLevel.Q;
-
-        using var qrGenerator = new QRCodeGenerator();
-        using var qrCode = new SvgQRCode(qrGenerator.CreateQrCode(data, eccLevel));
-
-        return qrCode.GetGraphic(new(width, height), drawQuietZones);
+        
+        var qr = QrCode.EncodeText(data, QrCode.Ecc.Quartile);
+        return qr.ToSvgString(border: 0);
     }
 }

@@ -170,6 +170,9 @@ html {
 .qr-code__content {
     margin: 0 0 20px 0;
 }
+.qr-code__content svg {
+    width: 140px;
+}
 .qr-code__text {
     color: #000;
     font-size: 16px;

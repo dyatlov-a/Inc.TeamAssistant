@@ -16,15 +16,12 @@ internal sealed class AssessmentSessionsService : IAssessmentSessionsService
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
         AssessmentSessionId assessmentSessionId,
-        int width,
-        int height,
-        bool drawQuietZones,
 		CancellationToken cancellationToken)
 	{
 		try
 		{
 			var result = await _mediator.Send(
-                new GetStoryDetailsQuery(assessmentSessionId, width, height, drawQuietZones),
+                new GetStoryDetailsQuery(assessmentSessionId),
                 cancellationToken);
 
 			return result is null
@@ -37,16 +34,12 @@ internal sealed class AssessmentSessionsService : IAssessmentSessionsService
 		}
 	}
 
-    public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(
-        int width,
-        int height,
-        bool drawQuietZones,
-        CancellationToken cancellationToken)
+    public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken cancellationToken)
     {
         try
         {
             var result = await _mediator.Send(
-                new GetLinkForConnectQuery(width, height, drawQuietZones),
+                new GetLinkForConnectQuery(),
                 cancellationToken);
 
             return ServiceResult.Success(result);

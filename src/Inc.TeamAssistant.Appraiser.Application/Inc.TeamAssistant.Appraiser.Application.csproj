@@ -4,10 +4,9 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.1" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">

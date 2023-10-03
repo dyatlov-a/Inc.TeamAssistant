@@ -4,16 +4,14 @@ namespace Inc.TeamAssistant.WebUI.Pages.Annotations;
 
 internal sealed record MainPageAnnotation
 {
-    public MarkupString Features { get; }
-    public MarkupString Tools { get; }
-    public MarkupString Feedback { get; }
+    public MarkupString MainTitle { get; }
+    public MarkupString MainDescription { get; }
 
-    public MainPageAnnotation(string advantages, string tools, string feedback)
+    public MainPageAnnotation(string mainTitle, string mainDescription)
     {
-        Features = (MarkupString)advantages;
-        Tools = (MarkupString)tools;
-        Feedback = (MarkupString)feedback;
+        MainTitle = (MarkupString)mainTitle;
+        MainDescription = (MarkupString)mainDescription;
     }
-
-    public static readonly MainPageAnnotation Empty = new(string.Empty, string.Empty, string.Empty);
+    
+    public static readonly MainPageAnnotation Empty = new(string.Empty, string.Empty);
 }

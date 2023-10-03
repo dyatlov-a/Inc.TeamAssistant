@@ -9,14 +9,7 @@ public interface IAssessmentSessionsService
 {
 	Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
         AssessmentSessionId assessmentSessionId,
-        int width,
-        int height,
-        bool drawQuietZones,
 		CancellationToken cancellationToken = default);
 
-    Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(
-        int width,
-        int height,
-        bool drawQuietZones,
-        CancellationToken cancellationToken = default);
+    Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken cancellationToken = default);
 }

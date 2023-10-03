@@ -22,31 +22,26 @@ internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGener
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
 
-    public string Generate(string data, int width, int height, bool drawQuietZones)
+    public string Generate(string data)
     {
         if (string.IsNullOrWhiteSpace(data))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(data));
-
-        var cacheKey = GetKey(data, width, height, drawQuietZones);
         
         var cacheItem = _memoryCache.GetOrCreate(
-            cacheKey,
+            data,
             c =>
             {
                 c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
 
-                return _generator.Generate(data, width, height, drawQuietZones);
+                return _generator.Generate(data);
             });
         
         if (cacheItem is null)
         {
-            _logger.LogWarning("Can not get object with key {CacheKey} from cache", cacheKey);
-            return _generator.Generate(data, width, height, drawQuietZones);
+            _logger.LogWarning("Can not get object with key {CacheKey} from cache", data);
+            return _generator.Generate(data);
         }
 
         return cacheItem;
     }
-
-    private string GetKey(string data, int width, int height, bool drawQuietZones)
-        => $"{data}_w{width}_h{height}_d{drawQuietZones}";
 }

@@ -156,7 +156,10 @@
 <body>
     <component type="typeof(WebUI.App)" render-mode="WebAssemblyPrerendered"/>
 
-    <script src="~/_framework/blazor.webassembly.js?v=@Model.AppVersion"></script>
+    <script src="~/_framework/blazor.webassembly.js?v=@Model.AppVersion" autostart="false"></script>
+    <script>
+        Blazor.start();
+    </script>
 </body>
 
 </html>

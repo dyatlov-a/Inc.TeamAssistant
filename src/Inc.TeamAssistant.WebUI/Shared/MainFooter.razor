@@ -46,6 +46,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var appraiserPageUrl = "appraiser";
         var appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         var resources = await LanguageManager.GetResource();
         var linkBuilder = LanguageManager.CreateLinkBuilder();
@@ -60,9 +61,9 @@
 
         _aboutItems = new[]
         {
-            new LinkViewModel(resources[Messages.GUI_Features], linkBuilder("#features"), "_top"),
-            new LinkViewModel(resources[Messages.GUI_LinkDevelopment], linkBuilder("#development"), "_top"),
-            new LinkViewModel(resources[Messages.GUI_Feedback], linkBuilder("#feedback"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_Features], linkBuilder($"{appraiserPageUrl}#features"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_LinkDevelopment], linkBuilder($"{appraiserPageUrl}#development"), "_top"),
+            new LinkViewModel(resources[Messages.GUI_Feedback], linkBuilder($"{appraiserPageUrl}#feedback"), "_top"),
             new LinkViewModel(resources[Messages.GUI_LinkMoveToBot], "https://t.me/inc_teamassistant_appraiser_bot/", "_blank")
         };
         _developmentItems = new[]

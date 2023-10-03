@@ -28,22 +28,18 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 			throw new ArgumentNullException(nameof(query));
 
 		var assessmentSession = _repository.Find(query.AssessmentSessionId);
-
-        var result = assessmentSession is not null
-            ? Get(assessmentSession, query.Width, query.Height, query.DrawQuietZones)
-            : null;
-
+        var result = assessmentSession is not null ? Get(assessmentSession) : null;
         return Task.FromResult(result);
     }
 
-    private GetStoryDetailsResult Get(AssessmentSession assessmentSession, int width, int height, bool drawQuietZones)
+    private GetStoryDetailsResult Get(AssessmentSession assessmentSession)
     {
         if (assessmentSession is null)
             throw new ArgumentNullException(nameof(assessmentSession));
 
         var estimateEnded = assessmentSession.EstimateEnded();
         var link = _linkBuilder.BuildLinkForConnect(assessmentSession.Id);
-        var code = _codeGenerator.Generate(link, width, height, drawQuietZones);
+        var code = _codeGenerator.Generate(link);
 
         var items = assessmentSession.CurrentStory.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
