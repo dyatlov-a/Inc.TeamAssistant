@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.CheckIn.All.Model;
+namespace Inc.TeamAssistant.CheckIn.Domain;
 
 public sealed class Map
 {

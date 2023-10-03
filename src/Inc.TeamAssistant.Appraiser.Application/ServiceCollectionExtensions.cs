@@ -28,11 +28,6 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(addStoryOptions)
-            .AddMediatR(c =>
-            {
-                c.Lifetime = ServiceLifetime.Scoped;
-                c.RegisterServicesFromAssemblyContaining<AddStoryToAssessmentSessionCommandHandler>();
-            })
             .AddValidatorsFromAssemblyContaining<AddStoryToAssessmentSessionCommandValidator>(
                 ServiceLifetime.Scoped,
                 includeInternalTypes: true)

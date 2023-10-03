@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.CheckIn.All;
+namespace Inc.TeamAssistant.CheckIn.Application;
 
 public sealed class CheckInOptions
 {

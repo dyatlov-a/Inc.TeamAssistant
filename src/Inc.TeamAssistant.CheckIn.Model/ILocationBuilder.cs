@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.Appraiser.Model.CheckIn.Queries.GetLocations;
+using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 
-namespace Inc.TeamAssistant.Appraiser.Model.CheckIn;
+namespace Inc.TeamAssistant.CheckIn.Model;
 
 public interface ILocationBuilder
 {

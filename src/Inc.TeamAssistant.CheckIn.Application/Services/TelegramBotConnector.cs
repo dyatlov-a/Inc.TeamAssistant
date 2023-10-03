@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 
-namespace Inc.TeamAssistant.CheckIn.All.Services;
+namespace Inc.TeamAssistant.CheckIn.Application.Services;
 
 internal sealed class TelegramBotConnector : IHostedService
 {

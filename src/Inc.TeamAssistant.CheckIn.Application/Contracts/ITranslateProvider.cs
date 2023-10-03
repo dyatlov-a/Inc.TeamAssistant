@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Primitives;
 
-namespace Inc.TeamAssistant.CheckIn.All.Contracts;
+namespace Inc.TeamAssistant.CheckIn.Application.Contracts;
 
 public interface ITranslateProvider
 {

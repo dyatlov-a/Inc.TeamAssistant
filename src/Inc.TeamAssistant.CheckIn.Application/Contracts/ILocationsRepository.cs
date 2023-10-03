@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.CheckIn.All.Model;
+using Inc.TeamAssistant.CheckIn.Domain;
 
-namespace Inc.TeamAssistant.CheckIn.All.Contracts;
+namespace Inc.TeamAssistant.CheckIn.Application.Contracts;
 
 public interface ILocationsRepository
 {

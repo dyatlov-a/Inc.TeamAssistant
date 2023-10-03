@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
-using Inc.TeamAssistant.Appraiser.Model.CheckIn.Queries.GetLocations;
+using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.CheckIn;
 

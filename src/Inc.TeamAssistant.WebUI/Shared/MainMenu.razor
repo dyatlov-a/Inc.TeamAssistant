@@ -20,7 +20,7 @@
 
                 @foreach (var item in _languageItems)
                 {
-                    <li class="menu__item menu__item_hidden-on-tablet"><a href="#" @onclick="@(() => ChangeLanguage(item.Url))" @onclick:preventDefault="true" class="menu__link">@item.Title</a></li>
+                    <li class="menu__item menu__item_hidden-on-tablet"><a href="#" @onclick="@(() => MoveTo(item.Url))" @onclick:preventDefault="true" class="menu__link">@item.Title</a></li>
                 }
             </ul>
         </nav>
@@ -30,7 +30,7 @@
 
         @foreach (var item in _languageItems)
         {
-            <a href="#" @onclick="@(() => ChangeLanguage(item.Url))" @onclick:preventDefault="true" class="header__lang-item header__lang-item_active-@item.Selected.ToString().ToLower()">@item.Title</a>
+            <a href="#" @onclick="@(() => MoveTo(item.Url))" @onclick:preventDefault="true" class="header__lang-item header__lang-item_active-@item.Selected.ToString().ToLower()">@item.Title</a>
         }
 
         <a href="#" class="header__open" @onclick="ChangeMenuState" @onclick:preventDefault="true"><span class="header__burger"></span></a>
@@ -49,7 +49,7 @@
     private void ChangeMenuState() => _isMenuOpened = !_isMenuOpened;
     private void Close() => _isMenuOpened = false;
 
-    private void ChangeLanguage(string lang) => NavigationManager.NavigateTo($"/{lang}/", forceLoad: true);
+    private void MoveTo(string url) => NavigationManager.NavigateTo($"/{url}", forceLoad: true);
 
     protected override async Task OnInitializedAsync()
     {

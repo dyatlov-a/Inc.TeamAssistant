@@ -1,25 +1,24 @@
 using System.Text.Json;
-using Inc.TeamAssistant.CheckIn.All.Contracts;
-using Inc.TeamAssistant.CheckIn.All.Model;
+using Inc.TeamAssistant.CheckIn.Application.Contracts;
+using Inc.TeamAssistant.CheckIn.Application.Extensions;
+using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Inc.TeamAssistant.CheckIn.All.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 
-namespace Inc.TeamAssistant.CheckIn.All.Services;
+namespace Inc.TeamAssistant.CheckIn.Application.Services;
 
 internal sealed class TelegramBotMessageHandler
 {
     private readonly ILogger<TelegramBotMessageHandler> _logger;
-    private readonly ILocationsRepository _locationsRepository;
     private readonly string _connectToMapLinkTemplate;
     private readonly IServiceProvider _serviceProvider;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
-        ILocationsRepository locationsRepository,
         IServiceProvider serviceProvider,
         string connectToMapLinkTemplate)
     {
@@ -27,7 +26,6 @@ internal sealed class TelegramBotMessageHandler
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectToMapLinkTemplate));
 
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _locationsRepository = locationsRepository ?? throw new ArgumentNullException(nameof(locationsRepository));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _connectToMapLinkTemplate = connectToMapLinkTemplate;
     }
@@ -46,6 +44,7 @@ internal sealed class TelegramBotMessageHandler
 
             using var scope = _serviceProvider.CreateScope();
             var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var languageId = update.Message.From.GetLanguageId();
 
             if (update.Message.Chat.Id == update.Message.From.Id)
@@ -61,27 +60,23 @@ internal sealed class TelegramBotMessageHandler
 
             if (update.Message?.Location is null)
                 return;
-
-            var existsMap = await _locationsRepository.Find(update.Message.Chat.Id, cancellationToken);
-            var map = existsMap ?? new(update.Message.Chat.Id);
-
-            var data = JsonSerializer.Serialize(update);
-            var location = new LocationOnMap(
+            
+            var addLocationToMapCommand = new AddLocationToMapCommand(
+                update.Message.Chat.Id,
                 update.Message.From.Id,
                 update.Message.From.GetUserName(),
                 update.Message.Location.Longitude,
                 update.Message.Location.Latitude,
-                data,
-                map);
-
-            await _locationsRepository.Insert(location, cancellationToken);
-
-            await client.DeleteMessageAsync(update.Message.Chat.Id, update.Message.MessageId, cancellationToken);
-
-            if (existsMap is null)
+                JsonSerializer.Serialize(update));
+            
+            var addLocationToMapResult = await mediator.Send(addLocationToMapCommand, cancellationToken);
+            
+            if (addLocationToMapResult.FirstLocationOnMap)
             {
-                var link = string.Format(_connectToMapLinkTemplate, languageId.Value, map.Id.ToString("N"));
-
+                var link = string.Format(
+                    _connectToMapLinkTemplate,
+                    languageId.Value,
+                    addLocationToMapResult.MapId.ToString("N"));
                 var linkToMap = await client.SendTextMessageAsync(
                     update.Message.Chat.Id,
                     await translateProvider.Get(Messages.CheckIn_ConnectLinkText, languageId, link),
@@ -92,6 +87,8 @@ internal sealed class TelegramBotMessageHandler
                     linkToMap.MessageId,
                     cancellationToken: cancellationToken);
             }
+            
+            await client.DeleteMessageAsync(update.Message.Chat.Id, update.Message.MessageId, cancellationToken);
         }
         catch (ApiRequestException ex)
         {

@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
+using Inc.TeamAssistant.CheckIn.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Controllers;

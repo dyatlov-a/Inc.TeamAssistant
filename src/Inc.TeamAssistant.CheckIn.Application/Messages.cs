@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Primitives;
 
-namespace Inc.TeamAssistant.CheckIn.All;
+namespace Inc.TeamAssistant.CheckIn.Application;
 
 internal static class Messages
 {

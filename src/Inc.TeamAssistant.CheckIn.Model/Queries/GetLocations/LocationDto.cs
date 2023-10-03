@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Appraiser.Model.CheckIn.Queries.GetLocations;
+namespace Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 
 public sealed record LocationDto(
     string DisplayName,

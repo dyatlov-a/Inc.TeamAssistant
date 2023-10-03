@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application;
+using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Backend;
 using Inc.TeamAssistant.Appraiser.Backend.Hubs;
 using Inc.TeamAssistant.Appraiser.Backend.Services;
@@ -7,9 +8,11 @@ using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Services;
 using Inc.TeamAssistant.Appraiser.DataAccess.InMemory;
 using Inc.TeamAssistant.Appraiser.DataAccess.Postgres;
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
 using Inc.TeamAssistant.Appraiser.Notifications;
-using Inc.TeamAssistant.CheckIn.All;
+using Inc.TeamAssistant.CheckIn.Application;
+using Inc.TeamAssistant.CheckIn.Application.Contracts;
+using Inc.TeamAssistant.CheckIn.DataAccess;
+using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Reviewer.All;
 using Inc.TeamAssistant.Reviewer.All.DialogContinuations;
 using Inc.TeamAssistant.Reviewer.All.Holidays;
@@ -25,16 +28,24 @@ var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOp
 var holidayOptions = builder.Configuration.GetRequiredSection(nameof(HolidayOptions)).Get<HolidayOptions>()!;
 
 builder.Services
+	.AddMediatR(c =>
+	{
+		c.Lifetime = ServiceLifetime.Scoped;
+		c.RegisterServicesFromAssemblyContaining<IAssessmentSessionRepository>();
+		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
+	})
+		
     .AddApplication(builder.Configuration)
     .AddInMemoryDataAccess()
     .AddPostgresDataAccess(connectionString, Settings.AnonymousUser)
 	.AddNotifications()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
 
-    .AddSingleton<ICheckInService, CheckInService>()
+    .AddScoped<ICheckInService, CheckInService>()
     .AddScoped<ILocationBuilder, DummyLocationBuilder>()
-    .AddScoped<Inc.TeamAssistant.CheckIn.All.Contracts.ITranslateProvider, TranslateProvider>()
-    .AddCheckIn(checkInOptions, connectionString)
+    .AddScoped<ITranslateProvider, TranslateProvider>()
+    .AddCheckInApplication(checkInOptions)
+    .AddCheckInDataAccess(connectionString)
 
     .AddScoped<Inc.TeamAssistant.Reviewer.All.Contracts.ITranslateProvider, TranslateProvider>()
     .AddReviewer(reviewerOptions, connectionString)

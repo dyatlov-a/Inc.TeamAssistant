@@ -1,8 +1,8 @@
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.WebUI;
 using Telegram.Bot.Types;
 
-namespace Inc.TeamAssistant.CheckIn.All.Extensions;
+namespace Inc.TeamAssistant.CheckIn.Application.Extensions;
 
 internal static class UserExtensions
 {

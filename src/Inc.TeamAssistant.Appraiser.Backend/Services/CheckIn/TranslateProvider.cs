@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Primitives;
-using Inc.TeamAssistant.CheckIn.All.Contracts;
+using Inc.TeamAssistant.CheckIn.Application.Contracts;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.CheckIn;
 

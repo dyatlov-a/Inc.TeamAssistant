@@ -1,9 +1,9 @@
 using Dapper;
-using Inc.TeamAssistant.CheckIn.All.Contracts;
-using Inc.TeamAssistant.CheckIn.All.Model;
+using Inc.TeamAssistant.CheckIn.Application.Contracts;
+using Inc.TeamAssistant.CheckIn.Domain;
 using Npgsql;
 
-namespace Inc.TeamAssistant.CheckIn.All.Internal;
+namespace Inc.TeamAssistant.CheckIn.DataAccess;
 
 internal sealed class LocationsRepository : ILocationsRepository
 {
