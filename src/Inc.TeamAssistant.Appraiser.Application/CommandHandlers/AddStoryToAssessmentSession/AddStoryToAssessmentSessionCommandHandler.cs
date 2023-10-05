@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.DialogContinuations;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
 
@@ -10,11 +11,11 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
     : IRequestHandler<AddStoryToAssessmentSessionCommand, AddStoryToAssessmentSessionResult>
 {
     private readonly IAssessmentSessionRepository _repository;
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
 
     public AddStoryToAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation dialogContinuation)
+        IDialogContinuation<ContinuationState> dialogContinuation)
 	{
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
@@ -30,7 +31,7 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
         assessmentSession.StorySelected(command.ModeratorId, command.Title.Trim(), command.Links);
-        _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterStory);
+        _dialogContinuation.End(command.ModeratorId.Value, ContinuationState.EnterStory);
 
         return Task.FromResult<AddStoryToAssessmentSessionResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
     }

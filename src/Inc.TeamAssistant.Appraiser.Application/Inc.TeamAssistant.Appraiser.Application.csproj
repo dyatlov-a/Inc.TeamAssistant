@@ -2,6 +2,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Domain\Inc.TeamAssistant.Appraiser.Domain.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.DialogContinuations\Inc.TeamAssistant.DialogContinuations.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />

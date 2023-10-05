@@ -1,7 +1,7 @@
 using System.Reflection;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Pages.Models;
@@ -34,7 +34,7 @@ internal sealed class HostPageModel : PageModel
         var currentLanguage = await _clientInfoService.GetCurrentLanguageId();
         var resourcesByLanguage = resources.Result.TryGetValue(currentLanguage.Value, out var data)
             ? data
-            : resources.Result[Settings.DefaultLanguageId.Value];
+            : resources.Result[LanguageSettings.DefaultLanguageId.Value];
 
         CurrentLanguageId = currentLanguage;
         AppVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();

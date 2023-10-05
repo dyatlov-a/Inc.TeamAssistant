@@ -4,18 +4,18 @@ using Inc.TeamAssistant.Appraiser.Backend;
 using Inc.TeamAssistant.Appraiser.Backend.Hubs;
 using Inc.TeamAssistant.Appraiser.Backend.Services;
 using Inc.TeamAssistant.Appraiser.Backend.Services.CheckIn;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Services;
-using Inc.TeamAssistant.Appraiser.DataAccess.InMemory;
 using Inc.TeamAssistant.Appraiser.DataAccess.Postgres;
 using Inc.TeamAssistant.Appraiser.Notifications;
 using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.Holidays;
+using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Reviewer.All;
-using Inc.TeamAssistant.Reviewer.All.DialogContinuations;
-using Inc.TeamAssistant.Reviewer.All.Holidays;
+using Inc.TeamAssistant.Users;
+using Inc.TeamAssistant.DialogContinuations;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 
@@ -34,20 +34,18 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<IAssessmentSessionRepository>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
 	})
+	.AddScoped<ITranslateProvider, TranslateProvider>()
 		
     .AddApplication(builder.Configuration)
-    .AddInMemoryDataAccess()
-    .AddPostgresDataAccess(connectionString, Settings.AnonymousUser)
+    .AddPostgresDataAccess(connectionString, UserSettings.AnonymousUser)
 	.AddNotifications()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
 
     .AddScoped<ICheckInService, CheckInService>()
     .AddScoped<ILocationBuilder, DummyLocationBuilder>()
-    .AddScoped<ITranslateProvider, TranslateProvider>()
     .AddCheckInApplication(checkInOptions)
     .AddCheckInDataAccess(connectionString)
-
-    .AddScoped<Inc.TeamAssistant.Reviewer.All.Contracts.ITranslateProvider, TranslateProvider>()
+	
     .AddReviewer(reviewerOptions, connectionString)
     .AddMemoryCache()
     .AddHolidays(connectionString, holidayOptions)

@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
-using Inc.TeamAssistant.Reviewer.All.Extensions;
+using Inc.TeamAssistant.DialogContinuations.Model;
 using Inc.TeamAssistant.Reviewer.All.Model;
+using Inc.TeamAssistant.Users.Extensions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 

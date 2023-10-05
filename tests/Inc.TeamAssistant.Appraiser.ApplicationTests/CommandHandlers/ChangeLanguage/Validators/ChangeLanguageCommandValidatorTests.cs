@@ -4,7 +4,7 @@ using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using NSubstitute;
 using Xunit;
 

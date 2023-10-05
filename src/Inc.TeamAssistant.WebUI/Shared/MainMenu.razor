@@ -3,6 +3,7 @@
 @using System.Text.Encodings.Web
 @using System.Text.Unicode
 @using System.Web
+@using Inc.TeamAssistant.Languages
 
 @inject LanguageManager LanguageManager
 @inject NavigationManager NavigationManager
@@ -58,7 +59,7 @@
         var resources = await LanguageManager.GetResource();
         var linkBuilder = LanguageManager.CreateLinkBuilder();
 
-        _languageItems = Settings.LanguageIds
+        _languageItems = LanguageSettings.LanguageIds
             .Select(l => new LinkViewModel(
                 l.Value.ToUpper(),
                 $"{l.Value.ToLower()}/{appraiserPageUrl}",

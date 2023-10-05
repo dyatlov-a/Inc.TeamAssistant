@@ -6,10 +6,11 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Backend.Extensions;
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Users.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
-using Inc.TeamAssistant.WebUI;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
@@ -41,7 +42,7 @@ internal sealed class TelegramBotMessageHandler
         if (!chatId.HasValue)
 	        return;
         
-        var userLanguageId = Settings.DefaultLanguageId;
+        var userLanguageId = LanguageSettings.DefaultLanguageId;
         using var scope = _serviceProvider.CreateScope();
         var commandFactory = scope.ServiceProvider.GetRequiredService<ICommandFactory>();
         var messageBuilder = scope.ServiceProvider.GetRequiredService<IMessageBuilder>();

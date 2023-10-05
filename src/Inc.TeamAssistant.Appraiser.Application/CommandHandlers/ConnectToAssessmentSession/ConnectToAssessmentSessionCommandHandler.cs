@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.DialogContinuations;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession;
 
@@ -11,11 +12,11 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
     : IRequestHandler<ConnectToAssessmentSessionCommand, ConnectToAssessmentSessionResult>
 {
     private readonly IAssessmentSessionRepository _repository;
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
 
     public ConnectToAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation dialogContinuation)
+        IDialogContinuation<ContinuationState> dialogContinuation)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
@@ -53,7 +54,7 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
 			.EnsureForAppraiser(command.AppraiserName);
 
 		assessmentSession.Connect(command.AppraiserId, command.AppraiserName);
-        _dialogContinuation.End(command.AppraiserId, ContinuationState.EnterSessionId);
+        _dialogContinuation.End(command.AppraiserId.Value, ContinuationState.EnterSessionId);
 
         var result = new ConnectToAssessmentSessionResult(
             assessmentSession.Moderator.Id,

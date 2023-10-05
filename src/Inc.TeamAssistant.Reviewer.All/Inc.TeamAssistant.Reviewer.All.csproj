@@ -3,13 +3,13 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-        <PackageReference Include="Telegram.Bot" Version="19.0.0" />
         <PackageReference Include="Dapper" Version="2.1.4" />
         <PackageReference Include="Npgsql" Version="7.0.6" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Primitives\Inc.TeamAssistant.Appraiser.Primitives.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.DialogContinuations\Inc.TeamAssistant.DialogContinuations.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Users\Inc.TeamAssistant.Users.csproj" />
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">

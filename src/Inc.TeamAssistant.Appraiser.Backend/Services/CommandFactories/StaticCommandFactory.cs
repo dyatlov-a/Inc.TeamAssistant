@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
@@ -14,6 +13,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.StartStorySelection;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Languages;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
@@ -54,7 +54,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
             [CommandList.AddStoryToAssessmentSession] = CreateStartStorySelectionCommand
         };
 
-        foreach (var language in Settings.LanguageIds)
+        foreach (var language in LanguageSettings.LanguageIds)
         {
             var command = string.Format(CommandList.ChangeLanguageForAssessmentSession, language.Value);
             commands.Add(command, c => new ChangeLanguageCommand(c.UserId, c.UserName, language));

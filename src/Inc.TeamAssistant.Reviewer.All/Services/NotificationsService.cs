@@ -1,5 +1,6 @@
+using Inc.TeamAssistant.Holidays;
+using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Reviewer.All.Contracts;
-using Inc.TeamAssistant.Reviewer.All.Holidays;
 using Inc.TeamAssistant.Reviewer.All.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

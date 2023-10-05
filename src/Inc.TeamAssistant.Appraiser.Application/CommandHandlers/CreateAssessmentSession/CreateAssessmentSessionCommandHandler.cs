@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
+using Inc.TeamAssistant.DialogContinuations;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.CreateAssessmentSession;
@@ -9,12 +10,12 @@ internal sealed class CreateAssessmentSessionCommandHandler
     : IRequestHandler<CreateAssessmentSessionCommand, CreateAssessmentSessionResult>
 {
     private readonly IAssessmentSessionRepository _repository;
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
     private readonly IAssessmentSessionMetrics _metrics;
 
     public CreateAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation dialogContinuation,
+        IDialogContinuation<ContinuationState> dialogContinuation,
         IAssessmentSessionMetrics metrics)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -37,7 +38,7 @@ internal sealed class CreateAssessmentSessionCommandHandler
             var moderator = new Participant(command.ModeratorId, command.ModeratorName);
             var assessmentSession = new AssessmentSession(command.ChatId, moderator, command.LanguageId);
 
-            _dialogContinuation.Begin(command.ModeratorId, ContinuationState.EnterTitle);
+            _dialogContinuation.TryBegin(command.ModeratorId.Value, ContinuationState.EnterTitle);
             _repository.Add(assessmentSession);
 
             _metrics.Created();

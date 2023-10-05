@@ -1,9 +1,9 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
 using Inc.TeamAssistant.Appraiser.Backend.Services.MessageProviders;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+using Inc.TeamAssistant.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(webRootPath))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
 
-        foreach (var languageId in Settings.LanguageIds)
+        foreach (var languageId in LanguageSettings.LanguageIds)
             services.AddSingleton(new LanguageContext(languageId, string.Format(CommandList.ChangeLanguageForAssessmentSession, languageId.Value)));
 
         services

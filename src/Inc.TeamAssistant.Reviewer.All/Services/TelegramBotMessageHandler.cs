@@ -1,7 +1,8 @@
 using System.Text;
+using Inc.TeamAssistant.DialogContinuations;
+using Inc.TeamAssistant.DialogContinuations.Model;
+using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Reviewer.All.Contracts;
-using Inc.TeamAssistant.Reviewer.All.DialogContinuations;
-using Inc.TeamAssistant.Reviewer.All.DialogContinuations.Model;
 using Inc.TeamAssistant.Reviewer.All.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ internal sealed class TelegramBotMessageHandler
     private readonly ITeamRepository _teamRepository;
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IPersonRepository _personRepository;
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<string> _dialogContinuation;
     private readonly IServiceProvider _serviceProvider;
     private readonly string _botLink;
     private readonly string _linkForConnectTemplate;
@@ -31,7 +32,7 @@ internal sealed class TelegramBotMessageHandler
         ITeamRepository teamRepository,
         ITaskForReviewRepository taskForReviewRepository,
         IPersonRepository personRepository,
-        IDialogContinuation dialogContinuation,
+        IDialogContinuation<string> dialogContinuation,
         IServiceProvider serviceProvider,
         string botLink,
         string linkForConnectTemplate,
@@ -158,7 +159,7 @@ internal sealed class TelegramBotMessageHandler
         ITelegramBotClient client,
         ITranslateProvider translateProvider,
         CommandContext context,
-        DialogState? currentDialog,
+        DialogState<string>? currentDialog,
         CancellationToken cancellationToken)
     {
         if (client is null)
@@ -217,7 +218,7 @@ internal sealed class TelegramBotMessageHandler
         ITelegramBotClient client,
         ITranslateProvider translateProvider,
         CommandContext context,
-        DialogState currentDialog,
+        DialogState<string> currentDialog,
         CancellationToken cancellationToken)
     {
         if (client is null)
@@ -304,7 +305,7 @@ internal sealed class TelegramBotMessageHandler
         ITelegramBotClient client,
         ITranslateProvider translateProvider,
         CommandContext context,
-        DialogState currentDialog,
+        DialogState<string> currentDialog,
         CancellationToken cancellationToken)
     {
         if (client is null)
@@ -443,7 +444,7 @@ internal sealed class TelegramBotMessageHandler
         ITelegramBotClient client,
         ITranslateProvider translateProvider,
         CommandContext context,
-        DialogState currentDialog,
+        DialogState<string> currentDialog,
         CancellationToken cancellationToken)
     {
         if (client is null)

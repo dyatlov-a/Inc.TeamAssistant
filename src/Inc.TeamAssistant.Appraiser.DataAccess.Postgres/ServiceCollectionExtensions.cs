@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(anonymousUser));
 
         services
+            .AddSingleton<IAssessmentSessionRepository, AssessmentSessionInMemoryRepository>()
             .AddSingleton(_ => new UserSettingsProvider(connectionString, anonymousUser))
             .AddSingleton<IUserSettingsProvider>(
                 sp => new UserSettingsProviderFailTolerance(

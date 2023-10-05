@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
 

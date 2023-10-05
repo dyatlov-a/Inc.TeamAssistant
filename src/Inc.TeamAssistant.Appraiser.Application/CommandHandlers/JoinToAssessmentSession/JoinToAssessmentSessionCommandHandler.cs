@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
+using Inc.TeamAssistant.DialogContinuations;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.JoinToAssessmentSession;
@@ -7,9 +8,9 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.JoinToAssessme
 internal sealed class JoinToAssessmentSessionCommandHandler
     : IRequestHandler<JoinToAssessmentSessionCommand, JoinToAssessmentSessionResult>
 {
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
 
-    public JoinToAssessmentSessionCommandHandler(IDialogContinuation dialogContinuation)
+    public JoinToAssessmentSessionCommandHandler(IDialogContinuation<ContinuationState> dialogContinuation)
     {
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
@@ -21,7 +22,7 @@ internal sealed class JoinToAssessmentSessionCommandHandler
         if (command is null)
             throw new ArgumentNullException(nameof(command));
 
-        _dialogContinuation.Begin(command.AppraiserId, ContinuationState.EnterSessionId);
+        _dialogContinuation.TryBegin(command.AppraiserId.Value, ContinuationState.EnterSessionId);
 
         return Task.FromResult<JoinToAssessmentSessionResult>(new(command.LanguageId));
     }

@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.MessageProviders;
 
@@ -21,7 +21,7 @@ internal sealed class MessageProvider : IMessageProvider
     {
         var result = new Dictionary<string, Dictionary<string, string>>();
 
-        foreach (var languageId in Settings.LanguageIds)
+        foreach (var languageId in LanguageSettings.LanguageIds)
         {
             var language = Path.Combine(_webRootPath, "langs", $"{languageId.Value}.json");
             var resourcesAsString = await File.ReadAllTextAsync(language);

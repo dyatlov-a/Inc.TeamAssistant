@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services;
 
@@ -14,7 +14,7 @@ internal sealed class ClientInfoService : IClientInfoService
     }
 
     public async Task<LanguageId> GetCurrentLanguageId()
-        => GetLanguageIdFromUrlOrDefault() ?? await GetLanguageIdFromClientOrDefault() ?? Settings.DefaultLanguageId;
+        => GetLanguageIdFromUrlOrDefault() ?? await GetLanguageIdFromClientOrDefault() ?? LanguageSettings.DefaultLanguageId;
 
     public LanguageId? GetLanguageIdFromUrlOrDefault()
     {
@@ -23,8 +23,8 @@ internal sealed class ClientInfoService : IClientInfoService
         if (httpContext is null)
             return null;
 
-        return httpContext.Request.Path.HasValue && httpContext.Request.Path.Value.Length > Settings.LanguageCodeLength
-            ? Settings.LanguageIds.SingleOrDefault(l => httpContext.Request.Path.StartsWithSegments($"/{l.Value}", StringComparison.InvariantCultureIgnoreCase))
+        return httpContext.Request.Path.HasValue && httpContext.Request.Path.Value.Length > LanguageSettings.LanguageCodeLength
+            ? LanguageSettings.LanguageIds.SingleOrDefault(l => httpContext.Request.Path.StartsWithSegments($"/{l.Value}", StringComparison.InvariantCultureIgnoreCase))
             : default;
     }
 
@@ -37,8 +37,8 @@ internal sealed class ClientInfoService : IClientInfoService
 
         var clientLanguage = httpContext.Request.GetTypedHeaders().AcceptLanguage.MaxBy(x => x.Quality ?? 1)?.ToString();
 
-        var result = !string.IsNullOrWhiteSpace(clientLanguage) && clientLanguage.Length >= Settings.LanguageCodeLength
-            ? Settings.LanguageIds.SingleOrDefault(l => clientLanguage.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
+        var result = !string.IsNullOrWhiteSpace(clientLanguage) && clientLanguage.Length >= LanguageSettings.LanguageCodeLength
+            ? LanguageSettings.LanguageIds.SingleOrDefault(l => clientLanguage.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
             : null;
 
         return Task.FromResult(result);

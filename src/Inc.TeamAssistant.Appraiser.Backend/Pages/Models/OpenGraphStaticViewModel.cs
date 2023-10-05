@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.WebUI;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Pages.Models;
 
@@ -8,7 +8,7 @@ public sealed record OpenGraphStaticViewModel(LanguageId LanguageId, string Titl
     public string GetLocale() => $"{LanguageId.Value.ToLower()}_{LanguageId.Value.ToUpper()}";
 
     public static readonly OpenGraphStaticViewModel Empty = new(
-        Settings.DefaultLanguageId,
+        LanguageSettings.DefaultLanguageId,
         string.Empty,
         string.Empty,
         string.Empty);

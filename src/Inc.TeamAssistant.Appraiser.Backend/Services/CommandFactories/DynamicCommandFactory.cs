@@ -5,16 +5,19 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
+using Inc.TeamAssistant.DialogContinuations;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Backend.Services.CommandFactories;
 
 internal sealed class DynamicCommandFactory : ICommandFactory
 {
-    private readonly IDialogContinuation _dialogContinuation;
+    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
     private readonly AddStoryToAssessmentSessionOptions _options;
 
-    public DynamicCommandFactory(IDialogContinuation dialogContinuation, AddStoryToAssessmentSessionOptions options)
+    public DynamicCommandFactory(
+        IDialogContinuation<ContinuationState> dialogContinuation,
+        AddStoryToAssessmentSessionOptions options)
 	{
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -25,9 +28,12 @@ internal sealed class DynamicCommandFactory : ICommandFactory
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var continuation = _dialogContinuation.Find(context.UserId);
+        var continuation = _dialogContinuation.Find(context.UserId.Value);
 
-		return continuation switch
+        if (continuation is null)
+            return null;
+        
+		return continuation.ContinuationState switch
 		{
             ContinuationState.EnterTitle => new ActivateAssessmentCommand(
                 new(context.UserId.Value),
