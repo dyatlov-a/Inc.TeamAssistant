@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{73CA6C4E-FE6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.ApplicationTests", "tests\Inc.TeamAssistant.Appraiser.ApplicationTests\Inc.TeamAssistant.Appraiser.ApplicationTests.csproj", "{74473972-177A-4BF8-ACAA-0EBB619E5C59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.DataAccess.Postgres", "src\Inc.TeamAssistant.Appraiser.DataAccess.Postgres\Inc.TeamAssistant.Appraiser.DataAccess.Postgres.csproj", "{BCAEF60E-28CD-4315-8A95-2737F4FC18B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.DataAccess", "src\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj", "{BCAEF60E-28CD-4315-8A95-2737F4FC18B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.Migrations", "src\Inc.TeamAssistant.Appraiser.Migrations\Inc.TeamAssistant.Appraiser.Migrations.csproj", "{6E3EBCF7-4BA6-4635-B242-D5812775301C}"
 EndProject
@@ -42,13 +42,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.Application", "src\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj", "{16408C70-078E-4322-970D-1964C9608158}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.All", "src\Inc.TeamAssistant.Reviewer.All\Inc.TeamAssistant.Reviewer.All.csproj", "{23EF103D-FA94-40EA-BB7E-F3387D15E6A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.Application", "src\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj", "{23EF103D-FA94-40EA-BB7E-F3387D15E6A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reviewer", "reviewer", "{70E979AF-B6E2-4044-9161-91FA02A2644F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.WebUI", "src\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj", "{642949CD-0C5B-4596-9165-A7338DE1D88F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.AllTests", "tests\Inc.TeamAssistant.Reviewer.AllTests\Inc.TeamAssistant.Reviewer.AllTests.csproj", "{428A2391-4DEB-40AF-9591-D8BA7123429F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.DomainTests", "tests\Inc.TeamAssistant.Reviewer.DomainTests\Inc.TeamAssistant.Reviewer.DomainTests.csproj", "{428A2391-4DEB-40AF-9591-D8BA7123429F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.Domain", "src\Inc.TeamAssistant.CheckIn.Domain\Inc.TeamAssistant.CheckIn.Domain.csproj", "{09877689-83E7-4BBB-ABE8-6DDB59E09BCA}"
 EndProject
@@ -69,6 +69,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.HolidaysTests", "tests\Inc.TeamAssistant.HolidaysTests\Inc.TeamAssistant.HolidaysTests.csproj", "{39417B68-C33C-411E-8478-DD9C081A640A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.DialogContinuations", "src\Inc.TeamAssistant.DialogContinuations\Inc.TeamAssistant.DialogContinuations.csproj", "{D0D129F3-79DF-4DDC-B54C-F272582D78D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.Domain", "src\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj", "{529CC802-3552-4381-8D22-872890CC6A9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.DataAccess", "src\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj", "{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.Model", "src\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj", "{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -178,6 +184,18 @@ Global
 		{D0D129F3-79DF-4DDC-B54C-F272582D78D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0D129F3-79DF-4DDC-B54C-F272582D78D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0D129F3-79DF-4DDC-B54C-F272582D78D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{529CC802-3552-4381-8D22-872890CC6A9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529CC802-3552-4381-8D22-872890CC6A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529CC802-3552-4381-8D22-872890CC6A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529CC802-3552-4381-8D22-872890CC6A9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B8F7A67F-CFA3-4CF2-BACB-B14C282BF202} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
@@ -211,5 +229,8 @@ Global
 		{2A6D584C-D381-4405-9DDD-51D5AEF6AC2E} = {2819C5EE-D36B-4BE5-95D3-80BF8869051D}
 		{39417B68-C33C-411E-8478-DD9C081A640A} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
 		{D0D129F3-79DF-4DDC-B54C-F272582D78D6} = {2819C5EE-D36B-4BE5-95D3-80BF8869051D}
+		{529CC802-3552-4381-8D22-872890CC6A9E} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
+		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
+		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
 	EndGlobalSection
 EndGlobal

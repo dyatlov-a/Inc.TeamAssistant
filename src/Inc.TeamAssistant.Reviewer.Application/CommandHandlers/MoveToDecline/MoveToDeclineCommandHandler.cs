@@ -1,0 +1,64 @@
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
+using MediatR;
+using Telegram.Bot;
+
+namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline;
+
+internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclineCommand>
+{
+    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly ITelegramBotClient _client;
+    private readonly ITranslateProvider _translateProvider;
+
+    public MoveToDeclineCommandHandler(
+        ITaskForReviewRepository taskForReviewRepository,
+        IMessageBuilderService messageBuilderService,
+        ITelegramBotClient client,
+        ITranslateProvider translateProvider)
+    {
+        _taskForReviewRepository =
+            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _messageBuilderService =
+            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+    }
+
+    public async Task Handle(MoveToDeclineCommand command, CancellationToken cancellationToken)
+    {
+        if (command is null)
+            throw new ArgumentNullException(nameof(command));
+        
+        var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, cancellationToken);
+        if (taskForReview.CanDecline())
+        {
+            taskForReview.Decline();
+
+            if (taskForReview.MessageId.HasValue)
+            {
+                var newTaskForReview = await _messageBuilderService.NewTaskForReviewBuild(
+                    command.PersonLanguageId,
+                    taskForReview);
+                await _client.EditMessageTextAsync(
+                    taskForReview.ChatId,
+                    taskForReview.MessageId.Value,
+                    newTaskForReview.Text,
+                    entities: newTaskForReview.Entities,
+                    cancellationToken: cancellationToken);
+            }
+                
+            await _client.SendTextMessageAsync(
+                taskForReview.Reviewer.Id,
+                await _translateProvider.Get(
+                    Messages.Reviewer_OperationApplied,
+                    taskForReview.Reviewer.LanguageId,
+                    cancellationToken),
+                cancellationToken: cancellationToken);
+
+            await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Languages\Inc.TeamAssistant.Languages.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Inc.TeamAssistant.Reviewer.DomainTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>

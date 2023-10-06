@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.DialogContinuations\Inc.TeamAssistant.DialogContinuations.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Users\Inc.TeamAssistant.Users.csproj" />
+    </ItemGroup>
+</Project>

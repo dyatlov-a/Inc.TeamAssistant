@@ -7,11 +7,12 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess.Postgres\Inc.TeamAssistant.Appraiser.DataAccess.Postgres.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Notifications\Inc.TeamAssistant.Appraiser.Notifications.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.All\Inc.TeamAssistant.Reviewer.All.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.11" />
