@@ -7,7 +7,7 @@ services:
       - 80:80
       - 443:443
     depends_on:
-      - appraiser_backend
+      - gateway
     networks:
       - team_assistant
     restart: unless-stopped
@@ -15,14 +15,14 @@ services:
       - /home/inc_teamassistant_appraiser/nginx.conf:/etc/nginx/nginx.conf
       - /home/inc_teamassistant_appraiser/ssl/:/ssl/
 
-  appraiser_backend:
-    image: dyatlovhome/inc.teamassistant.appraiser:latest
+  gateway:
+    image: dyatlovhome/inc.teamassistant.gateway:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - TelegramBotOptions__AccessToken=
       - CheckInOptions__AccessToken=
       - ReviewerOptions__AccessToken=
-    container_name: appraiser_backend
+    container_name: gateway
     expose:
       - 8080
 #    ports:
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   migrate:
-    image: dyatlovhome/inc.teamassistant.appraiser.migrationsrunner:latest
+    image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
     container_name: migrate
     command: [ "migrate", "Host=database;Port=5432;Database=appraiser;User Id=postgres;Password=[hidden]" ]
     depends_on:
@@ -42,7 +42,7 @@ services:
       - team_assistant
 
 #  create:
-#    image: dyatlovhome/inc.teamassistant.appraiser.migrationsrunner:latest
+#    image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
 #    container_name: create
 #    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=[hidden]", "[hidden]" ]
 #    depends_on:

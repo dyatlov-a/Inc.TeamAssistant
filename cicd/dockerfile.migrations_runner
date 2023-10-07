@@ -14,7 +14,7 @@ RUN mkdir -p ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Appraiser.MigrationsRunner ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.MigrationsRunner ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
@@ -24,5 +24,5 @@ RUN rm -f *.sh \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Appraiser.MigrationsRunner.dll"]
+ENTRYPOINT ["dotnet", "Inc.TeamAssistant.MigrationsRunner.dll"]
 CMD []

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.Backend", "src\Inc.TeamAssistant.Appraiser.Backend\Inc.TeamAssistant.Appraiser.Backend.csproj", "{61649230-BDDC-4916-BD91-76125E1297C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Gateway", "src\Inc.TeamAssistant.Gateway\Inc.TeamAssistant.Gateway.csproj", "{61649230-BDDC-4916-BD91-76125E1297C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.Domain", "src\Inc.TeamAssistant.Appraiser.Domain\Inc.TeamAssistant.Appraiser.Domain.csproj", "{9F662515-1BAD-4BCC-B8EC-184124B163C4}"
 EndProject
@@ -28,11 +28,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.DataAccess", "src\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj", "{BCAEF60E-28CD-4315-8A95-2737F4FC18B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.Migrations", "src\Inc.TeamAssistant.Appraiser.Migrations\Inc.TeamAssistant.Appraiser.Migrations.csproj", "{6E3EBCF7-4BA6-4635-B242-D5812775301C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Migrations", "src\Inc.TeamAssistant.Migrations\Inc.TeamAssistant.Migrations.csproj", "{6E3EBCF7-4BA6-4635-B242-D5812775301C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "migrations", "migrations", "{7683BC47-3CD1-4F24-8571-EF8E61340045}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Appraiser.MigrationsRunner", "src\Inc.TeamAssistant.Appraiser.MigrationsRunner\Inc.TeamAssistant.Appraiser.MigrationsRunner.csproj", "{AD512F03-E2F2-49A2-BA51-54845B229B9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.MigrationsRunner", "src\Inc.TeamAssistant.MigrationsRunner\Inc.TeamAssistant.MigrationsRunner.csproj", "{AD512F03-E2F2-49A2-BA51-54845B229B9E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{85267DA4-474D-48B5-AD01-A3BCF5695CB7}"
 EndProject

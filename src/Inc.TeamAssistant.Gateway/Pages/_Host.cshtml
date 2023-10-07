@@ -1,0 +1,165 @@
+@page
+
+@namespace Inc.TeamAssistant.Gateway.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model Inc.TeamAssistant.Gateway.Pages.Models.HostPageModel
+
+<!DOCTYPE html>
+<html lang="@Model.CurrentLanguageId.Value">
+
+<head>
+    @if (Model.AnalyticsEnabled())
+    {
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-0CE9QRSN23"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'G-0CE9QRSN23');
+        </script>
+
+        <!-- yandex webmaster -->
+        <meta name="yandex-verification" content="f42a0a4b186bf128" />
+    }
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16x16.png">
+    <link rel="manifest" href="~/site.webmanifest">
+
+    @{ await Html.RenderPartialAsync("MetaStatic", Model.MetaStaticViewModel); }
+
+    @{ await Html.RenderPartialAsync("OpenGraphStatic", Model.OpenGraphStaticViewModel); }
+
+    <link href="~/css/main.css?v=@Model.AppVersion" rel="stylesheet"/>
+    <link href="~/Inc.TeamAssistant.WebUI.styles.css?v=@Model.AppVersion" rel="stylesheet"/>
+
+    <base href="~/"/>
+
+    <script>
+        window.browserJsFunctions = {
+            getLanguage: () => {
+                return navigator.language;
+            }
+        };
+        window.writeCookie = (name, value, days) => {
+            let expires;
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            }
+            else {
+                expires = "";
+            }
+            document.cookie = name + "=" + value + expires + "; path=/";
+        };
+        window.readCookie = (cname) => {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) === 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        };
+    </script>
+
+    @if (Model.HasMap)
+    {
+        <link rel="stylesheet" href="~/leaflet/leaflet.css?v=@Model.AppVersion"/>
+        <script src="~/leaflet/leaflet.js?v=@Model.AppVersion"></script>
+
+        <script>
+            (function() {
+                let markers = [], points = [], routes = {}, layers = {}, mapControlName;
+
+                window.locations = {
+                    builder: {
+                        addMarker: (displayName, longitude, latitude, timeOffset, index, isActual, hasHistory) => {
+                            let popupContent = "<p><b>" + displayName + "</b><br>UTC " + timeOffset;
+
+                            if (hasHistory) {
+                                 popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
+                                    + index + ")' class='marker-btn'>" + (index === 0 ? 'Hide route' : 'Show route')
+                                    + "</button>";
+                            }
+
+                            popupContent += "</p>";
+
+                            markers[markers.length] = L
+                                .marker([latitude, longitude], { opacity: isActual ? 1 : 0.5 })
+                                .bindPopup(popupContent)
+                            points[points.length] = new L.LatLng(latitude, longitude);
+                        },
+                        addLayer: (title) => {
+                            layers[title] = L.layerGroup(markers);
+                            markers = [];
+                            points = [];
+                        },
+                        addRoute: (title) => {
+                            let layerGroup = L.layerGroup(markers);
+                            let polyline = new L.Polyline(points, {
+                                color: 'blue',
+                                weight: 2,
+                                opacity: 0.5,
+                                smoothFactor: 1
+                            });
+                            routes[title] = layerGroup;
+                            polyline.addTo(layerGroup);
+                            markers = [];
+                            points = [];
+                        },
+                        build: () => {
+                            let osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+                                minZoom: 2,
+                                maxZoom: 19,
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            });
+
+                            let defaultLayers = [osm];
+                            Object.keys(layers).forEach(function(key) {
+                                defaultLayers[defaultLayers.length] = layers[key];
+                            });
+
+                            let map = L.map('map', {
+                                center: [48.073777, 67.402377],
+                                zoom: 3,
+                                layers: defaultLayers
+                            });
+
+                            let control = L.control.layers({ ...layers, ...routes }).addTo(map);
+                            mapControlName = 'leaflet-base-layers_' + control._leaflet_id;
+                        }
+                    },
+                    markerClickHandler: (index) => {
+                        document.getElementsByName(mapControlName)[index].click();
+                    }
+                };
+            })();
+        </script>
+    }
+</head>
+
+<body>
+    <component type="typeof(WebUI.App)" render-mode="WebAssemblyPrerendered"/>
+
+    <script src="~/_framework/blazor.webassembly.js?v=@Model.AppVersion" autostart="false"></script>
+    <script>
+        Blazor.start();
+    </script>
+</body>
+
+</html>
