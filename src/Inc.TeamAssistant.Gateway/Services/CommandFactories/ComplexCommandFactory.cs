@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;
@@ -13,7 +14,7 @@ internal sealed class ComplexCommandFactory : ICommandFactory
 		_dynamicCommandFactory = dynamicCommandFactory ?? throw new ArgumentNullException(nameof(dynamicCommandFactory));
     }
 
-	public IBaseRequest? TryCreate(CommandContext context)
+	public IRequest<CommandResult>? TryCreate(CommandContext context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));

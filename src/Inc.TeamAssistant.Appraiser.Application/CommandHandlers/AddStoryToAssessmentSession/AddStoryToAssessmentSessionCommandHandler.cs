@@ -3,25 +3,33 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
 
 internal sealed class AddStoryToAssessmentSessionCommandHandler
-    : IRequestHandler<AddStoryToAssessmentSessionCommand, AddStoryToAssessmentSessionResult>
+    : IRequestHandler<AddStoryToAssessmentSessionCommand, CommandResult>
 {
     private readonly IAssessmentSessionRepository _repository;
     private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
+    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly IMessagesSender _messagesSender;
 
     public AddStoryToAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation<ContinuationState> dialogContinuation)
+        IDialogContinuation<ContinuationState> dialogContinuation,
+        SummaryByStoryBuilder summaryByStoryBuilder,
+        IMessagesSender messagesSender)
 	{
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
+        _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+        _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
     }
 
-    public Task<AddStoryToAssessmentSessionResult> Handle(
+    public async Task<CommandResult> Handle(
         AddStoryToAssessmentSessionCommand command,
         CancellationToken cancellationToken)
     {
@@ -32,7 +40,10 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
 
         assessmentSession.StorySelected(command.ModeratorId, command.Title.Trim(), command.Links);
         _dialogContinuation.End(command.ModeratorId.Value, ContinuationState.EnterStory);
+        
+        await _messagesSender.StoryChanged(assessmentSession.Id);
 
-        return Task.FromResult<AddStoryToAssessmentSessionResult>(new(SummaryByStoryConverter.ConvertTo(assessmentSession)));
+        return CommandResult.Build(
+            await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(assessmentSession)));
     }
 }

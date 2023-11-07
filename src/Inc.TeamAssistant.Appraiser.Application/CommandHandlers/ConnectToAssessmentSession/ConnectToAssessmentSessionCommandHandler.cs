@@ -4,25 +4,36 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession;
 
 internal sealed class ConnectToAssessmentSessionCommandHandler
-    : IRequestHandler<ConnectToAssessmentSessionCommand, ConnectToAssessmentSessionResult>
+    : IRequestHandler<ConnectToAssessmentSessionCommand, CommandResult>
 {
     private readonly IAssessmentSessionRepository _repository;
     private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
+    private readonly IMessagesSender _messagesSender;
+    private readonly IMessageBuilder _messageBuilder;
+    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
 
     public ConnectToAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation<ContinuationState> dialogContinuation)
+        IDialogContinuation<ContinuationState> dialogContinuation,
+        IMessagesSender messagesSender,
+        IMessageBuilder messageBuilder,
+        SummaryByStoryBuilder summaryByStoryBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
+        _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
     }
 
-    public Task<ConnectToAssessmentSessionResult> Handle(
+    public async Task<CommandResult> Handle(
         ConnectToAssessmentSessionCommand command,
         CancellationToken cancellationToken)
     {
@@ -56,14 +67,29 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
 		assessmentSession.Connect(command.AppraiserId, command.AppraiserName);
         _dialogContinuation.End(command.AppraiserId.Value, ContinuationState.EnterSessionId);
 
-        var result = new ConnectToAssessmentSessionResult(
-            assessmentSession.Moderator.Id,
-            command.AppraiserName,
-            IsModerator: command.AppraiserId != assessmentSession.Moderator.Id,
-            assessmentSession.Title,
-            assessmentSession.InProgress(),
-            SummaryByStoryConverter.ConvertTo(assessmentSession));
+        var notifications = new List<NotificationMessage>(3);
+        var connectedSuccessMessage = await _messageBuilder.Build(
+            Messages.ConnectedSuccess,
+            assessmentSession.LanguageId,
+            assessmentSession.Title);
+        notifications.Add(NotificationMessage.Create(command.TargetChatId, connectedSuccessMessage));
 
-        return Task.FromResult(result);
+        if (command.AppraiserId != assessmentSession.Moderator.Id)
+        {
+            var appraiserAddedMessage = await _messageBuilder.Build(
+                Messages.AppraiserAdded,
+                assessmentSession.LanguageId,
+                command.AppraiserName,
+                assessmentSession.Title);
+            notifications.Add(NotificationMessage.Create(assessmentSession.Moderator.Id.Value, appraiserAddedMessage));
+        }
+
+        if (assessmentSession.InProgress())
+        {
+            await _messagesSender.StoryChanged(assessmentSession.Id);
+            notifications.Add(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(assessmentSession)));
+        }
+
+        return CommandResult.Build(notifications.ToArray());
     }
 }

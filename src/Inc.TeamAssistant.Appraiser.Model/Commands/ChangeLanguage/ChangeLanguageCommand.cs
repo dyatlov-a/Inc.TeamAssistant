@@ -5,5 +5,9 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 
-public sealed record ChangeLanguageCommand(ParticipantId ModeratorId, string ModeratorName, LanguageId LanguageId)
-    : IRequest<ChangeLanguageResult>, IWithModerator, IWithLanguage;
+public sealed record ChangeLanguageCommand(
+        long TargetChatId,
+        ParticipantId ModeratorId,
+        string ModeratorName,
+        LanguageId LanguageId)
+    : IRequest<CommandResult>, IWithModerator, IWithLanguage;

@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Microsoft.AspNetCore.SignalR;

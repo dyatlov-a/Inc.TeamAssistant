@@ -5,5 +5,8 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 
-public sealed record JoinToAssessmentSessionCommand(ParticipantId AppraiserId, LanguageId LanguageId)
-    : IRequest<JoinToAssessmentSessionResult>, IWithLanguage;
+public sealed record JoinToAssessmentSessionCommand(
+        long TargetChatId,
+        ParticipantId AppraiserId,
+        LanguageId LanguageId)
+    : IRequest<CommandResult>, IWithLanguage;

@@ -6,8 +6,9 @@ using MediatR;
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 
 public sealed record ConnectToAssessmentSessionCommand(
+		long TargetChatId,
         AssessmentSessionId? AssessmentSessionId,
         LanguageId LanguageId,
         ParticipantId AppraiserId,
         string AppraiserName)
-	: IRequest<ConnectToAssessmentSessionResult>, IWithAppraiser, IWithLanguage;
+	: IRequest<CommandResult>, IWithAppraiser, IWithLanguage;

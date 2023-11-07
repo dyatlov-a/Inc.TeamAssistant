@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 
-public sealed record ShowParticipantsQuery(ParticipantId AppraiserId, string AppraiserName)
-    : IRequest<ShowParticipantsResult>, IWithAppraiser;
+public sealed record ShowParticipantsQuery(long TargetChatId, ParticipantId AppraiserId, string AppraiserName)
+    : IRequest<CommandResult>, IWithAppraiser;

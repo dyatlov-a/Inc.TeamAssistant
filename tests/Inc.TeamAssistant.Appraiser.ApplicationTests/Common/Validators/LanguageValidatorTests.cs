@@ -41,6 +41,7 @@ public sealed class LanguageValidatorTests : IClassFixture<ValidatorOptionsFixtu
     public async Task Validate_LanguageIncorrect_ShouldBeNotValid(string language)
     {
         var command = new ChangeLanguageCommand(
+            _fixture.Create<long>(),
             _fixture.Create<ParticipantId>(),
             _fixture.Create<string>(),
             new(language));
@@ -56,6 +57,7 @@ public sealed class LanguageValidatorTests : IClassFixture<ValidatorOptionsFixtu
         foreach (var languageId in _languages.Keys)
         {
             var command = new ChangeLanguageCommand(
+                _fixture.Create<long>(),
                 _fixture.Create<ParticipantId>(),
                 _fixture.Create<string>(),
                 new(languageId));

@@ -4,4 +4,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 
-public sealed record ShowHelpQuery(LanguageId LanguageId) : IRequest<ShowHelpResult>, IWithLanguage;
+public sealed record ShowHelpQuery(long TargetChatId, LanguageId LanguageId)
+    : IRequest<CommandResult>, IWithLanguage;

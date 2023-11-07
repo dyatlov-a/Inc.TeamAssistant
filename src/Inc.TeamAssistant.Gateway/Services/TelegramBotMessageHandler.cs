@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Gateway.Extensions;
 using Inc.TeamAssistant.Gateway.Services.CommandFactories;
 using Inc.TeamAssistant.Languages;
@@ -136,7 +136,7 @@ internal sealed class TelegramBotMessageHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Can not send message to chat {ChatId}", chatId);
+            _logger.LogError(ex, "Can not send message to chat {TargetChatId}", chatId);
         }
     }
 
@@ -144,7 +144,7 @@ internal sealed class TelegramBotMessageHandler
 		ITelegramBotClient client,
 		long chatId,
 		string userName,
-        IBaseRequest command,
+        IRequest<CommandResult> command,
 		IServiceScope scope,
         CancellationToken cancellationToken)
 	{
@@ -160,16 +160,8 @@ internal sealed class TelegramBotMessageHandler
 		var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
 		var commandResult = await mediator.Send(command, cancellationToken);
-		if (commandResult is null)
-			return;
 
-		var notificationProvider = (IAsyncEnumerable<NotificationMessage>) Build(
-			(dynamic) commandResult,
-			chatId,
-			scope,
-			cancellationToken);
-
-		await foreach (var notification in notificationProvider.WithCancellation(cancellationToken))
+		foreach (var notification in commandResult.Notifications)
 			await ProcessNotification(client, notification, userName, scope, cancellationToken);
 	}
 
@@ -230,28 +222,6 @@ internal sealed class TelegramBotMessageHandler
 					replyMarkup: ToReplyMarkup(notificationMessage),
 					cancellationToken: cancellationToken);
 			}
-	}
-
-	private async IAsyncEnumerable<NotificationMessage> Build<TCommandResult>(
-		TCommandResult commandResult,
-		long fromId,
-		IServiceScope scope,
-		[EnumeratorCancellation] CancellationToken cancellationToken)
-	{
-		if (commandResult is null)
-			throw new ArgumentNullException(nameof(commandResult));
-		if (scope is null)
-			throw new ArgumentNullException(nameof(scope));
-
-		var notificationBuilder = scope.ServiceProvider.GetService<INotificationBuilder<TCommandResult>>();
-
-		if (notificationBuilder is null)
-			yield break;
-
-		await foreach (var notification in notificationBuilder
-										   .Build(commandResult, fromId)
-										   .WithCancellation(cancellationToken))
-			yield return notification;
 	}
 
 	public Task OnError(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)

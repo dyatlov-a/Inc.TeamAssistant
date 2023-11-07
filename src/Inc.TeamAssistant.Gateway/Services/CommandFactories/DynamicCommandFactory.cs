@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
 using MediatR;
 
@@ -23,7 +24,7 @@ internal sealed class DynamicCommandFactory : ICommandFactory
         _options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
-	public IBaseRequest? TryCreate(CommandContext context)
+	public IRequest<CommandResult>? TryCreate(CommandContext context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
@@ -36,6 +37,7 @@ internal sealed class DynamicCommandFactory : ICommandFactory
 		return continuation.ContinuationState switch
 		{
             ContinuationState.EnterTitle => new ActivateAssessmentCommand(
+                context.ChatId,
                 new(context.UserId.Value),
                 context.UserName,
                 context.Cmd),
@@ -74,7 +76,7 @@ internal sealed class DynamicCommandFactory : ICommandFactory
 
         if (Guid.TryParse(assessmentSessionIdValue, out var value))
         {
-            return new(new(value), context.LanguageId, context.UserId, context.UserName);
+            return new(context.ChatId, new(value), context.LanguageId, context.UserId, context.UserName);
         }
 
         throw new AppraiserUserException(Messages.InvalidFormatAssessmentSessionId);

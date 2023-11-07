@@ -6,8 +6,8 @@ using MediatR;
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 
 public sealed record CreateAssessmentSessionCommand(
-        long ChatId,
+        long TargetChatId,
         ParticipantId ModeratorId,
         string ModeratorName,
         LanguageId LanguageId)
-	: IRequest<CreateAssessmentSessionResult>, IWithModerator, IWithLanguage;
+	: IRequest<CommandResult>, IWithModerator, IWithLanguage;

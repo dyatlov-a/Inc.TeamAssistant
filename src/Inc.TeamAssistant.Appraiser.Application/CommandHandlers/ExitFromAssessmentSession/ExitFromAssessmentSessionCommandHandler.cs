@@ -3,20 +3,32 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ExitFromAssessmentSession;
 
 internal sealed class ExitFromAssessmentSessionCommandHandler
-    : IRequestHandler<ExitFromAssessmentSessionCommand, ExitFromAssessmentSessionResult>
+    : IRequestHandler<ExitFromAssessmentSessionCommand, CommandResult>
 {
     private readonly IAssessmentSessionRepository _repository;
+    private readonly IMessagesSender _messagesSender;
+    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly IMessageBuilder _messageBuilder;
 
-	public ExitFromAssessmentSessionCommandHandler(IAssessmentSessionRepository repository)
-	{
-		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
-	}
+	public ExitFromAssessmentSessionCommandHandler(
+        IAssessmentSessionRepository repository,
+        IMessagesSender messagesSender,
+        SummaryByStoryBuilder summaryByStoryBuilder,
+        IMessageBuilder messageBuilder)
+    {
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
+        _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+    }
 
-    public Task<ExitFromAssessmentSessionResult> Handle(
+    public async Task<CommandResult> Handle(
         ExitFromAssessmentSessionCommand command,
         CancellationToken cancellationToken)
     {
@@ -29,13 +41,28 @@ internal sealed class ExitFromAssessmentSessionCommandHandler
 
 		assessmentSession.Disconnect(command.AppraiserId);
 
-        var result = new ExitFromAssessmentSessionResult(
-            assessmentSession.Moderator.Id,
+        var disconnectedFromSessionMessage = await _messageBuilder.Build(
+            Messages.DisconnectedFromSession,
+            assessmentSession.LanguageId,
+            assessmentSession.Title);
+        var appraiserDisconnectedFromSessionMessage = await _messageBuilder.Build(
+            Messages.AppraiserDisconnectedFromSession,
+            assessmentSession.LanguageId,
             command.AppraiserName,
-            assessmentSession.Title,
-            assessmentSession.InProgress(),
-            SummaryByStoryConverter.ConvertTo(assessmentSession));
+            assessmentSession.Title);
 
-        return Task.FromResult(result);
+        var notifications = new List<NotificationMessage>();
+        notifications.Add(NotificationMessage.Create(command.TargetChatId, disconnectedFromSessionMessage));
+        notifications.Add(NotificationMessage.Create(
+            assessmentSession.Moderator.Id.Value,
+            appraiserDisconnectedFromSessionMessage));
+
+        if (assessmentSession.InProgress())
+        {
+            await _messagesSender.StoryChanged(assessmentSession.Id);
+            notifications.Add(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(assessmentSession)));
+        }
+
+        return CommandResult.Build(notifications.ToArray());
     }
 }

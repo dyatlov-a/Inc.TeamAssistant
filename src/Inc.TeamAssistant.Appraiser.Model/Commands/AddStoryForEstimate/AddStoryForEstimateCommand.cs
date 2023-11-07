@@ -8,4 +8,4 @@ public sealed record AddStoryForEstimateCommand(
         AssessmentSessionId AssessmentSessionId,
         string ModeratorName,
 		int StoryExternalId)
-	: IRequest<AddStoryForEstimateResult>, IWithModerator;
+	: IRequest<CommandResult>, IWithModerator;

@@ -2,6 +2,7 @@ using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession.Validators;
 using Inc.TeamAssistant.Appraiser.Application.PipelineBehaviors;
+using Inc.TeamAssistant.Appraiser.Application.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +28,10 @@ public static class ServiceCollectionExtensions
         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
         services
+            .AddScoped<SummaryByStoryBuilder>()
             .AddSingleton(addStoryOptions)
             .AddValidatorsFromAssemblyContaining<AddStoryToAssessmentSessionCommandValidator>(
-                ServiceLifetime.Scoped,
+                lifetime: ServiceLifetime.Scoped,
                 includeInternalTypes: true)
             .TryAddEnumerable(ServiceDescriptor.Scoped(
                 typeof(IPipelineBehavior<,>),

@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Primitives;
 
-namespace Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
 public interface IMessagesSender
 {

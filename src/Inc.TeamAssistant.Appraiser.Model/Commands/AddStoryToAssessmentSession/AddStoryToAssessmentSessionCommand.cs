@@ -10,4 +10,4 @@ public sealed record AddStoryToAssessmentSessionCommand(
     ParticipantId ModeratorId,
     string ModeratorName,
     string Title,
-    IReadOnlyCollection<string> Links) : IRequest<AddStoryToAssessmentSessionResult>, IWithModerator, IWithLanguage;
+    IReadOnlyCollection<string> Links) : IRequest<CommandResult>, IWithModerator, IWithLanguage;

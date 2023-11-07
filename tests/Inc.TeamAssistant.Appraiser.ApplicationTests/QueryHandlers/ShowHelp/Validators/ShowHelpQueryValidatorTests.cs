@@ -33,7 +33,7 @@ public sealed class ShowHelpQueryValidatorTests
         _messageBuilder = Substitute.For<IMessageBuilder>();
         _messageBuilder.Build(Arg.Any<MessageId>(), Arg.Any<LanguageId>(), Arg.Any<object[]>()).Returns(_fixture.Create<string>());
 
-        _validQuery = new(new("en"));
+        _validQuery = new(_fixture.Create<long>(), new("en"));
         _target = new ShowHelpQueryValidator(new LanguageValidator(_messageProvider));
     }
 
@@ -48,7 +48,7 @@ public sealed class ShowHelpQueryValidatorTests
     [Fact]
     public async Task Validate_SetLanguageValidator_ShouldBeCalled()
     {
-        var query = new ShowHelpQuery(_fixture.Create<LanguageId>());
+        var query = new ShowHelpQuery(_fixture.Create<long>(), _fixture.Create<LanguageId>());
 
         var actual = await _target.ValidateAsync(query);
 

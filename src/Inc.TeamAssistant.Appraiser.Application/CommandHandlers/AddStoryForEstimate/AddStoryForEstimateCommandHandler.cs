@@ -2,11 +2,11 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryForEstimate;
 
-internal sealed class AddStoryForEstimateCommandHandler
-    : IRequestHandler<AddStoryForEstimateCommand, AddStoryForEstimateResult>
+internal sealed class AddStoryForEstimateCommandHandler : IRequestHandler<AddStoryForEstimateCommand, CommandResult>
 {
     private readonly IAssessmentSessionRepository _repository;
 
@@ -15,9 +15,7 @@ internal sealed class AddStoryForEstimateCommandHandler
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 	}
 
-    public Task<AddStoryForEstimateResult> Handle(
-		AddStoryForEstimateCommand command,
-        CancellationToken cancellationToken)
+    public Task<CommandResult> Handle(AddStoryForEstimateCommand command, CancellationToken cancellationToken)
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
@@ -28,6 +26,6 @@ internal sealed class AddStoryForEstimateCommandHandler
 
 		assessmentSession.CurrentStory.SetExternalId(command.StoryExternalId);
 
-        return Task.FromResult<AddStoryForEstimateResult>(new());
+        return Task.FromResult(CommandResult.Empty);
     }
 }

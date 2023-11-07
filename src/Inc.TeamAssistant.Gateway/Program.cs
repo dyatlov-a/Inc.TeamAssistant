@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Appraiser.Application;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess;
 using Inc.TeamAssistant.WebUI.Services;
-using Inc.TeamAssistant.Appraiser.Notifications;
 using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
@@ -40,7 +39,6 @@ builder.Services
 		
     .AddApplication(builder.Configuration)
     .AddAppraiserDataAccess()
-	.AddNotifications()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
 
     .AddScoped<ICheckInService, CheckInService>()

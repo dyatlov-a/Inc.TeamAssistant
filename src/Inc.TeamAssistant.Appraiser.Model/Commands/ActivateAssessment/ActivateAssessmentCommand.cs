@@ -4,5 +4,9 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 
-public sealed record ActivateAssessmentCommand(ParticipantId ModeratorId, string ModeratorName, string Title)
-	: IRequest<ActivateAssessmentResult>, IWithModerator;
+public sealed record ActivateAssessmentCommand(
+		long TargetChatId,
+		ParticipantId ModeratorId,
+		string ModeratorName,
+		string Title)
+	: IRequest<CommandResult>, IWithModerator;

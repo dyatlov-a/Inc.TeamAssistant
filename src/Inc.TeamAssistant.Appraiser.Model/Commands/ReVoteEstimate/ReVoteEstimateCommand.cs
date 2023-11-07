@@ -5,4 +5,4 @@ using MediatR;
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 
 public sealed record ReVoteEstimateCommand(ParticipantId ModeratorId, string ModeratorName)
-    : IRequest<ReVoteEstimateResult>, IWithModerator;
+    : IRequest<CommandResult>, IWithModerator;

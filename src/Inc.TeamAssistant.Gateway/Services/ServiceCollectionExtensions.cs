@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using Inc.TeamAssistant.Gateway.Services.CommandFactories;
 using Inc.TeamAssistant.Gateway.Services.MessageProviders;
 using Inc.TeamAssistant.Languages;

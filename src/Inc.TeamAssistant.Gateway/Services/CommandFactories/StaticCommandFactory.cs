@@ -9,6 +9,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Appraiser.Model.Commands.StartStorySelection;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using Inc.TeamAssistant.Appraiser.Primitives;
@@ -19,7 +20,7 @@ namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;
 
 internal sealed class StaticCommandFactory : ICommandFactory
 {
-    private readonly Dictionary<string, Func<CommandContext, IBaseRequest?>> _commandList;
+    private readonly Dictionary<string, Func<CommandContext, IRequest<CommandResult>?>> _commandList;
     private readonly HashSet<string> _targets;
 
 	public StaticCommandFactory()
@@ -28,7 +29,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
         _commandList = BuildCommands();
     }
 
-	public IBaseRequest? TryCreate(CommandContext context)
+	public IRequest<CommandResult>? TryCreate(CommandContext context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
@@ -40,22 +41,22 @@ internal sealed class StaticCommandFactory : ICommandFactory
         return commandKey is null ? null : _commandList[commandKey](context);
     }
 
-    private Dictionary<string, Func<CommandContext, IBaseRequest?>> BuildCommands()
+    private Dictionary<string, Func<CommandContext, IRequest<CommandResult>?>> BuildCommands()
 	{
-        var commands = new Dictionary<string, Func<CommandContext, IBaseRequest?>>
+        var commands = new Dictionary<string, Func<CommandContext, IRequest<CommandResult>?>>
         {
             [CommandList.Start] = CreateConnectAppraiserCommand,
-            [CommandList.JoinToSession] = c => new JoinToAssessmentSessionCommand(c.UserId, c.LanguageId),
-            [CommandList.ExitFromAssessmentSession] = c => new ExitFromAssessmentSessionCommand(c.UserId, c.UserName),
+            [CommandList.JoinToSession] = c => new JoinToAssessmentSessionCommand(c.ChatId, c.UserId, c.LanguageId),
+            [CommandList.ExitFromAssessmentSession] = c => new ExitFromAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName),
             [CommandList.CreateAssessmentSession] = c => new CreateAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName, c.LanguageId),
-            [CommandList.ShowParticipants] = c => new ShowParticipantsQuery(c.UserId, c.UserName),
+            [CommandList.ShowParticipants] = c => new ShowParticipantsQuery(c.ChatId, c.UserId, c.UserName),
             [CommandList.AddStoryToAssessmentSession] = CreateStartStorySelectionCommand
         };
 
         foreach (var language in LanguageSettings.LanguageIds)
         {
             var command = string.Format(CommandList.ChangeLanguageForAssessmentSession, language.Value);
-            commands.Add(command, c => new ChangeLanguageCommand(c.UserId, c.UserName, language));
+            commands.Add(command, c => new ChangeLanguageCommand(c.ChatId, c.UserId, c.UserName, language));
         }
 
         foreach (var target in _targets)
@@ -63,8 +64,8 @@ internal sealed class StaticCommandFactory : ICommandFactory
         
         commands.Add(CommandList.AcceptEstimate, c => new AcceptEstimateCommand(c.UserId, c.UserName));
         commands.Add(CommandList.ReVoteEstimate, c => new ReVoteEstimateCommand(c.UserId, c.UserName));
-        commands.Add(CommandList.FinishAssessmentSession, c => new FinishAssessmentSessionCommand(c.UserId, c.UserName));
-        commands.Add(CommandList.Help, c => new ShowHelpQuery(c.LanguageId));
+        commands.Add(CommandList.FinishAssessmentSession, c => new FinishAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName));
+        commands.Add(CommandList.Help, c => new ShowHelpQuery(c.ChatId, c.LanguageId));
 
         return commands;
     }
@@ -74,10 +75,10 @@ internal sealed class StaticCommandFactory : ICommandFactory
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        return new(context.UserId, context.UserName);
+        return new(context.ChatId, context.UserId, context.UserName);
     }
 
-    private IBaseRequest CreateEstimateStoryCommand(CommandContext context)
+    private IRequest<CommandResult> CreateEstimateStoryCommand(CommandContext context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
@@ -85,7 +86,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
         return new SetEstimateForStoryCommand(context.UserId, context.UserName, context.Cmd);
     }
 
-    private IBaseRequest CreateConnectAppraiserCommand(CommandContext context)
+    private IRequest<CommandResult> CreateConnectAppraiserCommand(CommandContext context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
@@ -97,6 +98,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
             : default(AssessmentSessionId);
 
         return new ConnectToAssessmentSessionCommand(
+            context.ChatId,
             assessmentSessionId,
             context.LanguageId,
             context.UserId,

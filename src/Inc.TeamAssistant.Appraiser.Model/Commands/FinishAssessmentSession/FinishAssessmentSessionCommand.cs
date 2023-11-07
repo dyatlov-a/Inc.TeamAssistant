@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 
-public sealed record FinishAssessmentSessionCommand(ParticipantId ModeratorId, string ModeratorName)
-    : IRequest<FinishAssessmentSessionResult>, IWithModerator;
+public sealed record FinishAssessmentSessionCommand(long TargetChatId, ParticipantId ModeratorId, string ModeratorName)
+    : IRequest<CommandResult>, IWithModerator;

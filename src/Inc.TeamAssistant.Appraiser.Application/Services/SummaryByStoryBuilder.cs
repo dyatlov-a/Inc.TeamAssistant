@@ -3,11 +3,10 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Notifications.Contracts;
 using Inc.TeamAssistant.Appraiser.Primitives;
 using MediatR;
 
-namespace Inc.TeamAssistant.Appraiser.Notifications.Services;
+namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
 internal sealed class SummaryByStoryBuilder
 {
@@ -66,7 +65,7 @@ internal sealed class SummaryByStoryBuilder
         return notification;
     }
 
-    private IBaseRequest AddStoryForEstimate(
+    private IRequest<CommandResult> AddStoryForEstimate(
         AssessmentSessionId assessmentSessionId,
         string userName,
         int messageId)

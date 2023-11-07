@@ -1,8 +1,9 @@
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;
 
 public interface ICommandFactory
 {
-	IBaseRequest? TryCreate(CommandContext context);
+	IRequest<CommandResult>? TryCreate(CommandContext context);
 }

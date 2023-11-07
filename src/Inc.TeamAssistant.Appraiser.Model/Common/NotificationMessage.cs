@@ -1,12 +1,12 @@
 using MediatR;
 
-namespace Inc.TeamAssistant.Appraiser.Notifications.Contracts;
+namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
 public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
     
-	public delegate IBaseRequest ResponseHandler(long chatId, string userName, int messageId);
+	public delegate IRequest<CommandResult> ResponseHandler(long chatId, string userName, int messageId);
 
 	public string Text { get; }
     public IReadOnlyCollection<long>? TargetChatIds { get; }

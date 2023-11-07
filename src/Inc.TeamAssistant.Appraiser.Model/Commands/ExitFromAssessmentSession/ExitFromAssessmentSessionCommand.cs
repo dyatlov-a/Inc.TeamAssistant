@@ -4,5 +4,8 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 
-public sealed record ExitFromAssessmentSessionCommand(ParticipantId AppraiserId, string AppraiserName)
-    : IRequest<ExitFromAssessmentSessionResult>, IWithAppraiser;
+public sealed record ExitFromAssessmentSessionCommand(
+        long TargetChatId,
+        ParticipantId AppraiserId,
+        string AppraiserName)
+    : IRequest<CommandResult>, IWithAppraiser;

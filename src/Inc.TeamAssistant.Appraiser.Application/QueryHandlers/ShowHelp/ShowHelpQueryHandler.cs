@@ -1,3 +1,4 @@
+using System.Text;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
@@ -7,13 +8,14 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
+using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.ShowHelp;
 
-internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, ShowHelpResult>
+internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, CommandResult>
 {
     private readonly ICommandProvider _commandProvider;
     private readonly IMessageBuilder _messageBuilder;
@@ -29,7 +31,7 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Show
         _languagesInfo = languagesInfo ?? throw new ArgumentNullException(nameof(languagesInfo));
     }
 
-    public async Task<ShowHelpResult> Handle(ShowHelpQuery query, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(ShowHelpQuery query, CancellationToken cancellationToken)
     {
         if (query == null)
             throw new ArgumentNullException(nameof(query));
@@ -96,7 +98,12 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Show
             Messages.ExitFromAssessmentSessionHelp,
             query.LanguageId,
             exitFromAssessmentSessionCommand));
+        
+        var messageBuilder = new StringBuilder();
 
-        return new(query.LanguageId, commandsHelp);
+        foreach (var commandHelp in commandsHelp)
+            messageBuilder.AppendLine(commandHelp);
+
+        return CommandResult.Build(NotificationMessage.Create(query.TargetChatId, messageBuilder.ToString()));
     }
 }
