@@ -19,16 +19,11 @@ internal sealed class TelegramBotMessageHandler
 {
     private readonly ILogger<TelegramBotMessageHandler> _logger;
 	private readonly IServiceProvider _serviceProvider;
-    private readonly IUserSettingsProvider _userSettingsProvider;
 
-    public TelegramBotMessageHandler(
-        ILogger<TelegramBotMessageHandler> logger,
-        IServiceProvider serviceProvider,
-        IUserSettingsProvider userSettingsProvider)
+    public TelegramBotMessageHandler(ILogger<TelegramBotMessageHandler> logger, IServiceProvider serviceProvider)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		_serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _userSettingsProvider = userSettingsProvider ?? throw new ArgumentNullException(nameof(userSettingsProvider));
     }
 
     public async Task Handle(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
@@ -102,32 +97,24 @@ internal sealed class TelegramBotMessageHandler
 	        && update.Message.From is not null
 	        && !update.Message.From.IsBot)
 	    {
-		    var userName = await _userSettingsProvider.GetUserName(new(update.Message.From.Id), cancellationToken);
-		    var userLanguageId = update.Message.From.GetLanguageId();
-		    
 		    return new(
 			    update.Message.Text,
 			    update.Message.Chat.Id,
 			    new(update.Message.From.Id),
-			    userName,
-			    update.Message.From.GetUserName(),
-			    userLanguageId);
+			    update.Message.From.FirstName,
+			    update.Message.From.GetLanguageId());
 	    }
 
 	    if (!string.IsNullOrWhiteSpace(update.CallbackQuery?.Data)
 	        && update.CallbackQuery.Message is not null
 	        && !update.CallbackQuery.From.IsBot)
 	    {
-		    var userName = await _userSettingsProvider.GetUserName(new(update.CallbackQuery.From.Id), cancellationToken);
-		    var userLanguageId = update.CallbackQuery.From.GetLanguageId();
-		    
 		    return new CommandContext(
 			    update.CallbackQuery.Data,
 			    update.CallbackQuery.Message.Chat.Id,
 			    new(update.CallbackQuery.From.Id),
-			    userName,
-			    update.CallbackQuery.From.GetUserName(),
-			    userLanguageId);
+			    update.CallbackQuery.From.FirstName,
+			    update.CallbackQuery.From.GetLanguageId());
 	    }
 
 	    return null;

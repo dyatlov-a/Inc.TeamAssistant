@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
@@ -47,7 +46,6 @@ internal sealed class StaticCommandFactory : ICommandFactory
         {
             [CommandList.Start] = CreateConnectAppraiserCommand,
             [CommandList.JoinToSession] = c => new JoinToAssessmentSessionCommand(c.UserId, c.LanguageId),
-            [CommandList.AllowUseName] = c => new AllowUseNameCommand(c.UserId, c.RealUserName),
             [CommandList.ExitFromAssessmentSession] = c => new ExitFromAssessmentSessionCommand(c.UserId, c.UserName),
             [CommandList.CreateAssessmentSession] = c => new CreateAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName, c.LanguageId),
             [CommandList.ShowParticipants] = c => new ShowParticipantsQuery(c.UserId, c.UserName),

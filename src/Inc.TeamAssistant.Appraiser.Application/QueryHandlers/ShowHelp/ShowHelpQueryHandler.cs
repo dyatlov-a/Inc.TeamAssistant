@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
@@ -42,9 +41,6 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Show
             Messages.CreateAssessmentSessionHelp,
             query.LanguageId,
             createAssessmentSessionCommand));
-
-        var allowUseNameCommand = _commandProvider.GetCommand(typeof(AllowUseNameCommand));
-        commandsHelp.Add(await _messageBuilder.Build(Messages.AllowUseNameHelp, query.LanguageId, allowUseNameCommand));
 
         foreach (var languageInfo in _languagesInfo)
         {

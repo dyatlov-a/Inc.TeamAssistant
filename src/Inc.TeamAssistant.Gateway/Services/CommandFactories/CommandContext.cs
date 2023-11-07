@@ -8,5 +8,4 @@ public sealed record CommandContext(
     long ChatId,
     ParticipantId UserId,
     string UserName,
-    string RealUserName,
     LanguageId LanguageId);

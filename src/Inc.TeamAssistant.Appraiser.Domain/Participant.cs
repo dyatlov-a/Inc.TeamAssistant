@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 public sealed class Participant
 {
 	public ParticipantId Id { get; }
-    public string Name { get; internal set; }
+    public string Name { get; }
 
     public Participant(ParticipantId id, string name)
     {

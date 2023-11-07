@@ -4,7 +4,6 @@ internal static class CommandList
 {
     public const string Start = "/start";
     public const string JoinToSession = "/join";
-    public const string AllowUseName = "/allow_use_name";
     public const string CreateAssessmentSession = "/new";
     public const string ChangeLanguageForAssessmentSession = "/{0}";
     public const string ShowParticipants = "/users";

@@ -64,7 +64,7 @@ internal sealed class TelegramBotMessageHandler
             var addLocationToMapCommand = new AddLocationToMapCommand(
                 update.Message.Chat.Id,
                 update.Message.From.Id,
-                update.Message.From.GetUserName(),
+                update.Message.From.FirstName,
                 update.Message.Location.Longitude,
                 update.Message.Location.Latitude,
                 JsonSerializer.Serialize(update));

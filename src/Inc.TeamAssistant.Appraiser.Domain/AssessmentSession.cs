@@ -44,21 +44,6 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
 	public bool InProgress() => _state.IsProgress();
     public bool EstimateEnded() => _state.EstimateEnded();
 
-    public void SetAppraiserName(ParticipantId participantId, string userName)
-    {
-        if (participantId is null)
-            throw new ArgumentNullException(nameof(participantId));
-        if (string.IsNullOrWhiteSpace(userName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(userName));
-
-        var participant = _participants.SingleOrDefault(p => p.Id.Equals(participantId));
-        if (participant is not null)
-            participant.Name = userName;
-
-        if (Moderator.Id.Equals(participantId))
-            Moderator.Name = userName;
-    }
-
     void IAssessmentSessionAccessor.AddParticipant(Participant participant)
 	{
 		if (participant is null)

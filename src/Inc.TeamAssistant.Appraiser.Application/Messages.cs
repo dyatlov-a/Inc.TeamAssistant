@@ -16,7 +16,6 @@ internal static class Messages
 
     public static readonly MessageId ExitFromAssessmentSessionHelp = new(nameof(ExitFromAssessmentSessionHelp));
     public static readonly MessageId CreateAssessmentSessionHelp = new(nameof(CreateAssessmentSessionHelp));
-    public static readonly MessageId AllowUseNameHelp = new(nameof(AllowUseNameHelp));
     public static readonly MessageId ShowParticipantsHelp = new(nameof(ShowParticipantsHelp));
     public static readonly MessageId AddStoryToAssessmentSessionHelp = new(nameof(AddStoryToAssessmentSessionHelp));
     public static readonly MessageId ChangeLanguageHelp = new(nameof(ChangeLanguageHelp));

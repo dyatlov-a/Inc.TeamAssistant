@@ -1,6 +1,5 @@
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
@@ -45,13 +44,11 @@ internal sealed class ConnectToAssessmentSessionCommandValidator : AbstractValid
 
         var joinToSessionCommand = _commandProvider.GetCommand(typeof(JoinToAssessmentSessionCommand));
         var createAssessmentCommand = _commandProvider.GetCommand(typeof(CreateAssessmentSessionCommand));
-        var allowUseUsernameCommand = _commandProvider.GetCommand(typeof(AllowUseNameCommand));
         if (assessmentSessionId is null || assessmentSessionId.Value == Guid.Empty)
             context.AddFailure(await _messageBuilder.Build(
                 Messages.Error_StarterMessage,
                 context.InstanceToValidate.LanguageId,
                 joinToSessionCommand,
-                createAssessmentCommand,
-                allowUseUsernameCommand));
+                createAssessmentCommand));
     }
 }

@@ -1,31 +1,17 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAppraiserDataAccess(
-        this IServiceCollection services,
-        string connectionString,
-        string anonymousUser)
+    public static IServiceCollection AddAppraiserDataAccess(this IServiceCollection services)
     {
         if (services is null)
             throw new ArgumentNullException(nameof(services));
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        if (string.IsNullOrWhiteSpace(anonymousUser))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(anonymousUser));
 
         services
-            .AddSingleton<IAssessmentSessionRepository, AssessmentSessionInMemoryRepository>()
-            .AddSingleton(_ => new UserSettingsProvider(connectionString, anonymousUser))
-            .AddSingleton<IUserSettingsProvider>(
-                sp => new UserSettingsProviderFailTolerance(
-                    sp.GetRequiredService<UserSettingsProvider>(),
-                    sp.GetRequiredService<ILogger<UserSettingsProviderFailTolerance>>(),
-                    anonymousUser));
+            .AddSingleton<IAssessmentSessionRepository, AssessmentSessionInMemoryRepository>();
 
         return services;
     }

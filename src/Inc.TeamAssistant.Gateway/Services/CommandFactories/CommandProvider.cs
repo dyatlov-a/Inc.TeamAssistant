@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AllowUseName;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
@@ -18,7 +17,6 @@ internal sealed class CommandProvider : ICommandProvider
     {
         [typeof(JoinToAssessmentSessionCommand)] = CommandList.JoinToSession,
         [typeof(CreateAssessmentSessionCommand)] = CommandList.CreateAssessmentSession,
-        [typeof(AllowUseNameCommand)] = CommandList.AllowUseName,
         [typeof(ChangeLanguageCommand)] = CommandList.ChangeLanguageForAssessmentSession,
         [typeof(AddStoryToAssessmentSessionCommand)] = CommandList.AddStoryToAssessmentSession,
         [typeof(ReVoteEstimateCommand)] = CommandList.ReVoteEstimate,

@@ -9,7 +9,6 @@ using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Languages;
-using Inc.TeamAssistant.Users;
 using Inc.TeamAssistant.DialogContinuations;
 using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Gateway.Hubs;
@@ -40,7 +39,7 @@ builder.Services
 	.AddScoped<ITranslateProvider, TranslateProvider>()
 		
     .AddApplication(builder.Configuration)
-    .AddAppraiserDataAccess(connectionString, UserSettings.AnonymousUser)
+    .AddAppraiserDataAccess()
 	.AddNotifications()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
 
