@@ -6,22 +6,20 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
+using Inc.TeamAssistant.Appraiser.Model.Commands.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
-using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using MediatR;
 
-namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.ShowHelp;
+namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ShowHelp;
 
-internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, CommandResult>
+internal sealed class ShowHelpCommandHandler : IRequestHandler<ShowHelpCommand, CommandResult>
 {
     private readonly ICommandProvider _commandProvider;
     private readonly IMessageBuilder _messageBuilder;
     private readonly IEnumerable<LanguageContext> _languagesInfo;
 
-    public ShowHelpQueryHandler(
+    public ShowHelpCommandHandler(
         ICommandProvider commandProvider,
         IMessageBuilder messageBuilder,
         IEnumerable<LanguageContext> languagesInfo)
@@ -31,17 +29,17 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Comm
         _languagesInfo = languagesInfo ?? throw new ArgumentNullException(nameof(languagesInfo));
     }
 
-    public async Task<CommandResult> Handle(ShowHelpQuery query, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(ShowHelpCommand command, CancellationToken cancellationToken)
     {
-        if (query == null)
-            throw new ArgumentNullException(nameof(query));
+        if (command == null)
+            throw new ArgumentNullException(nameof(command));
 
         var commandsHelp = new List<string>();
 
         var createAssessmentSessionCommand = _commandProvider.GetCommand(typeof(CreateAssessmentSessionCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.CreateAssessmentSessionHelp,
-            query.LanguageId,
+            command.LanguageId,
             createAssessmentSessionCommand));
 
         foreach (var languageInfo in _languagesInfo)
@@ -52,7 +50,7 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Comm
 
             commandsHelp.Add(await _messageBuilder.Build(
                 Messages.ChangeLanguageHelp,
-                query.LanguageId,
+                command.LanguageId,
                 changeLanguageCommand,
                 languageInfo.LanguageId.Value));
         }
@@ -60,43 +58,31 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Comm
         var addStoryToAssessmentSessionCommand = _commandProvider.GetCommand(typeof(AddStoryToAssessmentSessionCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.AddStoryToAssessmentSessionHelp,
-            query.LanguageId,
+            command.LanguageId,
             addStoryToAssessmentSessionCommand));
 
         var reVoteEstimateCommand = _commandProvider.GetCommand(typeof(ReVoteEstimateCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.ReVoteEstimateHelp,
-            query.LanguageId,
+            command.LanguageId,
             reVoteEstimateCommand));
 
         var acceptEstimateCommand = _commandProvider.GetCommand(typeof(AcceptEstimateCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.AcceptEstimateHelp,
-            query.LanguageId,
+            command.LanguageId,
             acceptEstimateCommand));
 
         var finishAssessmentSessionCommand = _commandProvider.GetCommand(typeof(FinishAssessmentSessionCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.FinishAssessmentSessionHelp,
-            query.LanguageId,
+            command.LanguageId,
             finishAssessmentSessionCommand));
-
-        var showParticipantsQuery = _commandProvider.GetCommand(typeof(ShowParticipantsQuery));
-        commandsHelp.Add(await _messageBuilder.Build(
-            Messages.ShowParticipantsHelp,
-            query.LanguageId,
-            showParticipantsQuery));
-
-        var joinToAssessmentSessionCommand = _commandProvider.GetCommand(typeof(JoinToAssessmentSessionCommand));
-        commandsHelp.Add(await _messageBuilder.Build(
-            Messages.JoinToAssessmentSessionHelp,
-            query.LanguageId,
-            joinToAssessmentSessionCommand));
 
         var exitFromAssessmentSessionCommand = _commandProvider.GetCommand(typeof(ExitFromAssessmentSessionCommand));
         commandsHelp.Add(await _messageBuilder.Build(
             Messages.ExitFromAssessmentSessionHelp,
-            query.LanguageId,
+            command.LanguageId,
             exitFromAssessmentSessionCommand));
         
         var messageBuilder = new StringBuilder();
@@ -104,6 +90,6 @@ internal sealed class ShowHelpQueryHandler : IRequestHandler<ShowHelpQuery, Comm
         foreach (var commandHelp in commandsHelp)
             messageBuilder.AppendLine(commandHelp);
 
-        return CommandResult.Build(NotificationMessage.Create(query.TargetChatId, messageBuilder.ToString()));
+        return CommandResult.Build(NotificationMessage.Create(command.TargetChatId, messageBuilder.ToString()));
     }
 }

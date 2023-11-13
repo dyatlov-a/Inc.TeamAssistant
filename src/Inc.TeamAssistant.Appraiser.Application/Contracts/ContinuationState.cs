@@ -4,6 +4,5 @@ public enum ContinuationState
 {
     None = 0,
     EnterTitle = 1,
-    EnterStory = 2,
-    EnterSessionId = 3
+    EnterStory = 2
 }

@@ -1,10 +1,8 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
 using MediatR;
@@ -42,7 +40,6 @@ internal sealed class DynamicCommandFactory : ICommandFactory
                 context.UserName,
                 context.Cmd),
             ContinuationState.EnterStory => CreateAddStoryCommand(context),
-            ContinuationState.EnterSessionId => CreateConnectAppraiserCommand(context),
 			_ => null
 		};
 	}
@@ -65,20 +62,5 @@ internal sealed class DynamicCommandFactory : ICommandFactory
         }
 
         return new(context.LanguageId, context.UserId, context.UserName, storyTitleBuilder.ToString(), links);
-    }
-
-    private ConnectToAssessmentSessionCommand CreateConnectAppraiserCommand(CommandContext context)
-    {
-        if (context is null)
-            throw new ArgumentNullException(nameof(context));
-
-        var assessmentSessionIdValue = context.Cmd.Replace(CommandList.Start, string.Empty).Trim();
-
-        if (Guid.TryParse(assessmentSessionIdValue, out var value))
-        {
-            return new(context.ChatId, new(value), context.LanguageId, context.UserId, context.UserName);
-        }
-
-        throw new AppraiserUserException(Messages.InvalidFormatAssessmentSessionId);
     }
 }

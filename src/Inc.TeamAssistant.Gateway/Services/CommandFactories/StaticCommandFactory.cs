@@ -5,13 +5,11 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Commands.JoinToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
+using Inc.TeamAssistant.Appraiser.Model.Commands.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Commands.StartStorySelection;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Model.Queries.ShowHelp;
-using Inc.TeamAssistant.Appraiser.Model.Queries.ShowParticipants;
 using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Languages;
 using MediatR;
@@ -46,10 +44,8 @@ internal sealed class StaticCommandFactory : ICommandFactory
         var commands = new Dictionary<string, Func<CommandContext, IRequest<CommandResult>?>>
         {
             [CommandList.Start] = CreateConnectAppraiserCommand,
-            [CommandList.JoinToSession] = c => new JoinToAssessmentSessionCommand(c.ChatId, c.UserId, c.LanguageId),
             [CommandList.ExitFromAssessmentSession] = c => new ExitFromAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName),
             [CommandList.CreateAssessmentSession] = c => new CreateAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName, c.LanguageId),
-            [CommandList.ShowParticipants] = c => new ShowParticipantsQuery(c.ChatId, c.UserId, c.UserName),
             [CommandList.AddStoryToAssessmentSession] = CreateStartStorySelectionCommand
         };
 
@@ -65,7 +61,7 @@ internal sealed class StaticCommandFactory : ICommandFactory
         commands.Add(CommandList.AcceptEstimate, c => new AcceptEstimateCommand(c.UserId, c.UserName));
         commands.Add(CommandList.ReVoteEstimate, c => new ReVoteEstimateCommand(c.UserId, c.UserName));
         commands.Add(CommandList.FinishAssessmentSession, c => new FinishAssessmentSessionCommand(c.ChatId, c.UserId, c.UserName));
-        commands.Add(CommandList.Help, c => new ShowHelpQuery(c.ChatId, c.LanguageId));
+        commands.Add(CommandList.Help, c => new ShowHelpCommand(c.ChatId, c.LanguageId));
 
         return commands;
     }

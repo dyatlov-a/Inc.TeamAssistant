@@ -16,13 +16,11 @@ internal static class Messages
 
     public static readonly MessageId ExitFromAssessmentSessionHelp = new(nameof(ExitFromAssessmentSessionHelp));
     public static readonly MessageId CreateAssessmentSessionHelp = new(nameof(CreateAssessmentSessionHelp));
-    public static readonly MessageId ShowParticipantsHelp = new(nameof(ShowParticipantsHelp));
     public static readonly MessageId AddStoryToAssessmentSessionHelp = new(nameof(AddStoryToAssessmentSessionHelp));
     public static readonly MessageId ChangeLanguageHelp = new(nameof(ChangeLanguageHelp));
     public static readonly MessageId AcceptEstimateHelp = new(nameof(AcceptEstimateHelp));
     public static readonly MessageId ReVoteEstimateHelp = new(nameof(ReVoteEstimateHelp));
     public static readonly MessageId FinishAssessmentSessionHelp = new(nameof(FinishAssessmentSessionHelp));
-    public static readonly MessageId JoinToAssessmentSessionHelp = new(nameof(JoinToAssessmentSessionHelp));
     
     public static readonly MessageId EnterSessionName = new(nameof(EnterSessionName));
     public static readonly MessageId CreateAssessmentSessionFailed = new(nameof(CreateAssessmentSessionFailed));
@@ -38,6 +36,4 @@ internal static class Messages
     public static readonly MessageId EndEstimate = new(nameof(EndEstimate));
     public static readonly MessageId NeedEstimate = new(nameof(NeedEstimate));
     public static readonly MessageId TotalEstimate = new(nameof(TotalEstimate));
-    public static readonly MessageId AppraiserList = new(nameof(AppraiserList));
-    public static readonly MessageId EnterSessionId = new(nameof(EnterSessionId));
 }

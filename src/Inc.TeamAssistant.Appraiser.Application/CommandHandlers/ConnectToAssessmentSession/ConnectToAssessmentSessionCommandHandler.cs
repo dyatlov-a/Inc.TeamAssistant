@@ -6,7 +6,6 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.DialogContinuations;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession;
 
@@ -14,20 +13,17 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
     : IRequestHandler<ConnectToAssessmentSessionCommand, CommandResult>
 {
     private readonly IAssessmentSessionRepository _repository;
-    private readonly IDialogContinuation<ContinuationState> _dialogContinuation;
     private readonly IMessagesSender _messagesSender;
     private readonly IMessageBuilder _messageBuilder;
     private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
 
     public ConnectToAssessmentSessionCommandHandler(
         IAssessmentSessionRepository repository,
-        IDialogContinuation<ContinuationState> dialogContinuation,
         IMessagesSender messagesSender,
         IMessageBuilder messageBuilder,
         SummaryByStoryBuilder summaryByStoryBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
@@ -65,7 +61,6 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
 			.EnsureForAppraiser(command.AppraiserName);
 
 		assessmentSession.Connect(command.AppraiserId, command.AppraiserName);
-        _dialogContinuation.End(command.AppraiserId.Value, ContinuationState.EnterSessionId);
 
         var notifications = new List<NotificationMessage>(3);
         var connectedSuccessMessage = await _messageBuilder.Build(
