@@ -43,7 +43,7 @@ internal sealed class CreateAssessmentSessionCommandHandler
             var moderator = new Participant(command.ModeratorId, command.ModeratorName);
             var assessmentSession = new AssessmentSession(command.TargetChatId, moderator, command.LanguageId);
 
-            _dialogContinuation.TryBegin(command.ModeratorId.Value, ContinuationState.EnterTitle);
+            _dialogContinuation.TryBegin(command.ModeratorId, ContinuationState.EnterTitle);
             _repository.Add(assessmentSession);
 
             _metrics.Created();

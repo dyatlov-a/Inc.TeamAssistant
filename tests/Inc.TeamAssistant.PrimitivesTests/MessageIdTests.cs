@@ -2,7 +2,7 @@ using AutoFixture;
 using Inc.TeamAssistant.Primitives;
 using Xunit;
 
-namespace Inc.TeamAssistant.Appraiser.PrimitivesTests;
+namespace Inc.TeamAssistant.PrimitivesTests;
 
 public sealed class MessageIdTests
 {

@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
@@ -10,10 +9,8 @@ internal sealed class Idle : AssessmentSessionState
 	{
 	}
 
-    public override void ChangeLanguage(ParticipantId moderatorId, LanguageId languageId)
+    public override void ChangeLanguage(long moderatorId, LanguageId languageId)
     {
-        if (moderatorId is null)
-            throw new ArgumentNullException(nameof(moderatorId));
         if (languageId is null)
             throw new ArgumentNullException(nameof(languageId));
 
@@ -22,10 +19,8 @@ internal sealed class Idle : AssessmentSessionState
             .ChangeLanguage(languageId);
     }
 
-    public override void Connect(ParticipantId participantId, string name)
+    public override void Connect(long participantId, string name)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
 		if (string.IsNullOrWhiteSpace(name))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
@@ -40,11 +35,8 @@ internal sealed class Idle : AssessmentSessionState
 			AssessmentSession.Story.AddStoryForEstimate(new (participant));
 	}
 
-	public override void Disconnect(ParticipantId participantId)
+	public override void Disconnect(long participantId)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
-
         if (AssessmentSession.Moderator.Id == participantId)
             throw new AppraiserUserException(Messages.ModeratorCannotDisconnectedFromSession, AssessmentSession.Title);
 
@@ -56,21 +48,15 @@ internal sealed class Idle : AssessmentSessionState
         AssessmentSession.RemoveParticipant(participant);
 	}
 
-	public override void StartStorySelection(ParticipantId moderatorId)
+	public override void StartStorySelection(long moderatorId)
 	{
-		if (moderatorId is null)
-			throw new ArgumentNullException(nameof(moderatorId));
-
 		AssessmentSession
 			.AsModerator(moderatorId)
 			.MoveToState(a => new StorySelection(a));
 	}
 
-	public override void Reset(ParticipantId moderatorId)
+	public override void Reset(long moderatorId)
 	{
-		if (moderatorId is null)
-			throw new ArgumentNullException(nameof(moderatorId));
-
 		AssessmentSession
 			.AsModerator(moderatorId)
 			.Story.Reset();

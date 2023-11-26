@@ -31,7 +31,7 @@ internal sealed class StartStorySelectionCommandHandler : IRequestHandler<StartS
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
 		assessmentSession.StartStorySelection(command.ModeratorId);
-        _dialogContinuation.TryBegin(command.ModeratorId.Value, ContinuationState.EnterStory);
+        _dialogContinuation.TryBegin(command.ModeratorId, ContinuationState.EnterStory);
         
         var message = await _messageBuilder.Build(
             Messages.EnterStoryName,

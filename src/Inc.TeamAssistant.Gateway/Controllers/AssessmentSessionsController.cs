@@ -16,7 +16,7 @@ public sealed class AssessmentSessionsController : ControllerBase
 
     [HttpGet("story/{assessmentSessionId}")]
 	public async Task<IActionResult> GetStoryDetails(Guid assessmentSessionId, CancellationToken cancellationToken)
-		=> Ok(await _service.GetStoryDetails(new(assessmentSessionId), cancellationToken));
+		=> Ok(await _service.GetStoryDetails(assessmentSessionId, cancellationToken));
 
     [HttpGet("link-for-connect")]
     public async Task<IActionResult> LinkForConnect(CancellationToken cancellationToken)

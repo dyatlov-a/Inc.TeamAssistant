@@ -1,13 +1,12 @@
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
 public interface IAssessmentSessionRepository
 {
-    AssessmentSession? Find(AssessmentSessionId assessmentSessionId);
+    AssessmentSession? Find(Guid assessmentSessionId);
 
-    AssessmentSession? Find(ParticipantId participantId);
+    AssessmentSession? Find(long participantId);
 
     void Add(AssessmentSession assessmentSession);
 

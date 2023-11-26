@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
@@ -11,7 +10,7 @@ internal interface IAssessmentSessionAccessor
 	IReadOnlyCollection<Participant> Participants { get; }
 	IStoryAccessor Story { get; }
 
-	IAssessmentSessionAccessor AsModerator(ParticipantId moderatorId, [CallerMemberName]string operationName = null!);
+	IAssessmentSessionAccessor AsModerator(long moderatorId, [CallerMemberName]string operationName = null!);
 	IAssessmentSessionAccessor ChangeTitle(string title);
     IAssessmentSessionAccessor ChangeStory(string title, IReadOnlyCollection<string> links);
     bool EstimateEnded();

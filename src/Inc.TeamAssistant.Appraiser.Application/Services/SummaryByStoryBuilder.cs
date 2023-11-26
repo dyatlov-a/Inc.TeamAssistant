@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
@@ -65,13 +64,8 @@ internal sealed class SummaryByStoryBuilder
         return notification;
     }
 
-    private IRequest<CommandResult> AddStoryForEstimate(
-        AssessmentSessionId assessmentSessionId,
-        string userName,
-        int messageId)
+    private IRequest<CommandResult> AddStoryForEstimate(Guid assessmentSessionId, string userName, int messageId)
     {
-        if (assessmentSessionId is null)
-            throw new ArgumentNullException(nameof(assessmentSessionId));
         if (string.IsNullOrWhiteSpace(userName))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(userName));
 

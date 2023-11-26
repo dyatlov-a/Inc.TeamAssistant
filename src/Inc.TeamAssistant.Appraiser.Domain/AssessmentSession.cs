@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Domain.States;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain;
@@ -8,7 +7,7 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 public sealed class AssessmentSession : IAssessmentSessionAccessor
 {
     private AssessmentSessionState _state;
-    public AssessmentSessionId Id { get; }
+    public Guid Id { get; }
     public long ChatId { get; }
     public Participant Moderator { get; }
     public LanguageId LanguageId { get; private set; }
@@ -23,24 +22,24 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
 	{
 		Moderator = moderator ?? throw new ArgumentNullException(nameof(moderator));
         LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
-		Id = new(Guid.NewGuid());
+		Id = Guid.NewGuid();
 		ChatId = chatId;
 		_state = new Draft(this);
 		CurrentStory = Story.Empty;
 		Title = string.Empty;
 	}
 
-	public void Activate(ParticipantId moderatorId, string title) => _state.Activate(moderatorId, title);
-    public void ChangeLanguage(ParticipantId moderatorId, LanguageId languageId)
+	public void Activate(long moderatorId, string title) => _state.Activate(moderatorId, title);
+    public void ChangeLanguage(long moderatorId, LanguageId languageId)
         => _state.ChangeLanguage(moderatorId, languageId);
-	public void Connect(ParticipantId participantId, string name) => _state.Connect(participantId, name);
-	public void StartStorySelection(ParticipantId moderatorId) => _state.StartStorySelection(moderatorId);
-	public void StorySelected(ParticipantId moderatorId, string storyTitle, IReadOnlyCollection<string> links)
+	public void Connect(long participantId, string name) => _state.Connect(participantId, name);
+	public void StartStorySelection(long moderatorId) => _state.StartStorySelection(moderatorId);
+	public void StorySelected(long moderatorId, string storyTitle, IReadOnlyCollection<string> links)
 		=> _state.StorySelected(moderatorId, storyTitle, links);
 	public void Estimate(Participant participant, AssessmentValue.Value value) => _state.Estimate(participant, value);
-	public void CompleteEstimate(ParticipantId moderatorId) => _state.CompleteEstimate(moderatorId);
-	public void Disconnect(ParticipantId participantId) => _state.Disconnect(participantId);
-	public void Reset(ParticipantId moderatorId) => _state.Reset(moderatorId);
+	public void CompleteEstimate(long moderatorId) => _state.CompleteEstimate(moderatorId);
+	public void Disconnect(long participantId) => _state.Disconnect(participantId);
+	public void Reset(long moderatorId) => _state.Reset(moderatorId);
 	public bool InProgress() => _state.IsProgress();
     public bool EstimateEnded() => _state.EstimateEnded();
 
@@ -60,10 +59,8 @@ public sealed class AssessmentSession : IAssessmentSessionAccessor
 		_participants.Remove(participant);
     }
 
-	IAssessmentSessionAccessor IAssessmentSessionAccessor.AsModerator(ParticipantId participantId, string operationName)
+	IAssessmentSessionAccessor IAssessmentSessionAccessor.AsModerator(long participantId, string operationName)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
 		if (!Moderator.Id.Equals(participantId))
 			throw new AppraiserUserException(Messages.NoRightsToMakeOperation, operationName);
         if (string.IsNullOrWhiteSpace(operationName))

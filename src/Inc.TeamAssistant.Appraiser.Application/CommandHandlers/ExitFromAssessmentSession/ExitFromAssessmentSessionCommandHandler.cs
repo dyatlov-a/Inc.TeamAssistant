@@ -54,7 +54,7 @@ internal sealed class ExitFromAssessmentSessionCommandHandler
         var notifications = new List<NotificationMessage>();
         notifications.Add(NotificationMessage.Create(command.TargetChatId, disconnectedFromSessionMessage));
         notifications.Add(NotificationMessage.Create(
-            assessmentSession.Moderator.Id.Value,
+            assessmentSession.Moderator.Id,
             appraiserDisconnectedFromSessionMessage));
 
         if (assessmentSession.InProgress())

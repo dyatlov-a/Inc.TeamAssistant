@@ -54,10 +54,10 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
         }
         
         // TODO: remove nullable check
-        if (command.AssessmentSessionId is null)
+        if (!command.AssessmentSessionId.HasValue)
             throw new ApplicationException("AssessmentSessionId is empty.");
         var assessmentSession = _repository
-			.Find(command.AssessmentSessionId)
+			.Find(command.AssessmentSessionId.Value)
 			.EnsureForAppraiser(command.AppraiserName);
 
 		assessmentSession.Connect(command.AppraiserId, command.AppraiserName);
@@ -76,7 +76,7 @@ internal sealed class ConnectToAssessmentSessionCommandHandler
                 assessmentSession.LanguageId,
                 command.AppraiserName,
                 assessmentSession.Title);
-            notifications.Add(NotificationMessage.Create(assessmentSession.Moderator.Id.Value, appraiserAddedMessage));
+            notifications.Add(NotificationMessage.Create(assessmentSession.Moderator.Id, appraiserAddedMessage));
         }
 
         if (assessmentSession.InProgress())

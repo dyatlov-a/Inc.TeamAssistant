@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
 
@@ -9,10 +8,8 @@ internal sealed class StorySelection : AssessmentSessionState
 	{
 	}
 	
-	public override void Connect(ParticipantId participantId, string name)
+	public override void Connect(long participantId, string name)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
 		if (string.IsNullOrWhiteSpace(name))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
@@ -22,11 +19,8 @@ internal sealed class StorySelection : AssessmentSessionState
 		AssessmentSession.AddParticipant(new(participantId, name));
 	}
 	
-	public override void Disconnect(ParticipantId participantId)
+	public override void Disconnect(long participantId)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
-
 		if (AssessmentSession.Moderator.Id == participantId)
 			throw new AppraiserUserException(Messages.ModeratorCannotDisconnectedFromSession, AssessmentSession.Title);
 
@@ -35,10 +29,8 @@ internal sealed class StorySelection : AssessmentSessionState
 		AssessmentSession.RemoveParticipant(appraiser);
 	}
 
-    public override void StorySelected(ParticipantId moderatorId, string storyTitle, IReadOnlyCollection<string> links)
+    public override void StorySelected(long moderatorId, string storyTitle, IReadOnlyCollection<string> links)
 	{
-		if (moderatorId is null)
-			throw new ArgumentNullException(nameof(moderatorId));
 		if (string.IsNullOrWhiteSpace(storyTitle))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(storyTitle));
         if (links is null)

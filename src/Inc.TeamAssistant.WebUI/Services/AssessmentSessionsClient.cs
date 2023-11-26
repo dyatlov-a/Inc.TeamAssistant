@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -17,13 +16,13 @@ internal sealed class AssessmentSessionsClient : IAssessmentSessionsService
     }
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        AssessmentSessionId assessmentSessionId,
+        Guid assessmentSessionId,
 		CancellationToken cancellationToken)
 	{
 		try
 		{
 			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoryDetailsResult?>>(
-				$"sessions/story/{assessmentSessionId.Value}",
+				$"sessions/story/{assessmentSessionId}",
 				cancellationToken);
 
 			if (result is null)

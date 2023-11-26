@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Gateway.Services;
@@ -26,22 +25,19 @@ internal sealed class LinkBuilder : ILinkBuilder
 
     public string BuildLinkMoveToBot() => _botLink;
 
-    public string BuildLinkForConnect(AssessmentSessionId assessmentSessionId)
+    public string BuildLinkForConnect(Guid assessmentSessionId)
     {
-        if (assessmentSessionId is null)
-            throw new ArgumentNullException(nameof(assessmentSessionId));
-
-        return string.Format(_linkForConnectTemplate, _botLink, assessmentSessionId.Value.ToString("N"));
+        return string.Format(
+            _linkForConnectTemplate,
+            _botLink,
+            assessmentSessionId.ToString("N"));
     }
 
-    public string BuildLinkForDashboard(AssessmentSessionId assessmentSessionId, LanguageId assessmentSessionLanguage)
+    public string BuildLinkForDashboard(Guid assessmentSessionId, LanguageId assessmentSessionLanguage)
     {
-        if (assessmentSessionId is null)
-            throw new ArgumentNullException(nameof(assessmentSessionId));
-
         return string.Format(
             _linkForDashboardTemplate,
             assessmentSessionLanguage.Value,
-            assessmentSessionId.Value.ToString("N"));
+            assessmentSessionId.ToString("N"));
     }
 }

@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
@@ -10,11 +9,8 @@ internal sealed class AssessmentSessionInMemoryRepository : IAssessmentSessionRe
 {
     private ConcurrentBag<AssessmentSession> _store = new ();
 
-    public AssessmentSession? Find(AssessmentSessionId assessmentSessionId)
+    public AssessmentSession? Find(Guid assessmentSessionId)
     {
-        if (assessmentSessionId is null)
-            throw new ArgumentNullException(nameof(assessmentSessionId));
-
         var assessmentSessions = _store.Where(i => i.Id == assessmentSessionId).ToArray();
 
         return assessmentSessions.Length switch
@@ -24,15 +20,12 @@ internal sealed class AssessmentSessionInMemoryRepository : IAssessmentSessionRe
             _ => throw new AppraiserUserException(
                 Messages.ActiveSessionsByIdFound,
                 assessmentSessions.Length,
-                assessmentSessionId.Value)
+                assessmentSessionId)
         };
     }
 
-    public AssessmentSession? Find(ParticipantId participantId)
+    public AssessmentSession? Find(long participantId)
     {
-        if (participantId is null)
-            throw new ArgumentNullException(nameof(participantId));
-
         var assessmentSessions = _store
             .Where(i => i.Participants.Any(a => a.Id.Equals(participantId)) || i.Moderator.Id.Equals(participantId))
             .ToArray();
@@ -44,7 +37,7 @@ internal sealed class AssessmentSessionInMemoryRepository : IAssessmentSessionRe
             _ => throw new AppraiserUserException(
                 Messages.ActiveSessionsByParticipantFound,
                 assessmentSessions.Length,
-                participantId.Value)
+                participantId)
         };
     }
 

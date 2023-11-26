@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
 
@@ -9,10 +8,8 @@ internal sealed class InProgress : AssessmentSessionState
 	{
 	}
 	
-	public override void Connect(ParticipantId participantId, string name)
+	public override void Connect(long participantId, string name)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
 		if (string.IsNullOrWhiteSpace(name))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
@@ -24,11 +21,8 @@ internal sealed class InProgress : AssessmentSessionState
 		AssessmentSession.Story.AddStoryForEstimate(new(participant));
 	}
 	
-	public override void Disconnect(ParticipantId participantId)
+	public override void Disconnect(long participantId)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
-
 		if (AssessmentSession.Moderator.Id == participantId)
 			throw new AppraiserUserException(Messages.ModeratorCannotDisconnectedFromSession, AssessmentSession.Title);
 
@@ -50,11 +44,8 @@ internal sealed class InProgress : AssessmentSessionState
 			AssessmentSession.MoveToState(a => new Idle(a));
 	}
 
-	public override void CompleteEstimate(ParticipantId moderatorId)
+	public override void CompleteEstimate(long moderatorId)
     {
-        if (moderatorId is null)
-            throw new ArgumentNullException(nameof(moderatorId));
-
         AssessmentSession
 			.AsModerator(moderatorId)
 			.MoveToState(a => new Idle(a));

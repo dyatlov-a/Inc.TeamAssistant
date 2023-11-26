@@ -1,10 +1,9 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
 public sealed record SummaryByStory(
-	AssessmentSessionId AssessmentSessionId,
+	Guid AssessmentSessionId,
 	LanguageId AssessmentSessionLanguageId,
 	long ChatId,
 	int? StoryExternalId,

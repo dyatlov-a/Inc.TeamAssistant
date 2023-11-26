@@ -27,7 +27,7 @@ internal sealed class DynamicCommandFactory : ICommandFactory
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        var continuation = _dialogContinuation.Find(context.UserId.Value);
+        var continuation = _dialogContinuation.Find(context.UserId);
 
         if (continuation is null)
             return null;
@@ -36,7 +36,7 @@ internal sealed class DynamicCommandFactory : ICommandFactory
 		{
             ContinuationState.EnterTitle => new ActivateAssessmentCommand(
                 context.ChatId,
-                new(context.UserId.Value),
+                context.UserId,
                 context.UserName,
                 context.Cmd),
             ContinuationState.EnterStory => CreateAddStoryCommand(context),

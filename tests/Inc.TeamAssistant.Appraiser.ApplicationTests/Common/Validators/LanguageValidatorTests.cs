@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Application.Common.Validators;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using NSubstitute;
 using Xunit;
 
@@ -42,7 +41,7 @@ public sealed class LanguageValidatorTests : IClassFixture<ValidatorOptionsFixtu
     {
         var command = new ChangeLanguageCommand(
             _fixture.Create<long>(),
-            _fixture.Create<ParticipantId>(),
+            _fixture.Create<long>(),
             _fixture.Create<string>(),
             new(language));
 
@@ -58,7 +57,7 @@ public sealed class LanguageValidatorTests : IClassFixture<ValidatorOptionsFixtu
         {
             var command = new ChangeLanguageCommand(
                 _fixture.Create<long>(),
-                _fixture.Create<ParticipantId>(),
+                _fixture.Create<long>(),
                 _fixture.Create<string>(),
                 new(languageId));
 

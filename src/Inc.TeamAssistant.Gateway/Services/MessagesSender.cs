@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,12 +11,9 @@ internal sealed class MessagesSender : IMessagesSender
 	public MessagesSender(IHubContext<MessagesHub, IMessagesHubClient> hubContext)
 		=> _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
 
-    public Task StoryChanged(AssessmentSessionId assessmentSessionId)
+    public Task StoryChanged(Guid assessmentSessionId)
     {
-        if (assessmentSessionId is null)
-            throw new ArgumentNullException(nameof(assessmentSessionId));
-
-        _hubContext.Clients.Group(assessmentSessionId.Value.ToString("N")).StoryChanged();
+        _hubContext.Clients.Group(assessmentSessionId.ToString("N")).StoryChanged();
 
         return Task.CompletedTask;
     }

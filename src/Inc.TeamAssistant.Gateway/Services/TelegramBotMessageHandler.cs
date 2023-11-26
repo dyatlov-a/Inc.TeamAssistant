@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
@@ -100,7 +99,7 @@ internal sealed class TelegramBotMessageHandler
 		    return new(
 			    update.Message.Text,
 			    update.Message.Chat.Id,
-			    new(update.Message.From.Id),
+			    update.Message.From.Id,
 			    update.Message.From.FirstName,
 			    update.Message.From.GetLanguageId());
 	    }
@@ -112,7 +111,7 @@ internal sealed class TelegramBotMessageHandler
 		    return new CommandContext(
 			    update.CallbackQuery.Data,
 			    update.CallbackQuery.Message.Chat.Id,
-			    new(update.CallbackQuery.From.Id),
+			    update.CallbackQuery.From.Id,
 			    update.CallbackQuery.From.FirstName,
 			    update.CallbackQuery.From.GetLanguageId());
 	    }

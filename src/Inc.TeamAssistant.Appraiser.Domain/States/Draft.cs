@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain.States;
@@ -9,10 +8,8 @@ internal sealed class Draft : AssessmentSessionState
 	{
 	}
 
-    public override void ChangeLanguage(ParticipantId moderatorId, LanguageId languageId)
+    public override void ChangeLanguage(long moderatorId, LanguageId languageId)
     {
-        if (moderatorId is null)
-            throw new ArgumentNullException(nameof(moderatorId));
         if (languageId is null)
             throw new ArgumentNullException(nameof(languageId));
 
@@ -21,10 +18,8 @@ internal sealed class Draft : AssessmentSessionState
             .ChangeLanguage(languageId);
     }
 
-    public override void Activate(ParticipantId moderatorId, string title)
+    public override void Activate(long moderatorId, string title)
 	{
-		if (moderatorId is null)
-			throw new ArgumentNullException(nameof(moderatorId));
 		if (string.IsNullOrWhiteSpace(title))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(title));
 

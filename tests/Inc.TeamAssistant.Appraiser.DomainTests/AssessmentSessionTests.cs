@@ -1,7 +1,6 @@
 using AutoFixture;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Primitives;
 using Xunit;
 
@@ -53,7 +52,7 @@ public sealed class AssessmentSessionTests
 		AssessmentValue.Value firstValue,
 		AssessmentValue.Value secondValue)
 	{
-		var participant = new Participant(_fixture.Create<ParticipantId>(), _fixture.Create<string>());
+		var participant = new Participant(_fixture.Create<long>(), _fixture.Create<string>());
 		_target.Activate(_moderator.Id, _fixture.Create<string>());
 
 		_target.StartStorySelection(_moderator.Id);
@@ -124,16 +123,6 @@ public sealed class AssessmentSessionTests
 		Assert.Equal(secondStory, _target.CurrentStory.Title);
 	}
 
-    [Fact]
-    public void Connect_ParticipantIdIsNull_ThrowsException()
-    {
-        _target.Activate(_moderator.Id, _fixture.Create<string>());
-
-        void Actual() => _target.Connect(null!, _fixture.Create<string>());
-
-        Assert.Throws<ArgumentNullException>(Actual);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -142,7 +131,7 @@ public sealed class AssessmentSessionTests
     {
         _target.Activate(_moderator.Id, _fixture.Create<string>());
 
-        void Actual() => _target.Connect(_fixture.Create<ParticipantId>(), name);
+        void Actual() => _target.Connect(_fixture.Create<long>(), name);
 
         Assert.Throws<ArgumentException>(Actual);
     }
@@ -150,7 +139,7 @@ public sealed class AssessmentSessionTests
     [Fact]
     public void Connect_ParticipantIdAlreadyExists_ThrowsException()
     {
-        var participantId = _fixture.Create<ParticipantId>();
+        var participantId = _fixture.Create<long>();
         _target.Activate(_moderator.Id, _fixture.Create<string>());
         _target.Connect(participantId, _fixture.Create<string>());
 
@@ -163,7 +152,7 @@ public sealed class AssessmentSessionTests
     [Fact]
     public void Connect_Participant_ShouldBeConnected()
     {
-        var otherParticipantId = _fixture.Create<ParticipantId>();
+        var otherParticipantId = _fixture.Create<long>();
         _target.Activate(_moderator.Id, _fixture.Create<string>());
 
         _target.Connect(otherParticipantId, _fixture.Create<string>());
@@ -174,7 +163,7 @@ public sealed class AssessmentSessionTests
     [Fact]
     public void Disconnect_IdleAssessmentSession_ShouldBeDisconnected()
     {
-        var otherParticipantId = _fixture.Create<ParticipantId>();
+        var otherParticipantId = _fixture.Create<long>();
         _target.Activate(_moderator.Id, _fixture.Create<string>());
         _target.Connect(otherParticipantId, _fixture.Create<string>());
 

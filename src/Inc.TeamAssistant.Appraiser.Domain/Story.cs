@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Domain.States;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain;
 
@@ -50,11 +49,8 @@ public sealed class Story : IStoryAccessor
 		return result;
 	}
 
-	void IStoryAccessor.RemoveStoryForEstimate(ParticipantId participantId)
+	void IStoryAccessor.RemoveStoryForEstimate(long participantId)
 	{
-		if (participantId is null)
-			throw new ArgumentNullException(nameof(participantId));
-
 		var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.Participant.Id == participantId);
 
 		if (storyForEstimate is null)
@@ -63,11 +59,8 @@ public sealed class Story : IStoryAccessor
 		_storyForEstimates.Remove(storyForEstimate);
 	}
 
-	void IStoryAccessor.Estimate(ParticipantId participantId, AssessmentValue.Value value)
+	void IStoryAccessor.Estimate(long participantId, AssessmentValue.Value value)
     {
-        if (participantId is null)
-            throw new ArgumentNullException(nameof(participantId));
-
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.Participant.Id == participantId);
 
         if (storyForEstimate is null)

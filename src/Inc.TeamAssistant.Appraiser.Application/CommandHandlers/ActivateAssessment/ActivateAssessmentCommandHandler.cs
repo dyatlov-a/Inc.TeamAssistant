@@ -37,7 +37,7 @@ internal sealed class ActivateAssessmentCommandHandler : IRequestHandler<Activat
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
 		assessmentSession.Activate(command.ModeratorId, command.Title);
-        _dialogContinuation.End(command.ModeratorId.Value, ContinuationState.EnterTitle);
+        _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterTitle);
 
         _metrics.Started();
         
@@ -54,7 +54,7 @@ internal sealed class ActivateAssessmentCommandHandler : IRequestHandler<Activat
 	        assessmentSession.LanguageId,
 	        assessmentSession.Title,
 	        _linkBuilder.BuildLinkForConnect(assessmentSession.Id),
-	        assessmentSession.Id.Value.ToString("N"));
+	        assessmentSession.Id.ToString("N"));
 
         return CommandResult.Build(
 	        NotificationMessage.Create(command.TargetChatId, connectToDashboardMessage),

@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ConnectToAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.CreateAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ConnectToAssessmentSession.Validators;
 
@@ -34,7 +33,7 @@ internal sealed class ConnectToAssessmentSessionCommandValidator : AbstractValid
     }
 
     private async Task HasAssessmentSessionId(
-        AssessmentSessionId? assessmentSessionId,
+        Guid? assessmentSessionId,
         ValidationContext<ConnectToAssessmentSessionCommand> context,
         CancellationToken cancellationToken)
     {

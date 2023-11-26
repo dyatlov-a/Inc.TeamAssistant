@@ -39,7 +39,7 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
         assessmentSession.StorySelected(command.ModeratorId, command.Title.Trim(), command.Links);
-        _dialogContinuation.End(command.ModeratorId.Value, ContinuationState.EnterStory);
+        _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterStory);
         
         await _messagesSender.StoryChanged(assessmentSession.Id);
 

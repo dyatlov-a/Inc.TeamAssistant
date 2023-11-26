@@ -15,6 +15,6 @@
         <PackageReference Include="NSubstitute" Version="5.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Inc.TeamAssistant.Appraiser.Primitives\Inc.TeamAssistant.Appraiser.Primitives.csproj" />
+      <ProjectReference Include="..\..\src\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
     </ItemGroup>
 </Project>

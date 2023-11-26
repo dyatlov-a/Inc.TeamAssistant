@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services;
@@ -15,7 +14,7 @@ internal sealed class AssessmentSessionsService : IAssessmentSessionsService
 		=> _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        AssessmentSessionId assessmentSessionId,
+        Guid assessmentSessionId,
 		CancellationToken cancellationToken)
 	{
 		try

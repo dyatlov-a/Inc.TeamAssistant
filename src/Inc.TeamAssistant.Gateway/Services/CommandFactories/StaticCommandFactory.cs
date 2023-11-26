@@ -10,7 +10,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Commands.StartStorySelection;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
 using Inc.TeamAssistant.Languages;
 using MediatR;
 
@@ -90,8 +89,8 @@ internal sealed class StaticCommandFactory : ICommandFactory
         var assessmentSessionIdValue = context.Cmd.Replace(CommandList.Start, string.Empty).Trim();
 
         var assessmentSessionId = Guid.TryParse(assessmentSessionIdValue, out var value)
-            ? new(value)
-            : default(AssessmentSessionId);
+            ? value
+            : (Guid?)null;
 
         return new ConnectToAssessmentSessionCommand(
             context.ChatId,

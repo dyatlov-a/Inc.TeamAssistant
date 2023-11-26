@@ -45,7 +45,7 @@ internal sealed class FinishAssessmentSessionCommandHandler
         await _messagesSender.StoryChanged(assessmentSession.Id);
 
         var targets = assessmentSession.Participants
-            .Select(a => a.Id.Value)
+            .Select(a => a.Id)
             .Append(command.TargetChatId)
             .Distinct()
             .ToArray();
