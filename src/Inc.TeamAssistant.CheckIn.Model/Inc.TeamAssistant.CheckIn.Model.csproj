@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="12.1.1" />
-    </ItemGroup>
-    <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
     </ItemGroup>
 </Project>

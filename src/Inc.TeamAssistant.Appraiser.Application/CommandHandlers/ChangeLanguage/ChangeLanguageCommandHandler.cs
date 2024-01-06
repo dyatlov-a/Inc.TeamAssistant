@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ChangeLanguage;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
-using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ChangeLanguage;
 

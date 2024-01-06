@@ -12,7 +12,9 @@ namespace Inc.TeamAssistant.Appraiser.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAppraiserApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         if (services is null)
             throw new ArgumentNullException(nameof(services));

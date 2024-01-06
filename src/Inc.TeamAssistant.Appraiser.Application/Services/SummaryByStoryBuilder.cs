@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
@@ -46,7 +47,9 @@ internal sealed class SummaryByStoryBuilder
         }
         
         var notification = summary.StoryExternalId.HasValue
-            ? NotificationMessage.Edit(new[] { (summary.ChatId, summary.StoryExternalId.Value) }, builder.ToString())
+            ? NotificationMessage.Edit(
+                new[] { new ChatMessage(summary.ChatId, summary.StoryExternalId.Value) },
+                builder.ToString())
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
                 .AddHandler((_, uName, mId) => AddStoryForEstimate(summary.AssessmentSessionId, uName, mId));

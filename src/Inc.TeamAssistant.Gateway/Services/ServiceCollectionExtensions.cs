@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Gateway.Services.CommandFactories;
 using Inc.TeamAssistant.Gateway.Services.MessageProviders;
 using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Gateway.Services;
 
@@ -67,7 +68,7 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<QuickResponseCodeGenerator>(),
                 options.CacheAbsoluteExpiration))
 
-            .AddScoped<IMessageBuilder, MessageBuilder>();
+            .AddSingleton<IMessageBuilder, MessageBuilder>();
 
         return services;
 	}

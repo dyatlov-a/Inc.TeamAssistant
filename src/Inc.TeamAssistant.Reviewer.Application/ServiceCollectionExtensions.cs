@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Reviewer.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddReviewer(this IServiceCollection services, ReviewerOptions options)
+    public static IServiceCollection AddReviewerApplication(this IServiceCollection services, ReviewerOptions options)
     {
         if (services is null)
             throw new ArgumentNullException(nameof(services));

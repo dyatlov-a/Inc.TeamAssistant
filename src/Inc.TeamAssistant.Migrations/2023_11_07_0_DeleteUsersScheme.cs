@@ -17,6 +17,5 @@ public class DeleteUsersScheme : Migration
 
     public override void Down()
     {
-        throw new NotImplementedException();
     }
 }

@@ -6,6 +6,9 @@ using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.Connector.Application;
+using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.DialogContinuations;
@@ -18,6 +21,7 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Prometheus.DotNetRuntime;
+using ITeamRepository = Inc.TeamAssistant.Connector.Application.Contracts.ITeamRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,25 +37,29 @@ builder.Services
 		c.Lifetime = ServiceLifetime.Scoped;
 		c.RegisterServicesFromAssemblyContaining<IAssessmentSessionRepository>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
+		//c.RegisterServicesFromAssemblyContaining<Inc.TeamAssistant.Reviewer.Application.Contracts.ITeamRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
 	})
 	.AddScoped<ITranslateProvider, TranslateProvider>()
+	.AddScoped<ICheckInService, CheckInService>()
+	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
+	.AddHolidays(connectionString, holidayOptions)
+	.AddDialogContinuations()
 		
-    .AddApplication(builder.Configuration)
+    .AddAppraiserApplication(builder.Configuration)
     .AddAppraiserDataAccess()
-	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
-
-    .AddScoped<ICheckInService, CheckInService>()
-    .AddScoped<ILocationBuilder, DummyLocationBuilder>()
+	
     .AddCheckInApplication(checkInOptions)
     .AddCheckInDataAccess(connectionString)
 	
-    .AddReviewer(reviewerOptions)
-	.AddReviewerDataAccess(connectionString)
-    .AddMemoryCache()
-    .AddHolidays(connectionString, holidayOptions)
-    .AddDialogContinuations()
-
+    //.AddReviewerApplication(reviewerOptions)
+	//.AddReviewerDataAccess(connectionString)
+	
+	.AddConnectorApplication()
+	.AddConnectorDataAccess(connectionString)
+	
+	.AddMemoryCache()
+	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
     .AddIsomorphic()
     .AddMvc();
 

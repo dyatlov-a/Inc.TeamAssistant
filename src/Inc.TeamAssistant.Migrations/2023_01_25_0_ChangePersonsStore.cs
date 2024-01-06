@@ -154,6 +154,5 @@ public class ChangePersonsStore : Migration
 
     public override void Down()
     {
-        throw new NotImplementedException();
     }
 }

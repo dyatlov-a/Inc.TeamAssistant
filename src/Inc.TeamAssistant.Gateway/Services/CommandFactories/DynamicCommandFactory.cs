@@ -3,8 +3,8 @@ using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessme
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;

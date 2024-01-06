@@ -2,6 +2,7 @@ using System.Text;
 using Inc.TeamAssistant.DialogContinuations;
 using Inc.TeamAssistant.DialogContinuations.Model;
 using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.ConnectToTeam;
 using Inc.TeamAssistant.Reviewer.Model.Commands.CreateTeam;
@@ -169,7 +170,7 @@ internal sealed class TelegramBotMessageHandler
             return;
         }
         
-        _dialogContinuation.End(context.Person.Id, currentDialog.ContinuationState, context.ToChatMessage());
+        _dialogContinuation.TryEnd(context.Person.Id, currentDialog.ContinuationState, context.ToChatMessage());
         foreach (var currentMessage in currentDialog.ChatMessages)
             await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
     }
@@ -227,7 +228,7 @@ internal sealed class TelegramBotMessageHandler
                 new LeaveFromTeamCommand(teamId, context.Person.Id, context.Person.FirstName, context.Person.LanguageId),
                 cancellationToken);
             
-            _dialogContinuation.End(context.Person.Id, CommandList.Leave, context.ToChatMessage());
+            _dialogContinuation.TryEnd(context.Person.Id, CommandList.Leave, context.ToChatMessage());
             foreach (var currentMessage in currentDialog.ChatMessages)
                 await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
         }
@@ -296,7 +297,7 @@ internal sealed class TelegramBotMessageHandler
                     context.Person.LanguageId),
                 cancellationToken);
 
-            _dialogContinuation.End(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
+            _dialogContinuation.TryEnd(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
             foreach (var currentMessage in currentDialog.ChatMessages)
                 await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
         }
@@ -390,7 +391,7 @@ internal sealed class TelegramBotMessageHandler
                     context.TargetUser),
                 cancellationToken);
 
-            _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
+            _dialogContinuation.TryEnd(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
             foreach (var currentMessage in currentDialog.ChatMessages)
                 await client.DeleteMessageAsync(currentMessage.ChatId, currentMessage.MessageId, cancellationToken);
         }
@@ -403,7 +404,7 @@ internal sealed class TelegramBotMessageHandler
                     context.ChatId,
                     await translateProvider.Get(Messages.Reviewer_TeamNotFoundError, context.Person.LanguageId),
                     cancellationToken: cancellationToken);
-                _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
+                _dialogContinuation.TryEnd(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
                 return;
             }
             if (currentTeam.CanStartReview.Value)
@@ -423,7 +424,7 @@ internal sealed class TelegramBotMessageHandler
                 context.ChatId,
                 await translateProvider.Get(Messages.Reviewer_TeamMinError, context.Person.LanguageId),
                 cancellationToken: cancellationToken);
-            _dialogContinuation.End(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
+            _dialogContinuation.TryEnd(context.Person.Id, CommandList.MoveToReview, context.ToChatMessage());
         }
     }
 

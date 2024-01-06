@@ -137,5 +137,16 @@
   "Reviewer_MoveToDecline": "Decline",
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_OperationApplied": "Operation completed",
-  "Reviewer_HasNotTeamsForPlayer": "No teams found for the user"
+  "Reviewer_HasNotTeamsForPlayer": "No teams found for the user",
+  
+  "Connector_EnterTeamName": "Reply to this message with team name",
+  "Connector_SelectTeam": "Select the team:",
+  "Connector_JoinToTeam": "Open the link {1}, then press START to connect team \"{0}\"",
+  "Connector_JoinToTeamSuccess": "You have successfully joined the team \"{0}\".",
+  "Connector_EnterTextError": "Previous operation not completed, waiting for text input.",
+  "Connector_TeamNotFound": "You're not on any team.",
+  "Connector_NewTeamHelp": "{0} - create a new team.",
+  "Connector_LeaveFromTeamHelp": "{0} - leave from the team.",
+  "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\".",
+  "Connector_CancelHelp": "{0} - cancel the current operation."
 }

@@ -8,7 +8,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ExitFromAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ShowHelp;
-using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ShowHelp;

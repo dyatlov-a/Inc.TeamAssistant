@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives;
+
 namespace Inc.TeamAssistant.DialogContinuations.Model;
 
 public sealed class DialogState<T>

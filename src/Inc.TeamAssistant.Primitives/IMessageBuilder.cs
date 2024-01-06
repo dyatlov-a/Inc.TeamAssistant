@@ -1,6 +1,4 @@
-using Inc.TeamAssistant.Primitives;
-
-namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
+namespace Inc.TeamAssistant.Primitives;
 
 public interface IMessageBuilder
 {

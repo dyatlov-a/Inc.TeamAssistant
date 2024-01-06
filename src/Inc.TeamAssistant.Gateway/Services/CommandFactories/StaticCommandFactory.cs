@@ -9,8 +9,8 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ShowHelp;
 using Inc.TeamAssistant.Appraiser.Model.Commands.StartStorySelection;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;

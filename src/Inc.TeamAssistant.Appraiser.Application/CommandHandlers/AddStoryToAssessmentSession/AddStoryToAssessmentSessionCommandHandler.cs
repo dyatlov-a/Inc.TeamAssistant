@@ -4,8 +4,8 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryToAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
 using Inc.TeamAssistant.Appraiser.Application.Services;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
 
@@ -39,7 +39,7 @@ internal sealed class AddStoryToAssessmentSessionCommandHandler
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
         assessmentSession.StorySelected(command.ModeratorId, command.Title.Trim(), command.Links);
-        _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterStory);
+        _dialogContinuation.TryEnd(command.ModeratorId, ContinuationState.EnterStory);
         
         await _messagesSender.StoryChanged(assessmentSession.Id);
 

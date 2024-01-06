@@ -2,8 +2,8 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.ActivateAssessment;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.DialogContinuations;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ActivateAssessment;
 
@@ -37,7 +37,7 @@ internal sealed class ActivateAssessmentCommandHandler : IRequestHandler<Activat
         var assessmentSession = _repository.Find(command.ModeratorId).EnsureForModerator(command.ModeratorName);
 
 		assessmentSession.Activate(command.ModeratorId, command.Title);
-        _dialogContinuation.End(command.ModeratorId, ContinuationState.EnterTitle);
+        _dialogContinuation.TryEnd(command.ModeratorId, ContinuationState.EnterTitle);
 
         _metrics.Started();
         

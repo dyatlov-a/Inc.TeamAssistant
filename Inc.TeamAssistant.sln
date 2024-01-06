@@ -72,6 +72,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.Model", "src\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj", "{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "telegram_connector", "telegram_connector", "{533DB9B2-8423-4379-9B57-AE87EC9091D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.Application", "src\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj", "{6D88ACED-9750-402F-AFDF-61A5E8478961}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.Domain", "src\Inc.TeamAssistant.Connector.Domain\Inc.TeamAssistant.Connector.Domain.csproj", "{27B45834-FCB5-46FE-999A-A6B12F69ACF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.DataAccess", "src\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj", "{1960CAA3-ACB5-4299-8B65-F764BDFF32FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.Model", "src\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj", "{066637C7-22D8-4F1F-A2F2-ADDDC363D011}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +194,22 @@ Global
 		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D88ACED-9750-402F-AFDF-61A5E8478961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D88ACED-9750-402F-AFDF-61A5E8478961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D88ACED-9750-402F-AFDF-61A5E8478961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D88ACED-9750-402F-AFDF-61A5E8478961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B45834-FCB5-46FE-999A-A6B12F69ACF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B45834-FCB5-46FE-999A-A6B12F69ACF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B45834-FCB5-46FE-999A-A6B12F69ACF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B45834-FCB5-46FE-999A-A6B12F69ACF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1960CAA3-ACB5-4299-8B65-F764BDFF32FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1960CAA3-ACB5-4299-8B65-F764BDFF32FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1960CAA3-ACB5-4299-8B65-F764BDFF32FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1960CAA3-ACB5-4299-8B65-F764BDFF32FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{066637C7-22D8-4F1F-A2F2-ADDDC363D011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{066637C7-22D8-4F1F-A2F2-ADDDC363D011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{066637C7-22D8-4F1F-A2F2-ADDDC363D011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{066637C7-22D8-4F1F-A2F2-ADDDC363D011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B8F7A67F-CFA3-4CF2-BACB-B14C282BF202} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
@@ -218,5 +244,10 @@ Global
 		{529CC802-3552-4381-8D22-872890CC6A9E} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
 		{0BCBE76B-F740-44AE-8D47-5DD735EA6F3D} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
 		{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18} = {70E979AF-B6E2-4044-9161-91FA02A2644F}
+		{533DB9B2-8423-4379-9B57-AE87EC9091D0} = {73CA6C4E-FE60-4BEF-9902-FFA9241616F9}
+		{6D88ACED-9750-402F-AFDF-61A5E8478961} = {533DB9B2-8423-4379-9B57-AE87EC9091D0}
+		{27B45834-FCB5-46FE-999A-A6B12F69ACF2} = {533DB9B2-8423-4379-9B57-AE87EC9091D0}
+		{1960CAA3-ACB5-4299-8B65-F764BDFF32FC} = {533DB9B2-8423-4379-9B57-AE87EC9091D0}
+		{066637C7-22D8-4F1F-A2F2-ADDDC363D011} = {533DB9B2-8423-4379-9B57-AE87EC9091D0}
 	EndGlobalSection
 EndGlobal

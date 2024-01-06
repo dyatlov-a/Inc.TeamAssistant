@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Appraiser.Model.Common;
+namespace Inc.TeamAssistant.Primitives;
 
 public sealed record CommandResult(IReadOnlyCollection<NotificationMessage> Notifications)
 {

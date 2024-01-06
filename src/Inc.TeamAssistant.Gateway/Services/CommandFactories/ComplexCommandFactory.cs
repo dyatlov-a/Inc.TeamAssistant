@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.CommandFactories;

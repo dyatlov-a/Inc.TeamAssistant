@@ -1,10 +1,9 @@
 using FluentValidation;
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Gateway.Extensions;
 using Inc.TeamAssistant.Gateway.Services.CommandFactories;
 using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Users.Extensions;
 using MediatR;
 using Telegram.Bot;
@@ -43,7 +42,7 @@ internal sealed class TelegramBotMessageHandler
 
         try
         {
-	        var commandContext = await TryCreateCommandContext(update, cancellationToken);
+	        var commandContext = TryCreateCommandContext(update);
 	        if (commandContext is null)
 		        return;
 
@@ -87,7 +86,7 @@ internal sealed class TelegramBotMessageHandler
         }
     }
     
-    private async Task<CommandContext?> TryCreateCommandContext(Update update, CancellationToken cancellationToken)
+    private CommandContext? TryCreateCommandContext(Update update)
     {
 	    if (update is null)
 		    throw new ArgumentNullException(nameof(update));

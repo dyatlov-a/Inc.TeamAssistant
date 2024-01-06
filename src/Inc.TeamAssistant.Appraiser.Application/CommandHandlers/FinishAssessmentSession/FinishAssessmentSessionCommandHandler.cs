@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishAssessmentSession;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
-using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishAssessmentSession;
 

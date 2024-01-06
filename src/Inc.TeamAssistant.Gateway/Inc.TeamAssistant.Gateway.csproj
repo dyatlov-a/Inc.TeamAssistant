@@ -7,6 +7,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj" />

@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.DialogContinuations.Model;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Users;
 using Inc.TeamAssistant.Users.Extensions;
 using Telegram.Bot.Types;
