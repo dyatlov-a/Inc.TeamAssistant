@@ -1,5 +1,6 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -22,7 +23,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IPersonRepository>(
                 sp => ActivatorUtilities.CreateInstance<PersonRepository>(sp, connectionString))
             .AddSingleton<IBotRepository>(
-                sp => ActivatorUtilities.CreateInstance<BotRepository>(sp, connectionString));
+                sp => ActivatorUtilities.CreateInstance<BotRepository>(sp, connectionString))
+            .AddSingleton<ITeamAccessor>(
+                sp => ActivatorUtilities.CreateInstance<TeamAccessor>(sp, connectionString));
         
         return services;
     }

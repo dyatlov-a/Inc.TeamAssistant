@@ -6,7 +6,7 @@ public interface ILinkBuilder
 {
     string BuildLinkMoveToBot();
 
-    string BuildLinkForConnect(Guid assessmentSessionId);
+    string BuildLinkForConnect(Guid teamId);
 
-    string BuildLinkForDashboard(Guid assessmentSessionId, LanguageId assessmentSessionLanguageId);
+    string BuildLinkForDashboard(Guid teamId, LanguageId languageId);
 }

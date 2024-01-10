@@ -35,7 +35,7 @@ builder.Services
 	.AddMediatR(c =>
 	{
 		c.Lifetime = ServiceLifetime.Scoped;
-		c.RegisterServicesFromAssemblyContaining<IAssessmentSessionRepository>();
+		c.RegisterServicesFromAssemblyContaining<ILinkBuilder>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
 		//c.RegisterServicesFromAssemblyContaining<Inc.TeamAssistant.Reviewer.Application.Contracts.ITeamRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
@@ -47,7 +47,7 @@ builder.Services
 	.AddDialogContinuations()
 		
     .AddAppraiserApplication(builder.Configuration)
-    .AddAppraiserDataAccess()
+    .AddAppraiserDataAccess(connectionString)
 	
     .AddCheckInApplication(checkInOptions)
     .AddCheckInDataAccess(connectionString)

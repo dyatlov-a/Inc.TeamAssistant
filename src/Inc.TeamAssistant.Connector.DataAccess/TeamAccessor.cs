@@ -1,0 +1,42 @@
+using Dapper;
+using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
+using Npgsql;
+
+namespace Inc.TeamAssistant.Connector.DataAccess;
+
+internal sealed class TeamAccessor : ITeamAccessor
+{
+    private readonly string _connectionString;
+
+    public TeamAccessor(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        
+        _connectionString = connectionString;
+    }
+    
+    public async Task<IReadOnlyCollection<(long PersonId, string PersonDisplayName)>> GetTeammates(
+        Guid teamId,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                p.id AS id,
+                p.name AS name,
+                p.language_id AS languageid,
+                p.username AS username
+            FROM connector.persons AS p
+            JOIN connector.teammates AS tm ON p.id = tm.person_id
+            WHERE tm.team_id = @team_id;",
+            new { team_id = teamId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        var persons = await connection.QueryAsync<Person>(command);
+        return persons.Select(p => (p.Id, p.DisplayName)).ToArray();
+    }
+}

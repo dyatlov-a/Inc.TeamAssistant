@@ -25,19 +25,19 @@ internal sealed class LinkBuilder : ILinkBuilder
 
     public string BuildLinkMoveToBot() => _botLink;
 
-    public string BuildLinkForConnect(Guid assessmentSessionId)
+    public string BuildLinkForConnect(Guid teamId)
     {
         return string.Format(
             _linkForConnectTemplate,
             _botLink,
-            assessmentSessionId.ToString("N"));
+            teamId.ToString("N"));
     }
 
-    public string BuildLinkForDashboard(Guid assessmentSessionId, LanguageId assessmentSessionLanguage)
+    public string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
     {
         return string.Format(
             _linkForDashboardTemplate,
-            assessmentSessionLanguage.Value,
-            assessmentSessionId.ToString("N"));
+            languageId.Value,
+            teamId.ToString("N"));
     }
 }

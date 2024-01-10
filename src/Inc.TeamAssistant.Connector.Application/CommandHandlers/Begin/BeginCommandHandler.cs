@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.Connector.Model.Commands.Begin;
 using Inc.TeamAssistant.DialogContinuations;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands.Begin;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin;
@@ -19,10 +19,7 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
         if (command is null)
             throw new ArgumentNullException(nameof(command));
 
-        var dialogState = _dialogContinuation.TryBegin(command.MessageContext.PersonId, command.NextStage);
-
-        if (dialogState is null)
-            throw new ApplicationException("Can not start command dialog.");
+        _dialogContinuation.TryBegin(command.MessageContext.PersonId, command.NextStage, out var dialogState);
 
         dialogState.AddItem(command.Command);
         

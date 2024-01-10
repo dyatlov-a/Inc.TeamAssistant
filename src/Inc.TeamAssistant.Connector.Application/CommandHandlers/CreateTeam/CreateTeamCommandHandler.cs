@@ -36,7 +36,11 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
         await _teamRepository.Upsert(team, token);
 
         var dialogState = _dialogContinuation.TryEnd(command.MessageContext.PersonId, BotCommandStage.EnterText);
-        var message = await _messageBuilder.Build(Messages.Connector_JoinToTeam, command.MessageContext.LanguageId, team.Name, $"https://t.me/{command.BotName}?start={team.Id:N}");
+        var message = await _messageBuilder.Build(
+            Messages.Connector_JoinToTeam,
+            command.MessageContext.LanguageId,
+            team.Name,
+            $"https://t.me/{command.BotName}?start={team.Id:N}");
         var notifications = new List<NotificationMessage>
         {
             NotificationMessage.Create(command.MessageContext.ChatId, message, pinned: true)

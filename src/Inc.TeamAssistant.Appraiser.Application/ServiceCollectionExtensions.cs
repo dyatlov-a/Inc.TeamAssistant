@@ -1,8 +1,11 @@
 using FluentValidation;
-using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession;
-using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStoryToAssessmentSession.Validators;
+using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate.Services;
+using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Services;
+using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate.Services;
+using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory.Services;
 using Inc.TeamAssistant.Appraiser.Application.PipelineBehaviors;
 using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,11 +33,18 @@ public static class ServiceCollectionExtensions
         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
         services
+            .AddSingleton<ICommandCreator, AcceptEstimateCommandCreator>()
+            .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
+            .AddSingleton<ICommandCreator, BeginSelectTeamForAddStoryCommandCreator>()
+            .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
+            .AddSingleton<ICommandCreator, SetEstimateForStoryCommandCreator>();
+
+        services
             .AddScoped<SummaryByStoryBuilder>()
             .AddSingleton(addStoryOptions)
-            .AddValidatorsFromAssemblyContaining<AddStoryToAssessmentSessionCommandValidator>(
-                lifetime: ServiceLifetime.Scoped,
-                includeInternalTypes: true)
+            /*.AddValidatorsFromAssemblyContaining<AddStoryToAssessmentSessionCommandValidator>(
+                ServiceLifetime.Scoped,
+                includeInternalTypes: true)*/
             .TryAddEnumerable(ServiceDescriptor.Scoped(
                 typeof(IPipelineBehavior<,>),
                 typeof(ValidationPipelineBehavior<,>)));

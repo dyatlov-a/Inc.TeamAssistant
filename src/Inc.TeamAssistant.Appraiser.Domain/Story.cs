@@ -1,34 +1,44 @@
 using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
-using Inc.TeamAssistant.Appraiser.Domain.States;
+using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Domain;
 
-public sealed class Story : IStoryAccessor
+public sealed class Story
 {
-	public static readonly Story Empty = new(nameof(Story), Array.Empty<string>());
+	public static readonly Story Empty = new(Guid.Empty, 0, 0, LanguageSettings.DefaultLanguageId, nameof(Story));
 
-	public string Title { get; }
+	public Guid Id { get; private set; }
+	public DateTimeOffset Created { get; private set; }
+	public Guid TeamId { get; private set; }
+	public long ChatId { get; private set; }
+	public long ModeratorId { get; private set; }
+	public LanguageId LanguageId { get; private set; } = default!;
+	public string Title { get; private set; } = default!;
 	public int? ExternalId { get; private set; }
 
-	private readonly List<StoryForEstimate> _storyForEstimates;
+	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
 
-    private readonly List<string> _links;
-    public IReadOnlyCollection<string> Links => _links;
+    public ICollection<string> Links { get; private set; } = new List<string>();
 
-    public Story(string title, IReadOnlyCollection<string> links)
+    private Story()
     {
-		if (string.IsNullOrWhiteSpace(title))
+    }
+    
+    public Story(Guid teamId, long chatId, long moderatorId, LanguageId languageId, string title)
+		: this()
+    {
+	    if (string.IsNullOrWhiteSpace(title))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(title));
-        if (links is null)
-            throw new ArgumentNullException(nameof(links));
-
-		_storyForEstimates = new();
+        
+		Id = Guid.NewGuid();
+		Created = DateTimeOffset.UtcNow;
+		ChatId = chatId;
+		ModeratorId = moderatorId;
+		LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
+		TeamId = teamId;
         Title = title;
-        _links = new();
-
-        foreach (var link in links)
-            _links.Add(link);
 	}
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
@@ -49,27 +59,17 @@ public sealed class Story : IStoryAccessor
 		return result;
 	}
 
-	void IStoryAccessor.RemoveStoryForEstimate(long participantId)
-	{
-		var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.Participant.Id == participantId);
-
-		if (storyForEstimate is null)
-			throw new AppraiserUserException(Messages.MissingTaskForEvaluate);
-
-		_storyForEstimates.Remove(storyForEstimate);
-	}
-
-	void IStoryAccessor.Estimate(long participantId, AssessmentValue.Value value)
+	public void Estimate(long participantId, AssessmentValue.Value value)
     {
-        var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.Participant.Id == participantId);
+        var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
 
         if (storyForEstimate is null)
-            throw new AppraiserUserException(Messages.MissingTaskForEvaluate);
+            throw new AppraiserUserException(Messages.Appraiser_MissingTaskForEvaluate);
 
         storyForEstimate.SetValue(value);
 	}
 
-	void IStoryAccessor.AddStoryForEstimate(StoryForEstimate storyForEstimate)
+	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)
     {
         if (storyForEstimate is null)
             throw new ArgumentNullException(nameof(storyForEstimate));
@@ -77,9 +77,30 @@ public sealed class Story : IStoryAccessor
         _storyForEstimates.Add(storyForEstimate);
 	}
 
-	void IStoryAccessor.Reset()
+	public void AddLink(string link)
+	{
+		if (string.IsNullOrWhiteSpace(link))
+			throw new ArgumentException("Value cannot be null or whitespace.", nameof(link));
+		
+		Links.Add(link);
+	}
+
+	public void Reset(long participantId)
     {
+	    if (ModeratorId != participantId)
+		    return;
+	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
+	}
+
+	public void Accept(long participantId)
+	{
+		if (ModeratorId != participantId)
+			return;
+		
+		foreach (var storyForEstimate in _storyForEstimates)
+			if (storyForEstimate.Value == AssessmentValue.Value.None)
+				storyForEstimate.SetValue(AssessmentValue.Value.NoIdea);
 	}
 }

@@ -2,5 +2,5 @@ namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
 public interface IMessagesSender
 {
-    Task StoryChanged(Guid assessmentSessionId);
+    Task StoryChanged(Guid teamId);
 }

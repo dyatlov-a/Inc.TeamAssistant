@@ -24,4 +24,6 @@ public sealed class Person
         LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
         Username = username;
     }
+
+    public string DisplayName => string.IsNullOrWhiteSpace(Username) ? Name : Username;
 }

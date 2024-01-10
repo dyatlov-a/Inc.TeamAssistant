@@ -10,18 +10,18 @@ internal sealed class JoinToTeamCommandCreator : ICommandCreator
     
     public int Priority => 4;
     
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext)
+    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
         
         if (messageContext.Cmd.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
         {
-            var token = messageContext.Text
+            var botToken = messageContext.Text
                 .Replace(_command, string.Empty, StringComparison.InvariantCultureIgnoreCase)
                 .Trim();
 
-            if (Guid.TryParse(token, out var value))
+            if (Guid.TryParse(botToken, out var value))
                 return Task.FromResult<IRequest<CommandResult>?>(new JoinToTeamCommand(messageContext, value));
         }
 

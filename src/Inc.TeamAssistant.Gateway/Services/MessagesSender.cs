@@ -11,9 +11,9 @@ internal sealed class MessagesSender : IMessagesSender
 	public MessagesSender(IHubContext<MessagesHub, IMessagesHubClient> hubContext)
 		=> _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
 
-    public Task StoryChanged(Guid assessmentSessionId)
+    public Task StoryChanged(Guid teamId)
     {
-        _hubContext.Clients.Group(assessmentSessionId.ToString("N")).StoryChanged();
+        _hubContext.Clients.Group(teamId.ToString("N")).StoryChanged();
 
         return Task.CompletedTask;
     }

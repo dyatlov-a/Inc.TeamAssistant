@@ -1,8 +1,8 @@
 using FluentValidation;
 using FluentValidation.Results;
-using Inc.TeamAssistant.Connector.Model.Commands.Begin;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands.Begin;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
@@ -19,7 +19,7 @@ internal sealed class BeginLeaveFromTeamCommandCreator : ICommandCreator
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
     
-    public async Task<IRequest<CommandResult>?> Create(MessageContext messageContext)
+    public async Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));

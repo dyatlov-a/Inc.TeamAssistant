@@ -9,6 +9,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Ser
 internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
     private readonly IMessageBuilder _messageBuilder;
+    private readonly string _command = "/new_team";
     private readonly BotCommandStage _commandStage = BotCommandStage.EnterText;
     
     public int Priority => 3;
@@ -18,12 +19,13 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
     
-    public async Task<IRequest<CommandResult>?> Create(MessageContext messageContext)
+    public async Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
         
-        if (messageContext.CurrentCommandStage == _commandStage)
+        if (messageContext.Cmd.Equals(_command, StringComparison.InvariantCultureIgnoreCase) &&
+            messageContext.CurrentCommandStage == _commandStage)
         {
             if (messageContext.Text.StartsWith("/"))
                 throw new ValidationException(new[]

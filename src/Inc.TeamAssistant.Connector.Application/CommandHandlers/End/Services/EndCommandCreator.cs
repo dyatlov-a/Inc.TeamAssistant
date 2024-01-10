@@ -10,7 +10,7 @@ internal sealed class EndCommandCreator : ICommandCreator
     
     public int Priority => 2;
     
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext)
+    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));

@@ -7,6 +7,6 @@ public interface IDialogContinuation<T>
     where T : notnull
 {
     DialogState<T>? Find(long userId);
-    DialogState<T>? TryBegin(long userId, T continuationState, ChatMessage? chatMessage = null);
+    bool TryBegin(long userId, T continuationState, out DialogState<T> dialogState, ChatMessage? chatMessage = null);
     DialogState<T>? TryEnd(long userId, T continuationState, ChatMessage? chatMessage = null);
 }

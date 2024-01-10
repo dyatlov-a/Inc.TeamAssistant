@@ -3,9 +3,10 @@ using Inc.TeamAssistant.Primitives;
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
 public sealed record SummaryByStory(
-	Guid AssessmentSessionId,
-	LanguageId AssessmentSessionLanguageId,
+	Guid TeamId,
+	LanguageId LanguageId,
 	long ChatId,
+	Guid StoryId,
 	int? StoryExternalId,
 	string StoryTitle,
 	IReadOnlyCollection<string> StoryLinks,

@@ -11,17 +11,19 @@ internal sealed class DialogContinuation<T> : IDialogContinuation<T>
 
     public DialogState<T>? Find(long userId) => _store.GetValueOrDefault(userId);
 
-    public DialogState<T>? TryBegin(long userId, T continuationState, ChatMessage? chatMessage = null)
+    public bool TryBegin(long userId, T continuationState, out DialogState<T> dialogState, ChatMessage? chatMessage = null)
     {
         if (continuationState is null)
             throw new ArgumentNullException(nameof(continuationState));
-        
-        var dialogState = new DialogState<T>(continuationState).TryAttachMessage(chatMessage);
 
-        if (_store.TryAdd(userId, dialogState))
-            return dialogState;
+        if (_store.TryGetValue(userId, out var value))
+        {
+            dialogState = value.MoveTo(continuationState).TryAttachMessage(chatMessage);
+            return false;
+        }
 
-        return null;
+        dialogState = new DialogState<T>(continuationState).TryAttachMessage(chatMessage);
+        return _store.TryAdd(userId, dialogState);
     }
 
     public DialogState<T>? TryEnd(long userId, T continuationState, ChatMessage? chatMessage = null)

@@ -1,20 +1,21 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Appraiser.Model.Commands.AddStoryForEstimate;
+using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
 internal sealed class SummaryByStoryBuilder
 {
 	private readonly IMessageBuilder _messageBuilder;
+    private readonly ILinkBuilder _linkBuilder;
 
-    public SummaryByStoryBuilder(IMessageBuilder messageBuilder)
-	{
+    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, ILinkBuilder linkBuilder)
+    {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
     }
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
@@ -25,13 +26,17 @@ internal sealed class SummaryByStoryBuilder
         var builder = new StringBuilder();
 
         builder.AppendLine(await _messageBuilder.Build(
-            summary.EstimateEnded ? Messages.EndEstimate : Messages.NeedEstimate,
-            summary.AssessmentSessionLanguageId,
+            summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
+            summary.LanguageId,
             summary.StoryTitle));
 
         if (summary.StoryLinks.Any())
             foreach (var link in summary.StoryLinks)
                 builder.AppendLine(link);
+
+        builder.AppendLine();
+
+        builder.AppendLine(_linkBuilder.BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
 
         builder.AppendLine();
         foreach (var item in summary.Items)
@@ -41,8 +46,8 @@ internal sealed class SummaryByStoryBuilder
         {
             builder.AppendLine();
             builder.AppendLine(await _messageBuilder.Build(
-                Messages.TotalEstimate,
-                summary.AssessmentSessionLanguageId,
+                Messages.Appraiser_TotalEstimate,
+                summary.LanguageId,
                 summary.Total));
         }
         
@@ -52,27 +57,25 @@ internal sealed class SummaryByStoryBuilder
                 builder.ToString())
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
-                .AddHandler((_, uName, mId) => AddStoryForEstimate(summary.AssessmentSessionId, uName, mId));
+                .AddHandler((c, mId) => new AttachStoryCommand(c, summary.StoryId, mId));
 
         if (!summary.EstimateEnded)
+        {
             foreach (var assessment in AssessmentValue.GetAssessments)
             {
                 var value = assessment.ToString();
             
                 notification.WithButton(
                     new Button(value.Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase),
-                        value));
+                        $"/{value}?storyId={summary.StoryId:N}"));
             }
 
+            notification.WithButton(new Button("Accept", $"/accept?storyId={summary.StoryId:N}"));
+        }
+        else
+            notification.WithButton(new Button("Revote", $"/revote?storyId={summary.StoryId:N}"));
+
         return notification;
-    }
-
-    private IRequest<CommandResult> AddStoryForEstimate(Guid assessmentSessionId, string userName, int messageId)
-    {
-        if (string.IsNullOrWhiteSpace(userName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(userName));
-
-        return new AddStoryForEstimateCommand(assessmentSessionId, userName, messageId);
     }
 
     private string AddEstimate(bool estimateEnded, EstimateItemDetails item)

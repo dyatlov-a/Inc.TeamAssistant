@@ -6,25 +6,26 @@ namespace Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 
 internal static class SummaryByStoryConverter
 {
-    public static SummaryByStory ConvertTo(AssessmentSession assessmentSession)
+    public static SummaryByStory ConvertTo(Story story)
     {
-        if (assessmentSession is null)
-            throw new ArgumentNullException(nameof(assessmentSession));
+        if (story is null)
+            throw new ArgumentNullException(nameof(story));
 
-        var estimateEnded = assessmentSession.EstimateEnded();
+        var estimateEnded = story.EstimateEnded();
 
         return new SummaryByStory(
-            assessmentSession.Id,
-            assessmentSession.LanguageId,
-            assessmentSession.ChatId,
-            assessmentSession.CurrentStory.ExternalId,
-            assessmentSession.CurrentStory.Title,
-            assessmentSession.CurrentStory.Links,
+            story.TeamId,
+            story.LanguageId,
+            story.ChatId,
+            story.Id,
+            story.ExternalId,
+            story.Title,
+            story.Links.ToArray(),
             estimateEnded,
-            assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded),
-            assessmentSession.CurrentStory.StoryForEstimates
+            story.GetTotal().ToDisplayValue(estimateEnded),
+            story.StoryForEstimates
                 .Select(s => new EstimateItemDetails(
-                    s.Participant.Name,
+                    s.ParticipantDisplayName,
                     s.Value.ToDisplayHasValue(),
                     s.Value.ToDisplayValue()))
                 .ToArray());

@@ -6,7 +6,7 @@ public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
     
-	public delegate IRequest<CommandResult> ResponseHandler(long chatId, string userName, int messageId);
+	public delegate IRequest<CommandResult> ResponseHandler(MessageContext messageContext, int messageId);
 
 	public string Text { get; }
     public bool Pinned { get; }

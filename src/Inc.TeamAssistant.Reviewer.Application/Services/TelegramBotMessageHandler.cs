@@ -246,9 +246,8 @@ internal sealed class TelegramBotMessageHandler
             throw new ArgumentNullException(nameof(translateProvider));
         if (context is null)
             throw new ArgumentNullException(nameof(context));
-
-        var dialogState = _dialogContinuation.TryBegin(context.Person.Id, CommandList.CreateTeam, context.ToChatMessage());
-        if (dialogState is null)
+        
+        if (!_dialogContinuation.TryBegin(context.Person.Id, CommandList.CreateTeam, out var dialogState, context.ToChatMessage()))
         {
             await client.SendTextMessageAsync(
                 context.ChatId,
@@ -341,8 +340,7 @@ internal sealed class TelegramBotMessageHandler
                 cancellationToken: cancellationToken);
         }
         
-        var dialogState = _dialogContinuation.TryBegin(context.Person.Id, targetCommand, context.ToChatMessage());
-        if (dialogState is null)
+        if (!_dialogContinuation.TryBegin(context.Person.Id, targetCommand, out var dialogState, context.ToChatMessage()))
         {
             await client.SendTextMessageAsync(
                 context.ChatId,

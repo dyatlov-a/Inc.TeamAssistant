@@ -7,7 +7,7 @@ public sealed class DialogState<T>
 {
     private readonly List<ChatMessage> _chatMessages = new();
     private readonly List<string> _data = new();
-    public T ContinuationState { get; }
+    public T ContinuationState { get; private set; }
 
     public DialogState(T continuationState)
     {
@@ -15,7 +15,7 @@ public sealed class DialogState<T>
     }
 
     public IReadOnlyCollection<ChatMessage> ChatMessages => _chatMessages;
-    public IReadOnlyCollection<string> Data => _data;
+    public IReadOnlyList<string> Data => _data;
 
     public DialogState<T> TryAttachMessage(ChatMessage? chatMessage)
     {
@@ -32,6 +32,13 @@ public sealed class DialogState<T>
 
         _data.Add(item);
         
+        return this;
+    }
+
+    public DialogState<T> MoveTo(T continuationState)
+    {
+        ContinuationState = continuationState;
+
         return this;
     }
 }

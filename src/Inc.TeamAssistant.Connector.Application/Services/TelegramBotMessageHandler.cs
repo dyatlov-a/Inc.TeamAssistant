@@ -61,7 +61,7 @@ internal sealed class TelegramBotMessageHandler
                         botCommand.Value,
                         StringComparison.InvariantCultureIgnoreCase) == true)
                 {
-                    var command = await _commandFactory.TryCreate(messageContext);
+                    var command = await _commandFactory.TryCreate(messageContext, token);
 
                     if (command is not null)
                     {
@@ -225,10 +225,7 @@ internal sealed class TelegramBotMessageHandler
 
                 if (notificationMessage.Handler is not null)
                 {
-                    var command = notificationMessage.Handler(
-                        targetChatId,
-                        messageContext.FirstName,
-                        message.MessageId);
+                    var command = notificationMessage.Handler(messageContext, message.MessageId);
 
                     await Execute(client, messageContext, command, token);
                 }

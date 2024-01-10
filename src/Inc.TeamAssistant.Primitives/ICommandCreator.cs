@@ -6,5 +6,5 @@ public interface ICommandCreator
 {
     int Priority { get; }
     
-    Task<IRequest<CommandResult>?> Create(MessageContext messageContext);
+    Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token);
 }

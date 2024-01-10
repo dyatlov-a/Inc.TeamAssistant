@@ -8,51 +8,50 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStoryDetails;
 
 internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDetailsQuery, GetStoryDetailsResult?>
 {
-	private readonly IAssessmentSessionRepository _repository;
+	private readonly IStoryRepository _storyRepository;
     private readonly IQuickResponseCodeGenerator _codeGenerator;
     private readonly ILinkBuilder _linkBuilder;
 
 	public GetStoryDetailsQueryHandler(
-        IAssessmentSessionRepository repository,
+		IStoryRepository storyRepository,
         IQuickResponseCodeGenerator codeGenerator,
         ILinkBuilder linkBuilder)
 	{
-		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
         _codeGenerator = codeGenerator ?? throw new ArgumentNullException(nameof(codeGenerator));
         _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
 	}
 
-	public Task<GetStoryDetailsResult?> Handle(GetStoryDetailsQuery query, CancellationToken cancellationToken)
+	public async Task<GetStoryDetailsResult?> Handle(GetStoryDetailsQuery query, CancellationToken token)
 	{
 		if (query is null)
 			throw new ArgumentNullException(nameof(query));
 
-		var assessmentSession = _repository.Find(query.AssessmentSessionId);
-        var result = assessmentSession is not null ? Get(assessmentSession) : null;
-        return Task.FromResult(result);
+		var story = await _storyRepository.FindLast(query.TeamId, token);
+        return Get(story ?? Story.Empty);
     }
 
-    private GetStoryDetailsResult Get(AssessmentSession assessmentSession)
+    private GetStoryDetailsResult Get(Story story)
     {
-        if (assessmentSession is null)
-            throw new ArgumentNullException(nameof(assessmentSession));
+        if (story is null)
+            throw new ArgumentNullException(nameof(story));
 
-        var estimateEnded = assessmentSession.EstimateEnded();
-        var link = _linkBuilder.BuildLinkForConnect(assessmentSession.Id);
+        var estimateEnded = story.EstimateEnded();
+        var link = _linkBuilder.BuildLinkForConnect(story.TeamId);
         var code = _codeGenerator.Generate(link);
 
-        var items = assessmentSession.CurrentStory.StoryForEstimates
+        var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
-                e.Participant.Name,
+                e.ParticipantDisplayName,
                 estimateEnded ? e.Value.ToDisplayValue() : e.Value.ToDisplayHasValue()))
             .ToArray();
 
         return new(
-            assessmentSession.Title,
+	        story.Title,
             code,
-            StorySelected: assessmentSession.CurrentStory != Story.Empty,
-            new StoryDetails(assessmentSession.CurrentStory.Title, assessmentSession.CurrentStory.Links),
+            StorySelected: story != Story.Empty,
+            new StoryDetails(story.Title, story.Links.ToArray()),
             items,
-            assessmentSession.CurrentStory.GetTotal().ToDisplayValue(estimateEnded));
+            story.GetTotal().ToDisplayValue(estimateEnded));
     }
 }

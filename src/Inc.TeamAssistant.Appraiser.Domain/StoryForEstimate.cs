@@ -2,16 +2,30 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed class StoryForEstimate
 {
-    public Participant Participant { get; }
+	public Guid Id { get; private set; }
+	public Guid StoryId { get; private set; }
+    public long ParticipantId { get; private set; }
+    public string ParticipantDisplayName { get; private set; } = default!;
     public AssessmentValue.Value Value { get; private set; }
 
-    public StoryForEstimate(Participant participant)
+    private StoryForEstimate()
     {
-		Participant = participant ?? throw new ArgumentNullException(nameof(participant));
+    }
+
+    public StoryForEstimate(Guid storyId, long participantId, string participantDisplayName)
+		: this()
+    {
+	    if (string.IsNullOrWhiteSpace(participantDisplayName))
+		    throw new ArgumentException("Value cannot be null or whitespace.", nameof(participantDisplayName));
+	    
+	    Id = Guid.NewGuid();
+	    StoryId = storyId;
+	    ParticipantId = participantId;
+	    ParticipantDisplayName = participantDisplayName;
 		Value = AssessmentValue.Value.None;
 	}
 
-	public void SetValue(AssessmentValue.Value value) => Value = value;
+	internal void SetValue(AssessmentValue.Value value) => Value = value;
 
 	internal void Reset() => Value = AssessmentValue.Value.None;
 }
