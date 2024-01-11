@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Inc.TeamAssistant.CheckIn.Application.Extensions;
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
 using Inc.TeamAssistant.Languages;
-using Inc.TeamAssistant.Users.Extensions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

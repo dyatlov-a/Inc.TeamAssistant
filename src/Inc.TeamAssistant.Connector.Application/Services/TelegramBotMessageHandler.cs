@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -105,8 +106,8 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.Message.From, token);
             var inProgressCommand = _dialogContinuation.Find(update.Message.From.Id);
             var targetTeams = bot.Teams
-                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id))
-                .Select(p => (p.Id, p.Name))
+                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
+                .Select(p => (p.Id, p.ChatId, p.Name))
                 .ToArray();
             
             return new(
@@ -123,7 +124,8 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.From.Username,
                 update.Message.MessageId,
                 person.LanguageId,
-                inProgressCommand?.ContinuationState);
+                inProgressCommand?.ContinuationState,
+                GetTargetUser(update.Message));
         }
 
         if (!string.IsNullOrWhiteSpace(update.CallbackQuery?.Data)
@@ -133,8 +135,8 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.CallbackQuery.From, token);
             var inProgressCommand = _dialogContinuation.Find(update.CallbackQuery.From.Id);
             var targetTeams = bot.Teams
-                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id))
-                .Select(p => (p.Id, p.Name))
+                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.CallbackQuery.Message.Chat.Id)
+                .Select(p => (p.Id, p.ChatId, p.Name))
                 .ToArray();
             
             return new(
@@ -149,10 +151,30 @@ internal sealed class TelegramBotMessageHandler
                 update.CallbackQuery.From.Username,
                 update.CallbackQuery.Message.MessageId,
                 person.LanguageId,
-                inProgressCommand?.ContinuationState);
+                inProgressCommand?.ContinuationState,
+                TargetUser: null);
         }
 
         return null;
+    }
+    
+    private UserIdentity? GetTargetUser(Message message)
+    {
+        if (message is null)
+            throw new ArgumentNullException(nameof(message));
+        
+        const char usernameMarker = '@';
+        var username = message.Text!.Split(usernameMarker).LastOrDefault()?.Trim();
+        var targetUserIds = message.Entities
+            ?.Where(e => e is { Type: MessageEntityType.TextMention, User: { } })
+            .Select(e => (e.User!.Id, e.User.FirstName))
+            .ToArray();
+        
+        return targetUserIds?.Any() == true
+            ? UserIdentity.Create(targetUserIds.Last().Id)
+            : string.IsNullOrWhiteSpace(username)
+                ? null
+                : UserIdentity.Create(username);
     }
 
     private async Task<Person> EnsurePerson(User user, CancellationToken token)

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,8 +15,9 @@ internal sealed class NotificationsService : BackgroundService
     private readonly ITaskForReviewAccessor _accessor;
     private readonly IHolidayService _holidayService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ITeamAccessor _teamAccessor;
     private readonly WorkdayOptions _options;
-    private readonly TelegramBotClient _client;
+    private readonly TelegramBotClientProvider _telegramBotClientProvider;
     private readonly int _notificationsBatch;
     private readonly TimeSpan _notificationsDelay;
 
@@ -23,38 +25,39 @@ internal sealed class NotificationsService : BackgroundService
         ITaskForReviewAccessor accessor,
         IHolidayService holidayService,
         IServiceProvider serviceProvider,
+        ITeamAccessor teamAccessor,
         WorkdayOptions options,
-        string accessToken,
+        TelegramBotClientProvider telegramBotClientProvider,
         int notificationsBatch,
         TimeSpan notificationsDelay)
     {
-        if (string.IsNullOrWhiteSpace(accessToken))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(accessToken));
-
         _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _client = new(accessToken);
+        _telegramBotClientProvider = telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
         _notificationsBatch = notificationsBatch;
         _notificationsDelay = notificationsDelay;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken token)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        var client = _telegramBotClientProvider.Get();
+        
+        while (!token.IsCancellationRequested)
         {
             var now = DateTimeOffset.UtcNow;
             using var scope = _serviceProvider.CreateScope();
             var translateProvider = scope.ServiceProvider.GetRequiredService<ITranslateProvider>();
 
-            if (await IsWorkTime(now, stoppingToken))
+            if (await IsWorkTime(now, token))
             {
                 var tasksForNotifications = await _accessor.GetTasksForNotifications(
                     now,
                     TaskForReviewStateRules.ActiveStates,
                     _notificationsBatch,
-                    stoppingToken);
+                    token);
 
                 foreach (var task in tasksForNotifications)
                 {
@@ -62,76 +65,86 @@ internal sealed class NotificationsService : BackgroundService
 
                     var message = task.State switch
                     {
-                        TaskForReviewState.New or TaskForReviewState.InProgress => await CreateNeedReviewMessage(translateProvider, task),
-                        TaskForReviewState.OnCorrection => await CreateMoveToNextRoundMessage(translateProvider, task),
+                        TaskForReviewState.New or TaskForReviewState.InProgress => await CreateNeedReviewMessage(translateProvider, task, token),
+                        TaskForReviewState.OnCorrection => await CreateMoveToNextRoundMessage(translateProvider, task, token),
                         _ => throw new ArgumentOutOfRangeException($"Value {task.State} OutOfRange for {nameof(TaskForReviewState)}")
                     };
 
-                    await _client.SendTextMessageAsync(
+                    await client.SendTextMessageAsync(
                         new(message.UserId),
                         message.Text,
                         replyMarkup: message.ReplyMarkup,
-                        cancellationToken: stoppingToken);
+                        cancellationToken: token);
                 }
 
-                await _accessor.Update(tasksForNotifications, stoppingToken);
+                await _accessor.Update(tasksForNotifications, token);
             }
 
-            await Task.Delay(_notificationsDelay, stoppingToken);
+            await Task.Delay(_notificationsDelay, token);
         }
     }
 
     private async Task<(long UserId, string Text, IReplyMarkup ReplyMarkup)> CreateNeedReviewMessage(
         ITranslateProvider translateProvider,
-        TaskForReview task)
+        TaskForReview task,
+        CancellationToken token)
     {
         if (translateProvider is null)
             throw new ArgumentNullException(nameof(translateProvider));
         if (task is null)
             throw new ArgumentNullException(nameof(task));
 
+        var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
+        if (!reviewer.HasValue)
+            throw new ApplicationException($"Reviewer {task.ReviewerId} was not found.");
+        
         var buttons = new[]
         {
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToInProgress, task.Reviewer.LanguageId),
-                $"{CommandList.MoveToInProgress}_{task.Id:N}"),
+                await translateProvider.Get(Messages.Reviewer_MoveToInProgress, reviewer.Value.LanguageId),
+                $"{CommandList.MoveToInProgress}{task.Id:N}"),
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToAccept, task.Reviewer.LanguageId),
-                $"{CommandList.Accept}_{task.Id:N}"),
+                await translateProvider.Get(Messages.Reviewer_MoveToAccept, reviewer.Value.LanguageId),
+                $"{CommandList.Accept}{task.Id:N}"),
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToDecline, task.Reviewer.LanguageId),
-                $"{CommandList.Decline}_{task.Id:N}")
+                await translateProvider.Get(Messages.Reviewer_MoveToDecline, reviewer.Value.LanguageId),
+                $"{CommandList.Decline}{task.Id:N}")
         };
 
         return (
-            task.Reviewer.Id,
-            await translateProvider.Get(Messages.Reviewer_NeedReview, task.Reviewer.LanguageId, task.Description),
+            reviewer.Value.Id,
+            await translateProvider.Get(Messages.Reviewer_NeedReview, reviewer.Value.LanguageId, task.Description),
             new InlineKeyboardMarkup(buttons));
     }
     
     private async Task<(long UserId, string Text, IReplyMarkup ReplyMarkup)> CreateMoveToNextRoundMessage(
         ITranslateProvider translateProvider,
-        TaskForReview task)
+        TaskForReview task,
+        CancellationToken token)
     {
         if (translateProvider is null)
             throw new ArgumentNullException(nameof(translateProvider));
         if (task is null)
             throw new ArgumentNullException(nameof(task));
         
+        var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
+        if (!owner.HasValue)
+            throw new ApplicationException($"Owner {task.OwnerId} was not found.");
+        
         var buttons = new[]
         {
             InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToNextRound, task.Owner.LanguageId),
-                $"{CommandList.MoveToNextRound}_{task.Id:N}")
+                await translateProvider.Get(Messages.Reviewer_MoveToNextRound, owner.Value.LanguageId),
+                $"{CommandList.MoveToNextRound}{task.Id:N}")
         };
 
         return (
-            task.Owner.Id,
-            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, task.Owner.LanguageId, task.Description),
+            owner.Value.Id,
+            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, owner.Value.LanguageId, task.Description),
             new InlineKeyboardMarkup(buttons));
     }
 
-    private async Task<bool> IsWorkTime(DateTimeOffset dateTimeOffset, CancellationToken cancellationToken)
+    private async Task<bool> IsWorkTime(DateTimeOffset dateTimeOffset, CancellationToken token)
     {
         if (_options.WorkOnHoliday)
             return true;
@@ -139,6 +152,6 @@ internal sealed class NotificationsService : BackgroundService
         if (dateTimeOffset.TimeOfDay < _options.StartTimeUtc || dateTimeOffset.TimeOfDay >= _options.EndTimeUtc)
             return false;
 
-        return await _holidayService.IsWorkday(DateOnly.FromDateTime(dateTimeOffset.DateTime), cancellationToken);
+        return await _holidayService.IsWorkday(DateOnly.FromDateTime(dateTimeOffset.DateTime), token);
     }
 }

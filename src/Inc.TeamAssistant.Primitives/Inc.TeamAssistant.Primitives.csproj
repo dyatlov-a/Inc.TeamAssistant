@@ -2,7 +2,4 @@
     <ItemGroup>
         <PackageReference Include="MediatR" Version="12.1.1" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Commands\" />
-    </ItemGroup>
 </Project>

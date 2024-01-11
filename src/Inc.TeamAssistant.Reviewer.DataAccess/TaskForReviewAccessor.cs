@@ -21,7 +21,7 @@ internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
         DateTimeOffset now,
         IReadOnlyCollection<TaskForReviewState> states,
         int limit,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
         if (states is null)
             throw new ArgumentNullException(nameof(states));
@@ -31,44 +31,31 @@ internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
 SELECT
     t.id AS id,
     t.team_id AS teamid,
+    t.owner_id AS ownerid,
+    t.reviewer_id AS reviewerid,
     t.description AS description,
     t.state AS state,
     t.created AS created,
     t.next_notification AS nextnotification,
     t.accept_date AS acceptdate,
     t.message_id AS messageid,
-    t.chat_id AS chatid,
-    o.id AS id,
-    o.language_id AS languageid,
-    o.first_name AS firstname,
-    o.last_name AS lastname,
-    o.username AS username,
-    r.id AS id,
-    r.language_id AS languageid,
-    r.first_name AS firstname,
-    r.last_name AS lastname,
-    r.username AS username
+    t.chat_id AS chatid
 FROM review.task_for_reviews AS t
-JOIN review.persons AS o ON o.id = t.owner_id
-JOIN review.persons AS r ON r.id = t.reviewer_id
 WHERE t.state = ANY(@states) AND t.next_notification < @now
 ORDER BY t.next_notification
 LIMIT @limit;",
             new { now, states = targetStates, limit },
-            flags: CommandFlags.Buffered,
-            cancellationToken: cancellationToken);
+            flags: CommandFlags.None,
+            cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        var results = await connection.QueryAsync<TaskForReview, Person, Person, TaskForReview>(
-            command,
-            (t, o, r) => t.Build(o, r),
-            splitOn: "id");
+        var results = await connection.QueryAsync<TaskForReview>(command);
 
         return results.ToArray();
     }
 
-    public async Task Update(IReadOnlyCollection<TaskForReview> taskForReviews, CancellationToken cancellationToken)
+    public async Task Update(IReadOnlyCollection<TaskForReview> taskForReviews, CancellationToken token)
     {
         if (taskForReviews is null)
             throw new ArgumentNullException(nameof(taskForReviews));
@@ -93,7 +80,7 @@ WHERE et.id = t.id;",
                 next_notifications = nextNotifications
             },
             flags: CommandFlags.None,
-            cancellationToken: cancellationToken);
+            cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
 

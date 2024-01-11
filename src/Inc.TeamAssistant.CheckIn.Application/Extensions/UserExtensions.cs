@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using Telegram.Bot.Types;
 
-namespace Inc.TeamAssistant.Users.Extensions;
+namespace Inc.TeamAssistant.CheckIn.Application.Extensions;
 
 public static class UserExtensions
 {

@@ -1,26 +1,23 @@
 namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
-internal sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
+public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
 {
-    private readonly Team _team;
+    private readonly IReadOnlyCollection<long> _teammates;
 
-    public RoundRobinReviewerStrategy(Team team)
+    public RoundRobinReviewerStrategy(IReadOnlyCollection<long> teammates)
     {
-        _team = team ?? throw new ArgumentNullException(nameof(team));
+        _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
     }
     
-    public Person Next(Person owner, Person? lastReviewer)
+    public long Next(long ownerId, long? lastReviewerId)
     {
-        if (owner is null)
-            throw new ArgumentNullException(nameof(owner));
-        
-        var otherPlayers = _team.Players.Where(p => p.Id != owner.Id).ToArray();
+        var otherTeammates = _teammates.Where(t => t != ownerId).OrderBy(t => t).ToArray();
 
-        if (!otherPlayers.Any())
-            return _team.Players.First();
+        if (!otherTeammates.Any())
+            return _teammates.First();
 
-        var nextReviewers = otherPlayers.Where(p => lastReviewer is null || p.Id > lastReviewer.Id).ToArray();
-        var targets = nextReviewers.Any() ? nextReviewers : otherPlayers;
-        return targets.MinBy(p => p.Id)!;
+        var nextReviewers = otherTeammates.Where(t => lastReviewerId is null || t > lastReviewerId).ToArray();
+        var targets = nextReviewers.Any() ? nextReviewers : otherTeammates;
+        return targets.MinBy(t => t);
     }
 }

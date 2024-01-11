@@ -7,7 +7,6 @@ using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Connector.Application;
-using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Languages;
@@ -37,7 +36,7 @@ builder.Services
 		c.Lifetime = ServiceLifetime.Scoped;
 		c.RegisterServicesFromAssemblyContaining<ILinkBuilder>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
-		//c.RegisterServicesFromAssemblyContaining<Inc.TeamAssistant.Reviewer.Application.Contracts.ITeamRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
 	})
 	.AddScoped<ITranslateProvider, TranslateProvider>()
@@ -52,8 +51,8 @@ builder.Services
     .AddCheckInApplication(checkInOptions)
     .AddCheckInDataAccess(connectionString)
 	
-    //.AddReviewerApplication(reviewerOptions)
-	//.AddReviewerDataAccess(connectionString)
+    .AddReviewerApplication(reviewerOptions)
+	.AddReviewerDataAccess(connectionString)
 	
 	.AddConnectorApplication()
 	.AddConnectorDataAccess(connectionString)

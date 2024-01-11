@@ -11,15 +11,18 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
     private readonly ITeamRepository _teamRepository;
     private readonly IDialogContinuation<BotCommandStage> _dialogContinuation;
     private readonly IMessageBuilder _messageBuilder;
+    private readonly IEnumerable<ILeaveTeamHandler> _leaveTeamHandlers;
 
     public LeaveFromTeamCommandHandler(
         ITeamRepository teamRepository,
         IDialogContinuation<BotCommandStage> dialogContinuation,
-        IMessageBuilder messageBuilder)
+        IMessageBuilder messageBuilder,
+        IEnumerable<ILeaveTeamHandler> leaveTeamHandlers)
     {
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _leaveTeamHandlers = leaveTeamHandlers ?? throw new ArgumentNullException(nameof(leaveTeamHandlers));
     }
     
     public async Task<CommandResult> Handle(LeaveFromTeamCommand command, CancellationToken token)
@@ -34,6 +37,9 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         team.RemoveTeammate(command.MessageContext.PersonId);
 
         await _teamRepository.Upsert(team, token);
+
+        foreach (var leaveTeamHandler in _leaveTeamHandlers)
+            await leaveTeamHandler.Handle(command.MessageContext, command.TeamId, token);
 
         var leaveFromTeamMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,

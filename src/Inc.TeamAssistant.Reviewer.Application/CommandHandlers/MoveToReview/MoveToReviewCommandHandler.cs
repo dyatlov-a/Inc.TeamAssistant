@@ -1,69 +1,74 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
-using Inc.TeamAssistant.Users;
 using MediatR;
 using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview;
 
-internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewCommand, MoveToReviewResult>
+internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewCommand, CommandResult>
 {
-    private readonly ITeamRepository _teamRepository;
-    private readonly IPersonRepository _personRepository;
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IMessageBuilderService _messageBuilderService;
-    private readonly TelegramBotClient _client;
+    private readonly TelegramBotClientProvider _telegramBotClientProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
     public MoveToReviewCommandHandler(
-        ITeamRepository teamRepository,
-        IPersonRepository personRepository,
         ITaskForReviewRepository taskForReviewRepository,
         IMessageBuilderService messageBuilderService,
-        TelegramBotClient client)
+        TelegramBotClientProvider telegramBotClientProvider,
+        ITeamAccessor teamAccessor)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
-        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _messageBuilderService =
             messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _telegramBotClientProvider = telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
-    public async Task<MoveToReviewResult> Handle(MoveToReviewCommand command, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
-        
-        var currentTeam = await _teamRepository.Find(command.TeamId, cancellationToken);
-        if (currentTeam is null)
+
+        var client = _telegramBotClientProvider.Get();
+        var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
+        var targetTeam = command.MessageContext.FindTeam(command.TeamId);
+        if (!targetTeam.HasValue)
             throw new ApplicationException($"Team {command.TeamId} was not found.");
-            
-        var owner = currentTeam.Players.SingleOrDefault(p => p.Id == command.PersonId)
-                    ?? await _personRepository.Find(UserIdentity.Create(command.PersonId), cancellationToken);
-        if (owner is null)
-            throw new ApplicationException($"User {command.PersonFirstName} was not found.");
-            
-        var lastReviewer = await _personRepository.FindLastReviewer(currentTeam.Id, cancellationToken);
-        var targetPlayer = command.TargetUser is { }
-            ? await _personRepository.Find(command.TargetUser, cancellationToken)
-            : null;
-        var reviewer = targetPlayer ?? currentTeam.GetNextReviewer(owner, lastReviewer);
-        var taskForReview = new TaskForReview(currentTeam.Id, owner, reviewer, currentTeam.ChatId, command.Description);
+        
+        var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
+        var targetPlayer = command.MessageContext.TargetUser?.UserId.HasValue == true
+            ? (await _teamAccessor.FindPerson(command.MessageContext.TargetUser.UserId.Value, token))?.Id
+            : !string.IsNullOrWhiteSpace(command.MessageContext.TargetUser?.Username)
+                ? (await _teamAccessor.FindPerson(command.MessageContext.TargetUser.Username, token))?.Id
+                : null;
+        var reviewer = targetPlayer ?? new RoundRobinReviewerStrategy(teammates.Select(t => t.PersonId).ToArray())
+            .Next(command.MessageContext.PersonId, lastReviewerId);
+        var taskForReview = new TaskForReview(
+            command.TeamId,
+            command.MessageContext.PersonId,
+            reviewer,
+            targetTeam.Value.ChatId,
+            command.Description);
         
         var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
-            command.PersonLanguageId,
-            taskForReview);
-        var message = await _client.SendTextMessageAsync(
-            currentTeam.ChatId,
+            command.MessageContext.LanguageId,
+            taskForReview,
+            token);
+        var message = await client.SendTextMessageAsync(
+            targetTeam.Value.ChatId,
             taskForReviewMessage.Text,
             entities: taskForReviewMessage.Entities,
-            cancellationToken: cancellationToken);
+            cancellationToken: token);
         taskForReview.AttachMessage(message.MessageId);
         
-        await _taskForReviewRepository.Upsert(taskForReview, cancellationToken);
+        await _taskForReviewRepository.Upsert(taskForReview, token);
 
-        return new MoveToReviewResult();
+        return CommandResult.Empty;
     }
 }

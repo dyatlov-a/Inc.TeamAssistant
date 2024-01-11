@@ -1,29 +1,26 @@
 namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
-internal sealed class RandomReviewerStrategy : INextReviewerStrategy
+public sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
     private static readonly Random RandomSelector = new();
 
-    private readonly Team _team;
+    private readonly IReadOnlyCollection<long> _teammates;
 
-    public RandomReviewerStrategy(Team team)
+    public RandomReviewerStrategy(IReadOnlyCollection<long> teammates)
     {
-        _team = team ?? throw new ArgumentNullException(nameof(team));
+        _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
     }
     
-    public Person Next(Person owner, Person? lastReviewer)
+    public long Next(long ownerId, long? lastReviewerId)
     {
-        if (owner is null)
-            throw new ArgumentNullException(nameof(owner));
-
-        var excludedPlayers = lastReviewer is null ? new[] { owner.Id } : new[] { owner.Id, lastReviewer.Id };
-        var targetPlayers = _team.Players
-            .Where(p => !excludedPlayers.Contains(p.Id))
-            .OrderBy(p => p.Id)
+        var excludedTeammates = lastReviewerId.HasValue ? new[] { ownerId, lastReviewerId.Value } : new[] { ownerId };
+        var targetPlayers = _teammates
+            .Where(t => !excludedTeammates.Contains(t))
+            .OrderBy(t => t)
             .ToArray();
 
         if (!targetPlayers.Any())
-            return _team.Players.First();
+            return _teammates.First();
         
         var nextReviewerIndex = RandomSelector.Next(0, targetPlayers.Length);
         return targetPlayers[nextReviewerIndex];

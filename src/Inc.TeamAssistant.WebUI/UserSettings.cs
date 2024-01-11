@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Users;
+namespace Inc.TeamAssistant.WebUI;
 
 public static class UserSettings
 {

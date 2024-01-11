@@ -2,14 +2,9 @@ namespace Inc.TeamAssistant.Reviewer.Application;
 
 internal static class CommandList
 {
-    public const string CreateTeam = "/create_team";
-    public const string Start = "/start";
-    public const string Leave = "/leave";
     public const string MoveToReview = "/need_review";
-    public const string MoveToInProgress = "/in_progress";
-    public const string Accept = "/accept";
-    public const string Decline = "/decline";
-    public const string MoveToNextRound = "/next_round";
-    public const string Help = "/help";
-    public const string Cancel = "/cancel";
+    public const string MoveToInProgress = "/in_progress?storyId=";
+    public const string Accept = "/approve?storyId=";
+    public const string Decline = "/decline?storyId=";
+    public const string MoveToNextRound = "/next_round?storyId=";
 }

@@ -17,69 +17,33 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionString = connectionString;
     }
 
-    public async Task<IReadOnlyCollection<Guid>> GetTaskIds(
-        IReadOnlyCollection<TaskForReviewState> states,
-        CancellationToken cancellationToken)
-    {
-        if (states is null)
-            throw new ArgumentNullException(nameof(states));
-
-        var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(@"
-SELECT id AS id
-FROM review.task_for_reviews
-WHERE state = ANY(@states);",
-            new { states = targetStates },
-            flags: CommandFlags.None,
-            cancellationToken: cancellationToken);
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        var results = await connection.QueryAsync<Guid>(command);
-        return results.ToArray();
-    }
-
-    public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken cancellationToken)
+    public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
 SELECT
     t.id AS id,
     t.team_id AS teamid,
+    t.owner_id AS ownerid,
+    t.reviewer_id AS reviewerid,
     t.description AS description,
     t.state AS state,
     t.created AS created,
     t.next_notification AS nextnotification,
     t.accept_date AS acceptdate,
     t.message_id AS messageid,
-    t.chat_id AS chatid,
-    o.id AS id,
-    o.language_id AS languageid,
-    o.first_name AS firstname,
-    o.last_name AS lastname,
-    o.username AS username,
-    r.id AS id,
-    r.language_id AS languageid,
-    r.first_name AS firstname,
-    r.last_name AS lastname,
-    r.username AS username
+    t.chat_id AS chatid
 FROM review.task_for_reviews AS t
-JOIN review.persons AS o ON o.id = t.owner_id
-JOIN review.persons AS r ON r.id = t.reviewer_id
 WHERE t.id = @id;",
             new { id = taskForReviewId },
-            flags: CommandFlags.Buffered,
-            cancellationToken: cancellationToken);
+            flags: CommandFlags.None,
+            cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
-
-        var results = await connection.QueryAsync<TaskForReview, Person, Person, TaskForReview>(
-            command,
-            (t, o, r) => t.Build(o, r),
-            splitOn: "id");
-        return results.Single();
+        
+        return await connection.QuerySingleAsync<TaskForReview>(command);
     }
 
-    public async Task Upsert(TaskForReview taskForReview, CancellationToken cancellationToken)
+    public async Task Upsert(TaskForReview taskForReview, CancellationToken token)
     {
         if (taskForReview is null)
             throw new ArgumentNullException(nameof(taskForReview));
@@ -131,11 +95,11 @@ ON CONFLICT (id) DO UPDATE SET
                 accept_date = taskForReview.AcceptDate,
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
-                owner_id = taskForReview.Owner.Id,
-                reviewer_id = taskForReview.Reviewer.Id
+                owner_id = taskForReview.OwnerId,
+                reviewer_id = taskForReview.ReviewerId
             },
             flags: CommandFlags.None,
-            cancellationToken: cancellationToken);
+            cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
 
@@ -144,16 +108,11 @@ ON CONFLICT (id) DO UPDATE SET
 
     public async Task RetargetAndLeave(
         Guid teamId,
-        Person from,
-        Person to,
+        long fromId,
+        long toId,
         DateTimeOffset nextNotification,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        if (from is null)
-            throw new ArgumentNullException(nameof(from));
-        if (to is null)
-            throw new ArgumentNullException(nameof(to));
-
         var command = new CommandDefinition(@"
             UPDATE review.task_for_reviews
             SET
@@ -166,16 +125,35 @@ ON CONFLICT (id) DO UPDATE SET
             new
             {
                 team_id = teamId,
-                from_person_id = from.Id,
-                to_person_id = to.Id,
+                from_person_id = fromId,
+                to_person_id = toId,
                 next_notification = nextNotification,
                 is_archived = (int)TaskForReviewState.IsArchived
             },
             flags: CommandFlags.None,
-            cancellationToken: cancellationToken);
+            cancellationToken: token);
         
         await using var connection = new NpgsqlConnection(_connectionString);
 
         await connection.ExecuteAsync(command);
+    }
+
+    public async Task<long?> FindLastReviewer(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                t.reviewer_id AS reviewerid
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id
+            ORDER BY t.created DESC
+            OFFSET 0
+            LIMIT 1;",
+            new { team_id = teamId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        
+        return await connection.QuerySingleOrDefaultAsync<long?>(command);
     }
 }

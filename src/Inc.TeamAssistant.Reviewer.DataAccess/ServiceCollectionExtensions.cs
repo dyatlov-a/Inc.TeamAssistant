@@ -19,13 +19,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITaskForReviewRepository>(sp => ActivatorUtilities.CreateInstance<TaskForReviewRepository>(
                 sp,
                 connectionString))
-            .AddSingleton<ITeamRepository>(sp => ActivatorUtilities.CreateInstance<TeamRepository>(
-                sp,
-                connectionString))
             .AddSingleton<ITaskForReviewAccessor>(sp => ActivatorUtilities.CreateInstance<TaskForReviewAccessor>(
-                sp,
-                connectionString))
-            .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<PersonRepository>(
                 sp,
                 connectionString));
 

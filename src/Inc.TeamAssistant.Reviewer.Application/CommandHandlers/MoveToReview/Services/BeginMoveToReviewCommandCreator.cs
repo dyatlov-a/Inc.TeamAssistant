@@ -5,32 +5,32 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands.Begin;
 using MediatR;
 
-namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Services;
+namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
 
-internal sealed class BeginSelectTeamForAddStoryCommandCreator : ICommandCreator
+internal sealed class BeginMoveToReviewCommandCreator : ICommandCreator
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly IDialogContinuation<BotCommandStage> _dialogContinuation;
+    private readonly ITeamAccessor _teamAccessor;
     
-    private readonly string _command = "/add";
+    public int Priority => 4;
 
-    public BeginSelectTeamForAddStoryCommandCreator(
+    public BeginMoveToReviewCommandCreator(
         IMessageBuilder messageBuilder,
-        IDialogContinuation<BotCommandStage> dialogContinuation)
+        IDialogContinuation<BotCommandStage> dialogContinuation, ITeamAccessor teamAccessor)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
-
-    public int Priority => 4;
     
     public async Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
-
+        
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
-        if (messageContext.Cmd.Equals(_command, StringComparison.InvariantCultureIgnoreCase))
+        if (messageContext.Cmd.Equals(CommandList.MoveToReview, StringComparison.InvariantCultureIgnoreCase))
         {
             if (dialogState is null)
             {
@@ -41,15 +41,19 @@ internal sealed class BeginSelectTeamForAddStoryCommandCreator : ICommandCreator
                             "Teams",
                             await _messageBuilder.Build(Messages.Connector_TeamNotFound, messageContext.LanguageId))
                     });
+                
                 if (messageContext.Teams.Count == 1)
                 {
+                    var teamId = messageContext.Teams[0].Id;
+                    await ValidateTeam(teamId, messageContext.LanguageId, token);
+                    
                     _dialogContinuation.TryBegin(messageContext.PersonId, BotCommandStage.EnterText, out dialogState);
-                    dialogState.AddItem(_command).AddItem(messageContext.Teams[0].Id.ToString());
+                    dialogState.AddItem(CommandList.MoveToReview).AddItem(teamId.ToString());
                 
                     var notification = NotificationMessage.Create(
                         messageContext.ChatId,
-                        await _messageBuilder.Build(Messages.Appraiser_EnterStoryName, messageContext.LanguageId));
-                    return new BeginCommand(messageContext, BotCommandStage.EnterText, _command, notification);
+                        await _messageBuilder.Build(Messages.Reviewer_EnterRequestForReview, messageContext.LanguageId));
+                    return new BeginCommand(messageContext, BotCommandStage.EnterText, CommandList.MoveToReview, notification);
                 }
                 else
                 {
@@ -60,20 +64,34 @@ internal sealed class BeginSelectTeamForAddStoryCommandCreator : ICommandCreator
                     foreach (var team in messageContext.Teams)
                         notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
             
-                    return new BeginCommand(messageContext, BotCommandStage.SelectTeam, _command, notification);
+                    return new BeginCommand(messageContext, BotCommandStage.SelectTeam, CommandList.MoveToReview, notification);
                 }
             }
 
             if (dialogState.ContinuationState == BotCommandStage.SelectTeam)
             {
+                var teamId = Guid.Parse(messageContext.Text.TrimStart('/'));
+                await ValidateTeam(teamId, messageContext.LanguageId, token);
+                
                 var notification = NotificationMessage.Create(
                     messageContext.ChatId,
-                    await _messageBuilder.Build(Messages.Appraiser_EnterStoryName, messageContext.LanguageId));
-                dialogState.AddItem(messageContext.Text.TrimStart('/'));
-                return new BeginCommand(messageContext, BotCommandStage.EnterText, _command, notification);
+                    await _messageBuilder.Build(Messages.Reviewer_EnterRequestForReview, messageContext.LanguageId));
+                
+                dialogState.AddItem(teamId.ToString());
+                return new BeginCommand(messageContext, BotCommandStage.EnterText, CommandList.MoveToReview, notification);
             }
         }
 
         return null;
+    }
+
+    private async Task ValidateTeam(Guid teamId, LanguageId languageId, CancellationToken token)
+    {
+        var teammates = await _teamAccessor.GetTeammates(teamId, token);
+        if (teammates.Count < 2)
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure("Teams", await _messageBuilder.Build(Messages.Reviewer_TeamMinError, languageId))
+            });
     }
 }

@@ -4,8 +4,8 @@ public sealed class TaskForReview
 {
     public Guid Id { get; private set; }
     public Guid TeamId { get; private set; }
-    public Person Owner { get; private set; } = default!;
-    public Person Reviewer { get; private set; } = default!;
+    public long OwnerId { get; private set; }
+    public long ReviewerId { get; private set; }
     public long ChatId { get; private set; }
     public string Description { get; private set; } = default!;
     public TaskForReviewState State { get; private set; }
@@ -18,7 +18,7 @@ public sealed class TaskForReview
     {
     }
 
-    public TaskForReview(Guid teamId, Person owner, Person reviewer, long chatId, string description)
+    public TaskForReview(Guid teamId, long ownerId, long reviewerId, long chatId, string description)
         : this()
     {
         if (string.IsNullOrWhiteSpace(description))
@@ -27,20 +27,12 @@ public sealed class TaskForReview
         Id = Guid.NewGuid();
         Created = DateTimeOffset.UtcNow;
         TeamId = teamId;
-        Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        Reviewer = reviewer ?? throw new ArgumentNullException(nameof(reviewer));
+        OwnerId = ownerId;
+        ReviewerId = reviewerId;
         ChatId = chatId;
         Description = description;
         State = TaskForReviewState.New;
         NextNotification = DateTimeOffset.UtcNow;
-    }
-
-    public TaskForReview Build(Person owner, Person reviewer)
-    {
-        Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        Reviewer = reviewer ?? throw new ArgumentNullException(nameof(reviewer));
-
-        return this;
     }
 
     public void AttachMessage(int messageId) => MessageId = messageId;

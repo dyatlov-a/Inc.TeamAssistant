@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 

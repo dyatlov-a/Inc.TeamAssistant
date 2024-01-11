@@ -3,4 +3,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
 
-public sealed record MoveToDeclineCommand(Guid TaskId, LanguageId PersonLanguageId) : IRequest;
+public sealed record MoveToDeclineCommand(MessageContext MessageContext, Guid TaskId)
+    : IRequest<CommandResult>;

@@ -8,5 +8,6 @@ public interface IMessageBuilderService
 {
     Task<(string Text, IReadOnlyCollection<MessageEntity> Entities)> NewTaskForReviewBuild(
         LanguageId languageId,
-        TaskForReview taskForReview);
+        TaskForReview taskForReview,
+        CancellationToken token);
 }

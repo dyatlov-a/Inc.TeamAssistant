@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-        <PackageReference Include="Telegram.Bot" Version="19.0.0" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.Languages\Inc.TeamAssistant.Languages.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
-    </ItemGroup>
-</Project>

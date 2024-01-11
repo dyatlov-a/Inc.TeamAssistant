@@ -8,7 +8,7 @@ public interface ITaskForReviewAccessor
         DateTimeOffset now,
         IReadOnlyCollection<TaskForReviewState> states,
         int limit,
-        CancellationToken cancellationToken);
+        CancellationToken token);
 
-    Task Update(IReadOnlyCollection<TaskForReview> taskForReviews, CancellationToken cancellationToken);
+    Task Update(IReadOnlyCollection<TaskForReview> taskForReviews, CancellationToken token);
 }

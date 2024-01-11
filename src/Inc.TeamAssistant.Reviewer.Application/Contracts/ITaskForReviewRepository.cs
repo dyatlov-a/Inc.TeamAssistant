@@ -4,18 +4,16 @@ namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 public interface ITaskForReviewRepository
 {
-    Task<IReadOnlyCollection<Guid>> GetTaskIds(
-        IReadOnlyCollection<TaskForReviewState> states,
-        CancellationToken cancellationToken);
+    Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token);
 
-    Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken cancellationToken);
-
-    Task Upsert(TaskForReview taskForReview, CancellationToken cancellationToken);
+    Task Upsert(TaskForReview taskForReview, CancellationToken token);
 
     Task RetargetAndLeave(
         Guid teamId,
-        Person from,
-        Person to,
+        long fromId,
+        long toId,
         DateTimeOffset nextNotification,
-        CancellationToken cancellationToken);
+        CancellationToken token);
+
+    Task<long?> FindLastReviewer(Guid teamId, CancellationToken token);
 }
