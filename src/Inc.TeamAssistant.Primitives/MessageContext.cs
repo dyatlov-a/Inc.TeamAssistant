@@ -13,7 +13,8 @@ public sealed record MessageContext(
     int MessageId,
     LanguageId LanguageId,
     BotCommandStage? CurrentCommandStage,
-    UserIdentity? TargetUser)
+    UserIdentity? TargetUser,
+    (double Longitude, double Latitude)? Location)
 {
     public bool Shared => ChatId != PersonId;
     public string DisplayUsername => string.IsNullOrWhiteSpace(Username) ? FirstName : Username;

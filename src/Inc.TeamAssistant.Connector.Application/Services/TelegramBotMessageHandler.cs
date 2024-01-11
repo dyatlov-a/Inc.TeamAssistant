@@ -99,6 +99,31 @@ internal sealed class TelegramBotMessageHandler
 
     private async Task<MessageContext?> CreateMessageContext(Update update, Bot bot, CancellationToken token)
     {
+        if (update.Message?.Location is not null && update.Message?.From is not null && !update.Message.From.IsBot)
+        {
+            var person = await EnsurePerson(update.Message.From, token);
+            var targetTeams = bot.Teams
+                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
+                .Select(p => (p.Id, p.ChatId, p.Name))
+                .ToArray();
+            
+            return new(
+                bot.Id,
+                bot.Name,
+                targetTeams,
+                "/location",
+                "/location",
+                update.Message.Chat.Id,
+                update.Message.From.Id,
+                update.Message.From.FirstName,
+                update.Message.From.Username,
+                update.Message.MessageId,
+                person.LanguageId,
+                CurrentCommandStage: null,
+                TargetUser: null,
+                (update.Message.Location.Longitude, update.Message.Location.Latitude));
+        }
+        
         if (!string.IsNullOrWhiteSpace(update.Message?.Text)
             && update.Message.From is not null
             && !update.Message.From.IsBot)
@@ -125,7 +150,8 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.MessageId,
                 person.LanguageId,
                 inProgressCommand?.ContinuationState,
-                GetTargetUser(update.Message));
+                GetTargetUser(update.Message),
+                Location: null);
         }
 
         if (!string.IsNullOrWhiteSpace(update.CallbackQuery?.Data)
@@ -152,7 +178,8 @@ internal sealed class TelegramBotMessageHandler
                 update.CallbackQuery.Message.MessageId,
                 person.LanguageId,
                 inProgressCommand?.ContinuationState,
-                TargetUser: null);
+                TargetUser: null,
+                Location: null);
         }
 
         return null;

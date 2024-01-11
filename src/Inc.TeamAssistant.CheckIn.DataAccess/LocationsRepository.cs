@@ -67,8 +67,8 @@ VALUES (@map_id, @chat_id)
 ON CONFLICT (id) DO UPDATE SET
 chat_id = excluded.chat_id;
 
-INSERT INTO maps.locations (id, map_id, user_id, display_name, longitude, latitude, created, data)
-VALUES (@id, @map_id, @user_id, @display_name, @longitude, @latitude, @created, @data::jsonb);",
+INSERT INTO maps.locations (id, map_id, user_id, display_name, longitude, latitude, created)
+VALUES (@id, @map_id, @user_id, @display_name, @longitude, @latitude, @created);",
             new
             {
                 id = locationOnMap.Id,
@@ -78,8 +78,7 @@ VALUES (@id, @map_id, @user_id, @display_name, @longitude, @latitude, @created, 
                 display_name = locationOnMap.DisplayName,
                 longitude = locationOnMap.Longitude,
                 latitude = locationOnMap.Latitude,
-                created = locationOnMap.Created,
-                data = locationOnMap.Data
+                created = locationOnMap.Created
             },
             flags: CommandFlags.None,
             cancellationToken: cancellationToken);

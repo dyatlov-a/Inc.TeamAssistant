@@ -1,4 +1,5 @@
-using Inc.TeamAssistant.CheckIn.Application.Services;
+using Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.CheckIn.Application;
@@ -13,17 +14,8 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(options));
 
         services
-            .AddSingleton(sp => ActivatorUtilities.CreateInstance<TelegramBotMessageHandler>(
-                sp,
-                options.ConnectToMapLinkTemplate));
-
-        if (!string.IsNullOrWhiteSpace(options.AccessToken))
-        {
-            services
-                .AddHostedService(sp => ActivatorUtilities.CreateInstance<TelegramBotConnector>(
-                    sp,
-                    options.AccessToken));
-        }
+            .AddSingleton(options)
+            .AddSingleton<ICommandCreator, AddLocationToMapCommandCreator>();
 
         return services;
     }
