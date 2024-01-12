@@ -6,18 +6,16 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 
 internal sealed class HelpCommandCreator : ICommandCreator
 {
-    private readonly string _command = "/help";
+    public string Command => "/help";
     
-    public int Priority => 1;
-    
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
+    public Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        Guid? selectedTeamId,
+        CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
         
-        if (messageContext.Text.Equals(_command, StringComparison.InvariantCultureIgnoreCase))
-            return Task.FromResult<IRequest<CommandResult>?>(new HelpCommand(messageContext));
-
-        return Task.FromResult<IRequest<CommandResult>?>(null);
+        return Task.FromResult<IRequest<CommandResult>>(new HelpCommand(messageContext));
     }
 }

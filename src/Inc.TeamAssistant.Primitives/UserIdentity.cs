@@ -9,7 +9,7 @@ public sealed record UserIdentity
     {
     }
     
-    public static UserIdentity? Create(long userId) => new() { UserId = userId };
+    public static UserIdentity Create(long userId) => new() { UserId = userId };
     
-    public static UserIdentity? Create(string username) => new() { Username = username };
+    public static UserIdentity Create(string username) => new() { Username = username };
 }

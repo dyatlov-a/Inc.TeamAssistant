@@ -16,7 +16,7 @@ internal sealed class HolidayReader : IHolidayReader
         _connectionString = connectionString;
     }
 
-    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken cancellationToken)
+    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken token)
     {
         var command = new CommandDefinition(@"
 SELECT
@@ -24,7 +24,7 @@ SELECT
     type AS type
 FROM generic.holidays;",
             flags: CommandFlags.None,
-            cancellationToken: cancellationToken);
+            cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
 

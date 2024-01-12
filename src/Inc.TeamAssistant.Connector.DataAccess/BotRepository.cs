@@ -53,8 +53,11 @@ internal sealed class BotRepository : IBotRepository
             WHERE bc.bot_id = @id;
 
             SELECT
+                bcs.id AS id,
                 bcs.bot_command_id AS botcommandid,
-                bcs.value AS value
+                bcs.value AS value,
+                bcs.dialog_message_id AS dialogmessageid,
+                bcs.position AS position
             FROM connector.bot_command_stages AS bcs
             JOIN connector.bot_commands AS bc ON bc.id = bcs.bot_command_id
             WHERE bc.bot_id = @id;
@@ -87,10 +90,7 @@ internal sealed class BotRepository : IBotRepository
         
         var bot = await query.ReadSingleOrDefaultAsync<Bot>();
         var botCommands = await query.ReadAsync<BotCommand>();
-        var botCommandStages = (await query.ReadAsync<(
-                Guid BotCommandId,
-                BotCommandStage Value)>())
-            .ToLookup(s => s.BotCommandId);
+        var botCommandStages = (await query.ReadAsync<BotCommandStage>()).ToLookup(s => s.BotCommandId);
         var teams = await query.ReadAsync<Team>();
         var personsLookup = (await query.ReadAsync<(
                 long Id,
@@ -105,7 +105,7 @@ internal sealed class BotRepository : IBotRepository
             foreach (var botCommand in botCommands)
             {
                 foreach (var botCommandStage in botCommandStages[botCommand.Id])
-                    botCommand.AddStage(botCommandStage.Value);
+                    botCommand.AddStage(botCommandStage);
                 
                 bot.AddCommand(botCommand);
             }

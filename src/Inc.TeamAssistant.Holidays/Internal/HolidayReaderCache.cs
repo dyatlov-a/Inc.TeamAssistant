@@ -23,7 +23,7 @@ internal sealed class HolidayReaderCache : IHolidayReader
         _cacheTimeout = cacheTimeout;
     }
 
-    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken cancellationToken)
+    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken token)
     {
         var cacheKey = $"{nameof(HolidayReaderCache)}__{nameof(GetAll)}";
         var cacheItem = await _memoryCache.GetOrCreateAsync(
@@ -32,13 +32,13 @@ internal sealed class HolidayReaderCache : IHolidayReader
             {
                 e.SetAbsoluteExpiration(_cacheTimeout);
 
-                return _reader.GetAll(cancellationToken);
+                return _reader.GetAll(token);
             });
 
         if (cacheItem is null)
         {
             _logger.LogWarning("Can not get object with key {CacheKey} from cache", cacheKey);
-            return await _reader.GetAll(cancellationToken);
+            return await _reader.GetAll(token);
         }
 
         return cacheItem;

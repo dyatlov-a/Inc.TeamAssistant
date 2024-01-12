@@ -31,7 +31,6 @@ internal sealed class TelegramBotConnector : IHostedService
                 (c, e, t) =>  _handler.OnError(c, e, bot.Name, t),
                 cancellationToken: token);
         }
-            
     }
 
     public Task StopAsync(CancellationToken token) => Task.CompletedTask;

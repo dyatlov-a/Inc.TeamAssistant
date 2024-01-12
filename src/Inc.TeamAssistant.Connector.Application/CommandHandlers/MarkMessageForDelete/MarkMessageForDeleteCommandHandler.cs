@@ -1,5 +1,5 @@
+using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
-using Inc.TeamAssistant.DialogContinuations;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 
@@ -7,9 +7,9 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.MarkMessageFor
 
 internal sealed class MarkMessageForDeleteCommandHandler : IRequestHandler<MarkMessageForDeleteCommand, CommandResult>
 {
-    private readonly IDialogContinuation<BotCommandStage> _dialogContinuation;
+    private readonly DialogContinuation _dialogContinuation;
 
-    public MarkMessageForDeleteCommandHandler(IDialogContinuation<BotCommandStage> dialogContinuation)
+    public MarkMessageForDeleteCommandHandler(DialogContinuation dialogContinuation)
     {
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
@@ -20,7 +20,10 @@ internal sealed class MarkMessageForDeleteCommandHandler : IRequestHandler<MarkM
             throw new ArgumentNullException(nameof(command));
 
         var dialogState = _dialogContinuation.Find(command.MessageContext.PersonId);
-        dialogState?.TryAttachMessage(new ChatMessage(command.MessageContext.ChatId, command.MessageId));
+        dialogState?.Attach(new ChatMessage(
+            command.MessageContext.ChatId,
+            command.MessageId,
+            command.MessageContext.Shared));
         
         return Task.FromResult(CommandResult.Empty);
     }

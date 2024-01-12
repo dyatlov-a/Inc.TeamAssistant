@@ -56,7 +56,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         {
             NotificationMessage.Delete(new[]
             {
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId)
+                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId, Shared: false)
             })
         };
 

@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate.Ser
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory.Services;
 using Inc.TeamAssistant.Appraiser.Application.PipelineBehaviors;
 using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -35,16 +36,22 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<ICommandCreator, AcceptEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
-            .AddSingleton<ICommandCreator, BeginSelectTeamForAddStoryCommandCreator>()
-            .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
-            .AddSingleton<ICommandCreator, SetEstimateForStoryCommandCreator>();
+            .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>();
+
+        foreach (var assessment in AssessmentValue.GetAssessments)
+        {
+            var command = $"/{assessment}?storyId=";
+            
+            services.AddSingleton<ICommandCreator>(
+                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, command));
+        }
 
         services
             .AddScoped<SummaryByStoryBuilder>()
             .AddSingleton(addStoryOptions)
-            /*.AddValidatorsFromAssemblyContaining<AddStoryToAssessmentSessionCommandValidator>(
-                ServiceLifetime.Scoped,
-                includeInternalTypes: true)*/
+            .AddValidatorsFromAssemblyContaining<SetEstimateForStoryCommandCreator>(
+                lifetime: ServiceLifetime.Scoped,
+                includeInternalTypes: true)
             .TryAddEnumerable(ServiceDescriptor.Scoped(
                 typeof(IPipelineBehavior<,>),
                 typeof(ValidationPipelineBehavior<,>)));

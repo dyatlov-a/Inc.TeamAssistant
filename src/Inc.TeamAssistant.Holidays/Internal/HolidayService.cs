@@ -11,9 +11,9 @@ internal sealed class HolidayService : IHolidayService
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
-    public async Task<bool> IsWorkday(DateOnly date, CancellationToken cancellationToken)
+    public async Task<bool> IsWorkday(DateOnly date, CancellationToken token)
     {
-        var holidays = await _reader.GetAll(cancellationToken);
+        var holidays = await _reader.GetAll(token);
 
         if (holidays.TryGetValue(date, out var holidayType))
             return holidayType == HolidayType.Workday;

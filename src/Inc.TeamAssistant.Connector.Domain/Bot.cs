@@ -48,4 +48,16 @@ public sealed class Bot
 
         return this;
     }
+    
+    public BotCommand? FindCommand(string cmd)
+    {
+        if (string.IsNullOrWhiteSpace(cmd))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(cmd));
+        
+        foreach (var botCommand in Commands)
+            if (cmd.StartsWith(botCommand.Value, StringComparison.InvariantCultureIgnoreCase))
+                return botCommand;
+
+        return null;
+    }
 }

@@ -9,7 +9,7 @@ public sealed class BotCommand
     public MessageId? HelpMessageId { get; private set; }
 
     private readonly List<BotCommandStage> _stages = new();
-    public IReadOnlyCollection<BotCommandStage> Stages => _stages;
+    public IReadOnlyCollection<BotCommandStage> Stages => _stages.OrderBy(s => s.Position).ToArray();
 
     private BotCommand()
     {
@@ -26,9 +26,12 @@ public sealed class BotCommand
         HelpMessageId = helpMessageId;
     }
 
-    public BotCommand AddStage(BotCommandStage stage)
+    public BotCommand AddStage(BotCommandStage botCommandStage)
     {
-        _stages.Add(stage);
+        if (botCommandStage is null)
+            throw new ArgumentNullException(nameof(botCommandStage));
+
+        _stages.Add(botCommandStage);
 
         return this;
     }

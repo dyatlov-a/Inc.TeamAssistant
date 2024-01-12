@@ -6,19 +6,17 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgres
 
 internal sealed class MoveToInProgressCommandCreator : ICommandCreator
 {
-    public int Priority => 3;
+    public string Command => CommandList.MoveToInProgress;
     
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
+    public Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        Guid? selectedTeamId,
+        CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
 
-        if (messageContext.Text.StartsWith(CommandList.MoveToInProgress, StringComparison.InvariantCultureIgnoreCase))
-        {
-            var storyId = Guid.Parse(messageContext.Text.Replace(CommandList.MoveToInProgress, string.Empty));
-            return Task.FromResult<IRequest<CommandResult>?>(new MoveToInProgressCommand(messageContext, storyId));
-        }
-
-        return Task.FromResult<IRequest<CommandResult>?>(null);
+        var storyId = Guid.Parse(messageContext.Text.Replace(Command, string.Empty));
+        return Task.FromResult<IRequest<CommandResult>>(new MoveToInProgressCommand(messageContext, storyId));
     }
 }

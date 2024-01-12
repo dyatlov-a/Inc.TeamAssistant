@@ -1,16 +1,13 @@
-using System.Text;
 using FluentValidation;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.DialogContinuations;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -19,7 +16,6 @@ internal sealed class TelegramBotMessageHandler
 {
     private readonly ILogger<TelegramBotMessageHandler> _logger;
     private readonly IBotRepository _botRepository;
-    private readonly IDialogContinuation<BotCommandStage> _dialogContinuation;
     private readonly IPersonRepository _personRepository;
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
@@ -27,14 +23,12 @@ internal sealed class TelegramBotMessageHandler
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
         IBotRepository botRepository,
-        IDialogContinuation<BotCommandStage> dialogContinuation,
         IPersonRepository personRepository,
         CommandFactory commandFactory,
         IServiceProvider serviceProvider)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
@@ -57,23 +51,13 @@ internal sealed class TelegramBotMessageHandler
         
         try
         {
-            foreach (var botCommand in bot.Commands)
-                if (messageContext.Cmd?.StartsWith(
-                        botCommand.Value,
-                        StringComparison.InvariantCultureIgnoreCase) == true)
-                {
-                    var command = await _commandFactory.TryCreate(messageContext, token);
-
-                    if (command is not null)
-                    {
-                        await Execute(client, messageContext, command, token);
-                        return;
-                    }
-                }
+            var command = await _commandFactory.TryCreate(client, bot, messageContext, token);
+            if (command is not null)
+                await Execute(client, messageContext, command, token);
         }
         catch (ValidationException validationException)
         {
-            await TrySend(client, messageContext.ChatId, ToMessage(validationException), token);
+            await TrySend(client, messageContext.ChatId, validationException.ToMessage(), token);
         }
         catch (Exception ex)
         {
@@ -104,22 +88,20 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.Message.From, token);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(p => (p.Id, p.ChatId, p.Name))
+                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(
+                update.Message.MessageId,
                 bot.Id,
                 bot.Name,
                 targetTeams,
-                "/location",
                 "/location",
                 update.Message.Chat.Id,
                 update.Message.From.Id,
                 update.Message.From.FirstName,
                 update.Message.From.Username,
-                update.Message.MessageId,
                 person.LanguageId,
-                CurrentCommandStage: null,
                 TargetUser: null,
                 (update.Message.Location.Longitude, update.Message.Location.Latitude));
         }
@@ -129,28 +111,23 @@ internal sealed class TelegramBotMessageHandler
             && !update.Message.From.IsBot)
         {
             var person = await EnsurePerson(update.Message.From, token);
-            var inProgressCommand = _dialogContinuation.Find(update.Message.From.Id);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(p => (p.Id, p.ChatId, p.Name))
+                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(
+                update.Message.MessageId,
                 bot.Id,
                 bot.Name,
                 targetTeams,
-                inProgressCommand is not null
-                    ? inProgressCommand.Data.First()
-                    : update.Message.Text,
                 update.Message.Text,
                 update.Message.Chat.Id,
                 update.Message.From.Id,
                 update.Message.From.FirstName,
                 update.Message.From.Username,
-                update.Message.MessageId,
                 person.LanguageId,
-                inProgressCommand?.ContinuationState,
-                GetTargetUser(update.Message),
+                update.Message.GetTargetUser(),
                 Location: null);
         }
 
@@ -159,63 +136,38 @@ internal sealed class TelegramBotMessageHandler
             && !update.CallbackQuery.From.IsBot)
         {
             var person = await EnsurePerson(update.CallbackQuery.From, token);
-            var inProgressCommand = _dialogContinuation.Find(update.CallbackQuery.From.Id);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.CallbackQuery.Message.Chat.Id)
-                .Select(p => (p.Id, p.ChatId, p.Name))
+                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(
+                update.CallbackQuery.Message.MessageId,
                 bot.Id,
                 bot.Name,
                 targetTeams,
-                inProgressCommand is not null ? inProgressCommand.Data.First() : update.CallbackQuery.Data,
                 update.CallbackQuery.Data,
                 update.CallbackQuery.Message.Chat.Id,
                 update.CallbackQuery.From.Id,
                 update.CallbackQuery.From.FirstName,
                 update.CallbackQuery.From.Username,
-                update.CallbackQuery.Message.MessageId,
                 person.LanguageId,
-                inProgressCommand?.ContinuationState,
                 TargetUser: null,
                 Location: null);
         }
 
         return null;
     }
-    
-    private UserIdentity? GetTargetUser(Message message)
-    {
-        if (message is null)
-            throw new ArgumentNullException(nameof(message));
-        
-        const char usernameMarker = '@';
-        var username = message.Text!.Split(usernameMarker).LastOrDefault()?.Trim();
-        var targetUserIds = message.Entities
-            ?.Where(e => e is { Type: MessageEntityType.TextMention, User: { } })
-            .Select(e => (e.User!.Id, e.User.FirstName))
-            .ToArray();
-        
-        return targetUserIds?.Any() == true
-            ? UserIdentity.Create(targetUserIds.Last().Id)
-            : string.IsNullOrWhiteSpace(username)
-                ? null
-                : UserIdentity.Create(username);
-    }
 
     private async Task<Person> EnsurePerson(User user, CancellationToken token)
     {
         if (user is null)
             throw new ArgumentNullException(nameof(user));
-
-        var languageId = string.IsNullOrWhiteSpace(user.LanguageCode)
-            ? LanguageSettings.DefaultLanguageId
-            : new LanguageId(user.LanguageCode);
+        
         var person = new Person(
             user.Id,
             user.FirstName,
-            languageId,
+            user.GetLanguageId(),
             user.Username);
         
         await _personRepository.Upsert(person, token);
@@ -294,7 +246,7 @@ internal sealed class TelegramBotMessageHandler
                 await client.DeleteMessageAsync(new(message.ChatId), message.MessageId, token);
     }
     
-    private InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
+    private static InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
     {
         const int rowCapacity = 7;
 		
@@ -323,22 +275,5 @@ internal sealed class TelegramBotMessageHandler
         {
             _logger.LogError(ex, "Can not send message to chat {TargetChatId}", chatId);
         }
-    }
-    
-    private static string ToMessage(ValidationException validationException)
-    {
-        if (validationException is null)
-            throw new ArgumentNullException(nameof(validationException));
-
-        return validationException.Errors.Any()
-            ? validationException.Errors.Aggregate(
-                new StringBuilder(),
-                (sb, e) =>
-                {
-                    sb.AppendLine(e.ErrorMessage);
-                    return sb;
-                },
-                sb => sb.ToString())
-            : validationException.Message;
     }
 }

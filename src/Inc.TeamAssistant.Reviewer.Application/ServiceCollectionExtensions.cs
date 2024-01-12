@@ -24,7 +24,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()
-            .AddSingleton<ICommandCreator, BeginMoveToReviewCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
             
             .AddSingleton<ILeaveTeamHandler, LeaveTeamHandler>()

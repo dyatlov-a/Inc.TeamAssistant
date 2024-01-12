@@ -38,7 +38,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var client = _telegramBotClientProvider.Get();
         var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
         var targetTeam = command.MessageContext.FindTeam(command.TeamId);
-        if (!targetTeam.HasValue)
+        if (targetTeam is null)
             throw new ApplicationException($"Team {command.TeamId} was not found.");
         
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
@@ -53,7 +53,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             command.TeamId,
             command.MessageContext.PersonId,
             reviewer,
-            targetTeam.Value.ChatId,
+            targetTeam.ChatId,
             command.Description);
         
         var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
@@ -61,7 +61,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             taskForReview,
             token);
         var message = await client.SendTextMessageAsync(
-            targetTeam.Value.ChatId,
+            targetTeam.ChatId,
             taskForReviewMessage.Text,
             entities: taskForReviewMessage.Entities,
             cancellationToken: token);

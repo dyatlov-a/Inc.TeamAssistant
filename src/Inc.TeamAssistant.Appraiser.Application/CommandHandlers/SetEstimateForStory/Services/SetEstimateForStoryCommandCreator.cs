@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
@@ -7,33 +6,32 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateFor
 
 internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
 {
-    private static readonly IReadOnlyCollection<string> Commands = AssessmentValue.GetAssessments
-        .Select(a => a.ToString())
-        .ToArray();
+    public string Command { get; }
+
+    public SetEstimateForStoryCommandCreator(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
+        
+        Command = command;
+    }
     
-    public int Priority => 3;
-    
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
+    public Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        Guid? selectedTeamId,
+        CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
 
-        foreach (var command in Commands)
-        {
-            if (messageContext.Cmd.StartsWith($"/{command}", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var storyId = Guid.Parse(messageContext.Cmd.Replace(
-                    $"/{command}?storyId=",
-                    string.Empty,
-                    StringComparison.InvariantCultureIgnoreCase));
+        var storyId = Guid.Parse(messageContext.Text.Replace(
+            Command,
+            string.Empty,
+            StringComparison.InvariantCultureIgnoreCase));
                 
-                return Task.FromResult<IRequest<CommandResult>?>(new SetEstimateForStoryCommand(
-                    messageContext,
-                    storyId,
-                    command));
-            }
-        }
-
-        return Task.FromResult<IRequest<CommandResult>?>(null);
+        return Task.FromResult<IRequest<CommandResult>>(new SetEstimateForStoryCommand(
+            messageContext,
+            storyId,
+            Command));
     }
 }

@@ -18,15 +18,14 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<CommandFactory>()
+            .AddSingleton<DialogContinuation>()
             .AddSingleton<TelegramBotMessageHandler>()
             .AddHostedService<TelegramBotConnector>()
             
-            .AddSingleton<ICommandCreator, BeginCreateTeamCommandCreator>()
             .AddSingleton<ICommandCreator, CreateTeamCommandCreator>()
             .AddSingleton<ICommandCreator, EndCommandCreator>()
             .AddSingleton<ICommandCreator, HelpCommandCreator>()
             .AddSingleton<ICommandCreator, JoinToTeamCommandCreator>()
-            .AddSingleton<ICommandCreator, BeginLeaveFromTeamCommandCreator>()
             .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>();
         
         return services;

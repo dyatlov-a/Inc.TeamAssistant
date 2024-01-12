@@ -6,22 +6,19 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.
 
 internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
 {
-    private readonly string _command = "/leave_team";
-    private readonly BotCommandStage _commandStage = BotCommandStage.SelectTeam;
+    public string Command => "/leave_team";
     
-    public int Priority => 3;
-    
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
+    public Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        Guid? selectedTeamId,
+        CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
         
-        if (messageContext.Cmd.Equals(_command, StringComparison.InvariantCultureIgnoreCase) &&
-            messageContext.CurrentCommandStage == _commandStage)
-            return Task.FromResult<IRequest<CommandResult>?>(new LeaveFromTeamCommand(
-                messageContext,
-                Guid.Parse(messageContext.Text.TrimStart('/'))));
-
-        return Task.FromResult<IRequest<CommandResult>?>(null);
+        if (!Guid.TryParse(messageContext.Text.TrimStart('/'), out var value))
+            throw new ApplicationException("Can not bot leave from team. Please select target team.");
+        
+        return Task.FromResult<IRequest<CommandResult>>(new LeaveFromTeamCommand(messageContext, value));
     }
 }

@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Primitives;
 
 public interface ICommandCreator
 {
-    int Priority { get; }
+    string Command { get; }
     
-    Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token);
+    Task<IRequest<CommandResult>> Create(MessageContext messageContext, Guid? selectedTeamId, CancellationToken token);
 }

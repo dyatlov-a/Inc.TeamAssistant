@@ -23,7 +23,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         
         var teammates = await _teamAccessor.GetTeammates(teamId, token);
         var targetTeam = messageContext.FindTeam(teamId);
-        if (!targetTeam.HasValue)
+        if (targetTeam is null)
             throw new ApplicationException($"Team {teamId} was not found.");
         
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(teamId, token);

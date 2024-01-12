@@ -6,25 +6,23 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Ser
 
 internal sealed class JoinToTeamCommandCreator : ICommandCreator
 {
-    private readonly string _command = "/start";
+    public string Command => "/start";
     
-    public int Priority => 4;
-    
-    public Task<IRequest<CommandResult>?> Create(MessageContext messageContext, CancellationToken token)
+    public Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        Guid? selectedTeamId,
+        CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
         
-        if (messageContext.Cmd.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
-        {
-            var botToken = messageContext.Text
-                .Replace(_command, string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                .Trim();
+        var botToken = messageContext.Text
+            .Replace(Command, string.Empty, StringComparison.InvariantCultureIgnoreCase)
+            .Trim();
 
-            if (Guid.TryParse(botToken, out var value))
-                return Task.FromResult<IRequest<CommandResult>?>(new JoinToTeamCommand(messageContext, value));
-        }
-
-        return Task.FromResult<IRequest<CommandResult>?>(null);
+        if (!Guid.TryParse(botToken, out var value))
+            throw new ApplicationException("Can not starting the bot. Please move by link for start.");
+        
+        return Task.FromResult<IRequest<CommandResult>>(new JoinToTeamCommand(messageContext, value));
     }
 }

@@ -10,7 +10,6 @@ using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Languages;
-using Inc.TeamAssistant.DialogContinuations;
 using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Inc.TeamAssistant.Gateway.Services;
@@ -43,7 +42,6 @@ builder.Services
 	.AddScoped<ICheckInService, CheckInService>()
 	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
 	.AddHolidays(connectionString, holidayOptions)
-	.AddDialogContinuations()
 		
     .AddAppraiserApplication(builder.Configuration)
     .AddAppraiserDataAccess(connectionString)

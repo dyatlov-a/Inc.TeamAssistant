@@ -121,6 +121,12 @@ public class CreateConnectorTables : Migration
                 primaryTableSchema: "connector")
             
             .WithColumn("value")
+            .AsInt32().NotNullable()
+            
+            .WithColumn("dialog_message_id")
+            .AsString(50).NotNullable()
+            
+            .WithColumn("position")
             .AsInt32().NotNullable();
     }
 

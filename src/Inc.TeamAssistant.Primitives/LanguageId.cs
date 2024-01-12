@@ -9,6 +9,6 @@ public sealed record LanguageId
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
 
-        Value = value;
+        Value = value.ToLowerInvariant();
     }
 }

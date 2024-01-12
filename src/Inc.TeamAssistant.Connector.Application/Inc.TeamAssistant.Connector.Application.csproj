@@ -8,7 +8,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Inc.TeamAssistant.Connector.Domain\Inc.TeamAssistant.Connector.Domain.csproj" />
     <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
-    <ProjectReference Include="..\Inc.TeamAssistant.DialogContinuations\Inc.TeamAssistant.DialogContinuations.csproj" />
     <ProjectReference Include="..\Inc.TeamAssistant.Languages\Inc.TeamAssistant.Languages.csproj" />
   </ItemGroup>
 </Project>

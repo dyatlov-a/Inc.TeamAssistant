@@ -53,7 +53,7 @@ internal sealed class SummaryByStoryBuilder
         
         var notification = summary.StoryExternalId.HasValue
             ? NotificationMessage.Edit(
-                new[] { new ChatMessage(summary.ChatId, summary.StoryExternalId.Value) },
+                new[] { new ChatMessage(summary.ChatId, summary.StoryExternalId.Value, Shared: false) },
                 builder.ToString())
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())

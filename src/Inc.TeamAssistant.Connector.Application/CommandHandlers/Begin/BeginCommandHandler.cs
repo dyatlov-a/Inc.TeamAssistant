@@ -1,15 +1,17 @@
-using Inc.TeamAssistant.DialogContinuations;
+using Inc.TeamAssistant.Connector.Application.Services;
+using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Connector.Model.Commands.Begin;
+using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Commands.Begin;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin;
 
 internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, CommandResult>
 {
-    private readonly IDialogContinuation<BotCommandStage> _dialogContinuation;
+    private readonly DialogContinuation _dialogContinuation;
 
-    public BeginCommandHandler(IDialogContinuation<BotCommandStage> dialogContinuation)
+    public BeginCommandHandler(DialogContinuation dialogContinuation)
     {
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
@@ -19,14 +21,19 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
         if (command is null)
             throw new ArgumentNullException(nameof(command));
 
-        _dialogContinuation.TryBegin(command.MessageContext.PersonId, command.NextStage, out var dialogState);
-
-        dialogState.AddItem(command.Command);
-        
-        if (command.MessageContext.Shared)
-            dialogState.TryAttachMessage(new ChatMessage(
+        var dialogState = _dialogContinuation.Begin(
+            command.MessageContext.PersonId,
+            command.Command,
+            (CommandStage)command.NextStage,
+            new ChatMessage(
                 command.MessageContext.ChatId,
-                command.MessageContext.MessageId));
+                command.MessageContext.MessageId,
+                command.MessageContext.Shared));
+
+        if (command.SelectedTeamId.HasValue)
+            dialogState.SetTeamId(command.SelectedTeamId.Value);
+
+        command.Notification.AddHandler((c, id) => new MarkMessageForDeleteCommand(c, id));
 
         return Task.FromResult(CommandResult.Build(command.Notification));
     }

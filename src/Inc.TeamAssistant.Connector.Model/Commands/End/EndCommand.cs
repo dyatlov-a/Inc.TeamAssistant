@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Model.Commands.End;
 
-public sealed record EndCommand(MessageContext MessageContext, BotCommandStage CurrentStage)
+public sealed record EndCommand(MessageContext MessageContext)
     : IRequest<CommandResult>;
