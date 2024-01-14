@@ -1,6 +1,4 @@
-using Inc.TeamAssistant.Primitives;
-
-namespace Inc.TeamAssistant.Languages;
+namespace Inc.TeamAssistant.Primitives;
 
 public interface ITranslateProvider
 {

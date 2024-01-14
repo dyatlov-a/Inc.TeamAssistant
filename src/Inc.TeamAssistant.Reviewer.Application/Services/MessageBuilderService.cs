@@ -1,10 +1,7 @@
 using System.Text;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
@@ -19,7 +16,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
-    public async Task<(string Text, IReadOnlyCollection<MessageEntity> Entities)> NewTaskForReviewBuild(
+    public async Task<string> NewTaskForReviewBuild(
         LanguageId languageId,
         TaskForReview taskForReview,
         CancellationToken token)
@@ -46,26 +43,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
             taskForReview.Description,
             owner.Value.Name,
             reviewerLink);
-        var entities = hasUsername
-            ? Array.Empty<MessageEntity>()
-            : new[]
-            {
-                new MessageEntity
-                {
-                    Type = MessageEntityType.TextMention,
-                    Offset = messageText.IndexOf(reviewerLink, StringComparison.InvariantCultureIgnoreCase),
-                    Length = reviewerLink.Length,
-                    User = new User
-                    {
-                        Id = taskForReview.ReviewerId,
-                        LanguageCode = reviewer.Value.LanguageId.Value,
-                        FirstName = reviewer.Value.Name,
-                        Username = reviewer.Value.Username
-                    }
-                }
-            };
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(messageText);
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
@@ -74,8 +52,10 @@ internal sealed class MessageBuilderService : IMessageBuilderService
             TaskForReviewState.IsArchived => "👍",
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
+        
+        messageBuilder.AppendLine(messageText);
         messageBuilder.AppendLine(state);
 
-        return (messageBuilder.ToString(), entities);
+        return messageBuilder.ToString();
     }
 }

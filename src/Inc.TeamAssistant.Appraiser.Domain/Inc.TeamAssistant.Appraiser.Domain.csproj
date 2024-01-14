@@ -5,7 +5,6 @@
         </AssemblyAttribute>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.Languages\Inc.TeamAssistant.Languages.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
     </ItemGroup>
 </Project>

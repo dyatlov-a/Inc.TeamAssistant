@@ -1,6 +1,5 @@
+using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
-using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.Begin;
 using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
@@ -24,11 +23,8 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
         var dialogState = _dialogContinuation.Begin(
             command.MessageContext.PersonId,
             command.Command,
-            (CommandStage)command.NextStage,
-            new ChatMessage(
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
-                command.MessageContext.Shared));
+            command.NextStage,
+            new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId));
 
         if (command.SelectedTeamId.HasValue)
             dialogState.SetTeamId(command.SelectedTeamId.Value);

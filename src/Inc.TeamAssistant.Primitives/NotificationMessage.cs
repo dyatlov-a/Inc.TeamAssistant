@@ -10,23 +10,23 @@ public sealed class NotificationMessage
 
 	public string Text { get; }
     public bool Pinned { get; }
-    public IReadOnlyCollection<long>? TargetChatIds { get; }
-    public IReadOnlyCollection<ChatMessage>? TargetMessages { get; }
-    public IReadOnlyCollection<ChatMessage>? DeleteMessages { get; }
+    public long? TargetChatId { get; }
+    public ChatMessage? TargetMessage { get; }
+    public ChatMessage? DeleteMessage { get; }
     public IReadOnlyCollection<Button> Buttons => _buttons;
     public ResponseHandler? Handler { get; private set; }
 
     private NotificationMessage(
-        IReadOnlyCollection<long>? targetChatIds,
-        IReadOnlyCollection<ChatMessage>? targetMessages,
-        IReadOnlyCollection<ChatMessage>? deleteMessages,
+        long? targetChatId,
+        ChatMessage? targetMessage,
+        ChatMessage? deleteMessage,
         string text,
         bool pinned = false)
     {
         Text = text ?? throw new ArgumentNullException(nameof(text));
-        TargetChatIds = targetChatIds;
-        TargetMessages = targetMessages;
-        DeleteMessages = deleteMessages;
+        TargetChatId = targetChatId;
+        TargetMessage = targetMessage;
+        DeleteMessage = deleteMessage;
         Pinned = pinned;
     }
 
@@ -47,36 +47,29 @@ public sealed class NotificationMessage
         return this;
     }
 
-    public static NotificationMessage Create(IReadOnlyCollection<long> targetChatIds, string text, bool pinned = false)
-    {
-        if (targetChatIds is null)
-            throw new ArgumentNullException(nameof(targetChatIds));
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
-
-        return new(targetChatIds, targetMessages: null, deleteMessages: null, text, pinned);
-    }
-
     public static NotificationMessage Create(long targetChatId, string text, bool pinned = false)
-        => Create(new[] { targetChatId }, text, pinned);
-
-    public static NotificationMessage Edit(
-        IReadOnlyCollection<ChatMessage> targetMessages,
-        string text)
     {
-        if (targetMessages is null)
-            throw new ArgumentNullException(nameof(targetMessages));
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
 
-        return new(targetChatIds: null, targetMessages, deleteMessages: null, text);
+        return new(targetChatId, targetMessage: null, deleteMessage: null, text, pinned);
     }
 
-    public static NotificationMessage Delete(IReadOnlyCollection<ChatMessage> deleteMessages)
+    public static NotificationMessage Edit(ChatMessage targetMessage, string text)
     {
-        if (deleteMessages is null)
-            throw new ArgumentNullException(nameof(deleteMessages));
+        if (targetMessage is null)
+            throw new ArgumentNullException(nameof(targetMessage));
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+
+        return new(targetChatId: null, targetMessage, deleteMessage: null, text);
+    }
+
+    public static NotificationMessage Delete(ChatMessage deleteMessage)
+    {
+        if (deleteMessage is null)
+            throw new ArgumentNullException(nameof(deleteMessage));
         
-        return new(targetChatIds: null, targetMessages: null, deleteMessages, string.Empty);
+        return new(targetChatId: null, targetMessage: null, deleteMessage, string.Empty);
     }
 }

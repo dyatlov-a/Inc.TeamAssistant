@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Holidays;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -17,7 +16,7 @@ internal sealed class NotificationsService : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private readonly ITeamAccessor _teamAccessor;
     private readonly WorkdayOptions _options;
-    private readonly TelegramBotClientProvider _telegramBotClientProvider;
+    private readonly TelegramBotClient _client;
     private readonly int _notificationsBatch;
     private readonly TimeSpan _notificationsDelay;
 
@@ -27,24 +26,25 @@ internal sealed class NotificationsService : BackgroundService
         IServiceProvider serviceProvider,
         ITeamAccessor teamAccessor,
         WorkdayOptions options,
-        TelegramBotClientProvider telegramBotClientProvider,
+        string accessToken,
         int notificationsBatch,
         TimeSpan notificationsDelay)
     {
+        if (string.IsNullOrWhiteSpace(accessToken))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(accessToken));
+        
         _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _telegramBotClientProvider = telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
+        _client = new(accessToken);
         _notificationsBatch = notificationsBatch;
         _notificationsDelay = notificationsDelay;
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        var client = _telegramBotClientProvider.Get();
-        
         while (!token.IsCancellationRequested)
         {
             var now = DateTimeOffset.UtcNow;
@@ -70,7 +70,7 @@ internal sealed class NotificationsService : BackgroundService
                         _ => throw new ArgumentOutOfRangeException($"Value {task.State} OutOfRange for {nameof(TaskForReviewState)}")
                     };
 
-                    await client.SendTextMessageAsync(
+                    await _client.SendTextMessageAsync(
                         new(message.UserId),
                         message.Text,
                         replyMarkup: message.ReplyMarkup,

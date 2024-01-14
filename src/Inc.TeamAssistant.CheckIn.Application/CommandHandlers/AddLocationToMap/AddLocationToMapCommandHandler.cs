@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 
@@ -54,10 +53,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
 
         var notifications = new List<NotificationMessage>
         {
-            NotificationMessage.Delete(new[]
-            {
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId, Shared: false)
-            })
+            NotificationMessage.Delete(new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId))
         };
 
         if (existsMap is null)

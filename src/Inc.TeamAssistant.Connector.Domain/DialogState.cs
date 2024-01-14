@@ -28,8 +28,7 @@ public sealed class DialogState
         if (chatMessage is null)
             throw new ArgumentNullException(nameof(chatMessage));
         
-        if (chatMessage.Shared)
-            _chatMessages.Add(chatMessage);
+        _chatMessages.Add(chatMessage);
         
         return this;
     }

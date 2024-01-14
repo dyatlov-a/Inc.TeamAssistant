@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Gateway.Services;

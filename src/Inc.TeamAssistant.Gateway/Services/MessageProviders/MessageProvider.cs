@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Languages;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Gateway.Services.MessageProviders;
 

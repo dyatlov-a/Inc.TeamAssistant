@@ -1,6 +1,5 @@
 using System.Reflection;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Languages;
 using Inc.TeamAssistant.Primitives;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

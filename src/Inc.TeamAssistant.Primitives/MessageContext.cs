@@ -11,7 +11,6 @@ public sealed record MessageContext(
     string FirstName,
     string? Username,
     LanguageId LanguageId,
-    UserIdentity? TargetUser,
     (double Longitude, double Latitude)? Location)
 {
     public bool Shared => ChatId != PersonId;

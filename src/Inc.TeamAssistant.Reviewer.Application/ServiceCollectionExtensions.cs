@@ -25,15 +25,17 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
-            
+
             .AddSingleton<ILeaveTeamHandler, LeaveTeamHandler>()
-                
+
             .AddSingleton(options)
-            .AddScoped<IMessageBuilderService, MessageBuilderService>()
-            .AddSingleton(new TelegramBotClientProvider(options.AccessToken))
-            .AddHostedService(
+            .AddScoped<IMessageBuilderService, MessageBuilderService>();
+
+        if (!string.IsNullOrWhiteSpace(options.AccessToken))
+            services.AddHostedService(
                 sp => ActivatorUtilities.CreateInstance<NotificationsService>(
                     sp,
+                    options.AccessToken,
                     options.Workday,
                     options.NotificationsBatch,
                     options.NotificationsDelay));

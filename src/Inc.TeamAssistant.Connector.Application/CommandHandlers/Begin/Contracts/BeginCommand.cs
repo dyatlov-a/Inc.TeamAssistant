@@ -1,11 +1,12 @@
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 
-namespace Inc.TeamAssistant.Connector.Model.Commands.Begin;
+namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 
 public sealed record BeginCommand(
     MessageContext MessageContext,
-    object NextStage,
+    CommandStage NextStage,
     Guid? SelectedTeamId,
     string Command,
     NotificationMessage Notification)

@@ -1,5 +1,5 @@
+using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.Begin;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
@@ -75,11 +75,12 @@ internal sealed class CommandFactory
             
             await _dialogContinuation.End(
                 messageContext.PersonId,
-                new ChatMessage(messageContext.ChatId, messageContext.MessageId, messageContext.Shared),
+                new ChatMessage(messageContext.ChatId, messageContext.MessageId),
                 async (ms, t) =>
                 {
-                    foreach (var m in ms)
-                        await client.DeleteMessageAsync(m.ChatId, m.MessageId, t);
+                    if (messageContext.Shared)
+                        foreach (var m in ms)
+                            await client.DeleteMessageAsync(m.ChatId, m.MessageId, t);
                 },
                 token);
 

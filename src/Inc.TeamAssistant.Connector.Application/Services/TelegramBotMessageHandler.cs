@@ -102,7 +102,6 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.From.FirstName,
                 update.Message.From.Username,
                 person.LanguageId,
-                TargetUser: null,
                 (update.Message.Location.Longitude, update.Message.Location.Latitude));
         }
         
@@ -127,7 +126,6 @@ internal sealed class TelegramBotMessageHandler
                 update.Message.From.FirstName,
                 update.Message.From.Username,
                 person.LanguageId,
-                update.Message.GetTargetUser(),
                 Location: null);
         }
 
@@ -152,7 +150,6 @@ internal sealed class TelegramBotMessageHandler
                 update.CallbackQuery.From.FirstName,
                 update.CallbackQuery.From.Username,
                 person.LanguageId,
-                TargetUser: null,
                 Location: null);
         }
 
@@ -209,41 +206,41 @@ internal sealed class TelegramBotMessageHandler
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
 
-        if (notificationMessage.TargetChatIds?.Any() == true)
-            foreach (var targetChatId in notificationMessage.TargetChatIds)
-            {
-                var message = await client.SendTextMessageAsync(
-                    targetChatId,
-                    notificationMessage.Text,
-                    replyMarkup: ToReplyMarkup(notificationMessage),
-                    cancellationToken: token);
+        if (notificationMessage.TargetChatId.HasValue)
+        {
+            var message = await client.SendTextMessageAsync(
+                notificationMessage.TargetChatId.Value,
+                notificationMessage.Text,
+                replyMarkup: ToReplyMarkup(notificationMessage),
+                cancellationToken: token);
 
-                if (notificationMessage.Pinned)
-                    await client.PinChatMessageAsync(
-                        new ChatId(targetChatId),
-                        message.MessageId,
-                        cancellationToken: token);
-
-                if (notificationMessage.Handler is not null)
-                {
-                    var command = notificationMessage.Handler(messageContext, message.MessageId);
-
-                    await Execute(client, messageContext, command, token);
-                }
-            }
-
-        if (notificationMessage.TargetMessages?.Any() == true)
-            foreach (var message in notificationMessage.TargetMessages)
-                await client.EditMessageTextAsync(
-                    new(message.ChatId),
+            if (notificationMessage.Pinned)
+                await client.PinChatMessageAsync(
+                    new ChatId(notificationMessage.TargetChatId.Value),
                     message.MessageId,
-                    notificationMessage.Text,
-                    replyMarkup: ToReplyMarkup(notificationMessage),
                     cancellationToken: token);
+
+            if (notificationMessage.Handler is not null)
+            {
+                var command = notificationMessage.Handler(messageContext, message.MessageId);
+
+                await Execute(client, messageContext, command, token);
+            }
+        }
+
+        if (notificationMessage.TargetMessage is not null)
+            await client.EditMessageTextAsync(
+                new(notificationMessage.TargetMessage.ChatId),
+                notificationMessage.TargetMessage.MessageId,
+                notificationMessage.Text,
+                replyMarkup: ToReplyMarkup(notificationMessage),
+                cancellationToken: token);
         
-        if (notificationMessage.DeleteMessages?.Any() == true)
-            foreach (var message in notificationMessage.DeleteMessages)
-                await client.DeleteMessageAsync(new(message.ChatId), message.MessageId, token);
+        if (notificationMessage.DeleteMessage is not null)
+            await client.DeleteMessageAsync
+                (new(notificationMessage.DeleteMessage.ChatId),
+                    notificationMessage.DeleteMessage.MessageId,
+                    token);
     }
     
     private static InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
