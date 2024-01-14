@@ -9,12 +9,13 @@ public sealed class Team
     
     private readonly List<Person> _teammates = new();
     public IReadOnlyCollection<Person> Teammates => _teammates;
+    public IReadOnlyDictionary<string, string> Properties { get; private set; } = default!;
 
     private Team()
     {
     }
     
-    public Team(Guid botId, long chatId, string name)
+    public Team(Guid botId, long chatId, string name, IReadOnlyDictionary<string, string> properties)
         : this()
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -24,6 +25,7 @@ public sealed class Team
         BotId = botId;
         ChatId = chatId;
         Name = name;
+        Properties = properties;
     }
 
     public Team AddTeammate(Person person)

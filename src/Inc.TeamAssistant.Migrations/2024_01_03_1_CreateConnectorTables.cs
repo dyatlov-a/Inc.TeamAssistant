@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2024_01_03_1)]
-public class CreateConnectorTables : Migration
+public sealed class CreateConnectorTables : Migration
 {
     public override void Up()
     {
@@ -58,7 +58,10 @@ public class CreateConnectorTables : Migration
             .AsInt64().NotNullable()
 
             .WithColumn("name")
-            .AsString(255).NotNullable();
+            .AsString(255).NotNullable()
+            
+            .WithColumn("properties")
+            .AsCustom("jsonb").NotNullable();
 
         Create
             .Table("teammates")

@@ -11,7 +11,7 @@ public sealed class DialogState
     
     public long UserId { get; private set; }
     public CommandStage CommandState { get; private set; }
-    public Guid? TeamId { get; private set; }
+    public CurrentTeamContext? TeamContext { get; private set; }
 
     public DialogState(long userId, string command, CommandStage commandState)
     {
@@ -40,9 +40,9 @@ public sealed class DialogState
         return this;
     }
 
-    public DialogState SetTeamId(Guid value)
+    public DialogState SetTeam(CurrentTeamContext teamContext)
     {
-        TeamId = value;
+        TeamContext = teamContext ?? throw new ArgumentNullException(nameof(teamContext));
 
         return this;
     }

@@ -38,9 +38,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>();
 
-        foreach (var assessment in AssessmentValue.GetAssessments)
+        foreach (var assessment in AssessmentValue.GetAllAssessments())
         {
-            var command = $"/{assessment}?storyId=";
+            var command = $"/set?value={assessment}&storyId=";
             
             services.AddSingleton<ICommandCreator>(
                 sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, command));

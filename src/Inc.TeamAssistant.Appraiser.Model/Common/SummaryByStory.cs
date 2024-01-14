@@ -12,4 +12,5 @@ public sealed record SummaryByStory(
 	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
     string Total,
-    IReadOnlyCollection<EstimateItemDetails> Items);
+    IReadOnlyCollection<EstimateItemDetails> Items,
+	IReadOnlyCollection<string> Assessments);

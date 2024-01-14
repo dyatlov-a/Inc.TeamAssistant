@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2023_01_17_0)]
-public class ChangeReviewHistory : Migration
+public sealed class ChangeReviewHistory : Migration
 {
     public override void Up()
     {

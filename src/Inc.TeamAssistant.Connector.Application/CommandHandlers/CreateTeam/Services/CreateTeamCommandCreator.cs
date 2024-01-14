@@ -19,7 +19,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
     
     public async Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        Guid? selectedTeamId,
+        CurrentTeamContext? teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
@@ -33,6 +33,6 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
                     await _messageBuilder.Build(Messages.Connector_EnterTextError, messageContext.LanguageId))
             });
             
-        return new CreateTeamCommand(messageContext, messageContext.BotName, messageContext.Text);
+        return new CreateTeamCommand(messageContext, messageContext.BotName, messageContext.Text, Properties: null);
     }
 }

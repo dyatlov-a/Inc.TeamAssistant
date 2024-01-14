@@ -88,7 +88,11 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.Message.From, token);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
+                .Select(t => new TeamContext(
+                    t.Id,
+                    t.ChatId,
+                    t.Name,
+                    t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(
@@ -112,7 +116,11 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.Message.From, token);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
+                .Select(t => new TeamContext(
+                    t.Id,
+                    t.ChatId,
+                    t.Name,
+                    t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(
@@ -136,7 +144,11 @@ internal sealed class TelegramBotMessageHandler
             var person = await EnsurePerson(update.CallbackQuery.From, token);
             var targetTeams = bot.Teams
                 .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.CallbackQuery.Message.Chat.Id)
-                .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, t.Teammates.Any(tm => tm.Id == person.Id)))
+                .Select(t => new TeamContext(
+                    t.Id,
+                    t.ChatId,
+                    t.Name,
+                    t.Teammates.Any(tm => tm.Id == person.Id)))
                 .ToArray();
             
             return new(

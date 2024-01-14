@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2024_01_11_1)]
-public class ChangeCheckInTables : Migration
+public sealed class ChangeCheckInTables : Migration
 {
     public override void Up()
     {

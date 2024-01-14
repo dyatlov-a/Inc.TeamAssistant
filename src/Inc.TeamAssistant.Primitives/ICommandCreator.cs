@@ -6,5 +6,8 @@ public interface ICommandCreator
 {
     string Command { get; }
     
-    Task<IRequest<CommandResult>> Create(MessageContext messageContext, Guid? selectedTeamId, CancellationToken token);
+    Task<IRequest<CommandResult>> Create(
+        MessageContext messageContext,
+        CurrentTeamContext? teamContext,
+        CancellationToken token);
 }

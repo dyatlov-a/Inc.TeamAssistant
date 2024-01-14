@@ -32,17 +32,13 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
         if (!owner.HasValue)
             throw new ApplicationException($"Owner {taskForReview.OwnerId} was not found.");
-
-        var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Value.Username);
-        var reviewerLink = hasUsername
-            ? reviewer.Value.Username!
-            : reviewer.Value.Name;
+        
         var messageText = await _translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,
             languageId,
             taskForReview.Description,
-            owner.Value.Name,
-            reviewerLink);
+            owner.Value.PersonDisplayName,
+            reviewer.Value.PersonDisplayName);
         var messageBuilder = new StringBuilder();
         var state = taskForReview.State switch
         {

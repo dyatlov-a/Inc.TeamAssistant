@@ -5,9 +5,14 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed class Story
 {
-	public static readonly Story Empty = new(Guid.Empty, 0, 0, LanguageSettings.DefaultLanguageId, nameof(Story));
+	public static readonly Story Empty = new()
+	{
+		LanguageId = LanguageSettings.DefaultLanguageId,
+		Title = string.Empty
+	};
 
 	public Guid Id { get; private set; }
+	public StoryType StoryType { get; private set; }
 	public DateTimeOffset Created { get; private set; }
 	public Guid TeamId { get; private set; }
 	public long ChatId { get; private set; }
@@ -25,13 +30,14 @@ public sealed class Story
     {
     }
     
-    public Story(Guid teamId, long chatId, long moderatorId, LanguageId languageId, string title)
+    public Story(Guid teamId, StoryType storyType, long chatId, long moderatorId, LanguageId languageId, string title)
 		: this()
     {
 	    if (string.IsNullOrWhiteSpace(title))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(title));
         
 		Id = Guid.NewGuid();
+		StoryType = storyType;
 		Created = DateTimeOffset.UtcNow;
 		ChatId = chatId;
 		ModeratorId = moderatorId;
@@ -101,5 +107,15 @@ public sealed class Story
 		foreach (var storyForEstimate in _storyForEstimates)
 			if (storyForEstimate.Value == AssessmentValue.Value.None)
 				storyForEstimate.SetValue(AssessmentValue.Value.NoIdea);
+	}
+	
+	public IReadOnlyCollection<AssessmentValue.Value> GetAssessments()
+	{
+		return StoryType switch
+		{
+			StoryType.Scrum => AssessmentValue.ScrumAssessments,
+			StoryType.Kanban => AssessmentValue.KanbanAssessments,
+			_ => throw new ApplicationException("StoryType is not valid.")
+		};
 	}
 }

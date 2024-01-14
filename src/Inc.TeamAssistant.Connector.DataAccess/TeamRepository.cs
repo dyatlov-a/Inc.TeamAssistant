@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
@@ -21,10 +22,11 @@ internal sealed class TeamRepository : ITeamRepository
     {
         var command = new CommandDefinition(@"
             SELECT
-                id AS id,
-                bot_id AS botid,
-                chat_id AS chatid,
-                name AS name
+                t.id AS id,
+                t.bot_id AS botid,
+                t.chat_id AS chatid,
+                t.name AS name,
+                t.properties AS properties
             FROM connector.teams AS t
             WHERE t.id = @team_id;
 
@@ -60,18 +62,20 @@ internal sealed class TeamRepository : ITeamRepository
             throw new ArgumentNullException(nameof(team));
         
         var upsertTeam = new CommandDefinition(@"
-            INSERT INTO connector.teams (id, bot_id, chat_id, name)
-            VALUES (@id, @bot_id, @chat_id, @name)
+            INSERT INTO connector.teams (id, bot_id, chat_id, name, properties)
+            VALUES (@id, @bot_id, @chat_id, @name, @properties)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = EXCLUDED.bot_id,
                 chat_id = EXCLUDED.chat_id,
-                name = EXCLUDED.name;",
+                name = EXCLUDED.name,
+                properties = EXCLUDED.properties;",
             new
             {
                 id = team.Id,
                 bot_id = team.BotId,
                 chat_id = team.ChatId,
-                name = team.Name
+                name = team.Name,
+                properties = JsonSerializer.Serialize(team.Properties)
             },
             flags: CommandFlags.None,
             cancellationToken: token);

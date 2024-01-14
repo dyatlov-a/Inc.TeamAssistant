@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2024_01_11_0)]
-public class ChangeReviewerTables : Migration
+public sealed class ChangeReviewerTables : Migration
 {
     public override void Up()
     {
@@ -15,8 +15,8 @@ public class ChangeReviewerTables : Migration
             "Migrate persons from review to connector");
         
         Execute.Sql(@"
-            INSERT INTO connector.teams(id, bot_id, chat_id, name)
-            SELECT id, 'e5b2d82b-3912-4d94-acb8-c6e603622a95', chat_id, name
+            INSERT INTO connector.teams(id, bot_id, chat_id, name, properties)
+            SELECT id, 'e5b2d82b-3912-4d94-acb8-c6e603622a95', chat_id, name, '{}'::jsonb
             FROM review.teams
             ON CONFLICT (id) DO NOTHING;",
             "Migrate teams from review to connector");

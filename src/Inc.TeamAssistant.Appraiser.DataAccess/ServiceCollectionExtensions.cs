@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         SqlMapper.AddTypeHandler(new JsonTypeHandler<ICollection<string>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<IReadOnlyDictionary<string, string>>());
         
         services
             .AddSingleton<IStoryRepository>(

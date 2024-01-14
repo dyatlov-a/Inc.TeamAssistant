@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Appraiser.Application.Common.Converters;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
+using Inc.TeamAssistant.Appraiser.Application.Converters;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
@@ -31,6 +31,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
 
         var story = new Story(
             command.TeamId,
+            Enum.Parse<StoryType>(command.StoryType),
             command.MessageContext.ChatId,
             command.MessageContext.PersonId,
             command.MessageContext.LanguageId,

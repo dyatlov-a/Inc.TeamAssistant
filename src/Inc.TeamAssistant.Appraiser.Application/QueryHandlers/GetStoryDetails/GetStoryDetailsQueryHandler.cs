@@ -43,7 +43,7 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
         var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
                 e.ParticipantDisplayName,
-                estimateEnded ? e.Value.ToDisplayValue() : e.Value.ToDisplayHasValue()))
+                estimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
             .ToArray();
 
         return new(
@@ -52,6 +52,6 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
             StorySelected: story != Story.Empty,
             new StoryDetails(story.Title, story.Links.ToArray()),
             items,
-            story.GetTotal().ToDisplayValue(estimateEnded));
+            story.GetTotal().ToDisplayValue(estimateEnded, story.StoryType));
     }
 }

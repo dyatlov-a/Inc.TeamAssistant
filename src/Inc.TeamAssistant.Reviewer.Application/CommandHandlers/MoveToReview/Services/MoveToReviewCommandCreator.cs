@@ -19,7 +19,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
     
     public async Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        Guid? selectedTeamId,
+        CurrentTeamContext? teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
@@ -32,9 +32,9 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
                     "Command",
                     await _messageBuilder.Build(Messages.Reviewer_TaskTitleIsEmpty, messageContext.LanguageId))
             });
-        if (!selectedTeamId.HasValue)
+        if (teamContext is null)
             throw new ApplicationException("Team was not selected.");
             
-        return new MoveToReviewCommand(messageContext, selectedTeamId.Value, messageContext.Text);
+        return new MoveToReviewCommand(messageContext, teamContext.TeamId, messageContext.Text);
     }
 }

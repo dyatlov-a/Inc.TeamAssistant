@@ -4,10 +4,10 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 
-public sealed record BeginCommand(
+internal sealed record BeginCommand(
     MessageContext MessageContext,
     CommandStage NextStage,
-    Guid? SelectedTeamId,
+    CurrentTeamContext? TeamContext,
     string Command,
     NotificationMessage Notification)
     : IRequest<CommandResult>;

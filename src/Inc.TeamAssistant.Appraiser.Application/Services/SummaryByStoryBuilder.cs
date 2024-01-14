@@ -1,6 +1,5 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives;
@@ -61,13 +60,13 @@ internal sealed class SummaryByStoryBuilder
 
         if (!summary.EstimateEnded)
         {
-            foreach (var assessment in AssessmentValue.GetAssessments)
+            foreach (var assessment in summary.Assessments)
             {
-                var value = assessment.ToString();
-            
-                notification.WithButton(
-                    new Button(value.Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase),
-                        $"/{value}?storyId={summary.StoryId:N}"));
+                var buttonText = assessment
+                    .Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                    .ToUpperInvariant();
+                
+                notification.WithButton(new Button(buttonText, $"/set?value={assessment}&storyId={summary.StoryId:N}"));
             }
 
             notification.WithButton(new Button("Accept", $"/accept?storyId={summary.StoryId:N}"));

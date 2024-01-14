@@ -26,8 +26,8 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
             command.NextStage,
             new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId));
 
-        if (command.SelectedTeamId.HasValue)
-            dialogState.SetTeamId(command.SelectedTeamId.Value);
+        if (command.TeamContext is not null)
+            dialogState.SetTeam(command.TeamContext);
 
         command.Notification.AddHandler((c, id) => new MarkMessageForDeleteCommand(c, id));
 

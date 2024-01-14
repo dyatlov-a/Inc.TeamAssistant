@@ -1,6 +1,7 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.Results;
+using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
@@ -27,7 +28,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
     
     public async Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        Guid? selectedTeamId,
+        CurrentTeamContext? teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
@@ -40,10 +41,10 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
                     "Command",
                     await _messageBuilder.Build(Messages.Appraiser_StoryTitleIsEmpty, messageContext.LanguageId))
             });
-        if (!selectedTeamId.HasValue)
+        if (teamContext is null)
             throw new ApplicationException("Team was not selected.");
         
-        var teammates = await _teamAccessor.GetTeammates(selectedTeamId.Value, token);
+        var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, token);
         var storyItems = messageContext.Text.Split(' ');
         var storyTitleBuilder = new StringBuilder();
         var links = new List<string>();
@@ -58,7 +59,8 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
             
         return new AddStoryCommand(
             messageContext,
-            selectedTeamId.Value,
+            teamContext.TeamId,
+            teamContext.Properties.GetValueOrDefault("StoryType", StoryType.Scrum.ToString()),
             storyTitleBuilder.ToString(),
             links,
             teammates);

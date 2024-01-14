@@ -10,7 +10,7 @@ internal sealed class AddLocationToMapCommandCreator : ICommandCreator
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        Guid? selectedTeamId,
+        CurrentTeamContext? teamContext,
         CancellationToken token)
     {
         if (messageContext is null)

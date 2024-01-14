@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2024_01_10_1)]
-public class CreateAppraiserTables : Migration
+public sealed class CreateAppraiserTables : Migration
 {
     public override void Up()
     {
@@ -14,6 +14,9 @@ public class CreateAppraiserTables : Migration
             .WithColumn("id")
             .AsGuid().NotNullable()
             .PrimaryKey("stories__pk__id")
+            
+            .WithColumn("story_type")
+            .AsInt32().NotNullable()
             
             .WithColumn("created")
             .AsDateTimeOffset().NotNullable()
