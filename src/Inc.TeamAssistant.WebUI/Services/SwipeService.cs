@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 

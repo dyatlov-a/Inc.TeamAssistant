@@ -1,7 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Extensions;
-using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,22 +15,23 @@ internal sealed class TelegramBotMessageHandler
 {
     private readonly ILogger<TelegramBotMessageHandler> _logger;
     private readonly IBotRepository _botRepository;
-    private readonly IPersonRepository _personRepository;
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
+    private readonly MessageContextBuilder _messageContextBuilder;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
         IBotRepository botRepository,
-        IPersonRepository personRepository,
         CommandFactory commandFactory,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        MessageContextBuilder messageContextBuilder)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _messageContextBuilder =
+            messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
     }
 
     public async Task Handle(ITelegramBotClient client, Update update, Guid botId, CancellationToken token)
@@ -45,7 +45,7 @@ internal sealed class TelegramBotMessageHandler
         if (bot is null)
             throw new ApplicationException($"Bot {botId} was not found.");
 
-        var messageContext = await CreateMessageContext(update, bot, token);
+        var messageContext = await _messageContextBuilder.Build(bot, update, token);
         if (messageContext is null)
             return;
         
@@ -79,109 +79,6 @@ internal sealed class TelegramBotMessageHandler
         _logger.LogError(exception, "Bot {BotName} listened message with error", botName);
 
         return Task.CompletedTask;
-    }
-
-    private async Task<MessageContext?> CreateMessageContext(Update update, Bot bot, CancellationToken token)
-    {
-        if (update.Message?.Location is not null && update.Message?.From is not null && !update.Message.From.IsBot)
-        {
-            var person = await EnsurePerson(update.Message.From, token);
-            var targetTeams = bot.Teams
-                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(t => new TeamContext(
-                    t.Id,
-                    t.ChatId,
-                    t.Name,
-                    t.Teammates.Any(tm => tm.Id == person.Id)))
-                .ToArray();
-            
-            return new(
-                update.Message.MessageId,
-                bot.Id,
-                bot.Name,
-                targetTeams,
-                "/location",
-                update.Message.Chat.Id,
-                update.Message.From.Id,
-                update.Message.From.FirstName,
-                update.Message.From.Username,
-                person.LanguageId,
-                (update.Message.Location.Longitude, update.Message.Location.Latitude));
-        }
-        
-        if (!string.IsNullOrWhiteSpace(update.Message?.Text)
-            && update.Message.From is not null
-            && !update.Message.From.IsBot)
-        {
-            var person = await EnsurePerson(update.Message.From, token);
-            var targetTeams = bot.Teams
-                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.Message.Chat.Id)
-                .Select(t => new TeamContext(
-                    t.Id,
-                    t.ChatId,
-                    t.Name,
-                    t.Teammates.Any(tm => tm.Id == person.Id)))
-                .ToArray();
-            
-            return new(
-                update.Message.MessageId,
-                bot.Id,
-                bot.Name,
-                targetTeams,
-                update.Message.Text,
-                update.Message.Chat.Id,
-                update.Message.From.Id,
-                update.Message.From.FirstName,
-                update.Message.From.Username,
-                person.LanguageId,
-                Location: null);
-        }
-
-        if (!string.IsNullOrWhiteSpace(update.CallbackQuery?.Data)
-            && update.CallbackQuery.Message is not null
-            && !update.CallbackQuery.From.IsBot)
-        {
-            var person = await EnsurePerson(update.CallbackQuery.From, token);
-            var targetTeams = bot.Teams
-                .Where(t => t.Teammates.Any(tm => tm.Id == person.Id) || t.ChatId == update.CallbackQuery.Message.Chat.Id)
-                .Select(t => new TeamContext(
-                    t.Id,
-                    t.ChatId,
-                    t.Name,
-                    t.Teammates.Any(tm => tm.Id == person.Id)))
-                .ToArray();
-            
-            return new(
-                update.CallbackQuery.Message.MessageId,
-                bot.Id,
-                bot.Name,
-                targetTeams,
-                update.CallbackQuery.Data,
-                update.CallbackQuery.Message.Chat.Id,
-                update.CallbackQuery.From.Id,
-                update.CallbackQuery.From.FirstName,
-                update.CallbackQuery.From.Username,
-                person.LanguageId,
-                Location: null);
-        }
-
-        return null;
-    }
-
-    private async Task<Person> EnsurePerson(User user, CancellationToken token)
-    {
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
-        
-        var person = new Person(
-            user.Id,
-            user.FirstName,
-            user.GetLanguageId(),
-            user.Username);
-        
-        await _personRepository.Upsert(person, token);
-
-        return person;
     }
 
     private async Task Execute(

@@ -27,7 +27,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         if (command is null)
             throw new ArgumentNullException(nameof(command));
 
-        if (!command.MessageContext.Location.HasValue)
+        if (command.MessageContext.Location is null)
             return CommandResult.Empty;
         
         if (command.MessageContext.ChatId == command.MessageContext.PersonId)
@@ -45,8 +45,8 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         var location = new LocationOnMap(
             command.MessageContext.PersonId,
             command.MessageContext.DisplayUsername,
-            command.MessageContext.Location.Value.Longitude,
-            command.MessageContext.Location.Value.Latitude,
+            command.MessageContext.Location.X,
+            command.MessageContext.Location.Y,
             map);
 
         await _locationsRepository.Insert(location, token);
