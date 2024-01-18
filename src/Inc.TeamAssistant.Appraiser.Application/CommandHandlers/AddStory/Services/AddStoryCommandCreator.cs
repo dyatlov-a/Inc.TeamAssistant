@@ -12,14 +12,14 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly AddStoryToAssessmentSessionOptions _options;
+    private readonly AddStoryOptions _options;
     
-    public string Command => "/add";
+    public string Command => CommandList.AddStory;
 
     public AddStoryCommandCreator(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        AddStoryToAssessmentSessionOptions options)
+        AddStoryOptions options)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
@@ -28,11 +28,13 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
     
     public async Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
         
         if (messageContext.Text.StartsWith("/"))
             throw new ValidationException(new[]
@@ -41,8 +43,6 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
                     "Command",
                     await _messageBuilder.Build(Messages.Appraiser_StoryTitleIsEmpty, messageContext.LanguageId))
             });
-        if (teamContext is null)
-            throw new ApplicationException("Team was not selected.");
         
         var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, token);
         var storyItems = messageContext.Text.Split(' ');

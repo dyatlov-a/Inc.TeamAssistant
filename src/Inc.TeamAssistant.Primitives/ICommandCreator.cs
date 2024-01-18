@@ -8,6 +8,6 @@ public interface ICommandCreator
     
     Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token);
 }

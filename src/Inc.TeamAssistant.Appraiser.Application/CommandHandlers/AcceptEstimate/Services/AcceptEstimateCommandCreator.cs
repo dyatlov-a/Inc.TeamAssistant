@@ -6,17 +6,20 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate
 
 internal sealed class AcceptEstimateCommandCreator : ICommandCreator
 {
-    public string Command => "/accept?storyId=";
+    public string Command => CommandList.AcceptEstimate;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
-
-        var storyId = Guid.Parse(messageContext.Text.Replace(Command, string.Empty));
-        return Task.FromResult<IRequest<CommandResult>>(new AcceptEstimateCommand(messageContext, storyId));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
+        
+        return Task.FromResult<IRequest<CommandResult>>(new AcceptEstimateCommand(
+            messageContext,
+            messageContext.TryParseId(Command)));
     }
 }

@@ -21,5 +21,6 @@
       <PackageReference Include="prometheus-net.AspNetCore" Version="8.0.1" />
       <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.0.1" />
       <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
     </ItemGroup>
 </Project>

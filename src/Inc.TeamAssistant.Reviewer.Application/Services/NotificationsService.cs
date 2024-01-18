@@ -102,13 +102,13 @@ internal sealed class NotificationsService : BackgroundService
         {
             InlineKeyboardButton.WithCallbackData(
                 await translateProvider.Get(Messages.Reviewer_MoveToInProgress, reviewer.Value.LanguageId),
-                $"{CommandList.MoveToInProgress}{task.Id:N}"),
+                CommandList.MoveToInProgress + task.Id.ToString("N")),
             InlineKeyboardButton.WithCallbackData(
                 await translateProvider.Get(Messages.Reviewer_MoveToAccept, reviewer.Value.LanguageId),
-                $"{CommandList.Accept}{task.Id:N}"),
+                CommandList.Accept + task.Id.ToString("N")),
             InlineKeyboardButton.WithCallbackData(
                 await translateProvider.Get(Messages.Reviewer_MoveToDecline, reviewer.Value.LanguageId),
-                $"{CommandList.Decline}{task.Id:N}")
+                CommandList.Decline + task.Id.ToString("N"))
         };
 
         return (
@@ -135,7 +135,7 @@ internal sealed class NotificationsService : BackgroundService
         {
             InlineKeyboardButton.WithCallbackData(
                 await translateProvider.Get(Messages.Reviewer_MoveToNextRound, owner.Value.LanguageId),
-                $"{CommandList.MoveToNextRound}{task.Id:N}")
+                CommandList.MoveToNextRound + task.Id.ToString("N"))
         };
 
         return (

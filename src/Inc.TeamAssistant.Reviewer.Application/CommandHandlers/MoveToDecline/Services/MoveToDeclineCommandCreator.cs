@@ -10,13 +10,16 @@ internal sealed class MoveToDeclineCommandCreator : ICommandCreator
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
-
-        var storyId = Guid.Parse(messageContext.Text.Replace(Command, string.Empty));
-        return Task.FromResult<IRequest<CommandResult>>(new MoveToDeclineCommand(messageContext, storyId));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
+        
+        return Task.FromResult<IRequest<CommandResult>>(new MoveToDeclineCommand(
+            messageContext,
+            messageContext.TryParseId(Command)));
     }
 }

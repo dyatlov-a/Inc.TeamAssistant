@@ -6,15 +6,17 @@ namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap
 
 internal sealed class AddLocationToMapCommandCreator : ICommandCreator
 {
-    public string Command => "/location";
+    public string Command => CommandList.AddLocation;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
 
         return Task.FromResult<IRequest<CommandResult>>(new AddLocationToMapCommand(messageContext));
     }

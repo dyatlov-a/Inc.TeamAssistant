@@ -19,7 +19,7 @@ internal sealed class DialogContinuation
 
         _store.AddOrUpdate(
             userId,
-            k => new DialogState(userId, command, commandStage).Attach(chatMessage),
+            k => new DialogState(command, commandStage).Attach(chatMessage),
             (k, v) => v.MoveTo(commandStage).Attach(chatMessage));
 
         return _store[userId];

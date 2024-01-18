@@ -66,13 +66,13 @@ internal sealed class SummaryByStoryBuilder
                     .Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
                     .ToUpperInvariant();
                 
-                notification.WithButton(new Button(buttonText, $"/set?value={assessment}&storyId={summary.StoryId:N}"));
+                notification.WithButton(new Button(buttonText, string.Format(CommandList.Set, assessment) + summary.StoryId.ToString("N")));
             }
 
-            notification.WithButton(new Button("Accept", $"/accept?storyId={summary.StoryId:N}"));
+            notification.WithButton(new Button("Accept", CommandList.AcceptEstimate + summary.StoryId.ToString("N")));
         }
         else
-            notification.WithButton(new Button("Revote", $"/revote?storyId={summary.StoryId:N}"));
+            notification.WithButton(new Button("Revote", CommandList.ReVote + summary.StoryId.ToString("N")));
 
         return notification;
     }

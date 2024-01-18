@@ -6,20 +6,20 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate
 
 internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
 {
-    public string Command => "/revote?storyId=";
+    public string Command => CommandList.ReVote;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
         
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-
-        var storyId = Guid.Parse(messageContext.Text.Replace(Command, string.Empty, StringComparison.InvariantCultureIgnoreCase));
-        return Task.FromResult<IRequest<CommandResult>>(new ReVoteEstimateCommand(messageContext, storyId));
+        return Task.FromResult<IRequest<CommandResult>>(new ReVoteEstimateCommand(
+            messageContext,
+            messageContext.TryParseId(Command)));
     }
 }

@@ -82,7 +82,7 @@ internal sealed class DialogCommandFactory
         return new BeginCommand(
             messageContext,
             CommandStage.SelectTeam,
-            TeamContext: null,
+            CurrentTeamContext.Empty,
             botCommand,
             notification);
     }
@@ -111,7 +111,7 @@ internal sealed class DialogCommandFactory
         return new BeginCommand(
             messageContext,
             CommandStage.EnterText,
-            team is not null ? new CurrentTeamContext(team.Id, team.Properties) : null,
+            team is not null ? new CurrentTeamContext(team.Id, team.Properties) : CurrentTeamContext.Empty,
             botCommand,
             notification);
     }

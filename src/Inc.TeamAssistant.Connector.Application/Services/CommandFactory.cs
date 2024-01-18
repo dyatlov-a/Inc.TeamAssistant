@@ -68,9 +68,10 @@ internal sealed class CommandFactory
 
         if (commandCreator is not null)
         {
-            var command = await commandCreator.Create(messageContext, dialogState?.TeamContext, token);
+            var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
+            var command = await commandCreator.Create(messageContext, currentTeamContext, token);
             
-            // TODO: add validation
+            // TODO: move end dialog action to post processor
             
             await _dialogContinuation.End(
                 messageContext.PersonId,

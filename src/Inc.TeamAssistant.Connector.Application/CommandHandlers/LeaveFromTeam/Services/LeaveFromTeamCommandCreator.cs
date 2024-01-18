@@ -10,15 +10,16 @@ internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,
-        CurrentTeamContext? teamContext,
+        CurrentTeamContext teamContext,
         CancellationToken token)
     {
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
+        if (teamContext is null)
+            throw new ArgumentNullException(nameof(teamContext));
         
-        if (!Guid.TryParse(messageContext.Text.TrimStart('/'), out var value))
-            throw new ApplicationException("Can not bot leave from team. Please select target team.");
-        
-        return Task.FromResult<IRequest<CommandResult>>(new LeaveFromTeamCommand(messageContext, value));
+        return Task.FromResult<IRequest<CommandResult>>(new LeaveFromTeamCommand(
+            messageContext,
+            messageContext.TryParseId("/")));
     }
 }

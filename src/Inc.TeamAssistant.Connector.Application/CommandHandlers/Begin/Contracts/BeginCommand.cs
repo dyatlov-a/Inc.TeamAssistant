@@ -7,7 +7,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contract
 internal sealed record BeginCommand(
     MessageContext MessageContext,
     CommandStage NextStage,
-    CurrentTeamContext? TeamContext,
+    CurrentTeamContext TeamContext,
     string Command,
     NotificationMessage Notification)
     : IRequest<CommandResult>;

@@ -26,7 +26,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             command.MessageContext.BotId,
             command.MessageContext.ChatId,
             command.Name,
-            command.Properties ?? new Dictionary<string, string>());
+            command.Properties);
 
         await _teamRepository.Upsert(team, token);
         

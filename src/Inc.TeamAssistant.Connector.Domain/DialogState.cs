@@ -8,19 +8,17 @@ public sealed class DialogState
     public IReadOnlyCollection<ChatMessage> ChatMessages => _chatMessages;
     
     public string Command { get; private set; }
-    
-    public long UserId { get; private set; }
     public CommandStage CommandState { get; private set; }
-    public CurrentTeamContext? TeamContext { get; private set; }
+    public CurrentTeamContext TeamContext { get; private set; }
 
-    public DialogState(long userId, string command, CommandStage commandState)
+    public DialogState(string command, CommandStage commandState)
     {
         if (string.IsNullOrWhiteSpace(command))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
-
-        UserId = userId;
+        
         Command = command;
         CommandState = commandState;
+        TeamContext = CurrentTeamContext.Empty;
     }
 
     public DialogState Attach(ChatMessage chatMessage)
