@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
-using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
@@ -26,14 +25,12 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         if (targetTeam is null)
             throw new ApplicationException($"Team {teamId} was not found.");
         
-        var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(teamId, token);
-        var nextReviewerId = new RoundRobinReviewerStrategy(teammates.Select(t => t.PersonId).ToArray())
-            .Next(messageContext.PersonId, lastReviewerId);
+        var nextReviewer = teammates.Where(t => t.PersonId != messageContext.PersonId).MinBy(t => t.PersonId);
 
         await _taskForReviewRepository.RetargetAndLeave(
             teamId,
             messageContext.PersonId,
-            nextReviewerId,
+            nextReviewer.PersonId,
             DateTimeOffset.UtcNow,
             token);
     }

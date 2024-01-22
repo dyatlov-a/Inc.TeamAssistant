@@ -6,5 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 public sealed record MoveToReviewCommand(
     MessageContext MessageContext,
     Guid TeamId,
+    string Strategy,
     string Description)
     : IRequest<CommandResult>;

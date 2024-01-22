@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
-public sealed class RandomReviewerStrategy : INextReviewerStrategy
+internal sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
     private static readonly Random RandomSelector = new();
 

@@ -1,8 +1,11 @@
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
+
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class TaskForReview
 {
     public Guid Id { get; private set; }
+    public NextReviewerType Strategy { get; private set; }
     public Guid TeamId { get; private set; }
     public long OwnerId { get; private set; }
     public long ReviewerId { get; private set; }
@@ -18,17 +21,22 @@ public sealed class TaskForReview
     {
     }
 
-    public TaskForReview(Guid teamId, long ownerId, long reviewerId, long chatId, string description)
+    public TaskForReview(
+        Guid teamId,
+        NextReviewerType strategy,
+        long ownerId,
+        long chatId,
+        string description)
         : this()
     {
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
 
         Id = Guid.NewGuid();
+        Strategy = strategy;
         Created = DateTimeOffset.UtcNow;
         TeamId = teamId;
         OwnerId = ownerId;
-        ReviewerId = reviewerId;
         ChatId = chatId;
         Description = description;
         State = TaskForReviewState.New;
@@ -76,5 +84,22 @@ public sealed class TaskForReview
     {
         State = TaskForReviewState.InProgress;
         SetNextNotificationTime(notificationInterval);
+    }
+
+    public TaskForReview DetectReviewer(IReadOnlyCollection<long> teammates, long? lastReviewerId)
+    {
+        if (teammates is null)
+            throw new ArgumentNullException(nameof(teammates));
+        
+        INextReviewerStrategy reviewerStrategy = Strategy switch
+        {
+            NextReviewerType.Random => new RandomReviewerStrategy(teammates),
+            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
+            _ => throw new ApplicationException($"Strategy {Strategy} was not supported.")
+        };
+
+        ReviewerId = reviewerStrategy.Next(OwnerId, lastReviewerId);
+
+        return this;
     }
 }

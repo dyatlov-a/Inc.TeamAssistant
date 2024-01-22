@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 using MediatR;
 
@@ -21,6 +22,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
         return Task.FromResult<IRequest<CommandResult>>(new MoveToReviewCommand(
             messageContext,
             teamContext.TeamId,
+            teamContext.Properties.GetValueOrDefault("Strategy", NextReviewerType.RoundRobin.ToString()),
             messageContext.Text));
     }
 }

@@ -54,6 +54,13 @@ public sealed class ChangeReviewerTables : Migration
         Delete
             .Table("persons")
             .InSchema("review");
+
+        Create
+            .Column("strategy")
+            .OnTable("task_for_reviews")
+            .InSchema("review")
+
+            .AsInt32().NotNullable().SetExistingRowsTo(1);
     }
 
     public override void Down()

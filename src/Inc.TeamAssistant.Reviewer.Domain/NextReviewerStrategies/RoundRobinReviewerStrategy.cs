@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
-public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
+internal sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
 {
     private readonly IReadOnlyCollection<long> _teammates;
 

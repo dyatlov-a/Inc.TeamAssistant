@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 using MediatR;
@@ -37,15 +36,14 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             throw new ApplicationException($"Team {command.TeamId} was not found.");
         
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
-        var reviewer = new RoundRobinReviewerStrategy(teammates.Select(t => t.PersonId).ToArray()).Next(
-            command.MessageContext.PersonId,
-            lastReviewerId);
         var taskForReview = new TaskForReview(
-            command.TeamId,
-            command.MessageContext.PersonId,
-            reviewer,
-            targetTeam.ChatId,
-            command.Description);
+                command.TeamId,
+                Enum.Parse<NextReviewerType>(command.Strategy),
+                command.MessageContext.PersonId,
+                targetTeam.ChatId,
+                command.Description)
+            .DetectReviewer(teammates.Select(t => t.PersonId).ToArray(), lastReviewerId);
+        
         var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
             command.MessageContext.LanguageId,
             taskForReview,

@@ -23,6 +23,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 SELECT
     t.id AS id,
     t.team_id AS teamid,
+    t.strategy AS strategy,
     t.owner_id AS ownerid,
     t.reviewer_id AS reviewerid,
     t.description AS description,
@@ -52,6 +53,7 @@ WHERE t.id = @id;",
 INSERT INTO review.task_for_reviews (
     id,
     team_id,
+    strategy,
     owner_id,
     reviewer_id,
     description,
@@ -64,6 +66,7 @@ INSERT INTO review.task_for_reviews (
 VALUES (
     @id,
     @team_id,
+    @strategy,
     @owner_id,
     @reviewer_id,
     @description,
@@ -75,6 +78,7 @@ VALUES (
     @chat_id)
 ON CONFLICT (id) DO UPDATE SET
     team_id = excluded.team_id,
+    strategy = excluded.strategy,
     owner_id = excluded.owner_id,
     reviewer_id = excluded.reviewer_id,
     description = excluded.description,
@@ -88,6 +92,7 @@ ON CONFLICT (id) DO UPDATE SET
             {
                 id = taskForReview.Id,
                 team_id = taskForReview.TeamId,
+                strategy = taskForReview.Strategy,
                 description = taskForReview.Description,
                 state = taskForReview.State,
                 created = taskForReview.Created,

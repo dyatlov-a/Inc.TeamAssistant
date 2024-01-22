@@ -31,6 +31,7 @@ internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
 SELECT
     t.id AS id,
     t.team_id AS teamid,
+    t.strategy AS strategy,
     t.owner_id AS ownerid,
     t.reviewer_id AS reviewerid,
     t.description AS description,
