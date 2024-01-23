@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -43,7 +44,7 @@ internal sealed class DialogCommandFactory
             ("/leave_team", null, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: false),
             ("/need_review", null, 0, _)
-                => throw new ApplicationException($"Teams for user {messageContext.PersonId} was not found."),
+                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
             ("/need_review", null, 1, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, stage.DialogMessageId),
             ("/need_review", null, > 1, _)
@@ -51,7 +52,7 @@ internal sealed class DialogCommandFactory
             ("/need_review", CommandStage.SelectTeam, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
             ("/add", null, 0, _)
-                => throw new ApplicationException($"Teams for user {messageContext.PersonId} was not found."),
+                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
             ("/add", null, 1, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, stage.DialogMessageId),
             ("/add", null, > 1, _)

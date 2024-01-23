@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
@@ -23,7 +24,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         var teammates = await _teamAccessor.GetTeammates(teamId, token);
         var targetTeam = messageContext.FindTeam(teamId);
         if (targetTeam is null)
-            throw new ApplicationException($"Team {teamId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
         
         var nextReviewer = teammates.Where(t => t.PersonId != messageContext.PersonId).MinBy(t => t.PersonId);
 

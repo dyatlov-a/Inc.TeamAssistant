@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.JoinToTeam;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam;
@@ -28,11 +29,11 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
 
         var team = await _teamRepository.Find(command.TeamId, token);
         if (team is null)
-            throw new ApplicationException($"Team {command.TeamId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         var person = await _personRepository.Find(command.MessageContext.PersonId, token);
         if (person is null)
-            throw new ApplicationException($"Person {command.MessageContext.PersonId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, command.MessageContext.PersonId);
 
         team.AddTeammate(person);
 

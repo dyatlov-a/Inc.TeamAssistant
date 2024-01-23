@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
@@ -33,7 +34,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
         var targetTeam = command.MessageContext.FindTeam(command.TeamId);
         if (targetTeam is null)
-            throw new ApplicationException($"Team {command.TeamId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
         var taskForReview = new TaskForReview(

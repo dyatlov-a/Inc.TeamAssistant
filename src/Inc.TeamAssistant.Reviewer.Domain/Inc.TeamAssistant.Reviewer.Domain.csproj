@@ -4,4 +4,7 @@
       <_Parameter1>Inc.TeamAssistant.Reviewer.DomainTests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
+  </ItemGroup>
 </Project>

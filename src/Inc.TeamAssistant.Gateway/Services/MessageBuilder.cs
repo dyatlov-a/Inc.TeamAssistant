@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Gateway.Services;
 
@@ -26,6 +27,6 @@ internal sealed class MessageBuilder : IMessageBuilder
             && resources.Result[languageId.Value].TryGetValue(messageId.Value, out var message))
             return values.Any() ? string.Format(message, values) : message;
 
-        throw new ApplicationException($"Not supported message with id {messageId.Value}.");
+        throw new TeamAssistantException($"Not supported message with id {messageId.Value}.");
     }
 }

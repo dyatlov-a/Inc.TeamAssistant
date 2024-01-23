@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate;
 
@@ -30,7 +31,7 @@ internal sealed class ReVoteEstimateCommandHandler : IRequestHandler<ReVoteEstim
 
         var story = await _storyRepository.Find(command.StoryId, token);
         if (story is null)
-            throw new ApplicationException($"Story {command.StoryId} was not found.");
+            throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
 
         story.Reset(command.MessageContext.PersonId);
         

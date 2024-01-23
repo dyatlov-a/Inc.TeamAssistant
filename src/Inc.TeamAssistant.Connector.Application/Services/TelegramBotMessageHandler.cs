@@ -2,6 +2,7 @@ using FluentValidation;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,13 +19,15 @@ internal sealed class TelegramBotMessageHandler
     private readonly CommandFactory _commandFactory;
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageContextBuilder _messageContextBuilder;
+    private readonly IMessageBuilder _messageBuilder;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
         IBotRepository botRepository,
         CommandFactory commandFactory,
         IServiceProvider serviceProvider,
-        MessageContextBuilder messageContextBuilder)
+        MessageContextBuilder messageContextBuilder,
+        IMessageBuilder messageBuilder)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
@@ -32,6 +35,7 @@ internal sealed class TelegramBotMessageHandler
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _messageContextBuilder =
             messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
     public async Task Handle(ITelegramBotClient client, Update update, Guid botId, CancellationToken token)
@@ -43,12 +47,12 @@ internal sealed class TelegramBotMessageHandler
 
         var bot = await _botRepository.Find(botId, token);
         if (bot is null)
-            throw new ApplicationException($"Bot {botId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 
         var messageContext = await _messageContextBuilder.Build(bot, update, token);
         if (messageContext is null)
             return;
-        
+
         try
         {
             var command = await _commandFactory.TryCreate(client, bot, messageContext, token);
@@ -58,6 +62,15 @@ internal sealed class TelegramBotMessageHandler
         catch (ValidationException validationException)
         {
             await TrySend(client, messageContext.ChatId, validationException.ToMessage(), token);
+        }
+        catch (TeamAssistantUserException userException)
+        {
+            var errorMessage = await _messageBuilder.Build(
+                userException.MessageId,
+                messageContext.LanguageId,
+                userException.Values);
+            
+            await TrySend(client, messageContext.ChatId, errorMessage, token);
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
 namespace Inc.TeamAssistant.Reviewer.Domain;
@@ -95,7 +96,7 @@ public sealed class TaskForReview
         {
             NextReviewerType.Random => new RandomReviewerStrategy(teammates),
             NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
-            _ => throw new ApplicationException($"Strategy {Strategy} was not supported.")
+            _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
         };
 
         ReviewerId = reviewerStrategy.Next(OwnerId, lastReviewerId);

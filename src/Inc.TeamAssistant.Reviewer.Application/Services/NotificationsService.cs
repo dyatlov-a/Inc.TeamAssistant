@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,7 +97,7 @@ internal sealed class NotificationsService : BackgroundService
 
         var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
         if (!reviewer.HasValue)
-            throw new ApplicationException($"Reviewer {task.ReviewerId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
         
         var buttons = new[]
         {
@@ -129,7 +130,7 @@ internal sealed class NotificationsService : BackgroundService
         
         var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
         if (!owner.HasValue)
-            throw new ApplicationException($"Owner {task.OwnerId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
         
         var buttons = new[]
         {

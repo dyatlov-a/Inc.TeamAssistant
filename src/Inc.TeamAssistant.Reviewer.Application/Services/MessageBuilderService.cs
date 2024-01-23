@@ -1,5 +1,6 @@
 using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 
@@ -28,10 +29,10 @@ internal sealed class MessageBuilderService : IMessageBuilderService
 
         var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (!reviewer.HasValue)
-            throw new ApplicationException($"Reviewer {taskForReview.ReviewerId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
         var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
         if (!owner.HasValue)
-            throw new ApplicationException($"Owner {taskForReview.OwnerId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
         
         var messageText = await _translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,

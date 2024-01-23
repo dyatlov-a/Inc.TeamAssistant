@@ -6,6 +6,7 @@
   "Appraiser_NeedEstimate": "Necessary to estimate task \"{0}\".",
   "Appraiser_TotalEstimate": "Average: {0} SP",
   "Appraiser_StoryTitleIsEmpty": "Necessary specify name of task",
+  "Appraiser_StoryNotFound": "Story {0} was not found.",
   
   "GUI_Tools": "Tools",
   "GUI_Feedback": "Feedback",
@@ -90,17 +91,17 @@
   "Reviewer_MoveToDecline": "Decline",
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_OperationApplied": "Operation completed",
-  "Reviewer_TaskTitleIsEmpty": "Enter link to MR and description",
   
   "Connector_EnterTeamName": "Reply to this message with team name",
   "Connector_SelectTeam": "Select the team:",
   "Connector_JoinToTeam": "Open the link {1}, then press START to connect team \"{0}\"",
   "Connector_JoinToTeamSuccess": "You have successfully joined the team \"{0}\".",
-  "Connector_EnterTextError": "Previous operation not completed, waiting for text input.",
-  "Connector_TeamNotFound": "You're not on any team.",
   "Connector_NewTeamHelp": "{0} - create a new team.",
   "Connector_LeaveFromTeamHelp": "{0} - leave from the team.",
   "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\".",
   "Connector_CancelHelp": "{0} - cancel the current operation.",
-  "Connector_TeamMinError": "There are not enough team members to start review"
+  "Connector_BotNotFound": "Bot {0} was not found.",
+  "Connector_TeamNotFound": "Team {0} was not found.",
+  "Connector_TeamForUserNotFound": "Team for user {0} was not found.",
+  "Connector_PersonNotFound": "Person {0} was not found."
 }

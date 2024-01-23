@@ -6,6 +6,7 @@
   "Appraiser_NeedEstimate": "Необходимо оценить задачу «{0}».",
   "Appraiser_TotalEstimate": "Среднее значение: {0} SP",
   "Appraiser_StoryTitleIsEmpty": "Необходимо указать название задачи",
+  "Appraiser_StoryNotFound": "История {0} не найдена.",
   
   "GUI_Tools": "Инструменты",
   "GUI_Feedback": "Обратная связь",
@@ -90,17 +91,17 @@
   "Reviewer_MoveToDecline": "Отклонить",
   "Reviewer_MoveToNextRound": "Попробовать снова",
   "Reviewer_OperationApplied": "Операция применена",
-  "Reviewer_TaskTitleIsEmpty": "Введите ссылку на MR и описание",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",
   "Connector_JoinToTeam": "Для подключения к команде «{0}» пройдите по ссылке {1} и нажмите Start.",
   "Connector_JoinToTeamSuccess": "Вы успешно подключидись к команде «{0}».",
-  "Connector_EnterTextError": "Не завершена предыдущая операция, ожидаем ввода текста.",
-  "Connector_TeamNotFound": "Вы не состоите не в одной команде.",
   "Connector_NewTeamHelp": "{0} - создать новую команду.",
   "Connector_LeaveFromTeamHelp": "{0} - покинуть команду.",
   "Connector_LeaveTeamSuccess": "{0} покинул команду «{1}».",
   "Connector_CancelHelp": "{0} - отменить текущую операцию.",
-  "Connector_TeamMinError": "В команде недостаточно участников для начала ревью"
+  "Connector_BotNotFound": "Бот {0} не найден.",
+  "Connector_TeamNotFound": "Команда {0} не найдена.",
+  "Connector_TeamForUserNotFound": "Команда для пользователя {0} не найдена.",
+  "Connector_PersonNotFound": "Пользователь {0} не найден."
 }

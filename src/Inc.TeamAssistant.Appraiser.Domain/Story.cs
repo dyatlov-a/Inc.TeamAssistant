@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Appraiser.Domain.Exceptions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Domain;
 
@@ -69,7 +69,7 @@ public sealed class Story
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
 
         if (storyForEstimate is null)
-            throw new AppraiserUserException(Messages.Appraiser_MissingTaskForEvaluate);
+            throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
 
         storyForEstimate.SetValue(value);
 	}
@@ -115,7 +115,7 @@ public sealed class Story
 		{
 			StoryType.Scrum => AssessmentValue.ScrumAssessments,
 			StoryType.Kanban => AssessmentValue.KanbanAssessments,
-			_ => throw new ApplicationException("StoryType is not valid.")
+			_ => throw new TeamAssistantException("StoryType is not valid.")
 		};
 	}
 }

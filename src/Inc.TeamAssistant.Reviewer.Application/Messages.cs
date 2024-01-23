@@ -13,5 +13,6 @@ internal static class Messages
     public static readonly MessageId Reviewer_MoveToDecline = new(nameof(Reviewer_MoveToDecline));
     public static readonly MessageId Reviewer_MoveToNextRound = new(nameof(Reviewer_MoveToNextRound));
     public static readonly MessageId Reviewer_OperationApplied = new(nameof(Reviewer_OperationApplied));
-    public static readonly MessageId Reviewer_TaskTitleIsEmpty = new(nameof(Reviewer_TaskTitleIsEmpty));
+    public static readonly MessageId Connector_TeamNotFound = new(nameof(Connector_TeamNotFound));
+    public static readonly MessageId Connector_PersonNotFound = new(nameof(Connector_PersonNotFound));
 }

@@ -2,6 +2,7 @@ using System.Text;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.Help;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 using ArgumentNullException = System.ArgumentNullException;
 
@@ -25,7 +26,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
 
         var bot = await _botRepository.Find(command.MessageContext.BotId, token);
         if (bot is null)
-            throw new ApplicationException($"Bot {command.MessageContext.BotId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.BotId);
         
         var builder = new StringBuilder();
         foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null))

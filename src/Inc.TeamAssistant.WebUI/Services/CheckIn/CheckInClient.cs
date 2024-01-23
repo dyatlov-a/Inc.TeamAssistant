@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.WebUI.Services.CheckIn;
 
@@ -23,7 +24,7 @@ internal sealed class CheckInClient : ICheckInService
                 cancellationToken);
 
             if (result is null)
-                throw new ApplicationException("Parse response with error.");
+                throw new TeamAssistantException("Parse response with error.");
 
             return result;
         }

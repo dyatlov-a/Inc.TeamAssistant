@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam;
@@ -28,7 +29,7 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         
         var team = await _teamRepository.Find(command.TeamId, token);
         if (team is null)
-            throw new ApplicationException($"Team {command.TeamId} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         team.RemoveTeammate(command.MessageContext.PersonId);
 
