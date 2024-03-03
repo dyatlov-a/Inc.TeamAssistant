@@ -35,23 +35,22 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
     {
         if (story is null)
             throw new ArgumentNullException(nameof(story));
-
-        var estimateEnded = story.EstimateEnded();
+        
         var link = _linkBuilder.BuildLinkForConnect(story.TeamId);
         var code = _codeGenerator.Generate(link);
 
         var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
                 e.ParticipantDisplayName,
-                estimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
+                story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
             .ToArray();
 
         return new(
 	        story.Title,
+	        story.Links.ToArray(),
             code,
             StorySelected: story != Story.Empty,
-            new StoryDetails(story.Title, story.Links.ToArray()),
             items,
-            story.GetTotal().ToDisplayValue(estimateEnded, story.StoryType));
+            story.GetTotalValue());
     }
 }

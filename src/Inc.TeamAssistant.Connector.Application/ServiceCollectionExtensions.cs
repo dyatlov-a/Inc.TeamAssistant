@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
+            .AddSingleton<PersonService>()
             .AddSingleton<CommandFactory>()
             .AddSingleton<DialogCommandFactory>()
             .AddSingleton<MessageContextBuilder>()

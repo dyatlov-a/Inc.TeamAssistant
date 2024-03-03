@@ -4,7 +4,7 @@
   "Appraiser_EnterStoryName": "Reply this message with task name for enstimation.",
   "Appraiser_EndEstimate": "Estimation of task \"{0}\" has been completed.",
   "Appraiser_NeedEstimate": "Necessary to estimate task \"{0}\".",
-  "Appraiser_TotalEstimate": "Average: {0} SP",
+  "Appraiser_TotalEstimate": "Average: {0}",
   "Appraiser_StoryTitleIsEmpty": "Necessary specify name of task",
   "Appraiser_StoryNotFound": "Story {0} was not found.",
   

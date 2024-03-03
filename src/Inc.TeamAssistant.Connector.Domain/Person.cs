@@ -26,4 +26,25 @@ public sealed class Person
     }
 
     public string DisplayName => string.IsNullOrWhiteSpace(Username) ? Name : Username;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null)
+            return false;
+        
+        return obj is Person person && Equals(person);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(Id, Name, LanguageId, Username);
+
+    private bool Equals(Person other)
+    {
+        if (other is null)
+            throw new ArgumentNullException(nameof(other));
+        
+        return Id == other.Id &&
+               Name == other.Name &&
+               LanguageId.Equals(other.LanguageId) &&
+               Username == other.Username;
+    }
 }

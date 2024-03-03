@@ -6,21 +6,21 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services;
 
-internal sealed class AssessmentSessionsService : IAssessmentSessionsService
+internal sealed class AppraiserService : IAppraiserService
 {
 	private readonly IMediator _mediator;
 
-	public AssessmentSessionsService(IMediator mediator)
+	public AppraiserService(IMediator mediator)
 		=> _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        Guid assessmentSessionId,
+        Guid teamId,
 		CancellationToken cancellationToken)
 	{
 		try
 		{
 			var result = await _mediator.Send(
-                new GetStoryDetailsQuery(assessmentSessionId),
+                new GetStoryDetailsQuery(teamId),
                 cancellationToken);
 
 			return result is null

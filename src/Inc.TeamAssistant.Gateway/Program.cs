@@ -63,6 +63,7 @@ builder.Services
 	.AddConnectorDataAccess(connectionString)
 	
 	.AddMemoryCache()
+	.AddHttpContextAccessor()
 	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
     .AddIsomorphic()
     .AddMvc();

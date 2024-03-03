@@ -18,10 +18,6 @@
     margin: 0 0 .75rem 0;
 	letter-spacing: .0625rem;
 }
-.assessment-session__subtitle {
-    margin: 0 0 .75rem 0;
-    display: block;
-}
 .assessment-session__text {
 	line-height: 1.6rem;
 }

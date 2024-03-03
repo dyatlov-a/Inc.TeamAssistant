@@ -17,6 +17,7 @@ public sealed class CreateConnectorTables : Migration
             
             .WithColumn("name")
             .AsString(50).NotNullable()
+            .Unique("bots__uidx__name")
             
             .WithColumn("token")
             .AsString(255).NotNullable();
@@ -62,6 +63,10 @@ public sealed class CreateConnectorTables : Migration
             
             .WithColumn("properties")
             .AsCustom("jsonb").NotNullable();
+        
+        Execute.Sql(
+            "CREATE UNIQUE INDEX teams__uidx__bot_id__name ON connector.teams (bot_id, lower(name));",
+            "Create index by team name");
 
         Create
             .Table("teammates")

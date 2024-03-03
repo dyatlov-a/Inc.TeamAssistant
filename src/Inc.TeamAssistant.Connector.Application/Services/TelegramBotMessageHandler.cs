@@ -6,7 +6,9 @@ using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -45,6 +47,7 @@ internal sealed class TelegramBotMessageHandler
         if (update is null)
             throw new ArgumentNullException(nameof(update));
 
+        const string duplicateKeyError = "23505";
         var bot = await _botRepository.Find(botId, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
@@ -69,8 +72,28 @@ internal sealed class TelegramBotMessageHandler
                 userException.MessageId,
                 messageContext.LanguageId,
                 userException.Values);
-            
+
             await TrySend(client, messageContext.ChatId, errorMessage, token);
+        }
+        catch (TeamAssistantException teamAssistantException)
+        {
+            await TrySend(
+                client,
+                messageContext.ChatId,
+                teamAssistantException.Message,
+                token);
+        }
+        catch (ApiRequestException apiRequestException)
+        {
+            _logger.LogError(apiRequestException, "Unhandled telegram api exception");
+        }
+        catch (PostgresException ex) when (ex.SqlState == duplicateKeyError)
+        {
+            await TrySend(
+                client,
+                messageContext.ChatId,
+                "Duplicate key value violates unique constraint.",
+                token);
         }
         catch (Exception ex)
         {

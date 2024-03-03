@@ -63,7 +63,7 @@ internal sealed class TeamRepository : ITeamRepository
         
         var upsertTeam = new CommandDefinition(@"
             INSERT INTO connector.teams (id, bot_id, chat_id, name, properties)
-            VALUES (@id, @bot_id, @chat_id, @name, @properties)
+            VALUES (@id, @bot_id, @chat_id, @name, @properties::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = EXCLUDED.bot_id,
                 chat_id = EXCLUDED.chat_id,

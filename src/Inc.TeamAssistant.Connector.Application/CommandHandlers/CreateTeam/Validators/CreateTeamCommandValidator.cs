@@ -12,6 +12,7 @@ internal sealed class CreateTeamCommandValidator : AbstractValidator<CreateTeamC
         
         RuleFor(e => e.Name)
             .NotEmpty()
+            .MaximumLength(255)
             .Must(e => !e.StartsWith("/"))
             .WithMessage("Please enter text value.");
     }

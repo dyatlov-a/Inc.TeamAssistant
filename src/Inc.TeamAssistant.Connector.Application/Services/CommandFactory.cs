@@ -37,17 +37,14 @@ internal sealed class CommandFactory
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
         var cmd = dialogState is not null ? dialogState.Command : messageContext.Text;
         var botCommand = bot.FindCommand(cmd);
-
-        if (botCommand is null)
-            return null;
         
-        if (botCommand.Stages.Any())
+        if (botCommand?.Stages.Any() == true)
         {
             var firstStage = botCommand.Stages.First();
             
             foreach (var stage in botCommand.Stages)
             {
-                if (dialogState is null && firstStage.Id == stage.Id || dialogState?.CommandState == stage.Value)
+                if ((dialogState is null && firstStage.Id == stage.Id) || dialogState?.CommandState == stage.Value)
                 {
                     var command = await _dialogCommandFactory.TryCreate(
                         bot,
@@ -62,8 +59,8 @@ internal sealed class CommandFactory
             }
         }
         
-        var commandCreator = _commandCreators.SingleOrDefault(c => c.Command.StartsWith(
-            botCommand.Value,
+        var commandCreator = _commandCreators.SingleOrDefault(c => cmd.StartsWith(
+            c.Command,
             StringComparison.InvariantCultureIgnoreCase));
 
         if (commandCreator is not null)

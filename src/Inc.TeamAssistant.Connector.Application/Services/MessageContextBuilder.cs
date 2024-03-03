@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Telegram.Bot.Types;
@@ -8,11 +6,11 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class MessageContextBuilder
 {
-    private readonly IPersonRepository _personRepository;
+    private readonly PersonService _personService;
 
-    public MessageContextBuilder(IPersonRepository personRepository)
+    public MessageContextBuilder(PersonService personService)
     {
-        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
     public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
@@ -60,7 +58,7 @@ internal sealed class MessageContextBuilder
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
 
-        var person = await EnsurePerson(user, token);
+        var person = await _personService.EnsurePerson(user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
         return new(
@@ -86,22 +84,6 @@ internal sealed class MessageContextBuilder
                     : string.Empty
                 : data
             : text;
-    }
-    
-    private async Task<Person> EnsurePerson(User user, CancellationToken token)
-    {
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
-        
-        var person = new Person(
-            user.Id,
-            user.FirstName,
-            user.GetLanguageId(),
-            user.Username);
-        
-        await _personRepository.Upsert(person, token);
-
-        return person;
     }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)

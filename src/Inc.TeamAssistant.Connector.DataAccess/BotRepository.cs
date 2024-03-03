@@ -66,7 +66,8 @@ internal sealed class BotRepository : IBotRepository
                 t.id AS id,
                 t.bot_id AS botid,
                 t.chat_id AS chatid,
-                t.name AS name
+                t.name AS name,
+                t.properties AS properties
             FROM connector.teams AS t
             WHERE t.bot_id = @id;
 

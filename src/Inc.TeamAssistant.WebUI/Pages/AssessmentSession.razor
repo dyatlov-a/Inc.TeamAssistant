@@ -5,7 +5,7 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.WebUI.Pages.Annotations
 
-@inject IAssessmentSessionsService Service
+@inject IAppraiserService Service
 @inject IEventsProvider EventsProvider
 @inject LanguageManager LanguageManager
 
@@ -18,16 +18,14 @@
                 @if (_model is { State: ServiceResultState.Success, Result: not null })
                 {
                     <div class="assessment-session__details">
-                        <span class="assessment-session__subtitle">@_model.Result.AssessmentSessionTitle</span>
-
                         @if (_model.Result.StorySelected)
                         {
-                            <h1 class="assessment-session__title">@_annotation.GetTitle(_model.Result.Story.Title)</h1>
+                            <h1 class="assessment-session__title">@_annotation.GetTitle(_model.Result.Title)</h1>
 
-                            if (_model.Result.Story.Links.Any())
+                            if (_model.Result.Links.Any())
                             {
                                 <ul class="assessment-session__items">
-                                    @foreach (var link in _model.Result.Story.Links)
+                                    @foreach (var link in _model.Result.Links)
                                     {
                                         <li class="assessment-session__item">
                                             <a class="assessment-session__link" href="@link" target="_blank">@link</a>
@@ -53,7 +51,7 @@
                     </div>
 
                     <div class="assessment-session__summary">
-                        <span class="assessment-session__total-value">@_model.Result.Total SP</span> @_annotation.AverageRating
+                        <span class="assessment-session__total-value">@_model.Result.Total</span> @_annotation.AverageRating
                     </div>
                 }
                 else
@@ -89,7 +87,7 @@
     private AssessmentSessionAnnotation _annotation = AssessmentSessionAnnotation.Empty;
 
     private MarkupString PageTitle => _model is { State: ServiceResultState.Success, Result: not null }
-        ? (MarkupString)_model.Result.AssessmentSessionTitle
+        ? (MarkupString)_model.Result.Title
         : _annotation.AssessmentSessionCard;
 
     private MarkupString StateMessage => _model.State switch

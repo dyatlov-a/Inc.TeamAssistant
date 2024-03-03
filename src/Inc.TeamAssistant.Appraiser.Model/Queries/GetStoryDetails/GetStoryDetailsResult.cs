@@ -1,9 +1,9 @@
 namespace Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 
 public sealed record GetStoryDetailsResult(
-	string AssessmentSessionTitle,
+	string Title,
+	IReadOnlyCollection<string> Links,
     string CodeForConnect,
     bool StorySelected,
-    StoryDetails Story,
 	IReadOnlyCollection<StoryForEstimateDto> StoryForEstimates,
 	string Total);

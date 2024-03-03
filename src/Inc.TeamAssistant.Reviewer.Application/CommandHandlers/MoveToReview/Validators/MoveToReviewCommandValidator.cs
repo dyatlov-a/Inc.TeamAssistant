@@ -12,6 +12,7 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
         
         RuleFor(e => e.Description)
             .NotEmpty()
+            .MaximumLength(2000)
             .Must(e => !e.StartsWith("/"))
             .WithMessage("Please enter text value.");
     }

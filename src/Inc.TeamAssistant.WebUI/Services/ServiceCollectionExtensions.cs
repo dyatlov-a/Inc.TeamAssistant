@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         services
             .AddBlazoredLocalStorage()
 
-            .AddScoped<IAssessmentSessionsService, AssessmentSessionsClient>()
+            .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<IClientInfoService, ClientInfoClient>()
             .AddSingleton<IEventsProvider, EventsProviderClient>()
             .AddSingleton<ICookieService, CookieServiceClient>()

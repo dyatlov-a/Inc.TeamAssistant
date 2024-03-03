@@ -26,7 +26,8 @@ public sealed class DialogState
         if (chatMessage is null)
             throw new ArgumentNullException(nameof(chatMessage));
         
-        _chatMessages.Add(chatMessage);
+        if (_chatMessages.All(cm => cm != chatMessage))
+            _chatMessages.Add(chatMessage);
         
         return this;
     }

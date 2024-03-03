@@ -20,10 +20,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
 
         services
-            .AddMemoryCache()
-            .AddHttpContextAccessor();
-
-        services
             .AddSingleton(new MessageProvider(webRootPath))
             .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
                 sp,
@@ -31,7 +27,7 @@ public static class ServiceCollectionExtensions
                 options.CacheAbsoluteExpiration));
 
         services
-            .AddScoped<IAssessmentSessionsService, AssessmentSessionsService>()
+            .AddScoped<IAppraiserService, AppraiserService>()
             .AddSingleton<IEventsProvider, EventsProvider>()
             .AddScoped<ICookieService, CookieService>()
             .AddScoped<IMessagesSender, MessagesSender>()

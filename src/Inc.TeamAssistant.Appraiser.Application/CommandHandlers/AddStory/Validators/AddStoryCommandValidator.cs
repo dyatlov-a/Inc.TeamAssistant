@@ -18,7 +18,7 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
             .Must(e => !e.StartsWith("/"))
             .WithMessage("Please enter text value.");
         
-        RuleFor(e => e.Links)
+        RuleForEach(e => e.Links)
             .NotEmpty();
         
         RuleFor(e => e.Teammates)

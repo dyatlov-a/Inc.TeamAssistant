@@ -10,8 +10,7 @@ internal static class SummaryByStoryConverter
     {
         if (story is null)
             throw new ArgumentNullException(nameof(story));
-
-        var estimateEnded = story.EstimateEnded();
+        
         var storyForEstimates = story.StoryForEstimates
             .Select(s => new EstimateItemDetails(
                 s.ParticipantDisplayName,
@@ -30,8 +29,8 @@ internal static class SummaryByStoryConverter
             story.ExternalId,
             story.Title,
             story.Links.ToArray(),
-            estimateEnded,
-            story.GetTotal().ToDisplayValue(estimateEnded, StoryType.Scrum),
+            story.EstimateEnded,
+            story.GetTotalValue(),
             storyForEstimates,
             assessments);
     }

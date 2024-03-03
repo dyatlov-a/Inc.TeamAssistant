@@ -15,13 +15,6 @@ public static class AssessmentValueExtensions
 		};
 	}
 
-	public static string ToDisplayValue(this decimal? value, bool estimateEnded, StoryType storyType)
-	{
-		return estimateEnded && storyType == StoryType.Scrum && value.HasValue
-			? value.Value.ToString(".##")
-			: "?";
-	}
-
 	public static string ToDisplayHasValue(this AssessmentValue.Value value) => value == AssessmentValue.Value.None
 		? "-"
 		: "+";

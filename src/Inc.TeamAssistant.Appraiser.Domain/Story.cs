@@ -48,20 +48,19 @@ public sealed class Story
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
 
-    public bool EstimateEnded() => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
-
-	public decimal? GetTotal()
+	public string GetTotalValue()
 	{
-		var values = _storyForEstimates
-			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
-			.Select(i => (int)i.Value)
-			.ToArray();
+		const string unknownValue = "?";
 
-		var result = values.Any()
-			? (decimal?)values.Sum() / values.Length
-			: null;
-
-		return result;
+		if (!EstimateEnded)
+			return unknownValue;
+		
+		return StoryType switch
+		{
+			StoryType.Scrum => GetScrumTotal()?.ToString(".## SP") ?? unknownValue,
+			StoryType.Kanban => GetKanbanTotal().ToString(),
+			_ => unknownValue
+		};
 	}
 
 	public void Estimate(long participantId, AssessmentValue.Value value)
@@ -91,9 +90,9 @@ public sealed class Story
 	}
 
 	public void Reset(long participantId)
-    {
-	    if (ModeratorId != participantId)
-		    return;
+	{
+		if (ModeratorId != participantId)
+			throw new TeamAssistantException("User has not rights for action.");
 	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
@@ -102,7 +101,7 @@ public sealed class Story
 	public void Accept(long participantId)
 	{
 		if (ModeratorId != participantId)
-			return;
+			throw new TeamAssistantException("User has not rights for action.");
 		
 		foreach (var storyForEstimate in _storyForEstimates)
 			if (storyForEstimate.Value == AssessmentValue.Value.None)
@@ -117,5 +116,33 @@ public sealed class Story
 			StoryType.Kanban => AssessmentValue.KanbanAssessments,
 			_ => throw new TeamAssistantException("StoryType is not valid.")
 		};
+	}
+	
+	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
+	
+	private decimal? GetScrumTotal()
+	{
+		var values = _storyForEstimates
+			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
+			.Select(i => (int)i.Value)
+			.ToArray();
+
+		var result = values.Any()
+			? (decimal?)values.Sum() / values.Length
+			: null;
+
+		return result;
+	}
+
+	private AssessmentValue.Value GetKanbanTotal()
+	{
+		var values = _storyForEstimates
+			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
+			.OrderBy(i => i.Value)
+			.Select(i => i.Value)
+			.ToArray();
+
+		var index = values.Length / 2;
+		return values[index];
 	}
 }

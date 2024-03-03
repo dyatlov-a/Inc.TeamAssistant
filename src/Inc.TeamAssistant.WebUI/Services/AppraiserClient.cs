@@ -7,23 +7,23 @@ using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
-internal sealed class AssessmentSessionsClient : IAssessmentSessionsService
+internal sealed class AppraiserClient : IAppraiserService
 {
 	private readonly HttpClient _client;
 
-    public AssessmentSessionsClient(HttpClient client)
+    public AppraiserClient(HttpClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
 	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        Guid assessmentSessionId,
+        Guid teamId,
 		CancellationToken cancellationToken)
 	{
 		try
 		{
 			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoryDetailsResult?>>(
-				$"sessions/story/{assessmentSessionId}",
+				$"sessions/story/{teamId}",
 				cancellationToken);
 
 			if (result is null)
