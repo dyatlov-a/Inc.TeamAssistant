@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProperty.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
@@ -29,7 +30,18 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, EndCommandCreator>()
             .AddSingleton<ICommandCreator, HelpCommandCreator>()
             .AddSingleton<ICommandCreator, JoinToTeamCommandCreator>()
-            .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>();
+            .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>()
+            
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                "/move_to_sp",
+                "storyType",
+                "Scrum"))
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                "/move_to_tshirts",
+                "storyType",
+                "Kanban"));
         
         return services;
     }

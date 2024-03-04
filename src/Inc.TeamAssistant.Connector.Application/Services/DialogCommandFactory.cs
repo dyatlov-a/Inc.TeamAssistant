@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -43,6 +44,14 @@ internal sealed class DialogCommandFactory
                 => new LeaveFromTeamCommand(messageContext, messageContext.Teams[0].Id),
             ("/leave_team", null, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: false),
+            ("/move_to_sp", null, 1, _)
+                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Scrum"),
+            ("/move_to_sp", null, > 1, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: true),
+            ("/move_to_tshirts", null, 1, _)
+                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Kanban"),
+            ("/move_to_tshirts", null, > 1, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: true),
             ("/need_review", null, 0, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
             ("/need_review", null, 1, _)

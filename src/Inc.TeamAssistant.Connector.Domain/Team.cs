@@ -46,4 +46,19 @@ public sealed class Team
 
         return this;
     }
+
+    public Team ChangeProperty(string name, string value)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        
+        Properties = new Dictionary<string, string>(Properties)
+        {
+            [name] = value
+        };;
+        
+        return this;
+    }
 }

@@ -7,6 +7,8 @@
   "Appraiser_TotalEstimate": "Average: {0}",
   "Appraiser_StoryTitleIsEmpty": "Necessary specify name of task",
   "Appraiser_StoryNotFound": "Story {0} was not found.",
+  "Appraiser_MoveToSpHelp": "{0} - change estimation units to story points",
+  "Appraiser_MoveToTShirtsHelp": "{0} - change estimation units to t-shirts",
   
   "GUI_Tools": "Tools",
   "GUI_Feedback": "Feedback",
@@ -103,5 +105,6 @@
   "Connector_BotNotFound": "Bot {0} was not found.",
   "Connector_TeamNotFound": "Team {0} was not found.",
   "Connector_TeamForUserNotFound": "Team for user {0} was not found.",
-  "Connector_PersonNotFound": "Person {0} was not found."
+  "Connector_PersonNotFound": "Person {0} was not found.",
+  "Connector_ChangedPropertySuccess": "Changed property for team \"{0}\""
 }

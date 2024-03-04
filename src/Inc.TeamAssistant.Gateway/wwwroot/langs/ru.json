@@ -7,6 +7,8 @@
   "Appraiser_TotalEstimate": "Среднее значение: {0}",
   "Appraiser_StoryTitleIsEmpty": "Необходимо указать название задачи",
   "Appraiser_StoryNotFound": "История {0} не найдена.",
+  "Appraiser_MoveToSpHelp": "{0} - изменить единицы оценки на баллы истории",
+  "Appraiser_MoveToTShirtsHelp": "{0} - изменить единицы оценки на футболки",
   
   "GUI_Tools": "Инструменты",
   "GUI_Feedback": "Обратная связь",
@@ -103,5 +105,6 @@
   "Connector_BotNotFound": "Бот {0} не найден.",
   "Connector_TeamNotFound": "Команда {0} не найдена.",
   "Connector_TeamForUserNotFound": "Команда для пользователя {0} не найдена.",
-  "Connector_PersonNotFound": "Пользователь {0} не найден."
+  "Connector_PersonNotFound": "Пользователь {0} не найден.",
+  "Connector_ChangedPropertySuccess": "Изменено свойство для команды \"{0}\""
 }
