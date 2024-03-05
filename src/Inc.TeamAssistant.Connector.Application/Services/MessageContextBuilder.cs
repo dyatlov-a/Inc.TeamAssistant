@@ -94,8 +94,14 @@ internal sealed class MessageContextBuilder
         if (bot is null)
             throw new ArgumentNullException(nameof(bot));
         
-        return bot.Teams
+        var memberOfChats = bot.Teams
             .Where(t => t.Teammates.Any(tm => tm.Id == personId) || t.ChatId == chatId)
+            .Select(t => t.ChatId)
+            .Distinct()
+            .ToArray();
+        
+        return bot.Teams
+            .Where(t => memberOfChats.Contains(t.ChatId))
             .Select(t => new TeamContext(
                 t.Id,
                 t.ChatId,
