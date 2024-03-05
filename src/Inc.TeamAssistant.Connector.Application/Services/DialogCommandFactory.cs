@@ -22,6 +22,7 @@ internal sealed class DialogCommandFactory
         string botCommand,
         CommandStage? currentStage,
         BotCommandStage stage,
+        BotCommandStage? nextStage,
         MessageContext messageContext)
     {
         if (bot is null)
@@ -40,6 +41,7 @@ internal sealed class DialogCommandFactory
             ("/cancel", _, _, _) => null,
             ("/new_team", null, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
+            // TODO: fix select team for leave_team command
             ("/leave_team", null, 1, _)
                 => new LeaveFromTeamCommand(messageContext, messageContext.Teams[0].Id),
             ("/leave_team", null, > 1, _)
@@ -55,7 +57,7 @@ internal sealed class DialogCommandFactory
             ("/need_review", null, 0, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
             ("/need_review", null, 1, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, stage.DialogMessageId),
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             ("/need_review", null, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: true),
             ("/need_review", CommandStage.SelectTeam, _, true)
@@ -63,7 +65,7 @@ internal sealed class DialogCommandFactory
             ("/add", null, 0, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
             ("/add", null, 1, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, stage.DialogMessageId),
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             ("/add", null, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, allTeams: true),
             ("/add", CommandStage.SelectTeam, _, true)

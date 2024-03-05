@@ -58,7 +58,7 @@ public sealed class Story
 		return StoryType switch
 		{
 			StoryType.Scrum => GetScrumTotal()?.ToString(".## SP") ?? unknownValue,
-			StoryType.Kanban => GetKanbanTotal().ToString(),
+			StoryType.Kanban => GetKanbanTotal()?.ToString().ToUpperInvariant() ?? unknownValue,
 			_ => unknownValue
 		};
 	}
@@ -134,13 +134,16 @@ public sealed class Story
 		return result;
 	}
 
-	private AssessmentValue.Value GetKanbanTotal()
+	private AssessmentValue.Value? GetKanbanTotal()
 	{
 		var values = _storyForEstimates
 			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
 			.OrderBy(i => i.Value)
 			.Select(i => i.Value)
 			.ToArray();
+
+		if (!values.Any())
+			return null;
 
 		var index = values.Length / 2;
 		return values[index];

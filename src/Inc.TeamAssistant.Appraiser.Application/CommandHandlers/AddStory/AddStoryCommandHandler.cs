@@ -5,6 +5,7 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory;
 
@@ -28,11 +29,15 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
     {
         if (command is null)
             throw new ArgumentNullException(nameof(command));
+        
+        var targetTeam = command.MessageContext.FindTeam(command.TeamId);
+        if (targetTeam is null)
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         var story = new Story(
             command.TeamId,
             Enum.Parse<StoryType>(command.StoryType),
-            command.MessageContext.ChatId,
+            targetTeam.ChatId,
             command.MessageContext.PersonId,
             command.MessageContext.LanguageId,
             command.Title);

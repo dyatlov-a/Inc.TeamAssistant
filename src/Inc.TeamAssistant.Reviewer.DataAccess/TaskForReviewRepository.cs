@@ -125,7 +125,7 @@ ON CONFLICT (id) DO UPDATE SET
                 next_notification = @next_notification
             WHERE reviewer_id = @from_person_id AND team_id = @team_id AND state != @is_archived;
 
-            DELETE FROM review.players
+            DELETE FROM connector.teammates
             WHERE person_id = @from_person_id AND team_id = @team_id;",
             new
             {

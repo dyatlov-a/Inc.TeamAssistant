@@ -11,7 +11,7 @@ public static class AssessmentValueExtensions
 			AssessmentValue.Value.None => "?",
 			AssessmentValue.Value.NoIdea => "?",
 			AssessmentValue.Value.More => "21+",
-			_ => storyType == StoryType.Scrum ? ((int)value).ToString() : value.ToString()
+			_ => storyType == StoryType.Scrum ? ((int)value).ToString() : value.ToString().ToUpperInvariant()
 		};
 	}
 

@@ -31,10 +31,13 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (command is null)
             throw new ArgumentNullException(nameof(command));
         
-        var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
         var targetTeam = command.MessageContext.FindTeam(command.TeamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
+        
+        var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
+        if (!teammates.Any())
+            throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
         
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
         var taskForReview = new TaskForReview(

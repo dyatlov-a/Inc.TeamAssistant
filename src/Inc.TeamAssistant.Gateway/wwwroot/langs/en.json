@@ -1,6 +1,6 @@
 {
   "Appraiser_AddHelp": "{0} - add a story/task for estimate.",
-  "Appraiser_MissingTaskForEvaluate": "There is no tasks for estimation. Wait for starting estimation process.",
+  "Appraiser_MissingTaskForEvaluate": "Wait for the measurement process to start with your participation.",
   "Appraiser_EnterStoryName": "Reply this message with task name for enstimation.",
   "Appraiser_EndEstimate": "Estimation of task \"{0}\" has been completed.",
   "Appraiser_NeedEstimate": "Necessary to estimate task \"{0}\".",
@@ -93,6 +93,7 @@
   "Reviewer_MoveToDecline": "Decline",
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_OperationApplied": "Operation completed",
+  "Reviewer_TeamWithoutUsers": "Team has no members",
   
   "Connector_EnterTeamName": "Reply to this message with team name",
   "Connector_SelectTeam": "Select the team:",

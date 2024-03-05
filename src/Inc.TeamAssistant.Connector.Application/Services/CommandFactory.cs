@@ -35,22 +35,28 @@ internal sealed class CommandFactory
             throw new ArgumentNullException(nameof(messageContext));
 
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
-        var cmd = dialogState is not null ? dialogState.Command : messageContext.Text;
+        var cmd = !messageContext.IsCancel() && dialogState is not null ? dialogState.Command : messageContext.Text;
         var botCommand = bot.FindCommand(cmd);
         
         if (botCommand?.Stages.Any() == true)
         {
-            var firstStage = botCommand.Stages.First();
-            
-            foreach (var stage in botCommand.Stages)
+            var stages = botCommand.Stages.ToArray();
+            var firstStage = stages.First();
+
+            for (var index = 0; index < stages.Length; index++)
             {
-                if ((dialogState is null && firstStage.Id == stage.Id) || dialogState?.CommandState == stage.Value)
+                var currentStage = stages[index];
+                var nextIndex = index + 1;
+                var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
+                
+                if ((dialogState is null && firstStage.Id == currentStage.Id) || dialogState?.CommandState == currentStage.Value)
                 {
                     var command = await _dialogCommandFactory.TryCreate(
                         bot,
                         botCommand.Value,
                         dialogState?.CommandState,
-                        stage,
+                        currentStage,
+                        nextStage,
                         messageContext);
 
                     if (command is not null)

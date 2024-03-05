@@ -35,7 +35,7 @@ internal sealed class MessageContextBuilder
         if (user is null)
             return null;
 
-        var text = ExtractText(update.Message?.Text, update.CallbackQuery?.Data, update.Message?.Location);
+        var text = ExtractText(bot.Name, update.Message?.Text, update.CallbackQuery?.Data, update.Message?.Location);
         if (string.IsNullOrWhiteSpace(text))
             return null;
 
@@ -75,15 +75,18 @@ internal sealed class MessageContextBuilder
             location is not null ? new (location.Longitude, location.Latitude) : null);
     }
     
-    private string ExtractText(string? text, string? data, Location? location)
+    private string ExtractText(string botName, string? text, string? data, Location? location)
     {
+        if (string.IsNullOrWhiteSpace(botName))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botName));
+        
         return string.IsNullOrWhiteSpace(text)
             ? string.IsNullOrWhiteSpace(data)
                 ? location is not null
                     ? "/location"
                     : string.Empty
                 : data
-            : text;
+            : text.Replace($"@{botName} ", string.Empty);
     }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)

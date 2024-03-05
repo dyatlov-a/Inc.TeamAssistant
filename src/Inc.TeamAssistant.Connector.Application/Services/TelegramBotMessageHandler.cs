@@ -190,7 +190,7 @@ internal sealed class TelegramBotMessageHandler
     
     private static InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
     {
-        const int rowCapacity = 7;
+        const int rowCapacity = 5;
 		
         return message.Buttons.Any()
             ? new InlineKeyboardMarkup(message.Buttons

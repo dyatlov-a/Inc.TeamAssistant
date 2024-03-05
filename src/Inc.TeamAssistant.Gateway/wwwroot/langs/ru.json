@@ -1,6 +1,6 @@
 {
   "Appraiser_AddHelp": "{0} - добавить историю/задачу для оценки.",
-  "Appraiser_MissingTaskForEvaluate": "Отсутствует задача для оценки. Дождитесь запуска процесса оценки.",
+  "Appraiser_MissingTaskForEvaluate": "Дождитесь запуска процесса оценки с вашим участием.",
   "Appraiser_EnterStoryName": "В ответ на это сообщение введите наименование задачи для оценки.",
   "Appraiser_EndEstimate": "Завершена оценка задачи «{0}».",
   "Appraiser_NeedEstimate": "Необходимо оценить задачу «{0}».",
@@ -93,6 +93,7 @@
   "Reviewer_MoveToDecline": "Отклонить",
   "Reviewer_MoveToNextRound": "Попробовать снова",
   "Reviewer_OperationApplied": "Операция применена",
+  "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

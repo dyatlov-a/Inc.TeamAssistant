@@ -25,14 +25,20 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         var targetTeam = messageContext.FindTeam(teamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
-        
-        var nextReviewer = teammates.Where(t => t.PersonId != messageContext.PersonId).MinBy(t => t.PersonId);
 
-        await _taskForReviewRepository.RetargetAndLeave(
-            teamId,
-            messageContext.PersonId,
-            nextReviewer.PersonId,
-            DateTimeOffset.UtcNow,
-            token);
+        // TODO: Accept task for leave last person
+        var otherTeammates = teammates.Where(t => t.PersonId != messageContext.PersonId).ToArray();
+
+        if (otherTeammates.Any())
+        {
+            var nextReviewer = otherTeammates.MinBy(t => t.PersonId);
+
+            await _taskForReviewRepository.RetargetAndLeave(
+                teamId,
+                messageContext.PersonId,
+                nextReviewer.PersonId,
+                DateTimeOffset.UtcNow,
+                token);
+        }
     }
 }
