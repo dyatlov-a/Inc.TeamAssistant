@@ -1,0 +1,60 @@
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
+using MediatR;
+
+namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline;
+
+internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclineCommand, CommandResult>
+{
+    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly ITranslateProvider _translateProvider;
+
+    public MoveToDeclineCommandHandler(
+        ITaskForReviewRepository taskForReviewRepository,
+        IMessageBuilderService messageBuilderService,
+        ITranslateProvider translateProvider)
+    {
+        _taskForReviewRepository =
+            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _messageBuilderService =
+            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+    }
+
+    public async Task<CommandResult> Handle(MoveToDeclineCommand command, CancellationToken token)
+    {
+        if (command is null)
+            throw new ArgumentNullException(nameof(command));
+
+        var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
+        if (!taskForReview.CanDecline())
+            return CommandResult.Empty;
+
+        taskForReview.Decline();
+
+        var notifications = new List<NotificationMessage>();
+
+        if (taskForReview.MessageId.HasValue)
+        {
+            var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
+                command.MessageContext.LanguageId,
+                taskForReview,
+                token);
+            notifications.Add(NotificationMessage.Edit(
+                new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
+                taskForReviewMessage));
+        }
+
+        var operationAppliedMessage = await _translateProvider.Get(
+            Messages.Reviewer_OperationApplied,
+            command.MessageContext.LanguageId,
+            token);
+        notifications.Add(NotificationMessage.Create(taskForReview.ReviewerId, operationAppliedMessage));
+
+        await _taskForReviewRepository.Upsert(taskForReview, token);
+        
+        return CommandResult.Build(notifications.ToArray());
+    }
+}

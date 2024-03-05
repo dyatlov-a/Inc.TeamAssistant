@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Migrations\Inc.TeamAssistant.Migrations.csproj" />
+    </ItemGroup>
+</Project>

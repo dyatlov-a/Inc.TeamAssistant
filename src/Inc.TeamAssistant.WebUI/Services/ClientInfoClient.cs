@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -17,14 +17,14 @@ internal sealed class ClientInfoClient : IClientInfoService
     }
 
     public async Task<LanguageId> GetCurrentLanguageId()
-        => GetLanguageIdFromUrlOrDefault() ?? await GetLanguageIdFromClientOrDefault() ?? Settings.DefaultLanguageId;
+        => GetLanguageIdFromUrlOrDefault() ?? await GetLanguageIdFromClientOrDefault() ?? LanguageSettings.DefaultLanguageId;
 
     public LanguageId? GetLanguageIdFromUrlOrDefault()
     {
         var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
 
-        return !string.IsNullOrWhiteSpace(relativeUrl) && relativeUrl.Length >= Settings.LanguageCodeLength
-            ? Settings.LanguageIds.SingleOrDefault(l => relativeUrl.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
+        return !string.IsNullOrWhiteSpace(relativeUrl) && relativeUrl.Length >= LanguageSettings.LanguageCodeLength
+            ? LanguageSettings.LanguageIds.SingleOrDefault(l => relativeUrl.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
             : null;
     }
 
@@ -32,8 +32,8 @@ internal sealed class ClientInfoClient : IClientInfoService
     {
         var clientLanguage = await _jsRuntime.InvokeAsync<string?>("browserJsFunctions.getLanguage");
 
-        return !string.IsNullOrWhiteSpace(clientLanguage) && clientLanguage.Length >= Settings.LanguageCodeLength
-            ? Settings.LanguageIds.SingleOrDefault(l => clientLanguage.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
+        return !string.IsNullOrWhiteSpace(clientLanguage) && clientLanguage.Length >= LanguageSettings.LanguageCodeLength
+            ? LanguageSettings.LanguageIds.SingleOrDefault(l => clientLanguage.StartsWith(l.Value, StringComparison.InvariantCultureIgnoreCase))
             : null;
     }
 }

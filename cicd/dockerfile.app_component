@@ -19,7 +19,7 @@ RUN mkdir -p ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Appraiser.Backend ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Gateway ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
@@ -29,4 +29,4 @@ RUN rm -f *.sh *.crt \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Appraiser.Backend.dll"]
+ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Gateway.dll"]

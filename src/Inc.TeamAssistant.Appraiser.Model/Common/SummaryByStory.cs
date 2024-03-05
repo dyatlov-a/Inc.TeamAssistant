@@ -1,14 +1,16 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
 public sealed record SummaryByStory(
-	AssessmentSessionId AssessmentSessionId,
-	LanguageId AssessmentSessionLanguageId,
+	Guid TeamId,
+	LanguageId LanguageId,
 	long ChatId,
+	Guid StoryId,
 	int? StoryExternalId,
 	string StoryTitle,
 	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
     string Total,
-    IReadOnlyCollection<EstimateItemDetails> Items);
+    IReadOnlyCollection<EstimateItemDetails> Items,
+	IReadOnlyCollection<string> Assessments);

@@ -8,7 +8,7 @@
     <div class="feedback__form">
         <input type="text" @bind="_subject" class="feedback__subject" placeholder="@_annotation.FeedbackSubject" />
         <textarea @bind="_value" class="feedback__value" placeholder="@_annotation.FeedbackQuestion"></textarea>
-        <a href="mailto:@(Settings.FeedbackTo)?body=@(_value)&subject=@(_subject)" class="button button_white">@_annotation.FeedbackSend</a>
+        <a href="mailto:@(UserSettings.FeedbackTo)?body=@(_value)&subject=@(_subject)" class="button button_white">@_annotation.FeedbackSend</a>
     </div>
 </div>
 

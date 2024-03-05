@@ -1,8 +1,7 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 
-public sealed record AcceptEstimateCommand(ParticipantId ModeratorId, string ModeratorName)
-    : IRequest<AcceptEstimateResult>, IWithModerator;
+public sealed record AcceptEstimateCommand(MessageContext MessageContext, Guid StoryId)
+    : IRequest<CommandResult>;

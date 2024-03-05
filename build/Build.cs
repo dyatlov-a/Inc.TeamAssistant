@@ -41,8 +41,8 @@ public sealed class Build : NukeBuild
     private AbsolutePath TestsDirectory => RootDirectory / "tests";
     private AbsolutePath TestReportsDirectory => OutputDirectory / "test-reports";
 
-    private readonly string _migrationRunnerProject = "Inc.TeamAssistant.Appraiser.MigrationsRunner";
-    private readonly IEnumerable<string> _appProjects = new[] { "Inc.TeamAssistant.Appraiser.Backend" };
+    private readonly string _migrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
+    private readonly IEnumerable<string> _appProjects = new[] { "Inc.TeamAssistant.Gateway" };
 
     private IEnumerable<string> ProjectsForPublish => _appProjects.Concat(_migrationRunnerProject);
 
@@ -122,14 +122,14 @@ public sealed class Build : NukeBuild
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.app_component")
-                .SetTag(GetImageName("inc.teamassistant.appraiser")));
+                .SetTag(GetImageName("inc.teamassistant.gateway")));
 
             DockerBuild(x => x
                 .DisableProcessLogOutput()
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.migrations_runner")
-                .SetTag(GetImageName("inc.teamassistant.appraiser.migrationsrunner")));
+                .SetTag(GetImageName("inc.teamassistant.migrationsrunner")));
         });
 
     Target PushImages => _ => _
@@ -142,10 +142,10 @@ public sealed class Build : NukeBuild
                 .DisableProcessLogOutput());
 
             DockerPush(s => s
-                .SetName(GetImageName("inc.teamassistant.appraiser"))
+                .SetName(GetImageName("inc.teamassistant.gateway"))
                 .DisableProcessLogOutput());
             DockerPush(s => s
-                .SetName(GetImageName("inc.teamassistant.appraiser.migrationsrunner"))
+                .SetName(GetImageName("inc.teamassistant.migrationsrunner"))
                 .DisableProcessLogOutput());
         });
 
@@ -154,8 +154,8 @@ public sealed class Build : NukeBuild
         .Executes(() =>
         {
             var appDirectory = "/home/inc_teamassistant_appraiser/prod";
-            var appraiserImage = GetImageName("inc.teamassistant.appraiser");
-            var migrationsRunnerImage = GetImageName("inc.teamassistant.appraiser.migrationsrunner");
+            var appraiserImage = GetImageName("inc.teamassistant.gateway");
+            var migrationsRunnerImage = GetImageName("inc.teamassistant.migrationsrunner");
 
             using var client = new SshClient(ServerName, ServerUsername, ServerPassword);
 

@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -21,7 +21,7 @@ internal sealed class LanguageManager
 
         return resources.Result.TryGetValue(currentLanguage.Value, out var result)
             ? result
-            : resources.Result[Settings.DefaultLanguageId.Value];
+            : resources.Result[LanguageSettings.DefaultLanguageId.Value];
     }
 
     public Func<string?, string> CreateLinkBuilder()

@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -35,7 +36,7 @@ internal sealed class MessageProviderClientCached : IMessageProvider
             if (response.State == ServiceResultState.Success)
                 await _localStorage.SetItemAsync(key, response.Result);
             else
-                throw new ApplicationException("Can't load resources.");
+                throw new TeamAssistantException("Can't load resources.");
         }
 
         var data = await _localStorage.GetItemAsync<Dictionary<string, Dictionary<string, string>>>(key);

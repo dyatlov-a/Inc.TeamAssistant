@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
@@ -6,7 +6,7 @@ public interface ILinkBuilder
 {
     string BuildLinkMoveToBot();
 
-    string BuildLinkForConnect(AssessmentSessionId assessmentSessionId);
+    string BuildLinkForConnect(Guid teamId);
 
-    string BuildLinkForDashboard(AssessmentSessionId assessmentSessionId, LanguageId assessmentSessionLanguageId);
+    string BuildLinkForDashboard(Guid teamId, LanguageId languageId);
 }

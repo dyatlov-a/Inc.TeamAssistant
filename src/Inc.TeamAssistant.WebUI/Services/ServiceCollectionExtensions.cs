@@ -2,7 +2,7 @@ using System.Reflection;
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.WebUI.Services.CheckIn;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Appraiser.Model.CheckIn;
+using Inc.TeamAssistant.CheckIn.Model;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         services
             .AddBlazoredLocalStorage()
 
-            .AddScoped<IAssessmentSessionsService, AssessmentSessionsClient>()
+            .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<IClientInfoService, ClientInfoClient>()
             .AddSingleton<IEventsProvider, EventsProviderClient>()
             .AddSingleton<ICookieService, CookieServiceClient>()

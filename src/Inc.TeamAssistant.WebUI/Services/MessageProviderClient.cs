@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -21,7 +22,7 @@ internal sealed class MessageProviderClient : IMessageProvider
                 .GetFromJsonAsync<ServiceResult<Dictionary<string, Dictionary<string, string>>>>("resources");
 
             if (result is null)
-                throw new ApplicationException("Parse response with error.");
+                throw new TeamAssistantException("Parse response with error.");
 
             return result;
         }

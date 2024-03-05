@@ -2,5 +2,5 @@ namespace Inc.TeamAssistant.Appraiser.Model;
 
 public interface IEventsProvider : IAsyncDisposable
 {
-    Task OnStoryChanged(Guid assessmentSessionId, Func<Task> changed);
+    Task OnStoryChanged(Guid teamId, Func<Task> changed);
 }

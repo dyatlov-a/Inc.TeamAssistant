@@ -1,8 +1,7 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Primitives;
+using Inc.TeamAssistant.Primitives;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 
-public sealed record ReVoteEstimateCommand(ParticipantId ModeratorId, string ModeratorName)
-    : IRequest<ReVoteEstimateResult>, IWithModerator;
+public sealed record ReVoteEstimateCommand(MessageContext MessageContext, Guid StoryId)
+    : IRequest<CommandResult>;

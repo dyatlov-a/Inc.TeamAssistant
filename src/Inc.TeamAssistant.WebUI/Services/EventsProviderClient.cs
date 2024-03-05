@@ -19,7 +19,7 @@ internal sealed class EventsProviderClient : IEventsProvider
             .Build();
 	}
 
-	public async Task OnStoryChanged(Guid assessmentSessionId, Func<Task> changed)
+	public async Task OnStoryChanged(Guid teamId, Func<Task> changed)
 	{
 		if (changed is null)
 			throw new ArgumentNullException(nameof(changed));
@@ -27,7 +27,7 @@ internal sealed class EventsProviderClient : IEventsProvider
         _hubConnection.On("StoryChanged", changed);
 
         await _hubConnection.StartAsync();
-        await _hubConnection.InvokeAsync("JoinToGroup", assessmentSessionId);
+        await _hubConnection.InvokeAsync("JoinToGroup", teamId);
     }
 
     public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();

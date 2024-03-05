@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <ItemGroup>
+      <Content Update="appsettings.*.json">
+        <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.11" />
+      <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.3" />
+      <PackageReference Include="prometheus-net.AspNetCore" Version="8.0.1" />
+      <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.0.1" />
+      <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.0" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
+    </ItemGroup>
+</Project>

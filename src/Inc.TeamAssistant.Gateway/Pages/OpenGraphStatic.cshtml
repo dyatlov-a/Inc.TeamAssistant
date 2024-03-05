@@ -1,0 +1,19 @@
+@model Inc.TeamAssistant.Gateway.Pages.Models.OpenGraphStaticViewModel
+
+<meta property="og:locale" content="@Model.GetLocale()">
+<meta property="og:title" content="@Html.Raw(Model.Title)">
+<meta property="og:description" content="@Html.Raw(Model.Description)">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://team-assistant.online">
+<meta property="og:site_name" content="team-assistant.online">
+<meta property="og:image" content="https://team-assistant.online/og/@(Model.ImageName)_@(Model.LanguageId.Value).png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="team-assistant.online">
+<meta name="twitter:title" content="@Html.Raw(Model.Title)">
+<meta name="twitter:description" content="@Html.Raw(Model.Description)">
+<meta name="twitter:image" content="https://team-assistant.online/og/@(Model.ImageName)_@(Model.LanguageId.Value).png">
+
+<meta property="vk:image" content="https://team-assistant.online/og/@(Model.ImageName)_@(Model.LanguageId.Value).png">
