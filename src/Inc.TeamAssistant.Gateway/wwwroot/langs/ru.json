@@ -98,7 +98,7 @@
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",
   "Connector_JoinToTeam": "Для подключения к команде «{0}» пройдите по ссылке {1} и нажмите Start.",
-  "Connector_JoinToTeamSuccess": "Вы успешно подключидись к команде «{0}».",
+  "Connector_JoinToTeamSuccess": "Вы успешно подключились к команде «{0}».",
   "Connector_NewTeamHelp": "{0} - создать новую команду.",
   "Connector_LeaveFromTeamHelp": "{0} - покинуть команду.",
   "Connector_LeaveTeamSuccess": "{0} покинул команду «{1}».",

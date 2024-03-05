@@ -98,7 +98,7 @@
   "Connector_EnterTeamName": "Reply to this message with team name",
   "Connector_SelectTeam": "Select the team:",
   "Connector_JoinToTeam": "Open the link {1}, then press START to connect team \"{0}\"",
-  "Connector_JoinToTeamSuccess": "You have successfully joined the team \"{0}\".",
+  "Connector_JoinToTeamSuccess": "You have successfully joined to the team \"{0}\".",
   "Connector_NewTeamHelp": "{0} - create a new team.",
   "Connector_LeaveFromTeamHelp": "{0} - leave from the team.",
   "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\".",

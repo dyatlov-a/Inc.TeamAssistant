@@ -1,7 +1,7 @@
 INSERT INTO connector.bots(id, name, token)
 VALUES
     ('2c9e14e0-63be-4381-aca0-a0e848cd34bc', 'inc_teamassistant_appraiser_bot', '[hidden]'),
-    ('f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', 'inc_teamassistant_reviewer_bot', '[hidden]'),
+    ('e5b2d82b-3912-4d94-acb8-c6e603622a95', 'inc_teamassistant_reviewer_bot', '[hidden]'),
     ('29160ded-0e79-4bce-9856-52eb39657e8d', 'inc_teamassistant_checkin_bot', '[hidden]')
 ON CONFLICT (id) DO UPDATE SET
     name = excluded.name,
@@ -22,17 +22,17 @@ VALUES
     ('d753d196-0c01-46ac-83d1-65fdd5d40318', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/move_to_sp', 'Appraiser_MoveToSpHelp'),
     ('a49e0652-9237-455e-afac-d6119fe10fde', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/move_to_tshirts', 'Appraiser_MoveToTShirtsHelp'),
 
-    ('2cf2974a-1fb8-47c7-869e-fda802924ad4', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/new_team', 'Connector_NewTeamHelp'),
-    ('c670b665-1dde-438a-97dc-7e2873f2cbbd', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/start', null),
-    ('3a8e95ba-0b62-4bd1-b59a-261bdbc14532', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/leave_team', 'Connector_LeaveFromTeamHelp'),
-    ('f2d2cb41-f07f-4b52-b5d1-8e3981bdf159', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/cancel', 'Connector_CancelHelp'),
-    ('7c7a447e-af64-4a0e-b9d2-513ea76a447d', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/help', null),
+    ('2cf2974a-1fb8-47c7-869e-fda802924ad4', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/new_team', 'Connector_NewTeamHelp'),
+    ('c670b665-1dde-438a-97dc-7e2873f2cbbd', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/start', null),
+    ('3a8e95ba-0b62-4bd1-b59a-261bdbc14532', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/leave_team', 'Connector_LeaveFromTeamHelp'),
+    ('f2d2cb41-f07f-4b52-b5d1-8e3981bdf159', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/cancel', 'Connector_CancelHelp'),
+    ('7c7a447e-af64-4a0e-b9d2-513ea76a447d', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/help', null),
 
-    ('57e1da3c-a65d-4172-b377-00d8543f55c3', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/need_review', 'Reviewer_MoveToReviewHelp'),
-    ('4b8af862-51a9-42ab-9478-99ec92ceeb47', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/in_progress', null),
-    ('b009ca75-a7b5-4159-8664-81caa30f5819', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/approve', null),
-    ('f3a22d65-2f86-4cc1-8945-7c6a36addc6f', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/decline', null),
-    ('1c3bfc0c-846a-470b-8433-8ca599441164', 'f9d62653-afe9-42dd-b148-3d4f4f2bc1e4', '/next_round', null),
+    ('57e1da3c-a65d-4172-b377-00d8543f55c3', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/need_review', 'Reviewer_MoveToReviewHelp'),
+    ('4b8af862-51a9-42ab-9478-99ec92ceeb47', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/in_progress', null),
+    ('b009ca75-a7b5-4159-8664-81caa30f5819', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/approve', null),
+    ('f3a22d65-2f86-4cc1-8945-7c6a36addc6f', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/decline', null),
+    ('1c3bfc0c-846a-470b-8433-8ca599441164', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/next_round', null),
 
     ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', null)
 ON CONFLICT (id) DO UPDATE SET
