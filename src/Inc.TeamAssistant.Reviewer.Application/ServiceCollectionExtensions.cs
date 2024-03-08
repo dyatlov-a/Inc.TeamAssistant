@@ -20,25 +20,21 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(options));
 
         services
+            .AddSingleton(options)
+            .AddScoped<IMessageBuilderService, MessageBuilderService>()
+            .AddHostedService(sp => ActivatorUtilities.CreateInstance<NotificationsService>(
+                sp,
+                options.Workday,
+                options.NotificationsBatch,
+                options.NotificationsDelay))
+            
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
 
-            .AddSingleton<ILeaveTeamHandler, LeaveTeamHandler>()
-
-            .AddSingleton(options)
-            .AddScoped<IMessageBuilderService, MessageBuilderService>();
-
-        if (!string.IsNullOrWhiteSpace(options.AccessToken))
-            services.AddHostedService(
-                sp => ActivatorUtilities.CreateInstance<NotificationsService>(
-                    sp,
-                    options.AccessToken,
-                    options.Workday,
-                    options.NotificationsBatch,
-                    options.NotificationsDelay));
+            .AddSingleton<ILeaveTeamHandler, LeaveTeamHandler>();
 
         return services;
     }

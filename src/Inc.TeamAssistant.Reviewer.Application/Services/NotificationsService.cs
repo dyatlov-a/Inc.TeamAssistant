@@ -5,19 +5,24 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Telegram.Bot;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class NotificationsService : BackgroundService
 {
+    private static readonly IReadOnlyCollection<(MessageId MessageId, string Command)> ReviewerCommands = new[]
+    {
+        (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress),
+        (Messages.Reviewer_MoveToAccept, CommandList.Accept),
+        (Messages.Reviewer_MoveToDecline, CommandList.Decline)
+    };
+    
     private readonly ITaskForReviewAccessor _accessor;
     private readonly IHolidayService _holidayService;
     private readonly IServiceProvider _serviceProvider;
     private readonly ITeamAccessor _teamAccessor;
+    private readonly INotificationMessageSender _notificationMessageSender;
     private readonly WorkdayOptions _options;
-    private readonly TelegramBotClient _client;
     private readonly int _notificationsBatch;
     private readonly TimeSpan _notificationsDelay;
 
@@ -26,20 +31,18 @@ internal sealed class NotificationsService : BackgroundService
         IHolidayService holidayService,
         IServiceProvider serviceProvider,
         ITeamAccessor teamAccessor,
+        INotificationMessageSender notificationMessageSender,
         WorkdayOptions options,
-        string accessToken,
         int notificationsBatch,
         TimeSpan notificationsDelay)
     {
-        if (string.IsNullOrWhiteSpace(accessToken))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(accessToken));
-        
         _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
         _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _client = new(accessToken);
+        _notificationMessageSender =
+            notificationMessageSender ?? throw new ArgumentNullException(nameof(notificationMessageSender));
         _notificationsBatch = notificationsBatch;
         _notificationsDelay = notificationsDelay;
     }
@@ -71,11 +74,7 @@ internal sealed class NotificationsService : BackgroundService
                         _ => throw new ArgumentOutOfRangeException($"Value {task.State} OutOfRange for {nameof(TaskForReviewState)}")
                     };
 
-                    await _client.SendTextMessageAsync(
-                        new(message.UserId),
-                        message.Text,
-                        replyMarkup: message.ReplyMarkup,
-                        cancellationToken: token);
+                    await _notificationMessageSender.Send(task.TeamId, message, token);
                 }
 
                 await _accessor.Update(tasksForNotifications, token);
@@ -85,7 +84,7 @@ internal sealed class NotificationsService : BackgroundService
         }
     }
 
-    private async Task<(long UserId, string Text, IReplyMarkup ReplyMarkup)> CreateNeedReviewMessage(
+    private async Task<NotificationMessage> CreateNeedReviewMessage(
         ITranslateProvider translateProvider,
         TaskForReview task,
         CancellationToken token)
@@ -98,27 +97,21 @@ internal sealed class NotificationsService : BackgroundService
         var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
         if (!reviewer.HasValue)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
-        
-        var buttons = new[]
-        {
-            InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToInProgress, reviewer.Value.LanguageId),
-                CommandList.MoveToInProgress + task.Id.ToString("N")),
-            InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToAccept, reviewer.Value.LanguageId),
-                CommandList.Accept + task.Id.ToString("N")),
-            InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToDecline, reviewer.Value.LanguageId),
-                CommandList.Decline + task.Id.ToString("N"))
-        };
 
-        return (
+        var message = NotificationMessage.Create(
             reviewer.Value.Id,
-            await translateProvider.Get(Messages.Reviewer_NeedReview, reviewer.Value.LanguageId, task.Description),
-            new InlineKeyboardMarkup(buttons));
+            await translateProvider.Get(Messages.Reviewer_NeedReview, reviewer.Value.LanguageId, task.Description));
+
+        foreach (var command in ReviewerCommands)
+        {
+            var text = await translateProvider.Get(command.MessageId, reviewer.Value.LanguageId);
+            message.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
+        }
+
+        return message;
     }
-    
-    private async Task<(long UserId, string Text, IReplyMarkup ReplyMarkup)> CreateMoveToNextRoundMessage(
+
+    private async Task<NotificationMessage> CreateMoveToNextRoundMessage(
         ITranslateProvider translateProvider,
         TaskForReview task,
         CancellationToken token)
@@ -127,22 +120,19 @@ internal sealed class NotificationsService : BackgroundService
             throw new ArgumentNullException(nameof(translateProvider));
         if (task is null)
             throw new ArgumentNullException(nameof(task));
-        
+
         var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
         if (!owner.HasValue)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
-        
-        var buttons = new[]
-        {
-            InlineKeyboardButton.WithCallbackData(
-                await translateProvider.Get(Messages.Reviewer_MoveToNextRound, owner.Value.LanguageId),
-                CommandList.MoveToNextRound + task.Id.ToString("N"))
-        };
 
-        return (
+        var message = NotificationMessage.Create(
             owner.Value.Id,
-            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, owner.Value.LanguageId, task.Description),
-            new InlineKeyboardMarkup(buttons));
+            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, owner.Value.LanguageId, task.Description));
+        message.WithButton(new Button(
+            await translateProvider.Get(Messages.Reviewer_MoveToNextRound, owner.Value.LanguageId),
+            $"{CommandList.MoveToNextRound}{task.Id:N}"));
+
+        return message;
     }
 
     private async Task<bool> IsWorkTime(DateTimeOffset dateTimeOffset, CancellationToken token)

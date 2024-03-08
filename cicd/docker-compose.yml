@@ -19,7 +19,6 @@ services:
     image: dyatlovhome/inc.teamassistant.gateway:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ReviewerOptions__AccessToken=[hidden]
     container_name: gateway
     expose:
       - 8080

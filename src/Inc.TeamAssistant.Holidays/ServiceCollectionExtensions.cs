@@ -9,14 +9,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHolidays(
         this IServiceCollection services,
         string connectionString,
-        HolidayOptions options)
+        TimeSpan cacheAbsoluteExpiration)
     {
         if (services is null)
             throw new ArgumentNullException(nameof(services));
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        if (options is null)
-            throw new ArgumentNullException(nameof(options));
 
         SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
@@ -25,7 +23,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IHolidayReader>(sp => ActivatorUtilities.CreateInstance<HolidayReaderCache>(
                 sp,
                 sp.GetRequiredService<HolidayReader>(),
-                options.CacheTimeout))
+                cacheAbsoluteExpiration))
             .AddSingleton<IHolidayService, HolidayService>();
 
         return services;

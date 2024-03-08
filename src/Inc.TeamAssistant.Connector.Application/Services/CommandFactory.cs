@@ -35,7 +35,9 @@ internal sealed class CommandFactory
             throw new ArgumentNullException(nameof(messageContext));
 
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
-        var cmd = !messageContext.IsCancel() && dialogState is not null ? dialogState.Command : messageContext.Text;
+        var cmd = !CommandList.Cancel.Equals(messageContext.Text, StringComparison.InvariantCultureIgnoreCase) && dialogState is not null
+            ? dialogState.Command
+            : messageContext.Text;
         var botCommand = bot.FindCommand(cmd);
         
         if (botCommand?.Stages.Any() == true)

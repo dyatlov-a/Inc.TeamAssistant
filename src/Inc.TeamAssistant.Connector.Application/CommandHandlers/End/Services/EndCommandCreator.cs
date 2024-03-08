@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 
 internal sealed class EndCommandCreator : ICommandCreator
 {
-    public string Command => "/cancel";
+    public string Command => CommandList.Cancel;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,

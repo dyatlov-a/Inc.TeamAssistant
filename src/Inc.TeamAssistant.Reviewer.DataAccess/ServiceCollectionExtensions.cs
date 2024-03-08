@@ -1,4 +1,3 @@
-using Dapper;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,8 +11,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        SqlMapper.AddTypeHandler(new LanguageIdTypeHandler());
 
         services
             .AddSingleton<ITaskForReviewRepository>(sp => ActivatorUtilities.CreateInstance<TaskForReviewRepository>(

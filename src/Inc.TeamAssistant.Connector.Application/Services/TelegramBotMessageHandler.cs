@@ -10,7 +10,6 @@ using Npgsql;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -156,7 +155,7 @@ internal sealed class TelegramBotMessageHandler
             var message = await client.SendTextMessageAsync(
                 notificationMessage.TargetChatId.Value,
                 notificationMessage.Text,
-                replyMarkup: ToReplyMarkup(notificationMessage),
+                replyMarkup: notificationMessage.ToReplyMarkup(),
                 cancellationToken: token);
 
             if (notificationMessage.Pinned)
@@ -178,7 +177,7 @@ internal sealed class TelegramBotMessageHandler
                 new(notificationMessage.TargetMessage.ChatId),
                 notificationMessage.TargetMessage.MessageId,
                 notificationMessage.Text,
-                replyMarkup: ToReplyMarkup(notificationMessage),
+                replyMarkup: notificationMessage.ToReplyMarkup(),
                 cancellationToken: token);
         
         if (notificationMessage.DeleteMessage is not null)
@@ -186,17 +185,6 @@ internal sealed class TelegramBotMessageHandler
                 (new(notificationMessage.DeleteMessage.ChatId),
                     notificationMessage.DeleteMessage.MessageId,
                     token);
-    }
-    
-    private static InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
-    {
-        const int rowCapacity = 5;
-		
-        return message.Buttons.Any()
-            ? new InlineKeyboardMarkup(message.Buttons
-                .Select(b => InlineKeyboardButton.WithCallbackData(b.Text, b.Data))
-                .Chunk(rowCapacity))
-            : null;
     }
     
     private async Task TrySend(ITelegramBotClient client, long chatId, string message, CancellationToken token)

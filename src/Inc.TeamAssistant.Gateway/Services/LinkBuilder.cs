@@ -1,43 +1,10 @@
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Gateway.Services;
 
 internal sealed class LinkBuilder : ILinkBuilder
 {
-    private readonly string _botLink;
-    private readonly string _linkForConnectTemplate;
-    private readonly string _linkForDashboardTemplate;
+    public string BuildLinkMoveToBot(string botName) => $"https://t.me/{botName}";
 
-    public LinkBuilder(string botLink, string linkForConnectTemplate, string linkForDashboardTemplate)
-    {
-        if (string.IsNullOrWhiteSpace(botLink))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botLink));
-        if (string.IsNullOrWhiteSpace(linkForConnectTemplate))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(linkForConnectTemplate));
-        if (string.IsNullOrWhiteSpace(linkForDashboardTemplate))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(linkForDashboardTemplate));
-
-        _botLink = botLink;
-        _linkForConnectTemplate = linkForConnectTemplate;
-        _linkForDashboardTemplate = linkForDashboardTemplate;
-    }
-
-    public string BuildLinkMoveToBot() => _botLink;
-
-    public string BuildLinkForConnect(Guid teamId)
-    {
-        return string.Format(
-            _linkForConnectTemplate,
-            _botLink,
-            teamId.ToString("N"));
-    }
-
-    public string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
-    {
-        return string.Format(
-            _linkForDashboardTemplate,
-            languageId.Value,
-            teamId.ToString("N"));
-    }
+    public string BuildLinkForConnect(string botName, Guid teamId) => $"{BuildLinkMoveToBot(botName)}?start={teamId:N}";
 }

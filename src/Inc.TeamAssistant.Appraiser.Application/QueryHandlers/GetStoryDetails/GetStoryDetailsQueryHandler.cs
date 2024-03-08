@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStoryDetails;
 
@@ -11,15 +12,18 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 	private readonly IStoryRepository _storyRepository;
     private readonly IQuickResponseCodeGenerator _codeGenerator;
     private readonly ILinkBuilder _linkBuilder;
+    private readonly AppraiserOptions _options;
 
 	public GetStoryDetailsQueryHandler(
 		IStoryRepository storyRepository,
         IQuickResponseCodeGenerator codeGenerator,
-        ILinkBuilder linkBuilder)
+        ILinkBuilder linkBuilder,
+		AppraiserOptions options)
 	{
 		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
         _codeGenerator = codeGenerator ?? throw new ArgumentNullException(nameof(codeGenerator));
         _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
 	public async Task<GetStoryDetailsResult?> Handle(GetStoryDetailsQuery query, CancellationToken token)
@@ -36,7 +40,7 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
         if (story is null)
             throw new ArgumentNullException(nameof(story));
         
-        var link = _linkBuilder.BuildLinkForConnect(story.TeamId);
+        var link = _linkBuilder.BuildLinkForConnect(_options.BotName, story.TeamId);
         var code = _codeGenerator.Generate(link);
 
         var items = story.StoryForEstimates

@@ -12,14 +12,14 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly AddStoryOptions _options;
+    private readonly AppraiserOptions _options;
     
     public string Command => CommandList.AddStory;
 
     public AddStoryCommandCreator(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        AddStoryOptions options)
+        AppraiserOptions options)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));

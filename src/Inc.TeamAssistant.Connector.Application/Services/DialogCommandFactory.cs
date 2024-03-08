@@ -41,37 +41,37 @@ internal sealed class DialogCommandFactory
 
         return (botCommand, currentStage, messageContext.Teams.Count, memberOfTeams.Length, teamSelected) switch
         {
-            ("/cancel", _, _, _, _) => null,
-            ("/new_team", null, _, _, _)
+            (CommandList.Cancel, _, _, _, _) => null,
+            (CommandList.NewTeam, null, _, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
             // TODO: fix select team for leave_team command
-            ("/leave_team", null, _, 1, _)
+            (CommandList.LeaveTeam, null, _, 1, _)
                 => new LeaveFromTeamCommand(messageContext, memberOfTeams[0].Id),
-            ("/leave_team", null, _, > 1, _)
+            (CommandList.LeaveTeam, null, _, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
-            ("/move_to_sp", null, 1, _, _)
+            (CommandList.MoveToSp, null, 1, _, _)
                 => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Scrum"),
-            ("/move_to_sp", null, > 1, _, _)
+            (CommandList.MoveToSp, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            ("/move_to_tshirts", null, 1, _, _)
+            (CommandList.MoveToTShirts, null, 1, _, _)
                 => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Kanban"),
-            ("/move_to_tshirts", null, > 1, _, _)
+            (CommandList.MoveToTShirts, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            ("/need_review", null, 0, _, _)
+            (CommandList.NeedReview, null, 0, _, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
-            ("/need_review", null, 1, _, _)
+            (CommandList.NeedReview, null, 1, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
-            ("/need_review", null, > 1, _, _)
+            (CommandList.NeedReview, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            ("/need_review", CommandStage.SelectTeam, _, _, true)
+            (CommandList.NeedReview, CommandStage.SelectTeam, _, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
-            ("/add", null, 0, _, _)
+            (CommandList.AddStory, null, 0, _, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
-            ("/add", null, 1, _, _)
+            (CommandList.AddStory, null, 1, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
-            ("/add", null, > 1, _, _)
+            (CommandList.AddStory, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            ("/add", CommandStage.SelectTeam, _, _, true)
+            (CommandList.AddStory, CommandStage.SelectTeam, _, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
             _ => null
         };
