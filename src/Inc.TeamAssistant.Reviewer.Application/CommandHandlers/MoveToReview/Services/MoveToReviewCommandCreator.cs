@@ -22,7 +22,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
         return Task.FromResult<IRequest<CommandResult>>(new MoveToReviewCommand(
             messageContext,
             teamContext.TeamId,
-            teamContext.Properties.GetValueOrDefault("strategy", NextReviewerType.RoundRobin.ToString()),
+            teamContext.Properties.GetValueOrDefault("nextReviewerStrategy", NextReviewerType.RoundRobin.ToString()),
             messageContext.Text));
     }
 }

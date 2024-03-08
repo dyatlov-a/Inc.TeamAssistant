@@ -44,7 +44,6 @@ internal sealed class DialogCommandFactory
             (CommandList.Cancel, _, _, _, _) => null,
             (CommandList.NewTeam, null, _, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
-            // TODO: fix select team for leave_team command
             (CommandList.LeaveTeam, null, _, 1, _)
                 => new LeaveFromTeamCommand(messageContext, memberOfTeams[0].Id),
             (CommandList.LeaveTeam, null, _, > 1, _)
@@ -56,6 +55,14 @@ internal sealed class DialogCommandFactory
             (CommandList.MoveToTShirts, null, 1, _, _)
                 => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Kanban"),
             (CommandList.MoveToTShirts, null, > 1, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+            (CommandList.ChangeToRoundRobin, null, 1, _, _)
+                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "nextReviewerStrategy", "RoundRobin"),
+            (CommandList.ChangeToRoundRobin, null, > 1, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+            (CommandList.ChangeToRandom, null, 1, _, _)
+                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "nextReviewerStrategy", "Random"),
+            (CommandList.ChangeToRandom, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.NeedReview, null, 0, _, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),

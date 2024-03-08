@@ -42,7 +42,18 @@ public static class ServiceCollectionExtensions
                 sp,
                 CommandList.MoveToTShirts,
                 "storyType",
-                "Kanban"));
+                "Kanban"))
+            
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                CommandList.ChangeToRoundRobin,
+                "nextReviewerStrategy",
+                "RoundRobin"))
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                CommandList.ChangeToRandom,
+                "nextReviewerStrategy",
+                "Random"));
         
         return services;
     }

@@ -94,6 +94,8 @@
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_OperationApplied": "Operation completed",
   "Reviewer_TeamWithoutUsers": "Team has no members",
+  "Reviewer_ChangeToRoundRobinHelp": "{0} - change the method of selecting a reviewer to sequential enumeration",
+  "Reviewer_ChangeToRandomHelp": "{0} - change the method of selecting a reviewer to random",
   
   "Connector_EnterTeamName": "Reply to this message with team name",
   "Connector_SelectTeam": "Select the team:",

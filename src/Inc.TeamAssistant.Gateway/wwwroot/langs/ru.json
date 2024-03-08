@@ -94,6 +94,8 @@
   "Reviewer_MoveToNextRound": "Попробовать снова",
   "Reviewer_OperationApplied": "Операция применена",
   "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
+  "Reviewer_ChangeToRoundRobinHelp": "{0} - изменить способ выбора ревьювера на последовательный перебор",
+  "Reviewer_ChangeToRandomHelp": "{0} - изменить способ выбора ревьювера на случайный",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

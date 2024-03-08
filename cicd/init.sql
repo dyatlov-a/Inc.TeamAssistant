@@ -33,6 +33,8 @@ VALUES
     ('b009ca75-a7b5-4159-8664-81caa30f5819', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/approve', null),
     ('f3a22d65-2f86-4cc1-8945-7c6a36addc6f', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/decline', null),
     ('1c3bfc0c-846a-470b-8433-8ca599441164', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/next_round', null),
+    ('e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/change_to_round_robin', 'Reviewer_ChangeToRoundRobinHelp'),
+    ('10b888d0-e086-4a51-85d2-6379735682c7', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/change_to_random', 'Reviewer_ChangeToRandomHelp'),
 
     ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', null)
 ON CONFLICT (id) DO UPDATE SET
