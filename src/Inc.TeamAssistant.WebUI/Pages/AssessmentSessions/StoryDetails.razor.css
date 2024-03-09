@@ -1,0 +1,45 @@
+.story__details--full-screen {
+    margin: 0 0 2.5rem 0;
+    min-height: 420px;
+}
+.story__title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    margin: 0 0 .75rem 0;
+    letter-spacing: .0625rem;
+}
+.story__item {
+    line-height: 2rem;
+}
+.story__link {
+    color: #fff;
+}
+.story__link:hover {
+    text-decoration: underline;
+}
+.story__participants {
+    margin: 0 0 2.5rem 0;
+}
+.story__participant {
+    line-height: 2rem;
+}
+.story__value {
+    font-weight: 700;
+}
+.story__summary {
+    font-size: 1.2rem;
+    line-height: 2rem;
+}
+.story__summary--full-screen {
+    text-align: right;
+}
+.story__total-value {
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+@media (max-width: 767.98px) {
+    .story__details {
+        margin: 0 0 1rem 0;
+        min-height: 100px;
+    }
+}

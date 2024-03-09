@@ -69,4 +69,9 @@ internal sealed class Messages
     public static readonly string GUI_ReviewerImageAlt = new(nameof(GUI_ReviewerImageAlt));
     public static readonly string GUI_CheckInDescription = new(nameof(GUI_CheckInDescription));
     public static readonly string GUI_CheckInImageAlt = new(nameof(GUI_CheckInImageAlt));
+
+    public static readonly string GUI_History = new(nameof(GUI_History));
+    public static readonly string GUI_Tasks = new(nameof(GUI_Tasks));
+    public static readonly string GUI_StoryList = new(nameof(GUI_StoryList));
+    public static readonly string GUI_Back = new(nameof(GUI_Back));
 }

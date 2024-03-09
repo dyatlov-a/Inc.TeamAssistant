@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
 
         SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+        SqlMapper.AddTypeHandler(new DateTimeOffsetTypeHandler());
 
         services
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<HolidayReader>(sp, connectionString))

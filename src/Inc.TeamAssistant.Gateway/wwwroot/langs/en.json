@@ -12,7 +12,7 @@
   
   "GUI_Tools": "Tools",
   "GUI_Feedback": "Feedback",
-  "GUI_TaskAssess": "Task \"{0}\" needs to be estimated",
+  "GUI_TaskAssess": "Task assessment",
   "GUI_CardNotSelected": "Task for estimation isn't selected",
   "GUI_AverageRating": "average score",
   "GUI_Scan": "Scan",
@@ -74,6 +74,10 @@
   "GUI_ReviewerImageAlt": "Telegram bot for timely reviews",
   "GUI_CheckInDescription": "Telegram bot to display the team's movements",
   "GUI_CheckInImageAlt": "Telegram bot to display the team's movements",
+  "GUI_History": "History",
+  "GUI_Tasks": "tasks",
+  "GUI_StoryList": "Tasks list",
+  "GUI_Back": "Back",
 
   "CheckIn_GetStarted": "Add the bot to the chat room to get started",
   "CheckIn_OgTitle": "CheckIn",

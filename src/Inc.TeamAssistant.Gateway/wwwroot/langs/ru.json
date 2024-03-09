@@ -12,7 +12,7 @@
   
   "GUI_Tools": "Инструменты",
   "GUI_Feedback": "Обратная связь",
-  "GUI_TaskAssess": "Необходимо оценить задачу «{0}»",
+  "GUI_TaskAssess": "Оценка задач",
   "GUI_CardNotSelected": "Задача для оценки не выбрана",
   "GUI_AverageRating": "средняя оценка",
   "GUI_Scan": "Отсканируй",
@@ -74,6 +74,10 @@
   "GUI_ReviewerImageAlt": "Телеграм бот для своевременного проведения ревью",
   "GUI_CheckInDescription": "Телеграм бот для отображения перемещений команды",
   "GUI_CheckInImageAlt": "Телеграм бот для отображения перемещений команды",
+  "GUI_History": "История",
+  "GUI_Tasks": "задач",
+  "GUI_StoryList": "Список историй",
+  "GUI_Back": "Назад",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_OgTitle": "Перемещения",

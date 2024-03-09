@@ -1,0 +1,19 @@
+.story-card {
+    padding: .3rem;
+    overflow: hidden;
+}
+.story-card__date {
+    float: right;
+}
+.story-card:nth-child(2n-1) {
+    background-color: #9d9d9d;
+}
+.story-card__link {
+    color: #fff;
+}
+.story-card__link:hover {
+    text-decoration: underline;
+}
+.story-card__body {
+    padding-top: 1.5rem;
+}

@@ -9,8 +9,7 @@ internal sealed class DateOnlyTypeHandler : SqlMapper.TypeHandler<DateOnly>
     {
         if (parameter is null)
             throw new ArgumentNullException(nameof(parameter));
-
-        parameter.DbType = DbType.DateTime;
+        
         parameter.Value = value.ToDateTime(new(0, 0));
     }
 

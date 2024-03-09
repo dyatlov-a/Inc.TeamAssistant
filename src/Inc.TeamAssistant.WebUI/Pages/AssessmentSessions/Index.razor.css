@@ -1,0 +1,29 @@
+.assessment-session {
+    padding: 8.5rem 0 2.5rem 0;
+}
+.assessment-session__title {
+    font-size: 1.7rem;
+    line-height: 2rem;
+    margin: 0 0 .75rem 0;
+    letter-spacing: .0625rem;
+}
+.assessment-session__body {
+    display: flex;
+}
+.assessment-session__card {
+    flex: 1 1 auto;
+    padding: 0 2rem 0 0;
+}
+.assessment-session__text {
+	line-height: 1.6rem;
+}
+@media (max-width: 991.98px) {
+    .assessment-session {
+        padding: 6rem 0 1rem 0;
+    }
+}
+@media (max-width: 767.98px) {
+    .assessment-session {
+        padding: 7rem 0 1rem 0;
+    }
+}
