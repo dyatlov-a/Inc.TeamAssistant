@@ -6,7 +6,7 @@ public interface ITeamAccessor
         Guid teamId,
         CancellationToken token);
 
-    Task<(long Id, string PersonDisplayName, LanguageId LanguageId)?> FindPerson(
+    Task<(long Id, string Name, string? Username, string PersonDisplayName, LanguageId LanguageId)?> FindPerson(
         long userId,
         CancellationToken token);
 }

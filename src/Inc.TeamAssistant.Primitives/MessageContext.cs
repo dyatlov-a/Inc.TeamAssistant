@@ -11,7 +11,8 @@ public sealed record MessageContext(
     string FirstName,
     string? Username,
     LanguageId LanguageId,
-    Point? Location)
+    Point? Location,
+    long? TargetPersonId)
 {
     public bool Shared => ChatId != PersonId;
     public string DisplayUsername => string.IsNullOrWhiteSpace(Username) ? FirstName : Username;

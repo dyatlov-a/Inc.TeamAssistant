@@ -38,22 +38,30 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
-        
-        var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
+
         var taskForReview = new TaskForReview(
-                command.TeamId,
-                Enum.Parse<NextReviewerType>(command.Strategy),
-                command.MessageContext.PersonId,
-                targetTeam.ChatId,
-                command.Description)
-            .DetectReviewer(teammates.Select(t => t.PersonId).ToArray(), lastReviewerId);
+            command.TeamId,
+            Enum.Parse<NextReviewerType>(command.Strategy),
+            command.MessageContext.PersonId,
+            targetTeam.ChatId,
+            command.Description);
+
+        if (command.MessageContext.TargetPersonId.HasValue)
+            taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
+        else
+        {
+            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
+            taskForReview.DetectReviewer(teammates.Select(t => t.PersonId).ToArray(), lastReviewerId);
+        }
         
         var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
             command.MessageContext.LanguageId,
             taskForReview,
             token);
         
-        var notification = NotificationMessage.Create(targetTeam.ChatId, taskForReviewMessage);
+        var notification = NotificationMessage
+            .Create(targetTeam.ChatId, taskForReviewMessage.Text)
+            .AttachPerson(taskForReviewMessage.AttachedPersonId);
         notification.AddHandler((c, id) => new AttachMessageCommand(command.MessageContext, taskForReview.Id, id));
         
         await _taskForReviewRepository.Upsert(taskForReview, token);

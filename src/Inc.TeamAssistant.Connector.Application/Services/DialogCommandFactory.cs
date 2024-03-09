@@ -100,7 +100,7 @@ internal sealed class DialogCommandFactory
             messageContext.ChatId,
             await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
-        foreach (var team in teams)
+        foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
         
         return new BeginCommand(

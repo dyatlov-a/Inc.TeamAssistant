@@ -15,6 +15,7 @@ public sealed class NotificationMessage
     public ChatMessage? DeleteMessage { get; }
     public IReadOnlyCollection<Button> Buttons => _buttons;
     public ResponseHandler? Handler { get; private set; }
+    public long? TargetPersonId { get; private set; }
 
     private NotificationMessage(
         long? targetChatId,
@@ -43,6 +44,13 @@ public sealed class NotificationMessage
             throw new ArgumentNullException(nameof(button));
         
         _buttons.Add(button);
+
+        return this;
+    }
+
+    public NotificationMessage AttachPerson(long? targetPersonId)
+    {
+        TargetPersonId = targetPersonId;
 
         return this;
     }

@@ -5,5 +5,8 @@ namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 public interface IMessageBuilderService
 {
-    Task<string> NewTaskForReviewBuild(LanguageId languageId, TaskForReview taskForReview, CancellationToken token);
+    Task<(string Text, long? AttachedPersonId)> NewTaskForReviewBuild(
+        LanguageId languageId,
+        TaskForReview taskForReview,
+        CancellationToken token);
 }

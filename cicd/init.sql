@@ -52,6 +52,8 @@ VALUES
     ('a225f93e-36ba-4bf7-9b7c-9cb82fa84c09', '57e1da3c-a65d-4172-b377-00d8543f55c3', 2, 'Reviewer_EnterRequestForReview', 2),
     ('29a7185b-ceff-4678-9030-17907665bc01', 'd753d196-0c01-46ac-83d1-65fdd5d40318', 1, 'Connector_SelectTeam', 1),
     ('eddcadc0-6805-4366-8c3b-0c5888d40539', 'a49e0652-9237-455e-afac-d6119fe10fde', 1, 'Connector_SelectTeam', 1),
+    ('1c6271aa-8051-4cc4-b3ff-d7b7fabf1020', 'e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', 1, 'Connector_SelectTeam', 1),
+    ('697078dc-94c2-43a3-abd7-762641c1d094', '10b888d0-e086-4a51-85d2-6379735682c7', 1, 'Connector_SelectTeam', 1),
 
     ('62dc2e65-fba8-4ce3-b0a5-cef36f988708', '2cf2974a-1fb8-47c7-869e-fda802924ad4', 1, 'Connector_EnterTeamName', 1),
     ('4258f5bd-8136-4e03-b0e8-e601286523f8', '3a8e95ba-0b62-4bd1-b59a-261bdbc14532', 1, 'Connector_SelectTeam', 1)

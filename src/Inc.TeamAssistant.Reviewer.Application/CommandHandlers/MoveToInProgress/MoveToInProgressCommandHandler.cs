@@ -47,8 +47,9 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
                 taskForReview,
                 token);
             notifications.Add(NotificationMessage.Edit(
-                new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
-                taskForReviewMessage));
+                    new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
+                    taskForReviewMessage.Text)
+                .AttachPerson(taskForReviewMessage.AttachedPersonId));
         }
 
         var operationAppliedMessage = await _translateProvider.Get(

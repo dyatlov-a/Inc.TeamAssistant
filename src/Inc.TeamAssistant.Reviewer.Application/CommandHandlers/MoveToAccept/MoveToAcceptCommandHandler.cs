@@ -43,8 +43,9 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
                 taskForReview,
                 token);
             notifications.Add(NotificationMessage.Edit(
-                new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
-                taskForReviewMessage));
+                    new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
+                    taskForReviewMessage.Text)
+                .AttachPerson(taskForReviewMessage.AttachedPersonId));
         }
 
         var reviewerAcceptedMessage = await _translateProvider.Get(
