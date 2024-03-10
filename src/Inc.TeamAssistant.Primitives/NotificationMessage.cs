@@ -4,17 +4,20 @@ namespace Inc.TeamAssistant.Primitives;
 
 public sealed class NotificationMessage
 {
+    private const int DefaultButtonsInRow = 5;
     private readonly List<Button> _buttons = new();
     
 	public delegate IRequest<CommandResult> ResponseHandler(MessageContext messageContext, int messageId);
-
+    
 	public string Text { get; }
     public bool Pinned { get; }
     public long? TargetChatId { get; }
     public ChatMessage? TargetMessage { get; }
     public ChatMessage? DeleteMessage { get; }
     public IReadOnlyCollection<Button> Buttons => _buttons;
+    public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
+    public long? TargetPersonId { get; private set; }
 
     private NotificationMessage(
         long? targetChatId,
@@ -28,11 +31,19 @@ public sealed class NotificationMessage
         TargetMessage = targetMessage;
         DeleteMessage = deleteMessage;
         Pinned = pinned;
+        ButtonsInRow = DefaultButtonsInRow;
     }
 
     public NotificationMessage AddHandler(ResponseHandler handler)
     {
         Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+
+        return this;
+    }
+
+    public NotificationMessage SetButtonsInRow(int value)
+    {
+        ButtonsInRow = value;
 
         return this;
     }
@@ -43,6 +54,13 @@ public sealed class NotificationMessage
             throw new ArgumentNullException(nameof(button));
         
         _buttons.Add(button);
+
+        return this;
+    }
+
+    public NotificationMessage AttachPerson(long? targetPersonId)
+    {
+        TargetPersonId = targetPersonId;
 
         return this;
     }

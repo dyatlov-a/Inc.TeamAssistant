@@ -17,7 +17,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
-    public async Task<string> NewTaskForReviewBuild(
+    public async Task<(string Text, long? AttachedPersonId)> NewTaskForReviewBuild(
         LanguageId languageId,
         TaskForReview taskForReview,
         CancellationToken token)
@@ -33,13 +33,14 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
         if (!owner.HasValue)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
-        
+
+        var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Value.Username);
         var messageText = await _translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,
             languageId,
             taskForReview.Description,
             owner.Value.PersonDisplayName,
-            reviewer.Value.PersonDisplayName);
+            hasUsername ? $"@{reviewer.Value.Username}" : reviewer.Value.Name);
         var messageBuilder = new StringBuilder();
         var state = taskForReview.State switch
         {
@@ -53,6 +54,6 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         messageBuilder.AppendLine(messageText);
         messageBuilder.AppendLine(state);
 
-        return messageBuilder.ToString();
+        return (messageBuilder.ToString(), hasUsername ? null : reviewer.Value.Id);
     }
 }

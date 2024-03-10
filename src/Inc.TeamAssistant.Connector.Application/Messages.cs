@@ -13,4 +13,5 @@ internal static class Messages
     public static readonly MessageId Connector_TeamForUserNotFound = new(nameof(Connector_TeamForUserNotFound));
     public static readonly MessageId Connector_PersonNotFound = new(nameof(Connector_PersonNotFound));
     public static readonly MessageId Connector_ChangedPropertySuccess = new(nameof(Connector_ChangedPropertySuccess));
+    public static readonly MessageId Connector_HelpText = new(nameof(Connector_HelpText));
 }

@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAppraiserApplication(
         this IServiceCollection services,
-        AddStoryOptions options)
+        AppraiserOptions options)
     {
         if (services is null)
             throw new ArgumentNullException(nameof(services));
@@ -21,6 +21,9 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(options));
 
         services
+            .AddScoped<SummaryByStoryBuilder>()
+            .AddSingleton(options)
+            
             .AddSingleton<ICommandCreator, AcceptEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>();
@@ -32,11 +35,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<ICommandCreator>(
                 sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, command, assessment));
         }
-
-        services
-            .AddScoped<SummaryByStoryBuilder>()
-            .AddSingleton(options);
-
+        
         return services;
     }
 }

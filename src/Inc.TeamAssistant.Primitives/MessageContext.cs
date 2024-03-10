@@ -11,7 +11,8 @@ public sealed record MessageContext(
     string FirstName,
     string? Username,
     LanguageId LanguageId,
-    Point? Location)
+    Point? Location,
+    long? TargetPersonId)
 {
     public bool Shared => ChatId != PersonId;
     public string DisplayUsername => string.IsNullOrWhiteSpace(Username) ? FirstName : Username;
@@ -26,6 +27,4 @@ public sealed record MessageContext(
         var parameters = Text.Replace(command, string.Empty, StringComparison.InvariantCultureIgnoreCase);
         return Guid.TryParse(parameters, out var value) ? value : Guid.Empty;
     }
-
-    public bool IsCancel() => "/cancel".Equals(Text, StringComparison.InvariantCultureIgnoreCase);
 }

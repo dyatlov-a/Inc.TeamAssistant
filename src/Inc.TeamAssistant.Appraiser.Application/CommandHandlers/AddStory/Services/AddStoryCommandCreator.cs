@@ -1,4 +1,3 @@
-using System.Text;
 using FluentValidation;
 using FluentValidation.Results;
 using Inc.TeamAssistant.Appraiser.Domain;
@@ -12,14 +11,14 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly AddStoryOptions _options;
+    private readonly AppraiserOptions _options;
     
     public string Command => CommandList.AddStory;
 
     public AddStoryCommandCreator(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        AddStoryOptions options)
+        AppraiserOptions options)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
@@ -43,25 +42,26 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
                     "Command",
                     await _messageBuilder.Build(Messages.Appraiser_StoryTitleIsEmpty, messageContext.LanguageId))
             });
-        
+
+        var separator = ' ';
         var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, token);
-        var storyItems = messageContext.Text.Split(' ');
-        var storyTitleBuilder = new StringBuilder();
+        var storyItems = messageContext.Text.Split(separator);
         var links = new List<string>();
+        var text = new List<string>();
 
         foreach (var storyItem in storyItems)
         {
             if (_options.LinksPrefix.Any(l => storyItem.StartsWith(l, StringComparison.InvariantCultureIgnoreCase)))
-                links.Add(storyItem.ToLower().Trim());
+                links.Add(storyItem.ToLower());
             else
-                storyTitleBuilder.Append($"{storyItem} ");
+                text.Add(storyItem);
         }
             
         return new AddStoryCommand(
             messageContext,
             teamContext.TeamId,
             teamContext.Properties.GetValueOrDefault("storyType", StoryType.Scrum.ToString()),
-            storyTitleBuilder.ToString(),
+            string.Join(separator, text),
             links,
             teammates);
     }

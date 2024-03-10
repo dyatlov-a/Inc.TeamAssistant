@@ -1,0 +1,48 @@
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+@inject IAppraiserService Service
+@inject LanguageManager LanguageManager
+
+<div class="history">
+    <div class="history__title">@_history</div>
+    <div class="history__body">
+        @if (_model is { State: ServiceResultState.Success, Result: not null })
+        {
+            foreach (var historyItem in _model.Result.Items)
+            {
+                <a href="@MoveTo(historyItem)" class="history__item">@historyItem.AssessmentDate.ToString("dd-MM-yyyy") - @historyItem.StoriesCount @_tasks</a>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid TeamId { get; set; }
+
+    private Func<string?, string> _linkBuilder = default!;
+    private ServiceResult<GetAssessmentHistoryResult?> _model = ServiceResult<GetAssessmentHistoryResult?>.Empty;
+
+    private MarkupString _history;
+    private MarkupString _tasks;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        _history = (MarkupString)resources[Messages.GUI_History];
+        _tasks = (MarkupString)resources[Messages.GUI_Tasks];
+        
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        _model = await Service.GetAssessmentHistory(TeamId, depth: 5);
+    }
+
+    private string MoveTo(AssessmentHistoryDto historyItem)
+    {
+        if (historyItem is null)
+            throw new ArgumentNullException(nameof(historyItem));
+
+        return _linkBuilder($"assessment-session/{TeamId}/{historyItem.AssessmentDate:yyyy-MM-dd}/stories");
+    }
+}

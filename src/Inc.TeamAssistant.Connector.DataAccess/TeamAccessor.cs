@@ -40,13 +40,15 @@ internal sealed class TeamAccessor : ITeamAccessor
         return persons.Select(p => (p.Id, p.DisplayName)).ToArray();
     }
 
-    public async Task<(long Id, string PersonDisplayName, LanguageId LanguageId)?> FindPerson(
+    public async Task<(long Id, string Name, string? Username, string PersonDisplayName, LanguageId LanguageId)?> FindPerson(
         long userId,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 p.id AS id,
+                p.name AS name,
+                p.username AS username,
                 COALESCE(p.username, p.name) AS persondisplayname,
                 p.language_id AS languageid
             FROM connector.persons AS p
@@ -58,6 +60,6 @@ internal sealed class TeamAccessor : ITeamAccessor
         await using var connection = new NpgsqlConnection(_connectionString);
 
         return await connection
-            .QuerySingleOrDefaultAsync<(long Id, string PersonDisplayName, LanguageId LanguageId)?>(command);
+            .QuerySingleOrDefaultAsync<(long Id, string Name, string? Username, string PersonDisplayName, LanguageId LanguageId)?>(command);
     }
 }

@@ -39,10 +39,20 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
 
         await _teamRepository.Upsert(team, token);
 
-        var message = await _messageBuilder.Build(
+        var joinToTeamSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_JoinToTeamSuccess,
             command.MessageContext.LanguageId,
+            person.DisplayName,
             team.Name);
-        return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatId, message));
+        
+        var notifications = new List<NotificationMessage>
+        {
+            NotificationMessage.Create(command.MessageContext.ChatId, joinToTeamSuccessMessage)
+        };
+
+        if (command.MessageContext.PersonId != team.OwnerId)
+            notifications.Add(NotificationMessage.Create(team.OwnerId, joinToTeamSuccessMessage));
+        
+        return CommandResult.Build(notifications.ToArray());
     }
 }

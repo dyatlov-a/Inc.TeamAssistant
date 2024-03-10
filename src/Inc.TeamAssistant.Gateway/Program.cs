@@ -1,6 +1,5 @@
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application;
-using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Services;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess;
 using Inc.TeamAssistant.WebUI.Services;
@@ -11,7 +10,6 @@ using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
-using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Inc.TeamAssistant.Gateway.PipelineBehaviors;
 using Inc.TeamAssistant.Gateway.Services;
@@ -28,12 +26,11 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var telegramBotOptions = builder.Configuration.GetRequiredSection(nameof(TelegramBotOptions)).Get<TelegramBotOptions>()!;
+var cacheAbsoluteExpiration = builder.Configuration.GetRequiredSection("CacheAbsoluteExpiration").Get<TimeSpan>();
+var appraiserOptions = builder.Configuration.GetRequiredSection(nameof(AppraiserOptions)).Get<AppraiserOptions>()!;
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
 var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOptions)).Get<CheckInOptions>()!;
 var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
-var holidayOptions = builder.Configuration.GetRequiredSection(nameof(HolidayOptions)).Get<HolidayOptions>()!;
-var addStoryOptions = builder.Configuration.GetRequiredSection(nameof(AddStoryOptions)).Get<AddStoryOptions>()!;
 
 builder.Services
 	.AddMediatR(c =>
@@ -48,9 +45,9 @@ builder.Services
 	.AddScoped<ITranslateProvider, TranslateProvider>()
 	.AddScoped<ICheckInService, CheckInService>()
 	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
-	.AddHolidays(connectionString, holidayOptions)
+	.AddHolidays(connectionString, cacheAbsoluteExpiration)
 		
-    .AddAppraiserApplication(addStoryOptions)
+    .AddAppraiserApplication(appraiserOptions)
     .AddAppraiserDataAccess(connectionString)
 	
     .AddCheckInApplication(checkInOptions)
@@ -64,7 +61,7 @@ builder.Services
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()
-	.AddServices(telegramBotOptions, builder.Environment.WebRootPath)
+	.AddServices(builder.Environment.WebRootPath, cacheAbsoluteExpiration)
     .AddIsomorphic()
     .AddMvc();
 

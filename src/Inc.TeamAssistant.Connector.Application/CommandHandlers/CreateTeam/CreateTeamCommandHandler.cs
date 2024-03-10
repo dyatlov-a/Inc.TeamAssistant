@@ -10,11 +10,16 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
 {
     private readonly ITeamRepository _teamRepository;
     private readonly IMessageBuilder _messageBuilder;
+    private readonly ILinkBuilder _linkBuilder;
 
-    public CreateTeamCommandHandler(ITeamRepository teamRepository, IMessageBuilder messageBuilder)
+    public CreateTeamCommandHandler(
+        ITeamRepository teamRepository,
+        IMessageBuilder messageBuilder,
+        ILinkBuilder linkBuilder)
     {
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
     }
 
     public async Task<CommandResult> Handle(CreateTeamCommand command, CancellationToken token)
@@ -25,6 +30,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
         var team = new Team(
             command.MessageContext.BotId,
             command.MessageContext.ChatId,
+            command.MessageContext.PersonId,
             command.Name,
             command.Properties);
 
@@ -34,7 +40,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             Messages.Connector_JoinToTeam,
             command.MessageContext.LanguageId,
             team.Name,
-            $"https://t.me/{command.BotName}?start={team.Id:N}");
+            _linkBuilder.BuildLinkForConnect(command.BotName, team.Id));
         var notifications = new List<NotificationMessage>
         {
             NotificationMessage.Create(command.MessageContext.ChatId, message, pinned: true)

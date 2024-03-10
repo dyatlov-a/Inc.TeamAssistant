@@ -1,5 +1,4 @@
 using System.Text;
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives;
@@ -9,12 +8,12 @@ namespace Inc.TeamAssistant.Appraiser.Application.Services;
 internal sealed class SummaryByStoryBuilder
 {
 	private readonly IMessageBuilder _messageBuilder;
-    private readonly ILinkBuilder _linkBuilder;
+    private readonly AppraiserOptions _options;
 
-    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, ILinkBuilder linkBuilder)
+    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, AppraiserOptions options)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
@@ -35,7 +34,7 @@ internal sealed class SummaryByStoryBuilder
 
         builder.AppendLine();
 
-        builder.AppendLine(_linkBuilder.BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
+        builder.AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
 
         builder.AppendLine();
         foreach (var item in summary.Items)
@@ -83,5 +82,13 @@ internal sealed class SummaryByStoryBuilder
             throw new ArgumentNullException(nameof(item));
         
         return estimateEnded ? item.DisplayValue : item.HasValue;
+    }
+    
+    private string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
+    {
+        return string.Format(
+            _options.ConnectToDashboardLinkTemplate,
+            languageId.Value,
+            teamId.ToString("N"));
     }
 }

@@ -1,0 +1,15 @@
+.history__title {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+}
+.history__body {
+    margin-top: .5rem;
+}
+.history__item {
+    display: block;
+    color: #fff;
+    line-height: 1.5rem;
+}
+.history__item:hover {
+    text-decoration: underline;
+}

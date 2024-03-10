@@ -20,21 +20,22 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
     public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    t.team_id AS teamid,
-    t.strategy AS strategy,
-    t.owner_id AS ownerid,
-    t.reviewer_id AS reviewerid,
-    t.description AS description,
-    t.state AS state,
-    t.created AS created,
-    t.next_notification AS nextnotification,
-    t.accept_date AS acceptdate,
-    t.message_id AS messageid,
-    t.chat_id AS chatid
-FROM review.task_for_reviews AS t
-WHERE t.id = @id;",
+            SELECT
+                t.id AS id,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.reviewer_id AS reviewerid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.has_concrete_reviewer AS hasconcretereviewer
+            FROM review.task_for_reviews AS t
+            WHERE t.id = @id;",
             new { id = taskForReviewId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -50,44 +51,47 @@ WHERE t.id = @id;",
             throw new ArgumentNullException(nameof(taskForReview));
 
         var command = new CommandDefinition(@"
-INSERT INTO review.task_for_reviews (
-    id,
-    team_id,
-    strategy,
-    owner_id,
-    reviewer_id,
-    description,
-    state,
-    created,
-    next_notification,
-    accept_date,
-    message_id,
-    chat_id)
-VALUES (
-    @id,
-    @team_id,
-    @strategy,
-    @owner_id,
-    @reviewer_id,
-    @description,
-    @state,
-    @created,
-    @next_notification,
-    @accept_date,
-    @message_id,
-    @chat_id)
-ON CONFLICT (id) DO UPDATE SET
-    team_id = excluded.team_id,
-    strategy = excluded.strategy,
-    owner_id = excluded.owner_id,
-    reviewer_id = excluded.reviewer_id,
-    description = excluded.description,
-    state = excluded.state,
-    created = excluded.created,
-    next_notification = excluded.next_notification,
-    accept_date = excluded.accept_date,
-    message_id = excluded.message_id,
-    chat_id = excluded.chat_id;",
+            INSERT INTO review.task_for_reviews (
+                id,
+                team_id,
+                strategy,
+                owner_id,
+                reviewer_id,
+                description,
+                state,
+                created,
+                next_notification,
+                accept_date,
+                message_id,
+                chat_id,
+                has_concrete_reviewer)
+            VALUES (
+                @id,
+                @team_id,
+                @strategy,
+                @owner_id,
+                @reviewer_id,
+                @description,
+                @state,
+                @created,
+                @next_notification,
+                @accept_date,
+                @message_id,
+                @chat_id,
+                @has_concrete_reviewer)
+            ON CONFLICT (id) DO UPDATE SET
+                team_id = excluded.team_id,
+                strategy = excluded.strategy,
+                owner_id = excluded.owner_id,
+                reviewer_id = excluded.reviewer_id,
+                description = excluded.description,
+                state = excluded.state,
+                created = excluded.created,
+                next_notification = excluded.next_notification,
+                accept_date = excluded.accept_date,
+                message_id = excluded.message_id,
+                chat_id = excluded.chat_id,
+                has_concrete_reviewer = excluded.has_concrete_reviewer;",
             new
             {
                 id = taskForReview.Id,
@@ -101,7 +105,8 @@ ON CONFLICT (id) DO UPDATE SET
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
                 owner_id = taskForReview.OwnerId,
-                reviewer_id = taskForReview.ReviewerId
+                reviewer_id = taskForReview.ReviewerId,
+                has_concrete_reviewer = taskForReview.HasConcreteReviewer
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -149,7 +154,7 @@ ON CONFLICT (id) DO UPDATE SET
             SELECT
                 t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id
+            WHERE t.team_id = @team_id AND NOT t.has_concrete_reviewer
             ORDER BY t.created DESC
             OFFSET 0
             LIMIT 1;",

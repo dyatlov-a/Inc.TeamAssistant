@@ -1,4 +1,3 @@
-using System.Text;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.Help;
 using Inc.TeamAssistant.Primitives;
@@ -27,14 +26,21 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
         var bot = await _botRepository.Find(command.MessageContext.BotId, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.BotId);
-        
-        var builder = new StringBuilder();
-        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null))
-            builder.AppendLine(await _messageBuilder.Build(
-                cmd.HelpMessageId!,
-                command.MessageContext.LanguageId,
-                cmd.Value));
 
-        return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatId, builder.ToString()));
+        var notificationText = await _messageBuilder.Build(
+            Messages.Connector_HelpText,
+            command.MessageContext.LanguageId);
+        var notification = NotificationMessage
+            .Create(command.MessageContext.ChatId, notificationText)
+            .SetButtonsInRow(1);
+
+        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null))
+        {
+            var text = await _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
+
+            notification.WithButton(new Button(text, cmd.Value));
+        }
+
+        return CommandResult.Build(notification);
     }
 }

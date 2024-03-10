@@ -1,8 +1,9 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.Domain;
+using Inc.TeamAssistant.Appraiser.Application.Converters;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 using MediatR;
-using Inc.TeamAssistant.Appraiser.Application.Extensions;
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStoryDetails;
 
@@ -11,15 +12,18 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 	private readonly IStoryRepository _storyRepository;
     private readonly IQuickResponseCodeGenerator _codeGenerator;
     private readonly ILinkBuilder _linkBuilder;
+    private readonly AppraiserOptions _options;
 
 	public GetStoryDetailsQueryHandler(
 		IStoryRepository storyRepository,
         IQuickResponseCodeGenerator codeGenerator,
-        ILinkBuilder linkBuilder)
+        ILinkBuilder linkBuilder,
+		AppraiserOptions options)
 	{
 		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
         _codeGenerator = codeGenerator ?? throw new ArgumentNullException(nameof(codeGenerator));
         _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
 	public async Task<GetStoryDetailsResult?> Handle(GetStoryDetailsQuery query, CancellationToken token)
@@ -28,29 +32,12 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 			throw new ArgumentNullException(nameof(query));
 
 		var story = await _storyRepository.FindLast(query.TeamId, token);
-        return Get(story ?? Story.Empty);
-    }
+		if (story is null)
+			throw new TeamAssistantException($"Story for {query.TeamId} was not found.");
+		
+		var link = _linkBuilder.BuildLinkForConnect(_options.BotName, story.TeamId);
+		var code = _codeGenerator.Generate(link);
 
-    private GetStoryDetailsResult Get(Story story)
-    {
-        if (story is null)
-            throw new ArgumentNullException(nameof(story));
-        
-        var link = _linkBuilder.BuildLinkForConnect(story.TeamId);
-        var code = _codeGenerator.Generate(link);
-
-        var items = story.StoryForEstimates
-            .Select(e => new StoryForEstimateDto(
-                e.ParticipantDisplayName,
-                story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
-            .ToArray();
-
-        return new(
-	        story.Title,
-	        story.Links.ToArray(),
-            code,
-            StorySelected: story != Story.Empty,
-            items,
-            story.GetTotalValue());
-    }
+		return new(StoryConverter.Convert(story), code);
+	}
 }

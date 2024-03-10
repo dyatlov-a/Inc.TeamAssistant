@@ -36,6 +36,25 @@ internal sealed class PersonRepository : IPersonRepository
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
 
+    public async Task<Person?> Find(string username, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                p.id AS id,
+                p.name AS name,
+                p.language_id AS languageid,
+                p.username AS username
+            FROM connector.persons AS p
+            WHERE LOWER(p.username) = @username;",
+            new { username = username.ToLowerInvariant() },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        return await connection.QuerySingleOrDefaultAsync<Person>(command);
+    }
+
     public async Task Upsert(Person person, CancellationToken token)
     {
         if (person is null)

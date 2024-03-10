@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<DialogContinuation>()
             .AddSingleton<TelegramBotMessageHandler>()
             .AddHostedService<TelegramBotConnector>()
+            .AddSingleton<INotificationMessageSender, NotificationMessageSender>()
             
             .AddSingleton<ICommandCreator, CreateTeamCommandCreator>()
             .AddSingleton<ICommandCreator, EndCommandCreator>()
@@ -34,14 +35,25 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
                 sp,
-                "/move_to_sp",
+                CommandList.MoveToSp,
                 "storyType",
                 "Scrum"))
             .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
                 sp,
-                "/move_to_tshirts",
+                CommandList.MoveToTShirts,
                 "storyType",
-                "Kanban"));
+                "Kanban"))
+            
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                CommandList.ChangeToRoundRobin,
+                "nextReviewerStrategy",
+                "RoundRobin"))
+            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
+                sp,
+                CommandList.ChangeToRandom,
+                "nextReviewerStrategy",
+                "Random"));
         
         return services;
     }

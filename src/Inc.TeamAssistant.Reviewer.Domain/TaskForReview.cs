@@ -17,6 +17,7 @@ public sealed class TaskForReview
     public DateTimeOffset NextNotification { get; private set; }
     public DateTimeOffset? AcceptDate { get; private set; }
     public int? MessageId { get; private set; }
+    public bool HasConcreteReviewer { get; private set; }
 
     private TaskForReview()
     {
@@ -85,6 +86,14 @@ public sealed class TaskForReview
     {
         State = TaskForReviewState.InProgress;
         SetNextNotificationTime(notificationInterval);
+    }
+
+    public TaskForReview SetConcreteReviewer(long reviewerId)
+    {
+        ReviewerId = reviewerId;
+        HasConcreteReviewer = true;
+        
+        return this;
     }
 
     public TaskForReview DetectReviewer(IReadOnlyCollection<long> teammates, long? lastReviewerId)

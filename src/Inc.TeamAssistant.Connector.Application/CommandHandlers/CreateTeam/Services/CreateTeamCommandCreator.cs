@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Ser
 
 internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
-    public string Command => "/new_team";
+    public string Command => CommandList.NewTeam;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,

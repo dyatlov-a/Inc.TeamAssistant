@@ -38,15 +38,19 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         foreach (var leaveTeamHandler in _leaveTeamHandlers)
             await leaveTeamHandler.Handle(command.MessageContext, command.TeamId, token);
 
-        var leaveFromTeamMessage = await _messageBuilder.Build(
+        var leaveTeamSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,
             command.MessageContext.LanguageId,
             command.MessageContext.DisplayUsername,
             team.Name);
+        
         var notifications = new List<NotificationMessage>
         {
-            NotificationMessage.Create(command.MessageContext.ChatId, leaveFromTeamMessage)
+            NotificationMessage.Create(command.MessageContext.ChatId, leaveTeamSuccessMessage)
         };
+        
+        if (command.MessageContext.PersonId != team.OwnerId)
+            notifications.Add(NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage));
         
         return CommandResult.Build(notifications.ToArray());
     }

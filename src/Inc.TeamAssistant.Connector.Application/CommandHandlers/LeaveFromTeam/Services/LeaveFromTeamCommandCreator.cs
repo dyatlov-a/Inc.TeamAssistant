@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.
 
 internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
 {
-    public string Command => "/leave_team";
+    public string Command => CommandList.LeaveTeam;
     
     public Task<IRequest<CommandResult>> Create(
         MessageContext messageContext,

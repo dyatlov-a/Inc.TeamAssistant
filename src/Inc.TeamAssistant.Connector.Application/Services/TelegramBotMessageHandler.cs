@@ -10,7 +10,7 @@ using Npgsql;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -22,6 +22,7 @@ internal sealed class TelegramBotMessageHandler
     private readonly IServiceProvider _serviceProvider;
     private readonly MessageContextBuilder _messageContextBuilder;
     private readonly IMessageBuilder _messageBuilder;
+    private readonly IPersonRepository _personRepository;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
@@ -29,7 +30,8 @@ internal sealed class TelegramBotMessageHandler
         CommandFactory commandFactory,
         IServiceProvider serviceProvider,
         MessageContextBuilder messageContextBuilder,
-        IMessageBuilder messageBuilder)
+        IMessageBuilder messageBuilder,
+        IPersonRepository personRepository)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
@@ -38,6 +40,7 @@ internal sealed class TelegramBotMessageHandler
         _messageContextBuilder =
             messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
     }
 
     public async Task Handle(ITelegramBotClient client, Update update, Guid botId, CancellationToken token)
@@ -137,6 +140,36 @@ internal sealed class TelegramBotMessageHandler
         foreach (var notification in commandResult.Notifications)
             await ProcessNotification(client, notification, messageContext, token);
     }
+
+    private async Task<IReadOnlyCollection<MessageEntity>> BuildMessageEntities(
+        string text,
+        long personId,
+        CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        
+        var person = await _personRepository.Find(personId, token);
+
+        return person is not null
+            ? new[]
+            {
+                new MessageEntity
+                {
+                    Type = MessageEntityType.TextMention,
+                    Offset = text.LastIndexOf(person.Name, StringComparison.InvariantCultureIgnoreCase),
+                    Length = person.Name.Length,
+                    User = new User
+                    {
+                        Id = person.Id,
+                        LanguageCode = person.LanguageId.Value,
+                        FirstName = person.Name,
+                        Username = person.Username
+                    }
+                }
+            }
+            : Array.Empty<MessageEntity>();
+    }
     
     private async Task ProcessNotification(
         ITelegramBotClient client,
@@ -151,12 +184,17 @@ internal sealed class TelegramBotMessageHandler
         if (messageContext is null)
             throw new ArgumentNullException(nameof(messageContext));
 
+        var entities = notificationMessage.TargetPersonId.HasValue
+            ? await BuildMessageEntities(notificationMessage.Text, notificationMessage.TargetPersonId.Value, token)
+            : Array.Empty<MessageEntity>();
+
         if (notificationMessage.TargetChatId.HasValue)
         {
             var message = await client.SendTextMessageAsync(
                 notificationMessage.TargetChatId.Value,
                 notificationMessage.Text,
-                replyMarkup: ToReplyMarkup(notificationMessage),
+                replyMarkup: notificationMessage.ToReplyMarkup(),
+                entities: entities,
                 cancellationToken: token);
 
             if (notificationMessage.Pinned)
@@ -178,7 +216,8 @@ internal sealed class TelegramBotMessageHandler
                 new(notificationMessage.TargetMessage.ChatId),
                 notificationMessage.TargetMessage.MessageId,
                 notificationMessage.Text,
-                replyMarkup: ToReplyMarkup(notificationMessage),
+                replyMarkup: notificationMessage.ToReplyMarkup(),
+                entities: entities,
                 cancellationToken: token);
         
         if (notificationMessage.DeleteMessage is not null)
@@ -186,17 +225,6 @@ internal sealed class TelegramBotMessageHandler
                 (new(notificationMessage.DeleteMessage.ChatId),
                     notificationMessage.DeleteMessage.MessageId,
                     token);
-    }
-    
-    private static InlineKeyboardMarkup? ToReplyMarkup(NotificationMessage message)
-    {
-        const int rowCapacity = 5;
-		
-        return message.Buttons.Any()
-            ? new InlineKeyboardMarkup(message.Buttons
-                .Select(b => InlineKeyboardButton.WithCallbackData(b.Text, b.Data))
-                .Chunk(rowCapacity))
-            : null;
     }
     
     private async Task TrySend(ITelegramBotClient client, long chatId, string message, CancellationToken token)

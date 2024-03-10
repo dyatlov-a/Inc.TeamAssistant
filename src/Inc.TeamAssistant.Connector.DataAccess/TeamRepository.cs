@@ -25,6 +25,7 @@ internal sealed class TeamRepository : ITeamRepository
                 t.id AS id,
                 t.bot_id AS botid,
                 t.chat_id AS chatid,
+                t.owner_id AS ownerid,
                 t.name AS name,
                 t.properties AS properties
             FROM connector.teams AS t
@@ -62,11 +63,12 @@ internal sealed class TeamRepository : ITeamRepository
             throw new ArgumentNullException(nameof(team));
         
         var upsertTeam = new CommandDefinition(@"
-            INSERT INTO connector.teams (id, bot_id, chat_id, name, properties)
-            VALUES (@id, @bot_id, @chat_id, @name, @properties::jsonb)
+            INSERT INTO connector.teams (id, bot_id, chat_id, owner_id, name, properties)
+            VALUES (@id, @bot_id, @chat_id, @owner_id, @name, @properties::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = EXCLUDED.bot_id,
                 chat_id = EXCLUDED.chat_id,
+                owner_id = EXCLUDED.owner_id,
                 name = EXCLUDED.name,
                 properties = EXCLUDED.properties;",
             new
@@ -74,6 +76,7 @@ internal sealed class TeamRepository : ITeamRepository
                 id = team.Id,
                 bot_id = team.BotId,
                 chat_id = team.ChatId,
+                owner_id = team.OwnerId,
                 name = team.Name,
                 properties = JsonSerializer.Serialize(team.Properties)
             },
