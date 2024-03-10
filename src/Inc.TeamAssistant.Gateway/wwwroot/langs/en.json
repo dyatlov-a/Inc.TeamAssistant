@@ -1,5 +1,5 @@
 {
-  "Appraiser_AddHelp": "{0} - add a story/task for estimate.",
+  "Appraiser_AddHelp": "Add a story for estimate",
   "Appraiser_MissingTaskForEvaluate": "Wait for the measurement process to start with your participation.",
   "Appraiser_EnterStoryName": "Reply this message with task name for enstimation.",
   "Appraiser_EndEstimate": "Estimation of task \"{0}\" has been completed.",
@@ -7,8 +7,8 @@
   "Appraiser_TotalEstimate": "Average: {0}",
   "Appraiser_StoryTitleIsEmpty": "Necessary specify name of task",
   "Appraiser_StoryNotFound": "Story {0} was not found.",
-  "Appraiser_MoveToSpHelp": "{0} - change estimation units to story points",
-  "Appraiser_MoveToTShirtsHelp": "{0} - change estimation units to t-shirts",
+  "Appraiser_MoveToSpHelp": "Change units to story points",
+  "Appraiser_MoveToTShirtsHelp": "Change units to t-shirts",
   
   "GUI_Tools": "Tools",
   "GUI_Feedback": "Feedback",
@@ -86,7 +86,7 @@
   "CheckIn_DefaultLayerTitle": "All",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
   
-  "Reviewer_MoveToReviewHelp": "{0} - to send task for review.",
+  "Reviewer_MoveToReviewHelp": "Send task for review",
   "Reviewer_EnterRequestForReview": "Reply to this message with link to MR and description",
   "Reviewer_NeedReview": "Task \"{0}\" is waiting for review",
   "Reviewer_NewTaskForReview": "New task \"{0}\" added for review. Author {1}. Assigned to {2}",
@@ -98,20 +98,21 @@
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_OperationApplied": "Operation completed",
   "Reviewer_TeamWithoutUsers": "Team has no members",
-  "Reviewer_ChangeToRoundRobinHelp": "{0} - change the method of selecting a reviewer to sequential enumeration",
-  "Reviewer_ChangeToRandomHelp": "{0} - change the method of selecting a reviewer to random",
+  "Reviewer_ChangeToRoundRobinHelp": "Change to sequential enumeration",
+  "Reviewer_ChangeToRandomHelp": "Change to random",
   
   "Connector_EnterTeamName": "Reply to this message with team name",
   "Connector_SelectTeam": "Select the team:",
   "Connector_JoinToTeam": "Open the link {1}, then press START to connect team \"{0}\"",
   "Connector_JoinToTeamSuccess": "You have successfully joined to the team \"{0}\".",
-  "Connector_NewTeamHelp": "{0} - create a new team.",
-  "Connector_LeaveFromTeamHelp": "{0} - leave from the team.",
+  "Connector_NewTeamHelp": "Create a new team",
+  "Connector_LeaveFromTeamHelp": "Leave from the team",
   "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\".",
-  "Connector_CancelHelp": "{0} - cancel the current operation.",
+  "Connector_CancelHelp": "Cancel the current operation",
   "Connector_BotNotFound": "Bot {0} was not found.",
   "Connector_TeamNotFound": "Team {0} was not found.",
   "Connector_TeamForUserNotFound": "Team for user {0} was not found.",
   "Connector_PersonNotFound": "Person {0} was not found.",
-  "Connector_ChangedPropertySuccess": "Changed property for team \"{0}\""
+  "Connector_ChangedPropertySuccess": "Changed property for team \"{0}\"",
+  "Connector_HelpText": "Choose the option"
 }

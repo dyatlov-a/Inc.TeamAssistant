@@ -9,13 +9,11 @@ internal static class NotificationMessageExtensions
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));
-        
-        const int rowCapacity = 5;
 		
         return message.Buttons.Any()
             ? new InlineKeyboardMarkup(message.Buttons
                 .Select(b => InlineKeyboardButton.WithCallbackData(b.Text, b.Data))
-                .Chunk(rowCapacity))
+                .Chunk(message.ButtonsInRow))
             : null;
     }
 }
