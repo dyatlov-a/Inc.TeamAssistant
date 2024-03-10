@@ -5,6 +5,7 @@ public sealed class Team
     public Guid Id { get; private set; }
     public Guid BotId { get; private set; }
     public long ChatId { get; private set; }
+    public long OwnerId { get; private set; }
     public string Name { get; private set; } = default!;
     
     private readonly List<Person> _teammates = new();
@@ -15,7 +16,7 @@ public sealed class Team
     {
     }
     
-    public Team(Guid botId, long chatId, string name, IReadOnlyDictionary<string, string> properties)
+    public Team(Guid botId, long chatId, long ownerId, string name, IReadOnlyDictionary<string, string> properties)
         : this()
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -24,6 +25,7 @@ public sealed class Team
         Id = Guid.NewGuid();
         BotId = botId;
         ChatId = chatId;
+        OwnerId = ownerId;
         Name = name;
         Properties = properties;
     }

@@ -30,6 +30,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
         var team = new Team(
             command.MessageContext.BotId,
             command.MessageContext.ChatId,
+            command.MessageContext.PersonId,
             command.Name,
             command.Properties);
 
