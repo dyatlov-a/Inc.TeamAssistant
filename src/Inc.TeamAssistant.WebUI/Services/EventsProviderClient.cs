@@ -23,16 +23,13 @@ internal sealed class EventsProviderClient : IEventsProvider
 	{
 		if (changed is null)
 			throw new ArgumentNullException(nameof(changed));
-		
-        if (_hubConnection.State == HubConnectionState.Disconnected)
-        {
-	        _hubConnection.On("StoryChanged", changed);
-	        
-	        await _hubConnection.StartAsync();
-	        
-	        await _hubConnection.InvokeAsync("JoinToGroup", teamId);
-        }
-    }
+
+		_hubConnection.On("StoryChanged", changed);
+
+		await _hubConnection.StartAsync();
+
+		await _hubConnection.InvokeAsync("JoinToGroup", teamId);
+	}
 
 	public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();
 }

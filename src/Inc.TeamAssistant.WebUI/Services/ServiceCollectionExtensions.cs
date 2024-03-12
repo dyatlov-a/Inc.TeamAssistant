@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
 
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<IClientInfoService, ClientInfoClient>()
-            .AddSingleton<IEventsProvider, EventsProviderClient>()
+            .AddTransient<IEventsProvider, EventsProviderClient>()
             .AddSingleton<ICookieService, CookieServiceClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<ILocationBuilder, LocationBuilder>()
