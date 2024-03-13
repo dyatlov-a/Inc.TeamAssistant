@@ -4,5 +4,5 @@ public sealed class ReviewerOptions
 {
     public TimeSpan NotificationsDelay { get; set; }
     public int NotificationsBatch { get; set; }
-    public WorkdayOptions Workday { get; set; } = default!;
+    public TimeSpan NotificationInterval { get; set; }
 }

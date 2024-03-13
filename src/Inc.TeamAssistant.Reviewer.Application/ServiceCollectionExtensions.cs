@@ -22,11 +22,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton(options)
             .AddScoped<IMessageBuilderService, MessageBuilderService>()
-            .AddHostedService(sp => ActivatorUtilities.CreateInstance<NotificationsService>(
-                sp,
-                options.Workday,
-                options.NotificationsBatch,
-                options.NotificationsDelay))
+            .AddHostedService<NotificationsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()

@@ -31,6 +31,7 @@ var appraiserOptions = builder.Configuration.GetRequiredSection(nameof(Appraiser
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
 var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOptions)).Get<CheckInOptions>()!;
 var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
+var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
 
 builder.Services
 	.AddMediatR(c =>
@@ -45,7 +46,7 @@ builder.Services
 	.AddScoped<ITranslateProvider, TranslateProvider>()
 	.AddScoped<ICheckInService, CheckInService>()
 	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
-	.AddHolidays(connectionString, cacheAbsoluteExpiration)
+	.AddHolidays(connectionString, workdayOptions, cacheAbsoluteExpiration)
 		
     .AddAppraiserApplication(appraiserOptions)
     .AddAppraiserDataAccess(connectionString)

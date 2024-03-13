@@ -18,13 +18,13 @@ internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotif
     
     private readonly ITaskForReviewRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly WorkdayOptions _options;
+    private readonly ReviewerOptions _options;
     private readonly ITranslateProvider _translateProvider;
 
     public SendNotificationCommandHandler(
         ITaskForReviewRepository repository,
         ITeamAccessor teamAccessor,
-        WorkdayOptions options,
+        ReviewerOptions options,
         ITranslateProvider translateProvider)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

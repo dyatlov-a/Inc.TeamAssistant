@@ -36,7 +36,7 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
         if (!taskForReview.CanMoveToInProgress())
             return CommandResult.Empty;
 
-        taskForReview.MoveToInProgress(_options.Workday.NotificationInterval);
+        taskForReview.MoveToInProgress(_options.NotificationInterval);
         
         var notifications = new List<NotificationMessage>();
 
