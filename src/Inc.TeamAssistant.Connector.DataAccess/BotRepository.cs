@@ -123,23 +123,4 @@ internal sealed class BotRepository : IBotRepository
 
         return bot;
     }
-
-    public async Task<Bot?> FindByTeam(Guid id, CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT t.bot_id AS botid
-            FROM connector.teams AS t
-            WHERE t.id = @id;",
-            new { id },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        var botId = await connection.QuerySingleOrDefaultAsync<Guid?>(command);
-
-        return botId.HasValue
-            ? await Find(botId.Value, token)
-            : null;
-    }
 }

@@ -10,4 +10,4 @@ public sealed record AddStoryCommand(
     string Title,
     IReadOnlyCollection<string> Links,
     IReadOnlyCollection<(long PersonId, string PersonDisplayName)> Teammates)
-    : IRequest<CommandResult>;
+    : IEndDialogCommand;

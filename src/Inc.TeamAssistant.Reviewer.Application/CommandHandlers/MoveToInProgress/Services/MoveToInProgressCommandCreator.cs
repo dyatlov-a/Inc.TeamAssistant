@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
-using MediatR;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgress.Services;
 
@@ -8,7 +7,7 @@ internal sealed class MoveToInProgressCommandCreator : ICommandCreator
 {
     public string Command => CommandList.MoveToInProgress;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,7 +17,7 @@ internal sealed class MoveToInProgressCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new MoveToInProgressCommand(
+        return Task.FromResult<IEndDialogCommand>(new MoveToInProgressCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

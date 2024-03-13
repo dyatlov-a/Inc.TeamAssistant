@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory.Services;
 
@@ -20,7 +19,7 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         _value = value;
     }
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -30,7 +29,7 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
                 
-        return Task.FromResult<IRequest<CommandResult>>(new SetEstimateForStoryCommand(
+        return Task.FromResult<IEndDialogCommand>(new SetEstimateForStoryCommand(
             messageContext,
             messageContext.TryParseId(Command),
             _value.ToString()));

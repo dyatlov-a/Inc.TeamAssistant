@@ -4,7 +4,6 @@ using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -17,7 +16,7 @@ internal sealed class DialogCommandFactory
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-    public async Task<IRequest<CommandResult>?> TryCreate(
+    public async Task<IDialogCommand?> TryCreate(
         Bot bot,
         string botCommand,
         CommandStage? currentStage,
@@ -84,7 +83,7 @@ internal sealed class DialogCommandFactory
         };
     }
 
-    private async Task<IRequest<CommandResult>> CreateSelectTeamCommand(
+    private async Task<IDialogCommand> CreateSelectTeamCommand(
         string botCommand,
         MessageContext messageContext,
         IReadOnlyCollection<TeamContext> teams)
@@ -111,7 +110,7 @@ internal sealed class DialogCommandFactory
             notification);
     }
 
-    private async Task<IRequest<CommandResult>> CreateEnterTextCommand(
+    private async Task<IDialogCommand> CreateEnterTextCommand(
         Bot bot,
         string botCommand,
         MessageContext messageContext,

@@ -1,7 +1,5 @@
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
-using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -21,14 +19,8 @@ internal sealed class CommandFactory
         _dialogCommandFactory = dialogCommandFactory ?? throw new ArgumentNullException(nameof(dialogCommandFactory));
     }
 
-    public async Task<IRequest<CommandResult>?> TryCreate(
-        ITelegramBotClient client,
-        Bot bot,
-        MessageContext messageContext,
-        CancellationToken token)
+    public async Task<IDialogCommand?> TryCreate(Bot bot, MessageContext messageContext, CancellationToken token)
     {
-        if (client is null)
-            throw new ArgumentNullException(nameof(client));
         if (bot is null)
             throw new ArgumentNullException(nameof(bot));
         if (messageContext is null)
@@ -75,20 +67,6 @@ internal sealed class CommandFactory
         {
             var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
             var command = await commandCreator.Create(messageContext, currentTeamContext, token);
-            
-            // TODO: move end dialog action to post processor
-            
-            await _dialogContinuation.End(
-                messageContext.PersonId,
-                new ChatMessage(messageContext.ChatId, messageContext.MessageId),
-                async (ms, t) =>
-                {
-                    if (messageContext.Shared)
-                        foreach (var m in ms)
-                            await client.DeleteMessageAsync(m.ChatId, m.MessageId, t);
-                },
-                token);
-
             return command;
         }
 

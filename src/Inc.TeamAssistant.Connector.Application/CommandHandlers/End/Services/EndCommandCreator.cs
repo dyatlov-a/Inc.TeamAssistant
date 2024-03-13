@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.End;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 
@@ -8,7 +7,7 @@ internal sealed class EndCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Cancel;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,6 +17,6 @@ internal sealed class EndCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new EndCommand(messageContext));
+        return Task.FromResult<IEndDialogCommand>(new EndCommand(messageContext));
     }
 }

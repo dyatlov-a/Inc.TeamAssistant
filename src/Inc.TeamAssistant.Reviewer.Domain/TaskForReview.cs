@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.Reviewer.Domain;
 public sealed class TaskForReview
 {
     public Guid Id { get; private set; }
+    public Guid BotId { get; private set; }
     public NextReviewerType Strategy { get; private set; }
     public Guid TeamId { get; private set; }
     public long OwnerId { get; private set; }
@@ -24,6 +25,7 @@ public sealed class TaskForReview
     }
 
     public TaskForReview(
+        Guid botId,
         Guid teamId,
         NextReviewerType strategy,
         long ownerId,
@@ -35,6 +37,7 @@ public sealed class TaskForReview
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
 
         Id = Guid.NewGuid();
+        BotId = botId;
         Strategy = strategy;
         Created = DateTimeOffset.UtcNow;
         TeamId = teamId;

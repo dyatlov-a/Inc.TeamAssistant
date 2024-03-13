@@ -5,11 +5,11 @@ using Npgsql;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
-internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
+internal sealed class TaskForReviewReader : ITaskForReviewReader
 {
     private readonly string _connectionString;
 
-    public TaskForReviewAccessor(string connectionString)
+    public TaskForReviewReader(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
@@ -30,6 +30,7 @@ internal sealed class TaskForReviewAccessor : ITaskForReviewAccessor
         var command = new CommandDefinition(@"
 SELECT
     t.id AS id,
+    bot_id AS botid,
     t.team_id AS teamid,
     t.strategy AS strategy,
     t.owner_id AS ownerid,
@@ -54,37 +55,5 @@ LIMIT @limit;",
         var results = await connection.QueryAsync<TaskForReview>(command);
 
         return results.ToArray();
-    }
-
-    public async Task Update(IReadOnlyCollection<TaskForReview> taskForReviews, CancellationToken token)
-    {
-        if (taskForReviews is null)
-            throw new ArgumentNullException(nameof(taskForReviews));
-
-        var ids = new List<Guid>(taskForReviews.Count);
-        var nextNotifications = new List<DateTimeOffset>(taskForReviews.Count);
-
-        foreach (var taskForReview in taskForReviews)
-        {
-            ids.Add(taskForReview.Id);
-            nextNotifications.Add(taskForReview.NextNotification);
-        }
-
-        var command = new CommandDefinition(@"
-UPDATE review.task_for_reviews AS et
-SET next_notification = t.next_notification
-FROM UNNEST(@ids, @next_notifications) AS t(id, next_notification)
-WHERE et.id = t.id;",
-            new
-            {
-                ids,
-                next_notifications = nextNotifications
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-
-        await connection.ExecuteAsync(command);
     }
 }

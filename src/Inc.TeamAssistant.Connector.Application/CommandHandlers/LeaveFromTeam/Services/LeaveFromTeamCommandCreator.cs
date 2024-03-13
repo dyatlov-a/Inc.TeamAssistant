@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 
@@ -8,7 +7,7 @@ internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.LeaveTeam;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,7 +17,7 @@ internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new LeaveFromTeamCommand(
+        return Task.FromResult<IEndDialogCommand>(new LeaveFromTeamCommand(
             messageContext,
             messageContext.TryParseId("/")));
     }

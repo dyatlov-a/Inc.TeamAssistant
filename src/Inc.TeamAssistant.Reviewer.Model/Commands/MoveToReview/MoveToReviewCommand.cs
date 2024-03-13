@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 
@@ -8,4 +7,4 @@ public sealed record MoveToReviewCommand(
     Guid TeamId,
     string Strategy,
     string Description)
-    : IRequest<CommandResult>;
+    : IEndDialogCommand;
