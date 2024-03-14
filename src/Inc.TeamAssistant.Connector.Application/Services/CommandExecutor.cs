@@ -21,19 +21,22 @@ internal sealed class CommandExecutor : ICommandExecutor
     private readonly IServiceProvider _serviceProvider;
     private readonly IMessageBuilder _messageBuilder;
     private readonly IPersonRepository _personRepository;
+    private readonly DialogContinuation _dialogContinuation;
 
     public CommandExecutor(
         ILogger<CommandExecutor> logger,
         TelegramBotClientProvider provider,
         IServiceProvider serviceProvider,
         IMessageBuilder messageBuilder,
-        IPersonRepository personRepository)
+        IPersonRepository personRepository,
+        DialogContinuation dialogContinuation)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
 
     public async Task Execute(IDialogCommand command, CancellationToken token)
@@ -51,7 +54,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (ValidationException validationException)
         {
-            await TrySend(client, command.MessageContext.ChatId, validationException.ToMessage(), token);
+            await TrySend(client, command.MessageContext, validationException.ToMessage(), token);
         }
         catch (TeamAssistantUserException userException)
         {
@@ -60,13 +63,13 @@ internal sealed class CommandExecutor : ICommandExecutor
                 command.MessageContext.LanguageId,
                 userException.Values);
 
-            await TrySend(client, command.MessageContext.ChatId, errorMessage, token);
+            await TrySend(client, command.MessageContext, errorMessage, token);
         }
         catch (TeamAssistantException teamAssistantException)
         {
             await TrySend(
                 client,
-                command.MessageContext.ChatId,
+                command.MessageContext,
                 teamAssistantException.Message,
                 token);
         }
@@ -78,7 +81,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         {
             await TrySend(
                 client,
-                command.MessageContext.ChatId,
+                command.MessageContext,
                 "Duplicate key value violates unique constraint.",
                 token);
         }
@@ -88,7 +91,7 @@ internal sealed class CommandExecutor : ICommandExecutor
 
             await TrySend(
                 client,
-                command.MessageContext.ChatId,
+                command.MessageContext,
                 "An unhandled exception has occurred. Try running the command again.",
                 token);
         }
@@ -201,23 +204,36 @@ internal sealed class CommandExecutor : ICommandExecutor
                     token);
     }
     
-    private async Task TrySend(ITelegramBotClient client, long chatId, string message, CancellationToken token)
+    private async Task TrySend(
+        ITelegramBotClient client,
+        MessageContext messageContext,
+        string text,
+        CancellationToken token)
     {
         if (client is null)
             throw new ArgumentNullException(nameof(client));
-        if (string.IsNullOrWhiteSpace(message))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(message));
+        if (messageContext is null)
+            throw new ArgumentNullException(nameof(messageContext));
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
 
         try
         {
-            await client.SendTextMessageAsync(
-                chatId,
-                message,
+            var message = await client.SendTextMessageAsync(
+                messageContext.ChatId,
+                text,
                 cancellationToken: token);
+            
+            var dialog = _dialogContinuation.Find(messageContext.PersonId);
+            if (dialog is not null)
+            {
+                dialog.Attach(new ChatMessage(messageContext.ChatId, messageContext.MessageId));
+                dialog.Attach(new ChatMessage(messageContext.ChatId, message.MessageId));
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Can not send message to chat {TargetChatId}", chatId);
+            _logger.LogError(ex, "Can not send message to chat {TargetChatId}", messageContext.ChatId);
         }
     }
 }

@@ -16,7 +16,7 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
         RuleFor(e => e.Title)
             .NotEmpty()
             .Must(e => !e.StartsWith("/"))
-            .WithMessage("Please enter text value.");
+            .WithMessage("'{PropertyName}' please enter text value.");
         
         RuleForEach(e => e.Links)
             .NotEmpty();

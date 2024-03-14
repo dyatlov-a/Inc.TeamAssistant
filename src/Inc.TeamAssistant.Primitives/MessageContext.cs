@@ -29,7 +29,7 @@ public sealed record MessageContext(
             PersonId: 0,
             FirstName: string.Empty,
             Username: null,
-            LanguageId: new LanguageId("en"),
+            LanguageId: LanguageSettings.DefaultLanguageId,
             Location: null,
             TargetPersonId: null);
     }
