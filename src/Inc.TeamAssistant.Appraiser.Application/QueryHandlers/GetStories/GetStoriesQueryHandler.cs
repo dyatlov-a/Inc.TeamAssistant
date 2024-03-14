@@ -6,11 +6,11 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStories;
 
 internal sealed class GetStoriesQueryHandler : IRequestHandler<GetStoriesQuery, GetStoriesResult>
 {
-    private readonly IStoryRepository _storyRepository;
+    private readonly IStoryReader _reader;
 
-    public GetStoriesQueryHandler(IStoryRepository storyRepository)
+    public GetStoriesQueryHandler(IStoryReader reader)
     {
-        _storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<GetStoriesResult> Handle(GetStoriesQuery query, CancellationToken token)
@@ -18,7 +18,7 @@ internal sealed class GetStoriesQueryHandler : IRequestHandler<GetStoriesQuery, 
         if (query is null)
             throw new ArgumentNullException(nameof(query));
 
-        var stories = await _storyRepository.GetStories(query.TeamId, query.AssessmentDate, token);
+        var stories = await _reader.GetStories(query.TeamId, query.AssessmentDate, token);
 
         return new GetStoriesResult(stories);
     }

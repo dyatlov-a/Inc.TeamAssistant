@@ -7,11 +7,11 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetAssessmentHis
 internal sealed class GetAssessmentHistoryQueryHandler
     : IRequestHandler<GetAssessmentHistoryQuery, GetAssessmentHistoryResult>
 {
-    private readonly IStoryRepository _storyRepository;
+    private readonly IStoryReader _reader;
 
-    public GetAssessmentHistoryQueryHandler(IStoryRepository storyRepository)
+    public GetAssessmentHistoryQueryHandler(IStoryReader reader)
     {
-        _storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<GetAssessmentHistoryResult> Handle(GetAssessmentHistoryQuery query, CancellationToken token)
@@ -19,7 +19,7 @@ internal sealed class GetAssessmentHistoryQueryHandler
         if (query is null)
             throw new ArgumentNullException(nameof(query));
 
-        var history = await _storyRepository.GetAssessmentHistory(query.TeamId, query.Depth, token);
+        var history = await _reader.GetAssessmentHistory(query.TeamId, query.Depth, token);
 
         return new GetAssessmentHistoryResult(history);
     }

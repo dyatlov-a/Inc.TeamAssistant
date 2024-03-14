@@ -9,18 +9,18 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStoryDetails;
 
 internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDetailsQuery, GetStoryDetailsResult?>
 {
-	private readonly IStoryRepository _storyRepository;
+	private readonly IStoryReader _reader;
     private readonly IQuickResponseCodeGenerator _codeGenerator;
     private readonly ILinkBuilder _linkBuilder;
     private readonly AppraiserOptions _options;
 
 	public GetStoryDetailsQueryHandler(
-		IStoryRepository storyRepository,
+		IStoryReader reader,
         IQuickResponseCodeGenerator codeGenerator,
         ILinkBuilder linkBuilder,
 		AppraiserOptions options)
 	{
-		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
+		_reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _codeGenerator = codeGenerator ?? throw new ArgumentNullException(nameof(codeGenerator));
         _linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -31,7 +31,7 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 		if (query is null)
 			throw new ArgumentNullException(nameof(query));
 
-		var story = await _storyRepository.FindLast(query.TeamId, token);
+		var story = await _reader.FindLast(query.TeamId, token);
 		if (story is null)
 			throw new TeamAssistantException($"Story for {query.TeamId} was not found.");
 		
