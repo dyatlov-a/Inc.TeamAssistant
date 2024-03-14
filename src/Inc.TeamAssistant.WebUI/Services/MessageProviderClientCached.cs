@@ -40,7 +40,7 @@ internal sealed class MessageProviderClientCached : IMessageProvider
         }
 
         var data = await _localStorage.GetItemAsync<Dictionary<string, Dictionary<string, string>>>(key);
-        return ServiceResult.Success(data);
+        return ServiceResult.Success(data!);
     }
 
     private string GetKey() => $"{nameof(MessageProviderClientCached)}_{nameof(Get)}_{_appVersion}";

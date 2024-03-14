@@ -2,17 +2,15 @@ name: app deploy
 on: workflow_dispatch
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        dotnet-version: ['7.0.x']
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
-      - name: Run './build.sh Deploy'
+          dotnet-version: '8.0.x'
+      - name: Run deploy
         run: ./build.sh Deploy --hubusername ${{ secrets.HUB_USERNAME }} --hubpassword ${{ secrets.HUB_PASSWORD }} --servername ${{ secrets.SERVER_NAME }} --serverusername ${{ secrets.SERVER_USERNAME }} --serverpassword ${{ secrets.SERVER_PASSWORD }}

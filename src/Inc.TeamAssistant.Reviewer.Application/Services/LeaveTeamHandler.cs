@@ -26,7 +26,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
 
-        // TODO: Accept task for leave last person
+        // TODO: Accept task for leave last person (Impl remove team case)
         var otherTeammates = teammates.Where(t => t.PersonId != messageContext.PersonId).ToArray();
 
         if (otherTeammates.Any())

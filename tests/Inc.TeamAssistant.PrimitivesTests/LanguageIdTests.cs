@@ -20,9 +20,9 @@ public sealed class LanguageIdTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Constructor_NotValidValue_ThrowsException(string value)
+    public void Constructor_NotValidValue_ThrowsException(string? value)
     {
-        LanguageId Actual() => new(value);
+        LanguageId Actual() => new(value!);
 
         Assert.Throws<ArgumentException>(Actual);
     }

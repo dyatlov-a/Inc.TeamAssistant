@@ -3,9 +3,8 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.4" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-        <PackageReference Include="Npgsql" Version="7.0.6" />
+        <PackageReference Include="Dapper" Version="2.1.37" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Npgsql" Version="8.0.2" />
     </ItemGroup>
 </Project>

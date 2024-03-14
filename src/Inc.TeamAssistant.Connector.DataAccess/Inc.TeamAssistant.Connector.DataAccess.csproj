@@ -3,7 +3,7 @@
     <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.28" />
-    <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="Dapper" Version="2.1.37" />
+    <PackageReference Include="Npgsql" Version="8.0.2" />
   </ItemGroup>
 </Project>
