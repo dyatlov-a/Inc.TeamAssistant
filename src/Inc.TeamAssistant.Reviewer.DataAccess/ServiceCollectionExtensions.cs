@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITaskForReviewRepository>(sp => ActivatorUtilities.CreateInstance<TaskForReviewRepository>(
                 sp,
                 connectionString))
-            .AddSingleton<ITaskForReviewAccessor>(sp => ActivatorUtilities.CreateInstance<TaskForReviewAccessor>(
+            .AddSingleton<ITaskForReviewReader>(sp => ActivatorUtilities.CreateInstance<TaskForReviewReader>(
                 sp,
                 connectionString));
 

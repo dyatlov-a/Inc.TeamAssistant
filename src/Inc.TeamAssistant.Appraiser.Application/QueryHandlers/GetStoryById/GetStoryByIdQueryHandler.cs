@@ -7,11 +7,11 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetStoryById;
 
 internal sealed class GetStoryByIdQueryHandler : IRequestHandler<GetStoryByIdQuery, GetStoryByIdResult?>
 {
-    private readonly IStoryRepository _storyRepository;
+    private readonly IStoryReader _storyReader;
 
-    public GetStoryByIdQueryHandler(IStoryRepository storyRepository)
+    public GetStoryByIdQueryHandler(IStoryReader storyReader)
     {
-        _storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
+        _storyReader = storyReader ?? throw new ArgumentNullException(nameof(storyReader));
     }
 
     public async Task<GetStoryByIdResult?> Handle(GetStoryByIdQuery query, CancellationToken token)
@@ -19,7 +19,7 @@ internal sealed class GetStoryByIdQueryHandler : IRequestHandler<GetStoryByIdQue
         if (query is null)
             throw new ArgumentNullException(nameof(query));
 
-        var story = await _storyRepository.Find(query.Id, token);
+        var story = await _storyReader.Find(query.Id, token);
         
         return story is not null ? new(StoryConverter.Convert(story)) : null;
     }

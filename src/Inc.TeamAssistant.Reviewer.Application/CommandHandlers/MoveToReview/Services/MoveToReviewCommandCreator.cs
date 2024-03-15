@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
-using MediatR;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
 
@@ -9,7 +8,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
 {
     public string Command => CommandList.NeedReview;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -19,7 +18,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
             
-        return Task.FromResult<IRequest<CommandResult>>(new MoveToReviewCommand(
+        return Task.FromResult<IEndDialogCommand>(new MoveToReviewCommand(
             messageContext,
             teamContext.TeamId,
             teamContext.Properties.GetValueOrDefault("nextReviewerStrategy", NextReviewerType.RoundRobin.ToString()),

@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.1.4" />
-      <PackageReference Include="FluentMigrator" Version="3.3.2" />
-      <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
-      <PackageReference Include="Npgsql" Version="7.0.6" />
+      <PackageReference Include="Dapper" Version="2.1.37" />
+      <PackageReference Include="FluentMigrator" Version="5.1.0" />
+      <PackageReference Include="FluentMigrator.Runner" Version="5.1.0" />
+      <PackageReference Include="Npgsql" Version="8.0.2" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="scripts\create-template.sql" />

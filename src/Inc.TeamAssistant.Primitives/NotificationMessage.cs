@@ -1,13 +1,10 @@
-using MediatR;
-
 namespace Inc.TeamAssistant.Primitives;
 
 public sealed class NotificationMessage
 {
-    private const int DefaultButtonsInRow = 5;
     private readonly List<Button> _buttons = new();
     
-	public delegate IRequest<CommandResult> ResponseHandler(MessageContext messageContext, int messageId);
+	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, int messageId);
     
 	public string Text { get; }
     public bool Pinned { get; }
@@ -26,12 +23,14 @@ public sealed class NotificationMessage
         string text,
         bool pinned = false)
     {
+        const int defaultButtonsInRow = 5;
+        
         Text = text ?? throw new ArgumentNullException(nameof(text));
         TargetChatId = targetChatId;
         TargetMessage = targetMessage;
         DeleteMessage = deleteMessage;
         Pinned = pinned;
-        ButtonsInRow = DefaultButtonsInRow;
+        ButtonsInRow = defaultButtonsInRow;
     }
 
     public NotificationMessage AddHandler(ResponseHandler handler)

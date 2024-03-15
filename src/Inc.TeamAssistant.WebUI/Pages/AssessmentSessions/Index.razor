@@ -5,6 +5,8 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.WebUI.Pages.Annotations
 
+@implements IAsyncDisposable
+
 @inject IAppraiserService Service
 @inject IEventsProvider EventsProvider
 @inject LanguageManager LanguageManager
@@ -87,4 +89,6 @@
 
         await InvokeAsync(StateHasChanged);
     }
+
+    public ValueTask DisposeAsync() => EventsProvider.DisposeAsync();
 }

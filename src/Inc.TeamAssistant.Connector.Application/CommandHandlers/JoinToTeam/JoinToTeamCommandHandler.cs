@@ -29,7 +29,7 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
 
         var team = await _teamRepository.Find(command.TeamId, token);
         if (team is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
+            return CommandResult.Empty;
 
         var person = await _personRepository.Find(command.MessageContext.PersonId, token);
         if (person is null)

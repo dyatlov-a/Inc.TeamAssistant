@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProperty.Services;
 
@@ -25,7 +24,7 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
         _propertyValue = propertyValue;
     }
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -35,7 +34,7 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
 
-        return Task.FromResult<IRequest<CommandResult>>(new ChangeTeamPropertyCommand(
+        return Task.FromResult<IEndDialogCommand>(new ChangeTeamPropertyCommand(
             messageContext,
             messageContext.TryParseId("/"),
             _propertyName,

@@ -13,50 +13,60 @@ public sealed class HolidayServiceTests
 
     public HolidayServiceTests()
     {
+        var options = new WorkdayOptions
+        {
+            WorkOnHoliday = false,
+            StartTimeUtc = TimeSpan.FromHours(7),
+            EndTimeUtc = TimeSpan.FromHours(16)
+        };
         _reader = Substitute.For<IHolidayReader>();
         _reader.GetAll(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new Dictionary<DateOnly, HolidayType>()));
-        _target = new(_reader);
+        _target = new(_reader, options);
     }
 
     [Theory]
-    [InlineData("2023-01-23", true)]
-    [InlineData("2023-01-24", true)]
-    [InlineData("2023-01-25", true)]
-    [InlineData("2023-01-26", true)]
-    [InlineData("2023-01-27", true)]
-    [InlineData("2023-01-28", false)]
-    [InlineData("2023-01-29", false)]
-    public async Task IsWorkday_Date_ShouldBe(string date, bool isWorkday)
+    [InlineData("2023-01-23T07:00:00+00:00", true)]
+    [InlineData("2023-01-24T07:00:00+00:00", true)]
+    [InlineData("2023-01-25T07:00:00+00:00", true)]
+    [InlineData("2023-01-26T07:00:00+00:00", true)]
+    [InlineData("2023-01-27T07:00:00+00:00", true)]
+    [InlineData("2023-01-28T07:00:00+00:00", false)]
+    [InlineData("2023-01-29T07:00:00+00:00", false)]
+    public async Task IsWorkTime_Date_ShouldBe(string date, bool isWorkday)
     {
-        var actual = await _target.IsWorkday(DateOnly.Parse(date), CancellationToken.None);
+        var actual = await _target.IsWorkTime(DateTimeOffset.Parse(date), CancellationToken.None);
         
         Assert.Equal(isWorkday, actual);
     }
 
     [Fact]
-    public async Task IsWorkday_ExcludeHoliday_ShouldBeHoliday()
+    public async Task IsWorkTime_ExcludeHoliday_ShouldBeHoliday()
     {
-        var day = new DateOnly(2023, 1, 23);
+        var value = new DateOnly(2023, 1, 23);
         _reader.GetAll(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new Dictionary<DateOnly, HolidayType>
         {
-            [day] = HolidayType.Holiday
+            [value] = HolidayType.Holiday
         }));
         
-        var actual = await _target.IsWorkday(day, CancellationToken.None);
+        var actual = await _target.IsWorkTime(
+            new DateTimeOffset(value.Year, value.Month, value.Day, 7, 0, 0, TimeSpan.Zero),
+            CancellationToken.None);
         
         Assert.False(actual);
     }
     
     [Fact]
-    public async Task IsWorkday_ExcludeWorkday_ShouldBeWorkday()
+    public async Task IsWorkTime_ExcludeWorkday_ShouldBeWorkday()
     {
-        var day = new DateOnly(2023, 1, 28);
+        var value = new DateOnly(2023, 1, 28);
         _reader.GetAll(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new Dictionary<DateOnly, HolidayType>
         {
-            [day] = HolidayType.Workday
+            [value] = HolidayType.Workday
         }));
         
-        var actual = await _target.IsWorkday(day, CancellationToken.None);
+        var actual = await _target.IsWorkTime(
+            new DateTimeOffset(value.Year, value.Month, value.Day, 7, 0, 0, TimeSpan.Zero),
+            CancellationToken.None);
         
         Assert.True(actual);
     }

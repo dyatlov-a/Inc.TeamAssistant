@@ -6,6 +6,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Service
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives;
+using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Connector.Application;
@@ -25,7 +26,10 @@ public static class ServiceCollectionExtensions
             .AddSingleton<DialogContinuation>()
             .AddSingleton<TelegramBotMessageHandler>()
             .AddHostedService<TelegramBotConnector>()
-            .AddSingleton<INotificationMessageSender, NotificationMessageSender>()
+            .AddSingleton<ICommandExecutor, CommandExecutor>()
+            .AddSingleton<TelegramBotClientProvider>()
+            
+            .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             
             .AddSingleton<ICommandCreator, CreateTeamCommandCreator>()
             .AddSingleton<ICommandCreator, EndCommandCreator>()

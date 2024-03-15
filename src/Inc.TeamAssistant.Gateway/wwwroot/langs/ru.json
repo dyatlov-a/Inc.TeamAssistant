@@ -5,7 +5,6 @@
   "Appraiser_EndEstimate": "Завершена оценка задачи «{0}».",
   "Appraiser_NeedEstimate": "Необходимо оценить задачу «{0}».",
   "Appraiser_TotalEstimate": "Среднее значение: {0}",
-  "Appraiser_StoryTitleIsEmpty": "Необходимо указать название задачи",
   "Appraiser_StoryNotFound": "История {0} не найдена.",
   "Appraiser_MoveToSpHelp": "Изменить единицы на SP",
   "Appraiser_MoveToTShirtsHelp": "Изменить единицы на майки",

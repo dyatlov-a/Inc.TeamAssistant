@@ -2,5 +2,5 @@ namespace Inc.TeamAssistant.Holidays;
 
 public interface IHolidayService
 {
-    Task<bool> IsWorkday(DateOnly date, CancellationToken token);
+    Task<bool> IsWorkTime(DateTimeOffset value, CancellationToken token);
 }

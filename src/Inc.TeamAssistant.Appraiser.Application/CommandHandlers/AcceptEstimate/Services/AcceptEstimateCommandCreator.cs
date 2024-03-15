@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate.Services;
 
@@ -8,7 +7,7 @@ internal sealed class AcceptEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AcceptEstimate;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,7 +17,7 @@ internal sealed class AcceptEstimateCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new AcceptEstimateCommand(
+        return Task.FromResult<IEndDialogCommand>(new AcceptEstimateCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

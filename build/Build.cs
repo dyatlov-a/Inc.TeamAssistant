@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.IO;
@@ -19,19 +16,19 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 public sealed class Build : NukeBuild
 {
     [Parameter("Docker hub username", Name = "hubusername")]
-    private readonly string HubUsername;
+    private readonly string HubUsername = default!;
 
     [Parameter("Docker hub password", Name = "hubpassword")]
-    private readonly string HubPassword;
+    private readonly string HubPassword = default!;
 
     [Parameter("Server name", Name = "servername")]
-    private readonly string ServerName;
+    private readonly string ServerName = default!;
 
     [Parameter("Server username", Name = "serverusername")]
-    private readonly string ServerUsername;
+    private readonly string ServerUsername = default!;
 
     [Parameter("Server password", Name = "serverpassword")]
-    private readonly string ServerPassword;
+    private readonly string ServerPassword = default!;
 
 
     public static int Main () => Execute<Build>(x => x.Compile);
@@ -41,21 +38,21 @@ public sealed class Build : NukeBuild
     private AbsolutePath TestsDirectory => RootDirectory / "tests";
     private AbsolutePath TestReportsDirectory => OutputDirectory / "test-reports";
 
-    private readonly string _migrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
-    private readonly IEnumerable<string> _appProjects = new[] { "Inc.TeamAssistant.Gateway" };
+    private readonly string MigrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
+    private readonly IEnumerable<string> AppProjects = new[] { "Inc.TeamAssistant.Gateway" };
 
-    private IEnumerable<string> ProjectsForPublish => _appProjects.Concat(_migrationRunnerProject);
+    private IEnumerable<string> ProjectsForPublish => AppProjects.Concat(MigrationRunnerProject);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution]
-    private readonly Solution Solution;
+    private readonly Solution Solution = default!;
 
-    [GitVersion(Framework = "net7.0")]
-    private readonly GitVersion GitVersion;
+    [GitVersion(Framework = "net8.0")]
+    private readonly GitVersion GitVersion = default!;
 
-    Target Clean => _ => _
+    private Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
@@ -64,14 +61,14 @@ public sealed class Build : NukeBuild
             OutputDirectory.CreateOrCleanDirectory();
         });
 
-    Target Restore => _ => _
+    private Target Restore => _ => _
         .Executes(() =>
         {
             DotNetRestore(s => s
                 .SetProjectFile(Solution));
         });
 
-    Target Compile => _ => _
+    private Target Compile => _ => _
         .DependsOn(Restore)
         .Executes(() =>
         {
@@ -84,7 +81,7 @@ public sealed class Build : NukeBuild
                 .EnableNoRestore());
         });
 
-    Target Test => _ => _
+    private Target Test => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
@@ -100,7 +97,7 @@ public sealed class Build : NukeBuild
                     .SetLoggers($"junit;LogFileName={p.Name}-results.xml;MethodFormat=Class;FailureBodyFormat=Verbose")));
         });
 
-    Target Publish => _ => _
+    private Target Publish => _ => _
         .DependsOn(Test)
         .Executes(() =>
         {
@@ -113,7 +110,7 @@ public sealed class Build : NukeBuild
                     .SetOutput(OutputDirectory / p)));
         });
 
-    Target BuildImages => _ => _
+    private Target BuildImages => _ => _
         .DependsOn(Publish)
         .Executes(() =>
         {
@@ -132,7 +129,7 @@ public sealed class Build : NukeBuild
                 .SetTag(GetImageName("inc.teamassistant.migrationsrunner")));
         });
 
-    Target PushImages => _ => _
+    private Target PushImages => _ => _
         .DependsOn(BuildImages)
         .Executes(() =>
         {
@@ -149,7 +146,7 @@ public sealed class Build : NukeBuild
                 .DisableProcessLogOutput());
         });
 
-    Target Deploy => _ => _
+    private Target Deploy => _ => _
         .DependsOn(PushImages)
         .Executes(() =>
         {

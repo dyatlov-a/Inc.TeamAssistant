@@ -5,7 +5,6 @@
   "Appraiser_EndEstimate": "Estimation of task \"{0}\" has been completed.",
   "Appraiser_NeedEstimate": "Necessary to estimate task \"{0}\".",
   "Appraiser_TotalEstimate": "Average: {0}",
-  "Appraiser_StoryTitleIsEmpty": "Necessary specify name of task",
   "Appraiser_StoryNotFound": "Story {0} was not found.",
   "Appraiser_MoveToSpHelp": "Move to story points",
   "Appraiser_MoveToTShirtsHelp": "Move to t-shirts",

@@ -62,7 +62,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.Model", "src\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj", "{CC45D751-DEF6-47A9-BBB3-9F46AA1F2A18}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "telegram_connector", "telegram_connector", "{533DB9B2-8423-4379-9B57-AE87EC9091D0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "connector", "connector", "{533DB9B2-8423-4379-9B57-AE87EC9091D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.Application", "src\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj", "{6D88ACED-9750-402F-AFDF-61A5E8478961}"
 EndProject

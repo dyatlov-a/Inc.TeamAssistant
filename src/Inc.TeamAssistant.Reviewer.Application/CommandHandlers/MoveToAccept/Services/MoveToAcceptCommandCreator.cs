@@ -8,7 +8,7 @@ internal sealed class MoveToAcceptCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Accept;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,7 +18,7 @@ internal sealed class MoveToAcceptCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new MoveToAcceptCommand(
+        return Task.FromResult<IEndDialogCommand>(new MoveToAcceptCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

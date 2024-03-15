@@ -22,6 +22,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         var command = new CommandDefinition(@"
             SELECT
                 t.id AS id,
+                t.bot_id AS botid,
                 t.team_id AS teamid,
                 t.strategy AS strategy,
                 t.owner_id AS ownerid,
@@ -53,6 +54,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         var command = new CommandDefinition(@"
             INSERT INTO review.task_for_reviews (
                 id,
+                bot_id,
                 team_id,
                 strategy,
                 owner_id,
@@ -67,6 +69,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 has_concrete_reviewer)
             VALUES (
                 @id,
+                @bot_id,
                 @team_id,
                 @strategy,
                 @owner_id,
@@ -80,6 +83,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @chat_id,
                 @has_concrete_reviewer)
             ON CONFLICT (id) DO UPDATE SET
+                bot_id = excluded.bot_id,
                 team_id = excluded.team_id,
                 strategy = excluded.strategy,
                 owner_id = excluded.owner_id,
@@ -95,6 +99,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             new
             {
                 id = taskForReview.Id,
+                bot_id = taskForReview.BotId,
                 team_id = taskForReview.TeamId,
                 strategy = taskForReview.Strategy,
                 description = taskForReview.Description,

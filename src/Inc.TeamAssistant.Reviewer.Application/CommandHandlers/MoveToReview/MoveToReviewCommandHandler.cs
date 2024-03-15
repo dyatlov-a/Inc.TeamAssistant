@@ -40,6 +40,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
 
         var taskForReview = new TaskForReview(
+            command.MessageContext.BotId,
             command.TeamId,
             Enum.Parse<NextReviewerType>(command.Strategy),
             command.MessageContext.PersonId,
@@ -62,7 +63,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var notification = NotificationMessage
             .Create(targetTeam.ChatId, taskForReviewMessage.Text)
             .AttachPerson(taskForReviewMessage.AttachedPersonId);
-        notification.AddHandler((c, id) => new AttachMessageCommand(command.MessageContext, taskForReview.Id, id));
+        notification.AddHandler((c, mId) => new AttachMessageCommand(c, taskForReview.Id, mId));
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         

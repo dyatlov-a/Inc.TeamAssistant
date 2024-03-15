@@ -17,6 +17,23 @@ public sealed record MessageContext(
     public bool Shared => ChatId != PersonId;
     public string DisplayUsername => string.IsNullOrWhiteSpace(Username) ? FirstName : Username;
 
+    public static MessageContext CreateIdle(Guid botId, long chatId)
+    {
+        return new MessageContext(
+            MessageId: 0,
+            BotId: botId,
+            BotName: string.Empty,
+            Teams: Array.Empty<TeamContext>(),
+            Text: string.Empty,
+            ChatId: chatId,
+            PersonId: 0,
+            FirstName: string.Empty,
+            Username: null,
+            LanguageId: LanguageSettings.DefaultLanguageId,
+            Location: null,
+            TargetPersonId: null);
+    }
+        
     public TeamContext? FindTeam(Guid teamId) => Teams.SingleOrDefault(t => t.Id == teamId);
 
     public Guid TryParseId(string command)

@@ -20,9 +20,9 @@ public sealed class MessageIdTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Constructor_NotValidValue_ThrowsException(string value)
+    public void Constructor_NotValidValue_ThrowsException(string? value)
     {
-        MessageId Actual() => new(value);
+        MessageId Actual() => new(value!);
 
         Assert.Throws<ArgumentException>(Actual);
     }

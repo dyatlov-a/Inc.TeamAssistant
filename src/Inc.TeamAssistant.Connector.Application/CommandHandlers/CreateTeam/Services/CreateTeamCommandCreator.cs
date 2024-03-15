@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.CreateTeam;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Services;
 
@@ -8,7 +7,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.NewTeam;
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,7 +17,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
             
-        return Task.FromResult<IRequest<CommandResult>>(new CreateTeamCommand(
+        return Task.FromResult<IEndDialogCommand>(new CreateTeamCommand(
             messageContext,
             messageContext.BotName,
             messageContext.Text,

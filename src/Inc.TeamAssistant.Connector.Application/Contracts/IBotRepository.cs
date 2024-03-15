@@ -7,6 +7,4 @@ public interface IBotRepository
     Task<IReadOnlyCollection<Bot>> GetAll(CancellationToken token);
 
     Task<Bot?> Find(Guid id, CancellationToken token);
-    
-    Task<Bot?> FindByTeam(Guid id, CancellationToken token);
 }

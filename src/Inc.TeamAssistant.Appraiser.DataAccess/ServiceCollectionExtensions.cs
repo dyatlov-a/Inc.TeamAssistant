@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         SqlMapper.AddTypeHandler(new JsonTypeHandler<IReadOnlyDictionary<string, string>>());
         
         services
+            .AddSingleton<IStoryReader>(sp => ActivatorUtilities.CreateInstance<StoryReader>(sp, connectionString))
             .AddSingleton<IStoryRepository>(
                 sp => ActivatorUtilities.CreateInstance<StoryRepository>(sp, connectionString));
 

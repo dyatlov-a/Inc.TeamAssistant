@@ -132,21 +132,20 @@ internal sealed class MessageContextBuilder
     {
         if (bot is null)
             throw new ArgumentNullException(nameof(bot));
+
+        bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
         
         var memberOfChats = bot.Teams
-            .Where(t => t.Teammates.Any(tm => tm.Id == personId) || t.ChatId == chatId)
+            .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.OwnerId == personId)
             .Select(t => t.ChatId)
             .Distinct()
             .ToArray();
-        
-        return bot.Teams
+        var results = bot.Teams
             .Where(t => memberOfChats.Contains(t.ChatId))
-            .Select(t => new TeamContext(
-                t.Id,
-                t.ChatId,
-                t.Name,
-                t.Teammates.Any(tm => tm.Id == personId)))
+            .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, MemberOfTeam(t)))
             .ToArray();
+
+        return results;
     }
 
     private async Task<(long Id, string Marker)?> GetPersonFromEntities(Message message, CancellationToken token)

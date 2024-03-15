@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0.1-jammy-amd64
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-amd64
 
 # VARS
 ENV APP_DIR="/app" \

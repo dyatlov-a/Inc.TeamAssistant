@@ -41,6 +41,10 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
             notification.WithButton(new Button(text, cmd.Value));
         }
 
-        return CommandResult.Build(notification);
+        var deleteHelp = NotificationMessage.Delete(new ChatMessage(
+            command.MessageContext.ChatId,
+            command.MessageContext.MessageId));
+        
+        return CommandResult.Build(notification, deleteHelp);
     }
 }

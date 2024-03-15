@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.Help;
 using Inc.TeamAssistant.Primitives;
-using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 
@@ -8,7 +7,7 @@ internal sealed class HelpCommandCreator : ICommandCreator
 {
     public string Command => "/help";
     
-    public Task<IRequest<CommandResult>> Create(
+    public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -18,6 +17,6 @@ internal sealed class HelpCommandCreator : ICommandCreator
         if (teamContext is null)
             throw new ArgumentNullException(nameof(teamContext));
         
-        return Task.FromResult<IRequest<CommandResult>>(new HelpCommand(messageContext));
+        return Task.FromResult<IEndDialogCommand>(new HelpCommand(messageContext));
     }
 }
