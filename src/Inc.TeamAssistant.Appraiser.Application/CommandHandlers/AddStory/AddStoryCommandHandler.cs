@@ -35,6 +35,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         var story = new Story(
+            command.MessageContext.BotId,
             command.TeamId,
             Enum.Parse<StoryType>(command.StoryType),
             targetTeam.ChatId,

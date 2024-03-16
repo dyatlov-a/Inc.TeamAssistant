@@ -55,7 +55,7 @@ internal sealed class SummaryByStoryBuilder
                 builder.ToString())
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
-                .AddHandler((c, mId) => new AttachStoryCommand(c, summary.StoryId, mId));
+                .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
 
         if (!summary.EstimateEnded)
         {

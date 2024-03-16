@@ -36,7 +36,7 @@ internal sealed class TelegramBotMessageHandler
             throw new ArgumentNullException(nameof(client));
         if (update is null)
             throw new ArgumentNullException(nameof(update));
-
+        
         try
         {
             var bot = await _botRepository.Find(botId, token);

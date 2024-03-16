@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Inc.TeamAssistant.RandomCoffee.DomainTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+</Project>

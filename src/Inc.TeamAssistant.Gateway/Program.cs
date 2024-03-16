@@ -23,6 +23,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.RandomCoffee.Application;
+using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
+using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using MediatR.Pipeline;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +36,7 @@ var connectionString = builder.Configuration.GetConnectionString("ConnectionStri
 var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOptions)).Get<CheckInOptions>()!;
 var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
 var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
+var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 
 builder.Services
 	.AddMediatR(c =>
@@ -42,6 +46,7 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
 	})
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
 		lifetime: ServiceLifetime.Scoped,
@@ -53,6 +58,9 @@ builder.Services
 		lifetime: ServiceLifetime.Scoped,
 		includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<ITeamRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
 		lifetime: ServiceLifetime.Scoped,
 		includeInternalTypes: true)
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
@@ -75,6 +83,9 @@ builder.Services
 	
     .AddReviewerApplication(reviewerOptions)
 	.AddReviewerDataAccess(connectionString)
+	
+	.AddRandomCoffeeApplication(randomCoffeeOptions)
+	.AddRandomCoffeeDataAccess(connectionString)
 	
 	.AddConnectorApplication()
 	.AddConnectorDataAccess(connectionString)

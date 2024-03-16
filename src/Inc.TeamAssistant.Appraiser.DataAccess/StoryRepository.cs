@@ -48,12 +48,13 @@ internal sealed class StoryRepository : IStoryRepository
         
         var upsertStory = new CommandDefinition(@"
             INSERT INTO appraiser.stories (
-                id, story_type, created, team_id, chat_id, moderator_id, language_id, title, external_id,
-                links)
+                id, bot_id, story_type, created, team_id, chat_id, moderator_id, language_id, title,
+                external_id, links)
             VALUES (
-                @id, @story_type, @created, @team_id, @chat_id, @moderator_id, @language_id, @title, @external_id,
-                @links::jsonb)
+                @id, @bot_id, @story_type, @created, @team_id, @chat_id, @moderator_id, @language_id, @title,
+                @external_id, @links::jsonb)
             ON CONFLICT (id) DO UPDATE SET
+                bot_id = EXCLUDED.bot_id,
                 story_type = EXCLUDED.story_type,
                 created = EXCLUDED.created,
                 team_id = EXCLUDED.team_id,
@@ -66,6 +67,7 @@ internal sealed class StoryRepository : IStoryRepository
             new
             {
                 id = story.Id,
+                bot_id = story.BotId,
                 story_type = story.StoryType,
                 created = story.Created,
                 team_id = story.TeamId,

@@ -63,7 +63,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var notification = NotificationMessage
             .Create(targetTeam.ChatId, taskForReviewMessage.Text)
             .AttachPerson(taskForReviewMessage.AttachedPersonId);
-        notification.AddHandler((c, mId) => new AttachMessageCommand(c, taskForReview.Id, mId));
+        notification.AddHandler((c, p) => new AttachMessageCommand(c, taskForReview.Id, int.Parse(p)));
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         

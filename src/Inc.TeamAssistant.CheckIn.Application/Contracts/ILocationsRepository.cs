@@ -4,9 +4,9 @@ namespace Inc.TeamAssistant.CheckIn.Application.Contracts;
 
 public interface ILocationsRepository
 {
-    Task<Map?> Find(long chatId, CancellationToken cancellationToken);
+    Task<Map?> Find(long chatId, CancellationToken token);
 
-    Task<IReadOnlyCollection<LocationOnMap>> GetLocations(Guid mapId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<LocationOnMap>> GetLocations(Guid mapId, CancellationToken token);
 
-    Task Insert(LocationOnMap locationOnMap, CancellationToken cancellationToken);
+    Task Insert(LocationOnMap locationOnMap, CancellationToken token);
 }

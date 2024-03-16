@@ -3,8 +3,9 @@ namespace Inc.TeamAssistant.Primitives;
 public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
+    private readonly List<string> _options = new();
     
-	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, int messageId);
+	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, string parameter);
     
 	public string Text { get; }
     public bool Pinned { get; }
@@ -12,6 +13,7 @@ public sealed class NotificationMessage
     public ChatMessage? TargetMessage { get; }
     public ChatMessage? DeleteMessage { get; }
     public IReadOnlyCollection<Button> Buttons => _buttons;
+    public IReadOnlyCollection<string> Options => _options;
     public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
     public long? TargetPersonId { get; private set; }
@@ -53,6 +55,16 @@ public sealed class NotificationMessage
             throw new ArgumentNullException(nameof(button));
         
         _buttons.Add(button);
+
+        return this;
+    }
+    
+    public NotificationMessage WithOption(string option)
+    {
+        if (string.IsNullOrWhiteSpace(option))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(option));
+        
+        _options.Add(option);
 
         return this;
     }

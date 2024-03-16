@@ -167,12 +167,19 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         if (notificationMessage.TargetChatId.HasValue)
         {
-            var message = await client.SendTextMessageAsync(
-                notificationMessage.TargetChatId.Value,
-                notificationMessage.Text,
-                replyMarkup: notificationMessage.ToReplyMarkup(),
-                entities: entities,
-                cancellationToken: token);
+            var message = notificationMessage.Options.Any()
+                ? await client.SendPollAsync(
+                    notificationMessage.TargetChatId.Value,
+                    notificationMessage.Text,
+                    notificationMessage.Options,
+                    isAnonymous: false,
+                    cancellationToken: token)
+                : await client.SendTextMessageAsync(
+                    notificationMessage.TargetChatId.Value,
+                    notificationMessage.Text,
+                    replyMarkup: notificationMessage.ToReplyMarkup(),
+                    entities: entities,
+                    cancellationToken: token);
 
             if (notificationMessage.Pinned)
                 await client.PinChatMessageAsync(
@@ -182,7 +189,8 @@ internal sealed class CommandExecutor : ICommandExecutor
 
             if (notificationMessage.Handler is not null)
             {
-                var command = notificationMessage.Handler(messageContext, message.MessageId);
+                var parameter = message.Poll?.Id ?? message.MessageId.ToString();
+                var command = notificationMessage.Handler(messageContext, parameter);
 
                 await Execute(client, messageContext, command, token);
             }

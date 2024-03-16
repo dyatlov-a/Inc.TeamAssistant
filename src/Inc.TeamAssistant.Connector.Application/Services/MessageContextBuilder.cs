@@ -17,6 +17,7 @@ internal sealed class MessageContextBuilder
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
     }
 
+    // TODO: need refactoring create MessageContext
     public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
     {
         if (bot is null)
@@ -24,9 +25,27 @@ internal sealed class MessageContextBuilder
         if (update is null)
             throw new ArgumentNullException(nameof(update));
         
-        if (update.Message?.From?.IsBot == true || update.CallbackQuery?.From.IsBot == true)
+        if (update.Message?.From?.IsBot == true ||
+            update.CallbackQuery?.From.IsBot == true ||
+            update.PollAnswer?.User.IsBot == true)
             return null;
 
+        if (update.PollAnswer is not null)
+        {
+            var parameters = string.Join("&option=", update.PollAnswer.OptionIds);
+            var text = string.Format(CommandList.AddPollAnswer, update.PollAnswer.PollId, parameters);
+            
+            return await Create(
+                bot,
+                messageId: 0,
+                chatId: 0,
+                update.PollAnswer.User,
+                text,
+                targetPersonId: null,
+                location: null,
+                token);
+        }
+        
         var messageId = update.Message?.MessageId ?? update.CallbackQuery?.Message?.MessageId;
         if (!messageId.HasValue)
             return null;
@@ -86,9 +105,9 @@ internal sealed class MessageContextBuilder
             teams,
             text,
             chatId,
-            user.Id,
-            user.FirstName,
-            user.Username,
+            person.Id,
+            person.Name,
+            person.Username,
             person.LanguageId,
             location is not null ? new (location.Longitude, location.Latitude) : null,
             targetPersonId);
@@ -123,7 +142,7 @@ internal sealed class MessageContextBuilder
 
         return string.IsNullOrWhiteSpace(data)
             ? location is not null
-                ? ("/location", null)
+                ? (CommandList.AddLocation, null)
                 : null
             : (data, null);
     }

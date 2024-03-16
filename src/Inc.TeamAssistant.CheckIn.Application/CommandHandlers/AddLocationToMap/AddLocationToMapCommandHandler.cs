@@ -40,7 +40,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         }
         
         var existsMap = await _locationsRepository.Find(command.MessageContext.ChatId, token);
-        var map = existsMap ?? new(command.MessageContext.ChatId);
+        var map = existsMap ?? new(command.MessageContext.BotId, command.MessageContext.ChatId);
         
         var location = new LocationOnMap(
             command.MessageContext.PersonId,
