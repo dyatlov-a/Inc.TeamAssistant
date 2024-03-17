@@ -108,7 +108,7 @@ internal sealed class MessageContextBuilder
             person.Id,
             person.Name,
             person.Username,
-            person.LanguageId,
+            person.GetLanguageId(),
             location is not null ? new (location.Longitude, location.Latitude) : null,
             targetPersonId);
     }

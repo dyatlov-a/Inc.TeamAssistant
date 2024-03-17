@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 using MediatR;
 
@@ -28,9 +27,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var targetTeam = command.MessageContext.FindTeam(command.TeamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
@@ -46,6 +44,14 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             command.MessageContext.PersonId,
             targetTeam.ChatId,
             command.Description);
+        
+        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
+        if (reviewer is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
+        
+        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
+        if (owner is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
         if (command.MessageContext.TargetPersonId.HasValue)
             taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
@@ -55,18 +61,13 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             taskForReview.DetectReviewer(teammates.Select(t => t.PersonId).ToArray(), lastReviewerId);
         }
         
-        var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
-            command.MessageContext.LanguageId,
+        var taskForReviewMessage = await _messageBuilderService.BuildMessageNewTaskForReview(
             taskForReview,
-            token);
-        
-        var notification = NotificationMessage
-            .Create(targetTeam.ChatId, taskForReviewMessage.Text)
-            .AttachPerson(taskForReviewMessage.AttachedPersonId);
-        notification.AddHandler((c, p) => new AttachMessageCommand(c, taskForReview.Id, int.Parse(p)));
+            reviewer,
+            owner);
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(notification);
+        return CommandResult.Build(taskForReviewMessage);
     }
 }

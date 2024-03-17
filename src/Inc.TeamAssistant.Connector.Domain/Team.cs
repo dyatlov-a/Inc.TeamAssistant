@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives;
+
 namespace Inc.TeamAssistant.Connector.Domain;
 
 public sealed class Team

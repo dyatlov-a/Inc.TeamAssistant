@@ -27,8 +27,8 @@ internal sealed class TelegramBotConnector : IHostedService
             var client = new TelegramBotClient(bot.Token);
             
             client.StartReceiving(
-                (c, m, t) => _handler.Handle(c, m, bot.Id, t),
-                (c, e, t) =>  _handler.OnError(c, e, bot.Name, t),
+                (c, m, t) => _handler.Handle(m, bot.Id, t),
+                (c, e, t) =>  _handler.OnError(e, bot.Name, t),
                 cancellationToken: token);
         }
     }

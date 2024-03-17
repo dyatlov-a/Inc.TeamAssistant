@@ -100,7 +100,7 @@ public sealed class SelectPairsStrategyTests
             throw new ArgumentNullException(nameof(historyPairs));
         
         foreach (var pair in pairs)
-            if (historyPairs.Any(h => h.IsEquivalent(pair)))
+            if (historyPairs.Any(h => h.Equals(pair)))
                 return true;
 
         return false;

@@ -97,7 +97,7 @@ internal sealed class BotRepository : IBotRepository
         var personsLookup = (await query.ReadAsync<(
                 long Id,
                 string Name,
-                LanguageId LanguageId,
+                LanguageId? LanguageId,
                 string? Username,
                 Guid TeamId)>())
             .ToLookup(p => p.TeamId);
@@ -115,7 +115,7 @@ internal sealed class BotRepository : IBotRepository
             foreach (var team in teams)
             {
                 foreach (var person in personsLookup[team.Id])
-                    team.AddTeammate(new Person(person.Id, person.Name, person.LanguageId, person.Username));
+                    team.AddTeammate(new Person(person.Id, person.Name, person.LanguageId?.Value, person.Username));
                 
                 bot.AddTeam(team);
             }

@@ -24,6 +24,9 @@ public sealed class AddRandomCoffee : Migration
             .WithColumn("chat_id")
             .AsInt64().NotNullable()
             
+            .WithColumn("owner_id")
+            .AsInt64().NotNullable()
+            
             .WithColumn("next_round")
             .AsDate().NotNullable()
             

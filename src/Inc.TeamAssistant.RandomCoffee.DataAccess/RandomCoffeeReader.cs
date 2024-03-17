@@ -25,6 +25,7 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
                 e.created AS created,
                 e.bot_id AS botid,
                 e.chat_id AS chatid,
+                e.owner_id AS ownerid,
                 e.next_round AS nextround,
                 e.state AS state,
                 e.poll_id AS pollid,

@@ -24,10 +24,22 @@ public sealed class AddBotIds : Migration
             .OnTable("stories")
             .InSchema("appraiser")
             .AsGuid().NotNullable().SetExistingRowsTo(Guid.Empty);
+
+        Alter
+            .Column("language_id")
+            .OnTable("persons")
+            .InSchema("connector")
+            .AsString().Nullable();
     }
 
     public override void Down()
     {
+        Alter
+            .Column("language_id")
+            .OnTable("persons")
+            .InSchema("connector")
+            .AsString().NotNullable();
+        
         Delete
             .Column("bot_id")
             .FromTable("stories")

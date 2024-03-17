@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 
 namespace Inc.TeamAssistant.Connector.Application.Contracts;
 

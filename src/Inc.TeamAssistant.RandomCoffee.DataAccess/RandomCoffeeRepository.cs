@@ -85,7 +85,9 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             INSERT INTO random_coffee.entries (
                 id,
                 created,
+                bot_id,
                 chat_id,
+                owner_id,
                 next_round,
                 state,
                 poll_id,
@@ -93,14 +95,18 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             VALUES (
                 @id,
                 @created,
+                @bot_id,
                 @chat_id,
+                @owner_id,
                 @next_round,
                 @state,
                 @poll_id,
                 @participant_ids::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 created = excluded.created,
+                bot_id = excluded.bot_id,
                 chat_id = excluded.chat_id,
+                owner_id = excluded.owner_id,
                 next_round = excluded.next_round,
                 state = excluded.state,
                 poll_id = excluded.poll_id,
@@ -109,7 +115,9 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             {
                 id = randomCoffeeEntry.Id,
                 created = randomCoffeeEntry.Created,
+                bot_id = randomCoffeeEntry.BotId,
                 chat_id = randomCoffeeEntry.ChatId,
+                owner_id = randomCoffeeEntry.OwnerId,
                 next_round = randomCoffeeEntry.NextRound,
                 state = randomCoffeeEntry.State,
                 poll_id = randomCoffeeEntry.PollId,
@@ -119,6 +127,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             cancellationToken: token);
         
         await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
 
         await connection.ExecuteAsync(upsertEntry);
@@ -166,6 +175,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.created AS created,
                 e.bot_id AS botid,
                 e.chat_id AS chatid,
+                e.owner_id AS ownerid,
                 e.next_round AS nextround,
                 e.state AS state,
                 e.poll_id AS pollid,

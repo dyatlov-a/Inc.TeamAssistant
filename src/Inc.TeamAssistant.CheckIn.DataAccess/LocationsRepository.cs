@@ -97,6 +97,7 @@ internal sealed class LocationsRepository : ILocationsRepository
             cancellationToken: token);
 
         await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
 
         await connection.ExecuteAsync(upsertMap);

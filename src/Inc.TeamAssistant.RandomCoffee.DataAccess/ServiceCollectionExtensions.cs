@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
 
         SqlMapper.AddTypeHandler(new JsonTypeHandler<ICollection<PersonPair>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<ICollection<long>>());
         
         services
             .AddSingleton<IRandomCoffeeReader>(sp => ActivatorUtilities.CreateInstance<RandomCoffeeReader>(

@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 using MediatR;
@@ -11,12 +12,14 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
     private readonly ReviewerOptions _options;
     private readonly IMessageBuilderService _messageBuilderService;
     private readonly ITranslateProvider _translateProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
     public MoveToInProgressCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
         ReviewerOptions options,
         IMessageBuilderService messageBuilderService,
-        ITranslateProvider translateProvider)
+        ITranslateProvider translateProvider,
+        ITeamAccessor teamAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
@@ -24,37 +27,39 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
         _messageBuilderService =
             messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
         _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task<CommandResult> Handle(MoveToInProgressCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
 
         if (!taskForReview.CanMoveToInProgress())
             return CommandResult.Empty;
+        
+        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
+        if (reviewer is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
+        
+        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
+        if (owner is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
         taskForReview.MoveToInProgress(_options.NotificationInterval);
         
         var notifications = new List<NotificationMessage>();
 
         if (taskForReview.MessageId.HasValue)
-        {
-            var taskForReviewMessage = await _messageBuilderService.NewTaskForReviewBuild(
-                command.MessageContext.LanguageId,
+            notifications.Add(await _messageBuilderService.BuildMessageNewTaskForReview(
                 taskForReview,
-                token);
-            notifications.Add(NotificationMessage.Edit(
-                    new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
-                    taskForReviewMessage.Text)
-                .AttachPerson(taskForReviewMessage.AttachedPersonId));
-        }
+                reviewer,
+                owner));
 
         var operationAppliedMessage = await _translateProvider.Get(
             Messages.Reviewer_OperationApplied,
-            command.MessageContext.LanguageId,
+            reviewer.GetLanguageId(),
             token);
         notifications.Add(NotificationMessage.Create(taskForReview.ReviewerId, operationAppliedMessage));
         

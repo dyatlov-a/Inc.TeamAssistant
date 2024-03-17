@@ -1,6 +1,6 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -61,17 +61,19 @@ internal sealed class PersonRepository : IPersonRepository
             throw new ArgumentNullException(nameof(person));
 
         var command = new CommandDefinition(@"
-            INSERT INTO connector.persons (id, name, language_id, username)
+            INSERT INTO connector.persons AS p (id, name, language_id, username)
             VALUES (@id, @name, @language_id, @username)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
-                language_id = EXCLUDED.language_id,
+                language_id = CASE WHEN p.language_id IS NULL AND EXCLUDED.language_id IS NOT NULL
+                    THEN EXCLUDED.language_id
+                    ELSE p.language_id END,
                 username = EXCLUDED.username;",
             new
             {
                 id = person.Id,
                 name = person.Name,
-                language_id = person.LanguageId.Value,
+                language_id = person.LanguageId?.Value,
                 username = person.Username
             },
             flags: CommandFlags.None,

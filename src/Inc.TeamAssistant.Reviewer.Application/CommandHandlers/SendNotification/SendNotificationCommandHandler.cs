@@ -9,105 +9,50 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.SendNotificatio
 
 internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotificationCommand, CommandResult>
 {
-    private static readonly IReadOnlyCollection<(MessageId MessageId, string Command)> ReviewerCommands = new[]
-    {
-        (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress),
-        (Messages.Reviewer_MoveToAccept, CommandList.Accept),
-        (Messages.Reviewer_MoveToDecline, CommandList.Decline)
-    };
-    
     private readonly ITaskForReviewRepository _repository;
-    private readonly ITeamAccessor _teamAccessor;
+    private readonly IMessageBuilderService _messageBuilderService;
     private readonly ReviewerOptions _options;
-    private readonly ITranslateProvider _translateProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
     public SendNotificationCommandHandler(
         ITaskForReviewRepository repository,
-        ITeamAccessor teamAccessor,
+        IMessageBuilderService messageBuilderService,
         ReviewerOptions options,
-        ITranslateProvider translateProvider)
+        ITeamAccessor teamAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+        _messageBuilderService = messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task<CommandResult> Handle(SendNotificationCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
-        var task = await _repository.GetById(command.TaskId, token);
+        var taskForReview = await _repository.GetById(command.TaskId, token);
+        
+        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
+        if (reviewer is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
+        
+        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
+        if (owner is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        task.SetNextNotificationTime(_options.NotificationInterval);
+        taskForReview.SetNextNotificationTime(_options.NotificationInterval);
 
-        var notifications = task.State switch
+        var notifications = taskForReview.State switch
         {
-            TaskForReviewState.New or TaskForReviewState.InProgress => new[]
-            {
-                await CreateNeedReviewMessage(_translateProvider, task, token)
-            },
-            TaskForReviewState.OnCorrection => new[]
-            {
-                await CreateMoveToNextRoundMessage(_translateProvider, task, token)
-            },
+            TaskForReviewState.New or TaskForReviewState.InProgress
+                => [await _messageBuilderService.BuildMessageNeedReview(taskForReview, reviewer)],
+            TaskForReviewState.OnCorrection
+                => [await _messageBuilderService.BuildMessageMoveToNextRound(taskForReview, owner)],
             _ => Array.Empty<NotificationMessage>()
         };
 
-        await _repository.Upsert(task, token);
+        await _repository.Upsert(taskForReview, token);
 
         return CommandResult.Build(notifications);
-    }
-
-    private async Task<NotificationMessage> CreateNeedReviewMessage(
-        ITranslateProvider translateProvider,
-        TaskForReview task,
-        CancellationToken token)
-    {
-        if (translateProvider is null)
-            throw new ArgumentNullException(nameof(translateProvider));
-        if (task is null)
-            throw new ArgumentNullException(nameof(task));
-
-        var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
-        if (!reviewer.HasValue)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
-
-        var message = NotificationMessage.Create(
-            reviewer.Value.Id,
-            await translateProvider.Get(Messages.Reviewer_NeedReview, reviewer.Value.LanguageId, task.Description));
-
-        foreach (var command in ReviewerCommands)
-        {
-            var text = await translateProvider.Get(command.MessageId, reviewer.Value.LanguageId);
-            message.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
-        }
-
-        return message;
-    }
-
-    private async Task<NotificationMessage> CreateMoveToNextRoundMessage(
-        ITranslateProvider translateProvider,
-        TaskForReview task,
-        CancellationToken token)
-    {
-        if (translateProvider is null)
-            throw new ArgumentNullException(nameof(translateProvider));
-        if (task is null)
-            throw new ArgumentNullException(nameof(task));
-
-        var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
-        if (!owner.HasValue)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
-
-        var message = NotificationMessage.Create(
-            owner.Value.Id,
-            await translateProvider.Get(Messages.Reviewer_ReviewDeclined, owner.Value.LanguageId, task.Description));
-        message.WithButton(new Button(
-            await translateProvider.Get(Messages.Reviewer_MoveToNextRound, owner.Value.LanguageId),
-            $"{CommandList.MoveToNextRound}{task.Id:N}"));
-
-        return message;
     }
 }

@@ -1,6 +1,7 @@
+using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives;
 using MediatR.Pipeline;
-using Telegram.Bot;
+using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -9,11 +10,16 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
 {
     private readonly DialogContinuation _dialogContinuation;
     private readonly TelegramBotClientProvider _provider;
+    private readonly ILogger<CommandPostProcessor<TCommand, TResult>> _logger;
 
-    public CommandPostProcessor(DialogContinuation dialogContinuation, TelegramBotClientProvider provider)
+    public CommandPostProcessor(
+        DialogContinuation dialogContinuation,
+        TelegramBotClientProvider provider,
+        ILogger<CommandPostProcessor<TCommand, TResult>> logger)
     {
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task Process(TCommand command, TResult result, CancellationToken token)
@@ -28,10 +34,9 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             {
                 if (command.MessageContext.Shared && ms.Any())
                 {
+                    var messages = ms.Select(m => (m.ChatId, m.MessageId)).ToArray();
                     var client = await _provider.Get(command.MessageContext.BotId, t);
-                    
-                    foreach (var m in ms)
-                        await client.DeleteMessageAsync(m.ChatId, m.MessageId, cancellationToken: t);
+                    await client.TryDelete(messages, _logger, token);
                 }
             },
             token);

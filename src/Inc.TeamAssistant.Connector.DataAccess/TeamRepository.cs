@@ -2,6 +2,7 @@ using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;

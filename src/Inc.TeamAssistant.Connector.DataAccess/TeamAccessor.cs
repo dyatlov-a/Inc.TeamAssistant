@@ -1,5 +1,4 @@
 using Dapper;
-using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Npgsql;
 
@@ -40,26 +39,22 @@ internal sealed class TeamAccessor : ITeamAccessor
         return persons.Select(p => (p.Id, p.DisplayName)).ToArray();
     }
 
-    public async Task<(long Id, string Name, string? Username, string PersonDisplayName, LanguageId LanguageId)?> FindPerson(
-        long userId,
-        CancellationToken token)
+    public async Task<Person?> FindPerson(long personId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 p.id AS id,
                 p.name AS name,
                 p.username AS username,
-                COALESCE(p.username, p.name) AS persondisplayname,
                 p.language_id AS languageid
             FROM connector.persons AS p
             WHERE p.id = @id;",
-            new { id = userId },
+            new { id = personId },
             flags: CommandFlags.None,
             cancellationToken: token);
         
         await using var connection = new NpgsqlConnection(_connectionString);
 
-        return await connection
-            .QuerySingleOrDefaultAsync<(long Id, string Name, string? Username, string PersonDisplayName, LanguageId LanguageId)?>(command);
+        return await connection.QuerySingleOrDefaultAsync<Person?>(command);
     }
 }

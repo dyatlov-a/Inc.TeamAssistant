@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Application.Extensions;
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 using Telegram.Bot.Types;
 
@@ -26,10 +25,10 @@ internal sealed class PersonService
         var currentPerson = new Person(
             user.Id,
             user.FirstName,
-            user.GetLanguageId(),
+            user.LanguageCode,
             user.Username);
         
-        if (_memoryCache.TryGetValue(key, out Person? person) && person?.Equals(currentPerson) == true)
+        if (_memoryCache.TryGetValue(key, out Person? person) && person?.IsEquivalent(currentPerson) == true)
             return currentPerson;
 
         await _personRepository.Upsert(currentPerson, token);

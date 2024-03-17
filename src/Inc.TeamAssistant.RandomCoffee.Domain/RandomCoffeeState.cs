@@ -4,5 +4,5 @@ public enum RandomCoffeeState
 {
     None = 0,
     Waiting = 1,
-    Idle = 2,
+    Idle = 2
 }

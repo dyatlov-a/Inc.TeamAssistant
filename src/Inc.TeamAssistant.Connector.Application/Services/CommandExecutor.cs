@@ -41,12 +41,12 @@ internal sealed class CommandExecutor : ICommandExecutor
 
     public async Task Execute(IDialogCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         const string duplicateKeyError = "23505";
 
         var client = await _provider.Get(command.MessageContext.BotId, token);
+        var dialog = _dialogContinuation.Find(command.MessageContext.PersonId);
         
         try
         {
@@ -54,7 +54,13 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (ValidationException validationException)
         {
-            await TrySend(client, command.MessageContext, validationException.ToMessage(), token);
+            await client.TrySend(
+                dialog,
+                command.MessageContext.ChatId,
+                command.MessageContext.MessageId,
+                validationException.ToMessage(),
+                _logger,
+                token);
         }
         catch (TeamAssistantUserException userException)
         {
@@ -62,15 +68,23 @@ internal sealed class CommandExecutor : ICommandExecutor
                 userException.MessageId,
                 command.MessageContext.LanguageId,
                 userException.Values);
-
-            await TrySend(client, command.MessageContext, errorMessage, token);
+            
+            await client.TrySend(
+                dialog,
+                command.MessageContext.ChatId,
+                command.MessageContext.MessageId,
+                errorMessage,
+                _logger,
+                token);
         }
         catch (TeamAssistantException teamAssistantException)
         {
-            await TrySend(
-                client,
-                command.MessageContext,
+            await client.TrySend(
+                dialog,
+                command.MessageContext.ChatId,
+                command.MessageContext.MessageId,
                 teamAssistantException.Message,
+                _logger,
                 token);
         }
         catch (ApiRequestException apiRequestException)
@@ -79,20 +93,24 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (PostgresException ex) when (ex.SqlState == duplicateKeyError)
         {
-            await TrySend(
-                client,
-                command.MessageContext,
+            await client.TrySend(
+                dialog,
+                command.MessageContext.ChatId,
+                command.MessageContext.MessageId,
                 "Duplicate key value violates unique constraint.",
+                _logger,
                 token);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");
-
-            await TrySend(
-                client,
-                command.MessageContext,
+            
+            await client.TrySend(
+                dialog,
+                command.MessageContext.ChatId,
+                command.MessageContext.MessageId,
                 "An unhandled exception has occurred. Try running the command again.",
+                _logger,
                 token);
         }
     }
@@ -103,13 +121,10 @@ internal sealed class CommandExecutor : ICommandExecutor
         IRequest<CommandResult> command,
         CancellationToken token)
     {
-        if (client is null)
-            throw new ArgumentNullException(nameof(client));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(command);
+
         using var scope = _serviceProvider.CreateScope();
         var mediatr = scope.ServiceProvider.GetRequiredService<IMediator>();
         var commandResult = await mediatr.Send(command, token);
@@ -129,9 +144,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         var person = await _personRepository.Find(personId, token);
 
         return person is not null
-            ? new[]
-            {
-                new MessageEntity
+            ? [new MessageEntity
                 {
                     Type = MessageEntityType.TextMention,
                     Offset = text.LastIndexOf(person.Name, StringComparison.InvariantCultureIgnoreCase),
@@ -139,12 +152,11 @@ internal sealed class CommandExecutor : ICommandExecutor
                     User = new User
                     {
                         Id = person.Id,
-                        LanguageCode = person.LanguageId.Value,
+                        LanguageCode = person.GetLanguageId().Value,
                         FirstName = person.Name,
                         Username = person.Username
                     }
-                }
-            }
+                }]
             : Array.Empty<MessageEntity>();
     }
     
@@ -154,12 +166,9 @@ internal sealed class CommandExecutor : ICommandExecutor
         MessageContext messageContext,
         CancellationToken token)
     {
-        if (client is null)
-            throw new ArgumentNullException(nameof(client));
-        if (notificationMessage is null)
-            throw new ArgumentNullException(nameof(notificationMessage));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(notificationMessage);
+        ArgumentNullException.ThrowIfNull(messageContext);
 
         var entities = notificationMessage.TargetPersonId.HasValue
             ? await BuildMessageEntities(notificationMessage.Text, notificationMessage.TargetPersonId.Value, token)
@@ -210,38 +219,5 @@ internal sealed class CommandExecutor : ICommandExecutor
                 (new(notificationMessage.DeleteMessage.ChatId),
                     notificationMessage.DeleteMessage.MessageId,
                     token);
-    }
-    
-    private async Task TrySend(
-        ITelegramBotClient client,
-        MessageContext messageContext,
-        string text,
-        CancellationToken token)
-    {
-        if (client is null)
-            throw new ArgumentNullException(nameof(client));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
-
-        try
-        {
-            var message = await client.SendTextMessageAsync(
-                messageContext.ChatId,
-                text,
-                cancellationToken: token);
-            
-            var dialog = _dialogContinuation.Find(messageContext.PersonId);
-            if (dialog is not null)
-            {
-                dialog.Attach(new ChatMessage(messageContext.ChatId, messageContext.MessageId));
-                dialog.Attach(new ChatMessage(messageContext.ChatId, message.MessageId));
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Can not send message to chat {TargetChatId}", messageContext.ChatId);
-        }
     }
 }
