@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToAccept;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;

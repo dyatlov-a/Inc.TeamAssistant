@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.InviteForCoffee;
 
 namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCoffee.Services;

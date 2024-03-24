@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -44,6 +45,14 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             command.MessageContext.PersonId,
             targetTeam.ChatId,
             command.Description);
+
+        if (command.MessageContext.TargetPersonId.HasValue)
+            taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
+        else
+        {
+            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
+            taskForReview.DetectReviewer(teammates.Select(t => t.Id).ToArray(), lastReviewerId);
+        }
         
         var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (reviewer is null)
@@ -52,19 +61,12 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
-
-        if (command.MessageContext.TargetPersonId.HasValue)
-            taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
-        else
-        {
-            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
-            taskForReview.DetectReviewer(teammates.Select(t => t.PersonId).ToArray(), lastReviewerId);
-        }
         
         var taskForReviewMessage = await _messageBuilderService.BuildMessageNewTaskForReview(
             taskForReview,
             reviewer,
-            owner);
+            owner,
+            token);
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         

@@ -1,5 +1,7 @@
 using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
@@ -16,27 +18,29 @@ internal sealed class MessageBuilderService : IMessageBuilderService
     };
     
     private readonly ITranslateProvider _translateProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
-    public MessageBuilderService(ITranslateProvider translateProvider)
+    public MessageBuilderService(ITranslateProvider translateProvider, ITeamAccessor teamAccessor)
     {
         _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task<NotificationMessage> BuildMessageNewTaskForReview(
         TaskForReview taskForReview,
         Person reviewer,
-        Person owner)
+        Person owner,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
         ArgumentNullException.ThrowIfNull(reviewer);
         ArgumentNullException.ThrowIfNull(owner);
-
-        var languageId = owner.GetLanguageId();
+        
         var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Username);
         var attachedPersonId = hasUsername ? null : (long?)reviewer.Id;
         var messageText = await _translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,
-            languageId,
+            await _teamAccessor.GetClientLanguage(owner.Id, token),
             taskForReview.Description,
             owner.DisplayName,
             hasUsername ? $"@{reviewer.Username}" : reviewer.Name);
@@ -66,12 +70,15 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         return notification;
     }
     
-    public async Task<NotificationMessage> BuildMessageNeedReview(TaskForReview task, Person reviewer)
+    public async Task<NotificationMessage> BuildMessageNeedReview(
+        TaskForReview task,
+        Person reviewer,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(reviewer);
 
-        var languageId = reviewer.GetLanguageId();
+        var languageId = await _teamAccessor.GetClientLanguage(reviewer.Id, token);
         var message = NotificationMessage.Create(
             reviewer.Id,
             await _translateProvider.Get(Messages.Reviewer_NeedReview, languageId, task.Description));
@@ -85,12 +92,15 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         return message;
     }
 
-    public async Task<NotificationMessage> BuildMessageMoveToNextRound(TaskForReview task, Person owner)
+    public async Task<NotificationMessage> BuildMessageMoveToNextRound(
+        TaskForReview task,
+        Person owner,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(owner);
 
-        var languageId = owner.GetLanguageId();
+        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
         var message = NotificationMessage.Create(
             owner.Id,
             await _translateProvider.Get(Messages.Reviewer_ReviewDeclined, languageId, task.Description));

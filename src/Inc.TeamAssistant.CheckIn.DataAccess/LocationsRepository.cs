@@ -66,7 +66,7 @@ internal sealed class LocationsRepository : ILocationsRepository
 
         var upsertMap = new CommandDefinition(@"
             INSERT INTO maps.maps (id, chat_id, bot_id)
-            VALUES (@map_id, @chat_id, @bot_id)
+            VALUES (@id, @chat_id, @bot_id)
             ON CONFLICT (id) DO UPDATE SET
                 chat_id = excluded.chat_id,
                 bot_id = excluded.bot_id;",

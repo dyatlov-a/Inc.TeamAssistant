@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         
         SqlMapper.AddTypeHandler(new JsonTypeHandler<ICollection<string>>());
         SqlMapper.AddTypeHandler(new JsonTypeHandler<IReadOnlyDictionary<string, string>>());
+        SqlMapper.AddTypeHandler(new LanguageIdTypeHandler());
         
         services
             .AddSingleton<IStoryReader>(sp => ActivatorUtilities.CreateInstance<StoryReader>(sp, connectionString))

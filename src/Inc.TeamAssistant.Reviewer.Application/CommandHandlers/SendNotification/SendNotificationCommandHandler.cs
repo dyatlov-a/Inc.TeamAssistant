@@ -1,5 +1,7 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.SendNotification;
@@ -45,9 +47,9 @@ internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotif
         var notifications = taskForReview.State switch
         {
             TaskForReviewState.New or TaskForReviewState.InProgress
-                => [await _messageBuilderService.BuildMessageNeedReview(taskForReview, reviewer)],
+                => [await _messageBuilderService.BuildMessageNeedReview(taskForReview, reviewer, token)],
             TaskForReviewState.OnCorrection
-                => [await _messageBuilderService.BuildMessageMoveToNextRound(taskForReview, owner)],
+                => [await _messageBuilderService.BuildMessageMoveToNextRound(taskForReview, owner, token)],
             _ => Array.Empty<NotificationMessage>()
         };
 

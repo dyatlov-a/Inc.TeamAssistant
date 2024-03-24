@@ -1,4 +1,6 @@
-namespace Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
+
+namespace Inc.TeamAssistant.Primitives.Commands;
 
 public sealed record MessageContext(
     int MessageId,

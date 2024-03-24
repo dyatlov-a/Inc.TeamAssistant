@@ -14,7 +14,6 @@ using Inc.TeamAssistant.Gateway.Hubs;
 using Inc.TeamAssistant.Gateway.PipelineBehaviors;
 using Inc.TeamAssistant.Gateway.Services;
 using Inc.TeamAssistant.Gateway.Services.CheckIn;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.DataAccess;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
@@ -88,7 +88,7 @@ builder.Services
 	.AddRandomCoffeeDataAccess(connectionString)
 	
 	.AddConnectorApplication()
-	.AddConnectorDataAccess(connectionString)
+	.AddConnectorDataAccess(connectionString, cacheAbsoluteExpiration)
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()

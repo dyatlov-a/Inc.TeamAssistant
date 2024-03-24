@@ -1,4 +1,6 @@
-namespace Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+
+namespace Inc.TeamAssistant.Primitives.Notifications;
 
 public sealed class NotificationMessage
 {

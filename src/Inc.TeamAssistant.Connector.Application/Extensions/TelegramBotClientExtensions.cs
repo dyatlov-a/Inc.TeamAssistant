@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 

@@ -1,8 +1,10 @@
 using FluentValidation;
-using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,7 +22,7 @@ internal sealed class CommandExecutor : ICommandExecutor
     private readonly TelegramBotClientProvider _provider;
     private readonly IServiceProvider _serviceProvider;
     private readonly IMessageBuilder _messageBuilder;
-    private readonly IPersonRepository _personRepository;
+    private readonly ITeamAccessor _teamAccessor;
     private readonly DialogContinuation _dialogContinuation;
 
     public CommandExecutor(
@@ -28,14 +30,14 @@ internal sealed class CommandExecutor : ICommandExecutor
         TelegramBotClientProvider provider,
         IServiceProvider serviceProvider,
         IMessageBuilder messageBuilder,
-        IPersonRepository personRepository,
+        ITeamAccessor teamAccessor,
         DialogContinuation dialogContinuation)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
 
@@ -141,7 +143,8 @@ internal sealed class CommandExecutor : ICommandExecutor
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
         
-        var person = await _personRepository.Find(personId, token);
+        var person = await _teamAccessor.FindPerson(personId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(personId, token);
 
         return person is not null
             ? [new MessageEntity
@@ -152,7 +155,7 @@ internal sealed class CommandExecutor : ICommandExecutor
                     User = new User
                     {
                         Id = person.Id,
-                        LanguageCode = person.GetLanguageId().Value,
+                        LanguageCode = languageId.Value,
                         FirstName = person.Name,
                         Username = person.Username
                     }

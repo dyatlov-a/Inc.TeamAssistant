@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.InviteForCoffee;

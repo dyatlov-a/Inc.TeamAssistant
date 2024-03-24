@@ -1,5 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 

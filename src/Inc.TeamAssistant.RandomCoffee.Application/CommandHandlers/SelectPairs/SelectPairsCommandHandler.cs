@@ -1,6 +1,9 @@
 using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.SelectPairs;
 using MediatR;
@@ -38,7 +41,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (owner is null)
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
 
-        var languageId = owner.GetLanguageId();
+        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
         var builder = new StringBuilder();
         randomCoffeeEntry.MoveToNextRound(_options.RoundInterval - _options.WaitingInterval);
         

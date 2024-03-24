@@ -75,7 +75,6 @@ internal sealed class BotRepository : IBotRepository
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.language_id AS languageid,
                 p.username AS username,
                 tm.team_id AS teamid
             FROM connector.persons AS p
@@ -94,12 +93,7 @@ internal sealed class BotRepository : IBotRepository
         var botCommands = await query.ReadAsync<BotCommand>();
         var botCommandStages = (await query.ReadAsync<BotCommandStage>()).ToLookup(s => s.BotCommandId);
         var teams = await query.ReadAsync<Team>();
-        var personsLookup = (await query.ReadAsync<(
-                long Id,
-                string Name,
-                LanguageId? LanguageId,
-                string? Username,
-                Guid TeamId)>())
+        var personsLookup = (await query.ReadAsync<(long Id, string Name, string? Username, Guid TeamId)>())
             .ToLookup(p => p.TeamId);
 
         if (bot is not null)
@@ -115,7 +109,7 @@ internal sealed class BotRepository : IBotRepository
             foreach (var team in teams)
             {
                 foreach (var person in personsLookup[team.Id])
-                    team.AddTeammate(new Person(person.Id, person.Name, person.LanguageId?.Value, person.Username));
+                    team.AddTeammate(new Person(person.Id, person.Name, person.Username));
                 
                 bot.AddTeam(team);
             }

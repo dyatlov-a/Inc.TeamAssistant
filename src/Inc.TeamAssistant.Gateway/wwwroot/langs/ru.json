@@ -113,7 +113,7 @@
   "Connector_TeamForUserNotFound": "Команда для пользователя {0} не найдена.",
   "Connector_PersonNotFound": "Пользователь {0} не найден.",
   "Connector_ChangedPropertySuccess": "Изменено свойство для команды \"{0}\"",
-  "Connector_HelpText": "Выбери подходящую опцию ниже",
+  "Connector_HelpText": "Выбери подходящую опцию ниже. Если что то пойдет не так, выполните команду {0} и попробуйте снова.",
   
   "RandomCoffee_Question": "Желаете участвовать в random coffee в этом спринте?",
   "RandomCoffee_Yes": "Да",
@@ -121,5 +121,6 @@
   "RandomCoffee_SelectedPairs": "Определены пары:",
   "RandomCoffee_NotSelectedPair": "К сожалению не найдена пара для {0}",
   "RandomCoffee_MeetingDescription": "Договоритесь в ЛС о проведении встречи",
-  "RandomCoffee_NotEnoughParticipants": "Недостаточно участников для составления пар"
+  "RandomCoffee_NotEnoughParticipants": "Недостаточно участников для составления пар",
+  "RandomCoffee_InviteHelp": "Начать проведение встреч"
 }

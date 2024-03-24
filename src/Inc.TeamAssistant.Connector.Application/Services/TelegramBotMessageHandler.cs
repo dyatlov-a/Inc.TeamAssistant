@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
@@ -25,15 +25,13 @@ internal sealed class TelegramBotMessageHandler
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
-        _messageContextBuilder =
-            messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
+        _messageContextBuilder = messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
     }
 
     public async Task Handle(Update update, Guid botId, CancellationToken token)
     {
-        if (update is null)
-            throw new ArgumentNullException(nameof(update));
-        
+        ArgumentNullException.ThrowIfNull(update);
+
         try
         {
             var bot = await _botRepository.Find(botId, token);

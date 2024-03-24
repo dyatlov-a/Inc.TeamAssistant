@@ -2,6 +2,8 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin;

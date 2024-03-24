@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.RandomCoffee.Application;
 

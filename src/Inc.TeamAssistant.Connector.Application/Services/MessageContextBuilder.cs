@@ -1,6 +1,8 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Languages;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -8,72 +10,101 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class MessageContextBuilder
 {
-    private readonly PersonService _personService;
     private readonly IPersonRepository _personRepository;
+    private readonly IClientLanguageRepository _clientLanguageRepository;
 
-    public MessageContextBuilder(PersonService personService, IPersonRepository personRepository)
+    public MessageContextBuilder(
+        IPersonRepository personRepository,
+        IClientLanguageRepository clientLanguageRepository)
     {
-        _personService = personService ?? throw new ArgumentNullException(nameof(personService));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
     }
-
-    // TODO: need refactoring create MessageContext
+    
     public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
-        if (update is null)
-            throw new ArgumentNullException(nameof(update));
-        
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(update);
+
         if (update.Message?.From?.IsBot == true ||
             update.CallbackQuery?.From.IsBot == true ||
             update.PollAnswer?.User.IsBot == true)
             return null;
 
-        if (update.PollAnswer is not null)
+        return update.Type switch
         {
-            var parameters = string.Join("&option=", update.PollAnswer.OptionIds);
-            var text = string.Format(CommandList.AddPollAnswer, update.PollAnswer.PollId, parameters);
+            UpdateType.Message => await CreateFromMessage(bot, update.Message!, token),
+            UpdateType.CallbackQuery => await CreateFromCallbackQuery(bot, update.CallbackQuery!, token),
+            UpdateType.PollAnswer => await CreateFromPollAnswer(bot, update.PollAnswer!, token),
+            _ => null
+        };
+    }
+
+    private async Task<MessageContext?> CreateFromPollAnswer(Bot bot, PollAnswer pollAnswer, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(pollAnswer);
+        
+        var parameters = string.Join("&option=", pollAnswer.OptionIds);
+        var text = string.Format(CommandList.AddPollAnswer, pollAnswer.PollId, parameters);
             
+        return await Create(
+            bot,
+            messageId: 0,
+            chatId: 0,
+            pollAnswer.User,
+            text,
+            targetPersonId: null,
+            location: null,
+            token);
+    }
+
+    private async Task<MessageContext?> CreateFromCallbackQuery(
+        Bot bot,
+        CallbackQuery callbackQuery,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(callbackQuery);
+        
+        return await Create(
+            bot,
+            callbackQuery.Message!.MessageId,
+            callbackQuery.Message.Chat.Id,
+            callbackQuery.From,
+            callbackQuery.Data!,
+            targetPersonId: null,
+            location: null,
+            token);
+    }
+
+    private async Task<MessageContext?> CreateFromMessage(Bot bot, Message message, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(message);
+
+        if (message.Location is not null)
             return await Create(
                 bot,
-                messageId: 0,
-                chatId: 0,
-                update.PollAnswer.User,
-                text,
+                message.MessageId,
+                message.Chat.Id,
+                message.From!,
+                CommandList.AddLocation,
                 targetPersonId: null,
-                location: null,
+                location: message.Location,
                 token);
-        }
         
-        var messageId = update.Message?.MessageId ?? update.CallbackQuery?.Message?.MessageId;
-        if (!messageId.HasValue)
-            return null;
+        var parsedText = await ParseText(bot.Name, message, token);
 
-        var chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
-        if (!chatId.HasValue)
-            return null;
-
-        var user = update.Message?.From ?? update.CallbackQuery?.From;
-        if (user is null)
-            return null;
-        
-        var message = await ParseText(
-            bot.Name,
-            update.Message,
-            update.CallbackQuery?.Data,
-            update.Message?.Location,
-            token);
-
-        return message.HasValue
+        return parsedText.HasValue
             ? await Create(
                 bot,
-                messageId.Value,
-                chatId.Value,
-                user,
-                message.Value.Text,
-                message.Value.TargetPersonId,
-                update.Message?.Location,
+                message.MessageId,
+                message.Chat.Id,
+                message.From!,
+                parsedText.Value.Text,
+                targetPersonId: parsedText.Value.TargetPersonId,
+                location: null,
                 token)
             : null;
     }
@@ -88,14 +119,14 @@ internal sealed class MessageContextBuilder
         Location? location,
         CancellationToken token)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
-        if (user is null)
-            throw new ArgumentNullException(nameof(user));
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(user);
+        
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
 
-        var person = await _personService.EnsurePerson(user, token);
+        var person = await EnsurePerson(user, token);
+        var language = await EnsureLanguage(user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
         return new(
@@ -108,43 +139,52 @@ internal sealed class MessageContextBuilder
             person.Id,
             person.Name,
             person.Username,
-            person.GetLanguageId(),
+            language,
             location is not null ? new (location.Longitude, location.Latitude) : null,
             targetPersonId);
     }
     
+    private async Task<LanguageId> EnsureLanguage(User user, CancellationToken token)
+    {
+        if (!string.IsNullOrWhiteSpace(user.LanguageCode))
+            await _clientLanguageRepository.Upsert(user.Id, user.LanguageCode, token);
+        
+        var language = await _clientLanguageRepository.Get(user.Id, token);
+        return language;
+    }
+
+    private async Task<Person> EnsurePerson(User user, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        
+        await _personRepository.Upsert(new Person(user.Id, user.FirstName, user.Username), token);
+        
+        var person = await _personRepository.Find(user.Id, token);
+        return person!;
+    }
+    
     private async Task<(string Text, long? TargetPersonId)?> ParseText(
         string botName,
-        Message? message,
-        string? data,
-        Location? location,
+        Message message,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(message);
+        
         if (string.IsNullOrWhiteSpace(botName))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botName));
 
-        if (!string.IsNullOrWhiteSpace(message?.Text))
-        {
-            var text = message.Text.Replace($"@{botName} ", string.Empty);
-            var attachedPerson = await GetPersonFromEntities(message, token) ?? await GetPersonFromText(text, token);
-            
-            if (attachedPerson.HasValue)
-            {
-                var cleanText = text.Replace(attachedPerson.Value.Marker, string.Empty);
-                
-                return string.IsNullOrWhiteSpace(cleanText)
-                    ? null
-                    : (cleanText, attachedPerson.Value.Id);
-            }
+        if (string.IsNullOrWhiteSpace(message.Text))
+            return null;
+        
+        var text = message.Text.Replace($"@{botName} ", string.Empty);
+        var attachedPerson = await GetPersonFromEntities(message, token) ?? await GetPersonFromText(text, token);
 
+        if (!attachedPerson.HasValue)
             return (text, null);
-        }
-
-        return string.IsNullOrWhiteSpace(data)
-            ? location is not null
-                ? (CommandList.AddLocation, null)
-                : null
-            : (data, null);
+            
+        var cleanText = text.Replace(attachedPerson.Value.Marker, string.Empty);
+                
+        return string.IsNullOrWhiteSpace(cleanText) ? null : (cleanText, attachedPerson.Value.Id);
     }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
 

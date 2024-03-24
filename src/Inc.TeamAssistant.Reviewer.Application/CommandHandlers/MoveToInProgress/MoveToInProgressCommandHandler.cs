@@ -1,5 +1,8 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 using MediatR;
@@ -55,11 +58,12 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
             notifications.Add(await _messageBuilderService.BuildMessageNewTaskForReview(
                 taskForReview,
                 reviewer,
-                owner));
+                owner,
+                token));
 
         var operationAppliedMessage = await _translateProvider.Get(
             Messages.Reviewer_OperationApplied,
-            reviewer.GetLanguageId(),
+            await _teamAccessor.GetClientLanguage(reviewer.Id, token),
             token);
         notifications.Add(NotificationMessage.Create(taskForReview.ReviewerId, operationAppliedMessage));
         

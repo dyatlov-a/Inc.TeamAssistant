@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Inc.TeamAssistant.Primitives;
+namespace Inc.TeamAssistant.Primitives.Commands;
 
 public interface IDialogCommand : IRequest<CommandResult>
 {

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProperty.Services;
 

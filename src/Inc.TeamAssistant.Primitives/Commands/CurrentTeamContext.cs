@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Primitives;
+namespace Inc.TeamAssistant.Primitives.Commands;
 
 public sealed record CurrentTeamContext(Guid TeamId, IReadOnlyDictionary<string, string> Properties)
 {

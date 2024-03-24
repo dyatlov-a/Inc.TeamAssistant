@@ -1,5 +1,8 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToAccept;
 using MediatR;
@@ -51,17 +54,18 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
             notifications.Add(await _messageBuilderService.BuildMessageNewTaskForReview(
                 taskForReview,
                 reviewer,
-                owner));
+                owner,
+                token));
 
         var reviewerAcceptedMessage = await _translateProvider.Get(
             Messages.Reviewer_Accepted,
-            owner.GetLanguageId(),
+            await _teamAccessor.GetClientLanguage(owner.Id, token),
             taskForReview.Description);
         notifications.Add(NotificationMessage.Create(taskForReview.OwnerId, reviewerAcceptedMessage));
 
         var operationAppliedMessage = await _translateProvider.Get(
             Messages.Reviewer_OperationApplied,
-            reviewer.GetLanguageId());
+            await _teamAccessor.GetClientLanguage(reviewer.Id, token));
         notifications.Add(NotificationMessage.Create(taskForReview.ReviewerId, operationAppliedMessage));
 
         await _taskForReviewRepository.Upsert(taskForReview, token);

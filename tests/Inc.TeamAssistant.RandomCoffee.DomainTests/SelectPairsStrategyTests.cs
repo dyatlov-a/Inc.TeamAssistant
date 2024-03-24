@@ -71,11 +71,28 @@ public sealed class SelectPairsStrategyTests
         Assert.False(IsIntersection(result.Pairs, history));
         Assert.Null(result.ExcludedPersonId);
     }
+    
+    [Fact]
+    public void Detect_SecondMeeting_ShouldBeSelectPairs()
+    {
+        var item1 = _fixture.Create<long>();
+        var item2 = _fixture.Create<long>();
+        var historyPairs1 = new PersonPair(item1, item2);
+        var history = new[] { historyPairs1 };
+        var orderedHistory = new[] { history };
+        var participantIds = new[] { item1, item2 };
+        
+        var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
+
+        var result = strategy.Detect();
+        
+        Assert.True(IsIntersection(result.Pairs, history));
+        Assert.Null(result.ExcludedPersonId);
+    }
 
     private static bool IsIntersection(IReadOnlyCollection<PersonPair> pairs)
     {
-        if (pairs is null)
-            throw new ArgumentNullException(nameof(pairs));
+        ArgumentNullException.ThrowIfNull(pairs);
 
         var exists = new HashSet<long>();
 
@@ -94,11 +111,9 @@ public sealed class SelectPairsStrategyTests
         IReadOnlyCollection<PersonPair> pairs,
         IReadOnlyCollection<PersonPair> historyPairs)
     {
-        if (pairs is null)
-            throw new ArgumentNullException(nameof(pairs));
-        if (historyPairs is null)
-            throw new ArgumentNullException(nameof(historyPairs));
-        
+        ArgumentNullException.ThrowIfNull(pairs);
+        ArgumentNullException.ThrowIfNull(historyPairs);
+
         foreach (var pair in pairs)
             if (historyPairs.Any(h => h.Equals(pair)))
                 return true;

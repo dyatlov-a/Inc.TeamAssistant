@@ -1,60 +1,32 @@
-using Dapper;
+using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class TeamAccessor : ITeamAccessor
 {
-    private readonly string _connectionString;
+    private readonly IPersonRepository _personRepository;
+    private readonly IClientLanguageRepository _clientLanguageRepository;
 
-    public TeamAccessor(string connectionString)
+    public TeamAccessor(IPersonRepository personRepository, IClientLanguageRepository clientLanguageRepository)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
+        _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
     }
-    
-    public async Task<IReadOnlyCollection<(long PersonId, string PersonDisplayName)>> GetTeammates(
-        Guid teamId,
-        CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT
-                p.id AS id,
-                p.name AS name,
-                p.language_id AS languageid,
-                p.username AS username
-            FROM connector.persons AS p
-            JOIN connector.teammates AS tm ON p.id = tm.person_id
-            WHERE tm.team_id = @team_id;",
-            new { team_id = teamId },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
 
-        var persons = await connection.QueryAsync<Person>(command);
-        return persons.Select(p => (p.Id, p.DisplayName)).ToArray();
+    public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
+    {
+        return await _personRepository.GetTeammates(teamId, token);
     }
 
     public async Task<Person?> FindPerson(long personId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-            SELECT
-                p.id AS id,
-                p.name AS name,
-                p.username AS username,
-                p.language_id AS languageid
-            FROM connector.persons AS p
-            WHERE p.id = @id;",
-            new { id = personId },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+        return await _personRepository.Find(personId, token);
+    }
 
-        return await connection.QuerySingleOrDefaultAsync<Person?>(command);
+    public async Task<LanguageId> GetClientLanguage(long personId, CancellationToken token)
+    {
+        return await _clientLanguageRepository.Get(personId, token);
     }
 }

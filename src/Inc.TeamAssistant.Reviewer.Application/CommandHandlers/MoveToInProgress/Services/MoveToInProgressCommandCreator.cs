@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgress.Services;

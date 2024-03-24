@@ -1,5 +1,7 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
@@ -27,16 +29,16 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
 
         // TODO: Accept task for leave last person (Impl remove team case)
-        var otherTeammates = teammates.Where(t => t.PersonId != messageContext.PersonId).ToArray();
+        var otherTeammates = teammates.Where(t => t.Id != messageContext.PersonId).ToArray();
 
         if (otherTeammates.Any())
         {
-            var nextReviewer = otherTeammates.MinBy(t => t.PersonId);
+            var nextReviewer = otherTeammates.MinBy(t => t.Id)!;
 
             await _taskForReviewRepository.RetargetAndLeave(
                 teamId,
                 messageContext.PersonId,
-                nextReviewer.PersonId,
+                nextReviewer.Id,
                 DateTimeOffset.UtcNow,
                 token);
         }

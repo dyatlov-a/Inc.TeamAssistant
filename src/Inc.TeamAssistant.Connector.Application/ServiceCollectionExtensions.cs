@@ -5,7 +5,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Services;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +19,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddSingleton<PersonService>()
             .AddSingleton<CommandFactory>()
             .AddSingleton<DialogCommandFactory>()
             .AddSingleton<MessageContextBuilder>()

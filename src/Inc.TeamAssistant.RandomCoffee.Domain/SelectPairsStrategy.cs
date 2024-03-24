@@ -54,9 +54,12 @@ internal sealed class SelectPairsStrategy
             var pairs = _orderedHistory[index]
                 .Where(p => _orderedParticipantIds.Contains(p.FirstId) && _orderedParticipantIds.Contains(p.SecondId))
                 .ToArray();
+            var weight = _orderedParticipantIds.Length < PersonPair.Size * 2
+                ? index + 1
+                : index;
             
             foreach (var pair in pairs)
-                pairByWeights.TryAdd(pair, index);
+                pairByWeights.TryAdd(pair, weight);
         }
 
         return pairByWeights;

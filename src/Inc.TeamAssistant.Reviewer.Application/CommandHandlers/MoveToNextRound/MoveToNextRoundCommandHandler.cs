@@ -1,5 +1,8 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToNextRound;
 using MediatR;
@@ -51,11 +54,12 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
             notifications.Add(await _messageBuilderService.BuildMessageNewTaskForReview(
                 taskForReview,
                 reviewer,
-                owner));
+                owner,
+                token));
 
         var operationAppliedMessage = await _translateProvider.Get(
             Messages.Reviewer_OperationApplied,
-            owner.GetLanguageId(),
+            await _teamAccessor.GetClientLanguage(owner.Id, token),
             token);
         notifications.Add(NotificationMessage.Create(taskForReview.OwnerId, operationAppliedMessage));
 

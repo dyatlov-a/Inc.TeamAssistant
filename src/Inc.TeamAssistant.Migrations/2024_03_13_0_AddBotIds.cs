@@ -25,20 +25,42 @@ public sealed class AddBotIds : Migration
             .InSchema("appraiser")
             .AsGuid().NotNullable().SetExistingRowsTo(Guid.Empty);
 
-        Alter
-            .Column("language_id")
-            .OnTable("persons")
+        Create
+            .Table("client_languages")
             .InSchema("connector")
-            .AsString().Nullable();
+
+            .WithColumn("person_id")
+            .AsInt64().NotNullable()
+            .PrimaryKey("client_languages__pk__person_id")
+
+            .WithColumn("language_id")
+            .AsString().NotNullable();
+
+        Execute.Sql("""
+            INSERT INTO connector.client_languages (person_id, language_id)
+            SELECT id, language_id
+            FROM connector.persons;
+            """,
+            "Migrate languages");
+
+        Delete
+            .Column("language_id")
+            .FromTable("persons")
+            .InSchema("connector");
     }
 
     public override void Down()
     {
-        Alter
+        Create
             .Column("language_id")
             .OnTable("persons")
             .InSchema("connector")
-            .AsString().NotNullable();
+            .AsString().NotNullable()
+            .SetExistingRowsTo(string.Empty);
+        
+        Delete
+            .Table("client_languages")
+            .InSchema("connector");
         
         Delete
             .Column("bot_id")

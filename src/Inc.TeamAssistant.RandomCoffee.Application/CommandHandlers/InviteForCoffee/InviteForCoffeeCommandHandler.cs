@@ -1,5 +1,8 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.AttachPoll;
@@ -50,7 +53,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
 
         await _repository.Upsert(randomCoffeeEntry, token);
 
-        var languageId = owner.GetLanguageId();
+        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
         var notifications = new[]
         {
             NotificationMessage

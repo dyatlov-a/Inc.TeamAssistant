@@ -1,4 +1,6 @@
-namespace Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Notifications;
+
+namespace Inc.TeamAssistant.Primitives.Commands;
 
 public sealed record CommandResult(IReadOnlyCollection<NotificationMessage> Notifications)
 {

@@ -1,7 +1,9 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.Help;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 using ArgumentNullException = System.ArgumentNullException;
 
@@ -20,8 +22,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
 
     public async Task<CommandResult> Handle(HelpCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var bot = await _botRepository.Find(command.MessageContext.BotId, token);
         if (bot is null)
@@ -29,7 +30,8 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
 
         var notificationText = await _messageBuilder.Build(
             Messages.Connector_HelpText,
-            command.MessageContext.LanguageId);
+            command.MessageContext.LanguageId,
+            CommandList.Cancel);
         var notification = NotificationMessage
             .Create(command.MessageContext.ChatId, notificationText)
             .SetButtonsInRow(1);

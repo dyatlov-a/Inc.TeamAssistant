@@ -35,7 +35,6 @@ internal sealed class TeamRepository : ITeamRepository
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.language_id AS languageid,
                 p.username AS username
             FROM connector.persons AS p
             JOIN connector.teammates AS tm ON p.id = tm.person_id

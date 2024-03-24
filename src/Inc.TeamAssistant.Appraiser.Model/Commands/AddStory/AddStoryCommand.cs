@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives;
-using MediatR;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 
@@ -9,5 +9,5 @@ public sealed record AddStoryCommand(
     string StoryType,
     string Title,
     IReadOnlyCollection<string> Links,
-    IReadOnlyCollection<(long PersonId, string PersonDisplayName)> Teammates)
+    IReadOnlyCollection<Person> Teammates)
     : IEndDialogCommand;

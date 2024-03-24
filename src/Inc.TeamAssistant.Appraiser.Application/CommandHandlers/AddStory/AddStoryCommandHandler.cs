@@ -5,6 +5,7 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory;
@@ -47,7 +48,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
             story.AddLink(link);
 
         foreach (var teammate in command.Teammates)
-            story.AddStoryForEstimate(new StoryForEstimate(story.Id, teammate.PersonId, teammate.PersonDisplayName));
+            story.AddStoryForEstimate(new StoryForEstimate(story.Id, teammate.Id, teammate.DisplayName));
 
         await _storyRepository.Upsert(story, token);
         
