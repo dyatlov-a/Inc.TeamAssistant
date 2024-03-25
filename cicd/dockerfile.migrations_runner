@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-amd64
 
 # VARS
-ENV APP_DIR="/app" \
-    APP_USER=app
+ENV APP_DIR="/migrations" \
+    APP_USER=migrations_user
     
 # Add timezones
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
