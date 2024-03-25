@@ -5,7 +5,7 @@ EXPOSE 8080
 
 # VARS
 ENV APP_DIR="/app" \
-    APP_USER=app \
+    APP_USER=app_user \
     # set environtent for aspnetcore
     ASPNETCORE_URLS=http://+:8080
     
