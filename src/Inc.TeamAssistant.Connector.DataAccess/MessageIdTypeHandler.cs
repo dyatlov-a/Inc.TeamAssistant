@@ -1,6 +1,7 @@
 using System.Data;
 using Dapper;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 

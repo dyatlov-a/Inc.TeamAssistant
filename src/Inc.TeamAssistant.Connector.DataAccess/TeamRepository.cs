@@ -2,6 +2,7 @@ using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -34,7 +35,6 @@ internal sealed class TeamRepository : ITeamRepository
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.language_id AS languageid,
                 p.username AS username
             FROM connector.persons AS p
             JOIN connector.teammates AS tm ON p.id = tm.person_id

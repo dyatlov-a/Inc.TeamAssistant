@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Services;
 

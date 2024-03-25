@@ -2,6 +2,8 @@ using System.Text;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
@@ -55,7 +57,7 @@ internal sealed class SummaryByStoryBuilder
                 builder.ToString())
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
-                .AddHandler((c, mId) => new AttachStoryCommand(c, summary.StoryId, mId));
+                .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
 
         if (!summary.EstimateEnded)
         {

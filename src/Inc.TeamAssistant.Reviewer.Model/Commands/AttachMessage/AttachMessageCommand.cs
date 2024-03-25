@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
 

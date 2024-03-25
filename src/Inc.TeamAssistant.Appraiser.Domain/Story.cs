@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Domain;
 
@@ -12,6 +13,7 @@ public sealed class Story
 	};
 
 	public Guid Id { get; private set; }
+	public Guid BotId { get; private set; }
 	public StoryType StoryType { get; private set; }
 	public DateTimeOffset Created { get; private set; }
 	public Guid TeamId { get; private set; }
@@ -30,13 +32,21 @@ public sealed class Story
     {
     }
     
-    public Story(Guid teamId, StoryType storyType, long chatId, long moderatorId, LanguageId languageId, string title)
+    public Story(
+	    Guid botId,
+	    Guid teamId,
+	    StoryType storyType,
+	    long chatId,
+	    long moderatorId,
+	    LanguageId languageId,
+	    string title)
 		: this()
     {
 	    if (string.IsNullOrWhiteSpace(title))
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(title));
         
 		Id = Guid.NewGuid();
+		BotId = botId;
 		StoryType = storyType;
 		Created = DateTimeOffset.UtcNow;
 		ChatId = chatId;

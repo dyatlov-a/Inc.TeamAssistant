@@ -5,14 +5,12 @@
       </Content>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.DataAccess\Inc.TeamAssistant.RandomCoffee.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj" />
     </ItemGroup>
     <ItemGroup>

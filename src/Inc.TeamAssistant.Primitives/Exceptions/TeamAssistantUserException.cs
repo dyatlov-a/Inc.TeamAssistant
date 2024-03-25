@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Languages;
+
 namespace Inc.TeamAssistant.Primitives.Exceptions;
 
 public class TeamAssistantUserException : TeamAssistantException

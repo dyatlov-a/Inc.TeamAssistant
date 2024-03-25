@@ -1,6 +1,6 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -23,7 +23,6 @@ internal sealed class PersonRepository : IPersonRepository
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.language_id AS languageid,
                 p.username AS username
             FROM connector.persons AS p
             WHERE p.id = @person_id;",
@@ -42,7 +41,6 @@ internal sealed class PersonRepository : IPersonRepository
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.language_id AS languageid,
                 p.username AS username
             FROM connector.persons AS p
             WHERE LOWER(p.username) = @username;",
@@ -54,6 +52,26 @@ internal sealed class PersonRepository : IPersonRepository
 
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
+    
+    public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                p.id AS id,
+                p.name AS name,
+                p.username AS username
+            FROM connector.persons AS p
+            JOIN connector.teammates AS tm ON p.id = tm.person_id
+            WHERE tm.team_id = @team_id;",
+            new { team_id = teamId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = new NpgsqlConnection(_connectionString);
+
+        var persons = await connection.QueryAsync<Person>(command);
+        return persons.ToArray();
+    }
 
     public async Task Upsert(Person person, CancellationToken token)
     {
@@ -61,17 +79,15 @@ internal sealed class PersonRepository : IPersonRepository
             throw new ArgumentNullException(nameof(person));
 
         var command = new CommandDefinition(@"
-            INSERT INTO connector.persons (id, name, language_id, username)
-            VALUES (@id, @name, @language_id, @username)
+            INSERT INTO connector.persons AS p (id, name, username)
+            VALUES (@id, @name, @username)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
-                language_id = EXCLUDED.language_id,
                 username = EXCLUDED.username;",
             new
             {
                 id = person.Id,
                 name = person.Name,
-                language_id = person.LanguageId.Value,
                 username = person.Username
             },
             flags: CommandFlags.None,

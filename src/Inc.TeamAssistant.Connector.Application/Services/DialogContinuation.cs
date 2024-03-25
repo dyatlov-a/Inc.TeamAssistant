@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 

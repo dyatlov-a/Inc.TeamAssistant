@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.CheckIn.Application;

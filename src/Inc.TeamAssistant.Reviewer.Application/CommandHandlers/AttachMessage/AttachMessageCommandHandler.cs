@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
 using MediatR;
@@ -17,9 +18,8 @@ internal sealed class AttachMessageCommandHandler : IRequestHandler<AttachMessag
 
     public async Task<CommandResult> Handle(AttachMessageCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
         
         taskForReview.AttachMessage(command.MessageId);

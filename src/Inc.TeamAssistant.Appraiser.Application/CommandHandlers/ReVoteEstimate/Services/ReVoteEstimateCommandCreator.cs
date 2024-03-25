@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate.Services;
 

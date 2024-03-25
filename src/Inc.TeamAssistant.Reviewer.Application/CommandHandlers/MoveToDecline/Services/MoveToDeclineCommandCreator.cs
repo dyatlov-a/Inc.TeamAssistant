@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.Services;

@@ -1,4 +1,6 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Connector.Domain;
 

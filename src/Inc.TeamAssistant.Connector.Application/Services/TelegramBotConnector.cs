@@ -1,6 +1,8 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -11,9 +13,6 @@ internal sealed class TelegramBotConnector : IHostedService
     
     public TelegramBotConnector(TelegramBotMessageHandler handler, IBotRepository botRepository)
     {
-        if (handler is null)
-            throw new ArgumentNullException(nameof(handler));
-
         _handler = handler ?? throw new ArgumentNullException(nameof(handler));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
     }
@@ -25,10 +24,19 @@ internal sealed class TelegramBotConnector : IHostedService
         foreach (var bot in bots)
         {
             var client = new TelegramBotClient(bot.Token);
-            
+
             client.StartReceiving(
-                (c, m, t) => _handler.Handle(c, m, bot.Id, t),
-                (c, e, t) =>  _handler.OnError(c, e, bot.Name, t),
+                (c, m, t) => _handler.Handle(m, bot.Id, t),
+                (c, e, t) => _handler.OnError(e, bot.Name, t),
+                receiverOptions: new ReceiverOptions
+                {
+                    AllowedUpdates =
+                    [
+                        UpdateType.Message,
+                        UpdateType.CallbackQuery,
+                        UpdateType.PollAnswer
+                    ]
+                },
                 cancellationToken: token);
         }
     }

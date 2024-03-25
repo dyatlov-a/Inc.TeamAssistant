@@ -7,25 +7,36 @@ namespace Inc.TeamAssistant.Connector.DataAccess;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddConnectorDataAccess(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddConnectorDataAccess(
+        this IServiceCollection services,
+        string connectionString,
+        TimeSpan cacheTimeout)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
+        
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
         
         SqlMapper.AddTypeHandler(new MessageIdTypeHandler());
-        SqlMapper.AddTypeHandler(new LanguageIdTypeHandler());
         
         services
             .AddSingleton<ITeamRepository>(
                 sp => ActivatorUtilities.CreateInstance<TeamRepository>(sp, connectionString))
-            .AddSingleton<IPersonRepository>(
-                sp => ActivatorUtilities.CreateInstance<PersonRepository>(sp, connectionString))
             .AddSingleton<IBotRepository>(
                 sp => ActivatorUtilities.CreateInstance<BotRepository>(sp, connectionString))
-            .AddSingleton<ITeamAccessor>(
-                sp => ActivatorUtilities.CreateInstance<TeamAccessor>(sp, connectionString));
+            .AddSingleton<ITeamAccessor, TeamAccessor>()
+            
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<PersonRepository>(sp, connectionString))
+            .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(
+                sp,
+                sp.GetRequiredService<PersonRepository>(),
+                cacheTimeout))
+            
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<ClientLanguageRepository>(sp, connectionString))
+            .AddSingleton<IClientLanguageRepository>(sp => ActivatorUtilities.CreateInstance<CachedClientLanguageRepository>(
+                sp,
+                sp.GetRequiredService<ClientLanguageRepository>(),
+                cacheTimeout));
         
         return services;
     }

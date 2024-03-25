@@ -2,6 +2,8 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin;
@@ -29,7 +31,7 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
         if (command.TeamContext != CurrentTeamContext.Empty)
             dialogState.SetTeam(command.TeamContext);
 
-        command.Notification.AddHandler((c, mId) => new MarkMessageForDeleteCommand(c, mId));
+        command.Notification.AddHandler((c, p) => new MarkMessageForDeleteCommand(c, int.Parse(p)));
 
         return Task.FromResult(CommandResult.Build(command.Notification));
     }

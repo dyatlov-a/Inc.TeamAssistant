@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName)Tests" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="MediatR" Version="12.2.0" />
     </ItemGroup>
 </Project>

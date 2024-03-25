@@ -14,6 +14,7 @@ internal static class FindStoryByIdQuery
         var command = new CommandDefinition(@"
             SELECT
                 s.id AS id,
+                s.bot_id AS botid,
                 s.story_type AS storytype,
                 s.created AS created,
                 s.team_id AS teamid,

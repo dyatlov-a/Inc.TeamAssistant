@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Model.Commands.End;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 

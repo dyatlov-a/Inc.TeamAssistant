@@ -2,6 +2,9 @@ using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 
 namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap;
@@ -40,7 +43,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         }
         
         var existsMap = await _locationsRepository.Find(command.MessageContext.ChatId, token);
-        var map = existsMap ?? new(command.MessageContext.ChatId);
+        var map = existsMap ?? new(command.MessageContext.BotId, command.MessageContext.ChatId);
         
         var location = new LocationOnMap(
             command.MessageContext.PersonId,
