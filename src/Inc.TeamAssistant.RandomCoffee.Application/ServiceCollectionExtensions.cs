@@ -1,7 +1,7 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnswer.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCoffee.Services;
+using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,13 +13,12 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         RandomCoffeeOptions options)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (options is null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         services
             .AddSingleton(options)
+            .AddSingleton<NotificationsBuilder>()
             
             .AddSingleton<ICommandCreator, InviteForCoffeeCommandCreator>()
             .AddSingleton<ICommandCreator, AddPollAnswerCommandCreator>()

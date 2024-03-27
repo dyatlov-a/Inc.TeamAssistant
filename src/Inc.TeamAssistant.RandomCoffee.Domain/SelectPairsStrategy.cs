@@ -15,10 +15,11 @@ internal sealed class SelectPairsStrategy
         _orderedHistory = orderedHistory ?? throw new ArgumentNullException(nameof(orderedHistory));
     }
 
-    public (IReadOnlyCollection<PersonPair> Pairs, long? ExcludedPersonId) Detect()
+    public (IReadOnlyCollection<PersonPair> Pairs, long? ExcludedPersonId) Detect(long? lastExcludedPersonId)
     {
         var pairCount = _orderedParticipantIds.Length / PersonPair.Size;
-        var pairByWeights = AddNewPairs(BuildByHistory());
+        var pairByWeights = SetPriorityForExcludedPerson(AddNewPairs(BuildByHistory()), lastExcludedPersonId);
+            
         var seeding = new List<PersonPair>(pairByWeights.Values.Sum(v => v));
         var pairs = new List<PersonPair>(pairCount);
         
@@ -82,6 +83,23 @@ internal sealed class SelectPairsStrategy
 
         foreach (var newPair in newPairs)
             pairByWeights.TryAdd(newPair, (_orderedHistory.Length + 1) * PersonPair.Size);
+        
+        return pairByWeights;
+    }
+
+    private Dictionary<PersonPair, int> SetPriorityForExcludedPerson(
+        Dictionary<PersonPair, int> pairByWeights,
+        long? lastExcludedPersonId)
+    {
+        ArgumentNullException.ThrowIfNull(pairByWeights);
+
+        const int priority = 100;
+        
+        if (lastExcludedPersonId.HasValue)
+        {
+            var pair = pairByWeights.First(p => p.Key.HasPerson(lastExcludedPersonId.Value)).Key;
+            pairByWeights[pair] = priority;
+        }
         
         return pairByWeights;
     }
