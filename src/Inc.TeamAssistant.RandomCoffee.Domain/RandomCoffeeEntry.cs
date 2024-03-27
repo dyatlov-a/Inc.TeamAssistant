@@ -61,7 +61,16 @@ public sealed class RandomCoffeeEntry
     
     public RandomCoffeeEntry AddPerson(long participantId)
     {
-        ParticipantIds.Add(participantId);
+        if (State == RandomCoffeeState.Waiting && !ParticipantIds.Contains(participantId))
+            ParticipantIds.Add(participantId);
+
+        return this;
+    }
+
+    public RandomCoffeeEntry RemovePerson(long participantId)
+    {
+        if (State == RandomCoffeeState.Waiting && ParticipantIds.Contains(participantId))
+            ParticipantIds.Remove(participantId);
 
         return this;
     }

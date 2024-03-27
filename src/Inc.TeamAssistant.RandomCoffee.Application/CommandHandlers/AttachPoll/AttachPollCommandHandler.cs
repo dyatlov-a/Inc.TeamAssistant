@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -18,8 +17,7 @@ internal sealed class AttachPollCommandHandler : IRequestHandler<AttachPollComma
 
     public async Task<CommandResult> Handle(AttachPollCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var randomCoffeeEntry = await _repository.Find(command.RandomCoffeeEntryId, token);
         if (randomCoffeeEntry is null)
