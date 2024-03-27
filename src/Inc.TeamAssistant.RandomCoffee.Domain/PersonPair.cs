@@ -62,4 +62,6 @@ public sealed class PersonPair
         
         return exists.Contains(FirstId) || exists.Contains(SecondId);
     }
+
+    public bool HasPerson(long personId) => FirstId == personId || SecondId == personId;
 }

@@ -22,7 +22,7 @@ public sealed class SelectPairsStrategyTests
         
         var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
 
-        var result = strategy.Detect();
+        var result = strategy.Detect(lastExcludedPersonId: null);
         
         Assert.False(IsIntersection(result.Pairs));
         Assert.Null(result.ExcludedPersonId);
@@ -41,13 +41,44 @@ public sealed class SelectPairsStrategyTests
         
         var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
 
-        var result = strategy.Detect();
+        var result = strategy.Detect(lastExcludedPersonId: null);
         
         var pair = Assert.Single(result.Pairs);
         Assert.True(result.ExcludedPersonId.HasValue);
         Assert.NotEqual(result.ExcludedPersonId.Value, pair.FirstId);
         Assert.NotEqual(result.ExcludedPersonId.Value, pair.SecondId);
         Assert.Contains(result.ExcludedPersonId.Value, participantIds);
+    }
+    
+    [Fact]
+    public void Detect_MultipleTimes_ShouldBeSelectAllParticipantIds()
+    {
+        var orderedHistory = Array.Empty<PersonPair[]>();
+        var participantIds = new[]
+        {
+            _fixture.Create<long>(),
+            _fixture.Create<long>(),
+            _fixture.Create<long>()
+        };
+        
+        var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
+
+        var firstTime = strategy.Detect(lastExcludedPersonId: null);
+        var secondTime = strategy.Detect(firstTime.ExcludedPersonId);
+        
+        var firstPair = Assert.Single(firstTime.Pairs);
+        Assert.True(firstTime.ExcludedPersonId.HasValue);
+        Assert.NotEqual(firstTime.ExcludedPersonId.Value, firstPair.FirstId);
+        Assert.NotEqual(firstTime.ExcludedPersonId.Value, firstPair.SecondId);
+        Assert.Contains(firstTime.ExcludedPersonId.Value, participantIds);
+        
+        var secondPair = Assert.Single(secondTime.Pairs);
+        Assert.True(secondTime.ExcludedPersonId.HasValue);
+        Assert.NotEqual(secondTime.ExcludedPersonId.Value, secondPair.FirstId);
+        Assert.NotEqual(secondTime.ExcludedPersonId.Value, secondPair.SecondId);
+        Assert.Contains(secondTime.ExcludedPersonId.Value, participantIds);
+        
+        Assert.NotEqual(firstTime.ExcludedPersonId, secondTime.ExcludedPersonId);
     }
     
     [Fact]
@@ -65,7 +96,7 @@ public sealed class SelectPairsStrategyTests
         
         var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
 
-        var result = strategy.Detect();
+        var result = strategy.Detect(lastExcludedPersonId: null);
         
         Assert.False(IsIntersection(result.Pairs));
         Assert.False(IsIntersection(result.Pairs, history));
@@ -84,7 +115,7 @@ public sealed class SelectPairsStrategyTests
         
         var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
 
-        var result = strategy.Detect();
+        var result = strategy.Detect(lastExcludedPersonId: null);
         
         Assert.True(IsIntersection(result.Pairs, history));
         Assert.Null(result.ExcludedPersonId);

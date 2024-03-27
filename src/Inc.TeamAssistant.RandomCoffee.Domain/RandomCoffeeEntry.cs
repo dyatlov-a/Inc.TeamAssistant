@@ -90,8 +90,9 @@ public sealed class RandomCoffeeEntry
             .OrderByDescending(i => i.Created)
             .Select(i => i.Pairs.ToArray())
             .ToArray();
+        var lastExcludedPersonId = History.MaxBy(i => i.Created)?.ExcludedPersonId;
         
-        var result = new SelectPairsStrategy(ParticipantIds, orderedHistory).Detect();
+        var result = new SelectPairsStrategy(ParticipantIds, orderedHistory).Detect(lastExcludedPersonId);
         
         var randomCoffeeHistory = RandomCoffeeHistory.Build(Id, result.Pairs, result.ExcludedPersonId);
         _history.Add(randomCoffeeHistory);

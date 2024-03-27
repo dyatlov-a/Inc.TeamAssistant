@@ -2,6 +2,10 @@ namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
 internal sealed class SelectPairsStrategy
 {
+    private const int HistoryPairsWeight = 10;
+    private const int NewPairsWeight = 100;
+    private const int ExcludedPersonWeight = 1_000;
+    
     private static readonly Random Random = new();
     
     private readonly long[] _orderedParticipantIds;
@@ -15,10 +19,13 @@ internal sealed class SelectPairsStrategy
         _orderedHistory = orderedHistory ?? throw new ArgumentNullException(nameof(orderedHistory));
     }
 
-    public (IReadOnlyCollection<PersonPair> Pairs, long? ExcludedPersonId) Detect()
+    public (IReadOnlyCollection<PersonPair> Pairs, long? ExcludedPersonId) Detect(long? lastExcludedPersonId)
     {
         var pairCount = _orderedParticipantIds.Length / PersonPair.Size;
-        var pairByWeights = AddNewPairs(BuildByHistory());
+        var pairByWeights = SetPriorityForExcludedPerson(AddNewPairs(BuildByHistory(
+            new Dictionary<PersonPair, int>())),
+            lastExcludedPersonId);
+            
         var seeding = new List<PersonPair>(pairByWeights.Values.Sum(v => v));
         var pairs = new List<PersonPair>(pairCount);
         
@@ -45,18 +52,17 @@ internal sealed class SelectPairsStrategy
         return (pairs, excludedPersonId);
     }
 
-    private Dictionary<PersonPair, int> BuildByHistory()
+    private Dictionary<PersonPair, int> BuildByHistory(Dictionary<PersonPair, int> pairByWeights)
     {
-        var pairByWeights = new Dictionary<PersonPair, int>();
-
-        for (var index = 0; index < _orderedHistory.Length; index++)
+        ArgumentNullException.ThrowIfNull(pairByWeights);
+        
+        for (var i = 0; i < _orderedHistory.Length; i++)
         {
-            var pairs = _orderedHistory[index]
+            var pairs = _orderedHistory[i]
                 .Where(p => _orderedParticipantIds.Contains(p.FirstId) && _orderedParticipantIds.Contains(p.SecondId))
                 .ToArray();
-            var weight = _orderedParticipantIds.Length < PersonPair.Size * 2
-                ? index + 1
-                : index;
+            var index = _orderedParticipantIds.Length < PersonPair.Size * PersonPair.Size ? i + 1 : i;
+            var weight = index * HistoryPairsWeight;
             
             foreach (var pair in pairs)
                 pairByWeights.TryAdd(pair, weight);
@@ -81,7 +87,22 @@ internal sealed class SelectPairsStrategy
         }
 
         foreach (var newPair in newPairs)
-            pairByWeights.TryAdd(newPair, (_orderedHistory.Length + 1) * PersonPair.Size);
+            pairByWeights.TryAdd(newPair, NewPairsWeight);
+        
+        return pairByWeights;
+    }
+
+    private Dictionary<PersonPair, int> SetPriorityForExcludedPerson(
+        Dictionary<PersonPair, int> pairByWeights,
+        long? lastExcludedPersonId)
+    {
+        ArgumentNullException.ThrowIfNull(pairByWeights);
+        
+        if (lastExcludedPersonId.HasValue)
+        {
+            var pair = pairByWeights.First(p => p.Key.HasPerson(lastExcludedPersonId.Value)).Key;
+            pairByWeights[pair] = ExcludedPersonWeight;
+        }
         
         return pairByWeights;
     }
