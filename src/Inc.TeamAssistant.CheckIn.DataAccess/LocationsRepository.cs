@@ -1,20 +1,17 @@
 using Dapper;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.CheckIn.DataAccess;
 
 internal sealed class LocationsRepository : ILocationsRepository
 {
-    private readonly string _connectionString;
-
-    public LocationsRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private LocationsRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<Map?> Find(long chatId, CancellationToken token)
@@ -30,7 +27,7 @@ internal sealed class LocationsRepository : ILocationsRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         return await connection.QuerySingleOrDefaultAsync<Map>(command);
     }
@@ -52,7 +49,7 @@ internal sealed class LocationsRepository : ILocationsRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<LocationOnMap>(command);
 
@@ -96,7 +93,7 @@ internal sealed class LocationsRepository : ILocationsRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
 

@@ -5,20 +5,13 @@ namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddReviewerDataAccess(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddReviewerDataAccess(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ITaskForReviewRepository>(sp => ActivatorUtilities.CreateInstance<TaskForReviewRepository>(
-                sp,
-                connectionString))
-            .AddSingleton<ITaskForReviewReader>(sp => ActivatorUtilities.CreateInstance<TaskForReviewReader>(
-                sp,
-                connectionString));
+            .AddSingleton<ITaskForReviewRepository, TaskForReviewRepository>()
+            .AddSingleton<ITaskForReviewReader, TaskForReviewReader>();
 
         return services;
     }

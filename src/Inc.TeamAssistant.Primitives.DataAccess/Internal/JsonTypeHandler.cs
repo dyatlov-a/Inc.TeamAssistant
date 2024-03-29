@@ -2,7 +2,7 @@ using System.Data;
 using System.Text.Json;
 using Dapper;
 
-namespace Inc.TeamAssistant.Appraiser.DataAccess;
+namespace Inc.TeamAssistant.Primitives.DataAccess.Internal;
 
 internal sealed class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
 {

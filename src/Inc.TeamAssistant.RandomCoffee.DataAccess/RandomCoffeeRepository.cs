@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Dapper;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Npgsql;
@@ -8,19 +9,16 @@ namespace Inc.TeamAssistant.RandomCoffee.DataAccess;
 
 internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 {
-    private readonly string _connectionString;
-
-    public RandomCoffeeRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private RandomCoffeeRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<RandomCoffeeEntry?> Find(Guid id, CancellationToken token)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         return await Find(connection, id, token);
     }
@@ -35,7 +33,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var randomCoffeeEntryId = await connection.QuerySingleOrDefaultAsync<Guid?>(command);
 
@@ -54,7 +52,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var randomCoffeeEntryId = await connection.QuerySingleOrDefaultAsync<Guid?>(command);
 
@@ -126,7 +124,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
 

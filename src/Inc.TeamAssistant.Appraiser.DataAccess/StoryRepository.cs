@@ -3,33 +3,29 @@ using Dapper;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
 internal sealed class StoryRepository : IStoryRepository
 {
-    private readonly string _connectionString;
-
-    public StoryRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private StoryRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<Story?> Find(Guid storyId, CancellationToken token)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         
         return await FindStoryByIdQuery.Find(connection, storyId, token);
     }
 
     public async Task Upsert(Story story, CancellationToken token)
     {
-        if (story is null)
-            throw new ArgumentNullException(nameof(story));
+        ArgumentNullException.ThrowIfNull(story);
 
         var ids = new List<Guid>(story.StoryForEstimates.Count);
         var storyIds = new List<Guid>(story.StoryForEstimates.Count);
@@ -102,7 +98,7 @@ internal sealed class StoryRepository : IStoryRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
         

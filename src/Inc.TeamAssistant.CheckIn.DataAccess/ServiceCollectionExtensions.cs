@@ -5,19 +5,12 @@ namespace Inc.TeamAssistant.CheckIn.DataAccess;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCheckInDataAccess(
-        this IServiceCollection services,
-        string connectionString)
+    public static IServiceCollection AddCheckInDataAccess(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ILocationsRepository>(sp => ActivatorUtilities.CreateInstance<LocationsRepository>(
-                sp,
-                connectionString));
+            .AddSingleton<ILocationsRepository, LocationsRepository>();
 
         return services;
     }

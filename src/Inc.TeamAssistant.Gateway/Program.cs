@@ -22,10 +22,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
+using Inc.TeamAssistant.RandomCoffee.Domain;
 using MediatR.Pipeline;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,28 +69,38 @@ builder.Services
 	.TryAddEnumerable(ServiceDescriptor.Scoped(
 		typeof(IPipelineBehavior<,>),
 		typeof(ValidationPipelineBehavior<,>)));
-	
+
+builder.Services
+	.AddDataAccess(connectionString)
+	.AddMessageIdType()
+	.AddLanguageIdType()
+	.AddDateOnlyType()
+	.AddDateTimeOffsetType()
+	.AddJsonType<ICollection<string>>()
+	.AddJsonType<ICollection<long>>()
+	.AddJsonType<ICollection<PersonPair>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>();
 
 builder.Services
 	.AddScoped<ITranslateProvider, TranslateProvider>()
 	.AddScoped<ICheckInService, CheckInService>()
 	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
-	.AddHolidays(connectionString, workdayOptions, cacheAbsoluteExpiration)
+	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
 		
     .AddAppraiserApplication(appraiserOptions)
-    .AddAppraiserDataAccess(connectionString)
+    .AddAppraiserDataAccess()
 	
     .AddCheckInApplication(checkInOptions)
-    .AddCheckInDataAccess(connectionString)
+    .AddCheckInDataAccess()
 	
     .AddReviewerApplication(reviewerOptions)
-	.AddReviewerDataAccess(connectionString)
+	.AddReviewerDataAccess()
 	
 	.AddRandomCoffeeApplication(randomCoffeeOptions)
-	.AddRandomCoffeeDataAccess(connectionString)
+	.AddRandomCoffeeDataAccess()
 	
 	.AddConnectorApplication()
-	.AddConnectorDataAccess(connectionString, cacheAbsoluteExpiration)
+	.AddConnectorDataAccess(cacheAbsoluteExpiration)
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()

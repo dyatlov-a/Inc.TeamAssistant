@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using Inc.TeamAssistant.Primitives.Languages;
 
-namespace Inc.TeamAssistant.Appraiser.DataAccess;
+namespace Inc.TeamAssistant.Primitives.DataAccess.Internal;
 
 internal sealed class LanguageIdTypeHandler : SqlMapper.TypeHandler<LanguageId>
 {

@@ -4,20 +4,17 @@ using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
 internal sealed class StoryReader : IStoryReader
 {
-    private readonly string _connectionString;
-
-    public StoryReader(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private StoryReader(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
     public async Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
@@ -42,8 +39,8 @@ internal sealed class StoryReader : IStoryReader
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<(DateTime AssessmentDate, int StoriesCount)>(command);
         
@@ -73,7 +70,7 @@ internal sealed class StoryReader : IStoryReader
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<StoryDto>(command);
         return results.ToArray();
@@ -93,7 +90,7 @@ internal sealed class StoryReader : IStoryReader
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var storyId = await connection.QuerySingleOrDefaultAsync<Guid?>(command);
         if (storyId.HasValue)
@@ -104,7 +101,7 @@ internal sealed class StoryReader : IStoryReader
 
     public async Task<Story?> Find(Guid storyId, CancellationToken token)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         
         return await FindStoryByIdQuery.Find(connection, storyId, token);
     }

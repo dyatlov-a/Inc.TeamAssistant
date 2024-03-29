@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.37" />
-    <PackageReference Include="Npgsql" Version="8.0.2" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
     <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Domain\Inc.TeamAssistant.CheckIn.Domain.csproj" />
+    <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
   </ItemGroup>
 </Project>

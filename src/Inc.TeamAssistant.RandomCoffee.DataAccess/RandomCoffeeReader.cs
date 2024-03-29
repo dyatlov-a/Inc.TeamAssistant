@@ -1,20 +1,17 @@
 using Dapper;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
-using Npgsql;
 
 namespace Inc.TeamAssistant.RandomCoffee.DataAccess;
 
 internal sealed class RandomCoffeeReader : IRandomCoffeeReader
 {
-    private readonly string _connectionString;
-
-    public RandomCoffeeReader(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private RandomCoffeeReader(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
     public async Task<IReadOnlyCollection<RandomCoffeeEntry>> GetByDate(DateOnly date, CancellationToken token)
@@ -36,7 +33,7 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<RandomCoffeeEntry>(command);
         return results.ToArray();

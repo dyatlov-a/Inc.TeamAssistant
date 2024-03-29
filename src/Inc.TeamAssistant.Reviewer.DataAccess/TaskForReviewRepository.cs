@@ -1,20 +1,17 @@
 using Dapper;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Npgsql;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
 internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 {
-    private readonly string _connectionString;
-
-    public TaskForReviewRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    private TaskForReviewRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
@@ -41,7 +38,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         
         return await connection.QuerySingleAsync<TaskForReview>(command);
     }
@@ -116,7 +113,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
     }
@@ -148,7 +145,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
     }
@@ -167,7 +164,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         
         return await connection.QuerySingleOrDefaultAsync<long?>(command);
     }

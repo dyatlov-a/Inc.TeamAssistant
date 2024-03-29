@@ -1,23 +1,21 @@
 using System.Data;
 using Dapper;
 
-namespace Inc.TeamAssistant.Holidays.Internal;
+namespace Inc.TeamAssistant.Primitives.DataAccess.Internal;
 
 internal sealed class DateTimeOffsetTypeHandler : SqlMapper.TypeHandler<DateTimeOffset>
 {
     public override void SetValue(IDbDataParameter parameter, DateTimeOffset value)
     {
-        if (parameter is null)
-            throw new ArgumentNullException(nameof(parameter));
-        
+        ArgumentNullException.ThrowIfNull(parameter);
+
         parameter.Value = value;
     }
 
     public override DateTimeOffset Parse(object value)
     {
-        if (value is null)
-            throw new ArgumentNullException(nameof(value));
-        
+        ArgumentNullException.ThrowIfNull(value);
+
         return DateTime.SpecifyKind((DateTime)value, DateTimeKind.Utc);
     }
 }

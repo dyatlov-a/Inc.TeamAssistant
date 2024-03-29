@@ -10,4 +10,7 @@
             <_Parameter1>Inc.TeamAssistant.HolidaysTests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
+    </ItemGroup>
 </Project>
