@@ -2,9 +2,10 @@ namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
 internal sealed class SelectPairsStrategy
 {
-    private const int HistoryPairsWeight = 10;
-    private const int NewPairsWeight = 100;
-    private const int ExcludedPersonWeight = 1_000;
+    private const int MaxSelectIterations = 10_000;
+    private const int HistoryPairsWeight = 1;
+    private const int NewPairsWeight = 10;
+    private const int ExcludedPersonWeight = 20;
     
     private static readonly Random Random = new();
     
@@ -33,13 +34,20 @@ internal sealed class SelectPairsStrategy
         foreach (var _ in Enumerable.Range(0, pairByWeight.Value))
             seeding.Add(pairByWeight.Key);
 
-        foreach (var _ in Enumerable.Range(0, int.MaxValue))
+        foreach (var _ in Enumerable.Range(0, MaxSelectIterations))
         {
             var index = Random.Next(0, seeding.Count - 1);
             var pair = seeding[index];
         
             if (!pair.ContainsIn(pairs))
                 pairs.Add(pair);
+
+            if (pairs.Count != pairCount)
+            {
+                var newPairs = seeding.Where(p => !p.ContainsIn(pairs)).Distinct().ToArray();
+                if (newPairs.Length == 1)
+                    pairs.Add(newPairs.Single());
+            }
             
             if (pairs.Count == pairCount)
                 break;
@@ -61,8 +69,7 @@ internal sealed class SelectPairsStrategy
             var pairs = _orderedHistory[i]
                 .Where(p => _orderedParticipantIds.Contains(p.FirstId) && _orderedParticipantIds.Contains(p.SecondId))
                 .ToArray();
-            var index = _orderedParticipantIds.Length < PersonPair.Size * PersonPair.Size ? i + 1 : i;
-            var weight = index * HistoryPairsWeight;
+            var weight = (i + 1) * HistoryPairsWeight;
             
             foreach (var pair in pairs)
                 pairByWeights.TryAdd(pair, weight);

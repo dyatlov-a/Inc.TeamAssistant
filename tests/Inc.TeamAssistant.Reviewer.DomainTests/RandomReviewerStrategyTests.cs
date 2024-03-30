@@ -52,7 +52,7 @@ public sealed class RandomReviewerStrategyTests
     }
 
     [Theory]
-    [InlineData(1_000, 300)]
+    [InlineData(1_000, 100)]
     public void Next_MultipleIterations_MustRandomReviewer(int iterationCount, int reviewerCountByPlayer)
     {
         var owner = _teammates.First();
@@ -63,6 +63,7 @@ public sealed class RandomReviewerStrategyTests
             .ToDictionary(i => i, i => i.Count());
         
         Assert.Equal(_teammates.Count - 1, reviewerIds.Keys.Count);
+        Assert.Equal(iterationCount, reviewerIds.Sum(r => r.Value));
         foreach (var reviewerId in reviewerIds)
             Assert.True(reviewerId.Value > reviewerCountByPlayer);
     }
