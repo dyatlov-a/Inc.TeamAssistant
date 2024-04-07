@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
@@ -79,18 +78,4 @@ internal sealed class AppraiserService : IAppraiserService
 			return ServiceResult.Failed<GetStoryByIdResult?>(ex.Message);
 		}
 	}
-
-	public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken token)
-    {
-        try
-        {
-            var result = await _mediator.Send(new GetLinkForConnectQuery(), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetLinkForConnectResult>(ex.Message);
-        }
-    }
 }

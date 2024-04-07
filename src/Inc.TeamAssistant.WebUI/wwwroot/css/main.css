@@ -83,12 +83,6 @@ html {
     height: 100%;
     opacity: .4;
 }
-.cmd {
-    padding: .125rem .625rem;
-    background-color: #616161;
-    color: #fff;
-    border-radius: .375rem;
-}
 /* BUTTON */
 .button {
     display: inline-block;
@@ -108,34 +102,6 @@ html {
 .button_white:hover {
     background-color: #fff;
     color: #000;
-}
-/* FEATURE */
-.features__title {
-    font-size: 2rem;
-    letter-spacing: .0625rem;
-    text-transform: uppercase;
-    line-height: 2.5rem;
-    margin: 2rem 0;
-}
-.features__description {
-    font-size: 1.2rem;
-    line-height: 1.5rem;
-}
-.features__list {
-    margin: .625rem 0 0 0;
-}
-.features__item {
-    font-size: 1.2rem;
-    line-height: 2.5rem;
-}
-.phone__content_hidden-by-default {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s, opacity .5s linear;
-}
-.phone__content_active {
-    visibility: visible;
-    opacity: 1;
 }
 /* PHONE */
 .phone {
@@ -191,27 +157,7 @@ html {
         display: none;
     }
 }
-/* TITLE */
-.title {
-    font-size: 2.6rem;
-    line-height: 3.4rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .0625rem;
-    text-align: center;
-    margin: 0 0 3.75rem 0;
-}
-.title_dark {
-    color: #616161;
-}
-@media (max-width: 479.98px) {
-    .title {
-        margin: 0 0 2rem 0;
-        font-size: 2rem;
-        line-height: 2.8rem;
-    }
-}
-/* map */
+/* MAP */
 .marker-btn {
     background-color: #fff;
     color: #000;

@@ -41,6 +41,17 @@ var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOpti
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 
 builder.Services
+	.AddDataAccess(connectionString)
+	.AddMessageIdType()
+	.AddLanguageIdType()
+	.AddDateOnlyType()
+	.AddDateTimeOffsetType()
+	.AddJsonType<ICollection<string>>()
+	.AddJsonType<ICollection<long>>()
+	.AddJsonType<ICollection<PersonPair>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>();
+
+builder.Services
 	.AddMediatR(c =>
 	{
 		c.Lifetime = ServiceLifetime.Scoped;
@@ -69,17 +80,6 @@ builder.Services
 	.TryAddEnumerable(ServiceDescriptor.Scoped(
 		typeof(IPipelineBehavior<,>),
 		typeof(ValidationPipelineBehavior<,>)));
-
-builder.Services
-	.AddDataAccess(connectionString)
-	.AddMessageIdType()
-	.AddLanguageIdType()
-	.AddDateOnlyType()
-	.AddDateTimeOffsetType()
-	.AddJsonType<ICollection<string>>()
-	.AddJsonType<ICollection<long>>()
-	.AddJsonType<ICollection<PersonPair>>()
-	.AddJsonType<IReadOnlyDictionary<string, string>>();
 
 builder.Services
 	.AddScoped<ITranslateProvider, TranslateProvider>()

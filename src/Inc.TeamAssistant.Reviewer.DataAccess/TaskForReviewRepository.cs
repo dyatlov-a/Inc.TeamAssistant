@@ -9,7 +9,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private TaskForReviewRepository(IConnectionFactory connectionFactory)
+    public TaskForReviewRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

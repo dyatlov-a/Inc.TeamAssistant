@@ -2,35 +2,13 @@ namespace Inc.TeamAssistant.WebUI;
 
 internal sealed class Messages
 {
-    public static readonly string GUI_Tools = nameof(GUI_Tools);
     public static readonly string GUI_Feedback = nameof(GUI_Feedback);
 
     public static readonly string GUI_Appraiser = nameof(GUI_Appraiser);
     public static readonly string GUI_TelegramBotToEvaluateTasks = nameof(GUI_TelegramBotToEvaluateTasks);
     public static readonly string GUI_EvaluateTool = nameof(GUI_EvaluateTool);
     public static readonly string GUI_Scan = nameof(GUI_Scan);
-    public static readonly string GUI_ToStart = nameof(GUI_ToStart);
     public static readonly string GUI_Logo = nameof(GUI_Logo);
-
-    public static readonly string GUI_ComfortableInUsing = nameof(GUI_ComfortableInUsing);
-    public static readonly string GUI_InteractionOptions = nameof(GUI_InteractionOptions);
-    public static readonly string GUI_InteractionOptionRestartVoting = nameof(GUI_InteractionOptionRestartVoting);
-    public static readonly string GUI_TerminationOfVoting = nameof(GUI_TerminationOfVoting);
-    public static readonly string GUI_ListOfConnected = nameof(GUI_ListOfConnected);
-    public static readonly string GUI_EasyStart = nameof(GUI_EasyStart);
-    public static readonly string GUI_StepsToStart = nameof(GUI_StepsToStart);
-    public static readonly string GUI_StepCreateChat = nameof(GUI_StepCreateChat);
-    public static readonly string GUI_StepInviteMembers = nameof(GUI_StepInviteMembers);
-    public static readonly string GUI_StepCreateAssessmentSession = nameof(GUI_StepCreateAssessmentSession);
-    public static readonly string GUI_StepFollowTheLink = nameof(GUI_StepFollowTheLink);
-    public static readonly string GUI_StepAddTask = nameof(GUI_StepAddTask);
-    public static readonly string GUI_ResponsiveInterface = nameof(GUI_ResponsiveInterface);
-    public static readonly string GUI_UserActionsDisplayedInTelegram = nameof(GUI_UserActionsDisplayedInTelegram);
-    public static readonly string GUI_UseHelp = nameof(GUI_UseHelp);
-
-    public static readonly string GUI_UseModernTechnologies = nameof(GUI_UseModernTechnologies);
-    public static readonly string GUI_ReuseCode = nameof(GUI_ReuseCode);
-    public static readonly string GUI_OpenSource = nameof(GUI_OpenSource);
 
     public static readonly string GUI_AskQuestion = nameof(GUI_AskQuestion);
     public static readonly string GUI_WhatYouThink = nameof(GUI_WhatYouThink);
@@ -60,15 +38,6 @@ internal sealed class Messages
 
     public static readonly string GUI_AcceptCookieButton = new(nameof(GUI_AcceptCookieButton));
     public static readonly string GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
-
-    public static readonly string GUI_MainTitle = new(nameof(GUI_MainTitle));
-    public static readonly string GUI_MainDescription = new(nameof(GUI_MainDescription));
-    public static readonly string GUI_AppraiserDescription = new(nameof(GUI_AppraiserDescription));
-    public static readonly string GUI_AppraiserImageAlt = new(nameof(GUI_AppraiserImageAlt));
-    public static readonly string GUI_ReviewerDescription = new(nameof(GUI_ReviewerDescription));
-    public static readonly string GUI_ReviewerImageAlt = new(nameof(GUI_ReviewerImageAlt));
-    public static readonly string GUI_CheckInDescription = new(nameof(GUI_CheckInDescription));
-    public static readonly string GUI_CheckInImageAlt = new(nameof(GUI_CheckInImageAlt));
 
     public static readonly string GUI_History = new(nameof(GUI_History));
     public static readonly string GUI_Tasks = new(nameof(GUI_Tasks));

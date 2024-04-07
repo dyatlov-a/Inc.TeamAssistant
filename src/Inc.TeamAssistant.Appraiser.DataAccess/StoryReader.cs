@@ -12,7 +12,7 @@ internal sealed class StoryReader : IStoryReader
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private StoryReader(IConnectionFactory connectionFactory)
+    public StoryReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

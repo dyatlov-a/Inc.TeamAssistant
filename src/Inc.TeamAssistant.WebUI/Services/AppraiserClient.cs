@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
@@ -102,23 +101,4 @@ internal sealed class AppraiserClient : IAppraiserService
 			return ServiceResult.Failed<GetStoryByIdResult?>(ex.Message);
 		}
 	}
-
-	public async Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken token)
-    {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetLinkForConnectResult>>(
-                "assessment-sessions/link-for-connect",
-                token);
-
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetLinkForConnectResult>(ex.Message);
-        }
-    }
 }

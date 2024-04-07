@@ -11,7 +11,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private RandomCoffeeRepository(IConnectionFactory connectionFactory)
+    public RandomCoffeeRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

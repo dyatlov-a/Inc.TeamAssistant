@@ -12,4 +12,15 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Features\Features.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\Items\Easy.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\Items\GettingStart.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\Items\UserFriendly.razor" />
+      <_ContentIncludedByDefault Remove="wwwroot\reviewer\preview.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\checkin\preview.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\main\development\blazor\development__logo.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\main\development\dotnet\development__logo.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\main\development\github\development__logo.svg" />
+    </ItemGroup>
 </Project>

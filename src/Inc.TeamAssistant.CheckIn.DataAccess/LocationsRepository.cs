@@ -9,7 +9,7 @@ internal sealed class LocationsRepository : ILocationsRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private LocationsRepository(IConnectionFactory connectionFactory)
+    public LocationsRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

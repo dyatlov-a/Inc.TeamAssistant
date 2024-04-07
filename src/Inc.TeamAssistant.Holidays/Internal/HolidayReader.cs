@@ -8,7 +8,7 @@ internal sealed class HolidayReader : IHolidayReader
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private HolidayReader(IConnectionFactory connectionFactory)
+    public HolidayReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

@@ -11,7 +11,7 @@ internal sealed class StoryRepository : IStoryRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private StoryRepository(IConnectionFactory connectionFactory)
+    public StoryRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

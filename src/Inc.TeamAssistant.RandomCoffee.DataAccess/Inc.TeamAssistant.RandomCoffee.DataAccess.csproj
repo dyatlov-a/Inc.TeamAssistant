@@ -5,6 +5,5 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.37" />
-    <PackageReference Include="Npgsql" Version="8.0.2" />
   </ItemGroup>
 </Project>

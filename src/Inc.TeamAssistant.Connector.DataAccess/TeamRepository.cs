@@ -12,7 +12,7 @@ internal sealed class TeamRepository : ITeamRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private TeamRepository(IConnectionFactory connectionFactory)
+    public TeamRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

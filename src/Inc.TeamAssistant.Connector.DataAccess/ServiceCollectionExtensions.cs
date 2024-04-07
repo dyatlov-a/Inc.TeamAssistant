@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -13,8 +12,13 @@ public static class ServiceCollectionExtensions
         
         services
             .AddSingleton<ITeamRepository, TeamRepository>()
-            .AddSingleton<IBotRepository, BotRepository>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
+            
+            .AddSingleton<BotRepository>()
+            .AddSingleton<IBotRepository>(sp => ActivatorUtilities.CreateInstance<CachedBotRepository>(
+                sp,
+                sp.GetRequiredService<BotRepository>(),
+                cacheTimeout))
             
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(

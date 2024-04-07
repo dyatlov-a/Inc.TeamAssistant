@@ -9,7 +9,7 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private ClientLanguageRepository(IConnectionFactory connectionFactory)
+    public ClientLanguageRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

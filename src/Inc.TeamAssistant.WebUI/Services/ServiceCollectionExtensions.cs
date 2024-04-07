@@ -40,7 +40,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(services));
 
         services
-            .AddScoped<ISwipeService, SwipeService>()
             .AddScoped<LanguageManager>();
 
         return services;

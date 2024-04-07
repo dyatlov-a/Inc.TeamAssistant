@@ -2,7 +2,6 @@
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.37" />
         <PackageReference Include="Npgsql" Version="8.0.2" />
-        <PackageReference Include="Npgsql.DependencyInjection" Version="8.0.2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />

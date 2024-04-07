@@ -9,7 +9,7 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private RandomCoffeeReader(IConnectionFactory connectionFactory)
+    public RandomCoffeeReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

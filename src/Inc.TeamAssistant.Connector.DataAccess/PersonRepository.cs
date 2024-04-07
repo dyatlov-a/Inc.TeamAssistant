@@ -9,7 +9,7 @@ internal sealed class PersonRepository : IPersonRepository
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    private PersonRepository(IConnectionFactory connectionFactory)
+    public PersonRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }

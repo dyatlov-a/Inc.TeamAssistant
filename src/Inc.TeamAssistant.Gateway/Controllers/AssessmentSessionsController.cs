@@ -13,12 +13,6 @@ public sealed class AssessmentSessionsController : ControllerBase
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
-    
-    [HttpGet("link-for-connect")]
-    public async Task<IActionResult> LinkForConnect(CancellationToken token)
-    {
-        return Ok(await _service.GetLinkForConnect(token));
-    }
 
     [HttpGet("story/{teamId}/current")]
     public async Task<IActionResult> GetStoryDetails(Guid teamId, CancellationToken token)
