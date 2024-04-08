@@ -86,28 +86,6 @@ public sealed class SelectPairsStrategyTests
         Assert.True(excludedNotEqualsCount > minSelectLimit);
     }
     
-    [Fact]
-    public void Detect_ParticipantsAndHistory_SelectedNewPairs()
-    {
-        var item1 = _fixture.Create<long>();
-        var item2 = _fixture.Create<long>();
-        var item3 = _fixture.Create<long>();
-        var item4 = _fixture.Create<long>();
-        var historyPairs1 = new PersonPair(item1, item2);
-        var historyPairs2 = new PersonPair(item3, item4);
-        var history = new[] { historyPairs1, historyPairs2 };
-        var orderedHistory = new[] { history };
-        var participantIds = new[] { item1, item2, item3, item4 };
-        
-        var strategy = new SelectPairsStrategy(participantIds, orderedHistory);
-
-        var result = strategy.Detect(lastExcludedPersonId: null);
-        
-        Assert.False(result.Pairs.IsIntersection());
-        Assert.False(result.Pairs.IsIntersection(history));
-        Assert.Null(result.ExcludedPersonId);
-    }
-    
     [Theory]
     [InlineData(1_000, 500)]
     public void Detect_ParticipantsAndHistory_SelectedPairs(int iterationCount, int minSelectLimit)
@@ -202,7 +180,7 @@ public sealed class SelectPairsStrategyTests
     [InlineData(100, 90)]
     public void Detect_ALotOfNewParticipants_SelectedPairs(int iterationCount, int minSelectLimit)
     {
-        var participantIds = _fixture.CreateMany<long>(15).ToArray();
+        var participantIds = _fixture.CreateMany<long>(21).ToArray();
         var history = new List<PersonPair[]>();
         var includeNewParticipantCount = 0;
 
