@@ -10,12 +10,6 @@ internal sealed class Messages
     public static readonly string GUI_Scan = nameof(GUI_Scan);
     public static readonly string GUI_Logo = nameof(GUI_Logo);
 
-    public static readonly string GUI_AskQuestion = nameof(GUI_AskQuestion);
-    public static readonly string GUI_WhatYouThink = nameof(GUI_WhatYouThink);
-    public static readonly string GUI_FeedbackSubject = nameof(GUI_FeedbackSubject);
-    public static readonly string GUI_FeedbackQuestion = nameof(GUI_FeedbackQuestion);
-    public static readonly string GUI_FeedbackSend = nameof(GUI_FeedbackSend);
-
     public static readonly string GUI_AboutBot = nameof(GUI_AboutBot);
     public static readonly string GUI_Development = nameof(GUI_Development);
     public static readonly string GUI_Resources = nameof(GUI_Resources);
@@ -43,4 +37,13 @@ internal sealed class Messages
     public static readonly string GUI_Tasks = new(nameof(GUI_Tasks));
     public static readonly string GUI_StoryList = new(nameof(GUI_StoryList));
     public static readonly string GUI_Back = new(nameof(GUI_Back));
+
+    public static readonly string GUI_GetContacts = nameof(GUI_GetContacts);
+    public static readonly string GUI_RequestDemo = new(nameof(GUI_RequestDemo));
+    public static readonly string GUI_RequestDemoBody = new(nameof(GUI_RequestDemoBody));
+    public static readonly string GUI_MainHeader = new(nameof(GUI_MainHeader));
+    public static readonly string GUI_MainSubHeader = new(nameof(GUI_MainSubHeader));
+    public static readonly string GUI_ToolAppraiser = new(nameof(GUI_ToolAppraiser));
+    public static readonly string GUI_ToolReviewer = new(nameof(GUI_ToolReviewer));
+    public static readonly string GUI_ToolRandomCoffee = new(nameof(GUI_ToolRandomCoffee));
 }

@@ -103,6 +103,14 @@ html {
     background-color: #fff;
     color: #000;
 }
+.button_black {
+    border: .1875rem solid #000;
+    color: #000;
+}
+.button_black:hover {
+    background-color: #000;
+    color: #fff;
+}
 /* PHONE */
 .phone {
     flex: 0 0 248px;

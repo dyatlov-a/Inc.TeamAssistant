@@ -5,8 +5,12 @@
     min-width: 100%;
     min-height: 100%;
     z-index: -1;
-    opacity: .5;
 }
 .feedback__container {
-    padding-top: 200px;
+    padding-top: 120px;
+}
+@media (max-width: 767.98px) {
+    .feedback__container {
+        padding-top: 60px;
+    }
 }
