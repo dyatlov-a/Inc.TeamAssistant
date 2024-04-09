@@ -2,22 +2,7 @@ namespace Inc.TeamAssistant.WebUI;
 
 internal sealed class Messages
 {
-    public static readonly string GUI_Feedback = nameof(GUI_Feedback);
-
-    public static readonly string GUI_Appraiser = nameof(GUI_Appraiser);
-    public static readonly string GUI_TelegramBotToEvaluateTasks = nameof(GUI_TelegramBotToEvaluateTasks);
-    public static readonly string GUI_EvaluateTool = nameof(GUI_EvaluateTool);
     public static readonly string GUI_Scan = nameof(GUI_Scan);
-    public static readonly string GUI_Logo = nameof(GUI_Logo);
-
-    public static readonly string GUI_AboutBot = nameof(GUI_AboutBot);
-    public static readonly string GUI_Development = nameof(GUI_Development);
-    public static readonly string GUI_Resources = nameof(GUI_Resources);
-    public static readonly string GUI_Features = nameof(GUI_Features);
-    public static readonly string GUI_LinkDevelopment = nameof(GUI_LinkDevelopment);
-    public static readonly string GUI_LinkMoveToBot = nameof(GUI_LinkMoveToBot);
-    public static readonly string GUI_LinkSourceCode = nameof(GUI_LinkSourceCode);
-    public static readonly string GUI_LinkWebVersion = nameof(GUI_LinkWebVersion);
 
     public static readonly string GUI_Error404 = nameof(GUI_Error404);
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
