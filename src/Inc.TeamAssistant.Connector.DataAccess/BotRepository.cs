@@ -2,20 +2,17 @@ using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class BotRepository : IBotRepository
 {
-    private readonly string _connectionString;
-
-    public BotRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    public BotRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
     public async Task<IReadOnlyCollection<Bot>> GetAll(CancellationToken token)
@@ -28,11 +25,26 @@ internal sealed class BotRepository : IBotRepository
             FROM connector.bots AS b;",
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<Bot>(command);
         return results.ToArray();
+    }
+    
+    public async Task<string> GetBotName(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT b.name AS name
+            FROM connector.bots AS b
+            WHERE b.id = @id;",
+            new { id },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        return await connection.QuerySingleAsync<string>(command);
     }
 
     public async Task<Bot?> Find(Guid id, CancellationToken token)
@@ -85,7 +97,7 @@ internal sealed class BotRepository : IBotRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
         
         var query = await connection.QueryMultipleAsync(command);
         

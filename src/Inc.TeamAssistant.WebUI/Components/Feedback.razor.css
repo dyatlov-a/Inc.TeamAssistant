@@ -1,52 +1,24 @@
-.feedback__body{
-    display: flex;
-    align-items: center;
-}
-.feedback-text{
-    position: relative;
-    flex: 1 1 auto;
+.feedback-text__header {
+    font-size: 2.3rem;
+    line-height: 3.6rem;
 }
 .feedback-text__description{
-    font-size: 1.5rem;
-    line-height: 2.3rem;
+    font-size: 1.3rem;
+    line-height: 2.6rem;
 }
-.feedback__form{
-    flex: 0 0 340px;
-    background-color: #616161;
-    padding: 2rem;
-    border-radius: 2rem;
-    text-align: right;
-}
-.feedback__subject{
-    width: 100%;
-    margin: 0 0 1.5rem 0;
-    padding: .5rem 1rem;
-    border-radius: 1rem;
-}
-.feedback__value{
-    width: 100%;
-    margin: 0 0 1.5rem 0;
-    height: 9rem;
-    resize: none;
-    padding: 1rem;
-    border-radius: 1rem;
-}
-.feedback__subject, .feedback__value{
-    font-size: 1rem;
-    line-height: 1.25rem;
-    font-family: 'Roboto', sans-serif;
-}
-@media (max-width: 767.98px) {
-    .feedback__body {
-        flex-direction: column;
-    }
-    .feedback-text{
-        margin: 0 0 2rem 0;
-    }
+.text-item {
+    background: rgba(0, 0, 0, .3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-shadow: #000 0 0 10px;
 }
 @media (max-width: 479.98px) {
+    .feedback-text__header {
+        font-size: 1.8rem;
+        line-height: 3.1rem;
+    }
     .feedback-text__description {
         font-size: 1rem;
-        line-height: 1.5rem;
+        line-height: 2rem;
     }
 }

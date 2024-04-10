@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetLinkForConnect;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
@@ -22,6 +21,4 @@ public interface IAppraiserService
 		CancellationToken token = default);
 	
 	Task<ServiceResult<GetStoryByIdResult?>> GetStoryById(Guid storyId, CancellationToken token = default);
-
-    Task<ServiceResult<GetLinkForConnectResult>> GetLinkForConnect(CancellationToken token = default);
 }

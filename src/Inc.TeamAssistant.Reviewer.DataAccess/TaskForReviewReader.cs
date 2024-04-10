@@ -1,20 +1,17 @@
 using Dapper;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Npgsql;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
 internal sealed class TaskForReviewReader : ITaskForReviewReader
 {
-    private readonly string _connectionString;
-
-    public TaskForReviewReader(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    public TaskForReviewReader(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
@@ -23,8 +20,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         int limit,
         CancellationToken token)
     {
-        if (states is null)
-            throw new ArgumentNullException(nameof(states));
+        ArgumentNullException.ThrowIfNull(states);
 
         var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(@"
@@ -50,7 +46,7 @@ LIMIT @limit;",
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var results = await connection.QueryAsync<TaskForReview>(command);
 

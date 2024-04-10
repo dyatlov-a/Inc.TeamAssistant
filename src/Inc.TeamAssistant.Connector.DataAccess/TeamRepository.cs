@@ -3,20 +3,18 @@ using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class TeamRepository : ITeamRepository
 {
-    private readonly string _connectionString;
-
-    public TeamRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    public TeamRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
     public async Task<Team?> Find(Guid teamId, CancellationToken token)
@@ -42,8 +40,8 @@ internal sealed class TeamRepository : ITeamRepository
             new { team_id = teamId },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
         
         var query = await connection.QueryMultipleAsync(command);
 
@@ -59,9 +57,8 @@ internal sealed class TeamRepository : ITeamRepository
 
     public async Task Upsert(Team team, CancellationToken token)
     {
-        if (team is null)
-            throw new ArgumentNullException(nameof(team));
-        
+        ArgumentNullException.ThrowIfNull(team);
+
         var upsertTeam = new CommandDefinition(@"
             INSERT INTO connector.teams (id, bot_id, chat_id, owner_id, name, properties)
             VALUES (@id, @bot_id, @chat_id, @owner_id, @name, @properties::jsonb)
@@ -110,8 +107,8 @@ internal sealed class TeamRepository : ITeamRepository
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
         

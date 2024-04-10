@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -22,18 +21,19 @@ internal sealed class CommandFactory
 
     public async Task<IDialogCommand?> TryCreate(Bot bot, MessageContext messageContext, CancellationToken token)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
 
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
         var cmd = !CommandList.Cancel.Equals(messageContext.Text, StringComparison.InvariantCultureIgnoreCase) && dialogState is not null
             ? dialogState.Command
             : messageContext.Text;
-        var botCommand = bot.FindCommand(cmd);
         
-        if (botCommand?.Stages.Any() == true)
+        var botCommand = bot.FindCommand(cmd);
+        if (botCommand is null)
+            return null;
+        
+        if (botCommand.Stages.Any())
         {
             var stages = botCommand.Stages.ToArray();
             var firstStage = stages.First();
@@ -44,9 +44,10 @@ internal sealed class CommandFactory
                 var nextIndex = index + 1;
                 var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
                 
-                if ((dialogState is null && firstStage.Id == currentStage.Id) || dialogState?.CommandState == currentStage.Value)
+                if ((dialogState is null && firstStage.Id == currentStage.Id) ||
+                    dialogState?.CommandState == currentStage.Value)
                 {
-                    var command = await _dialogCommandFactory.TryCreate(
+                    var dialogCommand = await _dialogCommandFactory.TryCreate(
                         bot,
                         botCommand.Value,
                         dialogState?.CommandState,
@@ -54,23 +55,20 @@ internal sealed class CommandFactory
                         nextStage,
                         messageContext);
 
-                    if (command is not null)
-                        return command;
+                    if (dialogCommand is not null)
+                        return dialogCommand;
                 }
             }
         }
-        
+            
         var commandCreator = _commandCreators.SingleOrDefault(c => cmd.StartsWith(
             c.Command,
             StringComparison.InvariantCultureIgnoreCase));
-
-        if (commandCreator is not null)
-        {
-            var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
-            var command = await commandCreator.Create(messageContext, currentTeamContext, token);
-            return command;
-        }
-
-        return null;
+        if (commandCreator is null)
+            return null;
+        
+        var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
+        var command = await commandCreator.Create(messageContext, currentTeamContext, token);
+        return command;
     }
 }

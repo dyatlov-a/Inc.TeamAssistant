@@ -21,10 +21,10 @@ namespace Inc.TeamAssistant.MigrationsRunner
             App.Command("create", config =>
             {
                 var connectionString = config
-                    .Argument<string>("ConnectionString", "ConnectionString to postgre with creating db permission")
+                    .Argument<string>("ConnectionString", "ConnectionString to postgres with creating db permission")
                     .IsRequired();
 
-                var userPassword = config.Argument<string>("UserPassword", "Password for appraiser__api user"
+                var userPassword = config.Argument<string>("UserPassword", "Password for user"
                 ).IsRequired();
 
                 config.OnExecute(() =>

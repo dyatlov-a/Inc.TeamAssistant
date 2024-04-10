@@ -1,20 +1,17 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
-using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class ClientLanguageRepository : IClientLanguageRepository
 {
-    private readonly string _connectionString;
-
-    public ClientLanguageRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    public ClientLanguageRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
     public async Task<LanguageId> Get(long personId, CancellationToken token)
@@ -27,8 +24,8 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
             new { person_id = personId },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
 
         var languageId = await connection.QuerySingleOrDefaultAsync<string?>(command);
         
@@ -54,7 +51,7 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
     }

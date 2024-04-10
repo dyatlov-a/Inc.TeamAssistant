@@ -32,8 +32,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
 
     public async Task<CommandResult> Handle(InviteForCoffeeCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var chatId = command.MessageContext.ChatId;
         var existsRandomCoffeeEntry = await _repository.Find(chatId, token);
@@ -54,22 +53,22 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
         await _repository.Upsert(randomCoffeeEntry, token);
 
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
-        var notifications = new[]
+        var notifications = new List<NotificationMessage>
         {
             NotificationMessage
-                .Create(randomCoffeeEntry.ChatId, await _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
+                .Create(
+                    randomCoffeeEntry.ChatId,
+                    await _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
                 .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
                 .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_No, languageId))
                 .AddHandler((c, p) => new AttachPollCommand(c, randomCoffeeEntry.Id, p))
         };
 
         if (command.MessageContext.MessageId != 0)
-        {
-            NotificationMessage.Delete(new ChatMessage(
+            notifications.Add(NotificationMessage.Delete(new ChatMessage(
                 command.MessageContext.ChatId,
-                command.MessageContext.MessageId));
-        }
+                command.MessageContext.MessageId)));
         
-        return CommandResult.Build(notifications);
+        return CommandResult.Build(notifications.ToArray());
     }
 }

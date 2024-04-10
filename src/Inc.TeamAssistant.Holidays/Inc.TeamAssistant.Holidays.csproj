@@ -3,11 +3,13 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
         <PackageReference Include="Dapper" Version="2.1.37" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-        <PackageReference Include="Npgsql" Version="8.0.2" />
     </ItemGroup>
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>Inc.TeamAssistant.HolidaysTests</_Parameter1>
         </AssemblyAttribute>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
     </ItemGroup>
 </Project>

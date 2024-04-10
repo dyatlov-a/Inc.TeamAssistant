@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.AddPollAnswer;
 
@@ -13,10 +12,8 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teamContext is null)
-            throw new ArgumentNullException(nameof(teamContext));
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teamContext);
 
         var parameters = messageContext.Text.Replace(CommandList.AddPollAnswer, string.Empty).Split("&option=");
         var pollId = parameters[0];

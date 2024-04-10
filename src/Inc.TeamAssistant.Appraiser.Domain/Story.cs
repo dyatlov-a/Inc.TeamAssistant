@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -6,12 +5,6 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed class Story
 {
-	public static readonly Story Empty = new()
-	{
-		LanguageId = LanguageSettings.DefaultLanguageId,
-		Title = string.Empty
-	};
-
 	public Guid Id { get; private set; }
 	public Guid BotId { get; private set; }
 	public StoryType StoryType { get; private set; }

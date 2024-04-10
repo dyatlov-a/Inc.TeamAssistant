@@ -8,11 +8,16 @@ internal sealed class TeamAccessor : ITeamAccessor
 {
     private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _clientLanguageRepository;
+    private readonly IBotRepository _botRepository;
 
-    public TeamAccessor(IPersonRepository personRepository, IClientLanguageRepository clientLanguageRepository)
+    public TeamAccessor(
+        IPersonRepository personRepository,
+        IClientLanguageRepository clientLanguageRepository,
+        IBotRepository botRepository)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
+        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
     }
 
     public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
@@ -28,5 +33,10 @@ internal sealed class TeamAccessor : ITeamAccessor
     public async Task<LanguageId> GetClientLanguage(long personId, CancellationToken token)
     {
         return await _clientLanguageRepository.Get(personId, token);
+    }
+
+    public async Task<string> GetBotName(Guid botId, CancellationToken token)
+    {
+        return await _botRepository.GetBotName(botId, token);
     }
 }

@@ -1,20 +1,17 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
-using Npgsql;
+using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class PersonRepository : IPersonRepository
 {
-    private readonly string _connectionString;
-
-    public PersonRepository(string connectionString)
+    private readonly IConnectionFactory _connectionFactory;
+    
+    public PersonRepository(IConnectionFactory connectionFactory)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
-        
-        _connectionString = connectionString;
+        _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
     public async Task<Person?> Find(long personId, CancellationToken token)
@@ -29,8 +26,8 @@ internal sealed class PersonRepository : IPersonRepository
             new { person_id = personId },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        await using var connection = new NpgsqlConnection(_connectionString);
+
+        await using var connection = _connectionFactory.Create();
 
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
@@ -48,7 +45,7 @@ internal sealed class PersonRepository : IPersonRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
@@ -67,7 +64,7 @@ internal sealed class PersonRepository : IPersonRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         var persons = await connection.QueryAsync<Person>(command);
         return persons.ToArray();
@@ -93,7 +90,7 @@ internal sealed class PersonRepository : IPersonRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
     }

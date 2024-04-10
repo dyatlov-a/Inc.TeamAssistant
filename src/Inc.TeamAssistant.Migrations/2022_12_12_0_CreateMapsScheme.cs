@@ -11,13 +11,13 @@ public sealed class CreateMapsScheme : Migration
             .Schema("maps");
 
         Execute.Sql(
-            "grant usage on schema maps to appraiser__api;",
-            "add permissions on usage maps schema to appraiser__api user"
+            "grant usage on schema maps to team_assistant__api;",
+            "add permissions on usage maps schema to team_assistant__api user"
         );
 
         Execute.Sql(
-            "alter default privileges in schema maps grant select, update, insert, delete on tables to appraiser__api;",
-            "add select, update, insert privileges to all tables in maps for appraiser__api user"
+            "alter default privileges in schema maps grant select, update, insert, delete on tables to team_assistant__api;",
+            "add select, update, insert privileges to all tables in maps for team_assistant__api user"
         );
     }
 

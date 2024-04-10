@@ -45,6 +45,7 @@ public static class AssessmentValue
 		Value.L,
 		Value.Xl,
 		Value.Xxl,
+		Value.More,
 		Value.NoIdea
 	};
 

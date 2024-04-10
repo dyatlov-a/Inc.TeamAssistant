@@ -1,10 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Application\Inc.TeamAssistant.Appraiser.Application.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.37" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-        <PackageReference Include="Npgsql" Version="8.0.2" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
     </ItemGroup>
 </Project>

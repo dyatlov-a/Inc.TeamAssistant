@@ -11,13 +11,13 @@ public sealed class CreateReviewScheme : Migration
             .Schema("review");
 
         Execute.Sql(
-            "grant usage on schema review to appraiser__api;",
-            "add permissions on usage review schema to appraiser__api user"
+            "grant usage on schema review to team_assistant__api;",
+            "add permissions on usage review schema to team_assistant__api user"
         );
 
         Execute.Sql(
-            "alter default privileges in schema review grant select, update, insert, delete on tables to appraiser__api;",
-            "add select, update, insert privileges to all tables in review for appraiser__api user"
+            "alter default privileges in schema review grant select, update, insert, delete on tables to team_assistant__api;",
+            "add select, update, insert privileges to all tables in review for team_assistant__api user"
         );
     }
 

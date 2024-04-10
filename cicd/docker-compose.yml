@@ -19,6 +19,7 @@ services:
     image: dyatlovhome/inc.teamassistant.gateway:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__ConnectionString=Host=database;Port=5432;Database=team_assistant;User Id=team_assistant__api;Password=hidden;Application Name=team_assistant;Pooling=true;Minimum Pool Size=10;Maximum Pool Size=100;Connection Idle Lifetime=30;ConnectionLifetime=300;
     container_name: gateway
     expose:
       - 8080
@@ -31,7 +32,7 @@ services:
   migrate:
     image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
     container_name: migrate
-    command: [ "migrate", "Host=database;Port=5432;Database=team_assistant;User Id=postgres;Password=[hidden]" ]
+    command: [ "migrate", "Host=database;Port=5432;Database=team_assistant;User Id=postgres;Password=hidden" ]
     depends_on:
       - database
 #      - create
@@ -41,7 +42,7 @@ services:
 #  create:
 #    image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
 #    container_name: create
-#    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=[hidden]", "[hidden]" ]
+#    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=hidden", "hidden" ]
 #    depends_on:
 #      - database
 #    networks:
@@ -49,10 +50,10 @@ services:
 
   database:
     container_name: database
-    image: postgres:14.5
+    image: postgres:16.2
     hostname: postgres
     environment:
-      POSTGRES_PASSWORD: pass
+      POSTGRES_PASSWORD: hidden
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - /home/inc_teamassistant/data:/var/lib/postgresql/data

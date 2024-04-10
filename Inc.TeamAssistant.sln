@@ -84,6 +84,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.RandomCof
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.RandomCoffee.DomainTests", "tests\Inc.TeamAssistant.RandomCoffee.DomainTests\Inc.TeamAssistant.RandomCoffee.DomainTests.csproj", "{F4F1844A-08C2-48E9-882B-84FF0FF3D580}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Primitives.DataAccess", "src\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj", "{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -212,6 +214,10 @@ Global
 		{F4F1844A-08C2-48E9-882B-84FF0FF3D580}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4F1844A-08C2-48E9-882B-84FF0FF3D580}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4F1844A-08C2-48E9-882B-84FF0FF3D580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B9C88CA2-123E-4D55-A931-91B0CFA08447} = {BF819FCA-A383-4283-B680-4B80B7B5CA32}
@@ -252,5 +258,6 @@ Global
 		{A8D82085-422F-4AC4-B140-43E2F8F36282} = {E4CE310E-9552-45F5-85EE-6B95A198AF92}
 		{4A95D04C-E4DF-41AB-9BD6-0604C9ED450E} = {E4CE310E-9552-45F5-85EE-6B95A198AF92}
 		{F4F1844A-08C2-48E9-882B-84FF0FF3D580} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
+		{57CC62E3-FF11-4A74-AED0-6DFCF249A3AB} = {2819C5EE-D36B-4BE5-95D3-80BF8869051D}
 	EndGlobalSection
 EndGlobal

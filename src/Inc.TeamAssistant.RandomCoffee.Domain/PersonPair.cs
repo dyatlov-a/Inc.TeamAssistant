@@ -1,18 +1,13 @@
 namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
-public sealed class PersonPair
+public sealed record PersonPair
 {
     public const int Size = 2;
     
-    public long FirstId { get; private set; }
-    public long SecondId { get; private set; }
-
-    private PersonPair()
-    {
-    }
+    public long FirstId { get; }
+    public long SecondId { get; }
 
     public PersonPair(long firstId, long secondId)
-        : this()
     {
         if (firstId == secondId)
             throw new ArgumentException($"FirstId {firstId} AND SecondId {secondId} can not be equals.");
@@ -29,25 +24,6 @@ public sealed class PersonPair
         }
     }
 
-    public override bool Equals(object? obj)
-    {
-        var other = obj as PersonPair;
-
-        return other is not null && Equals(other);
-    }
-
-    private bool Equals(PersonPair other)
-    {
-        ArgumentNullException.ThrowIfNull(other);
-
-        return FirstId == other.FirstId && SecondId == other.SecondId;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(FirstId, SecondId);
-    }
-
     public bool ContainsIn(IReadOnlyCollection<PersonPair> pairs)
     {
         ArgumentNullException.ThrowIfNull(pairs);
@@ -62,4 +38,6 @@ public sealed class PersonPair
         
         return exists.Contains(FirstId) || exists.Contains(SecondId);
     }
+
+    public bool HasPerson(long personId) => FirstId == personId || SecondId == personId;
 }

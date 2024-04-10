@@ -1,33 +1,44 @@
-@using Inc.TeamAssistant.WebUI.Components.Annotations
 @inject LanguageManager LanguageManager
 
 <div class="feedback__body">
     <div class="feedback-text">
-        <p class="feedback-text__description">@_annotation.AskQuestion<br/> @_annotation.WhatYouThink</p>
-    </div>
-    <div class="feedback__form">
-        <input type="text" @bind="_subject" class="feedback__subject" placeholder="@_annotation.FeedbackSubject" />
-        <textarea @bind="_value" class="feedback__value" placeholder="@_annotation.FeedbackQuestion"></textarea>
-        <a href="mailto:@(UserSettings.FeedbackTo)?body=@(_value)&subject=@(_subject)" class="button button_white">@_annotation.FeedbackSend</a>
+        <h1 class="feedback-text__header">
+            <span class="text-item">@_header</span><br/><span class="text-item">@_subHeader</span>
+        </h1>
+        <br/>
+        <p class="feedback-text__description">
+            <span class="text-item">👌 @_toolAppraiser<br/></span>
+            <span class="text-item">🤝 @_toolReviewer<br/></span>
+            <span class="text-item">💬 @_toolRandomCoffee</span>
+        </p>
+        <br/>
+        <a href="mailto:@(UserSettings.FeedbackTo)?body=@(_requestDemoBody)&subject=@(_requestDemo)" class="button button_black">@_requestDemo</a>
     </div>
 </div>
 
 @code {
-    private string _subject = string.Empty;
-    private string _value = string.Empty;
+    private string _requestDemo = string.Empty;
+    private string _requestDemoBody = string.Empty;
 
-    private FeedbackAnnotation _annotation = FeedbackAnnotation.Empty;
+    private string _getContacts = string.Empty;
+    private string _header = string.Empty;
+    private string _subHeader = string.Empty;
+    private string _toolAppraiser = string.Empty;
+    private string _toolReviewer = string.Empty;
+    private string _toolRandomCoffee = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var resources = await LanguageManager.GetResource();
 
-        _annotation = new(
-            resources[Messages.GUI_AskQuestion],
-            resources[Messages.GUI_WhatYouThink],
-            resources[Messages.GUI_FeedbackSubject],
-            resources[Messages.GUI_FeedbackQuestion],
-            resources[Messages.GUI_FeedbackSend]);
+        _getContacts = resources[Messages.GUI_GetContacts];
+        _requestDemo = resources[Messages.GUI_RequestDemo];
+        _requestDemoBody = resources[Messages.GUI_RequestDemoBody];
+        _header = resources[Messages.GUI_MainHeader];
+        _subHeader = resources[Messages.GUI_MainSubHeader];
+        _toolAppraiser = resources[Messages.GUI_ToolAppraiser];
+        _toolReviewer = resources[Messages.GUI_ToolReviewer];
+        _toolRandomCoffee = resources[Messages.GUI_ToolRandomCoffee];
 
         await InvokeAsync(StateHasChanged);
     }
