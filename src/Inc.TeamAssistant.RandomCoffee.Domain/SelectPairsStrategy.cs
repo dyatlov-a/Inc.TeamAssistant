@@ -119,10 +119,8 @@ internal sealed class SelectPairsStrategy
         ArgumentNullException.ThrowIfNull(pairByWeights);
         
         if (lastExcludedPersonId.HasValue)
-        {
-            var pair = pairByWeights.First(p => p.Key.HasPerson(lastExcludedPersonId.Value)).Key;
-            pairByWeights[pair] = ExcludedPersonWeight;
-        }
+            foreach (var pair in pairByWeights.Where(p => p.Key.HasPerson(lastExcludedPersonId.Value)))
+                pairByWeights[pair.Key] = ExcludedPersonWeight;
         
         return pairByWeights;
     }
