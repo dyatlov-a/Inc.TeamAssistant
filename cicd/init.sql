@@ -39,7 +39,8 @@ VALUES
 
     ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', null),
     
-    ('687426da-75eb-4cea-bdb1-6afd6c7e5dc0', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/invite', 'RandomCoffee_InviteHelp')
+    ('687426da-75eb-4cea-bdb1-6afd6c7e5dc0', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/invite', 'RandomCoffee_InviteHelp'),
+    ('a85b8851-6939-47f5-8e35-9fe9ecf680f7', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/poll_answer', null)
 ON CONFLICT (id) DO UPDATE SET
     bot_id = excluded.bot_id,
     value = excluded.value,
