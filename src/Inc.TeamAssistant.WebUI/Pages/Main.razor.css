@@ -7,7 +7,8 @@
     z-index: -1;
 }
 .feedback__container {
-    padding-top: 120px;
+    max-width: 90%;
+    padding-top: 100px;
 }
 @media (max-width: 767.98px) {
     .feedback__container {
