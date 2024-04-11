@@ -39,7 +39,8 @@ public static class ServiceCollectionExtensions
                 cacheAbsoluteExpiration))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
-            .AddSingleton<ILinkBuilder, LinkBuilder>();
+            .AddSingleton<ILinkBuilder, LinkBuilder>()
+            .AddSingleton<IVideoService, VideoServerService>();
 
         return services;
 	}

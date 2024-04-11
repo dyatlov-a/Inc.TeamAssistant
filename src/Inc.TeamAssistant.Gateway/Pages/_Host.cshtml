@@ -75,6 +75,11 @@
             }
             return "";
         };
+        window.videoPlay = (videoId) => {
+            let video = document.getElementById(videoId);
+            video.muted = "muted";
+            video.play();
+        }
     </script>
 
     @if (Model.HasMap)

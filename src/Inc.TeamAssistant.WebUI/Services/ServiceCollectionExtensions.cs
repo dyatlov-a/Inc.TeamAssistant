@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICookieService, CookieServiceClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<ILocationBuilder, LocationBuilder>()
+            .AddSingleton<IVideoService, VideoClientService>()
 
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
