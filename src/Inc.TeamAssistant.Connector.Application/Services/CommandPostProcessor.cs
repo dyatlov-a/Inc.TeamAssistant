@@ -1,7 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Extensions;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
@@ -30,14 +28,14 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             throw new ArgumentNullException(nameof(command));
         
         await _dialogContinuation.End(
-            command.MessageContext.PersonId,
-            new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId),
+            command.MessageContext.Person.Id,
+            command.MessageContext.ChatMessage,
             async (ms, t) =>
             {
                 if (command.MessageContext.Shared && ms.Any())
                 {
                     var messages = ms.Select(m => (m.ChatId, m.MessageId)).ToArray();
-                    var client = await _provider.Get(command.MessageContext.BotId, t);
+                    var client = await _provider.Get(command.MessageContext.Bot.Id, t);
                     await client.TryDelete(messages, _logger, token);
                 }
             },

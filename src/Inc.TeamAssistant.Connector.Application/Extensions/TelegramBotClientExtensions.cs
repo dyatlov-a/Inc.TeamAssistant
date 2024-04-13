@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -32,13 +31,13 @@ internal static class TelegramBotClientExtensions
     public static async Task TrySend(
         this ITelegramBotClient client,
         DialogState? dialog,
-        long chatId,
-        int messageId,
+        ChatMessage chatMessage,
         string text,
         ILogger logger,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(chatMessage);
         ArgumentNullException.ThrowIfNull(logger);
         
         if (string.IsNullOrWhiteSpace(text))
@@ -46,17 +45,17 @@ internal static class TelegramBotClientExtensions
 
         try
         {
-            var message = await client.SendTextMessageAsync(chatId, text, cancellationToken: token);
+            var message = await client.SendTextMessageAsync(chatMessage.ChatId, text, cancellationToken: token);
             
             if (dialog is not null)
             {
-                dialog.Attach(new ChatMessage(chatId, messageId));
-                dialog.Attach(new ChatMessage(chatId, message.MessageId));
+                dialog.Attach(chatMessage);
+                dialog.Attach(chatMessage with { MessageId = message.MessageId });
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Can not send message to chat {TargetChatId}", chatId);
+            logger.LogError(ex, "Can not send message to chat {TargetChatId}", chatMessage.ChatId);
         }
     }
 }

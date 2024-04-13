@@ -1,36 +1,28 @@
 using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Primitives.Commands;
 
 public sealed record MessageContext(
-    int MessageId,
-    Guid BotId,
-    string BotName,
+    ChatMessage ChatMessage,
+    BotContext Bot,
     IReadOnlyList<TeamContext> Teams,
     string Text,
-    long ChatId,
-    long PersonId,
-    string FirstName,
-    string? Username,
+    Person Person,
     LanguageId LanguageId,
     Point? Location,
     long? TargetPersonId)
 {
-    public bool Shared => ChatId != PersonId;
-    public string DisplayUsername => string.IsNullOrWhiteSpace(Username) ? FirstName : Username;
+    public bool Shared => ChatMessage.ChatId != Person.Id;
 
     public static MessageContext CreateIdle(Guid botId, long chatId)
     {
         return new MessageContext(
-            MessageId: 0,
-            BotId: botId,
-            BotName: string.Empty,
+            ChatMessage: new ChatMessage(chatId, MessageId: 0),
+            Bot: new BotContext(botId, Name: string.Empty),
             Teams: Array.Empty<TeamContext>(),
             Text: string.Empty,
-            ChatId: chatId,
-            PersonId: 0,
-            FirstName: string.Empty,
-            Username: null,
+            Person.Empty,
             LanguageId: LanguageSettings.DefaultLanguageId,
             Location: null,
             TargetPersonId: null);

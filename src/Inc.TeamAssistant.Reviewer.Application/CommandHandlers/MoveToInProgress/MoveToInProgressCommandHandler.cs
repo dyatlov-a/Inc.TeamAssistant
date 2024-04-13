@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 using MediatR;
@@ -55,7 +54,7 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
                 taskForReview,
                 reviewer,
                 hasInProgressAction: false,
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId),
+                command.MessageContext.ChatMessage,
                 token)
         };
         

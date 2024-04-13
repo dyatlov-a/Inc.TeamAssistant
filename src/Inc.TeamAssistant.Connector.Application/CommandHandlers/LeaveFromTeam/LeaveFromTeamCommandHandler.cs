@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Handlers;
@@ -28,14 +27,13 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
     
     public async Task<CommandResult> Handle(LeaveFromTeamCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var team = await _teamRepository.Find(command.TeamId, token);
         if (team is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
-        team.RemoveTeammate(command.MessageContext.PersonId);
+        team.RemoveTeammate(command.MessageContext.Person.Id);
 
         await _teamRepository.Upsert(team, token);
 
@@ -45,17 +43,20 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         var leaveTeamSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,
             command.MessageContext.LanguageId,
-            command.MessageContext.DisplayUsername,
+            command.MessageContext.Person.DisplayName,
             team.Name);
+        var notification = NotificationMessage.Create(
+            command.MessageContext.ChatMessage.ChatId,
+            leaveTeamSuccessMessage);
+
+        var notifications = command.MessageContext.Person.Id != team.OwnerId
+            ? new[]
+            {
+                NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage),
+                notification
+            }
+            : [notification];
         
-        var notifications = new List<NotificationMessage>
-        {
-            NotificationMessage.Create(command.MessageContext.ChatId, leaveTeamSuccessMessage)
-        };
-        
-        if (command.MessageContext.PersonId != team.OwnerId)
-            notifications.Add(NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage));
-        
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notifications);
     }
 }

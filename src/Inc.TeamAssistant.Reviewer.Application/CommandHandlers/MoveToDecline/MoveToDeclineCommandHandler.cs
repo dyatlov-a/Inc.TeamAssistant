@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
 using MediatR;
@@ -51,7 +50,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
                 taskForReview,
                 reviewer,
                 hasInProgressAction: null,
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId),
+                command.MessageContext.ChatMessage,
                 token)
         };
 

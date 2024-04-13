@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -13,10 +12,10 @@ internal sealed class DialogContinuation
 
     public DialogState Begin(long userId, string command, CommandStage commandStage, ChatMessage chatMessage)
     {
+        ArgumentNullException.ThrowIfNull(chatMessage);
+        
         if (string.IsNullOrWhiteSpace(command))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
-        if (chatMessage is null)
-            throw new ArgumentNullException(nameof(chatMessage));
 
         _store.AddOrUpdate(
             userId,
@@ -32,11 +31,9 @@ internal sealed class DialogContinuation
         Func<IReadOnlyCollection<ChatMessage>, CancellationToken, Task> cleanHistory,
         CancellationToken token)
     {
-        if (chatMessage is null)
-            throw new ArgumentNullException(nameof(chatMessage));
-        if (cleanHistory is null)
-            throw new ArgumentNullException(nameof(cleanHistory));
-        
+        ArgumentNullException.ThrowIfNull(chatMessage);
+        ArgumentNullException.ThrowIfNull(cleanHistory);
+
         if (_store.Remove(userId, out var dialogState))
         {
             dialogState.Attach(chatMessage);

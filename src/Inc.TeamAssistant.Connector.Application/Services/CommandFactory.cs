@@ -36,7 +36,7 @@ internal sealed class CommandFactory
         if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
             return new EndCommand(messageContext);
 
-        var dialogState = _dialogContinuation.Find(messageContext.PersonId);
+        var dialogState = _dialogContinuation.Find(messageContext.Person.Id);
         var input = dialogState is null ? _aliasService.OverrideCommand(messageContext.Text) : dialogState.Command;
         
         var botCommand = bot.FindCommand(input);
@@ -75,7 +75,7 @@ internal sealed class CommandFactory
             }
         }
             
-        var commandCreator = _commandCreatorResolver.TryResolve(botCommand.Value);
+        var commandCreator = _commandCreatorResolver.TryResolve(input);
         if (commandCreator is null)
             return null;
         

@@ -27,13 +27,12 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
 
     public async Task<CommandResult> Handle(CreateTeamCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var team = new Team(
-            command.MessageContext.BotId,
-            command.MessageContext.ChatId,
-            command.MessageContext.PersonId,
+            command.MessageContext.Bot.Id,
+            command.MessageContext.ChatMessage.ChatId,
+            command.MessageContext.Person.Id,
             command.Name,
             command.Properties);
 
@@ -44,11 +43,8 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             command.MessageContext.LanguageId,
             team.Name,
             _linkBuilder.BuildLinkForConnect(command.BotName, team.Id));
-        var notifications = new List<NotificationMessage>
-        {
-            NotificationMessage.Create(command.MessageContext.ChatId, message, pinned: true)
-        };
+        var notification = NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message, pinned: true);
         
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notification);
     }
 }

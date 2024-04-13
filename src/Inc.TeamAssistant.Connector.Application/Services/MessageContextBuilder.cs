@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -130,15 +131,11 @@ internal sealed class MessageContextBuilder
         var teams = GetTeams(bot, person.Id, chatId);
             
         return new(
-            messageId,
-            bot.Id,
-            bot.Name,
+            new ChatMessage(chatId, messageId),
+            new BotContext(bot.Id, bot.Name),
             teams,
             text,
-            chatId,
-            person.Id,
-            person.Name,
-            person.Username,
+            person,
             language,
             location is not null ? new (location.Longitude, location.Latitude) : null,
             targetPersonId);

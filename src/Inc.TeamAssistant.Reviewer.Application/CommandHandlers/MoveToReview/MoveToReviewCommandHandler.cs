@@ -39,10 +39,10 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
 
         var taskForReview = new TaskForReview(
-            command.MessageContext.BotId,
+            command.MessageContext.Bot.Id,
             command.TeamId,
             Enum.Parse<NextReviewerType>(command.Strategy),
-            command.MessageContext.PersonId,
+            command.MessageContext.Person.Id,
             targetTeam.ChatId,
             command.Description);
 

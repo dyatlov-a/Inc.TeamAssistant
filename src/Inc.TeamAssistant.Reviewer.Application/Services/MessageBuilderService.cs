@@ -31,13 +31,12 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         
         var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Username);
         var attachedPersonId = hasUsername ? null : (long?)reviewer.Id;
-        var message = await _translateProvider.Get(
+        var text = await _translateProvider.Get(
             Messages.Reviewer_NewTaskForReview,
             await _teamAccessor.GetClientLanguage(owner.Id, token),
             taskForReview.Description,
             owner.DisplayName,
             hasUsername ? $"@{reviewer.Username}" : reviewer.Name);
-        var builder = new StringBuilder(message);
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
@@ -47,15 +46,17 @@ internal sealed class MessageBuilderService : IMessageBuilderService
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
         
+        var builder = new StringBuilder();
+        builder.AppendLine(text);
         builder.AppendLine(state);
+        var message = builder.ToString();
         
         var notification = taskForReview.MessageId.HasValue
-            ? NotificationMessage.Edit(
-                    new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value),
-                    builder.ToString())
+            ? NotificationMessage
+                .Edit(new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value), message)
                 .AttachPerson(attachedPersonId)
             : NotificationMessage
-                .Create(taskForReview.ChatId, builder.ToString())
+                .Create(taskForReview.ChatId, message)
                 .AttachPerson(attachedPersonId)
                 .AddHandler((c, p) => new AttachMessageCommand(c, taskForReview.Id, int.Parse(p)));
 

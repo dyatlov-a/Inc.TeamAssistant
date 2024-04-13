@@ -11,9 +11,12 @@ internal sealed class CommandCreatorResolver
         _commandCreators = commandCreators ?? throw new ArgumentNullException(nameof(commandCreators));
     }
 
-    public ICommandCreator? TryResolve(string command)
+    public ICommandCreator? TryResolve(string input)
     {
-        return _commandCreators.SingleOrDefault(c => command.Equals(
+        if (string.IsNullOrWhiteSpace(input))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(input));
+        
+        return _commandCreators.SingleOrDefault(c => input.StartsWith(
             c.Command,
             StringComparison.InvariantCultureIgnoreCase));
     }

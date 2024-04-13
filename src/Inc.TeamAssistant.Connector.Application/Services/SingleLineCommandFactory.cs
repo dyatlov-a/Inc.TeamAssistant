@@ -6,11 +6,15 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 internal sealed class SingleLineCommandFactory
 {
     private readonly CommandCreatorResolver _commandCreatorResolver;
+    private readonly DialogContinuation _dialogContinuation;
     
-    public SingleLineCommandFactory(CommandCreatorResolver commandCreatorResolver)
+    public SingleLineCommandFactory(
+        CommandCreatorResolver commandCreatorResolver,
+        DialogContinuation dialogContinuation)
     {
         _commandCreatorResolver =
             commandCreatorResolver ?? throw new ArgumentNullException(nameof(commandCreatorResolver));
+        _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
     }
     
     public async Task<IEndDialogCommand?> TryCreate(
@@ -48,6 +52,8 @@ internal sealed class SingleLineCommandFactory
             messageContext with { Text = description },
             teamContext,
             token);
+        
+        _dialogContinuation.Begin(messageContext.Person.Id, cmd, CommandStage.None, messageContext.ChatMessage);
         
         return command;
 

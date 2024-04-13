@@ -29,7 +29,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
 
         // TODO: Accept task for leave last person (Impl remove team case)
-        var otherTeammates = teammates.Where(t => t.Id != messageContext.PersonId).ToArray();
+        var otherTeammates = teammates.Where(t => t.Id != messageContext.Person.Id).ToArray();
 
         if (otherTeammates.Any())
         {
@@ -37,7 +37,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
 
             await _taskForReviewRepository.RetargetAndLeave(
                 teamId,
-                messageContext.PersonId,
+                messageContext.Person.Id,
                 nextReviewer.Id,
                 DateTimeOffset.UtcNow,
                 token);

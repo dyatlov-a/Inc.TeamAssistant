@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -27,52 +26,51 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
 
     public async Task<CommandResult> Handle(AddLocationToMapCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         if (command.MessageContext.Location is null)
             return CommandResult.Empty;
         
-        if (command.MessageContext.ChatId == command.MessageContext.PersonId)
+        if (command.MessageContext.ChatMessage.ChatId == command.MessageContext.Person.Id)
         {
             var messageText = await _translateProvider.Get(
                 Messages.CheckIn_GetStarted,
                 command.MessageContext.LanguageId);
 
-            return CommandResult.Build(NotificationMessage.Create(command.MessageContext.PersonId, messageText));
+            return CommandResult.Build(NotificationMessage.Create(command.MessageContext.Person.Id, messageText));
         }
         
-        var existsMap = await _locationsRepository.Find(command.MessageContext.ChatId, token);
-        var map = existsMap ?? new(command.MessageContext.BotId, command.MessageContext.ChatId);
+        var existsMap = await _locationsRepository.Find(command.MessageContext.ChatMessage.ChatId, token);
+        var map = existsMap ?? new(command.MessageContext.Bot.Id, command.MessageContext.ChatMessage.ChatId);
         
         var location = new LocationOnMap(
-            command.MessageContext.PersonId,
-            command.MessageContext.DisplayUsername,
+            command.MessageContext.Person.Id,
+            command.MessageContext.Person.DisplayName,
             command.MessageContext.Location.X,
             command.MessageContext.Location.Y,
             map);
 
         await _locationsRepository.Insert(location, token);
 
-        var notifications = new List<NotificationMessage>
-        {
-            NotificationMessage.Delete(new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId))
-        };
+        var removeMessageNotification = NotificationMessage.Delete(command.MessageContext.ChatMessage);
 
-        if (existsMap is null)
-        {
-            var link = string.Format(
-                _options.ConnectToMapLinkTemplate,
-                command.MessageContext.LanguageId.Value,
-                map.Id.ToString("N"));
-            var message = await _translateProvider.Get(
-                Messages.CheckIn_ConnectLinkText,
-                command.MessageContext.LanguageId,
-                link);
+        if (existsMap is not null)
+            return CommandResult.Build(removeMessageNotification);
+        
+        var link = string.Format(
+            _options.ConnectToMapLinkTemplate,
+            command.MessageContext.LanguageId.Value,
+            map.Id.ToString("N"));
+        var message = await _translateProvider.Get(
+            Messages.CheckIn_ConnectLinkText,
+            command.MessageContext.LanguageId,
+            link);
+
+        var notification = NotificationMessage.Create(
+            command.MessageContext.ChatMessage.ChatId,
+            message,
+            pinned: true);
             
-            notifications.Add(NotificationMessage.Create(command.MessageContext.ChatId, message, pinned: true));
-        }
-
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(removeMessageNotification, notification);
     }
 }

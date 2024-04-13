@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToNextRound;
 using MediatR;
@@ -44,18 +43,18 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
 
         taskForReview.MoveToNextRound();
         
-        var notifications = new List<NotificationMessage>
+        var notifications = new[]
         {
             await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token),
             await _messageBuilderService.BuildMoveToNextRound(
                 taskForReview,
                 owner,
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId),
+                command.MessageContext.ChatMessage,
                 token)
         };
 
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notifications);
     }
 }

@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToAccept;
 using MediatR;
@@ -52,7 +51,7 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
                 taskForReview,
                 reviewer,
                 hasInProgressAction: null,
-                new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId),
+                command.MessageContext.ChatMessage,
                 token)
         };
 

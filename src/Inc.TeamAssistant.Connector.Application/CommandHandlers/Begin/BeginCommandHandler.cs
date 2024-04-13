@@ -1,9 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Connector.Model.Commands.MarkMessageForDelete;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin;
@@ -23,10 +21,10 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
             throw new ArgumentNullException(nameof(command));
 
         var dialogState = _dialogContinuation.Begin(
-            command.MessageContext.PersonId,
+            command.MessageContext.Person.Id,
             command.Command,
             command.NextStage,
-            new ChatMessage(command.MessageContext.ChatId, command.MessageContext.MessageId));
+            command.MessageContext.ChatMessage);
 
         if (command.TeamContext != CurrentTeamContext.Empty)
             dialogState.SetTeam(command.TeamContext);

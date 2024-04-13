@@ -47,8 +47,8 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         const string duplicateKeyError = "23505";
 
-        var client = await _provider.Get(command.MessageContext.BotId, token);
-        var dialog = _dialogContinuation.Find(command.MessageContext.PersonId);
+        var client = await _provider.Get(command.MessageContext.Bot.Id, token);
+        var dialog = _dialogContinuation.Find(command.MessageContext.Person.Id);
         
         try
         {
@@ -58,8 +58,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         {
             await client.TrySend(
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 validationException.ToMessage(),
                 _logger,
                 token);
@@ -73,8 +72,7 @@ internal sealed class CommandExecutor : ICommandExecutor
             
             await client.TrySend(
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 errorMessage,
                 _logger,
                 token);
@@ -83,8 +81,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         {
             await client.TrySend(
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 teamAssistantException.Message,
                 _logger,
                 token);
@@ -97,8 +94,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         {
             await client.TrySend(
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 "Duplicate key value violates unique constraint.",
                 _logger,
                 token);
@@ -109,8 +105,7 @@ internal sealed class CommandExecutor : ICommandExecutor
             
             await client.TrySend(
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 "An unhandled exception has occurred. Try running the command again.",
                 _logger,
                 token);

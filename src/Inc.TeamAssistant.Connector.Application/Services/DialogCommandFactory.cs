@@ -64,7 +64,7 @@ internal sealed class DialogCommandFactory
             (CommandList.ChangeToRandom, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.NeedReview, null, 0, _, _)
-                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
+                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.Person.Id),
             (CommandList.NeedReview, null, 1, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             (CommandList.NeedReview, null, > 1, _, _)
@@ -72,7 +72,7 @@ internal sealed class DialogCommandFactory
             (CommandList.NeedReview, CommandStage.SelectTeam, _, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
             (CommandList.AddStory, null, 0, _, _)
-                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.PersonId),
+                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.Person.Id),
             (CommandList.AddStory, null, 1, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             (CommandList.AddStory, null, > 1, _, _)
@@ -88,15 +88,14 @@ internal sealed class DialogCommandFactory
         MessageContext messageContext,
         IReadOnlyCollection<TeamContext> teams)
     {
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teams);
+        
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teams is null)
-            throw new ArgumentNullException(nameof(teams));
-            
+
         var notification = NotificationMessage.Create(
-            messageContext.ChatId,
+            messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
@@ -117,18 +116,16 @@ internal sealed class DialogCommandFactory
         Guid? teamId,
         MessageId messageId)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(messageId);
+        
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (messageId is null)
-            throw new ArgumentNullException(nameof(messageId));
 
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
-            messageContext.ChatId,
+            messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(messageId, messageContext.LanguageId));
             
         return new BeginCommand(
