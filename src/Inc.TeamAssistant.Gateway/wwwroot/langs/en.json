@@ -57,7 +57,6 @@
   "Reviewer_MoveToAccept": "Accept",
   "Reviewer_MoveToDecline": "Decline",
   "Reviewer_MoveToNextRound": "Try again",
-  "Reviewer_OperationApplied": "Operation completed",
   "Reviewer_TeamWithoutUsers": "Team has no members",
   "Reviewer_ChangeToRoundRobinHelp": "Change to round robin",
   "Reviewer_ChangeToRandomHelp": "Change to random",

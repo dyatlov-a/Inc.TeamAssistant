@@ -6,11 +6,27 @@ namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 public interface IMessageBuilderService
 {
-    Task<NotificationMessage> BuildMessageNewTaskForReview(
+    Task<NotificationMessage> BuildNewTaskForReview(
         TaskForReview taskForReview,
         Person reviewer,
         Person owner,
         CancellationToken token);
-    Task<NotificationMessage> BuildMessageNeedReview(TaskForReview task, Person reviewer, CancellationToken token);
-    Task<NotificationMessage> BuildMessageMoveToNextRound(TaskForReview task, Person owner, CancellationToken token);
+    
+    Task<NotificationMessage> BuildNeedReview(
+        TaskForReview task,
+        Person reviewer,
+        bool? hasInProgressAction,
+        ChatMessage? chatMessage,
+        CancellationToken token);
+    
+    Task<NotificationMessage> BuildMoveToNextRound(
+        TaskForReview task,
+        Person owner,
+        ChatMessage? chatMessage,
+        CancellationToken token);
+
+    Task<NotificationMessage> BuildReviewAccepted(
+        TaskForReview task,
+        Person owner,
+        CancellationToken token);
 }

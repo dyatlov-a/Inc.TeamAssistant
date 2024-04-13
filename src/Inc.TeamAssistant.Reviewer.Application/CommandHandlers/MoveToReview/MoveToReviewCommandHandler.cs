@@ -62,7 +62,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
         
-        var taskForReviewMessage = await _messageBuilderService.BuildMessageNewTaskForReview(
+        var taskForReviewMessage = await _messageBuilderService.BuildNewTaskForReview(
             taskForReview,
             reviewer,
             owner,

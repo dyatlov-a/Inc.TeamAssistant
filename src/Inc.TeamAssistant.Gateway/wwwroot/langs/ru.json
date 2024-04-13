@@ -57,7 +57,6 @@
   "Reviewer_MoveToAccept": "Принять",
   "Reviewer_MoveToDecline": "Отклонить",
   "Reviewer_MoveToNextRound": "Попробовать снова",
-  "Reviewer_OperationApplied": "Операция применена",
   "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
   "Reviewer_ChangeToRoundRobinHelp": "Перейти на последовательный перебор",
   "Reviewer_ChangeToRandomHelp": "Перейти на случайный выбор",
