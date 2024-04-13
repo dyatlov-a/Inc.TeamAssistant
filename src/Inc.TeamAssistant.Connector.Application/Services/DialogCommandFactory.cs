@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -27,15 +26,13 @@ internal sealed class DialogCommandFactory
         BotCommandStage? nextStage,
         MessageContext messageContext)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(stage);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
-        if (stage is null)
-            throw new ArgumentNullException(nameof(stage));
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-
+        
         var teamSelected = Guid.TryParse(messageContext.Text.TrimStart('/'), out var teamId);
         var memberOfTeams = messageContext.Teams
             .Where(t => t.UserInTeam)

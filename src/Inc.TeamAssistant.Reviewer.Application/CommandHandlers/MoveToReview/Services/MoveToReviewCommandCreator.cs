@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
@@ -14,11 +13,9 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teamContext is null)
-            throw new ArgumentNullException(nameof(teamContext));
-            
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teamContext);
+
         return Task.FromResult<IEndDialogCommand>(new MoveToReviewCommand(
             messageContext,
             teamContext.TeamId,

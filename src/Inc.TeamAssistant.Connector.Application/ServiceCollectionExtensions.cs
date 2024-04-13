@@ -28,6 +28,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramBotClientProvider>()
             .AddSingleton<AliasService>()
+            .AddSingleton<SingleLineCommandFactory>()
+            .AddSingleton<CommandCreatorResolver>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             
