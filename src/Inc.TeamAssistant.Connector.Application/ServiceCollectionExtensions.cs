@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
             .AddHostedService<TelegramBotConnector>()
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramBotClientProvider>()
+            .AddSingleton<AliasService>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             

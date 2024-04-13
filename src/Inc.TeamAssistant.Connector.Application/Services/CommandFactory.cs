@@ -8,15 +8,18 @@ internal sealed class CommandFactory
     private readonly IEnumerable<ICommandCreator> _commandCreators;
     private readonly DialogContinuation _dialogContinuation;
     private readonly DialogCommandFactory _dialogCommandFactory;
+    private readonly AliasService _aliasService;
 
     public CommandFactory(
         IEnumerable<ICommandCreator> commandCreators,
         DialogContinuation dialogContinuation,
-        DialogCommandFactory dialogCommandFactory)
+        DialogCommandFactory dialogCommandFactory,
+        AliasService aliasService)
     {
         _commandCreators = commandCreators ?? throw new ArgumentNullException(nameof(commandCreators));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _dialogCommandFactory = dialogCommandFactory ?? throw new ArgumentNullException(nameof(dialogCommandFactory));
+        _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
     }
 
     public async Task<IDialogCommand?> TryCreate(Bot bot, MessageContext messageContext, CancellationToken token)
@@ -27,11 +30,14 @@ internal sealed class CommandFactory
         var dialogState = _dialogContinuation.Find(messageContext.PersonId);
         var cmd = !CommandList.Cancel.Equals(messageContext.Text, StringComparison.InvariantCultureIgnoreCase) && dialogState is not null
             ? dialogState.Command
-            : messageContext.Text;
+            : _aliasService.OverrideCommand(messageContext.Text);
         
         var botCommand = bot.FindCommand(cmd);
         if (botCommand is null)
             return null;
+        
+        // TODO: /nr LIT_DEV about this feature and link
+        // TODO: /add LIT about this story and link
         
         if (botCommand.Stages.Any())
         {
