@@ -15,5 +15,5 @@ internal static class Messages
     public static readonly MessageId Connector_TeamNotFound = new(nameof(Connector_TeamNotFound));
     public static readonly MessageId Connector_PersonNotFound = new(nameof(Connector_PersonNotFound));
     public static readonly MessageId Reviewer_TeamWithoutUsers = new(nameof(Reviewer_TeamWithoutUsers));
-    public static readonly MessageId Reviewer_ReassignHelp = new(nameof(Reviewer_ReassignHelp));
+    public static readonly MessageId Reviewer_Reassign = new(nameof(Reviewer_Reassign));
 }

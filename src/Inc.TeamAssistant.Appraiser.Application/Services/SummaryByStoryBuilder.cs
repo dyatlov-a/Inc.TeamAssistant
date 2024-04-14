@@ -1,7 +1,6 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -20,8 +19,7 @@ internal sealed class SummaryByStoryBuilder
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
     {
-        if (summary is null)
-            throw new ArgumentNullException(nameof(summary));
+        ArgumentNullException.ThrowIfNull(summary);
 
         var builder = new StringBuilder();
 
@@ -58,7 +56,10 @@ internal sealed class SummaryByStoryBuilder
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
                 .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
-
+        
+        if (summary.IsFinished)
+            return notification;
+        
         if (!summary.EstimateEnded)
         {
             foreach (var assessment in summary.Assessments)
@@ -67,22 +68,23 @@ internal sealed class SummaryByStoryBuilder
                     .Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
                     .ToUpperInvariant();
                 
-                notification.WithButton(new Button(buttonText, string.Format(CommandList.Set, assessment) + summary.StoryId.ToString("N")));
+                notification.WithButton(new Button(buttonText, $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
             }
 
-            notification.WithButton(new Button("Accept", CommandList.AcceptEstimate + summary.StoryId.ToString("N")));
+            notification.WithButton(new Button("Accept", $"{CommandList.AcceptEstimate}{summary.StoryId:N}"));
         }
         else
-            notification.WithButton(new Button("Revote", CommandList.ReVote + summary.StoryId.ToString("N")));
+            notification
+                .WithButton(new Button("Finish", $"{CommandList.Finish}{summary.StoryId:N}"))
+                .WithButton(new Button("Revote", $"{CommandList.ReVote}{summary.StoryId:N}"));
 
         return notification;
     }
 
     private string AddEstimate(bool estimateEnded, EstimateItemDetails item)
     {
-        if (item is null)
-            throw new ArgumentNullException(nameof(item));
-        
+        ArgumentNullException.ThrowIfNull(item);
+
         return estimateEnded ? item.DisplayValue : item.HasValue;
     }
     

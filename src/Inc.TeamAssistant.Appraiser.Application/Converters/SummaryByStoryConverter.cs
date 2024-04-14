@@ -8,9 +8,8 @@ internal static class SummaryByStoryConverter
 {
     public static SummaryByStory ConvertTo(Story story)
     {
-        if (story is null)
-            throw new ArgumentNullException(nameof(story));
-        
+        ArgumentNullException.ThrowIfNull(story);
+
         var storyForEstimates = story.StoryForEstimates
             .Select(s => new EstimateItemDetails(
                 s.ParticipantDisplayName,
@@ -32,6 +31,7 @@ internal static class SummaryByStoryConverter
             story.EstimateEnded,
             story.GetTotalValue(),
             storyForEstimates,
-            assessments);
+            assessments,
+            story.IsFinished);
     }
 }

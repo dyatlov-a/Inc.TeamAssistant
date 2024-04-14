@@ -138,6 +138,6 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         if (hasInProgressAction)
             yield return (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress);
         
-        yield return (Messages.Reviewer_ReassignHelp, CommandList.ReassignReview);
+        yield return (Messages.Reviewer_Reassign, CommandList.ReassignReview);
     }
 }

@@ -1,11 +1,11 @@
-using Inc.TeamAssistant.Appraiser.Model.Commands.ReVoteEstimate;
+using Inc.TeamAssistant.Appraiser.Model.Commands.FinishStory;
 using Inc.TeamAssistant.Primitives.Commands;
 
-namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate.Services;
+namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishStory.Services;
 
-internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
+internal sealed class FinishStoryCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.ReVote;
+    public string Command => CommandList.Finish;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
@@ -15,7 +15,7 @@ internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new ReVoteEstimateCommand(
+        return Task.FromResult<IEndDialogCommand>(new FinishStoryCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

@@ -60,7 +60,7 @@
   "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
   "Reviewer_ChangeToRoundRobinHelp": "Перейти на последовательный перебор",
   "Reviewer_ChangeToRandomHelp": "Перейти на случайный выбор",
-  "Reviewer_ReassignHelp": "Переназначить задачу",
+  "Reviewer_Reassign": "Переназначить",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

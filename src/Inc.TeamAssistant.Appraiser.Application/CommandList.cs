@@ -6,4 +6,5 @@ internal static class CommandList
     public const string AcceptEstimate = "/accept?storyId=";
     public const string ReVote = "/revote?storyId=";
     public const string Set = "/set?value={0}&storyId=";
+    public const string Finish = "/finish?storyId=";
 }
