@@ -36,9 +36,11 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         team.RemoveTeammate(command.MessageContext.Person.Id);
 
         await _teamRepository.Upsert(team, token);
+        
+        var notifications = new List<NotificationMessage>();
 
         foreach (var leaveTeamHandler in _leaveTeamHandlers)
-            await leaveTeamHandler.Handle(command.MessageContext, command.TeamId, token);
+            notifications.AddRange(await leaveTeamHandler.Handle(command.MessageContext, command.TeamId, token));
 
         var leaveTeamSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,
@@ -48,15 +50,11 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
             leaveTeamSuccessMessage);
-
-        var notifications = command.MessageContext.Person.Id != team.OwnerId
-            ? new[]
-            {
-                NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage),
-                notification
-            }
-            : [notification];
+        notifications.Add(notification);
         
-        return CommandResult.Build(notifications);
+        if (command.MessageContext.Person.Id != team.OwnerId)
+            notifications.Add(NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage));
+        
+        return CommandResult.Build(notifications.ToArray());
     }
 }

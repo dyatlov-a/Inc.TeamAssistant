@@ -24,6 +24,16 @@ internal sealed class HolidayService : IHolidayService
         return await IsWorkday(DateOnly.FromDateTime(value.DateTime), token);
     }
 
+    public DateTimeOffset GetLastDayOfWeek(DayOfWeek dayOfWeek, DateTimeOffset date)
+    {
+        var currentDate = date;
+        
+        while (currentDate.DayOfWeek != dayOfWeek)
+            currentDate = currentDate.AddDays(-1);
+
+        return currentDate.Date;
+    }
+
     private async Task<bool> IsWorkday(DateOnly date, CancellationToken token)
     {
         var holidays = await _reader.GetAll(token);

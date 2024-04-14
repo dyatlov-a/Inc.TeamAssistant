@@ -30,7 +30,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
         ArgumentNullException.ThrowIfNull(command);
 
         var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
-        if (!taskForReview.CanDecline())
+        if (!taskForReview.CanAccept())
             return CommandResult.Empty;
         
         var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);

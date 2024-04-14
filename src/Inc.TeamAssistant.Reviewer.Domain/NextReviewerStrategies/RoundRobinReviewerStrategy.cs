@@ -9,9 +9,14 @@ internal sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
         _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
     }
     
-    public long Next(long ownerId, long? lastReviewerId)
+    public long Next(IReadOnlyCollection<long> excludedPersonIds, long? lastReviewerId)
     {
-        var otherTeammates = _teammates.Where(t => t != ownerId).OrderBy(t => t).ToArray();
+        ArgumentNullException.ThrowIfNull(excludedPersonIds);
+        
+        var otherTeammates = _teammates
+            .Where(t => !excludedPersonIds.Contains(t))
+            .OrderBy(t => t)
+            .ToArray();
 
         if (!otherTeammates.Any())
             return _teammates.First();

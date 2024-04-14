@@ -11,9 +11,13 @@ internal sealed class RandomReviewerStrategy : INextReviewerStrategy
         _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
     }
     
-    public long Next(long ownerId, long? lastReviewerId)
+    public long Next(IReadOnlyCollection<long> excludedPersonIds, long? lastReviewerId)
     {
-        var excludedTeammates = lastReviewerId.HasValue ? new[] { ownerId, lastReviewerId.Value } : new[] { ownerId };
+        ArgumentNullException.ThrowIfNull(excludedPersonIds);
+        
+        var excludedTeammates = lastReviewerId.HasValue
+            ? excludedPersonIds.Append(lastReviewerId.Value)
+            : excludedPersonIds;
         var targetPlayers = _teammates
             .Where(t => !excludedTeammates.Contains(t))
             .OrderBy(t => t)

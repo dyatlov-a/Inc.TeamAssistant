@@ -60,6 +60,7 @@
   "Reviewer_TeamWithoutUsers": "Team has no members",
   "Reviewer_ChangeToRoundRobinHelp": "Change to round robin",
   "Reviewer_ChangeToRandomHelp": "Change to random",
+  "Reviewer_ReassignHelp": "Reassign the task",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",

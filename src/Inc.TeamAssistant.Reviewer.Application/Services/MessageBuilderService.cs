@@ -87,7 +87,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
                 notification.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
             }
 
-        return notification;
+        return notification.SetButtonsInRow(2);
     }
 
     public async Task<NotificationMessage> BuildMoveToNextRound(
@@ -132,10 +132,12 @@ internal sealed class MessageBuilderService : IMessageBuilderService
     
     private IEnumerable<(MessageId MessageId, string Command)> GetReviewerCommands(bool hasInProgressAction)
     {
-        if (hasInProgressAction)
-            yield return (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress);
-
         yield return (Messages.Reviewer_MoveToAccept, CommandList.Accept);
         yield return (Messages.Reviewer_MoveToDecline, CommandList.Decline);
+        
+        if (hasInProgressAction)
+            yield return (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress);
+        
+        yield return (Messages.Reviewer_ReassignHelp, CommandList.ReassignReview);
     }
 }

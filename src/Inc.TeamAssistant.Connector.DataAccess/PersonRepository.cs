@@ -94,4 +94,22 @@ internal sealed class PersonRepository : IPersonRepository
 
         await connection.ExecuteAsync(command);
     }
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            DELETE FROM connector.teammates
+            WHERE person_id = @person_id AND team_id = @team_id;",
+            new
+            {
+                team_id = teamId,
+                person_id = personId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        await connection.ExecuteAsync(command);
+    }
 }

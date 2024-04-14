@@ -1,46 +1,44 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class LeaveTeamHandler : ILeaveTeamHandler
 {
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
-    private readonly ITeamAccessor _teamAccessor;
+    private readonly ReassignReviewService _reassignReviewService;
+    private readonly ITaskForReviewReader _taskForReviewReader;
 
-    public LeaveTeamHandler(ITaskForReviewRepository taskForReviewRepository, ITeamAccessor teamAccessor)
+    public LeaveTeamHandler(ReassignReviewService reassignReviewService, ITaskForReviewReader taskForReviewReader)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+        _reassignReviewService =
+            reassignReviewService ?? throw new ArgumentNullException(nameof(reassignReviewService));
+        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
     }
 
-    public async Task Handle(MessageContext messageContext, Guid teamId, CancellationToken token)
+    public async Task<IEnumerable<NotificationMessage>> Handle(
+        MessageContext messageContext,
+        Guid teamId,
+        CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
+        ArgumentNullException.ThrowIfNull(messageContext);
         
-        var teammates = await _teamAccessor.GetTeammates(teamId, token);
         var targetTeam = messageContext.FindTeam(teamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
+        
+        var notifications = new List<NotificationMessage>();
+        var tasks = await _taskForReviewReader.GetTasksByPerson(
+            messageContext.Person.Id,
+            TaskForReviewStateRules.ActiveStates,
+            token);
 
-        // TODO: Accept task for leave last person (Impl remove team case)
-        var otherTeammates = teammates.Where(t => t.Id != messageContext.Person.Id).ToArray();
+        foreach (var task in tasks)
+            notifications.AddRange(await _reassignReviewService.ReassignReview(task.Id, token));
 
-        if (otherTeammates.Any())
-        {
-            var nextReviewer = otherTeammates.MinBy(t => t.Id)!;
-
-            await _taskForReviewRepository.RetargetAndLeave(
-                teamId,
-                messageContext.Person.Id,
-                nextReviewer.Id,
-                DateTimeOffset.UtcNow,
-                token);
-        }
+        return notifications;
     }
 }

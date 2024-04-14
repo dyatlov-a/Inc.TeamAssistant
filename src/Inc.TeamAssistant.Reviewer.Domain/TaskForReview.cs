@@ -19,6 +19,7 @@ public sealed class TaskForReview
     public DateTimeOffset? AcceptDate { get; private set; }
     public int? MessageId { get; private set; }
     public bool HasConcreteReviewer { get; private set; }
+    public long? OriginalReviewerId { get; private set; }
 
     private TaskForReview()
     {
@@ -59,15 +60,13 @@ public sealed class TaskForReview
         NextNotification = DateTimeOffset.UtcNow.Add(interval);
     }
 
-    public bool CanAccept() => State == TaskForReviewState.New || State == TaskForReviewState.InProgress;
+    public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
     public void Accept()
     {
         State = TaskForReviewState.IsArchived;
         AcceptDate = DateTimeOffset.UtcNow;
     }
-
-    public bool CanDecline() => State == TaskForReviewState.New || State == TaskForReviewState.InProgress;
 
     public void Decline()
     {
@@ -93,17 +92,19 @@ public sealed class TaskForReview
 
     public TaskForReview SetConcreteReviewer(long reviewerId)
     {
-        ReviewerId = reviewerId;
+        SetReviewer(reviewerId);
         HasConcreteReviewer = true;
         
         return this;
     }
 
-    public TaskForReview DetectReviewer(IReadOnlyCollection<long> teammates, long? lastReviewerId)
+    public TaskForReview DetectReviewer(
+        IReadOnlyCollection<long> teammates,
+        long? lastReviewerId,
+        long? excludedPersonId = null)
     {
-        if (teammates is null)
-            throw new ArgumentNullException(nameof(teammates));
-        
+        ArgumentNullException.ThrowIfNull(teammates);
+
         INextReviewerStrategy reviewerStrategy = Strategy switch
         {
             NextReviewerType.Random => new RandomReviewerStrategy(teammates),
@@ -111,8 +112,19 @@ public sealed class TaskForReview
             _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
         };
 
-        ReviewerId = reviewerStrategy.Next(OwnerId, lastReviewerId);
+        var excludedPersonIds = excludedPersonId.HasValue
+            ? new[] { OwnerId, excludedPersonId.Value }
+            : [OwnerId];
+        SetReviewer(reviewerStrategy.Next(excludedPersonIds, lastReviewerId));
 
         return this;
+    }
+    
+    private void SetReviewer(long reviewerId)
+    {
+        if (!OriginalReviewerId.HasValue && ReviewerId != 0)
+            OriginalReviewerId = ReviewerId;
+            
+        ReviewerId = reviewerId;
     }
 }

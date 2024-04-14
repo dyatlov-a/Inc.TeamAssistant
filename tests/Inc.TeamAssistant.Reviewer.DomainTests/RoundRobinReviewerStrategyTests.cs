@@ -35,7 +35,7 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var ownerId = _teammates.First();
 
-        var reviewerId = _target.Next(ownerId, lastReviewerId: null);
+        var reviewerId = _target.Next([ownerId], lastReviewerId: null);
         
         Assert.NotEqual(ownerId, reviewerId);
     }
@@ -46,7 +46,7 @@ public sealed class RoundRobinReviewerStrategyTests
         var ownerId = _teammates.First();
         var lastReviewerId = _teammates.Skip(1).First();
         
-        var reviewerId = _target.Next(ownerId, lastReviewerId);
+        var reviewerId = _target.Next([ownerId], lastReviewerId);
         
         Assert.NotEqual(lastReviewerId, reviewerId);
     }
@@ -63,7 +63,7 @@ public sealed class RoundRobinReviewerStrategyTests
         long? lastReviewerId = null;
         foreach (var otherPlayerId in otherPlayerIds.Concat(otherPlayerIds))
         {
-            var reviewerId = _target.Next(ownerId, lastReviewerId);
+            var reviewerId = _target.Next([ownerId], lastReviewerId);
             lastReviewerId = reviewerId;
             Assert.Equal(otherPlayerId, reviewerId);
         }

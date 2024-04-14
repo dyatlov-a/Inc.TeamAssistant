@@ -1,8 +1,9 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Primitives.Handlers;
 
 public interface ILeaveTeamHandler
 {
-    Task Handle(MessageContext messageContext, Guid teamId, CancellationToken token);
+    Task<IEnumerable<NotificationMessage>> Handle(MessageContext messageContext, Guid teamId, CancellationToken token);
 }

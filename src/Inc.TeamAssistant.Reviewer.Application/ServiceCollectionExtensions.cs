@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;
@@ -6,6 +5,7 @@ using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.Servi
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgress.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
+using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton(options)
             .AddScoped<IMessageBuilderService, MessageBuilderService>()
+            .AddScoped<ReassignReviewService>()
             .AddHostedService<NotificationsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
@@ -31,8 +32,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
+            .AddSingleton<ICommandCreator, ReassignReviewCommandCreator>()
 
-            .AddSingleton<ILeaveTeamHandler, LeaveTeamHandler>();
+            .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>();
 
         return services;
     }

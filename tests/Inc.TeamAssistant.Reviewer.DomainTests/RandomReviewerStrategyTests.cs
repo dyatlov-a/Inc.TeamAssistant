@@ -35,7 +35,7 @@ public sealed class RandomReviewerStrategyTests
     {
         var ownerId = _teammates.First();
 
-        var reviewerId = _target.Next(ownerId, lastReviewerId: null);
+        var reviewerId = _target.Next([ownerId], lastReviewerId: null);
         
         Assert.NotEqual(ownerId, reviewerId);
     }
@@ -46,7 +46,7 @@ public sealed class RandomReviewerStrategyTests
         var ownerId = _teammates.First();
         var lastReviewerId = _teammates.Skip(1).First();
 
-        var reviewerId = _target.Next(ownerId, lastReviewerId);
+        var reviewerId = _target.Next([ownerId], lastReviewerId);
         
         Assert.NotEqual(lastReviewerId, reviewerId);
     }
@@ -58,7 +58,7 @@ public sealed class RandomReviewerStrategyTests
         var owner = _teammates.First();
 
         var reviewerIds = Enumerable.Range(0, iterationCount)
-            .Select(_ => _target.Next(owner, lastReviewerId: null))
+            .Select(_ => _target.Next([owner], lastReviewerId: null))
             .GroupBy(i => i)
             .ToDictionary(i => i, i => i.Count());
         

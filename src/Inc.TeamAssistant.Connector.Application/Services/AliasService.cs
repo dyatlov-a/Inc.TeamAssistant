@@ -5,7 +5,8 @@ internal sealed class AliasService
     private readonly IReadOnlyDictionary<string, string> _aliases = new Dictionary<string, string>(
         StringComparer.CurrentCultureIgnoreCase)
     {
-        ["/nr"] = "/need_review"
+        ["/nr"] = "/need_review",
+        ["/ra"] = "/reassign"
     };
     
     public string OverrideCommand(string text)
