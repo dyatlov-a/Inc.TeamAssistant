@@ -150,17 +150,21 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task<long?> FindLastReviewer(Guid teamId, CancellationToken token)
+    public async Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND NOT t.has_concrete_reviewer
+            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND NOT t.has_concrete_reviewer
             ORDER BY t.created DESC
             OFFSET 0
             LIMIT 1;",
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId,
+                owner_id = ownerId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

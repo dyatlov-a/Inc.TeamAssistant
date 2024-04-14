@@ -16,7 +16,7 @@ internal sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
         if (!otherTeammates.Any())
             return _teammates.First();
 
-        var nextReviewers = otherTeammates.Where(t => lastReviewerId is null || t > lastReviewerId).ToArray();
+        var nextReviewers = otherTeammates.Where(ot => lastReviewerId is null || ot > lastReviewerId).ToArray();
         var targets = nextReviewers.Any() ? nextReviewers : otherTeammates;
         return targets.MinBy(t => t);
     }

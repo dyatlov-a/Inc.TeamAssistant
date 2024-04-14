@@ -38,11 +38,12 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
 
+        var ownerId = command.MessageContext.Person.Id;
         var taskForReview = new TaskForReview(
             command.MessageContext.Bot.Id,
             command.TeamId,
             Enum.Parse<NextReviewerType>(command.Strategy),
-            command.MessageContext.Person.Id,
+            ownerId,
             targetTeam.ChatId,
             command.Description);
 
@@ -50,7 +51,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
         else
         {
-            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, token);
+            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, ownerId, token);
             taskForReview.DetectReviewer(teammates.Select(t => t.Id).ToArray(), lastReviewerId);
         }
         

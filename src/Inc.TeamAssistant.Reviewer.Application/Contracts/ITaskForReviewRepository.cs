@@ -15,5 +15,5 @@ public interface ITaskForReviewRepository
         DateTimeOffset nextNotification,
         CancellationToken token);
 
-    Task<long?> FindLastReviewer(Guid teamId, CancellationToken token);
+    Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token);
 }
