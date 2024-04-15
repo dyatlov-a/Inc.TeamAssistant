@@ -57,7 +57,7 @@ internal sealed class SummaryByStoryBuilder
                 .Create(summary.ChatId, builder.ToString())
                 .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
         
-        if (summary.IsFinished)
+        if (summary.Accepted)
             return notification;
         
         if (!summary.EstimateEnded)
@@ -71,12 +71,18 @@ internal sealed class SummaryByStoryBuilder
                 notification.WithButton(new Button(buttonText, $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
             }
 
-            notification.WithButton(new Button("Accept", $"{CommandList.AcceptEstimate}{summary.StoryId:N}"));
+            var acceptText = await _messageBuilder.Build(Messages.Appraiser_Accept, summary.LanguageId);
+            notification.WithButton(new Button(acceptText, $"{CommandList.AcceptEstimate}{summary.StoryId:N}"));
         }
         else
+        {
+            var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
+            var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
+            
             notification
-                .WithButton(new Button("Finish", $"{CommandList.Finish}{summary.StoryId:N}"))
-                .WithButton(new Button("Revote", $"{CommandList.ReVote}{summary.StoryId:N}"));
+                .WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"))
+                .WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
+        }
 
         return notification;
     }

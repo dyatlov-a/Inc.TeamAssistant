@@ -24,7 +24,7 @@ internal static class FindStoryByIdQuery
                 s.title AS title,
                 s.external_id AS externalid,
                 s.links AS links,
-                s.is_finished AS isfinished
+                s.accepted AS accepted
             FROM appraiser.stories AS s
             WHERE s.id = @story_id;
 

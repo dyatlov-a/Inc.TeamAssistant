@@ -18,11 +18,11 @@ VALUES
 
     ('3aaaa192-3dde-4d41-a720-3ae65594aa11', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/add', 'Appraiser_AddHelp'),
     ('7203e75b-8675-4af0-a96b-84afb8aa4710', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/set', null),
+    ('3c1115b5-5bd0-4f30-b1d5-d7d23da59a2a', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/finish', null),
     ('589978b5-9946-493a-9466-3402198d1262', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/accept', null),
     ('025740eb-b97e-43f1-9323-b7f35f8a6bd1', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/revote', null),
     ('d753d196-0c01-46ac-83d1-65fdd5d40318', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/move_to_sp', 'Appraiser_MoveToSpHelp'),
     ('a49e0652-9237-455e-afac-d6119fe10fde', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/move_to_tshirts', 'Appraiser_MoveToTShirtsHelp'),
-    ('3c1115b5-5bd0-4f30-b1d5-d7d23da59a2a', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/finish', null),
 
     ('2cf2974a-1fb8-47c7-869e-fda802924ad4', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/new_team', 'Connector_NewTeamHelp'),
     ('c670b665-1dde-438a-97dc-7e2873f2cbbd', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/start', null),

@@ -15,7 +15,7 @@ public sealed class Story
 	public LanguageId LanguageId { get; private set; } = default!;
 	public string Title { get; private set; } = default!;
 	public int? ExternalId { get; private set; }
-	public bool IsFinished { get; private set; }
+	public bool Accepted { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -69,7 +69,7 @@ public sealed class Story
 
 	public void Estimate(long participantId, AssessmentValue.Value value)
     {
-	    if (IsFinished)
+	    if (Accepted)
 		    return;
 	    
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
@@ -97,7 +97,7 @@ public sealed class Story
 
 	public void Reset(long participantId)
 	{
-		if (IsFinished)
+		if (Accepted)
 			return;
 		
 		if (ModeratorId != participantId)
@@ -107,9 +107,9 @@ public sealed class Story
             storyForEstimate.Reset();
 	}
 
-	public void Accept(long participantId)
+	public void Finish(long participantId)
 	{
-		if (IsFinished)
+		if (Accepted)
 			return;
 		
 		if (ModeratorId != participantId)
@@ -130,12 +130,12 @@ public sealed class Story
 		};
 	}
 
-	public void MoveToFinish(long participantId)
+	public void Accept(long participantId)
 	{
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 		
-		IsFinished = true;
+		Accepted = true;
 	}
 	
 	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);

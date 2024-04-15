@@ -1,6 +1,4 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 

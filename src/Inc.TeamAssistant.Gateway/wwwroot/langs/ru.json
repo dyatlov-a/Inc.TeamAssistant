@@ -8,6 +8,9 @@
   "Appraiser_StoryNotFound": "История {0} не найдена",
   "Appraiser_MoveToSpHelp": "Изменить единицы на SP",
   "Appraiser_MoveToTShirtsHelp": "Изменить единицы на майки",
+  "Appraiser_Accept": "Принять",
+  "Appraiser_Finish": "Завершить",
+  "Appraiser_Revote": "Переоценить",
   
   "GUI_TaskAssess": "Оценка задач",
   "GUI_CardNotSelected": "Задача для оценки не выбрана",

@@ -8,7 +8,7 @@ public sealed class ChangeStory : Migration
     public override void Up()
     {
         Create
-            .Column("is_finished")
+            .Column("accepted")
             .OnTable("stories")
             .InSchema("appraiser")
             .AsBoolean().NotNullable().SetExistingRowsTo(false);
@@ -17,7 +17,7 @@ public sealed class ChangeStory : Migration
     public override void Down()
     {
         Delete
-            .Column("is_finished")
+            .Column("accepted")
             .FromTable("stories")
             .InSchema("appraiser");
     }

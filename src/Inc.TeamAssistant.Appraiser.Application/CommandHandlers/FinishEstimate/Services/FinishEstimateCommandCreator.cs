@@ -1,9 +1,9 @@
-using Inc.TeamAssistant.Appraiser.Model.Commands.FinishStory;
+using Inc.TeamAssistant.Appraiser.Model.Commands.FinishEstimate;
 using Inc.TeamAssistant.Primitives.Commands;
 
-namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishStory.Services;
+namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate.Services;
 
-internal sealed class FinishStoryCommandCreator : ICommandCreator
+internal sealed class FinishEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Finish;
     
@@ -15,7 +15,7 @@ internal sealed class FinishStoryCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new FinishStoryCommand(
+        return Task.FromResult<IEndDialogCommand>(new FinishEstimateCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

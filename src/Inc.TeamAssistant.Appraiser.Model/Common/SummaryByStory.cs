@@ -14,4 +14,4 @@ public sealed record SummaryByStory(
     string Total,
     IReadOnlyCollection<EstimateItemDetails> Items,
 	IReadOnlyCollection<string> Assessments,
-	bool IsFinished);
+	bool Accepted);

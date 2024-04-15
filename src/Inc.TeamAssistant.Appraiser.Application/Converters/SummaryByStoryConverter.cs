@@ -32,6 +32,6 @@ internal static class SummaryByStoryConverter
             story.GetTotalValue(),
             storyForEstimates,
             assessments,
-            story.IsFinished);
+            story.Accepted);
     }
 }

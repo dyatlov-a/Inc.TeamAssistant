@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate
 
 internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.ReVote;
+    public string Command => CommandList.Revote;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

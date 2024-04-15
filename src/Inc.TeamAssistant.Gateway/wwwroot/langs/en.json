@@ -8,6 +8,9 @@
   "Appraiser_StoryNotFound": "Story {0} was not found",
   "Appraiser_MoveToSpHelp": "Move to story points",
   "Appraiser_MoveToTShirtsHelp": "Move to t-shirts",
+  "Appraiser_Accept": "Accept",
+  "Appraiser_Finish": "Finish",
+  "Appraiser_Revote": "Revote",
   
   "GUI_TaskAssess": "Task assessment",
   "GUI_CardNotSelected": "The story for estimation has not been selected",
