@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class MessageBuilderService : IMessageBuilderService
 {
-    private readonly ITranslateProvider _translateProvider;
+    private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
 
-    public MessageBuilderService(ITranslateProvider translateProvider, ITeamAccessor teamAccessor)
+    public MessageBuilderService(IMessageBuilder messageBuilder, ITeamAccessor teamAccessor)
     {
-        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -31,7 +31,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         
         var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Username);
         var attachedPersonId = hasUsername ? null : (long?)reviewer.Id;
-        var text = await _translateProvider.Get(
+        var text = await _messageBuilder.Build(
             Messages.Reviewer_NewTaskForReview,
             await _teamAccessor.GetClientLanguage(owner.Id, token),
             taskForReview.Description,
@@ -74,7 +74,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         ArgumentNullException.ThrowIfNull(reviewer);
 
         var languageId = await _teamAccessor.GetClientLanguage(reviewer.Id, token);
-        var message = await _translateProvider.Get(Messages.Reviewer_NeedReview, languageId, task.Description);
+        var message = await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId, task.Description);
 
         var notification = chatMessage is null
             ? NotificationMessage.Create(reviewer.Id, message)
@@ -83,7 +83,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         if (hasInProgressAction.HasValue)
             foreach (var command in GetReviewerCommands(hasInProgressAction.Value))
             {
-                var text = await _translateProvider.Get(command.MessageId, languageId);
+                var text = await _messageBuilder.Build(command.MessageId, languageId);
                 notification.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
             }
 
@@ -100,12 +100,12 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         ArgumentNullException.ThrowIfNull(owner);
 
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
-        var message = await _translateProvider.Get(Messages.Reviewer_ReviewDeclined, languageId, task.Description);
+        var message = await _messageBuilder.Build(Messages.Reviewer_ReviewDeclined, languageId, task.Description);
 
         if (chatMessage is not null)
             return NotificationMessage.Edit(chatMessage, message);
 
-        var text = await _translateProvider.Get(Messages.Reviewer_MoveToNextRound, languageId);
+        var text = await _messageBuilder.Build(Messages.Reviewer_MoveToNextRound, languageId);
         var notification = NotificationMessage
             .Create(owner.Id, message)
             .WithButton(new Button(text, $"{CommandList.MoveToNextRound}{task.Id:N}"));
@@ -121,7 +121,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(owner);
         
-        var message = await _translateProvider.Get(
+        var message = await _messageBuilder.Build(
             Messages.Reviewer_Accepted,
             await _teamAccessor.GetClientLanguage(owner.Id, token),
             task.Description);

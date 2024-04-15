@@ -12,16 +12,16 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
 {
     private readonly ILocationsRepository _locationsRepository;
     private readonly CheckInOptions _options;
-    private readonly ITranslateProvider _translateProvider;
+    private readonly IMessageBuilder _messageBuilder;
 
     public AddLocationToMapCommandHandler(
         ILocationsRepository locationsRepository,
         CheckInOptions options,
-        ITranslateProvider translateProvider)
+        IMessageBuilder messageBuilder)
     {
         _locationsRepository = locationsRepository ?? throw new ArgumentNullException(nameof(locationsRepository));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
     public async Task<CommandResult> Handle(AddLocationToMapCommand command, CancellationToken token)
@@ -33,7 +33,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         
         if (command.MessageContext.ChatMessage.ChatId == command.MessageContext.Person.Id)
         {
-            var messageText = await _translateProvider.Get(
+            var messageText = await _messageBuilder.Build(
                 Messages.CheckIn_GetStarted,
                 command.MessageContext.LanguageId);
 
@@ -61,7 +61,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
             _options.ConnectToMapLinkTemplate,
             command.MessageContext.LanguageId.Value,
             map.Id.ToString("N"));
-        var message = await _translateProvider.Get(
+        var message = await _messageBuilder.Build(
             Messages.CheckIn_ConnectLinkText,
             command.MessageContext.LanguageId,
             link);
