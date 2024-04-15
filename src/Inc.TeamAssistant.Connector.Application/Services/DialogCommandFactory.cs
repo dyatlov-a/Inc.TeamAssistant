@@ -40,7 +40,8 @@ internal sealed class DialogCommandFactory
 
         return (botCommand, currentStage, messageContext.Teams.Count, memberOfTeams.Length, teamSelected) switch
         {
-            (CommandList.Cancel, _, _, _, _) => null,
+            (CommandList.AddLocation, null, _, _, _)
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
             (CommandList.NewTeam, null, _, _, _)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
             (CommandList.LeaveTeam, null, _, 1, _)

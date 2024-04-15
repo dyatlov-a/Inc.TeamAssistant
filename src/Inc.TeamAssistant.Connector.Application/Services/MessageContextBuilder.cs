@@ -83,31 +83,18 @@ internal sealed class MessageContextBuilder
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(message);
-
-        if (message.Location is not null)
-            return await Create(
-                bot,
-                message.MessageId,
-                message.Chat.Id,
-                message.From!,
-                CommandList.AddLocation,
-                targetPersonId: null,
-                location: message.Location,
-                token);
         
         var parsedText = await ParseText(bot.Name, message, token);
 
-        return parsedText.HasValue
-            ? await Create(
-                bot,
-                message.MessageId,
-                message.Chat.Id,
-                message.From!,
-                parsedText.Value.Text,
-                targetPersonId: parsedText.Value.TargetPersonId,
-                location: null,
-                token)
-            : null;
+        return await Create(
+            bot,
+            message.MessageId,
+            message.Chat.Id,
+            message.From!,
+            parsedText.Text,
+            targetPersonId: parsedText.TargetPersonId,
+            location: message.Location,
+            token);
     }
 
     private async Task<MessageContext?> Create(
@@ -122,9 +109,7 @@ internal sealed class MessageContextBuilder
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(user);
-        
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentNullException.ThrowIfNull(text);
 
         var person = await EnsurePerson(user, token);
         var language = await EnsureLanguage(user, token);
@@ -143,6 +128,8 @@ internal sealed class MessageContextBuilder
     
     private async Task<LanguageId> EnsureLanguage(User user, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(user);
+        
         if (!string.IsNullOrWhiteSpace(user.LanguageCode))
             await _clientLanguageRepository.Upsert(user.Id, user.LanguageCode, token);
         
@@ -160,7 +147,7 @@ internal sealed class MessageContextBuilder
         return person!;
     }
     
-    private async Task<(string Text, long? TargetPersonId)?> ParseText(
+    private async Task<(string Text, long? TargetPersonId)> ParseText(
         string botName,
         Message message,
         CancellationToken token)
@@ -170,24 +157,18 @@ internal sealed class MessageContextBuilder
         if (string.IsNullOrWhiteSpace(botName))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botName));
 
-        if (string.IsNullOrWhiteSpace(message.Text))
-            return null;
-        
-        var text = message.Text.Replace($"@{botName} ", string.Empty);
+        var input = message.Text ?? String.Empty;
+        var text = input.Replace($"@{botName} ", string.Empty);
         var attachedPerson = await GetPersonFromEntities(message, token) ?? await GetPersonFromText(text, token);
 
-        if (!attachedPerson.HasValue)
-            return (text, null);
-            
-        var cleanText = text.Replace(attachedPerson.Value.Marker, string.Empty);
-                
-        return string.IsNullOrWhiteSpace(cleanText) ? null : (cleanText, attachedPerson.Value.Id);
+        return attachedPerson.HasValue
+            ? (text.Replace(attachedPerson.Value.Marker, string.Empty), attachedPerson.Value.Id)
+            : (text, null);
     }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)
     {
-        if (bot is null)
-            throw new ArgumentNullException(nameof(bot));
+        ArgumentNullException.ThrowIfNull(bot);
 
         bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
         
@@ -206,8 +187,7 @@ internal sealed class MessageContextBuilder
 
     private async Task<(long Id, string Marker)?> GetPersonFromEntities(Message message, CancellationToken token)
     {
-        if (message is null)
-            throw new ArgumentNullException(nameof(message));
+        ArgumentNullException.ThrowIfNull(message);
 
         var personId = message.Entities
             ?.LastOrDefault(e => e is { Type: MessageEntityType.TextMention, User: not null })
@@ -228,7 +208,7 @@ internal sealed class MessageContextBuilder
     private async Task<(long Id, string Marker)?> GetPersonFromText(string text, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+            return null;
         
         const char usernameMarker = '@';
         var username = text.Split(usernameMarker).LastOrDefault()?.Trim();

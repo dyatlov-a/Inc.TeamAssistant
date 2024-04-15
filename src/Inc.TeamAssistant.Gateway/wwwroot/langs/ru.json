@@ -49,6 +49,8 @@
   "CheckIn_PageTitle": "Наше местоположение",
   "CheckIn_DefaultLayerTitle": "Все",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",
+  "CheckIn_AddLocationHelp": "Добавить мою геолокацию на карту",
+  "CheckIn_AddLocation": "В ответ на это сообщение необходимо отправить вашу геолокацию",
   
   "Reviewer_MoveToReviewHelp": "Передать задачу на ревью",
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",

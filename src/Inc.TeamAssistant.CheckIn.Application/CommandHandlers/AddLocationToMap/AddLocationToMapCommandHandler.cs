@@ -27,9 +27,6 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
     public async Task<CommandResult> Handle(AddLocationToMapCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        if (command.MessageContext.Location is null)
-            return CommandResult.Empty;
         
         if (command.MessageContext.ChatMessage.ChatId == command.MessageContext.Person.Id)
         {
@@ -46,16 +43,14 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         var location = new LocationOnMap(
             command.MessageContext.Person.Id,
             command.MessageContext.Person.DisplayName,
-            command.MessageContext.Location.X,
+            command.MessageContext.Location!.X,
             command.MessageContext.Location.Y,
             map);
 
         await _locationsRepository.Insert(location, token);
 
-        var removeMessageNotification = NotificationMessage.Delete(command.MessageContext.ChatMessage);
-
         if (existsMap is not null)
-            return CommandResult.Build(removeMessageNotification);
+            return CommandResult.Empty;
         
         var link = string.Format(
             _options.ConnectToMapLinkTemplate,
@@ -71,6 +66,6 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
             message,
             pinned: true);
             
-        return CommandResult.Build(removeMessageNotification, notification);
+        return CommandResult.Build(notification);
     }
 }

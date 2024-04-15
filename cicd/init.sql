@@ -39,7 +39,7 @@ VALUES
     ('10b888d0-e086-4a51-85d2-6379735682c7', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/change_to_random', 'Reviewer_ChangeToRandomHelp'),
     ('f6b6aa8c-1ddf-4446-b91a-6e223108f366', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/reassign', null),
 
-    ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', null),
+    ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', 'CheckIn_AddLocationHelp'),
     
     ('687426da-75eb-4cea-bdb1-6afd6c7e5dc0', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/invite', 'RandomCoffee_InviteHelp'),
     ('a85b8851-6939-47f5-8e35-9fe9ecf680f7', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/poll_answer', null)
@@ -60,6 +60,8 @@ VALUES
     ('eddcadc0-6805-4366-8c3b-0c5888d40539', 'a49e0652-9237-455e-afac-d6119fe10fde', 1, 'Connector_SelectTeam', 1),
     ('1c6271aa-8051-4cc4-b3ff-d7b7fabf1020', 'e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', 1, 'Connector_SelectTeam', 1),
     ('697078dc-94c2-43a3-abd7-762641c1d094', '10b888d0-e086-4a51-85d2-6379735682c7', 1, 'Connector_SelectTeam', 1),
+    
+    ('4df5448c-8ee1-4002-bbfe-a75b71c38d68', '4f5843de-4a65-4934-afd7-efa6dfbf22fa', 1, 'CheckIn_AddLocation', 1),
 
     ('62dc2e65-fba8-4ce3-b0a5-cef36f988708', '2cf2974a-1fb8-47c7-869e-fda802924ad4', 1, 'Connector_EnterTeamName', 1),
     ('4258f5bd-8136-4e03-b0e8-e601286523f8', '3a8e95ba-0b62-4bd1-b59a-261bdbc14532', 1, 'Connector_SelectTeam', 1)

@@ -48,7 +48,7 @@ internal static class TelegramBotClientExtensions
         }
     }
     
-    public static async Task TryDelete(
+    public static async Task TryDeleteMessages(
         this ITelegramBotClient client,
         Guid botId,
         IReadOnlyCollection<ChatMessage> messages,
