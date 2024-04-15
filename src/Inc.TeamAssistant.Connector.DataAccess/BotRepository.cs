@@ -15,20 +15,17 @@ internal sealed class BotRepository : IBotRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<Bot>> GetAll(CancellationToken token)
+    public async Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token)
     {
         var command = new CommandDefinition(@"
-            SELECT
-                b.id AS id,
-                b.name AS name,
-                b.token AS token
+            SELECT b.id AS id
             FROM connector.bots AS b;",
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<Bot>(command);
+        var results = await connection.QueryAsync<Guid>(command);
         return results.ToArray();
     }
     

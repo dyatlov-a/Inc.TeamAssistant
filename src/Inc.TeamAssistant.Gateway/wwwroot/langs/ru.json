@@ -79,6 +79,8 @@
   "Connector_PersonNotFound": "Пользователь {0} не найден",
   "Connector_ChangedPropertySuccess": "Изменено свойство для команды \"{0}\"",
   "Connector_HelpText": "Выбери подходящую опцию ниже. Если что то пойдет не так, выполните команду {0} и попробуйте снова",
+  "Connector_BotShortDescription": "Чат-боты для оптимизации процессов в командах",
+  "Connector_BotDescription": "Чат-боты для оптимизации процессов в командах",
   
   "RandomCoffee_Question": "Желаете участвовать в random coffee в этом спринте?",
   "RandomCoffee_Yes": "Да",

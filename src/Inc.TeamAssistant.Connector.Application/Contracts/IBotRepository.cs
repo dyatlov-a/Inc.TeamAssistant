@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Connector.Application.Contracts;
 
 public interface IBotRepository
 {
-    Task<IReadOnlyCollection<Bot>> GetAll(CancellationToken token);
+    Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token);
 
     Task<string> GetBotName(Guid id, CancellationToken token);
     

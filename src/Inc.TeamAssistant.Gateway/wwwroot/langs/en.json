@@ -79,6 +79,8 @@
   "Connector_PersonNotFound": "Person {0} was not found",
   "Connector_ChangedPropertySuccess": "Changed property for team \"{0}\"",
   "Connector_HelpText": "Choose the option. If something goes wrong, run the command {0} and try again",
+  "Connector_BotShortDescription": "Chatbots for optimization processes in teams",
+  "Connector_BotDescription": "Chatbots for optimization processes in teams",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",
   "RandomCoffee_Yes": "Yes",

@@ -34,9 +34,8 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             {
                 if (command.MessageContext.Shared && ms.Any())
                 {
-                    var messages = ms.Select(m => (m.ChatId, m.MessageId)).ToArray();
                     var client = await _provider.Get(command.MessageContext.Bot.Id, t);
-                    await client.TryDelete(messages, _logger, token);
+                    await client.TryDelete(command.MessageContext.Bot.Id, ms, _logger, token);
                 }
             },
             token);

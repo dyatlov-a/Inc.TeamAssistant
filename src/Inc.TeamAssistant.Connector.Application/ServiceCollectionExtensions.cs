@@ -15,8 +15,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConnectorApplication(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddSingleton<CommandFactory>()
@@ -30,6 +29,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<AliasService>()
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
+            .AddSingleton<BotConstructor>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             
