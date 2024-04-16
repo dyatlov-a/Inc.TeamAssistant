@@ -31,7 +31,7 @@ internal sealed class HolidayService : IHolidayService
         while (currentDate.DayOfWeek != dayOfWeek)
             currentDate = currentDate.AddDays(-1);
 
-        return currentDate.Date;
+        return currentDate;
     }
 
     private async Task<bool> IsWorkday(DateOnly date, CancellationToken token)
