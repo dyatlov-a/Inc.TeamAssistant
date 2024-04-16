@@ -116,4 +116,29 @@ WHERE t.reviewer_id = @person_id AND t.state = ANY(@states);",
         
         return await connection.QuerySingleOrDefaultAsync<bool>(command);
     }
+
+    public async Task<IReadOnlyDictionary<long, int>> GetHistory(
+        Guid teamId,
+        DateTimeOffset date,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT t.reviewer_id AS reviewerid, COUNT(*) AS count
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.created >= @date
+            GROUP BY t.reviewer_id;",
+            new
+            {
+                team_id = teamId,
+                date = date.UtcDateTime
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var history = await connection.QueryAsync<(long ReviewerId, int Count)>(command);
+
+        return history.ToDictionary(h => h.ReviewerId, h => h.Count);
+    }
 }

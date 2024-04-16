@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton(options)
             .AddScoped<IMessageBuilderService, MessageBuilderService>()
             .AddScoped<ReassignReviewService>()
+            .AddSingleton<ReviewHistoryService>()
             .AddHostedService<NotificationsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()

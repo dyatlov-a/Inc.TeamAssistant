@@ -100,14 +100,16 @@ public sealed class TaskForReview
 
     public TaskForReview DetectReviewer(
         IReadOnlyCollection<long> teammates,
+        IReadOnlyDictionary<long, int> history,
         long? lastReviewerId,
         long? excludedPersonId = null)
     {
         ArgumentNullException.ThrowIfNull(teammates);
+        ArgumentNullException.ThrowIfNull(history);
 
         INextReviewerStrategy reviewerStrategy = Strategy switch
         {
-            NextReviewerType.Random => new RandomReviewerStrategy(teammates),
+            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history),
             NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
             _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
         };

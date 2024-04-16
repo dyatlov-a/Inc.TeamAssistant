@@ -25,7 +25,15 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(teammates: null!);
+        RandomReviewerStrategy Action() => new(teammates: null!, new Dictionary<long, int>());
+
+        Assert.Throws<ArgumentNullException>(Action);
+    }
+    
+    [Fact]
+    public void Constructor_HistoryIsNull_ThrowsException()
+    {
+        RandomReviewerStrategy Action() => new(_teammates, null!);
 
         Assert.Throws<ArgumentNullException>(Action);
     }

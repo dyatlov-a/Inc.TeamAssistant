@@ -16,4 +16,6 @@ public interface ITaskForReviewReader
         CancellationToken token);
     
     Task<bool> HasReassignFromDate(long personId, DateTimeOffset date, CancellationToken token);
+    
+    Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
 }

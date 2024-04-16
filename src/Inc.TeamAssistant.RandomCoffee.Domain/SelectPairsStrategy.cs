@@ -3,9 +3,9 @@ namespace Inc.TeamAssistant.RandomCoffee.Domain;
 internal sealed class SelectPairsStrategy
 {
     private const int MaxSelectIterations = 10_000;
-    private const int HistoryPairsWeight = 1;
-    private const int NewPairsWeight = 10;
-    private const int ExcludedPersonWeight = 20;
+    private const int HistoryPairsWeight = 10;
+    private const int NewPairsWeight = 100;
+    private const int ExcludedPersonWeight = 1_000;
     
     private static readonly Random Random = new();
     
