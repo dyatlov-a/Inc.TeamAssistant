@@ -17,6 +17,7 @@ public sealed class RandomReviewerStrategyTests
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>(),
+            _fixture.Create<long>(),
             _fixture.Create<long>()
         };
         _target = new RandomReviewerStrategy(_teammates, new Dictionary<long, int>());
@@ -60,7 +61,7 @@ public sealed class RandomReviewerStrategyTests
     }
 
     [Theory]
-    [InlineData(1_000, 100)]
+    [InlineData(1_000, 200)]
     public void Next_MultipleIterations_MustRandomReviewer(int iterationCount, int reviewerCountByPlayer)
     {
         var owner = _teammates.First();

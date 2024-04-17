@@ -17,6 +17,7 @@ public sealed class RoundRobinReviewerStrategyTests
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>(),
+            _fixture.Create<long>(),
             _fixture.Create<long>()
         };
         _target = new RoundRobinReviewerStrategy(_teammates);
