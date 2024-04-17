@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace Inc.TeamAssistant.Connector.Application.Extensions;
 
@@ -100,21 +99,5 @@ internal static class TelegramBotClientExtensions
         {
             logger.LogError(ex, "Bot {BotId} can not send message to chat {TargetChatId}", botId, chatMessage.ChatId);
         }
-    }
-    
-    public static IEnumerable<bool> Unwrap(this ChatAdministratorRights rights)
-    {
-        yield return rights.IsAnonymous;
-        yield return rights.CanManageChat;
-        yield return rights.CanDeleteMessages;
-        yield return rights.CanManageVideoChats;
-        yield return rights.CanRestrictMembers;
-        yield return rights.CanPromoteMembers;
-        yield return rights.CanChangeInfo;
-        yield return rights.CanInviteUsers;
-        yield return rights.CanPostMessages ?? false;
-        yield return rights.CanEditMessages ?? false;
-        yield return rights.CanPinMessages ?? false;
-        yield return rights.CanManageTopics ?? false;
     }
 }

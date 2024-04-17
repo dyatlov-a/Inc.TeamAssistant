@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -17,10 +16,8 @@ internal sealed class MessageBuilder : IMessageBuilder
 
     public async Task<string> Build(MessageId messageId, LanguageId languageId, params object[] values)
     {
-        if (messageId is null)
-            throw new ArgumentNullException(nameof(messageId));
-        if (values is null)
-            throw new ArgumentNullException(nameof(values));
+        ArgumentNullException.ThrowIfNull(messageId);
+        ArgumentNullException.ThrowIfNull(values);
 
         var resources = await _messageProvider.Get();
 
