@@ -11,6 +11,20 @@ internal sealed class BotConstructor
     private static readonly IReadOnlyDictionary<BotCommandScope, IReadOnlyCollection<string>> CommandsByScopes =
         new Dictionary<BotCommandScope, IReadOnlyCollection<string>>
         {
+            [BotCommandScope.AllGroupChats()] = new[]
+            {
+                "/location",
+                "/invite",
+                "/new_team",
+                "/leave_team",
+                "/cancel",
+                "/add",
+                "/move_to_sp",
+                "/move_to_tshirts",
+                "/need_review",
+                "/change_to_round_robin",
+                "/change_to_random"
+            },
             [BotCommandScope.Default()] = new[]
             {
                 "/leave_team",
@@ -21,12 +35,6 @@ internal sealed class BotConstructor
                 "/need_review",
                 "/change_to_round_robin",
                 "/change_to_random"
-            },
-            [BotCommandScope.AllGroupChats()] = new[]
-            {
-                "/location",
-                "/invite",
-                "/new_team"
             }
         };
     
@@ -93,12 +101,9 @@ internal sealed class BotConstructor
                 .OrderBy(c => c.Command)
                 .ToArray();
 
-            if (botCommandsByScope.Length != currentBotCommandsByScope.Length)
-                await client.SetMyCommandsAsync(botCommandsByScope, languageCode: languageId.Value, cancellationToken: token);
-            else
-                foreach (var commands in botCommandsByScope.Zip(currentBotCommandsByScope))
-                    if (commands.First.Command != commands.Second.Command || commands.First.Description != commands.Second.Description)
-                        await client.SetMyCommandsAsync(botCommandsByScope, languageCode: languageId.Value, cancellationToken: token);
+            if (botCommandsByScope.Length != currentBotCommandsByScope.Length ||
+                botCommandsByScope.Zip(currentBotCommandsByScope).Any(c => c.First.Command != c.Second.Command || c.First.Description != c.Second.Description))
+                await client.SetMyCommandsAsync(botCommandsByScope, commandsByScope.Key, languageCode: languageId.Value, cancellationToken: token);
         }
     }
 

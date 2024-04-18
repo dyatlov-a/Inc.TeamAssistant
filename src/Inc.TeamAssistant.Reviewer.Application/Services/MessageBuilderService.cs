@@ -79,6 +79,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         var notification = chatMessage is null
             ? NotificationMessage.Create(reviewer.Id, message)
             : NotificationMessage.Edit(chatMessage, message);
+        notification.SetButtonsInRow(2);
 
         if (hasInProgressAction.HasValue)
             foreach (var command in GetReviewerCommands(hasInProgressAction.Value))
@@ -87,7 +88,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
                 notification.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
             }
 
-        return notification.SetButtonsInRow(2);
+        return notification;
     }
 
     public async Task<NotificationMessage> BuildMoveToNextRound(

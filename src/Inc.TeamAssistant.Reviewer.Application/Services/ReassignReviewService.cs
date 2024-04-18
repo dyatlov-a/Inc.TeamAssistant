@@ -26,7 +26,10 @@ internal sealed class ReassignReviewService
         _reviewHistoryService = reviewHistoryService ?? throw new ArgumentNullException(nameof(reviewHistoryService));
     }
     
-    public async Task<IEnumerable<NotificationMessage>> ReassignReview(Guid taskId, CancellationToken token)
+    public async Task<IEnumerable<NotificationMessage>> ReassignReview(
+        Guid taskId,
+        ChatMessage? chatMessage,
+        CancellationToken token)
     {
         var taskForReview = await _taskForReviewRepository.GetById(taskId, token);
         if (!taskForReview.CanAccept())
@@ -44,7 +47,7 @@ internal sealed class ReassignReviewService
         var teammates = await _teamAccessor.GetTeammates(taskForReview.TeamId, token);
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(
             taskForReview.TeamId,
-            taskForReview.ReviewerId,
+            taskForReview.OwnerId,
             token);
 
         taskForReview
@@ -54,6 +57,14 @@ internal sealed class ReassignReviewService
                 lastReviewerId,
                 taskForReview.ReviewerId)
             .MoveToNextRound();
+
+        if (chatMessage is not null)
+            await _messageBuilderService.BuildNeedReview(
+                taskForReview,
+                reviewer,
+                hasInProgressAction: null,
+                chatMessage,
+                token);
         
         var taskForReviewMessage = await _messageBuilderService.BuildNewTaskForReview(
             taskForReview,
