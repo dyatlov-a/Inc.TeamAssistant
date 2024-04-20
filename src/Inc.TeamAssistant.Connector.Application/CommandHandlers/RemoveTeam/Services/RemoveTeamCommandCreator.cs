@@ -1,12 +1,11 @@
-using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeam;
 using Inc.TeamAssistant.Primitives.Commands;
 
-namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
+namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
 
-internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
+internal sealed class RemoveTeamCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.LeaveTeam;
+    public string Command => CommandList.RemoveTeam;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
@@ -16,7 +15,7 @@ internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new LeaveFromTeamCommand(
+        return Task.FromResult<IEndDialogCommand>(new RemoveTeamCommand(
             messageContext,
             messageContext.TryParseId("/")));
     }

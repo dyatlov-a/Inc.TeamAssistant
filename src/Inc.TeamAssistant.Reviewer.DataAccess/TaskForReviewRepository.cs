@@ -14,6 +14,48 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
+    public async Task<IReadOnlyCollection<TaskForReview>> Get(
+        Guid teamId,
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(states);
+        
+        var targetStates = states.Select(s => (int)s).ToArray();
+        var command = new CommandDefinition(@"
+            SELECT
+                t.id AS id,
+                t.bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.reviewer_id AS reviewerid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.has_concrete_reviewer AS hasconcretereviewer,
+                t.original_reviewer_id AS originalreviewerid
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.state = ANY(@states);",
+            new
+            {
+                team_id = teamId,
+                states = targetStates,
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var results = await connection.QueryAsync<TaskForReview>(command);
+
+        return results.ToArray();
+    }
+
     public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
@@ -46,8 +88,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
     public async Task Upsert(TaskForReview taskForReview, CancellationToken token)
     {
-        if (taskForReview is null)
-            throw new ArgumentNullException(nameof(taskForReview));
+        ArgumentNullException.ThrowIfNull(taskForReview);
 
         var command = new CommandDefinition(@"
             INSERT INTO review.task_for_reviews (

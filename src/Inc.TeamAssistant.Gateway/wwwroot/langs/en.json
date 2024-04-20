@@ -83,6 +83,9 @@
   "Connector_HelpText": "Choose the option. If something goes wrong, run the command {0} and try again",
   "Connector_BotShortDescription": "Chatbots for optimization processes in teams",
   "Connector_BotDescription": "Chatbots for optimization processes in teams",
+  "Connector_RemoveTeamHelp": "Remove the team",
+  "Connector_HasNotRightsForRemoveTeam": "You do not have permission to remove the command \"{0}\"",
+  "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",
   "RandomCoffee_Yes": "Yes",

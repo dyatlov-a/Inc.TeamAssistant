@@ -23,7 +23,8 @@ internal sealed class BotConstructor
                 "/move_to_tshirts",
                 "/need_review",
                 "/change_to_round_robin",
-                "/change_to_random"
+                "/change_to_random",
+                "/remove_team"
             },
             [BotCommandScope.Default()] = new[]
             {
@@ -34,7 +35,8 @@ internal sealed class BotConstructor
                 "/move_to_tshirts",
                 "/need_review",
                 "/change_to_round_robin",
-                "/change_to_random"
+                "/change_to_random",
+                "/remove_team"
             }
         };
     
@@ -133,7 +135,7 @@ internal sealed class BotConstructor
             await client.SetMyDescriptionAsync(description, languageId.Value, token);
     }
     
-    public async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Convert(
+    private async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Convert(
         IEnumerable<Domain.BotCommand> botCommands,
         LanguageId languageId)
     {

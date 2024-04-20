@@ -43,7 +43,12 @@ FROM review.task_for_reviews AS t
 WHERE t.state = ANY(@states) AND t.next_notification < @now
 ORDER BY t.next_notification
 LIMIT @limit;",
-            new { now, states = targetStates, limit },
+            new
+            {
+                now,
+                states = targetStates,
+                limit
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -55,6 +60,7 @@ LIMIT @limit;",
     }
 
     public async Task<IReadOnlyCollection<TaskForReview>> GetTasksByPerson(
+        Guid teamId,
         long personId,
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken token)
@@ -79,9 +85,10 @@ SELECT
     t.chat_id AS chatid,
     t.original_reviewer_id AS originalreviewerid
 FROM review.task_for_reviews AS t
-WHERE t.reviewer_id = @person_id AND t.state = ANY(@states);",
+WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);",
             new
             {
+                team_id = teamId,
                 person_id = personId,
                 states = targetStates
             },

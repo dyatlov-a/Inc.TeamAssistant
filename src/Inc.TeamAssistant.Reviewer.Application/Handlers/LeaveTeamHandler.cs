@@ -1,11 +1,11 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
 
-namespace Inc.TeamAssistant.Reviewer.Application.Services;
+namespace Inc.TeamAssistant.Reviewer.Application.Handlers;
 
 internal sealed class LeaveTeamHandler : ILeaveTeamHandler
 {
@@ -26,12 +26,9 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
     {
         ArgumentNullException.ThrowIfNull(messageContext);
         
-        var targetTeam = messageContext.FindTeam(teamId);
-        if (targetTeam is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
-        
         var notifications = new List<NotificationMessage>();
         var tasks = await _taskForReviewReader.GetTasksByPerson(
+            teamId,
             messageContext.Person.Id,
             TaskForReviewStateRules.ActiveStates,
             token);

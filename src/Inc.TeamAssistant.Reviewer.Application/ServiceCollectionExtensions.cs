@@ -7,6 +7,7 @@ using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound.Ser
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Application.Handlers;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,10 +17,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddReviewerApplication(this IServiceCollection services, ReviewerOptions options)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (options is null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         services
             .AddSingleton(options)
@@ -35,7 +34,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
             .AddSingleton<ICommandCreator, ReassignReviewCommandCreator>()
 
-            .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>();
+            .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>()
+            .AddScoped<IRemoveTeamHandler, RemoveTeamHandler>();
 
         return services;
     }

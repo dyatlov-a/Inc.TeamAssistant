@@ -64,8 +64,14 @@ public sealed class TaskForReview
 
     public void Accept()
     {
-        State = TaskForReviewState.IsArchived;
         AcceptDate = DateTimeOffset.UtcNow;
+
+        MoveToArchive();
+    }
+    
+    public void MoveToArchive()
+    {
+        State = TaskForReviewState.IsArchived;
     }
 
     public void Decline()

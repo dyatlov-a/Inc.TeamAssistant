@@ -11,6 +11,7 @@ public interface ITaskForReviewReader
         CancellationToken token);
     
     Task<IReadOnlyCollection<TaskForReview>> GetTasksByPerson(
+        Guid teamId,
         long personId,
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken token);

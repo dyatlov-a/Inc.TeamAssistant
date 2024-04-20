@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeam;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -47,6 +48,10 @@ internal sealed class DialogCommandFactory
             (CommandList.LeaveTeam, null, _, 1, _)
                 => new LeaveFromTeamCommand(messageContext, memberOfTeams[0].Id),
             (CommandList.LeaveTeam, null, _, > 1, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
+            (CommandList.RemoveTeam, null, _, 1, _)
+                => new RemoveTeamCommand(messageContext, memberOfTeams[0].Id),
+            (CommandList.RemoveTeam, null, _, > 1, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
             (CommandList.MoveToSp, null, 1, _, _)
                 => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Scrum"),

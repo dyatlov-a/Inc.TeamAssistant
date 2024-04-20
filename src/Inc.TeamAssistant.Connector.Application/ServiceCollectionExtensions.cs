@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
+using Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Commands;
 using MediatR.Pipeline;
@@ -38,6 +39,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, HelpCommandCreator>()
             .AddSingleton<ICommandCreator, JoinToTeamCommandCreator>()
             .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>()
+            .AddSingleton<ICommandCreator, RemoveTeamCommandCreator>()
             
             .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
                 sp,

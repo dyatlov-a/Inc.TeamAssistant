@@ -55,7 +55,7 @@ internal sealed class ReassignReviewService
                 teammates.Select(t => t.Id).ToArray(),
                 history,
                 lastReviewerId,
-                taskForReview.ReviewerId)
+                reviewer.Id)
             .MoveToNextRound();
 
         if (chatMessage is not null)

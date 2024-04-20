@@ -5,6 +5,7 @@ internal static class CommandList
     public const string Cancel = "/cancel";
     public const string NewTeam = "/new_team";
     public const string LeaveTeam = "/leave_team";
+    public const string RemoveTeam = "/remove_team";
     
     public const string MoveToSp = "/move_to_sp";
     public const string MoveToTShirts = "/move_to_tshirts";

@@ -61,7 +61,7 @@ public sealed class Team
         Properties = new Dictionary<string, string>(Properties)
         {
             [name] = value
-        };;
+        };
         
         return this;
     }
