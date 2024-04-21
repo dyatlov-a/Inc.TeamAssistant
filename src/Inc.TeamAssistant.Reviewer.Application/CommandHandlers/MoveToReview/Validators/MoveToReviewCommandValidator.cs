@@ -5,8 +5,10 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Va
 
 internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToReviewCommand>
 {
-    public MoveToReviewCommandValidator()
+    public MoveToReviewCommandValidator(ReviewerOptions reviewerOptions)
     {
+        ArgumentNullException.ThrowIfNull(reviewerOptions);
+
         RuleFor(e => e.TeamId)
             .NotEmpty();
         
@@ -14,6 +16,8 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
             .NotEmpty()
             .MaximumLength(2000)
             .Must(e => !e.StartsWith("/"))
-            .WithMessage("'{PropertyName}' please enter text value.");
+            .WithMessage("'{PropertyName}' please enter text value")
+            .Must(e => reviewerOptions.LinksPrefix.Any(e.Contains))
+            .WithMessage("'{PropertyName}' must contains a link to the source code");
     }
 }
