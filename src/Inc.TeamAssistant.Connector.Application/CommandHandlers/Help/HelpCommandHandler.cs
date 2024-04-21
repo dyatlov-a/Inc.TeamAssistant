@@ -36,7 +36,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
             .Create(command.MessageContext.ChatMessage.ChatId, notificationText)
             .SetButtonsInRow(1);
 
-        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null))
+        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null && !CommandList.Help.Equals(c.Value, StringComparison.InvariantCultureIgnoreCase)))
         {
             var text = await _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
 

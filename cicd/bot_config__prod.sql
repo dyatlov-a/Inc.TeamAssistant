@@ -15,7 +15,7 @@ VALUES
     ('6d218fdd-058b-49fb-9422-08741c872a61', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/leave_team', 'Connector_LeaveFromTeamHelp'),
     ('4367a88f-d818-4239-93b9-826f70950cc4', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/cancel', 'Connector_CancelHelp'),
     ('d2572173-b1cc-486b-9dee-207480601cfb', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/remove_team', 'Connector_RemoveTeamHelp'),
-    ('f48db5a5-cbbe-45c6-9791-0bda8fd825fd', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/help', null),
+    ('f48db5a5-cbbe-45c6-9791-0bda8fd825fd', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/help', 'Connector_Help'),
 
     ('3aaaa192-3dde-4d41-a720-3ae65594aa11', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/add', 'Appraiser_AddHelp'),
     ('7203e75b-8675-4af0-a96b-84afb8aa4710', '2c9e14e0-63be-4381-aca0-a0e848cd34bc', '/set', null),
@@ -30,7 +30,7 @@ VALUES
     ('3a8e95ba-0b62-4bd1-b59a-261bdbc14532', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/leave_team', 'Connector_LeaveFromTeamHelp'),
     ('f2d2cb41-f07f-4b52-b5d1-8e3981bdf159', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/cancel', 'Connector_CancelHelp'),
     ('ec16e7f2-3540-4252-a683-f1e9bbbfdac9', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/remove_team', 'Connector_RemoveTeamHelp'),
-    ('7c7a447e-af64-4a0e-b9d2-513ea76a447d', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/help', null),
+    ('7c7a447e-af64-4a0e-b9d2-513ea76a447d', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/help', 'Connector_Help'),
 
     ('57e1da3c-a65d-4172-b377-00d8543f55c3', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/need_review', 'Reviewer_MoveToReviewHelp'),
     ('4b8af862-51a9-42ab-9478-99ec92ceeb47', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/in_progress', null),
@@ -42,9 +42,11 @@ VALUES
     ('f6b6aa8c-1ddf-4446-b91a-6e223108f366', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/reassign', null),
 
     ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', 'CheckIn_AddLocationHelp'),
+    ('291e4bd8-76b5-4d37-ab2d-1856ac182925', '29160ded-0e79-4bce-9856-52eb39657e8d', '/help', 'Connector_Help'),
     
     ('687426da-75eb-4cea-bdb1-6afd6c7e5dc0', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/invite', 'RandomCoffee_InviteHelp'),
-    ('a85b8851-6939-47f5-8e35-9fe9ecf680f7', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/poll_answer', null)
+    ('a85b8851-6939-47f5-8e35-9fe9ecf680f7', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/poll_answer', null),
+    ('36a949b7-c7f8-4757-8ce8-698b3d2ece26', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/help', 'Connector_Help')
 ON CONFLICT (id) DO UPDATE SET
     bot_id = excluded.bot_id,
     value = excluded.value,

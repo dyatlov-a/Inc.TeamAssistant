@@ -24,7 +24,8 @@ internal sealed class BotConstructor
                 "/need_review",
                 "/change_to_round_robin",
                 "/change_to_random",
-                "/remove_team"
+                "/remove_team",
+                "/help"
             },
             [BotCommandScope.Default()] = new[]
             {
@@ -36,7 +37,8 @@ internal sealed class BotConstructor
                 "/need_review",
                 "/change_to_round_robin",
                 "/change_to_random",
-                "/remove_team"
+                "/remove_team",
+                "/help"
             }
         };
     

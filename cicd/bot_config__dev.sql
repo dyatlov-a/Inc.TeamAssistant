@@ -12,7 +12,7 @@ VALUES
     ('6d218fdd-058b-49fb-9422-08741c872a61', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/leave_team', 'Connector_LeaveFromTeamHelp'),
     ('4367a88f-d818-4239-93b9-826f70950cc4', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/cancel', 'Connector_CancelHelp'),
     ('ec16e7f2-3540-4252-a683-f1e9bbbfdac9', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/remove_team', 'Connector_RemoveTeamHelp'),
-    ('f48db5a5-cbbe-45c6-9791-0bda8fd825fd', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/help', null),
+    ('f48db5a5-cbbe-45c6-9791-0bda8fd825fd', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/help', 'Connector_Help'),
 
     ('3aaaa192-3dde-4d41-a720-3ae65594aa11', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/add', 'Appraiser_AddHelp'),
     ('7203e75b-8675-4af0-a96b-84afb8aa4710', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/set', null),

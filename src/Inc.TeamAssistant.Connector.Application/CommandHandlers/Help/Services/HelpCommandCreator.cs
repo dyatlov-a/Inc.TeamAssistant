@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 
 internal sealed class HelpCommandCreator : ICommandCreator
 {
-    public string Command => "/help";
+    public string Command => CommandList.Help;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

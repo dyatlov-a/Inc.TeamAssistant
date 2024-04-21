@@ -86,6 +86,7 @@
   "Connector_RemoveTeamHelp": "Удалить команду",
   "Connector_HasNotRightsForRemoveTeam": "У вас нет прав на удаление команды «{0}»",
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
+  "Connector_Help": "Отобразить список команд",
   
   "RandomCoffee_Question": "Желаете участвовать в random coffee в этом спринте?",
   "RandomCoffee_Yes": "Да",
