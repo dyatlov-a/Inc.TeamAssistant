@@ -21,7 +21,7 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
             throw new ArgumentNullException(nameof(command));
 
         var dialogState = _dialogContinuation.Begin(
-            command.MessageContext.Person.Id,
+            command.MessageContext.TargetChat,
             command.Command,
             command.NextStage,
             command.MessageContext.ChatMessage);

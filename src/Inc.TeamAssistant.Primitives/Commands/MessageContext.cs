@@ -15,6 +15,8 @@ public sealed record MessageContext(
 {
     public bool Shared => ChatMessage.ChatId != Person.Id;
 
+    public TargetChat TargetChat => new(Person.Id, ChatMessage.ChatId);
+
     public static MessageContext CreateIdle(Guid botId, long chatId)
     {
         return new MessageContext(

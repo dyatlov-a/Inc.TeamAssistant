@@ -6,35 +6,42 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class DialogContinuation
 {
-    private readonly ConcurrentDictionary<long, DialogState> _store = new();
+    private readonly ConcurrentDictionary<TargetChat, DialogState> _store = new();
 
-    public DialogState? Find(long userId) => _store.GetValueOrDefault(userId);
-
-    public DialogState Begin(long userId, string command, CommandStage commandStage, ChatMessage chatMessage)
+    public DialogState? Find(TargetChat targetChat)
     {
+        ArgumentNullException.ThrowIfNull(targetChat);
+        
+        return _store.GetValueOrDefault(targetChat);
+    }
+
+    public DialogState Begin(TargetChat targetChat, string command, CommandStage commandStage, ChatMessage chatMessage)
+    {
+        ArgumentNullException.ThrowIfNull(targetChat);
         ArgumentNullException.ThrowIfNull(chatMessage);
         
         if (string.IsNullOrWhiteSpace(command))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
 
         _store.AddOrUpdate(
-            userId,
+            targetChat,
             k => new DialogState(command, commandStage).Attach(chatMessage),
             (k, v) => v.MoveTo(commandStage).Attach(chatMessage));
 
-        return _store[userId];
+        return _store[targetChat];
     }
 
     public async Task End(
-        long userId,
+        TargetChat targetChat,
         ChatMessage chatMessage,
         Func<IReadOnlyCollection<ChatMessage>, CancellationToken, Task> cleanHistory,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(targetChat);
         ArgumentNullException.ThrowIfNull(chatMessage);
         ArgumentNullException.ThrowIfNull(cleanHistory);
 
-        if (_store.Remove(userId, out var dialogState))
+        if (_store.Remove(targetChat, out var dialogState))
         {
             dialogState.Attach(chatMessage);
 
