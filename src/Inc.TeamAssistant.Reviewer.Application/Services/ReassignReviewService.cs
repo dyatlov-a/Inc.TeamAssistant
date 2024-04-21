@@ -55,25 +55,31 @@ internal sealed class ReassignReviewService
                 teammates.Select(t => t.Id).ToArray(),
                 history,
                 lastReviewerId,
-                reviewer.Id)
+                taskForReview.ReviewerId)
             .MoveToNextRound();
+        
+        var newReviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
+        if (newReviewer is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
+
+        var notifications = new List<NotificationMessage>();
 
         if (chatMessage is not null)
-            await _messageBuilderService.BuildNeedReview(
+            notifications.Add(await _messageBuilderService.BuildNeedReview(
                 taskForReview,
                 reviewer,
                 hasInProgressAction: null,
                 chatMessage,
-                token);
+                token));
         
-        var taskForReviewMessage = await _messageBuilderService.BuildNewTaskForReview(
+        notifications.Add(await _messageBuilderService.BuildNewTaskForReview(
             taskForReview,
-            reviewer,
+            newReviewer,
             owner,
-            token);
+            token));
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
 
-        return [taskForReviewMessage];
+        return notifications;
     }
 }

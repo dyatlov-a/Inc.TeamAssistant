@@ -34,13 +34,13 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         team.RemoveTeammate(command.MessageContext.Person.Id);
+        
+        await _teamRepository.Upsert(team, token);
 
         var notifications = new List<NotificationMessage>();
         
         foreach (var leaveTeamHandler in _leaveTeamHandlers)
             notifications.AddRange(await leaveTeamHandler.Handle(command.MessageContext, team.Id, token));
-        
-        await _teamRepository.Upsert(team, token);
 
         var leaveTeamSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,

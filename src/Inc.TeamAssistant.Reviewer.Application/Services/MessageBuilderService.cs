@@ -82,7 +82,9 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         notification.SetButtonsInRow(2);
 
         if (hasInProgressAction.HasValue)
-            foreach (var command in GetReviewerCommands(hasInProgressAction.Value))
+            foreach (var command in GetReviewerCommands(
+                         hasReassign: !task.OriginalReviewerId.HasValue,
+                         hasInProgressAction: hasInProgressAction.Value))
             {
                 var text = await _messageBuilder.Build(command.MessageId, languageId);
                 notification.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
@@ -131,7 +133,9 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         return notification;
     }
     
-    private IEnumerable<(MessageId MessageId, string Command)> GetReviewerCommands(bool hasInProgressAction)
+    private IEnumerable<(MessageId MessageId, string Command)> GetReviewerCommands(
+        bool hasReassign,
+        bool hasInProgressAction)
     {
         yield return (Messages.Reviewer_MoveToAccept, CommandList.Accept);
         yield return (Messages.Reviewer_MoveToDecline, CommandList.Decline);
@@ -139,6 +143,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         if (hasInProgressAction)
             yield return (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress);
         
-        yield return (Messages.Reviewer_Reassign, CommandList.ReassignReview);
+        if (hasReassign)
+            yield return (Messages.Reviewer_Reassign, CommandList.ReassignReview);
     }
 }

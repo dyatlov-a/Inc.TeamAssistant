@@ -6,8 +6,7 @@ internal sealed class AliasService
         StringComparer.CurrentCultureIgnoreCase)
     {
         ["/nr"] = "/need_review",
-        ["/al"] = "/location",
-        ["/rt"] = "/remove_team"
+        ["/al"] = "/location"
     };
     
     public string OverrideCommand(string text)

@@ -44,8 +44,8 @@ internal sealed class TelegramBotConnector : IHostedService
             await _botConstructor.TrySetup(client, bot, token);
 
             client.StartReceiving(
-                (c, m, t) => _handler.Handle(m, bot, t),
-                (c, e, t) => _handler.OnError(e, bot, t),
+                (c, m, t) => _handler.Handle(m, bot.Id, t),
+                (c, e, t) => _handler.OnError(e, bot.Id, t),
                 receiverOptions: new ReceiverOptions
                 {
                     AllowedUpdates =
