@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Ser
 internal sealed class RemoveTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.RemoveTeam;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

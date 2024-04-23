@@ -40,7 +40,7 @@ internal sealed class SingleLineCommandFactory
         var teamName = parameters[1];
         var description = string.Join(cmdSeparator, parameters[2..]);
 
-        var commandCreator = _commandCreatorResolver.TryResolve(cmd);
+        var commandCreator = _commandCreatorResolver.TryResolve(cmd, onlySingleLineCommand: true);
         var canSelectTeam = messageContext.Teams.Any(t => TeamFilter(t.Name));
         var teamSettings = bot.Teams.SingleOrDefault(t => TeamFilter(t.Name));
 

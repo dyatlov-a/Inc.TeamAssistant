@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate
 internal sealed class AcceptEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AcceptEstimate;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

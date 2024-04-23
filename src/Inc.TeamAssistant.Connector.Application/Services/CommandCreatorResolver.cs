@@ -11,13 +11,12 @@ internal sealed class CommandCreatorResolver
         _commandCreators = commandCreators ?? throw new ArgumentNullException(nameof(commandCreators));
     }
 
-    public ICommandCreator? TryResolve(string input)
+    public ICommandCreator? TryResolve(string input, bool onlySingleLineCommand = false)
     {
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(input));
-        
-        return _commandCreators.SingleOrDefault(c => input.StartsWith(
-            c.Command,
-            StringComparison.InvariantCultureIgnoreCase));
+
+        return _commandCreators.SingleOrDefault(c => (!onlySingleLineCommand || c.SupportSingleLineMode) &&
+            input.StartsWith(c.Command, StringComparison.InvariantCultureIgnoreCase));
     }
 }

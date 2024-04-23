@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate
 internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Revote;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

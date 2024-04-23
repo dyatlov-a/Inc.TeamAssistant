@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnsw
 internal sealed class AddPollAnswerCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AddPollAnswer;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

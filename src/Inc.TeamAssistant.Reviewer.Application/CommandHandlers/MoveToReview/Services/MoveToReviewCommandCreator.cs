@@ -7,6 +7,7 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Se
 internal sealed class MoveToReviewCommandCreator : ICommandCreator
 {
     public string Command => CommandList.NeedReview;
+    public bool SupportSingleLineMode => true;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

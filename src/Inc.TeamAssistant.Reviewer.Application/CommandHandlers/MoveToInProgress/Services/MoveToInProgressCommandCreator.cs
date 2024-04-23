@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 
@@ -7,17 +6,16 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgres
 internal sealed class MoveToInProgressCommandCreator : ICommandCreator
 {
     public string Command => CommandList.MoveToInProgress;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teamContext is null)
-            throw new ArgumentNullException(nameof(teamContext));
-        
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teamContext);
+
         return Task.FromResult<IEndDialogCommand>(new MoveToInProgressCommand(
             messageContext,
             messageContext.TryParseId(Command)));

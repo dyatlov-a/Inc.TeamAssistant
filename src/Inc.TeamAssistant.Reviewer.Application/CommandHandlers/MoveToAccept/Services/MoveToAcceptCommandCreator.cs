@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToAccept;
 
@@ -7,6 +6,7 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Se
 internal sealed class MoveToAcceptCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Accept;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

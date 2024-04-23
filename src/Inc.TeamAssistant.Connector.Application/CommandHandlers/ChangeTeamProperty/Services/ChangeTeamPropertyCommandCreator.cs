@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProperty.Services;
@@ -10,7 +9,8 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
     private readonly string _propertyValue;
     
     public string Command { get; }
-    
+    public bool SupportSingleLineMode => false;
+
     public ChangeTeamPropertyCommandCreator(string command, string propertyName, string propertyValue)
     {
         if (string.IsNullOrWhiteSpace(command))
@@ -30,10 +30,8 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teamContext is null)
-            throw new ArgumentNullException(nameof(teamContext));
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teamContext);
 
         return Task.FromResult<IEndDialogCommand>(new ChangeTeamPropertyCommand(
             messageContext,
