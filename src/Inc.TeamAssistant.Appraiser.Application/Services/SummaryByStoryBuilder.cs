@@ -64,23 +64,25 @@ internal sealed class SummaryByStoryBuilder
         {
             foreach (var assessment in summary.Assessments)
             {
-                var buttonText = assessment
-                    .Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                    .ToUpperInvariant();
+                var buttonText = await _messageBuilder.Build(
+                    new MessageId($"Appraiser_{assessment}"),
+                    summary.LanguageId);
                 
-                notification.WithButton(new Button(buttonText, $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
+                notification.WithButton(new Button(
+                    buttonText,
+                    $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
             }
 
-            var acceptText = await _messageBuilder.Build(Messages.Appraiser_Accept, summary.LanguageId);
-            notification.WithButton(new Button(acceptText, $"{CommandList.AcceptEstimate}{summary.StoryId:N}"));
+            var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
+            notification.WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"));
         }
         else
         {
-            var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
+            var acceptText = await _messageBuilder.Build(Messages.Appraiser_Accept, summary.LanguageId);
             var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
             
             notification
-                .WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"))
+                .WithButton(new Button(acceptText, $"{CommandList.AcceptEstimate}{summary.StoryId:N}"))
                 .WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
         }
 
