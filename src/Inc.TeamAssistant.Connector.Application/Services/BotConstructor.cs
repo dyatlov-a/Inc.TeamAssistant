@@ -98,6 +98,7 @@ internal sealed class BotConstructor
         foreach (var commandsByScope in CommandsByScopes)
         {
             var botCommandsByScope = commandsByScope.Value
+                .Where(c => allBotCommands.ContainsKey(c))
                 .Select(c => allBotCommands[c])
                 .OrderBy(c => c.Command)
                 .ToArray();
