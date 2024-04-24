@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Connector.Application;
@@ -15,4 +14,8 @@ internal static class Messages
     public static readonly MessageId Connector_PersonNotFound = new(nameof(Connector_PersonNotFound));
     public static readonly MessageId Connector_ChangedPropertySuccess = new(nameof(Connector_ChangedPropertySuccess));
     public static readonly MessageId Connector_HelpText = new(nameof(Connector_HelpText));
+    public static readonly MessageId Connector_BotShortDescription = new(nameof(Connector_BotShortDescription));
+    public static readonly MessageId Connector_BotDescription = new(nameof(Connector_BotDescription));
+    public static readonly MessageId Connector_HasNotRightsForRemoveTeam = new(nameof(Connector_HasNotRightsForRemoveTeam));
+    public static readonly MessageId Connector_RemoveTeamSuccess = new(nameof(Connector_RemoveTeamSuccess));
 }

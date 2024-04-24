@@ -9,4 +9,14 @@ public interface ITaskForReviewReader
         IReadOnlyCollection<TaskForReviewState> states,
         int limit,
         CancellationToken token);
+    
+    Task<IReadOnlyCollection<TaskForReview>> GetTasksByPerson(
+        Guid teamId,
+        long personId,
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken token);
+    
+    Task<bool> HasReassignFromDate(long personId, DateTimeOffset date, CancellationToken token);
+    
+    Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
 }

@@ -47,8 +47,9 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         const string duplicateKeyError = "23505";
 
-        var client = await _provider.Get(command.MessageContext.BotId, token);
-        var dialog = _dialogContinuation.Find(command.MessageContext.PersonId);
+        var botId = command.MessageContext.Bot.Id;
+        var client = await _provider.Get(command.MessageContext.Bot.Id, token);
+        var dialog = _dialogContinuation.Find(command.MessageContext.TargetChat);
         
         try
         {
@@ -57,9 +58,9 @@ internal sealed class CommandExecutor : ICommandExecutor
         catch (ValidationException validationException)
         {
             await client.TrySend(
+                botId,
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 validationException.ToMessage(),
                 _logger,
                 token);
@@ -72,9 +73,9 @@ internal sealed class CommandExecutor : ICommandExecutor
                 userException.Values);
             
             await client.TrySend(
+                botId,
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 errorMessage,
                 _logger,
                 token);
@@ -82,35 +83,35 @@ internal sealed class CommandExecutor : ICommandExecutor
         catch (TeamAssistantException teamAssistantException)
         {
             await client.TrySend(
+                botId,
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 teamAssistantException.Message,
                 _logger,
                 token);
         }
         catch (ApiRequestException apiRequestException)
         {
-            _logger.LogError(apiRequestException, "Unhandled telegram api exception");
+            _logger.LogError(apiRequestException, "Bot {BotId} unhandled telegram api exception", botId);
         }
         catch (PostgresException ex) when (ex.SqlState == duplicateKeyError)
         {
             await client.TrySend(
+                botId,
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 "Duplicate key value violates unique constraint.",
                 _logger,
                 token);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex, "Bot {BotId} unhandled exception on execute command", botId);
             
             await client.TrySend(
+                botId,
                 dialog,
-                command.MessageContext.ChatId,
-                command.MessageContext.MessageId,
+                command.MessageContext.ChatMessage,
                 "An unhandled exception has occurred. Try running the command again.",
                 _logger,
                 token);
@@ -194,10 +195,11 @@ internal sealed class CommandExecutor : ICommandExecutor
                     cancellationToken: token);
 
             if (notificationMessage.Pinned)
-                await client.PinChatMessageAsync(
-                    new ChatId(notificationMessage.TargetChatId.Value),
-                    message.MessageId,
-                    cancellationToken: token);
+                await client.TryPinChatMessage(
+                    messageContext.Bot.Id,
+                    new(notificationMessage.TargetChatId.Value, message.MessageId),
+                    _logger,
+                    token);
 
             if (notificationMessage.Handler is not null)
             {
@@ -218,9 +220,6 @@ internal sealed class CommandExecutor : ICommandExecutor
                 cancellationToken: token);
         
         if (notificationMessage.DeleteMessage is not null)
-            await client.DeleteMessageAsync
-                (new(notificationMessage.DeleteMessage.ChatId),
-                    notificationMessage.DeleteMessage.MessageId,
-                    token);
+            await client.TryDeleteMessage(messageContext.Bot.Id, notificationMessage.DeleteMessage, _logger, token);
     }
 }

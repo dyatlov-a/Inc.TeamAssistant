@@ -49,6 +49,11 @@ internal sealed class CachedPersonRepository : IPersonRepository
         await _personRepository.Upsert(person, token);
         _memoryCache.Remove(key);
     }
-    
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
+    {
+        await _personRepository.LeaveFromTeam(teamId, personId, token);
+    }
+
     private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_{personId}";
 }

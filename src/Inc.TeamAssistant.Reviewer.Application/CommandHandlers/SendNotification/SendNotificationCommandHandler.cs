@@ -46,10 +46,23 @@ internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotif
 
         var notifications = taskForReview.State switch
         {
-            TaskForReviewState.New or TaskForReviewState.InProgress
-                => [await _messageBuilderService.BuildMessageNeedReview(taskForReview, reviewer, token)],
-            TaskForReviewState.OnCorrection
-                => [await _messageBuilderService.BuildMessageMoveToNextRound(taskForReview, owner, token)],
+            TaskForReviewState.New => [await _messageBuilderService.BuildNeedReview(
+                taskForReview,
+                reviewer,
+                hasInProgressAction: true,
+                chatMessage: null,
+                token)],
+            TaskForReviewState.InProgress => [await _messageBuilderService.BuildNeedReview(
+                taskForReview,
+                reviewer,
+                hasInProgressAction: false,
+                chatMessage: null,
+                token)],
+            TaskForReviewState.OnCorrection => [await _messageBuilderService.BuildMoveToNextRound(
+                taskForReview,
+                owner,
+                chatMessage: null,
+                token)],
             _ => Array.Empty<NotificationMessage>()
         };
 

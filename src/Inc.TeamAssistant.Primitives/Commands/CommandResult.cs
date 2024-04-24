@@ -8,8 +8,7 @@ public sealed record CommandResult(IReadOnlyCollection<NotificationMessage> Noti
     
     public static CommandResult Build(params NotificationMessage[] notifications)
     {
-        if (notifications is null)
-            throw new ArgumentNullException(nameof(notifications));
+        ArgumentNullException.ThrowIfNull(notifications);
 
         return new CommandResult(notifications);
     }

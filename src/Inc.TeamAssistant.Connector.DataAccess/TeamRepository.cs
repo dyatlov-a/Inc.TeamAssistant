@@ -4,7 +4,6 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
-using Npgsql;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
@@ -116,5 +115,18 @@ internal sealed class TeamRepository : ITeamRepository
         await connection.ExecuteAsync(upsertTeammates);
 
         await transaction.CommitAsync(token);
+    }
+
+    public async Task Remove(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            "DELETE FROM connector.teams WHERE id = @team_id;",
+            new { team_id = teamId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
     }
 }

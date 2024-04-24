@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -33,6 +32,6 @@ internal sealed class ChangeTeamPropertyCommandHandler : IRequestHandler<ChangeT
             Messages.Connector_ChangedPropertySuccess,
             command.MessageContext.LanguageId,
             team.Name);
-        return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatId, message));
+        return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message));
     }
 }

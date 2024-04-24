@@ -39,4 +39,9 @@ internal sealed class TeamAccessor : ITeamAccessor
     {
         return await _botRepository.GetBotName(botId, token);
     }
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
+    {
+        await _personRepository.LeaveFromTeam(teamId, personId, token);
+    }
 }

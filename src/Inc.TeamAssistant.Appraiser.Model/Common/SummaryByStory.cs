@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
@@ -14,4 +13,5 @@ public sealed record SummaryByStory(
 	bool EstimateEnded,
     string Total,
     IReadOnlyCollection<EstimateItemDetails> Items,
-	IReadOnlyCollection<string> Assessments);
+	IReadOnlyCollection<string> Assessments,
+	bool Accepted);

@@ -2,18 +2,25 @@ namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
 internal sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
+    private const int ReviewerWeight = 100;
     private static readonly Random RandomSelector = new();
 
     private readonly IReadOnlyCollection<long> _teammates;
+    private readonly IReadOnlyDictionary<long, int> _history;
 
-    public RandomReviewerStrategy(IReadOnlyCollection<long> teammates)
+    public RandomReviewerStrategy(IReadOnlyCollection<long> teammates, IReadOnlyDictionary<long, int> history)
     {
         _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
+        _history = history ?? throw new ArgumentNullException(nameof(history));
     }
     
-    public long Next(long ownerId, long? lastReviewerId)
+    public long Next(IReadOnlyCollection<long> excludedPersonIds, long? lastReviewerId)
     {
-        var excludedTeammates = lastReviewerId.HasValue ? new[] { ownerId, lastReviewerId.Value } : new[] { ownerId };
+        ArgumentNullException.ThrowIfNull(excludedPersonIds);
+        
+        var excludedTeammates = lastReviewerId.HasValue
+            ? excludedPersonIds.Append(lastReviewerId.Value)
+            : excludedPersonIds;
         var targetPlayers = _teammates
             .Where(t => !excludedTeammates.Contains(t))
             .OrderBy(t => t)
@@ -22,7 +29,12 @@ internal sealed class RandomReviewerStrategy : INextReviewerStrategy
         if (!targetPlayers.Any())
             return _teammates.First();
         
-        var nextReviewerIndex = RandomSelector.Next(0, targetPlayers.Length);
-        return targetPlayers[nextReviewerIndex];
+        var seeding = targetPlayers
+            .Select(t => (PersonId: t, Count: 1d / _history.GetValueOrDefault(t, 1) * ReviewerWeight))
+            .SelectMany(t => Enumerable.Repeat(t.PersonId, (int)t.Count))
+            .ToArray();
+        
+        var nextReviewerIndex = RandomSelector.Next(0, seeding.Length);
+        return seeding[nextReviewerIndex];
     }
 }

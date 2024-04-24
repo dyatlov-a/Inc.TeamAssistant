@@ -6,6 +6,7 @@ namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCo
 internal sealed class InviteForCoffeeCommandCreator : ICommandCreator
 {
     public string Command => CommandList.InviteForCoffee;
+    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

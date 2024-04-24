@@ -24,28 +24,26 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var bot = await _botRepository.Find(command.MessageContext.BotId, token);
+        var bot = await _botRepository.Find(command.MessageContext.Bot.Id, token);
         if (bot is null)
-            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.BotId);
+            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.Bot.Id);
 
         var notificationText = await _messageBuilder.Build(
             Messages.Connector_HelpText,
             command.MessageContext.LanguageId,
             CommandList.Cancel);
         var notification = NotificationMessage
-            .Create(command.MessageContext.ChatId, notificationText)
+            .Create(command.MessageContext.ChatMessage.ChatId, notificationText)
             .SetButtonsInRow(1);
 
-        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null))
+        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null && !CommandList.Help.Equals(c.Value, StringComparison.InvariantCultureIgnoreCase)))
         {
             var text = await _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
 
             notification.WithButton(new Button(text, cmd.Value));
         }
 
-        var deleteHelp = NotificationMessage.Delete(new ChatMessage(
-            command.MessageContext.ChatId,
-            command.MessageContext.MessageId));
+        var deleteHelp = NotificationMessage.Delete(command.MessageContext.ChatMessage);
         
         return CommandResult.Build(notification, deleteHelp);
     }

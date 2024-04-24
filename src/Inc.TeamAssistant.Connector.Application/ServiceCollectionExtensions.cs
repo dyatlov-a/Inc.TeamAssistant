@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
+using Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Commands;
 using MediatR.Pipeline;
@@ -15,8 +16,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConnectorApplication(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddSingleton<CommandFactory>()
@@ -27,6 +27,10 @@ public static class ServiceCollectionExtensions
             .AddHostedService<TelegramBotConnector>()
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramBotClientProvider>()
+            .AddSingleton<AliasService>()
+            .AddSingleton<SingleLineCommandFactory>()
+            .AddSingleton<CommandCreatorResolver>()
+            .AddSingleton<BotConstructor>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             
@@ -35,6 +39,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, HelpCommandCreator>()
             .AddSingleton<ICommandCreator, JoinToTeamCommandCreator>()
             .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>()
+            .AddSingleton<ICommandCreator, RemoveTeamCommandCreator>()
             
             .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
                 sp,

@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
@@ -18,9 +17,8 @@ internal sealed class AttachStoryCommandHandler : IRequestHandler<AttachStoryCom
 
     public async Task<CommandResult> Handle(AttachStoryCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var story = await _storyRepository.Find(command.StoryId, token);
         if (story is null)
             throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);

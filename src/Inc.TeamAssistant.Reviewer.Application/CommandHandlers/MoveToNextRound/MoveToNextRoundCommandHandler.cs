@@ -1,8 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToNextRound;
 using MediatR;
@@ -13,20 +11,17 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IMessageBuilderService _messageBuilderService;
-    private readonly ITranslateProvider _translateProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public MoveToNextRoundCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
         IMessageBuilderService messageBuilderService,
-        ITranslateProvider translateProvider,
         ITeamAccessor teamAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _messageBuilderService =
             messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
-        _translateProvider = translateProvider ?? throw new ArgumentNullException(nameof(translateProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -48,23 +43,18 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
 
         taskForReview.MoveToNextRound();
         
-        var notifications = new List<NotificationMessage>();
-
-        if (taskForReview.MessageId.HasValue)
-            notifications.Add(await _messageBuilderService.BuildMessageNewTaskForReview(
+        var notifications = new[]
+        {
+            await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token),
+            await _messageBuilderService.BuildMoveToNextRound(
                 taskForReview,
-                reviewer,
                 owner,
-                token));
-
-        var operationAppliedMessage = await _translateProvider.Get(
-            Messages.Reviewer_OperationApplied,
-            await _teamAccessor.GetClientLanguage(owner.Id, token),
-            token);
-        notifications.Add(NotificationMessage.Create(taskForReview.OwnerId, operationAppliedMessage));
+                command.MessageContext.ChatMessage,
+                token)
+        };
 
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notifications);
     }
 }

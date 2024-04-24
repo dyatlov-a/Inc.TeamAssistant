@@ -12,12 +12,13 @@
             <span class="text-item">💬 @_toolRandomCoffee</span>
         </p>
         <br/>
-        <a href="mailto:@(UserSettings.FeedbackTo)?body=@(_requestDemoBody)&subject=@(_requestDemo)" class="button button_black">@_requestDemo</a>
+        <a href="mailto:@(UserSettings.FeedbackTo)?body=@(_requestDemoBody)&subject=@(_requestDemoSubject)" class="button button_black">@_requestDemo</a>
     </div>
 </div>
 
 @code {
     private string _requestDemo = string.Empty;
+    private string _requestDemoSubject = string.Empty;
     private string _requestDemoBody = string.Empty;
 
     private string _getContacts = string.Empty;
@@ -31,8 +32,10 @@
     {
         var resources = await LanguageManager.GetResource();
 
+        var requestDemo = resources[Messages.GUI_RequestDemo];
         _getContacts = resources[Messages.GUI_GetContacts];
-        _requestDemo = resources[Messages.GUI_RequestDemo];
+        _requestDemo = requestDemo;
+        _requestDemoSubject = $"{requestDemo} [TeamAssistant]";
         _requestDemoBody = resources[Messages.GUI_RequestDemoBody];
         _header = resources[Messages.GUI_MainHeader];
         _subHeader = resources[Messages.GUI_MainSubHeader];

@@ -17,15 +17,24 @@ public sealed class RandomReviewerStrategyTests
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>(),
+            _fixture.Create<long>(),
             _fixture.Create<long>()
         };
-        _target = new RandomReviewerStrategy(_teammates);
+        _target = new RandomReviewerStrategy(_teammates, new Dictionary<long, int>());
     }
 
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(teammates: null!);
+        RandomReviewerStrategy Action() => new(teammates: null!, new Dictionary<long, int>());
+
+        Assert.Throws<ArgumentNullException>(Action);
+    }
+    
+    [Fact]
+    public void Constructor_HistoryIsNull_ThrowsException()
+    {
+        RandomReviewerStrategy Action() => new(_teammates, null!);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -35,7 +44,7 @@ public sealed class RandomReviewerStrategyTests
     {
         var ownerId = _teammates.First();
 
-        var reviewerId = _target.Next(ownerId, lastReviewerId: null);
+        var reviewerId = _target.Next([ownerId], lastReviewerId: null);
         
         Assert.NotEqual(ownerId, reviewerId);
     }
@@ -46,19 +55,19 @@ public sealed class RandomReviewerStrategyTests
         var ownerId = _teammates.First();
         var lastReviewerId = _teammates.Skip(1).First();
 
-        var reviewerId = _target.Next(ownerId, lastReviewerId);
+        var reviewerId = _target.Next([ownerId], lastReviewerId);
         
         Assert.NotEqual(lastReviewerId, reviewerId);
     }
 
     [Theory]
-    [InlineData(1_000, 100)]
+    [InlineData(1_000, 200)]
     public void Next_MultipleIterations_MustRandomReviewer(int iterationCount, int reviewerCountByPlayer)
     {
         var owner = _teammates.First();
 
         var reviewerIds = Enumerable.Range(0, iterationCount)
-            .Select(_ => _target.Next(owner, lastReviewerId: null))
+            .Select(_ => _target.Next([owner], lastReviewerId: null))
             .GroupBy(i => i)
             .ToDictionary(i => i, i => i.Count());
         

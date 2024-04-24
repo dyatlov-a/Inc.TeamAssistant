@@ -1,10 +1,10 @@
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate.Services;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Services;
+using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate.Services;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate.Services;
 using Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory.Services;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,10 +16,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         AppraiserOptions options)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (options is null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         services
             .AddScoped<SummaryByStoryBuilder>()
@@ -27,7 +25,8 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<ICommandCreator, AcceptEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
-            .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>();
+            .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
+            .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>();
 
         foreach (var assessment in AssessmentValue.GetAllAssessments())
         {

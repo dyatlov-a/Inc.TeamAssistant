@@ -24,9 +24,9 @@ internal sealed class AddPollAnswerCommandHandler : IRequestHandler<AddPollAnswe
             return CommandResult.Empty;
         
         if (command.Options.Contains("0"))
-            randomCoffeeEntry.AddPerson(command.MessageContext.PersonId);
+            randomCoffeeEntry.AddPerson(command.MessageContext.Person.Id);
         else
-            randomCoffeeEntry.RemovePerson(command.MessageContext.PersonId);
+            randomCoffeeEntry.RemovePerson(command.MessageContext.Person.Id);
 
         await _repository.Upsert(randomCoffeeEntry, token);
 

@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -25,9 +24,8 @@ public sealed class DialogState
 
     public DialogState Attach(ChatMessage chatMessage)
     {
-        if (chatMessage is null)
-            throw new ArgumentNullException(nameof(chatMessage));
-        
+        ArgumentNullException.ThrowIfNull(chatMessage);
+
         if (_chatMessages.All(cm => cm != chatMessage))
             _chatMessages.Add(chatMessage);
         

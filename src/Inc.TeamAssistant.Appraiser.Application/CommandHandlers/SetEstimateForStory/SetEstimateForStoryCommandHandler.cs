@@ -4,7 +4,6 @@ using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
@@ -35,7 +34,7 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
         if (story is null)
 	        throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
 
-        story.Estimate(command.MessageContext.PersonId, command.Value.ToAssessmentValue());
+        story.Estimate(command.MessageContext.Person.Id, command.Value.ToAssessmentValue());
 
         await _storyRepository.Upsert(story, token);
         

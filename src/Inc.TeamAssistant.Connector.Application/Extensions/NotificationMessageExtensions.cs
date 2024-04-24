@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -15,6 +14,6 @@ internal static class NotificationMessageExtensions
             ? new InlineKeyboardMarkup(message.Buttons
                 .Select(b => InlineKeyboardButton.WithCallbackData(b.Text, b.Data))
                 .Chunk(message.ButtonsInRow))
-            : null;
+            : new InlineKeyboardMarkup(Array.Empty<InlineKeyboardButton>());
     }
 }

@@ -20,9 +20,9 @@ internal sealed class CachedBotRepository : IBotRepository
         _cacheTimeout = cacheTimeout;
     }
     
-    public async Task<IReadOnlyCollection<Bot>> GetAll(CancellationToken token)
+    public async Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token)
     {
-        return await _botRepository.GetAll(token);
+        return await _botRepository.GetBotIds(token);
     }
 
     public async Task<string> GetBotName(Guid id, CancellationToken token)

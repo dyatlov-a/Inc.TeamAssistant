@@ -11,6 +11,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
     private readonly AppraiserOptions _options;
     
     public string Command => CommandList.AddStory;
+    public bool SupportSingleLineMode => true;
 
     public AddStoryCommandCreator(ITeamAccessor teamAccessor, AppraiserOptions options)
     {
@@ -23,10 +24,8 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
-        if (messageContext is null)
-            throw new ArgumentNullException(nameof(messageContext));
-        if (teamContext is null)
-            throw new ArgumentNullException(nameof(teamContext));
+        ArgumentNullException.ThrowIfNull(messageContext);
+        ArgumentNullException.ThrowIfNull(teamContext);
 
         var separator = ' ';
         var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, token);

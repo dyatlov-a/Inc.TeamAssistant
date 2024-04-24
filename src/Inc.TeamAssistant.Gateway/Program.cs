@@ -82,7 +82,6 @@ builder.Services
 		typeof(ValidationPipelineBehavior<,>)));
 
 builder.Services
-	.AddScoped<ITranslateProvider, TranslateProvider>()
 	.AddScoped<ICheckInService, CheckInService>()
 	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)

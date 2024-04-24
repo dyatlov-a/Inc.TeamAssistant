@@ -14,6 +14,48 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
+    public async Task<IReadOnlyCollection<TaskForReview>> Get(
+        Guid teamId,
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(states);
+        
+        var targetStates = states.Select(s => (int)s).ToArray();
+        var command = new CommandDefinition(@"
+            SELECT
+                t.id AS id,
+                t.bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.reviewer_id AS reviewerid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.has_concrete_reviewer AS hasconcretereviewer,
+                t.original_reviewer_id AS originalreviewerid
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.state = ANY(@states);",
+            new
+            {
+                team_id = teamId,
+                states = targetStates,
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var results = await connection.QueryAsync<TaskForReview>(command);
+
+        return results.ToArray();
+    }
+
     public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
@@ -31,7 +73,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.accept_date AS acceptdate,
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
-                t.has_concrete_reviewer AS hasconcretereviewer
+                t.has_concrete_reviewer AS hasconcretereviewer,
+                t.original_reviewer_id AS originalreviewerid
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;",
             new { id = taskForReviewId },
@@ -45,8 +88,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
     public async Task Upsert(TaskForReview taskForReview, CancellationToken token)
     {
-        if (taskForReview is null)
-            throw new ArgumentNullException(nameof(taskForReview));
+        ArgumentNullException.ThrowIfNull(taskForReview);
 
         var command = new CommandDefinition(@"
             INSERT INTO review.task_for_reviews (
@@ -63,7 +105,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date,
                 message_id,
                 chat_id,
-                has_concrete_reviewer)
+                has_concrete_reviewer,
+                original_reviewer_id)
             VALUES (
                 @id,
                 @bot_id,
@@ -78,7 +121,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @accept_date,
                 @message_id,
                 @chat_id,
-                @has_concrete_reviewer)
+                @has_concrete_reviewer,
+                @original_reviewer_id)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
                 team_id = excluded.team_id,
@@ -92,7 +136,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date = excluded.accept_date,
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
-                has_concrete_reviewer = excluded.has_concrete_reviewer;",
+                has_concrete_reviewer = excluded.has_concrete_reviewer,
+                original_reviewer_id = excluded.original_reviewer_id;",
             new
             {
                 id = taskForReview.Id,
@@ -108,7 +153,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 chat_id = taskForReview.ChatId,
                 owner_id = taskForReview.OwnerId,
                 reviewer_id = taskForReview.ReviewerId,
-                has_concrete_reviewer = taskForReview.HasConcreteReviewer
+                has_concrete_reviewer = taskForReview.HasConcreteReviewer,
+                original_reviewer_id = taskForReview.OriginalReviewerId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -118,49 +164,21 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task RetargetAndLeave(
-        Guid teamId,
-        long fromId,
-        long toId,
-        DateTimeOffset nextNotification,
-        CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            UPDATE review.task_for_reviews
-            SET
-                reviewer_id = @to_person_id,
-                next_notification = @next_notification
-            WHERE reviewer_id = @from_person_id AND team_id = @team_id AND state != @is_archived;
-
-            DELETE FROM connector.teammates
-            WHERE person_id = @from_person_id AND team_id = @team_id;",
-            new
-            {
-                team_id = teamId,
-                from_person_id = fromId,
-                to_person_id = toId,
-                next_notification = nextNotification,
-                is_archived = (int)TaskForReviewState.IsArchived
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        await connection.ExecuteAsync(command);
-    }
-
-    public async Task<long?> FindLastReviewer(Guid teamId, CancellationToken token)
+    public async Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND NOT t.has_concrete_reviewer
+            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND NOT t.has_concrete_reviewer
             ORDER BY t.created DESC
             OFFSET 0
             LIMIT 1;",
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId,
+                owner_id = ownerId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

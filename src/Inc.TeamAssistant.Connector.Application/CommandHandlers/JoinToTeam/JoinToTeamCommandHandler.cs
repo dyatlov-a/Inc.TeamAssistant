@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.JoinToTeam;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -27,16 +26,15 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
 
     public async Task<CommandResult> Handle(JoinToTeamCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var team = await _teamRepository.Find(command.TeamId, token);
         if (team is null)
             return CommandResult.Empty;
 
-        var person = await _personRepository.Find(command.MessageContext.PersonId, token);
+        var person = await _personRepository.Find(command.MessageContext.Person.Id, token);
         if (person is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, command.MessageContext.PersonId);
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, command.MessageContext.Person.Id);
 
         team.AddTeammate(person);
 
@@ -47,15 +45,18 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
             command.MessageContext.LanguageId,
             person.DisplayName,
             team.Name);
-        
-        var notifications = new List<NotificationMessage>
-        {
-            NotificationMessage.Create(command.MessageContext.ChatId, joinToTeamSuccessMessage)
-        };
+        var notification = NotificationMessage.Create(
+            command.MessageContext.ChatMessage.ChatId,
+            joinToTeamSuccessMessage);
 
-        if (command.MessageContext.PersonId != team.OwnerId)
-            notifications.Add(NotificationMessage.Create(team.OwnerId, joinToTeamSuccessMessage));
+        var notifications = command.MessageContext.Person.Id != team.OwnerId
+            ? new[]
+            {
+                NotificationMessage.Create(team.OwnerId, joinToTeamSuccessMessage),
+                notification
+            }
+            : [notification];
         
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notifications);
     }
 }

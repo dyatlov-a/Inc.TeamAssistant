@@ -1,7 +1,6 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -20,8 +19,7 @@ internal sealed class SummaryByStoryBuilder
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
     {
-        if (summary is null)
-            throw new ArgumentNullException(nameof(summary));
+        ArgumentNullException.ThrowIfNull(summary);
 
         var builder = new StringBuilder();
 
@@ -58,31 +56,43 @@ internal sealed class SummaryByStoryBuilder
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
                 .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
-
+        
+        if (summary.Accepted)
+            return notification;
+        
         if (!summary.EstimateEnded)
         {
             foreach (var assessment in summary.Assessments)
             {
-                var buttonText = assessment
-                    .Replace("sp", string.Empty, StringComparison.InvariantCultureIgnoreCase)
-                    .ToUpperInvariant();
+                var buttonText = await _messageBuilder.Build(
+                    new MessageId($"Appraiser_{assessment}"),
+                    summary.LanguageId);
                 
-                notification.WithButton(new Button(buttonText, string.Format(CommandList.Set, assessment) + summary.StoryId.ToString("N")));
+                notification.WithButton(new Button(
+                    buttonText,
+                    $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
             }
 
-            notification.WithButton(new Button("Accept", CommandList.AcceptEstimate + summary.StoryId.ToString("N")));
+            var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
+            notification.WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"));
         }
         else
-            notification.WithButton(new Button("Revote", CommandList.ReVote + summary.StoryId.ToString("N")));
+        {
+            var acceptText = await _messageBuilder.Build(Messages.Appraiser_Accept, summary.LanguageId);
+            var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
+            
+            notification
+                .WithButton(new Button(acceptText, $"{CommandList.AcceptEstimate}{summary.StoryId:N}"))
+                .WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
+        }
 
         return notification;
     }
 
     private string AddEstimate(bool estimateEnded, EstimateItemDetails item)
     {
-        if (item is null)
-            throw new ArgumentNullException(nameof(item));
-        
+        ArgumentNullException.ThrowIfNull(item);
+
         return estimateEnded ? item.DisplayValue : item.HasValue;
     }
     

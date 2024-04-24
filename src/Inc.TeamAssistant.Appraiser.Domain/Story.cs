@@ -15,6 +15,7 @@ public sealed class Story
 	public LanguageId LanguageId { get; private set; } = default!;
 	public string Title { get; private set; } = default!;
 	public int? ExternalId { get; private set; }
+	public bool Accepted { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -68,6 +69,9 @@ public sealed class Story
 
 	public void Estimate(long participantId, AssessmentValue.Value value)
     {
+	    if (Accepted)
+		    return;
+	    
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
 
         if (storyForEstimate is null)
@@ -78,8 +82,7 @@ public sealed class Story
 
 	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)
     {
-        if (storyForEstimate is null)
-            throw new ArgumentNullException(nameof(storyForEstimate));
+        ArgumentNullException.ThrowIfNull(storyForEstimate);
 
         _storyForEstimates.Add(storyForEstimate);
 	}
@@ -94,6 +97,9 @@ public sealed class Story
 
 	public void Reset(long participantId)
 	{
+		if (Accepted)
+			return;
+		
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 	    
@@ -101,8 +107,11 @@ public sealed class Story
             storyForEstimate.Reset();
 	}
 
-	public void Accept(long participantId)
+	public void Finish(long participantId)
 	{
+		if (Accepted)
+			return;
+		
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 		
@@ -119,6 +128,14 @@ public sealed class Story
 			StoryType.Kanban => AssessmentValue.KanbanAssessments,
 			_ => throw new TeamAssistantException("StoryType is not valid.")
 		};
+	}
+
+	public void Accept(long participantId)
+	{
+		if (ModeratorId != participantId)
+			throw new TeamAssistantException("User has not rights for action.");
+		
+		Accepted = true;
 	}
 	
 	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
