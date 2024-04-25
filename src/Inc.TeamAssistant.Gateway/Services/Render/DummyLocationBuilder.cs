@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 
-namespace Inc.TeamAssistant.Gateway.Services.CheckIn;
+namespace Inc.TeamAssistant.Gateway.Services.Render;
 
 internal sealed class DummyLocationBuilder : ILocationBuilder
 {

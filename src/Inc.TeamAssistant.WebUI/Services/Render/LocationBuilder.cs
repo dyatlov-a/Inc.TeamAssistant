@@ -2,7 +2,7 @@ using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 using Microsoft.JSInterop;
 
-namespace Inc.TeamAssistant.WebUI.Services.CheckIn;
+namespace Inc.TeamAssistant.WebUI.Services.Render;
 
 internal sealed class LocationBuilder : ILocationBuilder
 {

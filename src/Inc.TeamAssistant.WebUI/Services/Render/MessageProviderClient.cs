@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Render;
 
 internal sealed class MessageProviderClient : IMessageProvider
 {

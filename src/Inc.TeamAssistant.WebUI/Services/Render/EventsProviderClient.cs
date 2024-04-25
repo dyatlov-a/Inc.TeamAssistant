@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Render;
 
 internal sealed class EventsProviderClient : IEventsProvider
 {

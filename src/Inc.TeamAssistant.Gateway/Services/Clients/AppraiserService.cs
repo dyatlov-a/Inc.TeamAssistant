@@ -6,7 +6,7 @@ using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 using MediatR;
 
-namespace Inc.TeamAssistant.Gateway.Services;
+namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
 internal sealed class AppraiserService : IAppraiserService
 {

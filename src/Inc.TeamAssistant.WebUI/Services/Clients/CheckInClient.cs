@@ -4,7 +4,7 @@ using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
-namespace Inc.TeamAssistant.WebUI.Services.CheckIn;
+namespace Inc.TeamAssistant.WebUI.Services.Clients;
 
 internal sealed class CheckInClient : ICheckInService
 {

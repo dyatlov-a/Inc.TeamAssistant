@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model;
 
-namespace Inc.TeamAssistant.Gateway.Services;
+namespace Inc.TeamAssistant.Gateway.Services.Render;
 
 internal sealed class VideoServerService : IVideoService
 {

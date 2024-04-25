@@ -3,7 +3,7 @@ using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 using MediatR;
 
-namespace Inc.TeamAssistant.Gateway.Services.CheckIn;
+namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
 internal sealed class CheckInService : ICheckInService
 {

@@ -7,7 +7,7 @@ using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Clients;
 
 internal sealed class AppraiserClient : IAppraiserService
 {

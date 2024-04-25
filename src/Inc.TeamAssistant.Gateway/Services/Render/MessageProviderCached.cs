@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Inc.TeamAssistant.Gateway.Services.MessageProviders;
+namespace Inc.TeamAssistant.Gateway.Services.Render;
 
 internal sealed class MessageProviderCached : IMessageProvider
 {

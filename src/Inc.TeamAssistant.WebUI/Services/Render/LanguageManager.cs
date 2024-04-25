@@ -1,35 +1,36 @@
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Render;
 
 internal sealed class LanguageManager
 {
     private readonly IMessageProvider _messageProvider;
-    private readonly IClientInfoService _clientInfoService;
+    private readonly ILanguageProvider _languageProvider;
 
-    public LanguageManager(IMessageProvider messageProvider, IClientInfoService clientInfoService)
+    public LanguageManager(IMessageProvider messageProvider, ILanguageProvider languageProvider)
     {
         _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
-        _clientInfoService = clientInfoService ?? throw new ArgumentNullException(nameof(clientInfoService));
+        _languageProvider = languageProvider ?? throw new ArgumentNullException(nameof(languageProvider));
     }
 
     public async Task<Dictionary<string, string>> GetResource()
     {
-        var currentLanguage = await _clientInfoService.GetCurrentLanguageId();
+        var currentLanguage = _languageProvider.GetCurrentLanguageId();
         var resources = await _messageProvider.Get();
 
-        return resources.Result.TryGetValue(currentLanguage.Value, out var result)
+        return resources.Result.TryGetValue(currentLanguage.Language.Value, out var result)
             ? result
             : resources.Result[LanguageSettings.DefaultLanguageId.Value];
     }
 
     public Func<string?, string> CreateLinkBuilder()
     {
-        var currentLanguageId = _clientInfoService.GetLanguageIdFromUrlOrDefault();
+        var currentLanguageId = _languageProvider.GetCurrentLanguageId();
 
-        return relativeUrl => CreateLinkBuilder(currentLanguageId, relativeUrl);
+        return relativeUrl => CreateLinkBuilder(
+            currentLanguageId.Selected ? currentLanguageId.Language : null,
+            relativeUrl);
     }
 
     private string CreateLinkBuilder(LanguageId? currentLanguageId, string? relativeUrl)

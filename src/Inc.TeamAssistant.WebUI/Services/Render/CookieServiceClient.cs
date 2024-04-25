@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model;
 using Microsoft.JSInterop;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Render;
 
 internal sealed class CookieServiceClient : ICookieService
 {

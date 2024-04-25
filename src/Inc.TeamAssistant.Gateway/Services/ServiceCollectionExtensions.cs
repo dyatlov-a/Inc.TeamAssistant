@@ -1,6 +1,8 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.Gateway.Services.MessageProviders;
+using Inc.TeamAssistant.Gateway.Services.Clients;
+using Inc.TeamAssistant.Gateway.Services.Internal;
+using Inc.TeamAssistant.Gateway.Services.Render;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -13,8 +15,8 @@ public static class ServiceCollectionExtensions
         string webRootPath,
         TimeSpan cacheAbsoluteExpiration)
 	{
-		if (services is null)
-			throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
+        
         if (string.IsNullOrWhiteSpace(webRootPath))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
 
@@ -30,7 +32,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IEventsProvider, EventsProvider>()
             .AddScoped<ICookieService, CookieService>()
             .AddScoped<IMessagesSender, MessagesSender>()
-            .AddScoped<IClientInfoService, ClientInfoService>()
+            .AddScoped<ILanguageProvider, LanguageProvider>()
 
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(

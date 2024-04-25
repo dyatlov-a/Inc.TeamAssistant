@@ -1,8 +1,9 @@
 using System.Reflection;
 using Blazored.LocalStorage;
-using Inc.TeamAssistant.WebUI.Services.CheckIn;
 using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.WebUI.Services.Clients;
+using Inc.TeamAssistant.WebUI.Services.Render;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -10,8 +11,7 @@ public static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddServices(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         var appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
             .AddBlazoredLocalStorage()
 
             .AddScoped<IAppraiserService, AppraiserClient>()
-            .AddScoped<IClientInfoService, ClientInfoClient>()
+            .AddScoped<ILanguageProvider, LanguageProviderClient>()
             .AddTransient<IEventsProvider, EventsProviderClient>()
             .AddSingleton<ICookieService, CookieServiceClient>()
             .AddScoped<ICheckInService, CheckInClient>()
@@ -37,8 +37,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddIsomorphic(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddScoped<LanguageManager>();
