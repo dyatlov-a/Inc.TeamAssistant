@@ -35,18 +35,18 @@ services:
     command: [ "migrate", "Host=database;Port=5432;Database=team_assistant;User Id=postgres;Password=hidden" ]
     depends_on:
       - database
-#      - create
+      - create
     networks:
       - team_assistant
 
-#  create:
-#    image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
-#    container_name: create
-#    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=hidden", "hidden" ]
-#    depends_on:
-#      - database
-#    networks:
-#      - team_assistant
+  create:
+    image: dyatlovhome/inc.teamassistant.migrationsrunner:latest
+    container_name: create
+    command: [ "create", "Host=database;Port=5432;User Id=postgres;Password=hidden", "hidden" ]
+    depends_on:
+      - database
+    networks:
+      - team_assistant
 
   database:
     container_name: database

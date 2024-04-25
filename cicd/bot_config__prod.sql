@@ -42,6 +42,7 @@ VALUES
     ('f6b6aa8c-1ddf-4446-b91a-6e223108f366', 'e5b2d82b-3912-4d94-acb8-c6e603622a95', '/reassign', null),
 
     ('4f5843de-4a65-4934-afd7-efa6dfbf22fa', '29160ded-0e79-4bce-9856-52eb39657e8d', '/location', 'CheckIn_AddLocationHelp'),
+    ('4379085b-2ea4-4835-82dd-035c02c466be', '29160ded-0e79-4bce-9856-52eb39657e8d', '/cancel', 'Connector_CancelHelp'),
     ('291e4bd8-76b5-4d37-ab2d-1856ac182925', '29160ded-0e79-4bce-9856-52eb39657e8d', '/help', 'Connector_Help'),
     
     ('687426da-75eb-4cea-bdb1-6afd6c7e5dc0', '97e6239e-4f51-4165-9a69-1398cc0b6b93', '/invite', 'RandomCoffee_InviteHelp'),
