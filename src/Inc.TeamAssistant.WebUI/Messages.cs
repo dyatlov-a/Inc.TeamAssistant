@@ -31,4 +31,7 @@ internal sealed class Messages
     public static readonly string GUI_ToolAppraiser = new(nameof(GUI_ToolAppraiser));
     public static readonly string GUI_ToolReviewer = new(nameof(GUI_ToolReviewer));
     public static readonly string GUI_ToolRandomCoffee = new(nameof(GUI_ToolRandomCoffee));
+    
+    public static readonly string CheckIn_PageTitle = new(nameof(CheckIn_PageTitle));
+    public static readonly string CheckIn_DefaultLayerTitle = new(nameof(CheckIn_DefaultLayerTitle));
 }

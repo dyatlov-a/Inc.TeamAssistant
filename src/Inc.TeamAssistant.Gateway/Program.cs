@@ -6,7 +6,6 @@ using Inc.TeamAssistant.WebUI.Services;
 using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
-using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
@@ -21,8 +20,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prometheus;
 using Prometheus.DotNetRuntime;
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Gateway.Services.Clients;
-using Inc.TeamAssistant.Gateway.Services.Render;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
@@ -83,10 +80,6 @@ builder.Services
 		typeof(ValidationPipelineBehavior<,>)));
 
 builder.Services
-	.AddScoped<ICheckInService, CheckInService>()
-	.AddScoped<ILocationBuilder, DummyLocationBuilder>()
-	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
-		
     .AddAppraiserApplication(appraiserOptions)
     .AddAppraiserDataAccess()
 	
@@ -101,11 +94,13 @@ builder.Services
 	
 	.AddConnectorApplication()
 	.AddConnectorDataAccess(cacheAbsoluteExpiration)
-	
-	.AddMemoryCache()
-	.AddHttpContextAccessor()
+    
+	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
 	.AddServices(builder.Environment.WebRootPath, cacheAbsoluteExpiration)
     .AddIsomorphic()
+    
+    .AddMemoryCache()
+    .AddHttpContextAccessor()
     .AddMvc();
 
 builder.Services.AddSignalR();

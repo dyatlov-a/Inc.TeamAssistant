@@ -30,8 +30,8 @@
         var resources = await LanguageManager.GetResource();
 
         _annotation = new(
-            resources[CheckInMessages.CheckIn_PageTitle],
-            resources[CheckInMessages.CheckIn_DefaultLayerTitle]);
+            resources[Messages.CheckIn_PageTitle],
+            resources[Messages.CheckIn_DefaultLayerTitle]);
         _model = await CheckInService.GetLocations(Id);
 
         if (_model.State == ServiceResultState.Success)

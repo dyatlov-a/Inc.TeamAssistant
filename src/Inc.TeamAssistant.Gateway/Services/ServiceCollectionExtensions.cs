@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Model;
+using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.Internal;
 using Inc.TeamAssistant.Gateway.Services.Render;
@@ -33,6 +34,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICookieService, CookieService>()
             .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ILanguageProvider, LanguageProvider>()
+            .AddScoped<ICheckInService, CheckInService>()
+            .AddScoped<ILocationBuilder, DummyLocationBuilder>()
 
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
