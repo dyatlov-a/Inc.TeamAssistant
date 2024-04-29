@@ -3,7 +3,6 @@ namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 internal sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
     private const int ReviewerWeight = 100;
-    private static readonly Random RandomSelector = new();
 
     private readonly IReadOnlyCollection<long> _teammates;
     private readonly IReadOnlyDictionary<long, int> _history;
@@ -34,7 +33,7 @@ internal sealed class RandomReviewerStrategy : INextReviewerStrategy
             .SelectMany(t => Enumerable.Repeat(t.PersonId, (int)t.Count))
             .ToArray();
         
-        var nextReviewerIndex = RandomSelector.Next(0, seeding.Length);
+        var nextReviewerIndex = Random.Shared.Next(0, seeding.Length);
         return seeding[nextReviewerIndex];
     }
 }

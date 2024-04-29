@@ -7,8 +7,6 @@ internal sealed class SelectPairsStrategy
     private const int NewPairsWeight = 100;
     private const int ExcludedPersonWeight = 1_000;
     
-    private static readonly Random Random = new();
-    
     private readonly long[] _orderedParticipantIds;
     private readonly PersonPair[][] _orderedHistory;
 
@@ -62,7 +60,7 @@ internal sealed class SelectPairsStrategy
         
         var seedingLength = pairByWeights.Sum(p => p.Value);
         var seeding = Seeding(pairByWeights);
-        var index = Random.Next(0, seedingLength - 1);
+        var index = Random.Shared.Next(0, seedingLength - 1);
         return seeding.Skip(index).First();
     }
 
