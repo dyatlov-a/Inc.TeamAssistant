@@ -1,0 +1,41 @@
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories
+
+@inject IAppraiserService Service
+
+<div class="story-card">
+    <a class="story-card__link" href="#" @onclick="Toggle" @onclick:preventDefault="true">@ToShortTitle(Item.Title)</a>
+    <span class="story-card__date">@Item.Created.ToString("HH:mm")</span>
+    @if (_model is { State: ServiceResultState.Success, Result: not null } && IsOpen)
+    {
+        <div class="story-card__body">
+            <StoryDetails Item="_model.Result.Story" IsFullScreen="false" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Item { get; set; } = default!;
+
+    private bool IsOpen { get; set; }
+    private ServiceResult<GetStoryByIdResult?> _model = ServiceResult<GetStoryByIdResult?>.Empty;
+
+    private string ToShortTitle(string title)
+    {
+        const int maxLength = 23;
+        
+        return title.Length <= maxLength
+            ? title
+            : $"{title.Substring(0, maxLength)}...";
+    }
+
+    private async Task Toggle()
+    {
+        if (_model == ServiceResult<GetStoryByIdResult?>.Empty)
+            _model = await Service.GetStoryById(Item.Id);
+
+        IsOpen = !IsOpen;
+    }
+}

@@ -1,0 +1,21 @@
+@using Inc.TeamAssistant.WebUI.Services.Internal
+@inject LanguageManager LanguageManager
+
+<PageTitle>@_viewModel.Title</PageTitle>
+
+<div class="error-404">
+    <div class="error-404__container">
+        <p class="error-404__text"><span class="error-404__title">@_viewModel.Title</span> @_viewModel.Description</p>
+    </div>
+</div>
+
+@code {
+    private Error404ViewModel _viewModel = Error404ViewModel.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _viewModel = new(resources[Messages.GUI_Error404], resources[Messages.GUI_PageNotFound]);
+    }
+}

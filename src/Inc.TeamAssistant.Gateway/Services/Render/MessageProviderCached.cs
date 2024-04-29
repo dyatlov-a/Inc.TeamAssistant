@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Inc.TeamAssistant.Gateway.Services.Render;

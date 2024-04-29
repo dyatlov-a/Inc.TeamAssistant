@@ -10,7 +10,6 @@ using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Gateway.Hubs;
-using Inc.TeamAssistant.Gateway.PipelineBehaviors;
 using Inc.TeamAssistant.Gateway.Services;
 using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -18,14 +17,16 @@ using Inc.TeamAssistant.Reviewer.DataAccess;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Prometheus;
-using Prometheus.DotNetRuntime;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Gateway.Applications;
+using Inc.TeamAssistant.Gateway.Services.Internal;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
+using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR.Pipeline;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,15 +51,7 @@ builder.Services
 	.AddJsonType<IReadOnlyDictionary<string, string>>();
 
 builder.Services
-	.AddMediatR(c =>
-	{
-		c.Lifetime = ServiceLifetime.Scoped;
-		c.RegisterServicesFromAssemblyContaining<IStoryRepository>();
-		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
-		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
-		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
-		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
-	})
+	.ConfigureValidator(LanguageSettings.DefaultLanguageId)
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
 		lifetime: ServiceLifetime.Scoped,
 		includeInternalTypes: true)
@@ -74,6 +67,16 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
 		lifetime: ServiceLifetime.Scoped,
 		includeInternalTypes: true)
+		
+	.AddMediatR(c =>
+	{
+		c.Lifetime = ServiceLifetime.Scoped;
+		c.RegisterServicesFromAssemblyContaining<IStoryRepository>();
+		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
+	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(
 		typeof(IPipelineBehavior<,>),
@@ -82,16 +85,12 @@ builder.Services
 builder.Services
     .AddAppraiserApplication(appraiserOptions)
     .AddAppraiserDataAccess()
-	
     .AddCheckInApplication(checkInOptions)
     .AddCheckInDataAccess()
-	
     .AddReviewerApplication(reviewerOptions)
 	.AddReviewerDataAccess()
-	
 	.AddRandomCoffeeApplication(randomCoffeeOptions)
 	.AddRandomCoffeeDataAccess()
-	
 	.AddConnectorApplication()
 	.AddConnectorDataAccess(cacheAbsoluteExpiration)
     
@@ -103,12 +102,16 @@ builder.Services
     .AddHttpContextAccessor()
     .AddMvc();
 
-builder.Services.AddSignalR();
-builder.Services.AddHealthChecks();
+builder.Services
+	.AddSignalR();
 
-ValidatorOptions.Global.LanguageManager.Culture = new(LanguageSettings.DefaultLanguageId.Value);
-ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
-ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+builder.Services
+	.ConfigureMetrics()
+	.AddHealthChecks();
+
+builder.Services
+	.AddRazorComponents()
+	.AddInteractiveWebAssemblyComponents();
 
 var app = builder.Build();
 
@@ -117,22 +120,20 @@ if (builder.Environment.IsDevelopment())
 
 app
 	.UseStaticFiles()
-	.UseBlazorFrameworkFiles()
 	.UseRouting()
+	.UseAntiforgery()
 	.UseEndpoints(e =>
 	{
 		e.MapDefaultControllerRoute();
-		e.MapFallbackToPage("/_Host");
         e.MapMetrics();
         e.MapHealthChecks("/health");
     });
 
-app.MapHub<MessagesHub>("/messages");;
+app
+	.MapRazorComponents<Main>()
+	.AddInteractiveWebAssemblyRenderMode()
+	.AddAdditionalAssemblies(typeof(IRenderContext).Assembly);
 
-DotNetRuntimeStatsBuilder
-    .Customize()
-    .WithGcStats()
-    .WithThreadPoolStats()
-    .StartCollecting();
+app.MapHub<MessagesHub>("/messages");
 
 app.Run();

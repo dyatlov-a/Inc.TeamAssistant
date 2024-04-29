@@ -1,0 +1,34 @@
+﻿@using Inc.TeamAssistant.WebUI.Services.Internal
+@inherits LayoutComponentBase
+
+@inject LanguageManager LanguageManager
+
+<Meta Model="_metaModel" />
+
+<OpenGraph Model="_openGraphModel" />
+
+<div class="wrapper">
+    <main class="main">
+        @Body
+    </main>
+</div>
+
+<AcceptCookieDialog />
+
+@code {
+    private MetaViewModel _metaModel = MetaViewModel.Empty;
+    private OpenGraphViewModel _openGraphModel = OpenGraphViewModel.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        _metaModel = new(
+            resources[Messages.MetaTitle],
+            resources[Messages.MetaDescription],
+            resources[Messages.MetaKeywords],
+            resources[Messages.MetaAuthor]);
+
+        _openGraphModel = new(resources[Messages.OgTitle], resources[Messages.OgDescription], "card_appraiser");
+    }
+}

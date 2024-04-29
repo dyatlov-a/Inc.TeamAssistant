@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.Render;
 

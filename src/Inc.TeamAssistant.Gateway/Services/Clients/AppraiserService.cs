@@ -1,9 +1,9 @@
-using Inc.TeamAssistant.Appraiser.Model;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
+using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.Clients;

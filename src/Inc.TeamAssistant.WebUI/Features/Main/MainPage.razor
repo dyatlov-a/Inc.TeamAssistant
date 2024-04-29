@@ -1,0 +1,32 @@
+﻿@page "/"
+@page "/en"
+@page "/ru"
+
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+@if (RenderContext.IsBrowser)
+{
+    <video autoplay muted playsinline loop id="@_videoId" class="main__video">
+        <source src="@(_videoId).mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+}
+
+<section id="feedback" class="feedback white">
+    <div class="feedback__container">
+        <Feedback/>
+    </div>
+</section>
+
+<PageScript Src="./Features/Main/MainPage.razor.js" />
+
+@code {
+    private readonly string _videoId = "source-tree-02";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+            await JsRuntime.InvokeAsync<string>("playVideo", _videoId);
+    }
+}

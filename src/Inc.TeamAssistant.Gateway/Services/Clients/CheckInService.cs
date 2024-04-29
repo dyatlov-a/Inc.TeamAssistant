@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.CheckIn.Model;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
+using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
 namespace Inc.TeamAssistant.Gateway.Services.Clients;

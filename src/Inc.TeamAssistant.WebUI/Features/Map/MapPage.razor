@@ -1,0 +1,97 @@
+@page "/en/map/{id:guid}"
+@page "/ru/map/{id:guid}"
+
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.CheckIn.Model
+@using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
+@using Inc.TeamAssistant.WebUI.Services.Internal
+
+@inject ICheckInService CheckInService
+@inject LanguageManager LanguageManager
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+@layout MapLayout
+
+<PageTitle>@_viewModel.PageTitle</PageTitle>
+
+<div id="map" class="map"></div>
+
+<PageScript Src="./Features/Map/MapPage.razor.js" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid Id { get; set; }
+
+    private MapViewModel _viewModel = MapViewModel.Empty;
+
+    private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+        {
+            var resources = await LanguageManager.GetResource();
+
+            _viewModel = new(
+                resources[Messages.CheckIn_PageTitle],
+                resources[Messages.CheckIn_DefaultLayerTitle]);
+            _model = await CheckInService.GetLocations(Id);
+
+            if (_model.State == ServiceResultState.Success)
+                await Build(_model.Result!);
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task Build(GetLocationsResult data)
+    {
+        if (data is null)
+            throw new ArgumentNullException(nameof(data));
+
+        var index = 0;
+        foreach (var locations in data.OrderedLocations())
+        {
+            index++;
+            await AddMarker(locations.Value.First(), data.HasHistory(locations.Value), index);
+        }
+
+        await JsRuntime.InvokeVoidAsync("locations.builder.addLayer", _viewModel.DefaultLayerTitle);
+
+        foreach (var locations in data.OrderedLocations())
+        {
+            using var source = locations.Value.GetEnumerator();
+
+            source.MoveNext();
+            await AddMarker(source.Current, data.HasHistory(locations.Value));
+
+            while (source.MoveNext())
+                await AddMarker(source.Current, data.HasHistory(locations.Value), isActual: false);
+            
+            await JsRuntime.InvokeVoidAsync("locations.builder.addRoute", locations.Key);
+        }
+
+        await JsRuntime.InvokeVoidAsync("locations.builder.build");
+    }
+    
+    private async Task AddMarker(LocationDto location, bool hasHistory, int index = 0, bool isActual = true)
+    {
+        if (location is null)
+            throw new ArgumentNullException(nameof(location));
+        
+        var timeOffset = location.UtcOffset.HasValue
+            ? $"{(location.UtcOffset.Value < TimeSpan.Zero ? "-" : "+")}{location.UtcOffset.Value:hh\\:mm}"
+            : "?";
+
+        await JsRuntime.InvokeVoidAsync(
+            "locations.builder.addMarker",
+            location.DisplayName,
+            location.Longitude,
+            location.Latitude,
+            timeOffset,
+            index,
+            isActual,
+            hasHistory);
+    }
+}

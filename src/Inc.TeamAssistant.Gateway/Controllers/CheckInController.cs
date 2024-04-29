@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inc.TeamAssistant.Gateway.Controllers;

@@ -1,0 +1,52 @@
+@page "/en/assessment-session/{teamId:guid}/{date}"
+@page "/ru/assessment-session/{teamId:guid}/{date}"
+
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.WebUI.Services.Internal
+
+@inject LanguageManager LanguageManager
+@inject IAppraiserService Service
+
+<div class="assessment-story-list">
+    <div class="assessment-story-list__container">
+        <h1 class="assessment-story-list__title">@_storyList @Date</h1>
+        
+        @if (_model is { State: ServiceResultState.Success, Result: not null })
+        {
+            <div class="assessment-story-list__body">
+                @foreach (var story in _model.Result.Items)
+                {
+                    <Story Item="story" />
+                }
+            </div>
+            <a href="@MoveToBack()" class="assessment-story-back">@_back</a>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Date { get; set; } = default!;
+    
+    private MarkupString _back;
+    private MarkupString _storyList;
+
+    private Func<string?, string> _linkBuilder = default!;
+    private ServiceResult<GetStoriesResult?> _model = ServiceResult<GetStoriesResult?>.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        _back = (MarkupString)resources[Messages.GUI_Back];
+        _storyList = (MarkupString)resources[Messages.GUI_StoryList];
+        _model = await Service.GetStories(TeamId, DateOnly.Parse(Date));
+    }
+    
+    private string MoveToBack() => _linkBuilder($"assessment-session/{TeamId}");
+}
