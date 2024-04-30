@@ -7,15 +7,19 @@
 
 @if (RenderContext.IsBrowser)
 {
-    <video autoplay muted playsinline loop id="@_videoId" class="main__video">
+    <video autoplay muted playsinline loop id="@_videoId" poster="@(_videoId).jpg" class="main__video">
         <source src="@(_videoId).mp4" type="video/mp4">
         Your browser does not support HTML5 video.
     </video>
 }
+else
+{
+    <img src="@(_videoId).jpg" alt="A video about users writing bots' source code" class="main__video" />
+}
 
 <section id="feedback" class="feedback white">
     <div class="feedback__container">
-        <RequestDemo/>
+        <RequestDemo />
     </div>
 </section>
 

@@ -5,16 +5,16 @@
 @inject PersistentComponentState ApplicationState
 @inject LanguageManager LanguageManager
 
-<div class="feedback__body">
-    <div class="feedback-text">
-        <h1 class="feedback-text__header">
-            <span class="text-item">@_viewModel.Header</span><br/><span class="text-item">@_viewModel.SubHeader</span>
+<div class="request-demo__body">
+    <div class="request-demo-text">
+        <h1 class="request-demo-text__header">
+            <span class="request-demo-text-item">@_viewModel.Header</span><br/><span class="request-demo-text-item">@_viewModel.SubHeader</span>
         </h1>
         <br/>
-        <p class="feedback-text__description">
-            <span class="text-item">👌 @_viewModel.ToolAppraiser<br/></span>
-            <span class="text-item">🤝 @_viewModel.ToolReviewer<br/></span>
-            <span class="text-item">💬 @_viewModel.ToolRandomCoffee</span>
+        <p class="request-demo-text__description">
+            <span class="request-demo-text-item">👌 @_viewModel.ToolAppraiser<br/></span>
+            <span class="request-demo-text-item">🤝 @_viewModel.ToolReviewer<br/></span>
+            <span class="request-demo-text-item">💬 @_viewModel.ToolRandomCoffee</span>
         </p>
         <br/>
         <a href="mailto:@(GlobalSettings.FeedbackTo)?body=@(_viewModel.RequestDemoBody)&subject=@(_viewModel.RequestDemoSubject)" class="button button_black">@_viewModel.RequestDemo</a>

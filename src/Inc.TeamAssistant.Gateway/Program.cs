@@ -13,7 +13,7 @@ using Inc.TeamAssistant.Gateway.Services;
 using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
-using Inc.TeamAssistant.Gateway.Applications;
+using Inc.TeamAssistant.Gateway.Components;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
@@ -91,7 +91,7 @@ app
 	});
 
 app
-	.MapRazorComponents<Main>()
+	.MapRazorComponents<App>()
 	.AddInteractiveWebAssemblyRenderMode()
 	.AddAdditionalAssemblies(typeof(IRenderContext).Assembly);
 
