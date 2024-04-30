@@ -1,6 +1,5 @@
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
 @using Inc.TeamAssistant.Appraiser.Model.Common
-@using Inc.TeamAssistant.WebUI.Services.Internal
 
 @inject IAppraiserService Service
 @inject LanguageManager LanguageManager
@@ -10,9 +9,9 @@
     <div class="history__body">
         @if (_model is { State: ServiceResultState.Success, Result: not null })
         {
-            foreach (var historyItem in _model.Result.Items)
+            foreach (var item in _model.Result.Items)
             {
-                <a href="@MoveTo(historyItem)" class="history__item">@historyItem.AssessmentDate.ToString("dd-MM-yyyy") - @historyItem.StoriesCount @_tasks</a>
+                <a href="@MoveToItem(item)" class="history__item">@item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @_tasks</a>
             }
         }
     </div>
@@ -39,11 +38,11 @@
         _model = await Service.GetAssessmentHistory(TeamId, depth: 5);
     }
 
-    private string MoveTo(AssessmentHistoryDto historyItem)
+    private string MoveToItem(AssessmentHistoryDto historyItem)
     {
         if (historyItem is null)
             throw new ArgumentNullException(nameof(historyItem));
 
-        return _linkBuilder($"assessment-session/{TeamId}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+        return _linkBuilder($"assessment-session/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 }

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Inc.TeamAssistant.Primitives.DataAccess;
 
 public interface IDataTypeBuilder
@@ -7,4 +9,6 @@ public interface IDataTypeBuilder
     IDataTypeBuilder AddMessageIdType();
     IDataTypeBuilder AddDateOnlyType();
     IDataTypeBuilder AddDateTimeOffsetType();
+    
+    IServiceCollection Build();
 }

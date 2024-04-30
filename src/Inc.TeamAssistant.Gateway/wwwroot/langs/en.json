@@ -66,6 +66,8 @@
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
   "CheckIn_AddLocationHelp": "Add location to the map",
   "CheckIn_AddLocation": "Please reply to this message with a your current location",
+  "CheckIn_RouteShow": "Show route",
+  "CheckIn_RouteHide": "Hide route",
   
   "Reviewer_MoveToReviewHelp": "Add task for review",
   "Reviewer_EnterRequestForReview": "Please reply to this message with a link to the MR and a description",

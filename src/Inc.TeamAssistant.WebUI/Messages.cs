@@ -39,6 +39,8 @@ internal sealed class Messages
     public static readonly string CheckIn_DefaultLayerTitle = nameof(CheckIn_DefaultLayerTitle);
     public static readonly string CheckIn_OgTitle = nameof(CheckIn_OgTitle);
     public static readonly string CheckIn_OgDescription = nameof(CheckIn_OgDescription);
+    public static readonly string CheckIn_RouteShow = nameof(CheckIn_RouteShow);
+    public static readonly string CheckIn_RouteHide = nameof(CheckIn_RouteHide);
     
     public static readonly string MetaTitle = nameof(MetaTitle);
     public static readonly string MetaDescription = nameof(MetaDescription);

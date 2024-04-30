@@ -5,7 +5,7 @@
 @inject IAppraiserService Service
 
 <div class="story-card">
-    <a class="story-card__link" href="#" @onclick="Toggle" @onclick:preventDefault="true">@ToShortTitle(Item.Title)</a>
+    <a href="#" @onclick="ToggleCard" @onclick:preventDefault="true" class="story-card__link">@ToShortTitle(Item.Title)</a>
     <span class="story-card__date">@Item.Created.ToString("HH:mm")</span>
     @if (_model is { State: ServiceResultState.Success, Result: not null } && IsOpen)
     {
@@ -31,7 +31,7 @@
             : $"{title.Substring(0, maxLength)}...";
     }
 
-    private async Task Toggle()
+    private async Task ToggleCard()
     {
         if (_model == ServiceResult<GetStoryByIdResult?>.Empty)
             _model = await Service.GetStoryById(Item.Id);

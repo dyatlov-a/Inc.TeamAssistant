@@ -1,17 +1,17 @@
-using Microsoft.AspNetCore.Components;
-
 namespace Inc.TeamAssistant.WebUI.Features.Map;
 
-internal sealed record MapViewModel
+public sealed record MapViewModel
 {
-    public MarkupString PageTitle { get; }
     public string DefaultLayerTitle { get; }
-
-    public MapViewModel(string pageTitle, string defaultLayerTitle)
+    public string ShowRouteText { get; }
+    public string HideRouteText { get; }
+    
+    public MapViewModel(string defaultLayerTitle, string showRouteText, string hideRouteText)
     {
-        PageTitle = (MarkupString)pageTitle;
         DefaultLayerTitle = defaultLayerTitle;
+        ShowRouteText = showRouteText;
+        HideRouteText = hideRouteText;
     }
-
-    public static readonly MapViewModel Empty = new(string.Empty, string.Empty);
+    
+    public static readonly MapViewModel Empty = new(string.Empty, string.Empty, string.Empty);
 }

@@ -1,11 +1,11 @@
 let markers = [], points = [], routes = {}, layers = {}, mapControlName;
 
-function addMarker(displayName, longitude, latitude, timeOffset, index, isActual, hasHistory) {
+function addMarker(displayName, longitude, latitude, timeOffset, index, isActual, hasHistory, showRouteText, hideRouteText){
     let popupContent = "<p><b>" + displayName + "</b><br>UTC " + timeOffset;
 
     if (hasHistory) {
         popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
-            + index + ")' class='marker-btn'>" + (index === 0 ? 'Hide route' : 'Show route')
+            + index + ")' class='marker-btn'>" + (index === 0 ? hideRouteText : showRouteText)
             + "</button>";
     }
 

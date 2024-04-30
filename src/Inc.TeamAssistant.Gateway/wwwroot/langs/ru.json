@@ -66,6 +66,8 @@
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",
   "CheckIn_AddLocationHelp": "Добавить мою геолокацию на карту",
   "CheckIn_AddLocation": "В ответ на это сообщение необходимо отправить вашу геолокацию",
+  "CheckIn_RouteShow": "Показать маршрут",
+  "CheckIn_RouteHide": "Скрыть маршрут",
   
   "Reviewer_MoveToReviewHelp": "Передать задачу на ревью",
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",

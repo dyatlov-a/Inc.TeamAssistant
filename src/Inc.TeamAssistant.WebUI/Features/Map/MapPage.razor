@@ -1,10 +1,9 @@
+@page "/map/{id:guid}"
 @page "/en/map/{id:guid}"
 @page "/ru/map/{id:guid}"
 
 @using Inc.TeamAssistant.Appraiser.Model.Common
-@using Inc.TeamAssistant.CheckIn.Model
 @using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
-@using Inc.TeamAssistant.WebUI.Services.Internal
 
 @inject ICheckInService CheckInService
 @inject LanguageManager LanguageManager
@@ -12,8 +11,6 @@
 @inject IJSRuntime JsRuntime
 
 @layout MapLayout
-
-<PageTitle>@_viewModel.PageTitle</PageTitle>
 
 <div id="map" class="map"></div>
 
@@ -32,16 +29,14 @@
         if (firstRender && RenderContext.IsBrowser)
         {
             var resources = await LanguageManager.GetResource();
-
-            _viewModel = new(
-                resources[Messages.CheckIn_PageTitle],
-                resources[Messages.CheckIn_DefaultLayerTitle]);
+            _viewModel = new MapViewModel(
+                resources[Messages.CheckIn_DefaultLayerTitle],
+                resources[Messages.CheckIn_RouteShow],
+                resources[Messages.CheckIn_RouteHide]);
+            
             _model = await CheckInService.GetLocations(Id);
-
             if (_model.State == ServiceResultState.Success)
                 await Build(_model.Result!);
-
-            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -92,6 +87,8 @@
             timeOffset,
             index,
             isActual,
-            hasHistory);
+            hasHistory,
+            _viewModel.ShowRouteText,
+            _viewModel.HideRouteText);
     }
 }

@@ -22,7 +22,7 @@ internal sealed class ClientRenderContext : IRenderContext
         if (!string.IsNullOrWhiteSpace(relativeUrl))
         {
             var languageId = LanguageSettings.LanguageIds.SingleOrDefault(l => relativeUrl.StartsWith(
-                $"/{l.Value}",
+                l.Value,
                 StringComparison.InvariantCultureIgnoreCase));
 
             if (languageId is not null)

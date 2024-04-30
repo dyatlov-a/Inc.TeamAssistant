@@ -1,9 +1,17 @@
 using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Primitives.DataAccess.Internal;
 
 internal sealed class DataTypeBuilder : IDataTypeBuilder
 {
+    private readonly IServiceCollection _services;
+
+    public DataTypeBuilder(IServiceCollection services)
+    {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
+    }
+
     public IDataTypeBuilder AddJsonType<T>()
     {
         SqlMapper.AddTypeHandler(new JsonTypeHandler<T>());
@@ -38,4 +46,6 @@ internal sealed class DataTypeBuilder : IDataTypeBuilder
         
         return this;
     }
+
+    public IServiceCollection Build() => _services;
 }

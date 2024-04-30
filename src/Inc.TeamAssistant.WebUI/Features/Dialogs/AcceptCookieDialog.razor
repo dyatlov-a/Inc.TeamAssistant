@@ -1,4 +1,3 @@
-@using Inc.TeamAssistant.WebUI.Services.Internal
 @inject LanguageManager LanguageManager
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
@@ -10,7 +9,7 @@
             <p>@_model.Message</p>
         </div>
         <div class="inline-dialog__actions">
-            <a href="#" class="button button_white" @onclick:preventDefault="true" @onclick="Accept">@_model.ButtonText</a>
+            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_white">@_model.ButtonText</a>
         </div>
     </div>
 }
@@ -38,8 +37,8 @@
             var rightsValue = await JsRuntime.InvokeAsync<string>("readCookie", _rightsCookieName);
             if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
                 _isShow = true;
-            
-            await InvokeAsync(StateHasChanged);
+
+            StateHasChanged();
         }
     }
 

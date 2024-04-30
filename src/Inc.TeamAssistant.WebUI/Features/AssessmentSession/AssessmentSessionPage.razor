@@ -1,9 +1,9 @@
+@page "/assessment-session/{id:guid}"
 @page "/en/assessment-session/{id:guid}"
 @page "/ru/assessment-session/{id:guid}"
 
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails
 @using Inc.TeamAssistant.Appraiser.Model.Common
-@using Inc.TeamAssistant.WebUI.Services.Internal
 
 @implements IAsyncDisposable
 
@@ -95,7 +95,7 @@
     {
         _model = await Service.GetStoryDetails(Id);
 
-        await InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
