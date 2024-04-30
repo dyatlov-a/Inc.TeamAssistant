@@ -46,6 +46,13 @@
             await Initialize();
     }
 
+    public async Task Update()
+    {
+        await Initialize();
+        
+        StateHasChanged();
+    }
+
     private string MoveToItem(AssessmentHistoryDto historyItem)
     {
         if (historyItem is null)

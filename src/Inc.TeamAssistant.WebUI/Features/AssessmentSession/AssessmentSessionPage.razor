@@ -46,7 +46,7 @@
             </div>
         </div>
         
-        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" />
+        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" @ref="_history" />
     </div>
 </div>
 
@@ -59,6 +59,7 @@
     private EventsProvider? _eventsProvider;
 
     private AssessmentSessionPageViewModel _viewModel = AssessmentSessionPageViewModel.Empty;
+    private AssessmentSessionHistory _history = default!;
 
     private string StateMessage => _viewModel.Data.State switch
     {
@@ -95,6 +96,11 @@
     {
         var resources = await LanguageManager.GetResource();
 
+        var newStoryState = await Service.GetStoryDetails(Id);
+
+        if (_viewModel.Data.Result is not null && _viewModel.Data.Result.Story.Id != newStoryState.Result?.Story.Id)
+            await _history.Update();
+
         _viewModel = new(
             resources[Messages.GUI_TaskAssess],
             resources[Messages.GUI_CardNotSelected],
@@ -103,7 +109,7 @@
             resources[Messages.GUI_AssessmentSessionCard],
             resources[Messages.GUI_AssessmentSessionNotFound],
             resources[Messages.GUI_Loading],
-            await Service.GetStoryDetails(Id));
+            newStoryState);
     }
     
     private async Task StoryChanged()

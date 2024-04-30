@@ -1,3 +1,5 @@
+@using Inc.TeamAssistant.Primitives
+
 <PageTitle>@Model.Title</PageTitle>
 
 <HeadContent>
@@ -7,7 +9,7 @@
 
     <meta name="robots" content="index, archive" />
 
-    <link rel="canonical" href="https://team-assistant.online/" />
+    <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
 </HeadContent>
 
 @code {

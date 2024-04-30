@@ -8,15 +8,14 @@ internal static class StoryConverter
 {
     public static StoryDetailsDto Convert(Story story)
     {
-        if (story is null)
-            throw new ArgumentNullException(nameof(story));
-        
+        ArgumentNullException.ThrowIfNull(story);
+
         var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
                 e.ParticipantDisplayName,
                 story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
             .ToArray();
 
-        return new(story.Title, story.Links.ToArray(), items, story.GetTotalValue());
+        return new(story.Id, story.Title, story.Links.ToArray(), items, story.GetTotalValue());
     }
 }
