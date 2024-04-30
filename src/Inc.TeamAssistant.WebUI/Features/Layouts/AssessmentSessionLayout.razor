@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
 @inject LanguageManager LanguageManager
 
@@ -22,16 +22,12 @@
     {
         var resources = await LanguageManager.GetResource();
         
-        const string title = "Team assistant";
-        var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
-        var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
-        
         _metaModel = new(
-            title,
-            description,
-            keywords,
+            resources[Messages.MetaTitle],
+            resources[Messages.MetaDescription],
+            resources[Messages.MetaKeywords],
             resources[Messages.MetaAuthor]);
-        
-        _openGraphModel = new(title, description, "card_main");
+
+        _openGraphModel = new(resources[Messages.OgTitle], resources[Messages.OgDescription], "card_appraiser");
     }
 }

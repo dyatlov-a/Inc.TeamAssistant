@@ -69,7 +69,7 @@ The community looks forward to your contributions.
 - [X] Add a feature to estimate tasks in t-shirts
 - [X] Create a bot to help with organizing random coffee
 - [X] Create a page to request a [demo](https://team-assistant.online/)
-- [ ] Update blazor app
+- [X] Update blazor app
 - [ ] Add a feature for use world map
 - [ ] Add a constructor for the Telegram bot
 - [ ] Split the monolith into separate services
