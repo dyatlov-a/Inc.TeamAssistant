@@ -49,7 +49,6 @@
   "GUI_Tasks": "tasks",
   "GUI_StoryList": "Tasks list",
   "GUI_Back": "Back",
-  "GUI_GetContacts": "Please provide your contact information and our team will get in touch with you",
   "GUI_RequestDemo": "Request a demo",
   "GUI_RequestDemoBody": "Hello there! I would like to try out the team assistant bot",
   "GUI_MainHeader": "Chatbots for optimization",

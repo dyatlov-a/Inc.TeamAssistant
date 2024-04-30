@@ -2,25 +2,25 @@
 @page "/en/assessment-session/{id:guid}"
 @page "/ru/assessment-session/{id:guid}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
 @implements IAsyncDisposable
 
+@inject PersistentComponentState ApplicationState
 @inject IAppraiserService Service
 @inject IServiceProvider ServiceProvider
 @inject LanguageManager LanguageManager
 
-<PageTitle>@_annotation.TaskAssess</PageTitle>
+<PageTitle>@_viewModel.TaskAssess</PageTitle>
 
 <div class="assessment-session">
     <div class="assessment-session__container">
         <div class="assessment-session__body">
             <div class="assessment-session__card">
-                <h1 class="assessment-session__title">@_annotation.TaskAssess</h1>
-                @if (_model is { State: ServiceResultState.Success, Result: not null })
+                <h1 class="assessment-session__title">@_viewModel.TaskAssess</h1>
+                @if (_viewModel.Data is { State: ServiceResultState.Success, Result: not null })
                 {
-                    <StoryDetails Item="_model.Result.Story" IsFullScreen="true"/>
+                    <StoryDetails Item="_viewModel.Data.Result.Story" IsFullScreen="true"/>
                 }
                 else
                 {
@@ -31,13 +31,13 @@
                 <div class="phone__screen">
                     <div class="phone__content">
                         <div class="qr-code">
-                            @if (_model is { State: ServiceResultState.Success, Result: not null })
+                            @if (_viewModel.Data is { State: ServiceResultState.Success, Result: not null })
                             {
                                 <div class="qr-code__content">
-                                    @((MarkupString) _model.Result.CodeForConnect)
+                                    @((MarkupString) _viewModel.Data.Result.CodeForConnect)
                                 </div>
-                                <span class="qr-code__text">@_annotation.Scan</span>
-                                <span class="qr-code__text qr-code__text_sub">@_annotation.ToConnect</span>
+                                <span class="qr-code__text">@_viewModel.Scan</span>
+                                <span class="qr-code__text qr-code__text_sub">@_viewModel.ToConnect</span>
                             }
                         </div>
                     </div>
@@ -46,60 +46,77 @@
             </div>
         </div>
         
-        <AssessmentSessionHistory TeamId="Id" />
+        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" />
     </div>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public Guid Id { get; set; }
-
+    
+    private const string StateKey = nameof(AssessmentSessionPage);
+    private PersistingComponentStateSubscription _persistingSubscription;
     private EventsProvider? _eventsProvider;
 
-    private AssessmentViewModel _annotation = AssessmentViewModel.Empty;
+    private AssessmentSessionPageViewModel _viewModel = AssessmentSessionPageViewModel.Empty;
 
-    private MarkupString StateMessage => _model.State switch
+    private string StateMessage => _viewModel.Data.State switch
     {
-        ServiceResultState.NotFound => _annotation.AssessmentSessionNotFound,
-        ServiceResultState.Failed => (MarkupString)_model.ErrorMessage,
-        _ => _annotation.Loading
+        ServiceResultState.NotFound => _viewModel.AssessmentSessionNotFound,
+        ServiceResultState.Failed => _viewModel.Data.ErrorMessage,
+        _ => _viewModel.Loading
     };
-
-    private ServiceResult<GetStoryDetailsResult?> _model = ServiceResult<GetStoryDetailsResult?>.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (ApplicationState.TryTakeFromJson<AssessmentSessionPageViewModel>(StateKey, out var restored) && restored is not null)
+            _viewModel = restored;
+        else
+            await Initialize();
+
+        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        if (eventsProvider is not null)
+        {
+            await eventsProvider.OnStoryChanged(Id, StoryChanged);
+            _eventsProvider = eventsProvider;
+        }
+    }
+    
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(StateKey, _viewModel);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task Initialize()
+    {
         var resources = await LanguageManager.GetResource();
 
-        _annotation = new(
+        _viewModel = new(
             resources[Messages.GUI_TaskAssess],
             resources[Messages.GUI_CardNotSelected],
             resources[Messages.GUI_Scan],
             resources[Messages.GUI_ToConnect],
             resources[Messages.GUI_AssessmentSessionCard],
             resources[Messages.GUI_AssessmentSessionNotFound],
-            resources[Messages.GUI_Loading]);
-
-        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-
-        if (eventsProvider is not null)
-        {
-            await eventsProvider.OnStoryChanged(Id, StoryChanged);
-            _eventsProvider = eventsProvider;
-        }
-
-        await StoryChanged();
+            resources[Messages.GUI_Loading],
+            await Service.GetStoryDetails(Id));
     }
-
+    
     private async Task StoryChanged()
     {
-        _model = await Service.GetStoryDetails(Id);
+        await Initialize();
 
         StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
     {
+        _persistingSubscription.Dispose();
+        
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
     }

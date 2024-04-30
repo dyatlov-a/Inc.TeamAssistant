@@ -6,10 +6,10 @@
 {
     <div class="inline-dialog cookie-warning">
         <div class="inline-dialog__content">
-            <p>@_model.Message</p>
+            <p>@_viewModel.Message</p>
         </div>
         <div class="inline-dialog__actions">
-            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_white">@_model.ButtonText</a>
+            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_white">@_viewModel.ButtonText</a>
         </div>
     </div>
 }
@@ -18,7 +18,7 @@
 
 @code {
     private bool _isShow;
-    private AcceptCookieDialogViewModel _model = AcceptCookieDialogViewModel.Empty;
+    private AcceptCookieDialogViewModel _viewModel = AcceptCookieDialogViewModel.Empty;
     
     private readonly string _rightsCookieName = "rights";
     private readonly string _rightsCookieValue = "accept";
@@ -30,7 +30,7 @@
         {
             var resources = await LanguageManager.GetResource();
 
-            _model = new AcceptCookieDialogViewModel(
+            _viewModel = new AcceptCookieDialogViewModel(
                 resources[Messages.GUI_AcceptCookieText],
                 resources[Messages.GUI_AcceptCookieButton]);
 

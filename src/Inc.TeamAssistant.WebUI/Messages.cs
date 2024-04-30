@@ -22,8 +22,7 @@ internal sealed class Messages
     public static readonly string GUI_Tasks = nameof(GUI_Tasks);
     public static readonly string GUI_StoryList = nameof(GUI_StoryList);
     public static readonly string GUI_Back = nameof(GUI_Back);
-
-    public static readonly string GUI_GetContacts = nameof(GUI_GetContacts);
+    
     public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
     public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
     public static readonly string GUI_MainHeader = nameof(GUI_MainHeader);

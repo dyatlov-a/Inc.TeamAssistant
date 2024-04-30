@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Inc.TeamAssistant.Appraiser.Application;
 using Inc.TeamAssistant.Appraiser.DataAccess;
 using Inc.TeamAssistant.WebUI.Services;
@@ -18,6 +20,7 @@ using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Microsoft.Extensions.WebEncoders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +64,7 @@ builder.Services
 	.AddMemoryCache()
 	.AddHttpContextAccessor()
 	.AddTelemetry()
+	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 
 builder.Services

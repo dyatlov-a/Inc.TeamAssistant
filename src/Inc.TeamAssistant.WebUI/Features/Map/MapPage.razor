@@ -20,7 +20,7 @@
     [Parameter, EditorRequired]
     public Guid Id { get; set; }
 
-    private MapViewModel _viewModel = MapViewModel.Empty;
+    private MapPageViewModel _pageViewModel = MapPageViewModel.Empty;
 
     private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
 
@@ -29,7 +29,7 @@
         if (firstRender && RenderContext.IsBrowser)
         {
             var resources = await LanguageManager.GetResource();
-            _viewModel = new MapViewModel(
+            _pageViewModel = new MapPageViewModel(
                 resources[Messages.CheckIn_DefaultLayerTitle],
                 resources[Messages.CheckIn_RouteShow],
                 resources[Messages.CheckIn_RouteHide]);
@@ -52,7 +52,7 @@
             await AddMarker(locations.Value.First(), data.HasHistory(locations.Value), index);
         }
 
-        await JsRuntime.InvokeVoidAsync("locations.builder.addLayer", _viewModel.DefaultLayerTitle);
+        await JsRuntime.InvokeVoidAsync("locations.builder.addLayer", _pageViewModel.DefaultLayerTitle);
 
         foreach (var locations in data.OrderedLocations())
         {
@@ -88,7 +88,7 @@
             index,
             isActual,
             hasHistory,
-            _viewModel.ShowRouteText,
-            _viewModel.HideRouteText);
+            _pageViewModel.ShowRouteText,
+            _pageViewModel.HideRouteText);
     }
 }
