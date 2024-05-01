@@ -1,6 +1,15 @@
 let markers = [], points = [], routes = {}, layers = {}, mapControlName;
 
-function addMarker(displayName, longitude, latitude, timeOffset, index, isActual, hasHistory, showRouteText, hideRouteText){
+export function addMarker(
+    displayName,
+    longitude,
+    latitude,
+    timeOffset,
+    index,
+    isActual,
+    hasHistory,
+    showRouteText,
+    hideRouteText){
     let popupContent = "<p><b>" + displayName + "</b><br>UTC " + timeOffset;
 
     if (hasHistory) {
@@ -17,13 +26,13 @@ function addMarker(displayName, longitude, latitude, timeOffset, index, isActual
     points[points.length] = new L.LatLng(latitude, longitude);
 }
 
-function addLayer(title) {
+export function addLayer(title) {
     layers[title] = L.layerGroup(markers);
     markers = [];
     points = [];
 }
 
-function addRoute(title) {
+export function addRoute(title) {
     let layerGroup = L.layerGroup(markers);
     let polyline = new L.Polyline(points, {
         color: 'blue',
@@ -37,7 +46,7 @@ function addRoute(title) {
     points = [];
 }
 
-function build() {
+export function build(hostElement) {
     let osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
         minZoom: 2,
         maxZoom: 19,
@@ -49,7 +58,7 @@ function build() {
         defaultLayers[defaultLayers.length] = layers[key];
     });
 
-    let map = L.map('map', {
+    let map = L.map(hostElement, {
         center: [48.073777, 67.402377],
         zoom: 3,
         layers: defaultLayers
@@ -57,20 +66,11 @@ function build() {
 
     let control = L.control.layers({...layers, ...routes}).addTo(map);
     mapControlName = 'leaflet-base-layers_' + control._leaflet_id;
+    
+    window.locations = {
+        markerClickHandler: function markerClickHandler(index) {
+            document.getElementsByName(mapControlName)[index].click();
+        }
+    }
 }
 
-function markerClickHandler(index) {
-    document.getElementsByName(mapControlName)[index].click();
-}
-    
-export function onLoad(){
-    window.locations = {
-        builder: {
-            addMarker: addMarker,
-            addLayer: addLayer,
-            addRoute: addRoute,
-            build: build
-        },
-        markerClickHandler: markerClickHandler
-    };
-}

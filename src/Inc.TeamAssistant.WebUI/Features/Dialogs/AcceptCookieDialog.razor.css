@@ -5,6 +5,7 @@
     bottom: 0;
     display: flex;
     width: 100%;
+    z-index: 1000;
 }
 .inline-dialog__content {
     flex: 1 1 auto;

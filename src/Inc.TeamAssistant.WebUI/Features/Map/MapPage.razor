@@ -5,6 +5,8 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
 
+@implements IAsyncDisposable
+
 @inject ICheckInService CheckInService
 @inject LanguageManager LanguageManager
 @inject IRenderContext RenderContext
@@ -12,14 +14,15 @@
 
 @layout MapLayout
 
-<div id="map" class="map"></div>
-
-<PageScript Src="./Features/Map/MapPage.razor.js" />
+<div @ref="_map" class="map"></div>
 
 @code {
     [Parameter, EditorRequired]
     public Guid Id { get; set; }
 
+    private ElementReference _map;
+    private IJSObjectReference? _mapModule;
+    
     private MapPageViewModel _pageViewModel = MapPageViewModel.Empty;
 
     private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
@@ -28,6 +31,10 @@
     {
         if (firstRender && RenderContext.IsBrowser)
         {
+            _mapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Map/MapPage.razor.js");
+            
             var resources = await LanguageManager.GetResource();
             _pageViewModel = new MapPageViewModel(
                 resources[Messages.CheckIn_DefaultLayerTitle],
@@ -36,12 +43,14 @@
             
             _model = await CheckInService.GetLocations(Id);
             if (_model.State == ServiceResultState.Success)
-                await Build(_model.Result!);
+                await Build(_mapModule, _model.Result!);
         }
     }
 
-    private async Task Build(GetLocationsResult data)
+    private async Task Build(IJSObjectReference module, GetLocationsResult data)
     {
+        if (module is null)
+            throw new ArgumentNullException(nameof(module));
         if (data is null)
             throw new ArgumentNullException(nameof(data));
 
@@ -49,29 +58,36 @@
         foreach (var locations in data.OrderedLocations())
         {
             index++;
-            await AddMarker(locations.Value.First(), data.HasHistory(locations.Value), index);
+            await AddMarker(module, locations.Value.First(), data.HasHistory(locations.Value), index);
         }
 
-        await JsRuntime.InvokeVoidAsync("locations.builder.addLayer", _pageViewModel.DefaultLayerTitle);
+        await module.InvokeVoidAsync("addLayer", _pageViewModel.DefaultLayerTitle);
 
         foreach (var locations in data.OrderedLocations())
         {
             using var source = locations.Value.GetEnumerator();
 
             source.MoveNext();
-            await AddMarker(source.Current, data.HasHistory(locations.Value));
+            await AddMarker(module, source.Current, data.HasHistory(locations.Value));
 
             while (source.MoveNext())
-                await AddMarker(source.Current, data.HasHistory(locations.Value), isActual: false);
+                await AddMarker(module, source.Current, data.HasHistory(locations.Value), isActual: false);
             
-            await JsRuntime.InvokeVoidAsync("locations.builder.addRoute", locations.Key);
+            await module.InvokeVoidAsync("addRoute", locations.Key);
         }
 
-        await JsRuntime.InvokeVoidAsync("locations.builder.build");
+        await module.InvokeVoidAsync("build", _map);
     }
     
-    private async Task AddMarker(LocationDto location, bool hasHistory, int index = 0, bool isActual = true)
+    private async Task AddMarker(
+        IJSObjectReference module,
+        LocationDto location,
+        bool hasHistory,
+        int index = 0,
+        bool isActual = true)
     {
+        if (module is null)
+            throw new ArgumentNullException(nameof(module));
         if (location is null)
             throw new ArgumentNullException(nameof(location));
         
@@ -79,8 +95,8 @@
             ? $"{(location.UtcOffset.Value < TimeSpan.Zero ? "-" : "+")}{location.UtcOffset.Value:hh\\:mm}"
             : "?";
 
-        await JsRuntime.InvokeVoidAsync(
-            "locations.builder.addMarker",
+        await module.InvokeVoidAsync(
+            "addMarker",
             location.DisplayName,
             location.Longitude,
             location.Latitude,
@@ -90,5 +106,11 @@
             hasHistory,
             _pageViewModel.ShowRouteText,
             _pageViewModel.HideRouteText);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_mapModule is not null)
+            await _mapModule.DisposeAsync();
     }
 }
