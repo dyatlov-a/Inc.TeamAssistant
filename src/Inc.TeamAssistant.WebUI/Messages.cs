@@ -15,20 +15,34 @@ internal sealed class Messages
     public static readonly string GUI_AssessmentSessionNotFound = nameof(GUI_AssessmentSessionNotFound);
     public static readonly string GUI_Loading = nameof(GUI_Loading);
 
-    public static readonly string GUI_AcceptCookieButton = new(nameof(GUI_AcceptCookieButton));
-    public static readonly string GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
+    public static readonly string GUI_AcceptCookieButton = nameof(GUI_AcceptCookieButton);
+    public static readonly string GUI_AcceptCookieText = nameof(GUI_AcceptCookieText);
 
-    public static readonly string GUI_History = new(nameof(GUI_History));
-    public static readonly string GUI_Tasks = new(nameof(GUI_Tasks));
-    public static readonly string GUI_StoryList = new(nameof(GUI_StoryList));
-    public static readonly string GUI_Back = new(nameof(GUI_Back));
-
-    public static readonly string GUI_GetContacts = nameof(GUI_GetContacts);
-    public static readonly string GUI_RequestDemo = new(nameof(GUI_RequestDemo));
-    public static readonly string GUI_RequestDemoBody = new(nameof(GUI_RequestDemoBody));
-    public static readonly string GUI_MainHeader = new(nameof(GUI_MainHeader));
-    public static readonly string GUI_MainSubHeader = new(nameof(GUI_MainSubHeader));
-    public static readonly string GUI_ToolAppraiser = new(nameof(GUI_ToolAppraiser));
-    public static readonly string GUI_ToolReviewer = new(nameof(GUI_ToolReviewer));
-    public static readonly string GUI_ToolRandomCoffee = new(nameof(GUI_ToolRandomCoffee));
+    public static readonly string GUI_History = nameof(GUI_History);
+    public static readonly string GUI_Tasks = nameof(GUI_Tasks);
+    public static readonly string GUI_StoryList = nameof(GUI_StoryList);
+    public static readonly string GUI_Back = nameof(GUI_Back);
+    
+    public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
+    public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
+    public static readonly string GUI_MainHeader = nameof(GUI_MainHeader);
+    public static readonly string GUI_MainSubHeader = nameof(GUI_MainSubHeader);
+    public static readonly string GUI_ToolAppraiser = nameof(GUI_ToolAppraiser);
+    public static readonly string GUI_ToolReviewer = nameof(GUI_ToolReviewer);
+    public static readonly string GUI_ToolRandomCoffee = nameof(GUI_ToolRandomCoffee);
+    
+    public static readonly string OgTitle = nameof(OgTitle);
+    public static readonly string OgDescription = nameof(OgDescription);
+    
+    public static readonly string CheckIn_PageTitle = nameof(CheckIn_PageTitle);
+    public static readonly string CheckIn_DefaultLayerTitle = nameof(CheckIn_DefaultLayerTitle);
+    public static readonly string CheckIn_OgTitle = nameof(CheckIn_OgTitle);
+    public static readonly string CheckIn_OgDescription = nameof(CheckIn_OgDescription);
+    public static readonly string CheckIn_RouteShow = nameof(CheckIn_RouteShow);
+    public static readonly string CheckIn_RouteHide = nameof(CheckIn_RouteHide);
+    
+    public static readonly string MetaTitle = nameof(MetaTitle);
+    public static readonly string MetaDescription = nameof(MetaDescription);
+    public static readonly string MetaKeywords = nameof(MetaKeywords);
+    public static readonly string MetaAuthor = nameof(MetaAuthor);
 }

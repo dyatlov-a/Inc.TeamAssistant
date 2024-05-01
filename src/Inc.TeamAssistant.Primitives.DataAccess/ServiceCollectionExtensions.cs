@@ -24,6 +24,6 @@ public static class ServiceCollectionExtensions
                 .Build())
             .AddSingleton<IConnectionFactory, ConnectionFactory>();
 
-        return new DataTypeBuilder();
+        return new DataTypeBuilder(services);
     }
 }

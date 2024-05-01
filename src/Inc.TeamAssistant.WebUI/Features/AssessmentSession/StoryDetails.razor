@@ -1,0 +1,50 @@
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+@inject LanguageManager LanguageManager
+
+<div class="@GetClassName("story__details")">
+    <h2 class="story__title">@Item.Title</h2>
+
+    @if (Item.Links.Any())
+    {
+        <ul class="story__items">
+            @foreach (var link in Item.Links)
+            {
+                <li class="story__item">
+                    <a class="story__link" href="@link" target="_blank">@link</a>
+                </li>
+            }
+        </ul>
+    }
+
+    <ul class="story__participants">
+        @foreach (var storyForEstimate in Item.StoryForEstimates)
+        {
+            <li class="story__participant">
+                @storyForEstimate.ParticipantName
+                <span class="story__value">@storyForEstimate.DisplayValue</span>
+            </li>
+        }
+    </ul>
+</div>
+<div class="@GetClassName("story__summary")">
+    <span class="story__total-value">@Item.Total</span> @_averageRating
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDetailsDto Item { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool IsFullScreen { get; set; }
+
+    private string _averageRating = string.Empty;
+    private string GetClassName(string className) => IsFullScreen ? $"{className}--full-screen" : className;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        _averageRating = resources[Messages.GUI_AverageRating];
+    }
+}

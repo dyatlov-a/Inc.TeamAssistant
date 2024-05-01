@@ -1,0 +1,116 @@
+@page "/map/{id:guid}"
+@page "/en/map/{id:guid}"
+@page "/ru/map/{id:guid}"
+
+@using Inc.TeamAssistant.Appraiser.Model.Common
+@using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
+
+@implements IAsyncDisposable
+
+@inject ICheckInService CheckInService
+@inject LanguageManager LanguageManager
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+@layout MapLayout
+
+<div @ref="_map" class="map"></div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid Id { get; set; }
+
+    private ElementReference _map;
+    private IJSObjectReference? _mapModule;
+    
+    private MapPageViewModel _pageViewModel = MapPageViewModel.Empty;
+
+    private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+        {
+            _mapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Map/MapPage.razor.js");
+            
+            var resources = await LanguageManager.GetResource();
+            _pageViewModel = new MapPageViewModel(
+                resources[Messages.CheckIn_DefaultLayerTitle],
+                resources[Messages.CheckIn_RouteShow],
+                resources[Messages.CheckIn_RouteHide]);
+            
+            _model = await CheckInService.GetLocations(Id);
+            if (_model.State == ServiceResultState.Success)
+                await Build(_mapModule, _model.Result!);
+        }
+    }
+
+    private async Task Build(IJSObjectReference module, GetLocationsResult data)
+    {
+        if (module is null)
+            throw new ArgumentNullException(nameof(module));
+        if (data is null)
+            throw new ArgumentNullException(nameof(data));
+
+        var index = 0;
+        foreach (var locations in data.OrderedLocations())
+        {
+            index++;
+            await AddMarker(module, locations.Value.First(), data.HasHistory(locations.Value), index);
+        }
+
+        await module.InvokeVoidAsync("addLayer", _pageViewModel.DefaultLayerTitle);
+
+        foreach (var locations in data.OrderedLocations())
+        {
+            using var source = locations.Value.GetEnumerator();
+
+            source.MoveNext();
+            await AddMarker(module, source.Current, data.HasHistory(locations.Value));
+
+            while (source.MoveNext())
+                await AddMarker(module, source.Current, data.HasHistory(locations.Value), isActual: false);
+            
+            await module.InvokeVoidAsync("addRoute", locations.Key);
+        }
+
+        await module.InvokeVoidAsync("build", _map);
+    }
+    
+    private async Task AddMarker(
+        IJSObjectReference module,
+        LocationDto location,
+        bool hasHistory,
+        int index = 0,
+        bool isActual = true)
+    {
+        if (module is null)
+            throw new ArgumentNullException(nameof(module));
+        if (location is null)
+            throw new ArgumentNullException(nameof(location));
+        
+        var timeOffset = location.UtcOffset.HasValue
+            ? $"{(location.UtcOffset.Value < TimeSpan.Zero ? "-" : "+")}{location.UtcOffset.Value:hh\\:mm}"
+            : "?";
+
+        await module.InvokeVoidAsync(
+            "addMarker",
+            location.DisplayName,
+            location.Longitude,
+            location.Latitude,
+            timeOffset,
+            index,
+            isActual,
+            hasHistory,
+            _pageViewModel.ShowRouteText,
+            _pageViewModel.HideRouteText);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_mapModule is not null)
+            await _mapModule.DisposeAsync();
+    }
+}

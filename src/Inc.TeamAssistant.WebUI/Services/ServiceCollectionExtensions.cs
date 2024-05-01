@@ -1,8 +1,8 @@
-using System.Reflection;
 using Blazored.LocalStorage;
-using Inc.TeamAssistant.WebUI.Services.CheckIn;
-using Inc.TeamAssistant.Appraiser.Model;
-using Inc.TeamAssistant.CheckIn.Model;
+using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Services.Clients;
+using Inc.TeamAssistant.WebUI.Services.Internal;
+using Inc.TeamAssistant.WebUI.Services.Render;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -10,35 +10,29 @@ public static class ServiceCollectionExtensions
 {
     internal static IServiceCollection AddServices(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-
-        var appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddBlazoredLocalStorage()
 
+            .AddScoped<IRenderContext, ClientRenderContext>()
             .AddScoped<IAppraiserService, AppraiserClient>()
-            .AddScoped<IClientInfoService, ClientInfoClient>()
-            .AddTransient<IEventsProvider, EventsProviderClient>()
-            .AddSingleton<ICookieService, CookieServiceClient>()
             .AddScoped<ICheckInService, CheckInClient>()
-            .AddScoped<ILocationBuilder, LocationBuilder>()
-            .AddSingleton<IVideoService, VideoClientService>()
-
+            
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
                 sp.GetRequiredService<MessageProviderClient>(),
-                appVersion));
+                AppVersion.GetVersion()))
+            
+            .AddTransient<EventsProvider>();
 
         return services;
     }
 
     public static IServiceCollection AddIsomorphic(this IServiceCollection services)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddScoped<LanguageManager>();

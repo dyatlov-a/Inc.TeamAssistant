@@ -1,0 +1,51 @@
+﻿@page "/"
+@page "/en"
+@page "/ru"
+
+@implements IAsyncDisposable
+
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+@if (RenderContext.IsBrowser)
+{
+    <video autoplay muted playsinline loop poster="@(_fileName).jpg" @ref="_video" class="main__video">
+        <source src="@(_fileName).mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+}
+else
+{
+    <img src="@(_fileName).jpg" alt="A video about users writing bots' source code" class="main__video" />
+}
+
+<section id="feedback" class="feedback white">
+    <div class="feedback__container">
+        <RequestDemo />
+    </div>
+</section>
+
+@code {
+    private ElementReference _video;
+    private IJSObjectReference? _videoModule;
+    
+    private readonly string _fileName = "source-tree-02";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+        {
+            _videoModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Main/MainPage.razor.js");
+            
+            await _videoModule.InvokeVoidAsync("play", _video);
+        }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_videoModule is not null)
+            await _videoModule.DisposeAsync();
+    }
+}

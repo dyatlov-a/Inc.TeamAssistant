@@ -49,7 +49,6 @@
   "GUI_Tasks": "задач",
   "GUI_StoryList": "Список историй",
   "GUI_Back": "Назад",
-  "GUI_GetContacts": "Оставьте контактные данные и наши сотрудники свяжутся с вами",
   "GUI_RequestDemo": "Запросить демо",
   "GUI_RequestDemoBody": "Добрый день. Прошу провести демо продукта team-assessment bot",
   "GUI_MainHeader": "Чат-боты для оптимизации",
@@ -66,6 +65,8 @@
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",
   "CheckIn_AddLocationHelp": "Добавить мою геолокацию на карту",
   "CheckIn_AddLocation": "В ответ на это сообщение необходимо отправить вашу геолокацию",
+  "CheckIn_RouteShow": "Показать маршрут",
+  "CheckIn_RouteHide": "Скрыть маршрут",
   
   "Reviewer_MoveToReviewHelp": "Передать задачу на ревью",
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",

@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase
+
+@inject LanguageManager LanguageManager
+
+<Meta Model="_metaModel" />
+
+<OpenGraph Model="_openGraphModel" />
+
+<div class="wrapper">
+    <main class="main">
+        @Body
+    </main>
+</div>
+
+<AcceptCookieDialog />
+
+@code {
+    private MetaViewModel _metaModel = MetaViewModel.Empty;
+    private OpenGraphViewModel _openGraphModel = OpenGraphViewModel.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        const string title = "Team assistant";
+        var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
+        var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
+        
+        _metaModel = new(
+            title,
+            description,
+            keywords,
+            resources[Messages.MetaAuthor]);
+        
+        _openGraphModel = new(title, description, "card_main");
+    }
+}

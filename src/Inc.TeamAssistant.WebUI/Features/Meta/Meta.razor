@@ -1,0 +1,18 @@
+@using Inc.TeamAssistant.Primitives
+
+<PageTitle>@Model.Title</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="@Model.Description">
+    <meta name="keywords" content="@Model.Keywords">
+    <meta name="author" content="@Model.Author">
+
+    <meta name="robots" content="index, archive" />
+
+    <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
+</HeadContent>
+
+@code {
+    [Parameter, EditorRequired]
+    public MetaViewModel Model { get; set; } = default!;
+}

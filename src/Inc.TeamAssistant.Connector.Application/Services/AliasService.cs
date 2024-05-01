@@ -6,14 +6,11 @@ internal sealed class AliasService
         StringComparer.CurrentCultureIgnoreCase)
     {
         ["/nr"] = "/need_review",
-        ["/al"] = "/location"
+        ["/l"] = "/location"
     };
     
     public string OverrideCommand(string text)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
-
         if (text.StartsWith('/'))
         {
             var alias = text.Split(' ').First();

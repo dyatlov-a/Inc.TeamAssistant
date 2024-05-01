@@ -1,0 +1,82 @@
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+@implements IDisposable
+
+@inject PersistentComponentState ApplicationState
+@inject IAppraiserService Service
+@inject LanguageManager LanguageManager
+
+<div class="history">
+    <div class="history__title">@_viewModel.Title</div>
+    <div class="history__body">
+        @if (_viewModel.Data is { State: ServiceResultState.Success, Result: not null })
+        {
+            foreach (var item in _viewModel.Data.Result.Items)
+            {
+                <a href="@MoveToItem(item)" class="history__item">
+                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @_viewModel.TasksName
+                </a>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public int HistoryDepth { get; set; }
+    
+    private const string StateKey = nameof(AssessmentSessionHistory);
+    private PersistingComponentStateSubscription _persistingSubscription;
+    private Func<string?, string> _linkBuilder = default!;
+    
+    private AssessmentSessionHistoryViewModel _viewModel = AssessmentSessionHistoryViewModel.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (ApplicationState.TryTakeFromJson<AssessmentSessionHistoryViewModel>(StateKey, out var restored) && restored is not null)
+            _viewModel = restored;
+        else
+            await Initialize();
+    }
+
+    public async Task Update()
+    {
+        await Initialize();
+        
+        StateHasChanged();
+    }
+
+    private string MoveToItem(AssessmentHistoryDto historyItem)
+    {
+        if (historyItem is null)
+            throw new ArgumentNullException(nameof(historyItem));
+
+        return _linkBuilder($"assessment-session/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+    }
+    
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(StateKey, _viewModel);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task Initialize()
+    {
+        var resources = await LanguageManager.GetResource();
+
+        _viewModel = new AssessmentSessionHistoryViewModel(
+            resources[Messages.GUI_History],
+            resources[Messages.GUI_Tasks],
+            await Service.GetAssessmentHistory(TeamId, HistoryDepth));
+    }
+
+    public void Dispose() => _persistingSubscription.Dispose();
+}
