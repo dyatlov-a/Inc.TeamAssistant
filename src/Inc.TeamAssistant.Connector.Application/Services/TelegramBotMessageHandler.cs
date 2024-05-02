@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
@@ -27,17 +28,18 @@ internal sealed class TelegramBotMessageHandler
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
     }
 
-    public async Task Handle(Update update, Guid botId, CancellationToken token)
+    public async Task Handle(Update update, BotContext botContext, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
+        ArgumentNullException.ThrowIfNull(botContext);
 
         try
         {
-            var bot = await _botRepository.Find(botId, token);
+            var bot = await _botRepository.Find(botContext.Id, token);
             if (bot is null)
                 return;
             
-            var messageContext = await _messageContextBuilder.Build(bot, update, token);
+            var messageContext = await _messageContextBuilder.Build(bot, botContext, update, token);
             if (messageContext is null)
                 return;
         
@@ -47,13 +49,15 @@ internal sealed class TelegramBotMessageHandler
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Bot {BotId} unhandled exception on handle message", botId);
+            _logger.LogCritical(ex, "Bot {BotId} unhandled exception on handle message", botContext.Id);
         }
     }
 
-    public Task OnError(Exception exception, Guid botId, CancellationToken token)
+    public Task OnError(Exception exception, BotContext botContext, CancellationToken token)
     {
-        _logger.LogError(exception, "Bot {BotId} listened message with error", botId);
+        ArgumentNullException.ThrowIfNull(botContext);
+        
+        _logger.LogError(exception, "Bot {BotId} listened message with error", botContext.Id);
 
         return Task.CompletedTask;
     }

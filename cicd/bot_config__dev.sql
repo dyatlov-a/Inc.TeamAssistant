@@ -1,6 +1,6 @@
-INSERT INTO connector.bots(id, name, token)
+INSERT INTO connector.bots(id, token)
 VALUES
-    ('e5b2d82b-3912-4d94-acb8-c6e603622a95', 'inc_teamassistant_test_bot', '5950633493:AAFU5Lg_lWCptt8jh05r8SnP5jcLaf8CL84')
+    ('e5b2d82b-3912-4d94-acb8-c6e603622a95', 'hidden')
 ON CONFLICT (id) DO UPDATE SET
     name = excluded.name,
     token = excluded.token;

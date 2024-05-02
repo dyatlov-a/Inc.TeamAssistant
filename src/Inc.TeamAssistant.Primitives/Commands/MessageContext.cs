@@ -21,7 +21,7 @@ public sealed record MessageContext(
     {
         return new MessageContext(
             ChatMessage: new ChatMessage(chatId, MessageId: 0),
-            Bot: new BotContext(botId, Name: string.Empty),
+            Bot: new BotContext(botId, UserName: string.Empty),
             Teams: Array.Empty<TeamContext>(),
             Text: string.Empty,
             Person.Empty,

@@ -22,9 +22,10 @@ internal sealed class MessageContextBuilder
         _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
     }
     
-    public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
+    public async Task<MessageContext?> Build(Bot bot, BotContext botContext, Update update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(update);
 
         if (update.Message?.From?.IsBot == true ||
@@ -34,16 +35,17 @@ internal sealed class MessageContextBuilder
 
         return update.Type switch
         {
-            UpdateType.Message => await CreateFromMessage(bot, update.Message!, token),
-            UpdateType.CallbackQuery => await CreateFromCallbackQuery(bot, update.CallbackQuery!, token),
-            UpdateType.PollAnswer => await CreateFromPollAnswer(bot, update.PollAnswer!, token),
+            UpdateType.Message => await CreateFromMessage(bot, botContext, update.Message!, token),
+            UpdateType.CallbackQuery => await CreateFromCallbackQuery(bot, botContext, update.CallbackQuery!, token),
+            UpdateType.PollAnswer => await CreateFromPollAnswer(bot, botContext, update.PollAnswer!, token),
             _ => null
         };
     }
 
-    private async Task<MessageContext?> CreateFromPollAnswer(Bot bot, PollAnswer pollAnswer, CancellationToken token)
+    private async Task<MessageContext?> CreateFromPollAnswer(Bot bot, BotContext botContext, PollAnswer pollAnswer, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(pollAnswer);
         
         var parameters = string.Join("&option=", pollAnswer.OptionIds);
@@ -51,6 +53,7 @@ internal sealed class MessageContextBuilder
             
         return await Create(
             bot,
+            botContext,
             messageId: 0,
             chatId: 0,
             pollAnswer.User,
@@ -62,14 +65,17 @@ internal sealed class MessageContextBuilder
 
     private async Task<MessageContext?> CreateFromCallbackQuery(
         Bot bot,
+        BotContext botContext,
         CallbackQuery callbackQuery,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(callbackQuery);
         
         return await Create(
             bot,
+            botContext,
             callbackQuery.Message!.MessageId,
             callbackQuery.Message.Chat.Id,
             callbackQuery.From,
@@ -79,15 +85,21 @@ internal sealed class MessageContextBuilder
             token);
     }
 
-    private async Task<MessageContext?> CreateFromMessage(Bot bot, Message message, CancellationToken token)
+    private async Task<MessageContext?> CreateFromMessage(
+        Bot bot,
+        BotContext botContext,
+        Message message,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(message);
         
-        var parsedText = await ParseText(bot.Name, message, token);
+        var parsedText = await ParseText(botContext.UserName, message, token);
 
         return await Create(
             bot,
+            botContext,
             message.MessageId,
             message.Chat.Id,
             message.From!,
@@ -99,6 +111,7 @@ internal sealed class MessageContextBuilder
 
     private async Task<MessageContext?> Create(
         Bot bot,
+        BotContext botContext,
         int messageId,
         long chatId,
         User user,
@@ -108,6 +121,7 @@ internal sealed class MessageContextBuilder
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(text);
 
@@ -117,7 +131,7 @@ internal sealed class MessageContextBuilder
             
         return new(
             new ChatMessage(chatId, messageId),
-            new BotContext(bot.Id, bot.Name),
+            botContext,
             teams,
             text,
             person,

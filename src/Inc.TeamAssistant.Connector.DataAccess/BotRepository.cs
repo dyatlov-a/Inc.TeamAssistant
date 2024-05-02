@@ -28,28 +28,12 @@ internal sealed class BotRepository : IBotRepository
         var results = await connection.QueryAsync<Guid>(command);
         return results.ToArray();
     }
-    
-    public async Task<string> GetBotName(Guid id, CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT b.name AS name
-            FROM connector.bots AS b
-            WHERE b.id = @id;",
-            new { id },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        return await connection.QuerySingleAsync<string>(command);
-    }
 
     public async Task<Bot?> Find(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 b.id AS id,
-                b.name AS name,
                 b.token AS token
             FROM connector.bots AS b
             WHERE b.id = @id;

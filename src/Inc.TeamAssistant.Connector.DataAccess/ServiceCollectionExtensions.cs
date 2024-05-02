@@ -14,11 +14,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITeamRepository, TeamRepository>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
             
-            .AddSingleton<BotRepository>()
-            .AddSingleton<IBotRepository>(sp => ActivatorUtilities.CreateInstance<CachedBotRepository>(
-                sp,
-                sp.GetRequiredService<BotRepository>(),
-                cacheTimeout))
+            .AddSingleton<IBotRepository, BotRepository>()
             
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(
