@@ -39,23 +39,6 @@ internal sealed class BotRepository : IBotRepository
             WHERE b.id = @id;
 
             SELECT
-                bc.id AS id,
-                bc.value AS value,
-                bc.help_message_id AS helpmessageid
-            FROM connector.bot_commands AS bc
-            WHERE bc.bot_id = @id;
-
-            SELECT
-                bcs.id AS id,
-                bcs.bot_command_id AS botcommandid,
-                bcs.value AS value,
-                bcs.dialog_message_id AS dialogmessageid,
-                bcs.position AS position
-            FROM connector.bot_command_stages AS bcs
-            JOIN connector.bot_commands AS bc ON bc.id = bcs.bot_command_id
-            WHERE bc.bot_id = @id;
-
-            SELECT
                 t.id AS id,
                 t.bot_id AS botid,
                 t.chat_id AS chatid,
@@ -73,7 +56,27 @@ internal sealed class BotRepository : IBotRepository
             FROM connector.persons AS p
             JOIN connector.teammates AS tm ON p.id = tm.person_id
             JOIN connector.teams AS t ON t.id = tm.team_id
-            WHERE t.bot_id = @id;",
+            WHERE t.bot_id = @id;
+
+            SELECT DISTINCT cp.bot_command_id
+            FROM connector.activated_features AS af
+            JOIN connector.features AS f ON af.feature_id = f.id
+            JOIN connector.command_packs AS cp ON cp.feature_id = f.id
+            WHERE af.bot_id = @id;
+
+            SELECT
+                bc.id AS id,
+                bc.value AS value,
+                bc.help_message_id AS helpmessageid
+            FROM connector.bot_commands AS bc;
+
+            SELECT
+                bcs.id AS id,
+                bcs.bot_command_id AS botcommandid,
+                bcs.value AS value,
+                bcs.dialog_message_id AS dialogmessageid,
+                bcs.position AS position
+            FROM connector.bot_command_stages AS bcs;",
             new { id },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -83,15 +86,16 @@ internal sealed class BotRepository : IBotRepository
         var query = await connection.QueryMultipleAsync(command);
         
         var bot = await query.ReadSingleOrDefaultAsync<Bot>();
-        var botCommands = await query.ReadAsync<BotCommand>();
-        var botCommandStages = (await query.ReadAsync<BotCommandStage>()).ToLookup(s => s.BotCommandId);
         var teams = await query.ReadAsync<Team>();
         var personsLookup = (await query.ReadAsync<(long Id, string Name, string? Username, Guid TeamId)>())
             .ToLookup(p => p.TeamId);
+        var commandIds = await query.ReadAsync<Guid>();
+        var botCommands = (await query.ReadAsync<BotCommand>()).ToDictionary(s => s.Id);
+        var botCommandStages = (await query.ReadAsync<BotCommandStage>()).ToLookup(s => s.BotCommandId);
 
         if (bot is not null)
         {
-            foreach (var botCommand in botCommands)
+            foreach (var botCommand in commandIds.Select(i => botCommands[i]))
             {
                 foreach (var botCommandStage in botCommandStages[botCommand.Id])
                     botCommand.AddStage(botCommandStage);
