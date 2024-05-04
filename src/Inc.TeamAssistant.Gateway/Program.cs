@@ -38,7 +38,7 @@ var accountsOptions = builder.Configuration.GetRequiredSection(nameof(AuthOption
 
 builder.Services
 	.AddSingleton(accountsOptions)
-	.AddScoped<AuthService>()
+	.AddScoped<TelegramAuthService>()
 	.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(o =>
 	{

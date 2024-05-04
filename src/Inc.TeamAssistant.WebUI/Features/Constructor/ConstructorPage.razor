@@ -13,7 +13,7 @@
         <AuthorizeView>
             <Authorized>
                 <p class="constructor__text">@_viewModel.SelectBotText</p>
-                <BotSelector OwnerId="@context.User.GetUserId()" />
+                <BotSelector OwnerId="@context.User.ToPerson().Id" />
             </Authorized>
             <NotAuthorized>
                 <p class="constructor__text">@_viewModel.LoginTelegramText</p>
@@ -26,7 +26,7 @@
                             data-telegram-login="@_viewModel.BotUserName"
                             data-size="large"
                             data-userpic="false"
-                            data-auth-url="accounts/login_tg"
+                            data-auth-url="accounts/login-tg"
                             data-request-access="write">
                         </script>
                     }

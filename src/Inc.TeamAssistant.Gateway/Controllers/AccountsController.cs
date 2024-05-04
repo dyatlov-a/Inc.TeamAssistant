@@ -1,5 +1,9 @@
 using Inc.TeamAssistant.Gateway.Services;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Extensions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inc.TeamAssistant.Gateway.Controllers;
@@ -8,13 +12,21 @@ namespace Inc.TeamAssistant.Gateway.Controllers;
 [Route("accounts")]
 public sealed class AccountsController : ControllerBase
 {
-    private readonly AuthService _authService;
+    private readonly TelegramAuthService _telegramAuthService;
     private readonly IUserService _userService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly AuthOptions _authOptions;
 
-    public AccountsController(AuthService authService, IUserService userService)
+    public AccountsController(
+        TelegramAuthService telegramAuthService,
+        IUserService userService,
+        IWebHostEnvironment webHostEnvironment,
+        AuthOptions authOptions)
     {
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _telegramAuthService = telegramAuthService ?? throw new ArgumentNullException(nameof(telegramAuthService));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+        _authOptions = authOptions ?? throw new ArgumentNullException(nameof(authOptions));
     }
     
     [HttpGet("bot")]
@@ -23,7 +35,7 @@ public sealed class AccountsController : ControllerBase
     [HttpGet("current-user")]
     public async Task<IActionResult> GetCurrentUser() => Ok(await _userService.GetCurrentUser());
 
-    [HttpGet("login_tg")]
+    [HttpGet("login-tg")]
     public async Task<IActionResult> Login(
         [FromQuery(Name = "id")] long id,
         [FromQuery(Name = "first_name")] string firstName,
@@ -33,15 +45,33 @@ public sealed class AccountsController : ControllerBase
         [FromQuery(Name = "auth_date")] string authDate,
         [FromQuery(Name = "hash")] string hash)
     {
-        return await _authService.Login(id, firstName, lastName, username, photoUrl, authDate, hash)
-            ? Redirect("/constructor")
-            : BadRequest();
+        if (!await _telegramAuthService.CanLogin(id, firstName, lastName, username, photoUrl, authDate, hash))
+            return BadRequest();
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new Person(id, firstName, username).ToClaimsPrincipal());
+
+        return Redirect("/constructor");
+    }
+    
+    [HttpGet("as-super-user")]
+    public async Task<IActionResult> LoginAsSuperUser()
+    {
+        if (_webHostEnvironment.IsProduction())
+            return BadRequest();
+        
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            _authOptions.SuperUser.ToClaimsPrincipal());
+
+        return Redirect("/constructor");
     }
 
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _authService.Logout();
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         return Redirect("/");
     }
