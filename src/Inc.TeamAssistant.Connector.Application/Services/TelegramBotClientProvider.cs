@@ -9,11 +9,11 @@ internal sealed class TelegramBotClientProvider
 {
     private readonly ConcurrentDictionary<Guid, TelegramBotClient> _clientMap = new();
     
-    private readonly IBotRepository _botRepository;
+    private readonly IBotReader _botReader;
 
-    public TelegramBotClientProvider(IBotRepository botRepository)
+    public TelegramBotClientProvider(IBotReader botReader)
     {
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
+        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
     public async Task<ITelegramBotClient> Get(Guid botId, CancellationToken token)
@@ -26,7 +26,7 @@ internal sealed class TelegramBotClientProvider
         if (_clientMap.TryGetValue(botId, out var cachedClient))
             return cachedClient;
 
-        var bot = await _botRepository.Find(botId, token);
+        var bot = await _botReader.Find(botId, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 

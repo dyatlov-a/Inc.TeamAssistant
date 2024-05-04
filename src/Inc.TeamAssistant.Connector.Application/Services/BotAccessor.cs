@@ -1,31 +1,29 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
-using Telegram.Bot;
+using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class BotAccessor : IBotAccessor
 {
-    private readonly TelegramBotClientProvider _clientProvider;
-    private readonly IBotRepository _botRepository;
+    private readonly IBotReader _botReader;
 
-    public BotAccessor(TelegramBotClientProvider clientProvider, IBotRepository botRepository)
+    public BotAccessor(IBotReader botReader)
     {
-        _clientProvider = clientProvider ?? throw new ArgumentNullException(nameof(clientProvider));
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
+        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
     public async Task<string> GetUserName(Guid botId, CancellationToken token)
     {
-        var client = await _clientProvider.Get(botId, token);
+        var bot = await _botReader.Find(botId, token);
+        if (bot is null)
+            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 
-        var botUser = await client.GetMeAsync(token);
-
-        return botUser.Username!;
+        return bot.Name;
     }
 
     public async Task<string> GetToken(Guid botId, CancellationToken token)
     {
-        return await _botRepository.GetToken(botId, token);
+        return await _botReader.GetToken(botId, token);
     }
 }

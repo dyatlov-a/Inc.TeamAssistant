@@ -2,6 +2,7 @@ using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.Internal;
 using Inc.TeamAssistant.Gateway.Services.Render;
@@ -59,6 +60,9 @@ public static class ServiceCollectionExtensions
                 includeInternalTypes: true)
             .AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
                 lifetime: ServiceLifetime.Scoped,
+                includeInternalTypes: true)
+            .AddValidatorsFromAssemblyContaining<IBotRepository>(
+                lifetime: ServiceLifetime.Scoped,
                 includeInternalTypes: true);
         
         return services;
@@ -77,6 +81,7 @@ public static class ServiceCollectionExtensions
                 c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
                 c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
                 c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
+                c.RegisterServicesFromAssemblyContaining<IBotRepository>();
             })
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
             .TryAddEnumerable(ServiceDescriptor.Scoped(
@@ -108,6 +113,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
+            .AddScoped<IBotService, BotService>()
 
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(

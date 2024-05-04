@@ -1,0 +1,17 @@
+.bot-selector {
+    position: relative;
+    overflow: hidden;
+    margin-top: 40px;
+}
+.bot-selector__item {
+    float: left;
+    margin: 0 20px 20px 0;
+    width: 160px;
+    height: 200px;
+}
+.bot-selector__name {
+    opacity: .7;
+    font-size: .7rem;
+    word-break: break-all;
+    text-align: center;
+}

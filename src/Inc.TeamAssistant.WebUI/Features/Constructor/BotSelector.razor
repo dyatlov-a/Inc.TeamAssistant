@@ -1,0 +1,33 @@
+@inject IBotService BotService
+@inject LanguageManager LanguageManager
+
+<div class="bot-selector">
+    @foreach(var bot in _viewModel.Bots)
+    {
+        <div class="bot-selector__item">
+            <BotIcon Size="160px" Color="#fff" />
+            <div class="bot-selector__name" title="@bot.Name">@bot.Name</div>
+        </div>
+    }
+    <div class="bot-selector__item">
+        <AddIcon Size="160px" Color="#fff" />
+        <div class="bot-selector__name" title="Create">@_viewModel.AddBotLink</div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public long OwnerId { get; set; }
+    
+    private BotSelectorViewModel _viewModel = BotSelectorViewModel.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
+
+        _viewModel = new BotSelectorViewModel(
+            resources[Messages.Constructor_AddBotLink],
+            getBotsByOwnerResult.Result.Bots);
+    }
+}

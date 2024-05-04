@@ -6,11 +6,11 @@ using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
-internal sealed class BotRepository : IBotRepository
+internal sealed class BotReader : IBotReader
 {
     private readonly IConnectionFactory _connectionFactory;
     
-    public BotRepository(IConnectionFactory connectionFactory)
+    public BotReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
@@ -34,6 +34,7 @@ internal sealed class BotRepository : IBotRepository
         var command = new CommandDefinition(@"
             SELECT
                 b.id AS id,
+                b.name AS name,
                 b.token AS token
             FROM connector.bots AS b
             WHERE b.id = @id;

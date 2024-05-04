@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
+            .AddScoped<IBotService, BotClient>()
             
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(

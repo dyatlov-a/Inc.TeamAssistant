@@ -3,6 +3,7 @@ namespace Inc.TeamAssistant.Connector.Domain;
 public sealed class Bot
 {
     public Guid Id { get; private set; }
+    public string Name { get; private set; } = default!;
     public string Token { get; private set; } = default!;
     
     private readonly List<BotCommand> _commands = new();
@@ -11,25 +12,10 @@ public sealed class Bot
     private readonly List<Team> _teams = new();
     public IReadOnlyCollection<Team> Teams => _teams;
 
-    private Bot()
-    {
-    }
-    
-    public Bot(string token)
-        : this()
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(token));
-        
-        Id = Guid.NewGuid();
-        Token = token;
-    }
-
     public Bot AddCommand(BotCommand botCommand)
     {
-        if (botCommand is null)
-            throw new ArgumentNullException(nameof(botCommand));
-        
+        ArgumentNullException.ThrowIfNull(botCommand);
+
         _commands.Add(botCommand);
 
         return this;
@@ -37,9 +23,8 @@ public sealed class Bot
     
     public Bot AddTeam(Team team)
     {
-        if (team is null)
-            throw new ArgumentNullException(nameof(team));
-        
+        ArgumentNullException.ThrowIfNull(team);
+
         _teams.Add(team);
 
         return this;

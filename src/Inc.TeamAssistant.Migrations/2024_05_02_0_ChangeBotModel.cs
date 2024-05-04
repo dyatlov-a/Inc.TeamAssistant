@@ -8,11 +8,6 @@ public sealed class ChangeBotModel : Migration
 {
     public override void Up()
     {
-        Delete
-            .Column("name")
-            .FromTable("bots")
-            .InSchema("connector");
-
         Create
             .Table("features")
             .InSchema("connector")

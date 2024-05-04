@@ -1,0 +1,21 @@
+.constructor {
+    padding: 8.5rem 0 2.5rem 0;
+}
+.constructor__title {
+    font-size: 1.7rem;
+    line-height: 2rem;
+    margin: 0 0 .75rem 0;
+    letter-spacing: .0625rem;
+}
+.constructor__text {
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+}
+.constructor__tg-login {
+    margin-top: 40px;
+}
+@media (max-width: 767.98px) {
+    .constructor {
+        padding: 7rem 0 1rem 0;
+    }
+}

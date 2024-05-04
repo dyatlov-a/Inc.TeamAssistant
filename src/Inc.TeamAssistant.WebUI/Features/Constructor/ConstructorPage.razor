@@ -3,39 +3,51 @@
 @page "/ru/constructor"
 
 @inject IUserService UserService
+@inject LanguageManager LanguageManager
+
+<PageTitle>@_viewModel.Title</PageTitle>
 
 <div class="constructor">
     <div class="constructor__container">
+        <h1 class="constructor__title">@_viewModel.Title</h1>
         <AuthorizeView>
             <Authorized>
-                <h1>Hi @context.User.Identity?.Name</h1>
-                <a href="/accounts/logout">Logout</a>
+                <p class="constructor__text">@_viewModel.SelectBotText</p>
+                <BotSelector OwnerId="@context.User.GetUserId()" />
             </Authorized>
             <NotAuthorized>
-                @if (!string.IsNullOrWhiteSpace(_botUserName))
-                {
-                    <script
-                        async
-                        src="https://telegram.org/js/telegram-widget.js?22"
-                        data-telegram-login="@_botUserName"
-                        data-size="large"
-                        data-userpic="false"
-                        data-auth-url="accounts/login_tg"
-                        data-request-access="write">
-                    </script>
-                }
+                <p class="constructor__text">@_viewModel.LoginTelegramText</p>
+                <div class="constructor__tg-login">
+                    @if (_viewModel != ConstructorPageViewModel.Empty)
+                    {
+                        <script
+                            async
+                            src="https://telegram.org/js/telegram-widget.js?22"
+                            data-telegram-login="@_viewModel.BotUserName"
+                            data-size="large"
+                            data-userpic="false"
+                            data-auth-url="accounts/login_tg"
+                            data-request-access="write">
+                        </script>
+                    }
+                </div>
             </NotAuthorized>
         </AuthorizeView>
     </div>
 </div>
 
 @code {
-    private string _botUserName = string.Empty;
+    private ConstructorPageViewModel _viewModel = ConstructorPageViewModel.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        var resources = await LanguageManager.GetResource();
         var botContext = await UserService.GetAuthBotContext();
-        
-        _botUserName = botContext.UserName;
+
+        _viewModel = new ConstructorPageViewModel(
+            resources[Messages.Constructor_Title],
+            resources[Messages.Constructor_SelectBotText],
+            resources[Messages.Constructor_LoginTelegramText],
+            botContext.UserName);
     }
 }

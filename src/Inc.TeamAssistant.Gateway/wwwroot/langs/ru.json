@@ -112,5 +112,10 @@
   "RandomCoffee_NotSelectedPair": "К сожалению не найдена пара для {0}",
   "RandomCoffee_MeetingDescription": "Договоритесь в ЛС о проведении встречи",
   "RandomCoffee_NotEnoughParticipants": "Недостаточно участников для составления пар",
-  "RandomCoffee_InviteHelp": "Начать проведение встреч"
+  "RandomCoffee_InviteHelp": "Начать проведение встреч",
+
+  "Constructor_AddBotLink": "Добавить",
+  "Constructor_Title": "Создай бота для своей команды",
+  "Constructor_SelectBotText": "В конструкторе возможно создать нового бота или изменить настройки уже существующего. Выберите существующего бота или создайте нового нажав кнопку «Добавить».",
+  "Constructor_LoginTelegramText": "Чтобы начать работу с конструктором ботов, войдите в Telegram."
 }

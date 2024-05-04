@@ -7,6 +7,7 @@ using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
+using Inc.TeamAssistant.Constructor.DataAccess;
 using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Gateway.Hubs;
@@ -74,6 +75,7 @@ builder.Services
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication()
 	.AddConnectorDataAccess(cacheAbsoluteExpiration)
+	.AddConstructorDataAccess()
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()

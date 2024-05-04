@@ -7,11 +7,11 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Constructor.DataAccess\Inc.TeamAssistant.Constructor.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.DataAccess\Inc.TeamAssistant.RandomCoffee.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.DataAccess\Inc.TeamAssistant.Appraiser.DataAccess.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.3" />

@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Connector.Domain;
 
 namespace Inc.TeamAssistant.Connector.Application.Contracts;
 
-public interface IBotRepository
+public interface IBotReader
 {
     Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token);
     
