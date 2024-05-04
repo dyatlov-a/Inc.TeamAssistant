@@ -8,9 +8,11 @@ public sealed record RequestDemoViewModel(
     string SubHeader,
     string ToolAppraiser,
     string ToolReviewer,
-    string ToolRandomCoffee)
+    string ToolRandomCoffee,
+    string CreateBotLink)
 {
     public static readonly RequestDemoViewModel Empty = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

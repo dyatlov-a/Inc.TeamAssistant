@@ -12,6 +12,15 @@
     border-radius: 4px;
     text-shadow: #000 0 0 10px;
 }
+.request-demo-actions {
+    margin-top: 20px;
+    text-align: center;
+    float: left;
+}
+.request-demo-actions__link {
+    margin-top: 10px;
+    display: block;
+}
 @media (max-width: 479.98px) {
     .request-demo-text__header {
         font-size: 1.8rem;

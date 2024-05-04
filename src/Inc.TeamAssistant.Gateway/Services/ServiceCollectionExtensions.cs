@@ -107,6 +107,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IAppraiserService, AppraiserService>()
             .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ICheckInService, CheckInService>()
+            .AddScoped<IUserService, UserService>()
 
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(

@@ -36,15 +36,17 @@ public sealed class ChangeBotModel : Migration
                 primaryColumnName: "id",
                 primaryTableName: "features",
                 primaryTableSchema: "connector")
+            .OnDelete(Rule.Cascade)
             
             .WithColumn("bot_id")
-            .AsInt64().NotNullable()
+            .AsGuid().NotNullable()
             .PrimaryKey("activated_features__pk__feature_id__bot_id")
             .ForeignKey(
                 foreignKeyName: "activated_features__fk__bot_id__id",
                 primaryColumnName: "id",
                 primaryTableName: "bots",
-                primaryTableSchema: "connector");
+                primaryTableSchema: "connector")
+            .OnDelete(Rule.Cascade);
 
         Create
             .Table("command_packs")
@@ -58,14 +60,23 @@ public sealed class ChangeBotModel : Migration
                 primaryColumnName: "id",
                 primaryTableName: "features",
                 primaryTableSchema: "connector")
+            .OnDelete(Rule.Cascade)
             
             .WithColumn("bot_command_id")
             .AsGuid().NotNullable()
+            .PrimaryKey("command_packs__pk__feature_id__bot_command_id")
             .ForeignKey(
                 foreignKeyName: "command_packs__fk__bot_command_id__id",
                 primaryColumnName: "id",
                 primaryTableName: "bot_commands",
-                primaryTableSchema: "connector");
+                primaryTableSchema: "connector")
+            .OnDelete(Rule.Cascade);
+
+        Create
+            .Column("owner_id")
+            .OnTable("bots")
+            .InSchema("connector")
+            .AsInt64().NotNullable().SetExistingRowsTo(272062137);
         
         Execute.Sql("DELETE FROM connector.bot_command_stages;", "Clean connector.bot_command_stages");
         
@@ -118,10 +129,6 @@ public sealed class ChangeBotModel : Migration
                 ('7725d913-19b9-48c8-9d0c-bafb89a972f3', '3aaaa192-3dde-4d41-a720-3ae65594aa11', 2, 'Appraiser_EnterStoryName', 2),
                 ('35569ffd-dc1a-4b10-be72-66725d6569f5', '57e1da3c-a65d-4172-b377-00d8543f55c3', 1, 'Connector_SelectTeam', 1),
                 ('a225f93e-36ba-4bf7-9b7c-9cb82fa84c09', '57e1da3c-a65d-4172-b377-00d8543f55c3', 2, 'Reviewer_EnterRequestForReview', 2),
-                ('29a7185b-ceff-4678-9030-17907665bc01', 'd753d196-0c01-46ac-83d1-65fdd5d40318', 1, 'Connector_SelectTeam', 1),
-                ('eddcadc0-6805-4366-8c3b-0c5888d40539', 'a49e0652-9237-455e-afac-d6119fe10fde', 1, 'Connector_SelectTeam', 1),
-                ('1c6271aa-8051-4cc4-b3ff-d7b7fabf1020', 'e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', 1, 'Connector_SelectTeam', 1),
-                ('697078dc-94c2-43a3-abd7-762641c1d094', '10b888d0-e086-4a51-85d2-6379735682c7', 1, 'Connector_SelectTeam', 1),
                 ('4df5448c-8ee1-4002-bbfe-a75b71c38d68', '4378f324-4d70-4d53-b934-f5fdad6bb42b', 1, 'CheckIn_AddLocation', 1),
                 ('c014bdfb-1c54-44eb-87ef-a6561e5204b4', 'ec16e7f2-3540-4252-a683-f1e9bbbfdac9', 1, 'Connector_SelectTeam', 1)
             """,

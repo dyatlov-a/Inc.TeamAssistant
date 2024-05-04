@@ -7,6 +7,7 @@ using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.DataAccess;
+using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Inc.TeamAssistant.Gateway.Services;
@@ -20,6 +21,7 @@ using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.WebEncoders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +33,18 @@ var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOpti
 var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
 var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
+var accountsOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
+
+builder.Services
+	.AddSingleton(accountsOptions)
+	.AddScoped<AuthService>()
+	.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddCookie(o =>
+	{
+		o.ExpireTimeSpan = TimeSpan.FromDays(2);
+		o.SlidingExpiration = true;
+		o.AccessDeniedPath = "/";
+	});
 
 builder.Services
 	.AddDataAccess(connectionString)
@@ -82,6 +96,8 @@ if (builder.Environment.IsDevelopment())
 app
 	.UseStaticFiles()
 	.UseRouting()
+	.UseAuthentication()
+	.UseAuthorization()
 	.UseAntiforgery()
 	.UseEndpoints(e =>
 	{

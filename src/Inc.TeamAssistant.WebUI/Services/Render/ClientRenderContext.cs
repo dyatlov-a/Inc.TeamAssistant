@@ -14,7 +14,7 @@ internal sealed class ClientRenderContext : IRenderContext
     }
 
     public bool IsBrowser => true;
-    
+
     public (LanguageId Language, bool Selected) GetCurrentLanguageId()
     {
         var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);

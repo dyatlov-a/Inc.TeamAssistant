@@ -56,6 +56,7 @@
   "GUI_ToolAppraiser": "легкая оценка задач",
   "GUI_ToolReviewer": "оперативное проведение ревью кода",
   "GUI_ToolRandomCoffee": "нетворкинг",
+  "GUI_CreateBotLink": "Создать бота",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_OgTitle": "Перемещения",

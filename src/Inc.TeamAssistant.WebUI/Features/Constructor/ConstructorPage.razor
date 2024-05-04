@@ -1,0 +1,41 @@
+@page "/constructor"
+@page "/en/constructor"
+@page "/ru/constructor"
+
+@inject IUserService UserService
+
+<div class="constructor">
+    <div class="constructor__container">
+        <AuthorizeView>
+            <Authorized>
+                <h1>Hi @context.User.Identity?.Name</h1>
+                <a href="/accounts/logout">Logout</a>
+            </Authorized>
+            <NotAuthorized>
+                @if (!string.IsNullOrWhiteSpace(_botUserName))
+                {
+                    <script
+                        async
+                        src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="@_botUserName"
+                        data-size="large"
+                        data-userpic="false"
+                        data-auth-url="accounts/login_tg"
+                        data-request-access="write">
+                    </script>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private string _botUserName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var botContext = await UserService.GetAuthBotContext();
+        
+        _botUserName = botContext.UserName;
+    }
+}

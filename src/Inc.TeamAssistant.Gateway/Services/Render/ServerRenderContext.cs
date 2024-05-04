@@ -11,9 +11,9 @@ internal sealed class ServerRenderContext : IRenderContext
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
-    
+
     public bool IsBrowser => false;
-    
+
     public (LanguageId Language, bool Selected) GetCurrentLanguageId()
     {
         var relativeUrl = _httpContextAccessor.HttpContext!.Request.Path.Value;

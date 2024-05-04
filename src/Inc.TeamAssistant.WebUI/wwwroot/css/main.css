@@ -111,6 +111,15 @@ html {
     background-color: #000;
     color: #fff;
 }
+.link {
+    font-size: 1rem;
+}
+.link:hover {
+    text-decoration: underline;
+}
+.link_black {
+    color: #000;
+}
 /* PHONE */
 .phone {
     flex: 0 0 248px;

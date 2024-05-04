@@ -114,4 +114,20 @@ internal sealed class BotRepository : IBotRepository
 
         return bot;
     }
+
+    public async Task<string> GetToken(Guid botId, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT b.token AS token
+            FROM connector.bots AS b
+            WHERE b.id = @bot_id;",
+            new { bot_id = botId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var botToken = await connection.QuerySingleAsync<string>(command);
+        return botToken;
+    }
 }

@@ -1,0 +1,46 @@
+@implements IAsyncDisposable
+
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+@if (IsPlaying)
+{
+    <video autoplay muted playsinline loop poster="@(FileName).jpg" @ref="_video" class="main__video">
+        <source src="@(FileName).mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+}
+else
+{
+    <img src="@(FileName).jpg" alt="A video about users writing bots' source code" class="main__video" />
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string FileName { get; set; } = default!;
+    
+    [Parameter]
+    public bool Static { get; set; }
+    
+    private bool IsPlaying => RenderContext.IsBrowser && !Static;
+    private ElementReference _video;
+    private IJSObjectReference? _videoModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && IsPlaying)
+        {
+            _videoModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Video/Video.razor.js");
+            
+            await _videoModule.InvokeVoidAsync("play", _video);
+        }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_videoModule is not null)
+            await _videoModule.DisposeAsync();
+    }
+}
