@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -25,6 +26,22 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetBotsByOwnerResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetBotUserNameResult>> Check(GetBotUserNameQuery query, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+        
+        try
+        {
+            var result = await _mediator.Send(query, token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetBotUserNameResult>(ex.Message);
         }
     }
 }

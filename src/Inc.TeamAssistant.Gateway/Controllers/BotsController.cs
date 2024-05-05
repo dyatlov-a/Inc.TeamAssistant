@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,5 +21,13 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> Get(long ownerId, CancellationToken token)
     {
         return Ok(await _botService.GetBotsByOwner(ownerId, token));
+    }
+
+    [HttpPost("check")]
+    public async Task<IActionResult> Check(GetBotUserNameQuery query, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+        
+        return Ok(await _botService.Check(query, token));
     }
 }
