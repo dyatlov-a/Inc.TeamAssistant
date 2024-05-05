@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inc.TeamAssistant.Gateway.Controllers;
@@ -48,9 +47,9 @@ public sealed class AccountsController : ControllerBase
         if (!await _telegramAuthService.CanLogin(id, firstName, lastName, username, photoUrl, authDate, hash))
             return BadRequest();
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new Person(id, firstName, username).ToClaimsPrincipal());
+        var principal = new Person(id, firstName, username).ToClaimsPrincipal();
+        
+        await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
 
         return Redirect("/constructor");
     }
@@ -60,10 +59,10 @@ public sealed class AccountsController : ControllerBase
     {
         if (_webHostEnvironment.IsProduction())
             return BadRequest();
+
+        var principal = _authOptions.SuperUser.ToClaimsPrincipal();
         
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            _authOptions.SuperUser.ToClaimsPrincipal());
+        await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
 
         return Redirect("/constructor");
     }
@@ -71,7 +70,7 @@ public sealed class AccountsController : ControllerBase
     [HttpGet("logout")]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync(ApplicationContext.AuthenticationScheme);
 
         return Redirect("/");
     }

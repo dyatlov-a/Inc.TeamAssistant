@@ -22,7 +22,6 @@ using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.WebEncoders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +38,7 @@ var accountsOptions = builder.Configuration.GetRequiredSection(nameof(AuthOption
 builder.Services
 	.AddSingleton(accountsOptions)
 	.AddScoped<TelegramAuthService>()
-	.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddAuthentication(ApplicationContext.AuthenticationScheme)
 	.AddCookie(o =>
 	{
 		o.ExpireTimeSpan = TimeSpan.FromDays(2);

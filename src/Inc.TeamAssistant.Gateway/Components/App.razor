@@ -53,7 +53,7 @@
 
 @code {
     private readonly InteractiveWebAssemblyRenderMode _renderMode = new(prerender: true);
-    private readonly string _appVersion = AppVersion.GetVersion();
+    private readonly string _appVersion = ApplicationContext.GetVersion();
     private string _lang = LanguageSettings.DefaultLanguageId.Value;
 
     protected override void OnInitialized()

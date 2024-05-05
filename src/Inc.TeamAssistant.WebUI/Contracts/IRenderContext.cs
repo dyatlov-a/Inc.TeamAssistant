@@ -7,4 +7,6 @@ public interface IRenderContext
     (LanguageId Language, bool Selected) GetCurrentLanguageId();
     
     bool IsBrowser { get; }
+
+    bool IsDevelopment();
 }

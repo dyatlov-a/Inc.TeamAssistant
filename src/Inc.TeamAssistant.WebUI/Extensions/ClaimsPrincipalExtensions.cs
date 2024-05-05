@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Extensions;
 
@@ -8,18 +9,29 @@ public static class ClaimsPrincipalExtensions
     public static Person ToPerson(this ClaimsPrincipal principal)
     {
         ArgumentNullException.ThrowIfNull(principal);
-        
-        var personId = principal.Claims.Single(c => c.Type == nameof(Person.Id));
-        var username = principal.Claims.SingleOrDefault(c => c.Type == nameof(Person.Username));
-        
-        return new Person(long.Parse(personId.Value), principal.Identity!.Name!, username?.Value);
+
+        Claim? personId = null;
+        Claim? username = null;
+
+        foreach (var claim in principal.Claims)
+            switch (claim.Type)
+            {
+                case nameof(Person.Id):
+                    personId = claim;
+                    break;
+                case nameof(Person.Username):
+                    username = claim;
+                    break;
+            }
+
+        return new Person(long.Parse(personId!.Value), principal.Identity!.Name!, username?.Value);
     }
     
     public static ClaimsPrincipal ToClaimsPrincipal(this Person? person)
     {
         if (person is null)
             return new ClaimsPrincipal(new ClaimsIdentity());
-
+        
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, person.DisplayName),
@@ -29,7 +41,7 @@ public static class ClaimsPrincipalExtensions
         if (!string.IsNullOrWhiteSpace(person.Username))
             claims.Add(new Claim(nameof(Person.Username), person.Username));
         
-        var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+        var claimsIdentity = new ClaimsIdentity(claims, ApplicationContext.AuthenticationScheme);
         
         return new ClaimsPrincipal(claimsIdentity);
     }

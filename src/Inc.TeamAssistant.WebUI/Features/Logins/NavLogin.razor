@@ -1,0 +1,26 @@
+@inject IRenderContext RenderContext
+
+<div class="nav-login">
+    <div class="nav-login__container">
+        <AuthorizeView>
+            <Authorized>
+                <a href="/accounts/logout" class="link link_black">Logout</a>
+            </Authorized>
+            <NotAuthorized>
+                @if (_hasLoginAsSuperUser)
+                {
+                    <a href="/accounts/as-super-user" class="link link_black">Login as superuser</a>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private bool _hasLoginAsSuperUser;
+
+    protected override void OnInitialized()
+    {
+        _hasLoginAsSuperUser = RenderContext.IsDevelopment();
+    }
+}

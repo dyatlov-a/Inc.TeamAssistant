@@ -15,6 +15,10 @@ internal sealed class ClientRenderContext : IRenderContext
 
     public bool IsBrowser => true;
 
+    public bool IsDevelopment() => _navigationManager.BaseUri.StartsWith(
+        "http://localhost",
+        StringComparison.InvariantCultureIgnoreCase);
+
     public (LanguageId Language, bool Selected) GetCurrentLanguageId()
     {
         var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);

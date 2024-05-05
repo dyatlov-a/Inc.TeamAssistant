@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
                 sp.GetRequiredService<MessageProviderClient>(),
-                AppVersion.GetVersion()))
+                ApplicationContext.GetVersion()))
             
             .AddTransient<EventsProvider>();
 
