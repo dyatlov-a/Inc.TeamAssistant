@@ -19,7 +19,9 @@ internal sealed class BotRepository : IBotRepository
         var command = new CommandDefinition(@"
             SELECT
                 b.id AS id,
-                b.name AS name
+                b.name AS name,
+                b.token AS token,
+                b.owner_id AS ownerid
             FROM connector.bots AS b;",
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -28,5 +30,37 @@ internal sealed class BotRepository : IBotRepository
 
         var results = await connection.QueryAsync<Bot>(command);
         return results.ToArray();
+    }
+
+    public async Task<Bot?> FindById(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                b.id AS id,
+                b.name AS name,
+                b.token AS token,
+                b.owner_id AS ownerid
+            FROM connector.bots AS b
+            WHERE b.id = @id;
+
+            SELECT f.id AS id
+            FROM connector.features AS f
+            JOIN connector.activated_features AS af ON af.feature_id = f.id
+            WHERE af.bot_id = @id;",
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var query = await connection.QueryMultipleAsync(command);
+
+        var bot = await query.ReadSingleOrDefaultAsync<Bot>();
+        var features = await query.ReadAsync<Guid>();
+        
+        if (bot is not null)
+            foreach (var feature in features)
+                bot.AddFeature(feature);
+        
+        return bot;
     }
 }

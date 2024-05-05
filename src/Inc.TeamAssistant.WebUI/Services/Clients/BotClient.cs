@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -55,5 +56,21 @@ internal sealed class BotClient : IBotService
         {
             return ServiceResult.Failed<GetBotUserNameResult>(ex.Message);
         }
+    }
+
+    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long ownerId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetBotResult?>>($"bots/{botId}", token);
+            if (result is null)
+                throw new TeamAssistantException("Parse response with error.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetBotResult?>(ex.Message);
+        } 
     }
 }

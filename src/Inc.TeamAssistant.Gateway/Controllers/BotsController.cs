@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,18 @@ public sealed class BotsController : ControllerBase
         _botService = botService ?? throw new ArgumentNullException(nameof(botService));
     }
 
-    [HttpGet("{ownerId}")]
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken token)
+    {
+        var person = User.ToPerson();
+        var getBotByIdResult = await _botService.GetBotById(id, person.Id, token);
+        
+        return getBotByIdResult.Result is null
+            ? NotFound()
+            : Ok(getBotByIdResult);
+    }
+
+    [HttpGet("{ownerId:long}")]
     public async Task<IActionResult> Get(long ownerId, CancellationToken token)
     {
         return Ok(await _botService.GetBotsByOwner(ownerId, token));
