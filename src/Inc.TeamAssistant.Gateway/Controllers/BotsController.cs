@@ -42,4 +42,10 @@ public sealed class BotsController : ControllerBase
         
         return Ok(await _botService.Check(query, token));
     }
+
+    [HttpGet("features")]
+    public async Task<IActionResult> GetFeatures(CancellationToken token)
+    {
+        return Ok(await _botService.GetFeatures(token));
+    }
 }

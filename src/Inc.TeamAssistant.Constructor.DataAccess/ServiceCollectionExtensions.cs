@@ -10,7 +10,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         
         services
-            .AddSingleton<IBotRepository, BotRepository>();
+            .AddSingleton<IBotRepository, BotRepository>()
+            .AddSingleton<IFeatureReader, FeatureReader>();
         
         return services;
     }

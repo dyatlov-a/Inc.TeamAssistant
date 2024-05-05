@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -57,6 +58,20 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetBotResult?>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetFeaturesQuery(), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
         }
     }
 }

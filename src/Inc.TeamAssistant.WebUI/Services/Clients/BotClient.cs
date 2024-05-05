@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
@@ -72,5 +73,24 @@ internal sealed class BotClient : IBotService
         {
             return ServiceResult.Failed<GetBotResult?>(ex.Message);
         } 
+    }
+
+    public async Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token)
+    {
+        try
+        {
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetFeaturesResult>>(
+                "features",
+                token);
+
+            if (result is null)
+                throw new TeamAssistantException("Parse response with error.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
     }
 }
