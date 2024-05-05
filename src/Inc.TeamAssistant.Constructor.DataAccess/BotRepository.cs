@@ -47,6 +47,7 @@ internal sealed class BotRepository : IBotRepository
             FROM connector.features AS f
             JOIN connector.activated_features AS af ON af.feature_id = f.id
             WHERE af.bot_id = @id;",
+            new { id },
             flags: CommandFlags.None,
             cancellationToken: token);
 

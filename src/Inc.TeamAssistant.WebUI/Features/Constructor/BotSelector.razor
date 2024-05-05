@@ -1,15 +1,16 @@
 @inject IBotService BotService
 @inject LanguageManager LanguageManager
+@inject NavigationManager NavigationManager
 
 <div class="bot-selector">
     @foreach(var bot in _viewModel.Bots)
     {
-        <div class="bot-selector__item">
+        <div class="bot-selector__item" @onclick="() => MoveToEdit(bot.Id)">
             <BotIcon Size="160px" Color="#fff" />
             <div class="bot-selector__name" title="@bot.Name">@bot.Name</div>
         </div>
     }
-    <div class="bot-selector__item">
+    <div class="bot-selector__item" @onclick="MoveToAdd">
         <AddIcon Size="160px" Color="#fff" />
         <div class="bot-selector__name" title="Create">@_viewModel.AddBotLink</div>
     </div>
@@ -18,8 +19,15 @@
 @code {
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
+
+    private Func<string?, string> _linkBuilder = default!;
     
     private BotSelectorViewModel _viewModel = BotSelectorViewModel.Empty;
+
+    protected override void OnInitialized()
+    {
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -29,5 +37,17 @@
         _viewModel = new BotSelectorViewModel(
             resources[Messages.Constructor_AddBotLink],
             getBotsByOwnerResult.Result.Bots);
+    }
+
+    private void MoveToAdd() => MoveToEdit(botId: null);
+
+    private void MoveToEdit(Guid? botId)
+    {
+        var stage = Stage.CheckBot.ToString().ToLower();
+        var link = botId.HasValue
+            ? $"constructor/{botId.Value:N}/{stage}"
+            : $"constructor/{stage}";
+        
+        NavigationManager.NavigateTo(_linkBuilder(link));
     }
 }

@@ -94,6 +94,7 @@ html {
     padding: .875rem 1.25rem;
     border-radius: 1rem;
     transition: background-color 0.3s ease 0s;
+    background-color: transparent;
 }
 .button_white {
     border: .1875rem solid #fff;
@@ -186,4 +187,12 @@ html {
 }
 .marker-btn:hover {
     text-decoration: none;
+}
+/* FORMS */
+.form-section__control {
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 1rem;
 }

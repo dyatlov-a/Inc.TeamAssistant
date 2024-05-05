@@ -1,0 +1,54 @@
+@page "/constructor/{BotId:guid?}/{Selected}"
+@page "/en/constructor/{BotId:guid?}/{Selected}"
+@page "/ru/constructor/{BotId:guid?}/{Selected}"
+
+@attribute [Authorize]
+
+@inject IBotService BotService
+
+<ConstructorContainer>
+    <Content>
+        <StageSummary Current="CurrentState" />
+        <DynamicComponent Type="StageType" Parameters="StageParameters" />
+    </Content>
+</ConstructorContainer>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+
+    [Parameter]
+    public string Selected { get; set; } = default!;
+    
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+    
+    private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
+        ? value
+        : Stage.CheckBot;
+    
+    private Type StageType => CurrentState switch
+    {
+        Stage.CheckBot => typeof(CheckBot),
+        Stage.SelectFeatures => typeof(SelectFeatures),
+        _ => throw new ApplicationException()
+    };
+    
+    private Dictionary<string, object> StageParameters => new()
+    {
+        { nameof(BotFormModel), _botFormModel }
+    };
+    
+    private BotFormModel _botFormModel = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (BotId.HasValue && AuthenticationState is not null)
+        {
+            var person = (await AuthenticationState).User.ToPerson();
+            var bot = await BotService.GetBotById(BotId.Value, person.Id);
+            
+            _botFormModel = BotFormModel.Create(bot.Result!);
+        }
+    }
+}

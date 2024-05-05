@@ -1,0 +1,76 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName
+
+@inject IBotService BotService
+@inject NavigationManager NavigationManager
+@inject LanguageManager LanguageManager
+
+<EditForm EditContext="_editContext" OnValidSubmit="SubmitForm">
+    <div class="form-section">
+        <div class="form-section__legend">
+            <h4 class="form-section__title">Set bot token</h4>
+            <p class="form-section__help">Please move to <a href="https://telegram.me/BotFather" class="link link_black">BotFather</a> and create bot</p>
+        </div>
+        <div class="form-section__content">
+            <div class="form-section__field-set">
+                <label for="bot-token" class="form-section__label">Bot token</label>
+                <InputText @bind-Value="_botFormModel.Token" class="form-section__control" id="bot-token" />
+            </div>
+            <div class="form-section__field-set">
+                <label for="bot-username" class="form-section__label">Bot username</label>
+                <InputText @bind-Value="_botFormModel.UserName" class="form-section__control" id="bot-username" disabled="true" />
+            </div>
+        </div>
+    </div>
+    <div class="form-controls">
+        <button class="button button_white" type="button" @onclick="Check">Check token</button>
+        @if (_isValid)
+        {
+            <button class="button button_white" type="submit">Next</button>
+        }
+    </div>
+</EditForm>
+
+@code {
+    private readonly BotFormModel _botFormModel = new();
+    private bool _isValid;
+    private Func<string?, string> _linkBuilder = default!;
+    
+    [Parameter, EditorRequired]
+    public BotFormModel BotFormModel { get; set; } = default!;
+    
+    private EditContext? _editContext;
+    
+    protected override void OnInitialized()
+    {
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _isValid = BotFormModel.BotId.HasValue;
+        _botFormModel.BotId = BotFormModel.BotId;
+        _botFormModel.UserName = BotFormModel.UserName;
+        _botFormModel.Token = BotFormModel.Token;
+        _editContext = new EditContext(_botFormModel);
+    }
+
+    private async Task Check()
+    {
+        var getBotUserNameResult = await BotService.Check(new GetBotUserNameQuery(_botFormModel.Token));
+
+        if (getBotUserNameResult.Result.HasAccess)
+            _botFormModel.UserName = getBotUserNameResult.Result.UserName;
+        
+        _isValid = getBotUserNameResult.Result.HasAccess;
+    }
+
+    private void SubmitForm()
+    {
+        var stage = Stage.SelectFeatures.ToString().ToLower();
+        var link = _botFormModel.BotId.HasValue
+            ? $"constructor/{_botFormModel.BotId.Value:N}/{stage}"
+            : $"constructor/{stage}";
+        
+        NavigationManager.NavigateTo(_linkBuilder(link));
+    }
+}
