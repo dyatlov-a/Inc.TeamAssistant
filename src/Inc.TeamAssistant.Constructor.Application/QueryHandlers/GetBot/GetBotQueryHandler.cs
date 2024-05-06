@@ -21,8 +21,8 @@ internal sealed class GetBotQueryHandler : IRequestHandler<GetBotQuery, GetBotRe
         if (bot is null)
             return null;
         
-        if (bot.OwnerId != query.OwnerId)
-            throw new ApplicationException($"User {query.OwnerId} has not access to bot {query.Id}.");
+        if (bot.OwnerId != query.CurrentUserId)
+            throw new ApplicationException($"User {query.CurrentUserId} has not access to bot {query.Id}.");
 
         return new GetBotResult(bot.Id, bot.Name, bot.Token, bot.FeatureIds);
     }

@@ -48,4 +48,12 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetFeatures(token));
     }
+    
+    [HttpDelete("{id:Guid}")]
+    public async Task Remove(Guid id, CancellationToken token)
+    {
+        var person = User.ToPerson();
+        
+        await _botService.Remove(id, person.Id, token);
+    }
 }

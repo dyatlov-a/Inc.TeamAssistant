@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
@@ -47,11 +48,11 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long ownerId, CancellationToken token)
+    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long currentUserId, CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetBotQuery(botId, ownerId), token);
+            var result = await _mediator.Send(new GetBotQuery(botId, currentUserId), token);
 
             return ServiceResult.Success(result);
         }
@@ -72,6 +73,18 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
+    }
+
+    public async Task Remove(Guid botId, long currentUserId, CancellationToken token)
+    {
+        try
+        {
+            await _mediator.Send(new RemoveBotCommand(botId, currentUserId), token);
+        }
+        catch
+        {
+            // ignored
         }
     }
 }

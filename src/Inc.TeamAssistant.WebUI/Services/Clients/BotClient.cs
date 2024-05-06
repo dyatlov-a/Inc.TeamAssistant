@@ -59,7 +59,7 @@ internal sealed class BotClient : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long ownerId, CancellationToken token)
+    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long currentUserId, CancellationToken token)
     {
         try
         {
@@ -80,7 +80,7 @@ internal sealed class BotClient : IBotService
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetFeaturesResult>>(
-                "features",
+                "bots/features",
                 token);
 
             if (result is null)
@@ -91,6 +91,18 @@ internal sealed class BotClient : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
+    }
+
+    public async Task Remove(Guid botId, long currentUserId, CancellationToken token)
+    {
+        try
+        {
+            await _client.DeleteAsync($"bots/{botId}", token);
+        }
+        catch
+        {
+            // ignored
         }
     }
 }

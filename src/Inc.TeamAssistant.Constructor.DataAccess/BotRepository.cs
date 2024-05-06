@@ -22,7 +22,12 @@ internal sealed class BotRepository : IBotRepository
                 b.name AS name,
                 b.token AS token,
                 b.owner_id AS ownerid
-            FROM connector.bots AS b;",
+            FROM connector.bots AS b
+            WHERE b.owner_id = @owner_id;",
+            new
+            {
+                owner_id = ownerId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -47,7 +52,10 @@ internal sealed class BotRepository : IBotRepository
             FROM connector.features AS f
             JOIN connector.activated_features AS af ON af.feature_id = f.id
             WHERE af.bot_id = @id;",
-            new { id },
+            new
+            {
+                id
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -63,5 +71,22 @@ internal sealed class BotRepository : IBotRepository
                 bot.AddFeature(feature);
         
         return bot;
+    }
+
+    public async Task Remove(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            DELETE FROM connector.bots AS b
+            WHERE b.id = @id;",
+            new
+            {
+                id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        await connection.ExecuteAsync(command);
     }
 }
