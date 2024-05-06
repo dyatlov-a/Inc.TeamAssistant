@@ -50,11 +50,11 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long currentUserId, CancellationToken token)
+    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetBotQuery(botId, currentUserId), token);
+            var result = await _mediator.Send(new GetBotQuery(botId), token);
 
             return ServiceResult.Success(result);
         }
@@ -102,11 +102,11 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task Remove(Guid botId, long currentUserId, CancellationToken token)
+    public async Task Remove(Guid botId, CancellationToken token)
     {
         try
         {
-            await _mediator.Send(new RemoveBotCommand(botId, currentUserId), token);
+            await _mediator.Send(new RemoveBotCommand(botId), token);
         }
         catch
         {

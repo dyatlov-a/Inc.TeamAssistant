@@ -9,8 +9,5 @@ internal sealed class GetBotQueryValidator : AbstractValidator<GetBotQuery>
     {
         RuleFor(e => e.Id)
             .NotEmpty();
-
-        RuleFor(e => e.CurrentUserId)
-            .NotEmpty();
     }
 }

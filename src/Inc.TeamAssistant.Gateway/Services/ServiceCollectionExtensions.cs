@@ -114,6 +114,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
+            .AddScoped<ICurrentUserResolver, CurrentUserResolver>()
 
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(

@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,8 +22,7 @@ public sealed class BotsController : ControllerBase
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken token)
     {
-        var person = User.ToPerson();
-        var getBotByIdResult = await _botService.GetBotById(id, person.Id, token);
+        var getBotByIdResult = await _botService.GetBotById(id, token);
         
         return getBotByIdResult.Result is null
             ? NotFound()
@@ -55,12 +53,8 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> Create(CreateBotCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        var person = User.ToPerson();
 
-        await _botService.Create(
-            command with { CurrentUserId = person.Id },
-            token);
+        await _botService.Create(command, token);
 
         return Ok();
     }
@@ -69,12 +63,8 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> Update(UpdateBotCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        var person = User.ToPerson();
 
-        await _botService.Update(
-            command with { CurrentUserId = person.Id },
-            token);
+        await _botService.Update(command, token);
 
         return Ok();
     }
@@ -82,9 +72,7 @@ public sealed class BotsController : ControllerBase
     [HttpDelete("{id:Guid}")]
     public async Task<IActionResult> Remove(Guid id, CancellationToken token)
     {
-        var person = User.ToPerson();
-        
-        await _botService.Remove(id, person.Id, token);
+        await _botService.Remove(id, token);
 
         return Ok();
     }

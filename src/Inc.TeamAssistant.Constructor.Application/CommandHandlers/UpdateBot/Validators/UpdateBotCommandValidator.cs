@@ -17,9 +17,6 @@ internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCom
         RuleFor(e => e.Token)
             .NotEmpty()
             .MaximumLength(255);
-
-        RuleFor(e => e.CurrentUserId)
-            .NotEmpty();
         
         RuleFor(e => e.FeatureIds)
             .NotEmpty();

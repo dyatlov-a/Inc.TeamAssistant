@@ -20,9 +20,6 @@
     [Parameter]
     public string Selected { get; set; } = default!;
     
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthenticationState { get; set; }
-    
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
         : Stage.CheckBot;
@@ -43,10 +40,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (BotId.HasValue && AuthenticationState is not null)
+        if (BotId.HasValue)
         {
-            var person = (await AuthenticationState).User.ToPerson();
-            var bot = await BotService.GetBotById(BotId.Value, person.Id);
+            var bot = await BotService.GetBotById(BotId.Value);
             
             _botFormModel = BotFormModel.Create(bot.Result!);
         }

@@ -14,7 +14,7 @@ public interface IBotService
     
     Task<ServiceResult<GetBotUserNameResult>> Check(GetBotUserNameQuery query, CancellationToken token = default);
 
-    Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long currentUserId, CancellationToken token = default);
+    Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, CancellationToken token = default);
     
     Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token = default);
 
@@ -22,5 +22,5 @@ public interface IBotService
 
     Task Update(UpdateBotCommand command, CancellationToken token = default);
     
-    Task Remove(Guid botId, long currentUserId, CancellationToken token = default);
+    Task Remove(Guid botId, CancellationToken token = default);
 }

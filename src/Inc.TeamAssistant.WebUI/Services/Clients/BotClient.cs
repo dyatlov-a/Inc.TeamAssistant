@@ -61,7 +61,7 @@ internal sealed class BotClient : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, long currentUserId, CancellationToken token)
+    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, CancellationToken token)
     {
         try
         {
@@ -120,7 +120,7 @@ internal sealed class BotClient : IBotService
         }
     }
 
-    public async Task Remove(Guid botId, long currentUserId, CancellationToken token)
+    public async Task Remove(Guid botId, CancellationToken token)
     {
         try
         {

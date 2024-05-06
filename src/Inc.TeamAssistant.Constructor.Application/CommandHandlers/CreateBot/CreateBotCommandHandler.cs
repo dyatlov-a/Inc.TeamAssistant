@@ -8,10 +8,12 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot;
 internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand>
 {
     private readonly IBotRepository _botRepository;
+    private readonly ICurrentUserResolver _currentUserResolver;
 
-    public CreateBotCommandHandler(IBotRepository botRepository)
+    public CreateBotCommandHandler(IBotRepository botRepository, ICurrentUserResolver currentUserResolver)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
+        _currentUserResolver = currentUserResolver ?? throw new ArgumentNullException(nameof(currentUserResolver));
     }
 
     public async Task Handle(CreateBotCommand command, CancellationToken token)
@@ -22,7 +24,7 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
             Guid.NewGuid(),
             command.Name,
             command.Token,
-            command.CurrentUserId,
+            _currentUserResolver.GetUserId(),
             command.Properties,
             command.FeatureIds);
         

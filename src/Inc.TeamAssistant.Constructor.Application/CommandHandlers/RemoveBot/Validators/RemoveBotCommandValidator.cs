@@ -9,8 +9,5 @@ internal sealed class RemoveBotCommandValidator : AbstractValidator<RemoveBotCom
     {
         RuleFor(e => e.Id)
             .NotEmpty();
-
-        RuleFor(e => e.CurrentUserId)
-            .NotEmpty();
     }
 }
