@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -48,12 +49,28 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetFeatures(token));
     }
-    
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateBotCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var person = User.ToPerson();
+
+        await _botService.Create(
+            command with { OwnerId = person.Id },
+            token);
+
+        return Ok();
+    }
+
     [HttpDelete("{id:Guid}")]
-    public async Task Remove(Guid id, CancellationToken token)
+    public async Task<IActionResult> Remove(Guid id, CancellationToken token)
     {
         var person = User.ToPerson();
         
         await _botService.Remove(id, person.Id, token);
+
+        return Ok();
     }
 }

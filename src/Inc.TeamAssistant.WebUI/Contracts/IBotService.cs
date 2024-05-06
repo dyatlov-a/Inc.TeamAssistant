@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
@@ -16,5 +17,7 @@ public interface IBotService
     
     Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token = default);
 
+    Task Create(CreateBotCommand command, CancellationToken token = default);
+    
     Task Remove(Guid botId, long currentUserId, CancellationToken token = default);
 }

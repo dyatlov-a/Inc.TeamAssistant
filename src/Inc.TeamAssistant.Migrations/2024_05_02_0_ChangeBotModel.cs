@@ -72,6 +72,12 @@ public sealed class ChangeBotModel : Migration
             .OnTable("bots")
             .InSchema("connector")
             .AsInt64().NotNullable().SetExistingRowsTo(272062137);
+
+        Create
+            .Column("properties")
+            .OnTable("bots")
+            .InSchema("connector")
+            .AsCustom("jsonb").NotNullable().SetExistingRowsTo("{}");
         
         Execute.Sql("DELETE FROM connector.bot_command_stages;", "Clean connector.bot_command_stages");
         

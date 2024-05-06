@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Domain;
@@ -21,7 +22,8 @@ internal sealed class BotRepository : IBotRepository
                 b.id AS id,
                 b.name AS name,
                 b.token AS token,
-                b.owner_id AS ownerid
+                b.owner_id AS ownerid,
+                b.properties AS properties
             FROM connector.bots AS b
             WHERE b.owner_id = @owner_id;",
             new
@@ -44,7 +46,8 @@ internal sealed class BotRepository : IBotRepository
                 b.id AS id,
                 b.name AS name,
                 b.token AS token,
-                b.owner_id AS ownerid
+                b.owner_id AS ownerid,
+                b.properties AS properties
             FROM connector.bots AS b
             WHERE b.id = @id;
 
@@ -71,6 +74,57 @@ internal sealed class BotRepository : IBotRepository
                 bot.AddFeature(feature);
         
         return bot;
+    }
+
+    public async Task Upsert(Bot bot, CancellationToken token)
+    {
+        var upsertBotCommand = new CommandDefinition(@"
+            INSERT INTO connector.bots (id, name, token, owner_id, properties)
+            VALUES (@id, @name, @token, @owner_id, @properties::jsonb)
+            ON CONFLICT (id) DO UPDATE SET
+                name = EXCLUDED.name,
+                token = EXCLUDED.token,
+                owner_id = EXCLUDED.owner_id;",
+            new
+            {
+                id = bot.Id,
+                name = bot.Name,
+                token = bot.Token,
+                owner_id = bot.OwnerId,
+                properties = JsonSerializer.Serialize(bot.Properties)
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        var deleteFeaturesCommand = new CommandDefinition(@"
+            DELETE FROM connector.activated_features AS af
+            WHERE af.bot_id = @bot_id;",
+            new
+            {
+                bot_id = bot.Id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        var insertFeaturesCommand = new CommandDefinition(@"
+            INSERT INTO connector.activated_features (bot_id, feature_id)
+            SELECT @bot_id, i.feature_id
+            FROM UNNEST(@feature_ids) AS i(feature_id);",
+            new
+            {
+                bot_id = bot.Id,
+                feature_ids = bot.FeatureIds.ToArray()
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        await connection.OpenAsync(token);
+        await using var transaction = await connection.BeginTransactionAsync(token);
+        
+        await connection.ExecuteAsync(upsertBotCommand);
+        await connection.ExecuteAsync(deleteFeaturesCommand);
+        await connection.ExecuteAsync(insertFeaturesCommand);
+
+        await transaction.CommitAsync(token);
     }
 
     public async Task Remove(Guid id, CancellationToken token)
