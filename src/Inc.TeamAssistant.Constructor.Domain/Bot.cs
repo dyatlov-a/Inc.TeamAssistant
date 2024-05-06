@@ -15,9 +15,17 @@ public sealed class Bot
     {
     }
     
-    public Bot(Guid id, string name, string token, long ownerId, IReadOnlyDictionary<string, string> properties)
+    public Bot(
+        Guid id,
+        string name,
+        string token,
+        long ownerId,
+        IReadOnlyDictionary<string, string> properties,
+        IReadOnlyCollection<Guid> featureIds)
         : this()
     {
+        ArgumentNullException.ThrowIfNull(featureIds);
+        
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
         if (string.IsNullOrWhiteSpace(token))
@@ -28,12 +36,50 @@ public sealed class Bot
         Token = token;
         OwnerId = ownerId;
         Properties = properties ?? throw new ArgumentNullException(nameof(properties));
+        ChangeFeatures(featureIds);
+    }
+
+    public Bot ChangeName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        
+        Name = value;
+
+        return this;
     }
     
-    public Bot AddFeature(Guid featureId)
+    public Bot ChangeToken(string token)
     {
-        if (!_featureIds.Contains(featureId))
-            _featureIds.Add(featureId);
+        if (string.IsNullOrWhiteSpace(token))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(token));
+        
+        Token = token;
+
+        return this;
+    }
+    
+    public Bot ChangeFeatures(IReadOnlyCollection<Guid> featureIds)
+    {
+        ArgumentNullException.ThrowIfNull(featureIds);
+        
+        _featureIds.Clear();
+        _featureIds.AddRange(featureIds);
+        
+        return this;
+    }
+    
+    public Bot ChangeProperty(string name, string value)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        
+        Properties = new Dictionary<string, string>(Properties)
+        {
+            [name] = value
+        };
         
         return this;
     }

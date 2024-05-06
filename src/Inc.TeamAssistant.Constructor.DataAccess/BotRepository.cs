@@ -69,11 +69,7 @@ internal sealed class BotRepository : IBotRepository
         var bot = await query.ReadSingleOrDefaultAsync<Bot>();
         var features = await query.ReadAsync<Guid>();
         
-        if (bot is not null)
-            foreach (var feature in features)
-                bot.AddFeature(feature);
-        
-        return bot;
+        return bot?.ChangeFeatures(features.ToArray());
     }
 
     public async Task Upsert(Bot bot, CancellationToken token)

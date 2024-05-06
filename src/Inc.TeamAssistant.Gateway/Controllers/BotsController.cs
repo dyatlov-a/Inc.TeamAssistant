@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -58,7 +59,21 @@ public sealed class BotsController : ControllerBase
         var person = User.ToPerson();
 
         await _botService.Create(
-            command with { OwnerId = person.Id },
+            command with { CurrentUserId = person.Id },
+            token);
+
+        return Ok();
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateBotCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var person = User.ToPerson();
+
+        await _botService.Update(
+            command with { CurrentUserId = person.Id },
             token);
 
         return Ok();

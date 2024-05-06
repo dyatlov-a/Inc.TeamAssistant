@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
@@ -100,6 +101,18 @@ internal sealed class BotClient : IBotService
         try
         {
             await _client.PostAsJsonAsync("bots", command, token);
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+
+    public async Task Update(UpdateBotCommand command, CancellationToken token)
+    {
+        try
+        {
+            await _client.PutAsJsonAsync("bots", command, token);
         }
         catch
         {

@@ -1,12 +1,15 @@
 using FluentValidation;
-using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 
-namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot.Validators;
+namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot.Validators;
 
-internal sealed class CreateBotCommandValidator : AbstractValidator<CreateBotCommand>
+internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCommand>
 {
-    public CreateBotCommandValidator()
+    public UpdateBotCommandValidator()
     {
+        RuleFor(e => e.Id)
+            .NotEmpty();
+        
         RuleFor(e => e.Name)
             .NotEmpty()
             .MaximumLength(50);

@@ -22,11 +22,9 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
             Guid.NewGuid(),
             command.Name,
             command.Token,
-            command.OwnerId,
-            command.Properties);
-
-        foreach (var featureId in command.FeatureIds)
-            bot.AddFeature(featureId);
+            command.CurrentUserId,
+            command.Properties,
+            command.FeatureIds);
         
         await _botRepository.Upsert(bot, token);
     }
