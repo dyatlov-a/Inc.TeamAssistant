@@ -196,3 +196,9 @@ html {
     margin-bottom: 10px;
     font-size: 1rem;
 }
+.is-valid {
+    border: 1px solid #28a745;
+}
+.is-invalid {
+    border: 1px solid #dc3545;
+}
