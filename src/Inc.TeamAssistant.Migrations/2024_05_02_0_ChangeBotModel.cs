@@ -11,13 +11,19 @@ public sealed class ChangeBotModel : Migration
         Create
             .Table("features")
             .InSchema("connector")
-            
+
             .WithColumn("id")
             .AsGuid().NotNullable()
             .PrimaryKey("features__pk__id")
-            
+
             .WithColumn("name")
-            .AsString(50).NotNullable();
+            .AsString(50).NotNullable()
+
+            .WithColumn("properties")
+            .AsCustom("jsonb").NotNullable()
+            
+            .WithColumn("position")
+            .AsInt32().NotNullable();
             
         Create
             .Table("activated_features")
@@ -137,12 +143,12 @@ public sealed class ChangeBotModel : Migration
         
         Execute.Sql(
             """
-                INSERT INTO connector.features(id, name)
+                INSERT INTO connector.features(id, name, properties, position)
                 VALUES
-                    ('5a7334e6-8076-4fc1-89e9-5139b8135947', 'Appraiser'),
-                    ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'Reviewer'),
-                    ('a8623f4a-5ac6-40e5-8d38-e3d76f641dc7', 'CheckIn'),
-                    ('39195e70-b83a-42b3-88e5-dbbf6789a3c8', 'RandomCoffee')
+                    ('5a7334e6-8076-4fc1-89e9-5139b8135947', 'Appraiser', '["storyType"]'::jsonb, 1),
+                    ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'Reviewer', '["nextReviewerStrategy"]'::jsonb, 2),
+                    ('a8623f4a-5ac6-40e5-8d38-e3d76f641dc7', 'CheckIn', '[]'::jsonb, 4),
+                    ('39195e70-b83a-42b3-88e5-dbbf6789a3c8', 'RandomCoffee', '[]'::jsonb, 3)
             """,
             "Setup features");
         

@@ -19,8 +19,10 @@ internal sealed class FeatureReader : IFeatureReader
         var command = new CommandDefinition(@"
             SELECT
                 f.id AS id,
-                f.name AS name
-            FROM connector.features AS f;",
+                f.name AS name,
+                f.properties AS properties
+            FROM connector.features AS f
+            ORDER BY f.position;",
             flags: CommandFlags.None,
             cancellationToken: token);
 

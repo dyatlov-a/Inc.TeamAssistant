@@ -53,6 +53,7 @@ builder.Services
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
 	.AddJsonType<ICollection<string>>()
+	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
