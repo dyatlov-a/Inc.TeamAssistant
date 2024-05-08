@@ -4,11 +4,11 @@ using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
-internal sealed class BotFormModelValidator : AbstractValidator<BotFormModel>
+public sealed class Stage1CheckBotFormModelValidator : AbstractValidator<Stage1CheckBotFormModel>
 {
     private readonly IBotService _botService;
     
-    public BotFormModelValidator(IBotService botService)
+    public Stage1CheckBotFormModelValidator(IBotService botService)
     {
         _botService = botService ?? throw new ArgumentNullException(nameof(botService));
         

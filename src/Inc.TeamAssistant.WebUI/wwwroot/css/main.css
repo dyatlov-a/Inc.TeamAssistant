@@ -202,3 +202,7 @@ html {
 .is-invalid {
     border: 1px solid #dc3545;
 }
+.validation-message {
+    font-size: .8rem;
+    color: #dc3545;
+}

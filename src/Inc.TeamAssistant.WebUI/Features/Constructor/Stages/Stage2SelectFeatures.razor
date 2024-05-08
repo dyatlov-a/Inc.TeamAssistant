@@ -1,0 +1,83 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
+
+@inject NavigationManager NavigationManager
+@inject LanguageManager LanguageManager
+@inject IBotService BotService
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <div class="feature-selector">
+        @foreach(var feature in _features)
+        {
+            <div class="feature-selector__item" @onclick="() => SelectFeature(feature.Id)">
+                <DynamicComponent Type="@GetFeatureType(feature.Name)" Parameters="IconParameters" />
+                <div class="feature-selector__name" title="@feature.Name">@feature.Name</div>
+            </div>
+        }
+    </div>
+    <ValidationMessage For="@(() => _formModel.FeatureIds)" />
+    <div class="form-controls">
+        <button class="button button_white" type="submit">Next</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly Stage2SelectFeaturesFormModel _formModel = new();
+    private Func<string?, string> _linkBuilder = default!;
+    private FluentValidationValidator? _fluentValidationValidator;
+    private IReadOnlyCollection<FeatureDto> _features = Array.Empty<FeatureDto>();
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "160px",
+        ["Color"] = "#fff"
+    };
+    
+    private Type GetFeatureType(string featureName) => featureName switch
+    {
+        "Appraiser" => typeof(AppraiserIcon),
+        "CheckIn" => typeof(CheckInIcon),
+        "RandomCoffee" => typeof(RandomCoffeeIcon),
+        "Reviewer" => typeof(ReviewerIcon),
+        _ => throw new ApplicationException()
+    };
+    
+    [Parameter, EditorRequired]
+    public BotFormModel BotFormModel { get; set; } = default!;
+    
+    private EditContext _editContext = new(new Stage2SelectFeaturesFormModel());
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var getFeaturesResult = await BotService.GetFeatures();
+        _features = getFeaturesResult.Result.Features;
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        
+        _formModel.FeatureIds = BotFormModel.FeatureIds.ToList();
+        
+        _editContext = new EditContext(_formModel);
+        _editContext.SetFieldCssClassProvider(new ValidationCssClassProvider());
+    }
+
+    private void SelectFeature(Guid featureId)
+    {
+        if (_formModel.FeatureIds.Contains(featureId))
+            _formModel.FeatureIds.Remove(featureId);
+        else
+            _formModel.FeatureIds.Add(featureId);
+    }
+
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+        
+        var stage = Stage.SetSettings.ToString().ToLower();
+        var link = BotFormModel.Id.HasValue
+            ? $"constructor/{BotFormModel.Id.Value:N}/{stage}"
+            : $"constructor/{stage}";
+
+        BotFormModel.FeatureIds = _formModel.FeatureIds.ToList();
+        
+        NavigationManager.NavigateTo(_linkBuilder(link));
+    }
+}

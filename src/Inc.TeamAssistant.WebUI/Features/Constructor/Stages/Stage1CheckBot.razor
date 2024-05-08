@@ -1,9 +1,8 @@
 @inject NavigationManager NavigationManager
 @inject LanguageManager LanguageManager
 
-<EditForm EditContext="_editContext" OnValidSubmit="SubmitForm">
-    <FluentValidationValidator />
-    
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="form-section">
         <div class="form-section__legend">
             <h4 class="form-section__title">Set bot token</h4>
@@ -12,12 +11,12 @@
         <div class="form-section__content">
             <div class="form-section__field-set">
                 <label for="bot-token" class="form-section__label">Bot token</label>
-                <InputText @bind-Value="_botFormModel.Token" class="form-section__control" id="bot-token"/>
-                <ValidationMessage For="@(() => _botFormModel.Token)" />
+                <InputText @bind-Value="_formModel.Token" class="form-section__control" id="bot-token"/>
+                <ValidationMessage For="@(() => _formModel.Token)" />
             </div>
             <div class="form-section__field-set">
                 <label for="bot-username" class="form-section__label">Bot username</label>
-                <InputText @bind-Value="_botFormModel.UserName" class="form-section__control" id="bot-username" disabled="true"/>
+                <InputText @bind-Value="_formModel.UserName" class="form-section__control" id="bot-username" disabled="true"/>
             </div>
         </div>
     </div>
@@ -27,13 +26,14 @@
 </EditForm>
 
 @code {
-    private readonly BotFormModel _botFormModel = new();
+    private readonly Stage1CheckBotFormModel _formModel = new();
     private Func<string?, string> _linkBuilder = default!;
+    private FluentValidationValidator? _fluentValidationValidator;
     
     [Parameter, EditorRequired]
     public BotFormModel BotFormModel { get; set; } = default!;
     
-    private EditContext? _editContext;
+    private EditContext _editContext = new(new Stage1CheckBotFormModel());
     
     protected override void OnInitialized()
     {
@@ -42,19 +42,24 @@
 
     protected override void OnParametersSet()
     {
-        _botFormModel.BotId = BotFormModel.BotId;
-        _botFormModel.UserName = BotFormModel.UserName;
-        _botFormModel.Token = BotFormModel.Token;
-        _editContext = new EditContext(_botFormModel);
+        _formModel.UserName = BotFormModel.UserName;
+        _formModel.Token = BotFormModel.Token;
+        _editContext = new EditContext(_formModel);
         _editContext.SetFieldCssClassProvider(new ValidationCssClassProvider());
     }
 
-    private void SubmitForm()
+    private async Task SubmitForm()
     {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+            
         var stage = Stage.SelectFeatures.ToString().ToLower();
-        var link = _botFormModel.BotId.HasValue
-            ? $"constructor/{_botFormModel.BotId.Value:N}/{stage}"
+        var link = BotFormModel.Id.HasValue
+            ? $"constructor/{BotFormModel.Id.Value:N}/{stage}"
             : $"constructor/{stage}";
+
+        BotFormModel.UserName = _formModel.UserName;
+        BotFormModel.Token = _formModel.Token;
         
         NavigationManager.NavigateTo(_linkBuilder(link));
     }

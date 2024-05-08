@@ -22,18 +22,20 @@
     
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
-        : Stage.CheckBot;
+        : Enum.GetValues<Stage>().First();
     
     private Type StageType => CurrentState switch
     {
-        Stage.CheckBot => typeof(CheckBot),
-        Stage.SelectFeatures => typeof(SelectFeatures),
+        Stage.CheckBot => typeof(Stage1CheckBot),
+        Stage.SelectFeatures => typeof(Stage2SelectFeatures),
+        Stage.SetSettings => typeof(Stage3SetSettings),
+        Stage.Complete => typeof(Stage4Complete),
         _ => throw new ApplicationException()
     };
     
     private Dictionary<string, object> StageParameters => new()
     {
-        { nameof(BotFormModel), _botFormModel }
+        [nameof(BotFormModel)] = _botFormModel
     };
     
     private BotFormModel _botFormModel = new();
@@ -43,8 +45,15 @@
         if (BotId.HasValue)
         {
             var bot = await BotService.GetBotById(BotId.Value);
-            
-            _botFormModel = BotFormModel.Create(bot.Result!);
+
+            _botFormModel = new()
+            {
+                Id = bot.Result!.Id,
+                UserName = bot.Result.UserName,
+                Token = bot.Result.Token,
+                FeatureIds = bot.Result.FeatureIds.ToList(),
+                Properties = bot.Result.Properties.ToDictionary()
+            };
         }
     }
 }

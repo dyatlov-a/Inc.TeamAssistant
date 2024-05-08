@@ -4,4 +4,5 @@ public sealed record GetBotResult(
     Guid Id,
     string UserName,
     string Token,
-    IReadOnlyCollection<Guid> FeatureIds);
+    IReadOnlyCollection<Guid> FeatureIds,
+    IReadOnlyDictionary<string, string> Properties);
