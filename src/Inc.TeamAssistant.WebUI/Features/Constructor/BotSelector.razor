@@ -5,14 +5,27 @@
 <div class="bot-selector">
     @foreach(var bot in _viewModel.Bots)
     {
-        <div class="bot-selector__item" @onclick="() => MoveToEdit(bot.Id)">
+        <div class="bot-selector__item">
             <BotIcon Size="160px" Color="#fff" />
             <div class="bot-selector__name" title="@bot.Name">@bot.Name</div>
+            <div>
+                <span @onclick="() => MoveToEdit(bot.Id)">
+                    <EditIcon Size="40px" Color="#fff" />
+                </span>
+                <span @onclick="() => Remove(bot.Id)">
+                    <TrashIcon Size="40px" Color="#fff" />
+                </span>
+            </div>
         </div>
     }
-    <div class="bot-selector__item" @onclick="MoveToAdd">
+    <div class="bot-selector__item">
         <AddIcon Size="160px" Color="#fff" />
         <div class="bot-selector__name" title="Create">@_viewModel.AddBotLink</div>
+        <div>
+            <span @onclick="MoveToAdd">
+                <AddIcon Size="40px" Color="#fff" />
+            </span>
+        </div>
     </div>
 </div>
 
@@ -49,5 +62,16 @@
             : $"constructor/{stage}";
         
         NavigationManager.NavigateTo(_linkBuilder(link));
+    }
+
+    private async Task Remove(Guid botId)
+    {
+        await BotService.Remove(botId);
+        
+        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
+        _viewModel = _viewModel with
+        {
+            Bots = getBotsByOwnerResult.Result.Bots
+        };
     }
 }

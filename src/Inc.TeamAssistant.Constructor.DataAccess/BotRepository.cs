@@ -80,7 +80,8 @@ internal sealed class BotRepository : IBotRepository
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
                 token = EXCLUDED.token,
-                owner_id = EXCLUDED.owner_id;",
+                owner_id = EXCLUDED.owner_id,
+                properties = EXCLUDED.properties;",
             new
             {
                 id = bot.Id,

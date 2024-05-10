@@ -2,7 +2,7 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
 public sealed class Stage3SetSettingsFormModel
 {
-    public IReadOnlyCollection<Setting> Properties { get; set; } = default!;
+    public IReadOnlyCollection<Setting> Properties { get; set; } = Array.Empty<Setting>();
     
     public sealed class Setting
     {

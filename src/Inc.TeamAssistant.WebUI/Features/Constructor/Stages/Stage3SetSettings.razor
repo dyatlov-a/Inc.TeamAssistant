@@ -16,7 +16,8 @@
                 <div class="form-section__field-set">
                     <label class="form-section__label">@description.FieldName</label>
                     <InputSelect @bind-Value="property.Value" class="form-section__control">
-                        @foreach(var targetValue in TargetValues[property.Name])
+                        <option value="@((string?)null)">Need select value</option>
+                        @foreach (var targetValue in TargetValues[property.Name])
                         {
                             <option value="@targetValue">@targetValue</option>
                         }
@@ -73,6 +74,8 @@
     {
         if (!await _fluentValidationValidator!.ValidateAsync())
             return;
+        
+        BotFormModel.Properties = _formModel.Properties.ToDictionary(v => v.Name, v => v.Value);
         
         var stage = Stage.Complete.ToString().ToLower();
         var link = BotFormModel.Id.HasValue

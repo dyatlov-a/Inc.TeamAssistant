@@ -9,6 +9,8 @@ public sealed class BotFormModel
     public IReadOnlyCollection<Guid> FeatureIds { get; set; } = Array.Empty<Guid>();
     public IReadOnlyCollection<string> PropertyKeys { get; set; } = Array.Empty<string>();
     public IReadOnlyDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+    public static readonly BotFormModel Empty = new();
     
     public sealed class Feature
     {

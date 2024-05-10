@@ -1,6 +1,9 @@
-@page "/constructor/{BotId:guid?}/{Selected}"
-@page "/en/constructor/{BotId:guid?}/{Selected}"
-@page "/ru/constructor/{BotId:guid?}/{Selected}"
+@page "/constructor/{Selected}"
+@page "/en/constructor/{Selected}"
+@page "/ru/constructor/{Selected}"
+@page "/constructor/{BotId:guid}/{Selected}"
+@page "/en/constructor/{BotId:guid}/{Selected}"
+@page "/ru/constructor/{BotId:guid}/{Selected}"
 
 @attribute [Authorize]
 
@@ -14,16 +17,14 @@
 </ConstructorContainer>
 
 @code {
-    [Parameter]
-    public Guid? BotId { get; set; }
+    [Parameter] public Guid? BotId { get; set; }
 
-    [Parameter]
-    public string Selected { get; set; } = default!;
-    
+    [Parameter] public string Selected { get; set; } = default!;
+
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
         : Enum.GetValues<Stage>().First();
-    
+
     private Type StageType => CurrentState switch
     {
         Stage.CheckBot => typeof(Stage1CheckBot),
@@ -32,37 +33,53 @@
         Stage.Complete => typeof(Stage4Complete),
         _ => throw new ApplicationException()
     };
-    
+
     private Dictionary<string, object> StageParameters => new()
     {
         [nameof(BotFormModel)] = _botFormModel
     };
-    
-    private BotFormModel _botFormModel = new();
+
+    private BotFormModel _botFormModel = BotFormModel.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
         var getFeaturesResult = await BotService.GetFeatures();
-        
-        if (BotId.HasValue)
-        {
-            var bot = await BotService.GetBotById(BotId.Value);
 
-            _botFormModel = new()
+        if (_botFormModel == BotFormModel.Empty)
+        {
+            _botFormModel = new BotFormModel
             {
-                Id = bot.Result!.Id,
-                UserName = bot.Result.UserName,
-                Token = bot.Result.Token,
                 Features = getFeaturesResult.Result.Features.Select(f => new BotFormModel.Feature
                 {
                     Id = f.Id,
                     Name = f.Name,
                     Properties = f.Properties
-                }).ToArray(),
-                FeatureIds = bot.Result.FeatureIds.ToArray(),
-                PropertyKeys = bot.Result.Properties.Keys.ToArray(),
-                Properties = bot.Result.Properties.ToDictionary()
+                }).ToArray()
             };
+        }
+
+        if (_botFormModel.Id != BotId)
+        {
+            if (BotId.HasValue)
+            {
+                var bot = await BotService.GetBotById(BotId.Value);
+
+                _botFormModel.Id = bot.Result!.Id;
+                _botFormModel.UserName = bot.Result.UserName;
+                _botFormModel.Token = bot.Result.Token;
+                _botFormModel.FeatureIds = bot.Result.FeatureIds.ToArray();
+                _botFormModel.PropertyKeys = bot.Result.Properties.Keys.ToArray();
+                _botFormModel.Properties = bot.Result.Properties.ToDictionary();
+            }
+            else
+            {
+                _botFormModel.Id = null;
+                _botFormModel.UserName = string.Empty;
+                _botFormModel.Token = string.Empty;
+                _botFormModel.FeatureIds = Array.Empty<Guid>();
+                _botFormModel.PropertyKeys = Array.Empty<string>();
+                _botFormModel.Properties = new Dictionary<string, string>();
+            }
         }
     }
 }

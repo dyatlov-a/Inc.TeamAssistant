@@ -19,13 +19,16 @@ public sealed class Stage1CheckBotFormModelValidator : AbstractValidator<Stage1C
             .WithMessage("Token was not valid. Please check it.");
     }
     
-    private async Task<bool> CheckAccessToBot(string botToken, CancellationToken token)
+    private async Task<bool> CheckAccessToBot(Stage1CheckBotFormModel model, string botToken, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(model);
+        
         if (string.IsNullOrWhiteSpace(botToken))
             return false;
         
         var getBotUserNameResult = await _botService.Check(new GetBotUserNameQuery(botToken), token);
 
+        model.UserName = getBotUserNameResult.Result.UserName;
         return getBotUserNameResult.Result.HasAccess;
     }
 }
