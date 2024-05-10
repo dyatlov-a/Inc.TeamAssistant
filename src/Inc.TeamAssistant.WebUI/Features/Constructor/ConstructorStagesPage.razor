@@ -1,3 +1,6 @@
+@page "/constructor/{BotId:guid}"
+@page "/en/constructor/{BotId:guid}"
+@page "/ru/constructor/{BotId:guid}"
 @page "/constructor/{Selected}"
 @page "/en/constructor/{Selected}"
 @page "/ru/constructor/{Selected}"
@@ -17,9 +20,11 @@
 </ConstructorContainer>
 
 @code {
-    [Parameter] public Guid? BotId { get; set; }
+    [Parameter]
+    public Guid? BotId { get; set; }
 
-    [Parameter] public string Selected { get; set; } = default!;
+    [Parameter]
+    public string Selected { get; set; } = default!;
 
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value

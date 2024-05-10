@@ -3,6 +3,8 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Stage1CheckBotFormTracker OnChange="StateHasChanged" />
+    
     <div class="form-section">
         <div class="form-section__legend">
             <h4 class="form-section__title">Set bot token</h4>
