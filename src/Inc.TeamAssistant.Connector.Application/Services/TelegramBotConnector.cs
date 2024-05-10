@@ -91,7 +91,10 @@ internal sealed class TelegramBotConnector : IHostedService, IBotListener
         
         _listeners.Remove(botId, out var cancellationTokenSource);
         
-        if (cancellationTokenSource is not null)
+        if (cancellationTokenSource is null)
+            return;
+        
+        using (cancellationTokenSource)
             await cancellationTokenSource.CancelAsync();
     }
 
@@ -102,7 +105,9 @@ internal sealed class TelegramBotConnector : IHostedService, IBotListener
         foreach (var cancellationTokenSource in _listeners.Values)
         {
             token.ThrowIfCancellationRequested();
-            await cancellationTokenSource.CancelAsync();
+            
+            using (cancellationTokenSource)
+                await cancellationTokenSource.CancelAsync();
         }
     }
 }

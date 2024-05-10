@@ -11,6 +11,7 @@ public sealed class Bot
     
     private readonly List<Team> _teams = new();
     public IReadOnlyCollection<Team> Teams => _teams;
+    public IReadOnlyDictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
 
     public Bot AddCommand(BotCommand botCommand)
     {

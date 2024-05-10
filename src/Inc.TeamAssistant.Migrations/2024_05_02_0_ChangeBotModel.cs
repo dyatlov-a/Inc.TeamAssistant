@@ -110,11 +110,15 @@ public sealed class ChangeBotModel : Migration
                 ('ec16e7f2-3540-4252-a683-f1e9bbbfdac9', '/remove_team', 'Connector_RemoveTeamHelp'),
                 ('f48db5a5-cbbe-45c6-9791-0bda8fd825fd', '/help', 'Connector_Help'),
                 ('3aaaa192-3dde-4d41-a720-3ae65594aa11', '/add', 'Appraiser_AddHelp'),
+                ('d753d196-0c01-46ac-83d1-65fdd5d40318', '/move_to_sp', 'Appraiser_MoveToSpHelp'),
+                ('a49e0652-9237-455e-afac-d6119fe10fde', '/move_to_tshirts', 'Appraiser_MoveToTShirtsHelp'),
                 ('7203e75b-8675-4af0-a96b-84afb8aa4710', '/set', null),
                 ('589978b5-9946-493a-9466-3402198d1262', '/accept', null),
                 ('025740eb-b97e-43f1-9323-b7f35f8a6bd1', '/revote', null),
                 ('3c1115b5-5bd0-4f30-b1d5-d7d23da59a2a', '/finish', null),
                 ('57e1da3c-a65d-4172-b377-00d8543f55c3', '/need_review', 'Reviewer_MoveToReviewHelp'),
+                ('e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', '/change_to_round_robin', 'Reviewer_ChangeToRoundRobinHelp'),
+                ('10b888d0-e086-4a51-85d2-6379735682c7', '/change_to_random', 'Reviewer_ChangeToRandomHelp'),
                 ('4b8af862-51a9-42ab-9478-99ec92ceeb47', '/in_progress', null),
                 ('b009ca75-a7b5-4159-8664-81caa30f5819', '/approve', null),
                 ('f3a22d65-2f86-4cc1-8945-7c6a36addc6f', '/decline', null),
@@ -137,7 +141,12 @@ public sealed class ChangeBotModel : Migration
                 ('35569ffd-dc1a-4b10-be72-66725d6569f5', '57e1da3c-a65d-4172-b377-00d8543f55c3', 1, 'Connector_SelectTeam', 1),
                 ('a225f93e-36ba-4bf7-9b7c-9cb82fa84c09', '57e1da3c-a65d-4172-b377-00d8543f55c3', 2, 'Reviewer_EnterRequestForReview', 2),
                 ('4df5448c-8ee1-4002-bbfe-a75b71c38d68', '4378f324-4d70-4d53-b934-f5fdad6bb42b', 1, 'CheckIn_AddLocation', 1),
-                ('c014bdfb-1c54-44eb-87ef-a6561e5204b4', 'ec16e7f2-3540-4252-a683-f1e9bbbfdac9', 1, 'Connector_SelectTeam', 1)
+                ('c014bdfb-1c54-44eb-87ef-a6561e5204b4', 'ec16e7f2-3540-4252-a683-f1e9bbbfdac9', 1, 'Connector_SelectTeam', 1),
+                ('1c6271aa-8051-4cc4-b3ff-d7b7fabf1020', 'e9b79c43-1bd5-4bf8-91e7-6677b5d72e71', 1, 'Connector_SelectTeam', 1),
+                ('697078dc-94c2-43a3-abd7-762641c1d094', '10b888d0-e086-4a51-85d2-6379735682c7', 1, 'Connector_SelectTeam', 1),
+                ('29a7185b-ceff-4678-9030-17907665bc01', 'd753d196-0c01-46ac-83d1-65fdd5d40318', 1, 'Connector_SelectTeam', 1),
+                ('eddcadc0-6805-4366-8c3b-0c5888d40539', 'a49e0652-9237-455e-afac-d6119fe10fde', 1, 'Connector_SelectTeam', 1)
+                
             """,
             "Setup bot_command_stages");
         
@@ -167,6 +176,8 @@ public sealed class ChangeBotModel : Migration
                 ('5a7334e6-8076-4fc1-89e9-5139b8135947', '589978b5-9946-493a-9466-3402198d1262'),
                 ('5a7334e6-8076-4fc1-89e9-5139b8135947', '025740eb-b97e-43f1-9323-b7f35f8a6bd1'),
                 ('5a7334e6-8076-4fc1-89e9-5139b8135947', '3c1115b5-5bd0-4f30-b1d5-d7d23da59a2a'),
+                ('5a7334e6-8076-4fc1-89e9-5139b8135947', 'd753d196-0c01-46ac-83d1-65fdd5d40318'),
+                ('5a7334e6-8076-4fc1-89e9-5139b8135947', 'a49e0652-9237-455e-afac-d6119fe10fde'),
                 
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'ce23b15d-ebe3-429f-a019-21671fe42bcd'),
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', '54d07c42-0d8b-448c-a657-9ba508f30537'),
@@ -180,6 +191,8 @@ public sealed class ChangeBotModel : Migration
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'f3a22d65-2f86-4cc1-8945-7c6a36addc6f'),
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', '1c3bfc0c-846a-470b-8433-8ca599441164'),
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'f6b6aa8c-1ddf-4446-b91a-6e223108f366'),
+                ('501df55a-42db-4db6-a057-e5a4d3ed3625', 'e9b79c43-1bd5-4bf8-91e7-6677b5d72e71'),
+                ('501df55a-42db-4db6-a057-e5a4d3ed3625', '10b888d0-e086-4a51-85d2-6379735682c7'),
                 
                 ('a8623f4a-5ac6-40e5-8d38-e3d76f641dc7', '4378f324-4d70-4d53-b934-f5fdad6bb42b'),
                 ('a8623f4a-5ac6-40e5-8d38-e3d76f641dc7', '4367a88f-d818-4239-93b9-826f70950cc4'),

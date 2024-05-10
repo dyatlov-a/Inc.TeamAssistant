@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
@@ -14,13 +13,13 @@ internal sealed class BotAccessor : IBotAccessor
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
-    public async Task<string> GetUserName(Guid botId, CancellationToken token)
+    public async Task<BotContext> GetBotContext(Guid botId, CancellationToken token)
     {
         var bot = await _botReader.Find(botId, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 
-        return bot.Name;
+        return new BotContext(bot.Id, bot.Name, bot.Properties);
     }
 
     public async Task<string> GetToken(Guid botId, CancellationToken token)

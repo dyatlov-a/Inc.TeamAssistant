@@ -35,7 +35,8 @@ internal sealed class BotReader : IBotReader
             SELECT
                 b.id AS id,
                 b.name AS name,
-                b.token AS token
+                b.token AS token,
+                b.properties AS properties
             FROM connector.bots AS b
             WHERE b.id = @id;
 

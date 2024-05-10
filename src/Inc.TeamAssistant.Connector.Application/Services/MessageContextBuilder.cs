@@ -121,7 +121,7 @@ internal sealed class MessageContextBuilder
             
         return new(
             new ChatMessage(chatId, messageId),
-            new BotContext(bot.Id, bot.Name),
+            new BotContext(bot.Id, bot.Name, bot.Properties),
             teams,
             text,
             person,

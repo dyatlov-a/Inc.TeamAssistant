@@ -36,8 +36,6 @@ internal sealed class UserService : IUserService
 
     public async Task<BotContext> GetAuthBotContext(CancellationToken token)
     {
-        var botUserName = await _botAccessor.GetUserName(_authOptions.BotId, token);
-
-        return new BotContext(_authOptions.BotId, botUserName);
+        return await _botAccessor.GetBotContext(_authOptions.BotId, token);
     }
 }

@@ -36,8 +36,8 @@ internal sealed class GetStoryDetailsQueryHandler : IRequestHandler<GetStoryDeta
 		if (story is null)
 			throw new TeamAssistantException($"Story for {query.TeamId} was not found.");
 
-		var botName = await _botAccessor.GetUserName(story.BotId, token);
-		var link = _linkBuilder.BuildLinkForConnect(botName, story.TeamId);
+		var botContext = await _botAccessor.GetBotContext(story.BotId, token);
+		var link = _linkBuilder.BuildLinkForConnect(botContext.UserName, story.TeamId);
 		var code = _codeGenerator.Generate(link);
 
 		return new(StoryConverter.Convert(story), code);
