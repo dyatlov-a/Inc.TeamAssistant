@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Telegram.Bot.Extensions.LoginWidget;
 
 namespace Inc.TeamAssistant.Gateway.Services;

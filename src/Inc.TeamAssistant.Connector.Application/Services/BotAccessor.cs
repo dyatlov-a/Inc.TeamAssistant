@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;

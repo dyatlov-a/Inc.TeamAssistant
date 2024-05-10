@@ -75,7 +75,7 @@
         if (!await _fluentValidationValidator!.ValidateAsync())
             return;
         
-        BotFormModel.Properties = _formModel.Properties.ToDictionary(v => v.Name, v => v.Value);
+        BotFormModel.Properties = _formModel.Properties.ToDictionary(v => v.Name, v => v.Value!);
         
         var stage = Stage.Complete.ToString().ToLower();
         var link = BotFormModel.Id.HasValue

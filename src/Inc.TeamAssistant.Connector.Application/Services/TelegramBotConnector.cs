@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Bots;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -7,12 +9,20 @@ using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class TelegramBotConnector : IHostedService
+internal sealed class TelegramBotConnector : IHostedService, IBotListener
 {
     private readonly TelegramBotMessageHandler _handler;
     private readonly IBotReader _botReader;
     private readonly BotConstructor _botConstructor;
     private readonly ILogger<TelegramBotConnector> _logger;
+    
+    private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _listeners = new();
+    private bool _isWorking;
+    
+    private static readonly ReceiverOptions ReceiverOptions = new()
+    {
+        AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.PollAnswer]
+    };
     
     public TelegramBotConnector(
         TelegramBotMessageHandler handler,
@@ -28,34 +38,36 @@ internal sealed class TelegramBotConnector : IHostedService
 
     public async Task StartAsync(CancellationToken token)
     {
+        _isWorking = true;
         var botIds = await _botReader.GetBotIds(token);
 
         foreach (var botId in botIds)
-            await Start(botId, token);
+        {
+            token.ThrowIfCancellationRequested();
+            await Start(botId);
+        }
     }
     
-    private async Task Start(Guid botId, CancellationToken token)
+    public async Task Start(Guid botId)
     {
+        if (!_isWorking)
+            return;
+        
         try
         {
-            var bot = await _botReader.Find(botId, token);
+            var consumeTokenSource = new CancellationTokenSource();
+            var bot = await _botReader.Find(botId, consumeTokenSource.Token);
             var client = new TelegramBotClient(bot!.Token);
 
-            await _botConstructor.TrySetup(client, bot, token);
-
+            await _botConstructor.TrySetup(client, bot, consumeTokenSource.Token);
+            
             client.StartReceiving(
                 (c, m, t) => _handler.Handle(m, bot.Id, t),
                 (c, e, t) => _handler.OnError(e, bot.Id, t),
-                receiverOptions: new ReceiverOptions
-                {
-                    AllowedUpdates =
-                    [
-                        UpdateType.Message,
-                        UpdateType.CallbackQuery,
-                        UpdateType.PollAnswer
-                    ]
-                },
-                cancellationToken: token);
+                ReceiverOptions,
+                cancellationToken: consumeTokenSource.Token);
+            
+            _listeners.TryAdd(botId, consumeTokenSource);
         }
         catch (Exception ex)
         {
@@ -63,5 +75,34 @@ internal sealed class TelegramBotConnector : IHostedService
         }
     }
 
-    public Task StopAsync(CancellationToken token) => Task.CompletedTask;
+    public async Task Restart(Guid botId)
+    {
+        if (!_isWorking)
+            return;
+        
+        await Stop(botId);
+        await Start(botId);
+    }
+
+    public async Task Stop(Guid botId)
+    {
+        if (!_isWorking)
+            return;
+        
+        _listeners.Remove(botId, out var cancellationTokenSource);
+        
+        if (cancellationTokenSource is not null)
+            await cancellationTokenSource.CancelAsync();
+    }
+
+    public async Task StopAsync(CancellationToken token)
+    {
+        _isWorking = false;
+
+        foreach (var cancellationTokenSource in _listeners.Values)
+        {
+            token.ThrowIfCancellationRequested();
+            await cancellationTokenSource.CancelAsync();
+        }
+    }
 }

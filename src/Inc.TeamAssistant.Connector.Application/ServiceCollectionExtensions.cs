@@ -6,7 +6,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Service
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Services;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<BotConstructor>()
             .AddSingleton<IBotAccessor, BotAccessor>()
             .AddSingleton<IBotConnector, BotConnector>()
+            .AddSingleton<IBotListenerProvider, BotListenerProvider>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             

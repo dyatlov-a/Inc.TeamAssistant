@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Primitives;
+namespace Inc.TeamAssistant.Primitives.Bots;
 
 public sealed record BotContext(Guid Id, string UserName)
 {

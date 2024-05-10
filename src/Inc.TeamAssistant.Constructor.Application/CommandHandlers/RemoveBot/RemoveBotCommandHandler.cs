@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
+using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.RemoveBot;
@@ -8,11 +9,16 @@ internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand
 {
     private readonly IBotRepository _botRepository;
     private readonly ICurrentUserResolver _currentUserResolver;
+    private readonly IBotListenerProvider _botListenerProvider;
 
-    public RemoveBotCommandHandler(IBotRepository botRepository, ICurrentUserResolver currentUserResolver)
+    public RemoveBotCommandHandler(
+        IBotRepository botRepository,
+        ICurrentUserResolver currentUserResolver,
+        IBotListenerProvider botListenerProvider)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _currentUserResolver = currentUserResolver ?? throw new ArgumentNullException(nameof(currentUserResolver));
+        _botListenerProvider = botListenerProvider ?? throw new ArgumentNullException(nameof(botListenerProvider));
     }
 
     public async Task Handle(RemoveBotCommand command, CancellationToken token)
@@ -25,5 +31,7 @@ internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand
             throw new ApplicationException($"User {currentUserId} has not access to bot {command.Id}.");
         
         await _botRepository.Remove(command.Id, token);
+        
+        await _botListenerProvider.Listener.Stop(bot.Id);
     }
 }

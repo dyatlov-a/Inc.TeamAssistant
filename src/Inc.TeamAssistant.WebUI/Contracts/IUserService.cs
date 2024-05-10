@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
 

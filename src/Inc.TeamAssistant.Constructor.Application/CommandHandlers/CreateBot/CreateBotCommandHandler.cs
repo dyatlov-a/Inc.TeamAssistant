@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Domain;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot;
@@ -9,11 +10,16 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
 {
     private readonly IBotRepository _botRepository;
     private readonly ICurrentUserResolver _currentUserResolver;
+    private readonly IBotListenerProvider _botListenerProvider;
 
-    public CreateBotCommandHandler(IBotRepository botRepository, ICurrentUserResolver currentUserResolver)
+    public CreateBotCommandHandler(
+        IBotRepository botRepository,
+        ICurrentUserResolver currentUserResolver,
+        IBotListenerProvider botListenerProvider)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _currentUserResolver = currentUserResolver ?? throw new ArgumentNullException(nameof(currentUserResolver));
+        _botListenerProvider = botListenerProvider ?? throw new ArgumentNullException(nameof(botListenerProvider));
     }
 
     public async Task Handle(CreateBotCommand command, CancellationToken token)
@@ -29,5 +35,7 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
             command.FeatureIds);
         
         await _botRepository.Upsert(bot, token);
+
+        await _botListenerProvider.Listener.Start(bot.Id);
     }
 }

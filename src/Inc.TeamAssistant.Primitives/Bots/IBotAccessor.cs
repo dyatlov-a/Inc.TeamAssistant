@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Primitives;
+namespace Inc.TeamAssistant.Primitives.Bots;
 
 public interface IBotAccessor
 {

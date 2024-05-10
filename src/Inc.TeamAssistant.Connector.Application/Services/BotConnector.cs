@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetBotUserName;
