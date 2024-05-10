@@ -42,6 +42,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        var getFeaturesResult = await BotService.GetFeatures();
+        
         if (BotId.HasValue)
         {
             var bot = await BotService.GetBotById(BotId.Value);
@@ -51,6 +53,12 @@
                 Id = bot.Result!.Id,
                 UserName = bot.Result.UserName,
                 Token = bot.Result.Token,
+                Features = getFeaturesResult.Result.Features.Select(f => new BotFormModel.Feature
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Properties = f.Properties
+                }).ToArray(),
                 FeatureIds = bot.Result.FeatureIds.ToArray(),
                 PropertyKeys = bot.Result.Properties.Keys.ToArray(),
                 Properties = bot.Result.Properties.ToDictionary()

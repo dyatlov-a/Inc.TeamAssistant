@@ -1,14 +1,11 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
-
 @inject NavigationManager NavigationManager
 @inject LanguageManager LanguageManager
-@inject IBotService BotService
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="form-section">
         <div class="feature-selector">
-            @foreach(var feature in _features)
+            @foreach(var feature in BotFormModel.Features)
             {
                 <div class="feature-selector__item @GetSelected(feature)" @onclick="() => SelectFeature(feature)">
                     <DynamicComponent Type="@GetFeatureType(feature.Name)" Parameters="IconParameters" />
@@ -27,7 +24,6 @@
     private readonly Stage2SelectFeaturesFormModel _formModel = new();
     private Func<string?, string> _linkBuilder = default!;
     private FluentValidationValidator? _fluentValidationValidator;
-    private IReadOnlyCollection<FeatureDto> _features = Array.Empty<FeatureDto>();
     private Dictionary<string, object> IconParameters => new()
     {
         ["Size"] = "160px",
@@ -48,10 +44,8 @@
     
     private EditContext _editContext = new(new Stage2SelectFeaturesFormModel());
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        var getFeaturesResult = await BotService.GetFeatures();
-        _features = getFeaturesResult.Result.Features;
         _linkBuilder = LanguageManager.CreateLinkBuilder();
         
         _formModel.FeatureIds = BotFormModel.FeatureIds.ToList();
@@ -60,7 +54,7 @@
         _editContext.SetFieldCssClassProvider(new ValidationCssClassProvider());
     }
 
-    private void SelectFeature(FeatureDto feature)
+    private void SelectFeature(BotFormModel.Feature feature)
     {
         ArgumentNullException.ThrowIfNull(feature);
 
@@ -70,7 +64,7 @@
             _formModel.FeatureIds.Add(feature.Id);
     }
 
-    private string GetSelected(FeatureDto feature)
+    private string GetSelected(BotFormModel.Feature feature)
     {
         ArgumentNullException.ThrowIfNull(feature);
 
@@ -83,7 +77,7 @@
             return;
 
         BotFormModel.FeatureIds = _formModel.FeatureIds.ToArray();
-        BotFormModel.PropertyKeys = _features
+        BotFormModel.PropertyKeys = BotFormModel.Features
             .Where(f => _formModel.FeatureIds.Contains(f.Id))
             .SelectMany(f => f.Properties)
             .ToArray();
