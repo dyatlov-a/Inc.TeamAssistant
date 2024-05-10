@@ -9,8 +9,7 @@ internal sealed class EventsProvider : IAsyncDisposable
 
 	public EventsProvider(NavigationManager navigationManager)
 	{
-		if (navigationManager is null)
-			throw new ArgumentNullException(nameof(navigationManager));
+        ArgumentNullException.ThrowIfNull(navigationManager);
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri("/messages"))
@@ -20,10 +19,9 @@ internal sealed class EventsProvider : IAsyncDisposable
 
 	public async Task OnStoryChanged(Guid teamId, Func<Task> changed)
 	{
-		if (changed is null)
-			throw new ArgumentNullException(nameof(changed));
+        ArgumentNullException.ThrowIfNull(changed);
 
-		_hubConnection.On("StoryChanged", changed);
+        _hubConnection.On("StoryChanged", changed);
 
 		await _hubConnection.StartAsync();
 

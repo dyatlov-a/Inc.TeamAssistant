@@ -1,5 +1,84 @@
-<h3>SetSettings</h3>
+@inject NavigationManager NavigationManager
+@inject LanguageManager LanguageManager
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    @foreach (var property in _formModel.Properties)
+    {
+        var description = Descriptions[property.Name];
+        
+        <div class="form-section">
+            <div class="form-section__legend">
+                <h4 class="form-section__title">@description.Header</h4>
+                <p class="form-section__help">@description.Help</p>
+            </div>
+            <div class="form-section__content">
+                <div class="form-section__field-set">
+                    <label class="form-section__label">@description.FieldName</label>
+                    <InputSelect @bind-Value="property.Value" class="form-section__control">
+                        @foreach(var targetValue in TargetValues[property.Name])
+                        {
+                            <option value="@targetValue">@targetValue</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => property.Value)" />
+                </div>
+            </div>
+        </div>
+    }
+    <div class="form-controls">
+        <button class="button button_white" type="submit">Next</button>
+    </div>
+</EditForm>
 
 @code {
+    private readonly Stage3SetSettingsFormModel _formModel = new();
+    private Func<string?, string> _linkBuilder = default!;
+    private FluentValidationValidator? _fluentValidationValidator;
     
+    [Parameter, EditorRequired]
+    public BotFormModel BotFormModel { get; set; } = default!;
+    
+    private EditContext _editContext = new(new Stage3SetSettingsFormModel());
+
+    private static readonly Dictionary<string, IReadOnlyCollection<string>> TargetValues = new(StringComparer.InvariantCultureIgnoreCase)
+    {
+        ["StoryType"] = ["Scrum", "Kanban"],
+        ["nextReviewerStrategy"] = ["RoundRobin", "Random"]
+    };
+    
+    private static readonly Dictionary<string, (string Header, string Help, string FieldName)> Descriptions = new(StringComparer.InvariantCultureIgnoreCase)
+    {
+        ["StoryType"] = ("Story type", "Select the type of stories you want to work with", "Story type"),
+        ["nextReviewerStrategy"] = ("Next reviewer type", "Select the type of the next reviewer", "Next reviewer type")
+    };
+    
+    protected override void OnParametersSet()
+    {
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+
+        _formModel.Properties = BotFormModel.PropertyKeys
+            .Select(v => new Stage3SetSettingsFormModel.Setting
+            {
+                Name = v,
+                Value = BotFormModel.Properties.GetValueOrDefault(v)
+            })
+            .ToList();
+        
+        _editContext = new EditContext(_formModel);
+        _editContext.SetFieldCssClassProvider(new ValidationCssClassProvider());
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+        
+        var stage = Stage.Complete.ToString().ToLower();
+        var link = BotFormModel.Id.HasValue
+            ? $"constructor/{BotFormModel.Id.Value:N}/{stage}"
+            : $"constructor/{stage}";
+        
+        NavigationManager.NavigateTo(_linkBuilder(link));
+    }
 }

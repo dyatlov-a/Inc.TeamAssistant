@@ -5,6 +5,7 @@ public sealed class BotFormModel
     public Guid? Id { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string Token { get; set; } = string.Empty;
-    public List<Guid> FeatureIds { get; set; } = new();
-    public Dictionary<string, string> Properties { get; set; } = new();
+    public IReadOnlyCollection<Guid> FeatureIds { get; set; } = Array.Empty<Guid>();
+    public IReadOnlyCollection<string> PropertyKeys { get; set; } = Array.Empty<string>();
+    public IReadOnlyDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 }

@@ -9,6 +9,9 @@
     width: 160px;
     height: 200px;
 }
+.feature-selector__item.selected {
+    background-color: #000;
+}
 .feature-selector__name {
     opacity: .7;
     font-size: .7rem;

@@ -6,16 +6,18 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <div class="feature-selector">
-        @foreach(var feature in _features)
-        {
-            <div class="feature-selector__item" @onclick="() => SelectFeature(feature.Id)">
-                <DynamicComponent Type="@GetFeatureType(feature.Name)" Parameters="IconParameters" />
-                <div class="feature-selector__name" title="@feature.Name">@feature.Name</div>
-            </div>
-        }
+    <div class="form-section">
+        <div class="feature-selector">
+            @foreach(var feature in _features)
+            {
+                <div class="feature-selector__item @GetSelected(feature)" @onclick="() => SelectFeature(feature)">
+                    <DynamicComponent Type="@GetFeatureType(feature.Name)" Parameters="IconParameters" />
+                    <div class="feature-selector__name" title="@feature.Name">@feature.Name</div>
+                </div>
+            }
+        </div>
+        <ValidationMessage For="@(() => _formModel.FeatureIds)" />
     </div>
-    <ValidationMessage For="@(() => _formModel.FeatureIds)" />
     <div class="form-controls">
         <button class="button button_white" type="submit">Next</button>
     </div>
@@ -58,25 +60,40 @@
         _editContext.SetFieldCssClassProvider(new ValidationCssClassProvider());
     }
 
-    private void SelectFeature(Guid featureId)
+    private void SelectFeature(FeatureDto feature)
     {
-        if (_formModel.FeatureIds.Contains(featureId))
-            _formModel.FeatureIds.Remove(featureId);
+        ArgumentNullException.ThrowIfNull(feature);
+
+        if (_formModel.FeatureIds.Contains(feature.Id))
+            _formModel.FeatureIds.Remove(feature.Id);
         else
-            _formModel.FeatureIds.Add(featureId);
+            _formModel.FeatureIds.Add(feature.Id);
+    }
+
+    private string GetSelected(FeatureDto feature)
+    {
+        ArgumentNullException.ThrowIfNull(feature);
+
+        return _formModel.FeatureIds.Contains(feature.Id) ? "selected" : string.Empty;
     }
 
     private async Task SubmitForm()
     {
         if (!await _fluentValidationValidator!.ValidateAsync())
             return;
+
+        BotFormModel.FeatureIds = _formModel.FeatureIds.ToArray();
+        BotFormModel.PropertyKeys = _features
+            .Where(f => _formModel.FeatureIds.Contains(f.Id))
+            .SelectMany(f => f.Properties)
+            .ToArray();
         
-        var stage = Stage.SetSettings.ToString().ToLower();
+        var stage = BotFormModel.PropertyKeys.Any()
+            ? Stage.SetSettings.ToString().ToLower()
+            : Stage.Complete.ToString().ToLower();
         var link = BotFormModel.Id.HasValue
             ? $"constructor/{BotFormModel.Id.Value:N}/{stage}"
             : $"constructor/{stage}";
-
-        BotFormModel.FeatureIds = _formModel.FeatureIds.ToList();
         
         NavigationManager.NavigateTo(_linkBuilder(link));
     }

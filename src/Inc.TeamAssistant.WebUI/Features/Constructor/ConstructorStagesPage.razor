@@ -51,7 +51,8 @@
                 Id = bot.Result!.Id,
                 UserName = bot.Result.UserName,
                 Token = bot.Result.Token,
-                FeatureIds = bot.Result.FeatureIds.ToList(),
+                FeatureIds = bot.Result.FeatureIds.ToArray(),
+                PropertyKeys = bot.Result.Properties.Keys.ToArray(),
                 Properties = bot.Result.Properties.ToDictionary()
             };
         }
