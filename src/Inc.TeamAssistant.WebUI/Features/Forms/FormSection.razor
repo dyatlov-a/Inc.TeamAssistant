@@ -1,0 +1,32 @@
+<div class="form-section">
+    <div class="form-section__legend">
+        <h4 class="form-section__title">@Title</h4>
+        <p class="form-section__help">
+            @if (HelpContent is not null)
+            {
+                @HelpContent
+            }
+            else
+            {
+                @HelpText
+            }
+        </p>
+    </div>
+    <div class="form-section__content">
+        @Content
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    [Parameter]
+    public string? HelpText { get; set; }
+    
+    [Parameter]
+    public RenderFragment? HelpContent { get; set; }
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+}

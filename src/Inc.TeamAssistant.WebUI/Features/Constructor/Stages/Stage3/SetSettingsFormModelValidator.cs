@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class Stage3SetSettingsFormModelValidator : AbstractValidator<Stage3SetSettingsFormModel>
+public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
 {
-    public Stage3SetSettingsFormModelValidator()
+    public SetSettingsFormModelValidator()
     {
         RuleFor(e => e.Properties)
             .NotEmpty();

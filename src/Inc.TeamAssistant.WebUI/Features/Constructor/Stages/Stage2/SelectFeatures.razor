@@ -1,0 +1,84 @@
+@inject NavigationManager NavigationManager
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <FormSection Title="Select features" HelpText="Please select features for your bot">
+        <Content>
+            <div class="feature-selector">
+                @foreach(var feature in StagesState.Features)
+                {
+                    <div class="feature-selector__item @CssClass(feature)" @onclick="() => SelectFeature(feature)">
+                        <DynamicComponent Type="@FeatureType(feature.Name)" Parameters="IconParameters" />
+                        <div class="feature-selector__name" title="@feature.Name">@feature.Name</div>
+                    </div>
+                }
+            </div>
+            <ValidationMessage For="@(() => _formModel.FeatureIds)" />
+        </Content>
+    </FormSection>
+    <div class="form-controls">
+        <button class="button button_white" type="submit">Next</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly SelectFeaturesFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "160px",
+        ["Color"] = "#fff"
+    };
+    
+    private Type FeatureType(string featureName) => featureName switch
+    {
+        "Appraiser" => typeof(AppraiserIcon),
+        "CheckIn" => typeof(CheckInIcon),
+        "RandomCoffee" => typeof(RandomCoffeeIcon),
+        "Reviewer" => typeof(ReviewerIcon),
+        _ => typeof(UnknownIcon)
+    };
+    
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    private EditContext _editContext = EditContextFactory.Create(new SelectFeaturesFormModel());
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+    }
+
+    private void SelectFeature(StagesState.Feature feature)
+    {
+        ArgumentNullException.ThrowIfNull(feature);
+
+        if (_formModel.FeatureIds.Contains(feature.Id))
+            _formModel.FeatureIds.Remove(feature.Id);
+        else
+            _formModel.FeatureIds.Add(feature.Id);
+    }
+
+    private string CssClass(StagesState.Feature feature)
+    {
+        ArgumentNullException.ThrowIfNull(feature);
+
+        return _formModel.FeatureIds.Contains(feature.Id)
+            ? "feature-selector__item_selected"
+            : string.Empty;
+    }
+
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+
+        StagesState.Apply(_formModel);
+        
+        var stage = StagesState.PropertyKeys.Any() ? Stage.SetSettings : Stage.Complete;
+        NavigationManager.NavigateTo(LinkFactory(stage));
+    }
+}

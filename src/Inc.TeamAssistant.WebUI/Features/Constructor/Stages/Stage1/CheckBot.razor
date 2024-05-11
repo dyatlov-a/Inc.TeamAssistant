@@ -1,0 +1,55 @@
+@inject NavigationManager NavigationManager
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <CheckBotFormTracker OnChange="StateHasChanged" />
+    <FormSection Title="Set bot token">
+        <HelpContent>
+            Please move to <a href="https://telegram.me/BotFather" class="link link_black">BotFather</a> and create bot
+        </HelpContent>
+        <Content>
+            <FormFieldSet FieldId="bot-token" Label="Bot token">
+                <Content>
+                    <InputText @bind-Value="_formModel.Token" class="form-section__control" id="bot-token"/>
+                    <ValidationMessage For="@(() => _formModel.Token)"/>
+                </Content>
+            </FormFieldSet>
+            <FormFieldSet FieldId="bot-username" Label="Bot username">
+                <Content>
+                    <InputText @bind-Value="_formModel.UserName" class="form-section__control" id="bot-username" disabled="true"/>
+                </Content>
+            </FormFieldSet>
+        </Content>
+    </FormSection>
+    <div class="form-controls">
+        <button class="button button_white" type="submit">Next</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly CheckBotFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    private EditContext _editContext = EditContextFactory.Create(new CheckBotFormModel());
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+    }
+
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+
+        StagesState.Apply(_formModel);
+        
+        NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
+    }
+}

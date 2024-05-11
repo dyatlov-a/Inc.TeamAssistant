@@ -1,0 +1,75 @@
+@inject NavigationManager NavigationManager
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    @foreach (var property in _formModel.Properties)
+    {
+        var description = Descriptions[property.Name];
+        var fieldId = $"property_{_propertyIndex}";
+        
+        <FormSection Title="@description.Header" HelpText="@description.Help">
+            <Content>
+                <FormFieldSet FieldId="@fieldId" Label="@description.FieldName">
+                    <Content>
+                        <InputSelect id="@fieldId" @bind-Value="property.Value" class="form-section__control">
+                            <option value="">Need select value</option>
+                            @foreach (var targetValue in TargetValues[property.Name])
+                            {
+                                <option value="@targetValue">@targetValue</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => property.Value)" />
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </FormSection>
+
+        _propertyIndex++;
+    }
+    <div class="form-controls">
+        <button class="button button_white" type="submit">Next</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly SetSettingsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+
+    private int _propertyIndex;
+    
+    private EditContext _editContext = EditContextFactory.Create(new SetSettingsFormModel());
+
+    private static readonly Dictionary<string, IReadOnlyCollection<string>> TargetValues = new(StringComparer.InvariantCultureIgnoreCase)
+    {
+        ["StoryType"] = ["Scrum", "Kanban"],
+        ["nextReviewerStrategy"] = ["RoundRobin", "Random"]
+    };
+    
+    private static readonly Dictionary<string, (string Header, string Help, string FieldName)> Descriptions = new(StringComparer.InvariantCultureIgnoreCase)
+    {
+        ["StoryType"] = ("Story type", "Select the type of stories you want to work with", "Story type"),
+        ["nextReviewerStrategy"] = ("Next reviewer type", "Select the type of the next reviewer", "Next reviewer type")
+    };
+    
+    protected override void OnParametersSet()
+    {
+        _propertyIndex = 0;
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+        
+        StagesState.Apply(_formModel);
+        
+        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+    }
+}

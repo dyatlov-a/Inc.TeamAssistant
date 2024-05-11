@@ -1,7 +1,7 @@
 <div class="stages-summary">
     @foreach (var stage in Stages)
     {
-        <div class="stages-summary__item @GetClass(stage)">@stage</div>
+        <div class="stages-summary__item @CssClass(stage)">@stage</div>
     }
 </div>
 
@@ -11,5 +11,7 @@
 
     private IReadOnlyCollection<Stage> Stages => Enum.GetValues<Stage>();
     
-    private string GetClass(Stage stage) => stage == Current ? "stages-summary__item_active" : string.Empty;
+    private string CssClass(Stage stage) => stage == Current
+        ? "stages-summary__item_active"
+        : string.Empty;
 }

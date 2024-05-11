@@ -1,0 +1,103 @@
+@page "/constructor/{BotId:guid}"
+@page "/en/constructor/{BotId:guid}"
+@page "/ru/constructor/{BotId:guid}"
+@page "/constructor/{Selected}"
+@page "/en/constructor/{Selected}"
+@page "/ru/constructor/{Selected}"
+@page "/constructor/{BotId:guid}/{Selected}"
+@page "/en/constructor/{BotId:guid}/{Selected}"
+@page "/ru/constructor/{BotId:guid}/{Selected}"
+
+@attribute [Authorize]
+
+@inject IBotService BotService
+@inject LanguageManager LanguageManager
+
+<PageTitle>@_viewModel.Title</PageTitle>
+
+<NavLogin />
+
+<div class="constructor">
+    <div class="constructor__container">
+        <h1 class="constructor__title">@_viewModel.Title</h1>
+        <StagesSummary Current="CurrentState" />
+        <DynamicComponent Type="StageType" Parameters="StageParameters" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+
+    [Parameter]
+    public string Selected { get; set; } = default!;
+
+    private Func<string?, string> _linkBuilder = default!;
+    private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
+        ? value
+        : Enum.GetValues<Stage>().First();
+
+    private Type StageType => CurrentState switch
+    {
+        Stage.SelectFeatures => typeof(SelectFeatures),
+        Stage.SetSettings => typeof(SetSettings),
+        Stage.Complete => typeof(Complete),
+        _ => typeof(CheckBot)
+    };
+
+    private Dictionary<string, object> StageParameters => new()
+    {
+        ["StagesState"] = _viewModel.StagesState,
+        ["LinkFactory"] = (object)LinkFactory
+    };
+    
+    private StagesPageViewModel _viewModel = StagesPageViewModel.Empty;
+
+    protected override void OnInitialized()
+    {
+        _linkBuilder = LanguageManager.CreateLinkBuilder();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var resources = await LanguageManager.GetResource();
+        var getFeaturesResult = await BotService.GetFeatures();
+
+        if (_viewModel.StagesState.Id != BotId || !_viewModel.StagesState.Features.Any())
+        {
+            var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
+            var features = getFeaturesResult.Result.Features
+                .Select(f => new StagesState.Feature
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Properties = f.Properties
+                })
+                .ToArray();
+
+            _viewModel = new StagesPageViewModel(
+                resources[Messages.Constructor_Title],
+                new StagesState(
+                    bot?.Result?.Id,
+                    bot?.Result?.UserName ?? string.Empty,
+                    bot?.Result?.Token ?? string.Empty,
+                    bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
+                    bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
+                    bot?.Result?.Properties ?? new Dictionary<string, string>(),
+                    features));
+        }
+    }
+
+    private string LinkFactory(Stage? stage)
+    {
+        if (!stage.HasValue)
+            return _linkBuilder("constructor");
+        
+        var target = stage.Value.ToString().ToLower();
+        var link = _viewModel.StagesState.Id.HasValue
+            ? $"constructor/{_viewModel.StagesState.Id.Value:N}/{target}"
+            : $"constructor/{target}";
+
+        return _linkBuilder(link);
+    }
+}

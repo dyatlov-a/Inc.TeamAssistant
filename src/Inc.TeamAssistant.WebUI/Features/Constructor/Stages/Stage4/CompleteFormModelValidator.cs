@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
-public sealed class Stage4CompleteFormModelValidator : AbstractValidator<Stage4CompleteFormModel>
+public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormModel>
 {
-    public Stage4CompleteFormModelValidator()
+    public CompleteFormModelValidator()
     {
         RuleFor(e => e.UserName)
             .NotEmpty();

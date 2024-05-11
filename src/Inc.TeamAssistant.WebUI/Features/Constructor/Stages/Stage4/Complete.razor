@@ -1,0 +1,83 @@
+@using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
+@using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
+
+@inject NavigationManager NavigationManager
+@inject IBotService BotService
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <ValidationSummary />
+    <FormSection Title="Bot properties" HelpText="Please check and confirm bot properties">
+        <Content>
+            <FormFieldSet FieldId="bot-username" Label="Bot name">
+                <Content>
+                    <InputText @bind-Value="_formModel.UserName" class="form-section__control" id="bot-username" disabled="true"/>
+                </Content>
+            </FormFieldSet>
+        </Content>
+    </FormSection>
+    <FormSection Title="Features" HelpText="Please check and confirm selected features">
+        <Content>
+            @foreach (var feature in StagesState.GetSelectedFeatures())
+            {
+                var fieldId = $"property_{_propertyIndex}";
+                
+                <FormFieldSet FieldId="@fieldId" Label="Feature">
+                    <Content>
+                        <InputText id="@fieldId" @bind-Value="feature.Name" class="form-section__control" disabled="true"/>
+                    </Content>
+                </FormFieldSet>
+
+                _propertyIndex++;
+            }
+        </Content>
+    </FormSection>
+    <div class="form-controls">
+        <button class="button button_white" type="submit">@ButtonText</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly CompleteFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    private int _propertyIndex;
+    
+    private EditContext _editContext = EditContextFactory.Create(new CompleteFormModel());
+
+    private string ButtonText => StagesState.Id.HasValue ? "Update" : "Create";
+    
+    protected override void OnParametersSet()
+    {
+        _propertyIndex = 0;
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+
+        if (StagesState.Id.HasValue)
+            await BotService.Update(new UpdateBotCommand(
+                StagesState.Id.Value,
+                _formModel.UserName,
+                _formModel.Token,
+                _formModel.FeatureIds,
+                _formModel.Properties));
+        else
+            await BotService.Create(new CreateBotCommand(
+                _formModel.UserName,
+                _formModel.Token,
+                _formModel.FeatureIds,
+                _formModel.Properties));
+        
+        NavigationManager.NavigateTo(LinkFactory(null));
+    }
+}
