@@ -22,8 +22,6 @@
     private ElementReference _map;
     private IJSObjectReference? _mapModule;
 
-    private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && RenderContext.IsBrowser)
@@ -32,9 +30,9 @@
                 "import",
                 "./Features/Map/MapPage.razor.js");
             
-            _model = await CheckInService.GetLocations(Id);
-            if (_model.State == ServiceResultState.Success)
-                await Build(_mapModule, _model.Result!);
+            var locations = await CheckInService.GetLocations(Id);
+            if (locations.State == ServiceResultState.Success)
+                await Build(_mapModule, locations.Result!);
         }
     }
 

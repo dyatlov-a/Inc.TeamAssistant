@@ -35,6 +35,9 @@
   "GUI_AssessmentSessionCard": "Scorecard",
   "GUI_AssessmentSessionNotFound": "Assessment session not found",
   "GUI_Loading": "Loading",
+  "GUI_Authorizing": "Authorizing...",
+  "GUI_Error401": "Not authorized",
+  "GUI_Unauthorized": "You're not authorized to reach this page. You need to log in.",
   "GUI_Error404": "Error 404",
   "GUI_PageNotFound": "Page not found",
   "MetaTitle": "Telegram bot to estimate tasks via planning poker",
@@ -57,6 +60,10 @@
   "GUI_ToolReviewer": "fast code review",
   "GUI_ToolRandomCoffee": "networking",
   "GUI_CreateBotLink": "Create your bot",
+  "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
+  
+  "Navigation_Logout": "Logout",
+  "Navigation_LoginAsSuperuser": "Login as superuser",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
   "CheckIn_OgTitle": "CheckIn",

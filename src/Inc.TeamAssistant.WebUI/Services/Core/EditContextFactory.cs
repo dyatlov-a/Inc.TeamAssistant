@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace Inc.TeamAssistant.WebUI.Services.Internal;
+namespace Inc.TeamAssistant.WebUI.Services.Core;
 
 internal static class EditContextFactory
 {

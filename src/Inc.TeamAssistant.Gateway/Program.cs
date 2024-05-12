@@ -33,18 +33,7 @@ var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOpti
 var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
 var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
-var accountsOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
-
-builder.Services
-	.AddSingleton(accountsOptions)
-	.AddScoped<TelegramAuthService>()
-	.AddAuthentication(ApplicationContext.AuthenticationScheme)
-	.AddCookie(o =>
-	{
-		o.ExpireTimeSpan = TimeSpan.FromDays(2);
-		o.SlidingExpiration = true;
-		o.AccessDeniedPath = "/";
-	});
+var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
 
 builder.Services
 	.AddDataAccess(connectionString)
@@ -58,9 +47,10 @@ builder.Services
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.Build()
-		
+	
 	.AddValidators(LanguageSettings.DefaultLanguageId)
 	.AddHandlers()
+	.AddAuth(authOptions)
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
 	.AddServices(builder.Environment.WebRootPath, cacheAbsoluteExpiration)
 	.AddIsomorphic()

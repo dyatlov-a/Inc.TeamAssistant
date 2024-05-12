@@ -5,19 +5,22 @@
 
 @if (IsPlaying)
 {
-    <video autoplay muted playsinline loop poster="@(FileName).jpg" @ref="_video" class="main__video">
+    <video autoplay muted playsinline loop poster="@(FileName).jpg" @ref="_video" class="video-main">
         <source src="@(FileName).mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
+        @NotSupportedMessage
     </video>
 }
 else
 {
-    <img src="@(FileName).jpg" alt="A video about users writing bots' source code" class="main__video" />
+    <img src="@(FileName).jpg" alt="A video about users writing bots' source code" class="video-main" />
 }
 
 @code {
     [Parameter, EditorRequired]
     public string FileName { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string NotSupportedMessage { get; set; } = default!;
     
     [Parameter]
     public bool Static { get; set; }

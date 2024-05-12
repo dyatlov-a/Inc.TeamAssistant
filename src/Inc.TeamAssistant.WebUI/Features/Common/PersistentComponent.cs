@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Inc.TeamAssistant.WebUI.Services.Internal;
+using Inc.TeamAssistant.WebUI.Services.Core;
 
 namespace Inc.TeamAssistant.WebUI.Features.Common;
 

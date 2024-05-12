@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Inc.TeamAssistant.WebUI.Services.Internal;
+namespace Inc.TeamAssistant.WebUI.Services.Core;
 
 internal sealed class EventsProvider : IAsyncDisposable
 {

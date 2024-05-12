@@ -52,6 +52,15 @@ html {
 	margin: 0 auto;
 	padding: 0 1rem;
 }
+.wrapper {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.main {
+    flex: 1 1 auto;
+}
 /* PC */
 @media (max-width: 1080px) {
 	[class*="__container"] {
@@ -72,16 +81,6 @@ html {
 }
 /* MOBILE SMALL */
 @media (max-width: 479.98px) {
-}
-/* CUSTOM */
-.dark {
-    position: absolute;
-    background-color: #000;
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 100%;
-    opacity: .4;
 }
 /* BUTTON */
 .button {

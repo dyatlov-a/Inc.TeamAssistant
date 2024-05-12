@@ -2,7 +2,7 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Main;
 
-public sealed record RequestDemoViewModel(
+public sealed record MainPageViewModel(
     string RequestDemo,
     string RequestDemoSubject,
     string RequestDemoBody,
@@ -11,10 +11,12 @@ public sealed record RequestDemoViewModel(
     string ToolAppraiser,
     string ToolReviewer,
     string ToolRandomCoffee,
-    string CreateBotLink)
-    : IViewModel<RequestDemoViewModel>
+    string CreateBotLink,
+    string NotSupportedMessage)
+    : IViewModel<MainPageViewModel>
 {
-    public static RequestDemoViewModel Empty { get; } = new(
+    public static MainPageViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

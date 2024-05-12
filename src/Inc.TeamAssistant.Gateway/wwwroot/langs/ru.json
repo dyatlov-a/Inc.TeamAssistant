@@ -35,6 +35,9 @@
   "GUI_AssessmentSessionCard": "Карточка для оценки",
   "GUI_AssessmentSessionNotFound": "Сессия оценки не найдена",
   "GUI_Loading": "Загрузка",
+  "GUI_Authorizing": "Авторизация...",
+  "GUI_Error401": "Не авторизован",
+  "GUI_Unauthorized": "Вы не авторизованы для входа на эту страницу. Вам необходимо войти в систему.",
   "GUI_Error404": "Ошибка 404",
   "GUI_PageNotFound": "страница не найдена",
   "MetaTitle": "Телеграм бот для оценки задач через planning poker",
@@ -57,6 +60,10 @@
   "GUI_ToolReviewer": "оперативное проведение ревью кода",
   "GUI_ToolRandomCoffee": "нетворкинг",
   "GUI_CreateBotLink": "Создать бота",
+  "GUI_VideoNotSupported": "Ваш браузер не поддерживает видео в формате HTML5.",
+
+  "Navigation_Logout": "Выйти",
+  "Navigation_LoginAsSuperuser": "Войти как суперпользователь",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_OgTitle": "Перемещения",

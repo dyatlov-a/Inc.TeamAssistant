@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
+using Inc.TeamAssistant.Gateway.Services.Auth;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.Internal;
 using Inc.TeamAssistant.Gateway.Services.Render;
@@ -87,6 +88,25 @@ public static class ServiceCollectionExtensions
             .TryAddEnumerable(ServiceDescriptor.Scoped(
                 typeof(IPipelineBehavior<,>),
                 typeof(ValidationPipelineBehavior<,>)));
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuth(this IServiceCollection services, AuthOptions authOptions)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(authOptions);
+        
+        services
+            .AddSingleton(authOptions)
+            .AddScoped<TelegramAuthService>()
+            .AddAuthentication(ApplicationContext.AuthenticationScheme)
+            .AddCookie(o =>
+            {
+                o.ExpireTimeSpan = TimeSpan.FromDays(2);
+                o.SlidingExpiration = true;
+                o.AccessDeniedPath = "/";
+            });
 
         return services;
     }

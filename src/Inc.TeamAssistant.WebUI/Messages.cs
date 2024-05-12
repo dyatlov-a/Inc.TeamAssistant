@@ -4,6 +4,9 @@ internal sealed class Messages
 {
     public static readonly string GUI_Scan = nameof(GUI_Scan);
 
+    public static readonly string GUI_Authorizing = nameof(GUI_Authorizing);
+    public static readonly string GUI_Error401 = nameof(GUI_Error401);
+    public static readonly string GUI_Unauthorized = nameof(GUI_Unauthorized);
     public static readonly string GUI_Error404 = nameof(GUI_Error404);
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
@@ -31,6 +34,10 @@ internal sealed class Messages
     public static readonly string GUI_ToolReviewer = nameof(GUI_ToolReviewer);
     public static readonly string GUI_ToolRandomCoffee = nameof(GUI_ToolRandomCoffee);
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
+    public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
+
+    public static readonly string Navigation_Logout = nameof(Navigation_Logout);
+    public static readonly string Navigation_LoginAsSuperuser = nameof(Navigation_LoginAsSuperuser);
 
     public static readonly string Constructor_AddBotLink = nameof(Constructor_AddBotLink);
     public static readonly string Constructor_Title = nameof(Constructor_Title);

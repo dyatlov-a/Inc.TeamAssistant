@@ -7,10 +7,10 @@
 <div class="story-card">
     <a href="#" @onclick="ToggleCard" @onclick:preventDefault="true" class="story-card__link">@ToShortTitle(Item.Title)</a>
     <span class="story-card__date">@Item.Created.ToString("HH:mm")</span>
-    @if (_model is { State: ServiceResultState.Success, Result: not null } && IsOpen)
+    @if (_itemDetails is { State: ServiceResultState.Success, Result: not null } && IsOpen)
     {
         <div class="story-card__body">
-            <StoryDetails Item="_model.Result.Story" AverageRating="@AverageRating" IsFullScreen="false" />
+            <StoryDetails Item="_itemDetails.Result.Story" AverageRating="@AverageRating" IsFullScreen="false" />
         </div>
     }
 </div>
@@ -23,7 +23,7 @@
     public string AverageRating { get; set; } = default!;
 
     private bool IsOpen { get; set; }
-    private ServiceResult<GetStoryByIdResult?> _model = ServiceResult<GetStoryByIdResult?>.Empty;
+    private ServiceResult<GetStoryByIdResult?> _itemDetails = ServiceResult<GetStoryByIdResult?>.Empty;
 
     private string ToShortTitle(string title)
     {
@@ -36,8 +36,8 @@
 
     private async Task ToggleCard()
     {
-        if (_model == ServiceResult<GetStoryByIdResult?>.Empty)
-            _model = await AppraiserService.GetStoryById(Item.Id);
+        if (_itemDetails == ServiceResult<GetStoryByIdResult?>.Empty)
+            _itemDetails = await AppraiserService.GetStoryById(Item.Id);
 
         IsOpen = !IsOpen;
     }

@@ -1,8 +1,7 @@
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 using Inc.TeamAssistant.WebUI.Services.Clients;
-using Inc.TeamAssistant.WebUI.Services.Internal;
+using Inc.TeamAssistant.WebUI.Services.Core;
 using Inc.TeamAssistant.WebUI.Services.Render;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -16,13 +15,13 @@ public static class ServiceCollectionExtensions
 
         services
             .AddBlazoredLocalStorage()
-
-            .AddScoped<IRenderContext, ClientRenderContext>()
+            
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
             .AddScoped<IBotService, BotClient>()
             
+            .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
@@ -39,11 +38,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddScoped<LanguageManager>()
-            
             .AddOptions()
             .AddAuthorizationCore()
-            .AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+            .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
+            .AddScoped<LanguageManager>();
 
         return services;
     }
