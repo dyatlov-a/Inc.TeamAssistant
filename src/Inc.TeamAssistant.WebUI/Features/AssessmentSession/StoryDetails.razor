@@ -1,7 +1,5 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
-@inject LanguageManager LanguageManager
-
 <div class="@GetClassName("story__details")">
     <h2 class="story__title">@Item.Title</h2>
 
@@ -28,7 +26,7 @@
     </ul>
 </div>
 <div class="@GetClassName("story__summary")">
-    <span class="story__total-value">@Item.Total</span> @_averageRating
+    <span class="story__total-value">@Item.Total</span> @AverageRating
 </div>
 
 @code {
@@ -37,14 +35,9 @@
     
     [Parameter, EditorRequired]
     public bool IsFullScreen { get; set; }
-
-    private string _averageRating = string.Empty;
+    
+    [Parameter, EditorRequired]
+    public string AverageRating { get; set; } = default!;
+    
     private string GetClassName(string className) => IsFullScreen ? $"{className}--full-screen" : className;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var resources = await LanguageManager.GetResource();
-        
-        _averageRating = resources[Messages.GUI_AverageRating];
-    }
 }

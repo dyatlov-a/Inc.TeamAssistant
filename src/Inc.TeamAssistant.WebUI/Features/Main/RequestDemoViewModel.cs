@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.WebUI.Features.Common;
+
 namespace Inc.TeamAssistant.WebUI.Features.Main;
 
 public sealed record RequestDemoViewModel(
@@ -10,8 +12,9 @@ public sealed record RequestDemoViewModel(
     string ToolReviewer,
     string ToolRandomCoffee,
     string CreateBotLink)
+    : IViewModel<RequestDemoViewModel>
 {
-    public static readonly RequestDemoViewModel Empty = new(
+    public static RequestDemoViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,

@@ -2,7 +2,7 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories
 
-@inject IAppraiserService Service
+@inject IAppraiserService AppraiserService
 
 <div class="story-card">
     <a href="#" @onclick="ToggleCard" @onclick:preventDefault="true" class="story-card__link">@ToShortTitle(Item.Title)</a>
@@ -10,7 +10,7 @@
     @if (_model is { State: ServiceResultState.Success, Result: not null } && IsOpen)
     {
         <div class="story-card__body">
-            <StoryDetails Item="_model.Result.Story" IsFullScreen="false" />
+            <StoryDetails Item="_model.Result.Story" AverageRating="@AverageRating" IsFullScreen="false" />
         </div>
     }
 </div>
@@ -18,6 +18,9 @@
 @code {
     [Parameter, EditorRequired]
     public StoryDto Item { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string AverageRating { get; set; } = default!;
 
     private bool IsOpen { get; set; }
     private ServiceResult<GetStoryByIdResult?> _model = ServiceResult<GetStoryByIdResult?>.Empty;
@@ -34,7 +37,7 @@
     private async Task ToggleCard()
     {
         if (_model == ServiceResult<GetStoryByIdResult?>.Empty)
-            _model = await Service.GetStoryById(Item.Id);
+            _model = await AppraiserService.GetStoryById(Item.Id);
 
         IsOpen = !IsOpen;
     }

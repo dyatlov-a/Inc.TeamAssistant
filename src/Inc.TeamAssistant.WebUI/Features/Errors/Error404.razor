@@ -1,20 +1,18 @@
-@inject LanguageManager LanguageManager
+@inherits PersistentComponent<Error404ViewModel>
 
-<PageTitle>@_viewModel.Title</PageTitle>
+<PageTitle>@ViewModel.Title</PageTitle>
 
 <div class="error-404">
     <div class="error-404__container">
-        <p class="error-404__text"><span class="error-404__title">@_viewModel.Title</span> @_viewModel.Description</p>
+        <p class="error-404__text"><span class="error-404__title">@ViewModel.Title</span> @ViewModel.Description</p>
     </div>
 </div>
 
 @code {
-    private Error404ViewModel _viewModel = Error404ViewModel.Empty;
-
-    protected override async Task OnInitializedAsync()
+    protected override Task<Error404ViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var resources = await LanguageManager.GetResource();
-
-        _viewModel = new(resources[Messages.GUI_Error404], resources[Messages.GUI_PageNotFound]);
+        return Task.FromResult(new Error404ViewModel(
+            resources[Messages.GUI_Error404],
+            resources[Messages.GUI_PageNotFound]));
     }
 }

@@ -1,9 +1,10 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
+using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
-internal sealed record AssessmentSessionPageViewModel(
+public sealed record AssessmentSessionPageViewModel(
     string TaskAssess,
     string CardNotSelected,
     string Scan,
@@ -11,9 +12,12 @@ internal sealed record AssessmentSessionPageViewModel(
     string AssessmentSessionCard,
     string AssessmentSessionNotFound,
     string Loading,
+    string AverageRating,
     ServiceResult<GetStoryDetailsResult?> Data)
+    : IViewModel<AssessmentSessionPageViewModel>
 {
-    public static readonly AssessmentSessionPageViewModel Empty = new(
+    public static AssessmentSessionPageViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,
@@ -22,4 +26,11 @@ internal sealed record AssessmentSessionPageViewModel(
         string.Empty,
         string.Empty,
         ServiceResult<GetStoryDetailsResult?>.Empty);
+    
+    public string StateMessage => Data.State switch
+    {
+        ServiceResultState.NotFound => AssessmentSessionNotFound,
+        ServiceResultState.Failed => Data.ErrorMessage,
+        _ => Loading
+    };
 }

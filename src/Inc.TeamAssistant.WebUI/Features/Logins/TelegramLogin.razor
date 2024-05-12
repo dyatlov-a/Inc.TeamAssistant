@@ -1,14 +1,15 @@
-@inject IUserService UserService
-@inject LanguageManager LanguageManager
+@inherits PersistentComponent<TelegramLoginViewModel>
 
-<p class="telegram-login__text">@_viewModel.LoginTelegramText</p>
+@inject IUserService UserService
+
+<p class="telegram-login__text">@ViewModel.LoginTelegramText</p>
 <div class="telegram-login__actions">
-    @if (_viewModel != TelegramLoginViewModel.Empty)
+    @if (ViewModel != TelegramLoginViewModel.Empty)
     {
         <script
             async
             src="https://telegram.org/js/telegram-widget.js?22"
-            data-telegram-login="@_viewModel.BotUserName"
+            data-telegram-login="@ViewModel.BotUserName"
             data-size="large"
             data-userpic="false"
             data-auth-url="accounts/login-tg"
@@ -18,14 +19,11 @@
 </div>
 
 @code {
-    private TelegramLoginViewModel _viewModel = TelegramLoginViewModel.Empty;
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task<TelegramLoginViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var resources = await LanguageManager.GetResource();
         var botContext = await UserService.GetAuthBotContext();
 
-        _viewModel = new TelegramLoginViewModel(
+        return new TelegramLoginViewModel(
             resources[Messages.Constructor_LoginTelegramText],
             botContext.UserName);
     }

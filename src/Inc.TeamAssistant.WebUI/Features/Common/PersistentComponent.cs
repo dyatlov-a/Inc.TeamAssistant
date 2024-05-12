@@ -1,0 +1,55 @@
+using Microsoft.AspNetCore.Components;
+using Inc.TeamAssistant.WebUI.Services.Internal;
+
+namespace Inc.TeamAssistant.WebUI.Features.Common;
+
+public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDisposable
+    where TViewModel : IViewModel<TViewModel>
+{
+    [Inject]
+    public PersistentComponentState ApplicationState { get; set; } = default!;
+    
+    [Inject]
+    public LanguageManager LanguageManager { get; set; } = default!;
+    
+    private PersistingComponentStateSubscription? _persistingSubscription;
+    protected TViewModel ViewModel { get; private set; } = TViewModel.Empty;
+    protected Func<string?, string> LinkBuilder { get; private set; } = _ => string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var key = typeof(TViewModel).FullName!;
+        LinkBuilder = LanguageManager.CreateLinkBuilder();
+        _persistingSubscription ??= ApplicationState.RegisterOnPersisting(() =>
+        {
+            ApplicationState.PersistAsJson(key, ViewModel);
+            return Task.CompletedTask;
+        });
+
+        if (ApplicationState.TryTakeFromJson<TViewModel>(key, out var restored) && restored is not null)
+            ViewModel = restored;
+        else
+        {
+            var resources = await LanguageManager.GetResource();
+            ViewModel = await Initialize(resources);
+        }
+    }
+
+    public async Task Update()
+    {
+        var resources = await LanguageManager.GetResource();
+        
+        ViewModel = await Initialize(resources);
+        
+        StateHasChanged();
+    }
+    
+    protected abstract Task<TViewModel> Initialize(Dictionary<string, string> resources);
+    
+    public virtual ValueTask DisposeAsync()
+    {
+        _persistingSubscription?.Dispose();
+
+        return ValueTask.CompletedTask;
+    }
+}

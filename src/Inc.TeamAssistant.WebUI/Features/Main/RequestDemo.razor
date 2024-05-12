@@ -1,60 +1,34 @@
 @using Inc.TeamAssistant.Primitives
 
-@implements IDisposable
-
-@inject PersistentComponentState ApplicationState
-@inject LanguageManager LanguageManager
+@inherits PersistentComponent<RequestDemoViewModel>
 
 <div class="request-demo__body">
     <div class="request-demo-text">
         <h1 class="request-demo-text__header">
-            <span class="request-demo-text-item">@_viewModel.Header</span><br/><span class="request-demo-text-item">@_viewModel.SubHeader</span>
+            <span class="request-demo-text-item">@ViewModel.Header</span><br/><span class="request-demo-text-item">@ViewModel.SubHeader</span>
         </h1>
         <br/>
         <p class="request-demo-text__description">
-            <span class="request-demo-text-item">👌 @_viewModel.ToolAppraiser<br/></span>
-            <span class="request-demo-text-item">🤝 @_viewModel.ToolReviewer<br/></span>
-            <span class="request-demo-text-item">💬 @_viewModel.ToolRandomCoffee</span>
+            <span class="request-demo-text-item">👌 @ViewModel.ToolAppraiser<br/></span>
+            <span class="request-demo-text-item">🤝 @ViewModel.ToolReviewer<br/></span>
+            <span class="request-demo-text-item">💬 @ViewModel.ToolRandomCoffee</span>
         </p>
         <div class="request-demo-actions">
-            <a href="mailto:@(GlobalSettings.FeedbackTo)?body=@(_viewModel.RequestDemoBody)&subject=@(_viewModel.RequestDemoSubject)" class="button button_black">@_viewModel.RequestDemo</a>
+            <a href="mailto:@(GlobalSettings.FeedbackTo)?body=@(ViewModel.RequestDemoBody)&subject=@(ViewModel.RequestDemoSubject)" class="button button_black">@ViewModel.RequestDemo</a>
             <br/>
-            <a href="@MoveToConstructor()" class="link link_black request-demo-actions__link">@_viewModel.CreateBotLink</a>
+            <a href="@MoveToConstructor()" class="link link_black request-demo-actions__link">@ViewModel.CreateBotLink</a>
         </div>
     </div>
 </div>
 
 @code {
-    private const string StateKey = nameof(RequestDemo);
-    private PersistingComponentStateSubscription _persistingSubscription;
-    private Func<string?, string> _linkBuilder = default!;
+    private string MoveToConstructor() => LinkBuilder("constructor");
     
-    private RequestDemoViewModel _viewModel = RequestDemoViewModel.Empty;
-
-    protected override async Task OnInitializedAsync()
+    protected override Task<RequestDemoViewModel> Initialize(Dictionary<string, string> resources)
     {
-        _linkBuilder = LanguageManager.CreateLinkBuilder();
-        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
-
-        if (ApplicationState.TryTakeFromJson<RequestDemoViewModel>(StateKey, out var restored) && restored is not null)
-            _viewModel = restored;
-        else
-            await Initialize();
-    }
-
-    private Task PersistData()
-    {
-        ApplicationState.PersistAsJson(StateKey, _viewModel);
-
-        return Task.CompletedTask;
-    }
-
-    private async Task Initialize()
-    {
-        var resources = await LanguageManager.GetResource();
         var requestDemo = resources[Messages.GUI_RequestDemo];
 
-        _viewModel = new RequestDemoViewModel(
+        return Task.FromResult(new RequestDemoViewModel(
             requestDemo,
             $"{requestDemo} [TeamAssistant]",
             resources[Messages.GUI_RequestDemoBody],
@@ -63,10 +37,6 @@
             resources[Messages.GUI_ToolAppraiser],
             resources[Messages.GUI_ToolReviewer],
             resources[Messages.GUI_ToolRandomCoffee],
-            resources[Messages.GUI_CreateBotLink]);
+            resources[Messages.GUI_CreateBotLink]));
     }
-    
-    private string MoveToConstructor() => _linkBuilder("constructor");
-
-    public void Dispose() => _persistingSubscription.Dispose();
 }

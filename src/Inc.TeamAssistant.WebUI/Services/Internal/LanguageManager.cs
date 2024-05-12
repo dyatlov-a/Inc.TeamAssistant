@@ -3,7 +3,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
-internal sealed class LanguageManager
+public sealed class LanguageManager
 {
     private readonly IMessageProvider _messageProvider;
     private readonly IRenderContext _renderContext;
