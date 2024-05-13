@@ -1,5 +1,5 @@
 @inject IBotService BotService
-@inject LanguageManager LanguageManager
+@inject ResourcesManager ResourcesManager
 @inject NavigationManager NavigationManager
 
 <div class="bot-selector">
@@ -39,12 +39,12 @@
 
     protected override void OnInitialized()
     {
-        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        _linkBuilder = ResourcesManager.CreateLinkBuilder();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
         var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
 
         _viewModel = new BotSelectorViewModel(

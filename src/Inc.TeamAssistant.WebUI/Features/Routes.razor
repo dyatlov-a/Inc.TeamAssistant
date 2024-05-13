@@ -1,4 +1,12 @@
-﻿<CascadingAuthenticationState>
+﻿@using System.Globalization
+@using FluentValidation
+
+@implements IDisposable
+
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
@@ -18,3 +26,28 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    protected override void OnInitialized()
+    {
+        SetCurrentLanguage();
+        
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetCurrentLanguage();
+    }
+    
+    private void SetCurrentLanguage()
+    {
+        var currentLanguage = RenderContext.GetCurrentLanguageId();
+        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo(currentLanguage.Language.Value);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

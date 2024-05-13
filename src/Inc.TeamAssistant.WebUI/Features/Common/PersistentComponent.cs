@@ -10,7 +10,7 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
     public PersistentComponentState ApplicationState { get; set; } = default!;
     
     [Inject]
-    public LanguageManager LanguageManager { get; set; } = default!;
+    public ResourcesManager ResourcesManager { get; set; } = default!;
     
     private PersistingComponentStateSubscription? _persistingSubscription;
     protected TViewModel ViewModel { get; private set; } = TViewModel.Empty;
@@ -19,7 +19,7 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
     protected override async Task OnParametersSetAsync()
     {
         var key = typeof(TViewModel).FullName!;
-        LinkBuilder = LanguageManager.CreateLinkBuilder();
+        LinkBuilder = ResourcesManager.CreateLinkBuilder();
         _persistingSubscription ??= ApplicationState.RegisterOnPersisting(() =>
         {
             ApplicationState.PersistAsJson(key, ViewModel);
@@ -30,14 +30,14 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
             ViewModel = restored;
         else
         {
-            var resources = await LanguageManager.GetResource();
+            var resources = await ResourcesManager.GetResource();
             ViewModel = await Initialize(resources);
         }
     }
 
     public async Task Update()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
         
         ViewModel = await Initialize(resources);
         

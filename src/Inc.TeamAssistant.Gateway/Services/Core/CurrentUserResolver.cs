@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
 
-namespace Inc.TeamAssistant.Gateway.Services.Internal;
+namespace Inc.TeamAssistant.Gateway.Services.Core;
 
 internal sealed class CurrentUserResolver : ICurrentUserResolver
 {

@@ -111,6 +111,8 @@
   "Connector_HasNotRightsForRemoveTeam": "You do not have permission to remove the command \"{0}\"",
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
+  
+  "Validation_TokenInvalid": "The token is invalid.",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",
   "RandomCoffee_Yes": "Yes",

@@ -1,12 +1,17 @@
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Application;
+using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess;
 using Inc.TeamAssistant.WebUI.Services;
 using Inc.TeamAssistant.CheckIn.Application;
+using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.Connector.Application;
+using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.DataAccess;
+using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.DataAccess;
 using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Holidays;
@@ -16,13 +21,30 @@ using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Inc.TeamAssistant.Gateway.Components;
+using Inc.TeamAssistant.Gateway.Services.Core;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
+using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Contracts;
+using MediatR;
+using MediatR.Pipeline;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
+using Prometheus.DotNetRuntime;
+
+DotNetRuntimeStatsBuilder
+	.Customize()
+	.WithGcStats()
+	.WithThreadPoolStats()
+	.StartCollecting();
+
+ValidatorOptions.Global.LanguageManager.Culture = new(LanguageSettings.DefaultLanguageId.Value);
+ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
+ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +56,49 @@ var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOp
 var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
+
+builder.Services
+	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ILocationsRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITeamRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IBotRepository>(
+		lifetime: ServiceLifetime.Scoped,
+		includeInternalTypes: true);
+
+builder.Services
+	.AddMediatR(c =>
+	{
+		c.Lifetime = ServiceLifetime.Scoped;
+		c.RegisterServicesFromAssemblyContaining<IStoryRepository>();
+		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
+		c.RegisterServicesFromAssemblyContaining<IBotRepository>();
+	})
+	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
+	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
+
+builder.Services
+	.AddAuthentication(ApplicationContext.AuthenticationScheme)
+	.AddCookie(o =>
+	{
+		o.ExpireTimeSpan = TimeSpan.FromDays(2);
+		o.SlidingExpiration = true;
+		o.AccessDeniedPath = "/";
+	});
 
 builder.Services
 	.AddDataAccess(connectionString)
@@ -48,11 +113,8 @@ builder.Services
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.Build()
 	
-	.AddValidators(LanguageSettings.DefaultLanguageId)
-	.AddHandlers()
-	.AddAuth(authOptions)
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
-	.AddServices(builder.Environment.WebRootPath, cacheAbsoluteExpiration)
+	.AddServices(authOptions, builder.Environment.WebRootPath, cacheAbsoluteExpiration)
 	.AddIsomorphic()
 		
 	.AddAppraiserApplication(appraiserOptions)
@@ -69,9 +131,11 @@ builder.Services
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()
-	.AddTelemetry()
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
+
+builder.Services
+	.AddHealthChecks();
 
 builder.Services
 	.AddSignalR();

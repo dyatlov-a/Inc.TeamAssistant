@@ -11,7 +11,7 @@
 @attribute [Authorize]
 
 @inject IBotService BotService
-@inject LanguageManager LanguageManager
+@inject ResourcesManager ResourcesManager
 
 <PageTitle>@_viewModel.Title</PageTitle>
 
@@ -55,12 +55,12 @@
 
     protected override void OnInitialized()
     {
-        _linkBuilder = LanguageManager.CreateLinkBuilder();
+        _linkBuilder = ResourcesManager.CreateLinkBuilder();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
         var getFeaturesResult = await BotService.GetFeatures();
 
         if (_viewModel.StagesState.Id != BotId || !_viewModel.StagesState.Features.Any())

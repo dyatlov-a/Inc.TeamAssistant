@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Gateway.Services.Auth;
+using Inc.TeamAssistant.Gateway.Services.Core;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;

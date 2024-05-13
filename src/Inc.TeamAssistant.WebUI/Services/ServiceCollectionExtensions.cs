@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
             .AddOptions()
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<LanguageManager>();
+            .AddScoped<ResourcesManager>();
 
         return services;
     }

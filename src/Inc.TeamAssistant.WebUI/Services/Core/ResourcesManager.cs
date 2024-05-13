@@ -3,12 +3,12 @@ using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.Core;
 
-public sealed class LanguageManager
+public sealed class ResourcesManager
 {
     private readonly IMessageProvider _messageProvider;
     private readonly IRenderContext _renderContext;
 
-    public LanguageManager(IMessageProvider messageProvider, IRenderContext renderContext)
+    public ResourcesManager(IMessageProvider messageProvider, IRenderContext renderContext)
     {
         _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));

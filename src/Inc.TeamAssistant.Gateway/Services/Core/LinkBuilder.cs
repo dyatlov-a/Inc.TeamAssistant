@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 
-namespace Inc.TeamAssistant.Gateway.Services.Internal;
+namespace Inc.TeamAssistant.Gateway.Services.Core;
 
 internal sealed class LinkBuilder : ILinkBuilder
 {

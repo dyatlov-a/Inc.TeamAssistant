@@ -2,7 +2,7 @@
 @page "/en/constructor"
 @page "/ru/constructor"
 
-@inject LanguageManager LanguageManager
+@inject ResourcesManager ResourcesManager
 
 <PageTitle>@_viewModel.Title</PageTitle>
 
@@ -28,7 +28,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
 
         _viewModel = new ConstructorPageViewModel(
             resources[Messages.Constructor_Title],

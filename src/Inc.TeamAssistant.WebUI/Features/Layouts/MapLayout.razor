@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-@inject LanguageManager LanguageManager
+@inject ResourcesManager ResourcesManager
 
 <Meta Model="_metaModel" />
 
@@ -16,7 +16,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
         
         _metaModel = new(
             resources[Messages.CheckIn_PageTitle],

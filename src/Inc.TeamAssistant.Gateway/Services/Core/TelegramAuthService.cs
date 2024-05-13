@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives.Bots;
 using Telegram.Bot.Extensions.LoginWidget;
 
-namespace Inc.TeamAssistant.Gateway.Services.Auth;
+namespace Inc.TeamAssistant.Gateway.Services.Core;
 
 public sealed class TelegramAuthService
 {

@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Inc.TeamAssistant.Gateway.Services.Internal;
+namespace Inc.TeamAssistant.Gateway.Services.Core;
 
 internal sealed class MessagesSender : IMessagesSender
 {
