@@ -129,5 +129,9 @@
   "Constructor_Remove": "Delete",
   "Constructor_Title": "Build your bot",
   "Constructor_SelectBotText": "In the constructor, you can create a new bot or modify the settings of an existing one. You can select an existing bot or create a new one by clicking the \"Add\" button.",
-  "Constructor_LoginTelegramText": "To start working with the bot constructor, please log in to Telegram."
+  "Constructor_LoginTelegramText": "To start working with the bot constructor, please log in to Telegram.",
+  "Constructor_RemoveConfirmationText": "You confirm the removal of the bot named \"{0}\"?",
+
+  "ConfirmDialog_Yes": "Yes",
+  "ConfirmDialog_No": "No"
 }

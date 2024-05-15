@@ -8,10 +8,12 @@ public sealed record BotSelectorViewModel(
     string AddBot,
     string Edit,
     string Remove,
+    string RemoveConfirmationTemplate,
     IReadOnlyCollection<BotDto> Bots)
     : IViewModel<BotSelectorViewModel>
 {
     public static BotSelectorViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

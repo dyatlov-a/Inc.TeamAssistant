@@ -2,18 +2,18 @@
 @page "/en/constructor"
 @page "/ru/constructor"
 
-@inject ResourcesManager ResourcesManager
+@inherits PersistentComponent<ConstructorPageViewModel>
 
-<PageTitle>@_viewModel.Title</PageTitle>
+<PageTitle>@ViewModel.Title</PageTitle>
 
 <NavigationLogin />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title constructor__title">@_viewModel.Title</h1>
+        <h1 class="title constructor__title">@ViewModel.Title</h1>
         <AuthorizeView>
             <Authorized>
-                <p class="text constructor__text">@_viewModel.SelectBotText</p>
+                <p class="text constructor__text">@ViewModel.SelectBotText</p>
                 <BotSelector OwnerId="@context.User.ToPerson().Id" />
             </Authorized>
             <NotAuthorized>
@@ -24,14 +24,10 @@
 </div>
 
 @code {
-    private ConstructorPageViewModel _viewModel = ConstructorPageViewModel.Empty;
-
-    protected override async Task OnInitializedAsync()
+    protected override Task<ConstructorPageViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var resources = await ResourcesManager.GetResource();
-
-        _viewModel = new ConstructorPageViewModel(
+        return Task.FromResult(new ConstructorPageViewModel(
             resources[Messages.Constructor_Title],
-            resources[Messages.Constructor_SelectBotText]);
+            resources[Messages.Constructor_SelectBotText]));
     }
 }
