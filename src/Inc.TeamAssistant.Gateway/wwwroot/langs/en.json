@@ -122,8 +122,11 @@
   "RandomCoffee_MeetingDescription": "Please make arrangements for a meeting in private messages",
   "RandomCoffee_NotEnoughParticipants": "There are not enough participants to form pairs",
   "RandomCoffee_InviteHelp": "Start random coffee meetings",
-  
-  "Constructor_AddBotLink": "Add",
+
+  "Constructor_NewBot": "New bot",
+  "Constructor_AddBot": "Add",
+  "Constructor_Edit": "Edit",
+  "Constructor_Remove": "Delete",
   "Constructor_Title": "Build your bot",
   "Constructor_SelectBotText": "In the constructor, you can create a new bot or modify the settings of an existing one. You can select an existing bot or create a new one by clicking the \"Add\" button.",
   "Constructor_LoginTelegramText": "To start working with the bot constructor, please log in to Telegram."

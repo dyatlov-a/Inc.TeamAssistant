@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
-        <ScopedCssEnabled>true</ScopedCssEnabled>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     </PropertyGroup>
     <ItemGroup>

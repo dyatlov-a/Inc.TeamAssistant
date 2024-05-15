@@ -39,7 +39,10 @@ internal sealed class Messages
     public static readonly string Navigation_Logout = nameof(Navigation_Logout);
     public static readonly string Navigation_LoginAsSuperuser = nameof(Navigation_LoginAsSuperuser);
 
-    public static readonly string Constructor_AddBotLink = nameof(Constructor_AddBotLink);
+    public static readonly string Constructor_NewBot = nameof(Constructor_NewBot);
+    public static readonly string Constructor_AddBot = nameof(Constructor_AddBot);
+    public static readonly string Constructor_Edit = nameof(Constructor_Edit);
+    public static readonly string Constructor_Remove = nameof(Constructor_Remove);
     public static readonly string Constructor_Title = nameof(Constructor_Title);
     public static readonly string Constructor_SelectBotText = nameof(Constructor_SelectBotText);
     public static readonly string Constructor_LoginTelegramText = nameof(Constructor_LoginTelegramText);

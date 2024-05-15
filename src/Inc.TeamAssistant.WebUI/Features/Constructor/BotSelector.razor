@@ -1,54 +1,44 @@
+@inherits PersistentComponent<BotSelectorViewModel>
+
 @inject IBotService BotService
-@inject ResourcesManager ResourcesManager
 @inject NavigationManager NavigationManager
 
 <div class="bot-selector">
-    @foreach(var bot in _viewModel.Bots)
+    @foreach(var bot in ViewModel.Bots)
     {
-        <div class="bot-selector__item">
-            <BotIcon Size="160px" Color="#fff" />
-            <div class="bot-selector__name" title="@bot.Name">@bot.Name</div>
-            <div>
-                <span @onclick="() => MoveToEdit(bot.Id)">
-                    <EditIcon Size="40px" Color="#fff" />
-                </span>
-                <span @onclick="() => Remove(bot.Id)">
-                    <TrashIcon Size="40px" Color="#fff" />
-                </span>
-            </div>
-        </div>
+        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+            <Buttons>
+                <button class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
+                    @ViewModel.Edit
+                </button>
+                <button class="button button_black bot-selector__button" @onclick="() => Remove(bot.Id)">
+                    @ViewModel.Remove
+                </button>
+            </Buttons>
+        </BotCard>
     }
-    <div class="bot-selector__item">
-        <AddBotIcon Size="160px" Color="#fff" />
-        <div class="bot-selector__name" title="Create">@_viewModel.AddBotLink</div>
-        <div>
-            <span @onclick="MoveToAdd">
-                <AddIcon Size="40px" Color="#fff" />
-            </span>
-        </div>
-    </div>
+    <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+        <Buttons>
+            <button class="button button_white bot-selector__button" @onclick="MoveToAdd">
+                @ViewModel.AddBot
+            </button>
+        </Buttons>
+    </BotCard>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
-
-    private Func<string?, string> _linkBuilder = default!;
     
-    private BotSelectorViewModel _viewModel = BotSelectorViewModel.Empty;
-
-    protected override void OnInitialized()
+    protected override async Task<BotSelectorViewModel> Initialize(Dictionary<string, string> resources)
     {
-        _linkBuilder = ResourcesManager.CreateLinkBuilder();
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var resources = await ResourcesManager.GetResource();
         var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
-
-        _viewModel = new BotSelectorViewModel(
-            resources[Messages.Constructor_AddBotLink],
+        
+        return new BotSelectorViewModel(
+            resources[Messages.Constructor_NewBot],
+            resources[Messages.Constructor_AddBot],
+            resources[Messages.Constructor_Edit],
+            resources[Messages.Constructor_Remove],
             getBotsByOwnerResult.Result.Bots);
     }
 
@@ -61,7 +51,7 @@
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavigationManager.NavigateTo(_linkBuilder(link));
+        NavigationManager.NavigateTo(LinkBuilder(link));
     }
 
     private async Task Remove(Guid botId)
@@ -69,9 +59,10 @@
         await BotService.Remove(botId);
         
         var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
-        _viewModel = _viewModel with
+        
+        Set(ViewModel with
         {
             Bots = getBotsByOwnerResult.Result.Bots
-        };
+        });
     }
 }

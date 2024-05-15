@@ -1,0 +1,30 @@
+<div class="bot-card bot-selector__item">
+    <div class="bot-card__avatar">
+        <div class="bot-card__box">
+            <DynamicComponent Type="Icon" Parameters="IconParameters" />
+        </div>
+    </div>
+    <div class="bot-card__content">
+        <h3 class="bot-card__name">@Name</h3>
+        <div class="bot-card__actions">
+            @Buttons
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Type Icon { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Buttons { get; set; } = default!;
+    
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "60px",
+        ["Color"] = "#000"
+    };
+}

@@ -94,6 +94,7 @@ html {
     border-radius: 1rem;
     transition: background-color 0.3s ease 0s;
     background-color: transparent;
+    cursor: pointer;
 }
 .button_white {
     border: .1875rem solid #fff;
@@ -116,6 +117,9 @@ html {
 }
 .link:hover {
     text-decoration: underline;
+}
+.link_white {
+    color: #fff;
 }
 .link_black {
     color: #000;
@@ -240,4 +244,13 @@ html {
 .form-controls {
     margin-top: 40px;
     text-align: right;
+}
+/* ROOT COMPONENTS */
+.title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+}
+.text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
 }

@@ -1,8 +1,20 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
+using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor;
 
-public sealed record BotSelectorViewModel(string AddBotLink, IReadOnlyCollection<BotDto> Bots)
+public sealed record BotSelectorViewModel(
+    string NewBot,
+    string AddBot,
+    string Edit,
+    string Remove,
+    IReadOnlyCollection<BotDto> Bots)
+    : IViewModel<BotSelectorViewModel>
 {
-    public static readonly BotSelectorViewModel Empty = new(string.Empty, Array.Empty<BotDto>());
+    public static BotSelectorViewModel Empty { get; } = new(
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        Array.Empty<BotDto>());
 }
