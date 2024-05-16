@@ -19,8 +19,10 @@
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="constructor__title">@_viewModel.Title</h1>
-        <StagesSummary Current="CurrentState" />
+        <h1 class="title constructor__title">@_viewModel.Title</h1>
+        <div class="constructor__nav">
+            <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
+        </div>
         <DynamicComponent Type="StageType" Parameters="StageParameters" />
     </div>
 </div>

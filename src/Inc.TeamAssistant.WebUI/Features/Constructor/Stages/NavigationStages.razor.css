@@ -1,0 +1,29 @@
+.nav-stages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.nav-stages__item {
+    flex: 0 1 25%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+.nav-stages__item_can-move {
+    cursor: pointer;
+}
+.nav-stages__item_active, .nav-stages__item_can-move:hover {
+    background-color: #fff;
+    color: #000;
+}
+@media (max-width: 767.98px) {
+    .nav-stages__item {
+        flex: 0 1 50%;
+    }
+}
+@media (max-width: 479.98px) {
+    .nav-stages__item {
+        flex: 0 1 100%;
+    }
+}

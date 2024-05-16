@@ -131,6 +131,10 @@
   "Constructor_SelectBotText": "В конструкторе возможно создать нового бота или изменить настройки уже существующего. Выберите существующего бота или создайте нового нажав кнопку «Добавить».",
   "Constructor_LoginTelegramText": "Чтобы начать работу с конструктором ботов, войдите в Telegram.",
   "Constructor_RemoveConfirmationText": "Вы подтверждаете удаление бота «{0}»?",
+  "Constructor_StageCheckBot": "Подключение бота",
+  "Constructor_StageSelectFeatures": "Выбор функционала",
+  "Constructor_StageSetSettings": "Установка настроек",
+  "Constructor_StageComplete": "Побтверждение",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"
