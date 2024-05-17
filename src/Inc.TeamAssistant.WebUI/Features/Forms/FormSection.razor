@@ -21,12 +21,12 @@
     [Parameter, EditorRequired]
     public string Title { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
     [Parameter]
     public string? HelpText { get; set; }
     
     [Parameter]
     public RenderFragment? HelpContent { get; set; }
-    
-    [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
 }

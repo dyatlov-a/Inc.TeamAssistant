@@ -135,6 +135,11 @@
   "Constructor_StageSelectFeatures": "Selection of functionality",
   "Constructor_StageSetSettings": "Set the settings",
   "Constructor_StageComplete": "Confirmation",
+  "Constructor_FormSectionTokenTitle": "Set bot token",
+  "Constructor_FormSectionTokenHelpTemplate": "Please move to {0} and create bot",
+  "Constructor_FormSectionTokenFieldTokenLabel": "Bot token",
+  "Constructor_FormSectionTokenFieldUserNameLabel": "Bot username",
+  "Constructor_MoveNextTitle": "Next",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

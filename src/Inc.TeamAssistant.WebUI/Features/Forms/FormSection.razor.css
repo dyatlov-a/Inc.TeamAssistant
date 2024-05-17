@@ -1,0 +1,34 @@
+.form-section {
+    padding-top: 10px;
+    border-top: 5px #555 solid;
+    margin-top: 30px;
+    background-color: #9d9d9d;
+    display: flex;
+    color: #000;
+}
+.form-section__legend {
+    width: 40%;
+    padding: 10px;
+}
+.form-section__title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+.form-section__help {
+    font-size: 1rem;
+}
+.form-section__content {
+    width: 60%;
+    padding: 10px;
+}
+@media (max-width: 767.98px) {
+    .form-section {
+        flex-direction: column;
+    }
+    .form-section__legend {
+        width: 100%;
+    }
+    .form-section__content {
+        width: 100%;
+    }
+}

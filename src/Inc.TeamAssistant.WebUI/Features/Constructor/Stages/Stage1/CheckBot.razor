@@ -1,46 +1,61 @@
+@inherits PersistentComponent<CheckBotViewModel>
+
 @inject NavigationManager NavigationManager
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
-    <FormSection Title="Set bot token">
-        <HelpContent>
-            Please move to <a href="https://telegram.me/BotFather" class="link link_black">BotFather</a> and create bot
-        </HelpContent>
-        <Content>
-            <FormFieldSet FieldId="bot-token" Label="Bot token">
-                <Content>
-                    <InputText @bind-Value="_formModel.Token" class="form-section__control" id="bot-token"/>
-                    <ValidationMessage For="@(() => _formModel.Token)"/>
-                </Content>
-            </FormFieldSet>
-            <FormFieldSet FieldId="bot-username" Label="Bot username">
-                <Content>
-                    <InputText @bind-Value="_formModel.UserName" class="form-section__control" id="bot-username" disabled="true"/>
-                </Content>
-            </FormFieldSet>
-        </Content>
-    </FormSection>
-    <div class="form-controls">
-        <button class="button button_white" type="submit">Next</button>
+    <div class="constructor__form">
+        <FormSection Title="@ViewModel.FormSectionTokenTitle">
+            <HelpContent>
+                @((MarkupString)string.Format(ViewModel.FormSectionTokenHelpTemplate, "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_black\">BotFather</a>"))
+            </HelpContent>
+            <Content>
+                <FormFieldSet FieldId="bot-token" Label="@ViewModel.FormSectionTokenFieldTokenLabel">
+                    <Content>
+                        <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
+                        <ValidationMessage For="@(() => _formModel.Token)"/>
+                    </Content>
+                </FormFieldSet>
+                <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
+                    <Content>
+                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="true"/>
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </FormSection>
+    </div>
+    <div class="constructor__actions">
+        <button class="button button_white" type="submit">@ViewModel.MoveNextTitle</button>
     </div>
 </EditForm>
 
 @code {
-    private readonly CheckBotFormModel _formModel = new();
-    private FluentValidationValidator? _fluentValidationValidator;
-    
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
     
+    private readonly CheckBotFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
     private EditContext _editContext = EditContextFactory.Create(new CheckBotFormModel());
 
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        
+        base.OnParametersSet();
+    }
+    
+    protected override Task<CheckBotViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new CheckBotViewModel(
+            resources[Messages.Constructor_FormSectionTokenTitle],
+            resources[Messages.Constructor_FormSectionTokenHelpTemplate],
+            resources[Messages.Constructor_FormSectionTokenFieldTokenLabel],
+            resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
+            resources[Messages.Constructor_MoveNextTitle]));
     }
 
     private async Task SubmitForm()

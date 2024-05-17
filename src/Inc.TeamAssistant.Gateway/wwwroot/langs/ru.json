@@ -135,6 +135,11 @@
   "Constructor_StageSelectFeatures": "Выбор функционала",
   "Constructor_StageSetSettings": "Установка настроек",
   "Constructor_StageComplete": "Побтверждение",
+  "Constructor_FormSectionTokenTitle": "Укажите токен бота",
+  "Constructor_FormSectionTokenHelpTemplate": "Перейдите к {0} и создайте бота",
+  "Constructor_FormSectionTokenFieldTokenLabel": "Токен доступа для бота",
+  "Constructor_FormSectionTokenFieldUserNameLabel": "Имя бота",
+  "Constructor_MoveNextTitle": "Далее",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

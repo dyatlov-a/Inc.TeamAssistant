@@ -8,7 +8,7 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-    vertical-align: middle;
+    align-items: center;
 }
 .nav-stages__item_can-move {
     cursor: pointer;

@@ -47,6 +47,11 @@ internal sealed class Messages
     public static readonly string Constructor_SelectBotText = nameof(Constructor_SelectBotText);
     public static readonly string Constructor_LoginTelegramText = nameof(Constructor_LoginTelegramText);
     public static readonly string Constructor_RemoveConfirmationText = nameof(Constructor_RemoveConfirmationText);
+    public static readonly string Constructor_FormSectionTokenTitle = nameof(Constructor_FormSectionTokenTitle);
+    public static readonly string Constructor_FormSectionTokenHelpTemplate = nameof(Constructor_FormSectionTokenHelpTemplate);
+    public static readonly string Constructor_FormSectionTokenFieldTokenLabel = nameof(Constructor_FormSectionTokenFieldTokenLabel);
+    public static readonly string Constructor_FormSectionTokenFieldUserNameLabel = nameof(Constructor_FormSectionTokenFieldUserNameLabel);
+    public static readonly string Constructor_MoveNextTitle = nameof(Constructor_MoveNextTitle);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

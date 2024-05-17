@@ -4,3 +4,9 @@
 .constructor__title {
     margin-top: 60px;
 }
+::deep .constructor__form {
+    margin-bottom: 20px;
+}
+::deep .constructor__actions {
+    text-align: right;
+}

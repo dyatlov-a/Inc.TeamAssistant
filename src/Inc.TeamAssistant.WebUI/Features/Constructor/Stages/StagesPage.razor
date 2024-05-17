@@ -10,16 +10,17 @@
 
 @attribute [Authorize]
 
-@inject IBotService BotService
-@inject ResourcesManager ResourcesManager
+@inherits PersistentComponent<StagesPageViewModel>
 
-<PageTitle>@_viewModel.Title</PageTitle>
+@inject IBotService BotService
+
+<PageTitle>@ViewModel.Title</PageTitle>
 
 <NavigationLogin />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title constructor__title">@_viewModel.Title</h1>
+        <h1 class="title constructor__title">@ViewModel.Title</h1>
         <div class="constructor__nav">
             <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
         </div>
@@ -33,8 +34,7 @@
 
     [Parameter]
     public string Selected { get; set; } = default!;
-
-    private Func<string?, string> _linkBuilder = default!;
+    
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
         : Enum.GetValues<Stage>().First();
@@ -49,57 +49,50 @@
 
     private Dictionary<string, object> StageParameters => new()
     {
-        ["StagesState"] = _viewModel.StagesState,
+        ["StagesState"] = ViewModel.StagesState,
         ["LinkFactory"] = (object)LinkFactory
     };
     
-    private StagesPageViewModel _viewModel = StagesPageViewModel.Empty;
-
-    protected override void OnInitialized()
+    protected override async Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
     {
-        _linkBuilder = ResourcesManager.CreateLinkBuilder();
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var resources = await ResourcesManager.GetResource();
         var getFeaturesResult = await BotService.GetFeatures();
 
-        if (_viewModel.StagesState.Id != BotId || !_viewModel.StagesState.Features.Any())
-        {
-            var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
-            var features = getFeaturesResult.Result.Features
-                .Select(f => new StagesState.Feature
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Properties = f.Properties
-                })
-                .ToArray();
+        if (ViewModel.StagesState.Id == BotId && ViewModel.StagesState.Features.Any())
+            return ViewModel;
+        
+        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
+        var features = getFeaturesResult.Result.Features
+            .Select(f => new StagesState.Feature
+            {
+                Id = f.Id,
+                Name = f.Name,
+                Properties = f.Properties
+            })
+            .ToArray();
 
-            _viewModel = new StagesPageViewModel(
-                resources[Messages.Constructor_Title],
-                new StagesState(
-                    bot?.Result?.Id,
-                    bot?.Result?.UserName ?? string.Empty,
-                    bot?.Result?.Token ?? string.Empty,
-                    bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
-                    bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
-                    bot?.Result?.Properties ?? new Dictionary<string, string>(),
-                    features));
-        }
+        return new StagesPageViewModel(
+            resources[Messages.Constructor_Title],
+            new StagesState(
+                bot?.Result?.Id,
+                bot?.Result?.UserName ?? string.Empty,
+                bot?.Result?.Token ?? string.Empty,
+                bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
+                bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
+                bot?.Result?.Properties ?? new Dictionary<string, string>(),
+                features));
+
     }
 
     private string LinkFactory(Stage? stage)
     {
         if (!stage.HasValue)
-            return _linkBuilder("constructor");
+            return LinkBuilder("constructor");
         
         var target = stage.Value.ToString().ToLower();
-        var link = _viewModel.StagesState.Id.HasValue
-            ? $"constructor/{_viewModel.StagesState.Id.Value:N}/{target}"
+        var link = ViewModel.StagesState.Id.HasValue
+            ? $"constructor/{ViewModel.StagesState.Id.Value:N}/{target}"
             : $"constructor/{target}";
 
-        return _linkBuilder(link);
+        return LinkBuilder(link);
     }
 }
