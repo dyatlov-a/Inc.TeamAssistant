@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.WebUI.Features.Common;
 
@@ -8,12 +7,12 @@ public sealed record AssessmentSessionHistoryPageViewModel(
     string LinkToBackText,
     string StoryList,
     string AverageRating,
-    ServiceResult<GetStoriesResult?> Data)
+    GetStoriesResult? Data)
     : IViewModel<AssessmentSessionHistoryPageViewModel>
 {
     public static AssessmentSessionHistoryPageViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,
-        ServiceResult<GetStoriesResult?>.Empty);
+        null);
 }

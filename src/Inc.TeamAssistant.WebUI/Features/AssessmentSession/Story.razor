@@ -1,0 +1,35 @@
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+<div class="story">
+    <h2 class="story__title">@Item.Title</h2>
+    @if (Item.Links.Any())
+    {
+        <ul class="story__items">
+            @foreach (var link in Item.Links)
+            {
+                <li class="story__item">
+                    <a class="link link_white" href="@link" target="_blank">@link</a>
+                </li>
+            }
+        </ul>
+    }
+    <div class="story__cards">
+        @foreach (var storyForEstimate in Item.StoryForEstimates)
+        {
+            <DefaultCard Icon="@typeof(BotIcon)" Name="@storyForEstimate.ParticipantName">
+                <Content>
+                    <span class="story__value">@storyForEstimate.DisplayValue</span>
+                </Content>
+            </DefaultCard>
+        }
+    </div>
+    <span class="story__value-total"><b>@Item.Total</b> @AverageRating</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Item { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string AverageRating { get; set; } = default!;
+}

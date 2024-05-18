@@ -4,8 +4,6 @@ namespace Inc.TeamAssistant.WebUI;
 
 internal static class Messages
 {
-    public static readonly string GUI_Scan = nameof(GUI_Scan);
-
     public static readonly string GUI_Authorizing = nameof(GUI_Authorizing);
     public static readonly string GUI_Error401 = nameof(GUI_Error401);
     public static readonly string GUI_Unauthorized = nameof(GUI_Unauthorized);
@@ -13,12 +11,9 @@ internal static class Messages
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
     public static readonly string GUI_TaskAssess = nameof(GUI_TaskAssess);
-    public static readonly string GUI_CardNotSelected = nameof(GUI_CardNotSelected);
     public static readonly string GUI_AverageRating = nameof(GUI_AverageRating);
-    public static readonly string GUI_ToConnect = nameof(GUI_ToConnect);
-    public static readonly string GUI_AssessmentSessionCard = nameof(GUI_AssessmentSessionCard);
-    public static readonly string GUI_AssessmentSessionNotFound = nameof(GUI_AssessmentSessionNotFound);
-    public static readonly string GUI_Loading = nameof(GUI_Loading);
+    public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
+    public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
 
     public static readonly string GUI_AcceptCookieButton = nameof(GUI_AcceptCookieButton);
     public static readonly string GUI_AcceptCookieText = nameof(GUI_AcceptCookieText);

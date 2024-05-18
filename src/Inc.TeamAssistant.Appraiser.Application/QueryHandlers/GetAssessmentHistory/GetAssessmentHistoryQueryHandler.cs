@@ -16,8 +16,7 @@ internal sealed class GetAssessmentHistoryQueryHandler
 
     public async Task<GetAssessmentHistoryResult> Handle(GetAssessmentHistoryQuery query, CancellationToken token)
     {
-        if (query is null)
-            throw new ArgumentNullException(nameof(query));
+        ArgumentNullException.ThrowIfNull(query);
 
         var history = await _reader.GetAssessmentHistory(query.TeamId, query.Depth, token);
 

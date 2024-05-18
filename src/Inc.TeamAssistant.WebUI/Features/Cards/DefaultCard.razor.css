@@ -2,7 +2,6 @@
     font-size: 1.1rem;
     word-break: break-all;
     text-align: center;
-    text-transform: lowercase;
 }
 .default-card__header {
     background-color: #fff;

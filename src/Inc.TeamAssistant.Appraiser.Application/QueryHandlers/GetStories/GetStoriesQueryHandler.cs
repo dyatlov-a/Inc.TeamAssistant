@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
+using Inc.TeamAssistant.Appraiser.Application.Converters;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using MediatR;
 
@@ -15,11 +16,11 @@ internal sealed class GetStoriesQueryHandler : IRequestHandler<GetStoriesQuery, 
 
     public async Task<GetStoriesResult> Handle(GetStoriesQuery query, CancellationToken token)
     {
-        if (query is null)
-            throw new ArgumentNullException(nameof(query));
+        ArgumentNullException.ThrowIfNull(query);
 
         var stories = await _reader.GetStories(query.TeamId, query.AssessmentDate, token);
+        var results = stories.Select(StoryConverter.Convert).ToArray(); 
 
-        return new GetStoriesResult(stories);
+        return new GetStoriesResult(results);
     }
 }

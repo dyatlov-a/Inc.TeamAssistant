@@ -14,4 +14,8 @@
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\main\logo.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\main\phone__mockup.png" />
+    </ItemGroup>
 </Project>

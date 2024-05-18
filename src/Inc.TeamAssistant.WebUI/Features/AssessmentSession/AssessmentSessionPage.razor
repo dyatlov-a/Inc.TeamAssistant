@@ -2,8 +2,6 @@
 @page "/en/assessment-session/{id:guid}"
 @page "/ru/assessment-session/{id:guid}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Common
-
 @inherits PersistentComponent<AssessmentSessionPageViewModel>
 
 @inject IAppraiserService AppraiserService
@@ -11,40 +9,31 @@
 
 <PageTitle>@ViewModel.TaskAssess</PageTitle>
 
-<div class="assessment-session">
-    <div class="assessment-session__container">
-        <div class="assessment-session__body">
-            <div class="assessment-session__card">
-                <h1 class="assessment-session__title">@ViewModel.TaskAssess</h1>
-                @if (ViewModel.Data is { State: ServiceResultState.Success, Result: not null })
-                {
-                    <StoryDetails Item="ViewModel.Data.Result.Story" AverageRating="@ViewModel.AverageRating" IsFullScreen="true"/>
-                }
-                else
-                {
-                    <p class="assessment-session__text">@ViewModel.StateMessage</p>
-                }
+<div class="assessment-session-header white">
+    <div class="assessment-session-header__container">
+        <div class="assessment-session__header">
+            <div class="assessment-session__about">
+                <h1 class="title">@ViewModel.TaskAssess</h1>
+                <p class="assessment-session__text text">@string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)</p>
+                <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
             </div>
-            <div class="phone phone_hidden-on-tablet">
-                <div class="phone__screen">
-                    <div class="phone__content">
-                        <div class="qr-code">
-                            @if (ViewModel.Data is { State: ServiceResultState.Success, Result: not null })
-                            {
-                                <div class="qr-code__content">
-                                    @((MarkupString) ViewModel.Data.Result.CodeForConnect)
-                                </div>
-                                <span class="qr-code__text">@ViewModel.Scan</span>
-                                <span class="qr-code__text qr-code__text_sub">@ViewModel.ToConnect</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="phone__mockup"></div>
-                </div>
+            <div class="assessment-session__link">
+                @((MarkupString)ViewModel.CodeForConnect)
             </div>
         </div>
-        
-        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" @ref="_history" />
+    </div>
+</div>
+<div class="assessment-session-content">
+    <div class="assessment-session-content__container">
+        @if (ViewModel.Story is not null)
+        {
+            <Story Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
+        }
+    </div>
+</div>
+<div class="assessment-session-footer white">
+    <div class="assessment-session-footer__container">
+        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" @ref="_history"/>
     </div>
 </div>
 
@@ -53,36 +42,32 @@
     public Guid Id { get; set; }
     
     private EventsProvider? _eventsProvider;
-    
     private AssessmentSessionHistory _history = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+        
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null)
-        {
-            await eventsProvider.OnStoryChanged(Id, Update);
-            _eventsProvider = eventsProvider;
-        }
+        if (eventsProvider is not null && _eventsProvider is null)
+            _eventsProvider = await eventsProvider.OnStoryChanged(Id, Update);
     }
 
     protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var newStoryState = await AppraiserService.GetStoryDetails(Id);
+        var newStoryState = await AppraiserService.GetActiveStory(Id);
 
-        if (ViewModel.Data.Result is not null && ViewModel.Data.Result.Story.Id != newStoryState.Result?.Story.Id)
+        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id)
             await _history.Update();
 
         return new(
             resources[Messages.GUI_TaskAssess],
-            resources[Messages.GUI_CardNotSelected],
-            resources[Messages.GUI_Scan],
-            resources[Messages.GUI_ToConnect],
-            resources[Messages.GUI_AssessmentSessionCard],
-            resources[Messages.GUI_AssessmentSessionNotFound],
-            resources[Messages.GUI_Loading],
             resources[Messages.GUI_AverageRating],
-            newStoryState);
+            resources[Messages.GUI_AssessmentSessionAbout],
+            resources[Messages.GUI_AssessmentSessionConnect],
+            newStoryState.Result.TeamName,
+            newStoryState.Result.CodeForConnect,
+            newStoryState.Result.Story);
     }
     
     public override async ValueTask DisposeAsync()

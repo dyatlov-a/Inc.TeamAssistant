@@ -1,19 +1,16 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
 using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
 public sealed record AssessmentSessionPageViewModel(
     string TaskAssess,
-    string CardNotSelected,
-    string Scan,
-    string ToConnect,
-    string AssessmentSessionCard,
-    string AssessmentSessionNotFound,
-    string Loading,
     string AverageRating,
-    ServiceResult<GetStoryDetailsResult?> Data)
+    string AboutTemplate,
+    string ConnectToTeam,
+    string TeamName,
+    string CodeForConnect,
+    StoryDto? Story)
     : IViewModel<AssessmentSessionPageViewModel>
 {
     public static AssessmentSessionPageViewModel Empty { get; } = new(
@@ -23,14 +20,5 @@ public sealed record AssessmentSessionPageViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
-        string.Empty,
-        string.Empty,
-        ServiceResult<GetStoryDetailsResult?>.Empty);
-    
-    public string StateMessage => Data.State switch
-    {
-        ServiceResultState.NotFound => AssessmentSessionNotFound,
-        ServiceResultState.Failed => Data.ErrorMessage,
-        _ => Loading
-    };
+        null);
 }

@@ -44,13 +44,6 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
         StateHasChanged();
     }
     
-    protected void Set(TViewModel viewModel)
-    {
-        ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
-        
-        StateHasChanged();
-    }
-    
     protected abstract Task<TViewModel> Initialize(Dictionary<string, string> resources);
     
     public virtual ValueTask DisposeAsync()

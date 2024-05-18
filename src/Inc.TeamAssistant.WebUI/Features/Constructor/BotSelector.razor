@@ -79,12 +79,7 @@
             return;
         
         await BotService.Remove(_selectedBot.Id);
-        
-        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
-        
-        Set(ViewModel with
-        {
-            Bots = getBotsByOwnerResult.Result.Bots
-        });
+
+        await Update();
     }
 }

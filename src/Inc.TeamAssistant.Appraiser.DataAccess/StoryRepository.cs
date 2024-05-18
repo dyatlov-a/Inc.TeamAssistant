@@ -20,7 +20,9 @@ internal sealed class StoryRepository : IStoryRepository
     {
         await using var connection = _connectionFactory.Create();
         
-        return await FindStoryByIdQuery.Find(connection, storyId, token);
+        var stories = await GetStoryQuery.Get(connection, new[] { storyId }, token);
+
+        return stories.SingleOrDefault();
     }
 
     public async Task Upsert(Story story, CancellationToken token)

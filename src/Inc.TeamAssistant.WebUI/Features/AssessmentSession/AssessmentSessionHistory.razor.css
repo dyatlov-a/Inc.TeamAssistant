@@ -7,9 +7,5 @@
 }
 .history__item {
     display: block;
-    color: #fff;
     line-height: 1.5rem;
-}
-.history__item:hover {
-    text-decoration: underline;
 }

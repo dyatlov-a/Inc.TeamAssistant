@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.Converters;
 
 internal static class StoryConverter
 {
-    public static StoryDetailsDto Convert(Story story)
+    public static StoryDto Convert(Story story)
     {
         ArgumentNullException.ThrowIfNull(story);
 

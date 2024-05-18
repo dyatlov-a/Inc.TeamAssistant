@@ -124,60 +124,6 @@ html {
 .link_black {
     color: #000;
 }
-/* PHONE */
-.phone {
-    flex: 0 0 248px;
-}
-.phone__screen {
-    position: relative;
-    width: 248px;
-    height: 500px;
-}
-.phone__mockup {
-    position: absolute;
-    background-image: url('../main/phone__mockup.png');
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-.phone__content {
-    width: 100%;
-    height: 100%;
-    padding: 12px 14px;
-    position: absolute;
-}
-.qr-code {
-    width: 100%;
-    height: 100%;
-    padding: 136px 0 0 0;
-    background-color: #fff;
-    text-align: center;
-}
-.qr-code__content {
-    margin: 0 0 20px 0;
-}
-.qr-code__content svg {
-    width: 140px;
-}
-.qr-code__text {
-    color: #000;
-    font-size: 16px;
-    line-height: 20px;
-    padding: 0 20px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-weight: bold;
-    display: block;
-}
-.qr-code__text_sub {
-    font-size: 12px;
-}
-@media (max-width: 767.98px) {
-    .phone_hidden-on-tablet {
-        display: none;
-    }
-}
 /* MAP */
 .marker-btn {
     background-color: #fff;

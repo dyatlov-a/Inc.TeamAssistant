@@ -2,8 +2,7 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
+using Inc.TeamAssistant.Appraiser.Model.Queries.GetActiveStory;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
@@ -18,14 +17,12 @@ internal sealed class AppraiserClient : IAppraiserService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        Guid teamId,
-		CancellationToken token)
+    public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(Guid teamId, CancellationToken token)
 	{
 		try
 		{
-			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoryDetailsResult?>>(
-				$"assessment-sessions/story/{teamId}/current",
+			var result = await _client.GetFromJsonAsync<ServiceResult<GetActiveStoryResult>>(
+				$"assessment-sessions/story/{teamId}/active",
 				token);
 
 			if (result is null)
@@ -35,18 +32,18 @@ internal sealed class AppraiserClient : IAppraiserService
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetStoryDetailsResult?>(ex.Message);
+			return ServiceResult.Failed<GetActiveStoryResult>(ex.Message);
 		}
 	}
 
-	public async Task<ServiceResult<GetAssessmentHistoryResult?>> GetAssessmentHistory(
+	public async Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
 		Guid teamId,
 		int depth,
 		CancellationToken token)
 	{
 		try
 		{
-			var result = await _client.GetFromJsonAsync<ServiceResult<GetAssessmentHistoryResult?>>(
+			var result = await _client.GetFromJsonAsync<ServiceResult<GetAssessmentHistoryResult>>(
 				$"assessment-sessions/history?teamid={teamId}&depth={depth}",
 				token);
 
@@ -57,18 +54,18 @@ internal sealed class AppraiserClient : IAppraiserService
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetAssessmentHistoryResult?>(ex.Message);
+			return ServiceResult.Failed<GetAssessmentHistoryResult>(ex.Message);
 		}
 	}
 
-	public async Task<ServiceResult<GetStoriesResult?>> GetStories(
+	public async Task<ServiceResult<GetStoriesResult>> GetStories(
 		Guid teamId,
 		DateOnly assessmentDate,
 		CancellationToken token)
 	{
 		try
 		{
-			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoriesResult?>>(
+			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoriesResult>>(
 				$"assessment-sessions/stories/{teamId}/{assessmentDate:yyyy-MM-dd}",
 				token);
 
@@ -79,26 +76,7 @@ internal sealed class AppraiserClient : IAppraiserService
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetStoriesResult?>(ex.Message);
-		}
-	}
-
-	public async Task<ServiceResult<GetStoryByIdResult?>> GetStoryById(Guid storyId, CancellationToken token)
-	{
-		try
-		{
-			var result = await _client.GetFromJsonAsync<ServiceResult<GetStoryByIdResult?>>(
-				$"assessment-sessions/story/{storyId}",
-				token);
-
-			if (result is null)
-				throw new TeamAssistantException("Parse response with error.");
-
-			return result;
-		}
-		catch (Exception ex)
-		{
-			return ServiceResult.Failed<GetStoryByIdResult?>(ex.Message);
+			return ServiceResult.Failed<GetStoriesResult>(ex.Message);
 		}
 	}
 }

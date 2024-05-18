@@ -1,8 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryById;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStoryDetails;
+using Inc.TeamAssistant.Appraiser.Model.Queries.GetActiveStory;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -17,65 +16,51 @@ internal sealed class AppraiserService : IAppraiserService
 		_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 	}
 
-	public async Task<ServiceResult<GetStoryDetailsResult?>> GetStoryDetails(
-        Guid teamId,
-		CancellationToken token)
+	public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(Guid teamId, CancellationToken token)
 	{
 		try
 		{
-			var result = await _mediator.Send(new GetStoryDetailsQuery(teamId), token);
+			var result = await _mediator.Send(new GetActiveStoryQuery(teamId), token);
 
-			return result is null
-				? ServiceResult.NotFound<GetStoryDetailsResult?>()
-				: ServiceResult.Success((GetStoryDetailsResult?)result);
+			return ServiceResult.Success(result);
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetStoryDetailsResult?>(ex.Message);
+			return ServiceResult.Failed<GetActiveStoryResult>(ex.Message);
 		}
 	}
 
-	public async Task<ServiceResult<GetAssessmentHistoryResult?>> GetAssessmentHistory(Guid teamId, int depth, CancellationToken token = default)
+	public async Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
+		Guid teamId,
+		int depth,
+		CancellationToken token)
 	{
 		try
 		{
 			var result = await _mediator.Send(new GetAssessmentHistoryQuery(teamId, depth), token);
 
-			return ServiceResult.Success((GetAssessmentHistoryResult?)result);
+			return ServiceResult.Success(result);
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetAssessmentHistoryResult?>(ex.Message);
+			return ServiceResult.Failed<GetAssessmentHistoryResult>(ex.Message);
 		}
 	}
 
-	public async Task<ServiceResult<GetStoriesResult?>> GetStories(Guid teamId, DateOnly assessmentDate, CancellationToken token = default)
+	public async Task<ServiceResult<GetStoriesResult>> GetStories(
+		Guid teamId,
+		DateOnly assessmentDate,
+		CancellationToken token)
 	{
 		try
 		{
 			var result = await _mediator.Send(new GetStoriesQuery(teamId, assessmentDate), token);
 
-			return ServiceResult.Success((GetStoriesResult?)result);
+			return ServiceResult.Success(result);
 		}
 		catch (Exception ex)
 		{
-			return ServiceResult.Failed<GetStoriesResult?>(ex.Message);
-		}
-	}
-
-	public async Task<ServiceResult<GetStoryByIdResult?>> GetStoryById(Guid storyId, CancellationToken token = default)
-	{
-		try
-		{
-			var result = await _mediator.Send(new GetStoryByIdQuery(storyId), token);
-
-			return result is null
-				? ServiceResult.NotFound<GetStoryByIdResult?>()
-				: ServiceResult.Success((GetStoryByIdResult?)result);
-		}
-		catch (Exception ex)
-		{
-			return ServiceResult.Failed<GetStoryByIdResult?>(ex.Message);
+			return ServiceResult.Failed<GetStoriesResult>(ex.Message);
 		}
 	}
 }

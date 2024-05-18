@@ -2,22 +2,20 @@
 @page "/en/assessment-session/{teamId:guid}/{date}"
 @page "/ru/assessment-session/{teamId:guid}/{date}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Common
-
 @inherits PersistentComponent<AssessmentSessionHistoryPageViewModel>
 
-@inject IAppraiserService Service
+@inject IAppraiserService AppraiserService
 
 <div class="assessment-story-list">
     <div class="assessment-story-list__container">
         <h1 class="assessment-story-list__title">@ViewModel.StoryList @Date</h1>
         
-        @if (ViewModel.Data is { State: ServiceResultState.Success, Result: not null })
+        @if (ViewModel.Data is not null)
         {
             <div class="assessment-story-list__body">
-                @foreach (var story in ViewModel.Data.Result.Items)
+                @foreach (var story in ViewModel.Data.Items)
                 {
-                    <StoryHistoryItem Item="story" AverageRating="@ViewModel.AverageRating" />
+                    <Story Item="story" AverageRating="@ViewModel.AverageRating" />
                 }
             </div>
             <a href="@MoveToBack()" class="assessment-story-back">@ViewModel.LinkToBackText</a>
@@ -37,10 +35,12 @@
     protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(
         Dictionary<string, string> resources)
     {
+        var getStoriesResult = await AppraiserService.GetStories(TeamId, DateOnly.Parse(Date));
+        
         return new AssessmentSessionHistoryPageViewModel(
             resources[Messages.GUI_Back],
             resources[Messages.GUI_StoryList],
             resources[Messages.GUI_AverageRating],
-            await Service.GetStories(TeamId, DateOnly.Parse(Date)));
+            getStoriesResult.Result);
     }
 }

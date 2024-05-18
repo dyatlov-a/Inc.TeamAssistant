@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
-public sealed record StoryDetailsDto(
+public sealed record StoryDto(
     Guid Id,
     string Title,
     IReadOnlyCollection<string> Links,

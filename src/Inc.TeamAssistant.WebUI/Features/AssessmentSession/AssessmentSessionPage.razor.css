@@ -1,29 +1,36 @@
-.assessment-session {
-    padding: 8.5rem 0 2.5rem 0;
+.assessment-session-header, .assessment-session-content, .assessment-session-footer {
+    padding: 60px 0 40px 0;
 }
-.assessment-session__title {
-    font-size: 1.7rem;
-    line-height: 2rem;
-    margin: 0 0 .75rem 0;
-    letter-spacing: .0625rem;
+.white {
+    background-color: #fff;
+    color: #000;
 }
-.assessment-session__body {
+.assessment-session__header {
     display: flex;
+    align-items: center;
 }
-.assessment-session__card {
-    flex: 1 1 auto;
-    padding: 0 2rem 0 0;
+.assessment-session__about, .assessment-session__link {
+    flex: 0 1 200px;
+}
+.assessment-session__about {
+    flex-grow: 1;
+}
+.assessment-session__link {
+    margin: 0 0 0 40px;
 }
 .assessment-session__text {
-	line-height: 1.6rem;
+    margin-top: 10px;
 }
-@media (max-width: 991.98px) {
-    .assessment-session {
-        padding: 6rem 0 1rem 0;
+@media (max-width: 479.98px) {
+    .assessment-session__header {
+        flex-direction: column;
     }
-}
-@media (max-width: 767.98px) {
-    .assessment-session {
-        padding: 7rem 0 1rem 0;
+    .assessment-session__link {
+        width: 100%;
+        padding: 0 20px;
+        margin: 40px 0 0 0;
+    }
+    .assessment-session__about, .assessment-session__link {
+        flex: 0 1 100%;
     }
 }

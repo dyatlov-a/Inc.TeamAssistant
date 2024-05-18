@@ -6,9 +6,15 @@
     </div>
     <div class="default-card__content">
         <h3 class="default-card__name">@Name</h3>
-        <div class="default-card__actions">
-            @Buttons
-        </div>
+        
+        @Content
+        
+        @if (Buttons is not null)
+        {
+            <div class="default-card__actions">
+                @Buttons
+            </div>
+        }
     </div>
 </div>
 
@@ -19,8 +25,11 @@
     [Parameter, EditorRequired]
     public string Name { get; set; } = default!;
     
-    [Parameter, EditorRequired]
-    public RenderFragment Buttons { get; set; } = default!;
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Buttons { get; set; }
     
     private Dictionary<string, object> IconParameters => new()
     {
