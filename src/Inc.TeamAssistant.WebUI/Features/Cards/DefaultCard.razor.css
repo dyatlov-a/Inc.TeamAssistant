@@ -1,18 +1,18 @@
-.bot-card__name {
+.default-card__name {
     font-size: 1.1rem;
     word-break: break-all;
     text-align: center;
     text-transform: lowercase;
 }
-.bot-card__avatar {
+.default-card__avatar {
     background-color: #fff;
     position: relative;
     height: 60px;
 }
-.bot-card__content {
+.default-card__content {
     padding: 60px 20px 20px 20px;
 }
-.bot-card__box {
+.default-card__box {
     position: absolute;
     width: 80px;
     height: 80px;
@@ -24,7 +24,7 @@
     background-color: #fff;
     padding: 6px;
 }
-.bot-card__actions {
+.default-card__actions {
     text-align: center;
     margin-top: 15px;
 }

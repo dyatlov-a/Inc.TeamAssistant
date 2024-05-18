@@ -14,7 +14,7 @@
 <div class="bot-selector">
     @foreach(var bot in ViewModel.Bots)
     {
-        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+        <DefaultCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Buttons>
                 <button class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
                     @ViewModel.Edit
@@ -23,15 +23,15 @@
                     @ViewModel.Remove
                 </button>
             </Buttons>
-        </BotCard>
+        </DefaultCard>
     }
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+    <DefaultCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
         <Buttons>
             <button class="button button_white bot-selector__button" @onclick="MoveToAdd">
                 @ViewModel.AddBot
             </button>
         </Buttons>
-    </BotCard>
+    </DefaultCard>
 </div>
 
 @code {

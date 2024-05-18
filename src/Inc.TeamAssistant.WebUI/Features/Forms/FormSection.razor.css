@@ -1,4 +1,4 @@
-.form-section {
+.form-section, .form-section_rows {
     padding-top: 10px;
     border-top: 5px #555 solid;
     margin-top: 30px;
@@ -6,9 +6,17 @@
     display: flex;
     color: #000;
 }
+.form-section_rows {
+    flex-direction: column;
+}
+.form-section__legend, .form-section__legend_rows {
+    padding: 10px;
+}
 .form-section__legend {
     width: 40%;
-    padding: 10px;
+}
+.form-section__legend_rows {
+    width: 100%;
 }
 .form-section__title {
     font-size: 1.2rem;
@@ -17,9 +25,14 @@
 .form-section__help {
     font-size: 1rem;
 }
+.form-section__content, .form-section__content_rows {
+    padding: 10px;
+}
 .form-section__content {
     width: 60%;
-    padding: 10px;
+}
+.form-section__content_rows {
+    width: 100%;
 }
 @media (max-width: 767.98px) {
     .form-section {

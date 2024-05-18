@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.WebUI;
 
-internal sealed class Messages
+internal static class Messages
 {
     public static readonly string GUI_Scan = nameof(GUI_Scan);
 
@@ -52,6 +52,16 @@ internal sealed class Messages
     public static readonly string Constructor_FormSectionTokenFieldTokenLabel = nameof(Constructor_FormSectionTokenFieldTokenLabel);
     public static readonly string Constructor_FormSectionTokenFieldUserNameLabel = nameof(Constructor_FormSectionTokenFieldUserNameLabel);
     public static readonly string Constructor_MoveNextTitle = nameof(Constructor_MoveNextTitle);
+    public static readonly string Constructor_FormSectionFeaturesTitle = nameof(Constructor_FormSectionFeaturesTitle);
+    public static readonly string Constructor_FormSectionFeaturesHelp = nameof(Constructor_FormSectionFeaturesHelp);
+    public static readonly string Constructor_FeatureAppraiserName = nameof(Constructor_FeatureAppraiserName);
+    public static readonly string Constructor_FeatureReviewerName = nameof(Constructor_FeatureReviewerName);
+    public static readonly string Constructor_FeatureRandomCoffeeName = nameof(Constructor_FeatureRandomCoffeeName);
+    public static readonly string Constructor_FeatureCheckInName = nameof(Constructor_FeatureCheckInName);
+    public static readonly string Constructor_FeatureAdd = nameof(Constructor_FeatureAdd);
+    public static readonly string Constructor_FeatureRemove = nameof(Constructor_FeatureRemove);
+    public static readonly string Constructor_FormSectionFeaturesAvailableEmptyText = nameof(Constructor_FormSectionFeaturesAvailableEmptyText);
+    public static readonly string Constructor_FormSectionFeaturesSelectedEmptyText = nameof(Constructor_FormSectionFeaturesSelectedEmptyText);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

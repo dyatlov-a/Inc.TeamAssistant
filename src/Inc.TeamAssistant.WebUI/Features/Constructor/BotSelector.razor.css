@@ -3,7 +3,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
 }
-::deep .bot-selector__item {
+::deep .default-card {
     margin-bottom: 40px;
     flex: 0 1 48%;
     background-color: #9d9d9d;
@@ -12,9 +12,8 @@
     margin: 5px;
     min-width: 166px;
 }
-
 @media (max-width: 991.98px) {
-    ::deep .bot-selector__item{
+    ::deep .default-card {
         flex: 0 1 100%;
     }
 }
