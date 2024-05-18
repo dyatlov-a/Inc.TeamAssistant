@@ -7,21 +7,24 @@
     <div class="constructor__form">
         @foreach (var property in _formModel.Properties)
         {
-            if (ViewModel.Items.TryGetValue(property.Name, out var item))
+            if (ViewModel.SettingSections.TryGetValue(property.Name, out var item))
             {
                 <FormSection Title="@item.Header" HelpText="@item.Help">
                     <Content>
                         @foreach (var settingItem in item.SettingItems)
                         {
-                            <label for="@settingItem.PropertyName" class="form-section__label">@settingItem.Label</label>
-                            <InputSelect id="@settingItem.PropertyName" @bind-Value="property.Value" class="form-control">
-                                <option value=""></option>
-                                @foreach (var value in settingItem.Values)
-                                {
-                                    <option value="@value.Value">@value.Text</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => property.Value)"/>
+                            <FormFieldSet FieldId="@settingItem.PropertyName" Label="@settingItem.Label">
+                                <Content>
+                                    <InputSelect id="@settingItem.PropertyName" @bind-Value="property.Value" class="form-control">
+                                        <option value=""></option>
+                                        @foreach (var value in settingItem.Values)
+                                        {
+                                            <option value="@value.Value">@value.Text</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => property.Value)"/>
+                                </Content>
+                            </FormFieldSet>
                         }
                     </Content>
                 </FormSection>
@@ -53,39 +56,9 @@
     
     protected override Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var descriptions = new Dictionary<string, SetSettingsViewModel.SettingSection>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            ["storyType"] = new(
-                resources[Messages.Constructor_FormSectionSetSettingsAppraiserHeader],
-                resources[Messages.Constructor_FormSectionSetSettingsAppraiserHelp],
-                new SetSettingsViewModel.SettingItem[]
-                {
-                    new(
-                        "story-type",
-                        resources[Messages.Constructor_FormSectionSetSettingsStoryTypeFieldLabel],
-                        new SetSettingsViewModel.SelectListItem[]
-                        {
-                            new(resources[Messages.Constructor_FormSectionSetSettingsScrumDescription], "Scrum"),
-                            new(resources[Messages.Constructor_FormSectionSetSettingsKanbanDescription], "Kanban")
-                        })
-                }),
-            ["nextReviewerStrategy"] = new(
-                resources[Messages.Constructor_FormSectionSetSettingsReviewerHeader],
-                resources[Messages.Constructor_FormSectionSetSettingsReviewerHelp],
-                new SetSettingsViewModel.SettingItem[]
-                {
-                    new(
-                        "next-reviewer-strategy",
-                        resources[Messages.Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel],
-                        new SetSettingsViewModel.SelectListItem[]
-                        {
-                            new(resources[Messages.Constructor_FormSectionSetSettingsRoundRobinDescription], "RoundRobin"),
-                            new(resources[Messages.Constructor_FormSectionSetSettingsRandomDescription], "Random")
-                        })
-                })
-        };
-        
-        return Task.FromResult(new SetSettingsViewModel(descriptions, resources[Messages.Constructor_MoveNextTitle]));
+        return Task.FromResult(new SetSettingsViewModel(
+            BotSettingsFactory.Create(resources),
+            resources[Messages.Constructor_MoveNextTitle]));
     }
     
     private async Task SubmitForm()

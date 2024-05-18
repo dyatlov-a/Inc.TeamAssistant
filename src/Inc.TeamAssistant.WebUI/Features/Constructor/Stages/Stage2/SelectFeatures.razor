@@ -48,14 +48,6 @@
     
     protected override Task<SelectFeaturesViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var features = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            ["appraiser"] = resources[Messages.Constructor_FeatureAppraiserName],
-            ["reviewer"] = resources[Messages.Constructor_FeatureReviewerName],
-            ["randomcoffee"] = resources[Messages.Constructor_FeatureRandomCoffeeName],
-            ["checkin"] = resources[Messages.Constructor_FeatureCheckInName]
-        };
-        
         return Task.FromResult(new SelectFeaturesViewModel(
             resources[Messages.Constructor_FormSectionFeaturesTitle],
             resources[Messages.Constructor_FormSectionFeaturesHelp],
@@ -64,7 +56,7 @@
             resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText],
             resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText],
             resources[Messages.Constructor_MoveNextTitle],
-            features));
+            Messages.BuildFeatureNames(resources)));
     }
 
     private async Task SubmitForm()

@@ -160,6 +160,12 @@
   "Constructor_FormSectionSetSettingsReviewerHeader": "Code review",
   "Constructor_FormSectionSetSettingsReviewerHelp": "Specify the parameters within which the code review will be conducted",
   "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel": "Strategy for selecting a reviewer (default for teams)",
+  "Constructor_FormSectionTokenCheckHelp": "Please check and confirm the bot's properties",
+  "Constructor_FormSectionFeaturesCheckHelp": "Please check and confirm the selected features",
+  "Constructor_ButtonCreateText": "Create",
+  "Constructor_ButtonUpdateText": "Update",
+  "Constructor_BooleanTrueText": "Yes",
+  "Constructor_BooleanFalseText": "No",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

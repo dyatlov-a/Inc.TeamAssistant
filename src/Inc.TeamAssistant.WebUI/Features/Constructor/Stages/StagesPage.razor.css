@@ -13,3 +13,7 @@
 ::deep .constructor__actions {
     text-align: right;
 }
+::deep .constructor__edit-link {
+    display: block;
+    text-align: right;
+}

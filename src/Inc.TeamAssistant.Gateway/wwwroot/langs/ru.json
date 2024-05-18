@@ -160,6 +160,12 @@
   "Constructor_FormSectionSetSettingsReviewerHeader": "Ревью кода",
   "Constructor_FormSectionSetSettingsReviewerHelp": "Укажите параметры в рамках которых проводится ревью кода",
   "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel": "Стратегия выбора ревьювера (по умолчанию для команд)",
+  "Constructor_FormSectionTokenCheckHelp": "Пожалуйста, проверьте и подтвердите свойства бота",
+  "Constructor_FormSectionFeaturesCheckHelp": "Пожалуйста, проверьте и подтвердите выбранные функции",
+  "Constructor_ButtonCreateText": "Создать",
+  "Constructor_ButtonUpdateText": "Обновить",
+  "Constructor_BooleanTrueText": "Да",
+  "Constructor_BooleanFalseText": "Нет",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

@@ -38,9 +38,7 @@
 
     protected override Task<NavigationStagesViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var stagesLookup = Enum.GetValues<Stage>()
-            .Select(s => (Key: s, Value: resources[$"Constructor_Stage{s}"]))
-            .ToDictionary(s => s.Key, s => s.Value);
+        var stagesLookup = Enum.GetValues<Stage>().ToDictionary(s => s, s => resources[Messages.GetStageTitle(s)]);
         
         return Task.FromResult(new NavigationStagesViewModel(stagesLookup));
     }

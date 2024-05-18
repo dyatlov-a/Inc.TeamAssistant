@@ -39,7 +39,7 @@
     
     private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
-    private EditContext _editContext = EditContextFactory.Create(new CheckBotFormModel());
+    private EditContext? _editContext;
 
     protected override void OnParametersSet()
     {

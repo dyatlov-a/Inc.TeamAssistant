@@ -50,7 +50,7 @@
     public IReadOnlyCollection<StagesState.Feature> Features { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public Dictionary<string, string> FeatureNames { get; set; } = default!;
+    public IReadOnlyDictionary<string, string> FeatureNames { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public string AddText { get; set; } = default!;

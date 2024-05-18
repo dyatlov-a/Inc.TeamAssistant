@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
+
 namespace Inc.TeamAssistant.WebUI;
 
 internal static class Messages
@@ -72,6 +74,12 @@ internal static class Messages
     public static readonly string Constructor_FormSectionSetSettingsReviewerHeader = nameof(Constructor_FormSectionSetSettingsReviewerHeader);
     public static readonly string Constructor_FormSectionSetSettingsReviewerHelp = nameof(Constructor_FormSectionSetSettingsReviewerHelp);
     public static readonly string Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel = nameof(Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel);
+    public static readonly string Constructor_FormSectionTokenCheckHelp = nameof(Constructor_FormSectionTokenCheckHelp);
+    public static readonly string Constructor_FormSectionFeaturesCheckHelp = nameof(Constructor_FormSectionFeaturesCheckHelp);
+    public static readonly string Constructor_ButtonCreateText = nameof(Constructor_ButtonCreateText);
+    public static readonly string Constructor_ButtonUpdateText = nameof(Constructor_ButtonUpdateText);
+    public static readonly string Constructor_BooleanTrueText = nameof(Constructor_BooleanTrueText);
+    public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
@@ -92,4 +100,19 @@ internal static class Messages
     public static readonly string MetaDescription = nameof(MetaDescription);
     public static readonly string MetaKeywords = nameof(MetaKeywords);
     public static readonly string MetaAuthor = nameof(MetaAuthor);
+    
+    public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
+
+    public static IReadOnlyDictionary<string, string> BuildFeatureNames(IReadOnlyDictionary<string, string> resources)
+    {
+        ArgumentNullException.ThrowIfNull(resources);
+        
+        return new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            ["Appraiser"] = resources[Constructor_FeatureAppraiserName],
+            ["Reviewer"] = resources[Constructor_FeatureReviewerName],
+            ["RandomCoffee"] = resources[Constructor_FeatureRandomCoffeeName],
+            ["CheckIn"] = resources[Constructor_FeatureCheckInName]
+        };
+    }
 }

@@ -47,13 +47,6 @@ public sealed class StagesState
         public string Name { get; set; } = string.Empty;
         public IReadOnlyCollection<string> Properties { get; set; } = Array.Empty<string>();
     }
-    
-    public IReadOnlyCollection<Feature> GetSelectedFeatures()
-    {
-        return Features
-            .Where(f => FeatureIds.Contains(f.Id))
-            .ToArray();
-    }
 
     public void Apply(CheckBotFormModel formModel)
     {
@@ -72,6 +65,9 @@ public sealed class StagesState
             .Where(f => formModel.FeatureIds.Contains(f.Id))
             .SelectMany(f => f.Properties)
             .ToArray();
+        Properties = Properties
+            .Where(p => PropertyKeys.Contains(p.Key, StringComparer.InvariantCultureIgnoreCase))
+            .ToDictionary();
     }
 
     public void Apply(SetSettingsFormModel formModel)
