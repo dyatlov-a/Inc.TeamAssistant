@@ -4,7 +4,7 @@
     text-align: center;
     text-transform: lowercase;
 }
-.default-card__avatar {
+.default-card__header {
     background-color: #fff;
     position: relative;
     height: 60px;
@@ -12,7 +12,7 @@
 .default-card__content {
     padding: 60px 20px 20px 20px;
 }
-.default-card__box {
+.default-card__avatar {
     position: absolute;
     width: 80px;
     height: 80px;

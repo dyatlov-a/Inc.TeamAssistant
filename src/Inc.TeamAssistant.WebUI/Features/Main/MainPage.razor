@@ -3,31 +3,28 @@
 @page "/ru"
 
 @using Inc.TeamAssistant.Primitives
-@using Inc.TeamAssistant.WebUI.Features.Video
+@using Inc.TeamAssistant.WebUI.Features.Videos
 
 @inherits PersistentComponent<MainPageViewModel>
 
-<Video FileName="source-tree-02" NotSupportedMessage="@ViewModel.NotSupportedMessage"></Video>
+<MainVideo FileName="source-tree-02" NotSupportedMessage="@ViewModel.NotSupportedMessage" />
 
-<section id="feedback" class="feedback">
-    <div class="feedback__container">
-        <div class="request-demo__body">
-            <div class="request-demo-text">
-                <h1 class="request-demo-text__header">
-                    <span class="request-demo-text-item">@ViewModel.Header</span><br/><span class="request-demo-text-item">@ViewModel.SubHeader</span>
-                </h1>
-                <br/>
-                <p class="request-demo-text__description">
-                    <span class="request-demo-text-item">👌 @ViewModel.ToolAppraiser<br/></span>
-                    <span class="request-demo-text-item">🤝 @ViewModel.ToolReviewer<br/></span>
-                    <span class="request-demo-text-item">💬 @ViewModel.ToolRandomCoffee</span>
-                </p>
-                <div class="request-demo-actions">
-                    <a href="mailto:@(GlobalSettings.FeedbackTo)?body=@(ViewModel.RequestDemoBody)&subject=@(ViewModel.RequestDemoSubject)" class="button button_black">@ViewModel.RequestDemo</a>
-                    <br/>
-                    <a href="@MoveToConstructor()" class="link link_black request-demo-actions__link">@ViewModel.CreateBotLink</a>
-                </div>
-            </div>
+<section id="about-bots" class="about-bots">
+    <div class="about-bots__container">
+        <h1 class="about-bots__header">
+            <span class="about-bots__item">@ViewModel.Header</span>
+            <br/>
+            <span class="about-bots__item">@ViewModel.SubHeader</span>
+        </h1>
+        <br/>
+        <p class="about-bots__description">
+            <span class="about-bots__item">👌 @ViewModel.ToolAppraiser<br/></span>
+            <span class="about-bots__item">🤝 @ViewModel.ToolReviewer<br/></span>
+            <span class="about-bots__item">💬 @ViewModel.ToolRandomCoffee</span>
+        </p>
+        <div class="about-bots__actions">
+            <a href="@MoveToConstructor()" class="button button_black">@ViewModel.CreateBotLink</a>
+            <a href="mailto:@(GlobalSettings.RequestDemoEmail)?body=@(ViewModel.RequestDemoBody)&subject=@(ViewModel.RequestDemoSubject)" class="link link_black about-bots__link">@ViewModel.RequestDemo</a>
         </div>
     </div>
 </section>
