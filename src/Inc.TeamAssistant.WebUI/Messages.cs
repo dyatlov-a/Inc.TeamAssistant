@@ -62,6 +62,16 @@ internal static class Messages
     public static readonly string Constructor_FeatureRemove = nameof(Constructor_FeatureRemove);
     public static readonly string Constructor_FormSectionFeaturesAvailableEmptyText = nameof(Constructor_FormSectionFeaturesAvailableEmptyText);
     public static readonly string Constructor_FormSectionFeaturesSelectedEmptyText = nameof(Constructor_FormSectionFeaturesSelectedEmptyText);
+    public static readonly string Constructor_FormSectionSetSettingsScrumDescription = nameof(Constructor_FormSectionSetSettingsScrumDescription);
+    public static readonly string Constructor_FormSectionSetSettingsKanbanDescription = nameof(Constructor_FormSectionSetSettingsKanbanDescription);
+    public static readonly string Constructor_FormSectionSetSettingsRoundRobinDescription = nameof(Constructor_FormSectionSetSettingsRoundRobinDescription);
+    public static readonly string Constructor_FormSectionSetSettingsRandomDescription = nameof(Constructor_FormSectionSetSettingsRandomDescription);
+    public static readonly string Constructor_FormSectionSetSettingsAppraiserHeader = nameof(Constructor_FormSectionSetSettingsAppraiserHeader);
+    public static readonly string Constructor_FormSectionSetSettingsAppraiserHelp = nameof(Constructor_FormSectionSetSettingsAppraiserHelp);
+    public static readonly string Constructor_FormSectionSetSettingsStoryTypeFieldLabel = nameof(Constructor_FormSectionSetSettingsStoryTypeFieldLabel);
+    public static readonly string Constructor_FormSectionSetSettingsReviewerHeader = nameof(Constructor_FormSectionSetSettingsReviewerHeader);
+    public static readonly string Constructor_FormSectionSetSettingsReviewerHelp = nameof(Constructor_FormSectionSetSettingsReviewerHelp);
+    public static readonly string Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel = nameof(Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

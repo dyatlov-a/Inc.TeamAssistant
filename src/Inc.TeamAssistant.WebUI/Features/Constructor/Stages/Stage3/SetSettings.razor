@@ -1,66 +1,91 @@
+@inherits PersistentComponent<SetSettingsViewModel>
+
 @inject NavigationManager NavigationManager
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    @foreach (var property in _formModel.Properties)
-    {
-        var description = Descriptions[property.Name];
-        var fieldId = $"property_{_propertyIndex}";
-        
-        <FormSection Title="@description.Header" HelpText="@description.Help">
-            <Content>
-                <FormFieldSet FieldId="@fieldId" Label="@description.FieldName">
+    <div class="constructor__form">
+        @foreach (var property in _formModel.Properties)
+        {
+            if (ViewModel.Items.TryGetValue(property.Name, out var item))
+            {
+                <FormSection Title="@item.Header" HelpText="@item.Help">
                     <Content>
-                        <InputSelect id="@fieldId" @bind-Value="property.Value" class="form-section__control">
-                            <option value="">Need select value</option>
-                            @foreach (var targetValue in TargetValues[property.Name])
-                            {
-                                <option value="@targetValue">@targetValue</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => property.Value)" />
+                        @foreach (var settingItem in item.SettingItems)
+                        {
+                            <label for="@settingItem.PropertyName" class="form-section__label">@settingItem.Label</label>
+                            <InputSelect id="@settingItem.PropertyName" @bind-Value="property.Value" class="form-control">
+                                <option value=""></option>
+                                @foreach (var value in settingItem.Values)
+                                {
+                                    <option value="@value.Value">@value.Text</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => property.Value)"/>
+                        }
                     </Content>
-                </FormFieldSet>
-            </Content>
-        </FormSection>
-
-        _propertyIndex++;
-    }
-    <div class="form-controls">
-        <button class="button button_white" type="submit">Next</button>
+                </FormSection>
+            }
+        }
+    </div>
+    <div class="constructor__actions">
+        <button class="button button_white" type="submit">@ViewModel.MoveNextTitle</button>
     </div>
 </EditForm>
 
 @code {
-    private readonly SetSettingsFormModel _formModel = new();
-    private FluentValidationValidator? _fluentValidationValidator;
-    
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
-
-    private int _propertyIndex;
     
-    private EditContext _editContext = EditContextFactory.Create(new SetSettingsFormModel());
-
-    private static readonly Dictionary<string, IReadOnlyCollection<string>> TargetValues = new(StringComparer.InvariantCultureIgnoreCase)
-    {
-        ["StoryType"] = ["Scrum", "Kanban"],
-        ["nextReviewerStrategy"] = ["RoundRobin", "Random"]
-    };
-    
-    private static readonly Dictionary<string, (string Header, string Help, string FieldName)> Descriptions = new(StringComparer.InvariantCultureIgnoreCase)
-    {
-        ["StoryType"] = ("Story type", "Select the type of stories you want to work with", "Story type"),
-        ["nextReviewerStrategy"] = ("Next reviewer type", "Select the type of the next reviewer", "Next reviewer type")
-    };
+    private readonly SetSettingsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
     
     protected override void OnParametersSet()
     {
-        _propertyIndex = 0;
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        
+        base.OnParametersSet();
+    }
+    
+    protected override Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var descriptions = new Dictionary<string, SetSettingsViewModel.SettingSection>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            ["storyType"] = new(
+                resources[Messages.Constructor_FormSectionSetSettingsAppraiserHeader],
+                resources[Messages.Constructor_FormSectionSetSettingsAppraiserHelp],
+                new SetSettingsViewModel.SettingItem[]
+                {
+                    new(
+                        "story-type",
+                        resources[Messages.Constructor_FormSectionSetSettingsStoryTypeFieldLabel],
+                        new SetSettingsViewModel.SelectListItem[]
+                        {
+                            new(resources[Messages.Constructor_FormSectionSetSettingsScrumDescription], "Scrum"),
+                            new(resources[Messages.Constructor_FormSectionSetSettingsKanbanDescription], "Kanban")
+                        })
+                }),
+            ["nextReviewerStrategy"] = new(
+                resources[Messages.Constructor_FormSectionSetSettingsReviewerHeader],
+                resources[Messages.Constructor_FormSectionSetSettingsReviewerHelp],
+                new SetSettingsViewModel.SettingItem[]
+                {
+                    new(
+                        "next-reviewer-strategy",
+                        resources[Messages.Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel],
+                        new SetSettingsViewModel.SelectListItem[]
+                        {
+                            new(resources[Messages.Constructor_FormSectionSetSettingsRoundRobinDescription], "RoundRobin"),
+                            new(resources[Messages.Constructor_FormSectionSetSettingsRandomDescription], "Random")
+                        })
+                })
+        };
+        
+        return Task.FromResult(new SetSettingsViewModel(descriptions, resources[Messages.Constructor_MoveNextTitle]));
     }
     
     private async Task SubmitForm()
