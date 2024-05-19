@@ -72,8 +72,7 @@ internal sealed class PersonRepository : IPersonRepository
 
     public async Task Upsert(Person person, CancellationToken token)
     {
-        if (person is null)
-            throw new ArgumentNullException(nameof(person));
+        ArgumentNullException.ThrowIfNull(person);
 
         var command = new CommandDefinition(@"
             INSERT INTO connector.persons AS p (id, name, username)

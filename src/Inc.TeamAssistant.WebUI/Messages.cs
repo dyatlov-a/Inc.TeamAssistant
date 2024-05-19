@@ -14,6 +14,7 @@ internal static class Messages
     public static readonly string GUI_AverageRating = nameof(GUI_AverageRating);
     public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
     public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
+    public static readonly string GUI_AssessmentSessionHasNotTasks = nameof(GUI_AssessmentSessionHasNotTasks);
 
     public static readonly string GUI_AcceptCookieButton = nameof(GUI_AcceptCookieButton);
     public static readonly string GUI_AcceptCookieText = nameof(GUI_AcceptCookieText);

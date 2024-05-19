@@ -8,12 +8,14 @@ public sealed record AssessmentSessionPageViewModel(
     string AverageRating,
     string AboutTemplate,
     string ConnectToTeam,
+    string HasNotTasks,
     string TeamName,
     string CodeForConnect,
     StoryDto? Story)
     : IViewModel<AssessmentSessionPageViewModel>
 {
     public static AssessmentSessionPageViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

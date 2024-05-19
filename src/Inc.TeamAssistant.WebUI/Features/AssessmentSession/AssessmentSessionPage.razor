@@ -29,6 +29,10 @@
         {
             <Story Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
         }
+        else
+        {
+            <h2 class="text">@ViewModel.HasNotTasks</h2>
+        }
     </div>
 </div>
 <div class="assessment-session-footer white">
@@ -65,6 +69,7 @@
             resources[Messages.GUI_AverageRating],
             resources[Messages.GUI_AssessmentSessionAbout],
             resources[Messages.GUI_AssessmentSessionConnect],
+            resources[Messages.GUI_AssessmentSessionHasNotTasks],
             newStoryState.Result.TeamName,
             newStoryState.Result.CodeForConnect,
             newStoryState.Result.Story);

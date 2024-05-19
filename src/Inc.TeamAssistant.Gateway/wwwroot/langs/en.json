@@ -31,6 +31,7 @@
   "GUI_AverageRating": "average score",
   "GUI_AssessmentSessionAbout": "This page shows the current evaluation process for the \"{0}\" team's tasks. The evaluation takes place using a bot in a Telegram chat.",
   "GUI_AssessmentSessionConnect": "Scan the QR code to join the team",
+  "GUI_AssessmentSessionHasNotTasks": "The team has not tasks",
   "GUI_Authorizing": "Authorizing...",
   "GUI_Error401": "Not authorized",
   "GUI_Unauthorized": "You're not authorized to reach this page. You need to log in.",

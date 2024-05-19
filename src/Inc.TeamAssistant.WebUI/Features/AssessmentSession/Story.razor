@@ -16,11 +16,11 @@
     <div class="story__cards">
         @foreach (var storyForEstimate in Item.StoryForEstimates)
         {
-            <DefaultCard Icon="@typeof(BotIcon)" Name="@storyForEstimate.ParticipantName">
+            <UserCard PersonId="storyForEstimate.ParticipantId" Name="@storyForEstimate.ParticipantName">
                 <Content>
                     <span class="story__value">@storyForEstimate.DisplayValue</span>
                 </Content>
-            </DefaultCard>
+            </UserCard>
         }
     </div>
     <span class="story__value-total"><b>@Item.Total</b> @AverageRating</span>

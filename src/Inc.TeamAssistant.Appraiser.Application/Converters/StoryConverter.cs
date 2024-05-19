@@ -12,6 +12,7 @@ internal static class StoryConverter
 
         var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
+                e.ParticipantId,
                 e.ParticipantDisplayName,
                 story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
             .ToArray();

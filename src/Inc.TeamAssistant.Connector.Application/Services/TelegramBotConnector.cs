@@ -17,7 +17,6 @@ internal sealed class TelegramBotConnector : IHostedService
 
     public async Task StartAsync(CancellationToken token)
     {
-        
         var botIds = await _botReader.GetBotIds(token);
 
         foreach (var botId in botIds)
