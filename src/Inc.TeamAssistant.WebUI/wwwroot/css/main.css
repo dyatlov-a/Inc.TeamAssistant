@@ -163,3 +163,7 @@ html {
     font-size: 1.2rem;
     line-height: 1.6rem;
 }
+.white {
+    background-color: #fff;
+    color: #000;
+}

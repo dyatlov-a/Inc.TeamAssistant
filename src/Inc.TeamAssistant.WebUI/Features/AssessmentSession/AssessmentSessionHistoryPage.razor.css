@@ -1,20 +1,7 @@
-.assessment-story-list {
-    padding: 8.5rem 0 2.5rem 0;
+.assessment-history-header, .assessment-history-content {
+    padding: 60px 0 40px 0;
 }
-.assessment-story-list__title {
-    font-size: 1.7rem;
-    line-height: 2rem;
-    margin: 0 0 .75rem 0;
-    letter-spacing: .0625rem;
-}
-.assessment-story-list__body {
-    margin-top: .5rem;
-}
-.assessment-story-back {
-    color: #fff;
-    padding-top: 2rem;
+.assessment-history__link {
     display: block;
-}
-.assessment-story-back:hover {
-    text-decoration: underline;
+    text-align: right;
 }

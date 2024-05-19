@@ -9,12 +9,13 @@
     color: #fff;
     display: flex;
     flex-flow: column;
-    justify-content: center;
     align-items: center;
 }
 .input-features__text {
     font-size: 1.2rem;
     color: #555;
+    height: 100%;
+    align-content: center;
 }
 ::deep .default-card {
     margin-bottom: 20px;

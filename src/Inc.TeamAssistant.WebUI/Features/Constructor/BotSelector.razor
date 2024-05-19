@@ -16,10 +16,10 @@
     {
         <DefaultCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Buttons>
-                <button class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
+                <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
                     @ViewModel.Edit
                 </button>
-                <button class="button button_black bot-selector__button" @onclick="() => MoveToRemove(bot)">
+                <button type="button" class="button button_black bot-selector__button" @onclick="() => MoveToRemove(bot)">
                     @ViewModel.Remove
                 </button>
             </Buttons>
@@ -27,7 +27,7 @@
     }
     <DefaultCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
         <Buttons>
-            <button class="button button_white bot-selector__button" @onclick="MoveToAdd">
+            <button type="button" class="button button_white bot-selector__button" @onclick="MoveToAdd">
                 @ViewModel.AddBot
             </button>
         </Buttons>

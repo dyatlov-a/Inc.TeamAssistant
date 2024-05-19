@@ -6,22 +6,23 @@
 
 @inject IAppraiserService AppraiserService
 
-<div class="assessment-story-list">
-    <div class="assessment-story-list__container">
-        <h1 class="assessment-story-list__title">@ViewModel.StoryList @Date</h1>
-        
-        @if (ViewModel.Data is not null)
-        {
-            <div class="assessment-story-list__body">
-                @foreach (var story in ViewModel.Data.Items)
-                {
-                    <Story Item="story" AverageRating="@ViewModel.AverageRating" />
-                }
-            </div>
-            <a href="@MoveToBack()" class="assessment-story-back">@ViewModel.LinkToBackText</a>
-        }
+<div class="assessment-history-header white">
+    <div class="assessment-history-header__container">
+        <a href="@MoveToBack()" class="link link_black assessment-history__link">@ViewModel.LinkToBackText</a>
+        <h1 class="title">@ViewModel.StoryList @Date</h1>
     </div>
 </div>
+@if (ViewModel.Data is not null)
+{
+    foreach (var story in ViewModel.Data.Items)
+    {
+        <div class="assessment-history-content">
+            <div class="assessment-history-content__container">
+                <Story Item="story" AverageRating="@ViewModel.AverageRating"/>
+            </div>
+        </div>
+    }
+}
 
 @code {
     [Parameter, EditorRequired]

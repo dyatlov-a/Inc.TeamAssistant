@@ -13,6 +13,4 @@ public interface IStoryReader
     Task<IReadOnlyCollection<Story>> GetStories(Guid teamId, DateOnly assessmentDate, CancellationToken token);
     
     Task<Story?> FindLast(Guid teamId, CancellationToken token);
-
-    Task<Story?> Find(Guid storyId, CancellationToken token);
 }

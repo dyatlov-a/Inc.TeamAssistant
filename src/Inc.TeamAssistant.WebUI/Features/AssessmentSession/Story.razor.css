@@ -1,7 +1,7 @@
 .story__cards {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    margin: 0 -20px;
 }
 .story__title {
     font-size: 1.4rem;
@@ -18,11 +18,12 @@
     text-align: right;
     display: block;
     font-size: 1.8rem;
+    line-height: 2.2rem;
 }
 ::deep .default-card {
-    margin-bottom: 20px;
+    margin: 20px;
     background-color: #9d9d9d;
-    flex: 0 1 23%;
+    flex: 0 1 calc(25% - 40px);
 }
 ::deep .story__value {
     text-align: center;
@@ -33,12 +34,12 @@
 }
 @media (max-width: 991.98px) {
     ::deep .default-card {
-        flex: 0 1 30%;
+        flex: 0 1 calc(33.333% - 40px);
     }
 }
 @media (max-width: 767.98px) {
     ::deep .default-card {
-        flex: 0 1 48%;
+        flex: 0 1 calc(50% - 40px);
     }
 }
 @media (max-width: 479.98px) {

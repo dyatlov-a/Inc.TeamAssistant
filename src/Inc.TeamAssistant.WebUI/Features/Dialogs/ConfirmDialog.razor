@@ -9,10 +9,10 @@
                 @Content
             </div>
             <div class="confirm-dialog__actions">
-                <button class="button button_white confirm-dialog__button" @onclick="() => Close(OnConfirm)">
+                <button type="button" class="button button_white confirm-dialog__button" @onclick="() => Close(OnConfirm)">
                     @_viewModel.ConfirmText
                 </button>
-                <button class="button button_black confirm-dialog__button" @onclick="() => Close()">
+                <button type="button" class="button button_black confirm-dialog__button" @onclick="() => Close()">
                     @_viewModel.RejectText
                 </button>
             </div>

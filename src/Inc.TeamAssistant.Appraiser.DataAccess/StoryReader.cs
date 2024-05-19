@@ -80,8 +80,8 @@ internal sealed class StoryReader : IStoryReader
             SELECT
                 s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id
-            ORDER BY s.created DESC
+            WHERE s.team_id = @team_id AND accepted = false
+            ORDER BY s.created
             OFFSET 0
             LIMIT 1;",
             new { team_id = teamId },
@@ -95,15 +95,6 @@ internal sealed class StoryReader : IStoryReader
             return null;
         
         var stories = await GetStoryQuery.Get(connection, new[] { storyId.Value }, token);
-        return stories.SingleOrDefault();
-    }
-
-    public async Task<Story?> Find(Guid storyId, CancellationToken token)
-    {
-        await using var connection = _connectionFactory.Create();
-
-        var stories = await GetStoryQuery.Get(connection, new[] { storyId }, token);
-        
         return stories.SingleOrDefault();
     }
 }
