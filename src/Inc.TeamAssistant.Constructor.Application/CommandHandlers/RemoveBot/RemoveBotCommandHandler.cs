@@ -9,16 +9,16 @@ internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand
 {
     private readonly IBotRepository _botRepository;
     private readonly ICurrentUserResolver _currentUserResolver;
-    private readonly IBotListenerProvider _botListenerProvider;
+    private readonly IBotListeners _botListeners;
 
     public RemoveBotCommandHandler(
         IBotRepository botRepository,
         ICurrentUserResolver currentUserResolver,
-        IBotListenerProvider botListenerProvider)
+        IBotListeners botListeners)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _currentUserResolver = currentUserResolver ?? throw new ArgumentNullException(nameof(currentUserResolver));
-        _botListenerProvider = botListenerProvider ?? throw new ArgumentNullException(nameof(botListenerProvider));
+        _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
     }
 
     public async Task Handle(RemoveBotCommand command, CancellationToken token)
@@ -32,6 +32,6 @@ internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand
         
         await _botRepository.Remove(command.Id, token);
         
-        await _botListenerProvider.Listener.Stop(bot.Id);
+        await _botListeners.Stop(bot.Id);
     }
 }
