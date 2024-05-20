@@ -6,12 +6,13 @@ namespace Inc.TeamAssistant.Appraiser.Application.Converters;
 
 internal static class StoryConverter
 {
-    public static StoryDetailsDto Convert(Story story)
+    public static StoryDto Convert(Story story)
     {
         ArgumentNullException.ThrowIfNull(story);
 
         var items = story.StoryForEstimates
             .Select(e => new StoryForEstimateDto(
+                e.ParticipantId,
                 e.ParticipantDisplayName,
                 story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
             .ToArray();

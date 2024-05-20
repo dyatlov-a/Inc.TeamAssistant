@@ -1,0 +1,58 @@
+@inject ResourcesManager ResourcesManager
+
+@if (_isOpen)
+{
+    <div class="confirm-dialog-bg"></div>
+    <div class="confirm-dialog">
+        <div class="confirm-dialog__body">
+            <div class="confirm-dialog__content">
+                @Content
+            </div>
+            <div class="confirm-dialog__actions">
+                <button type="button" class="button button_white confirm-dialog__button" @onclick="() => Close(OnConfirm)">
+                    @_viewModel.ConfirmText
+                </button>
+                <button type="button" class="button button_black confirm-dialog__button" @onclick="() => Close()">
+                    @_viewModel.RejectText
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public EventCallback OnConfirm { get; set; }
+    
+    private bool _isOpen;
+    private ConfirmDialogViewModel _viewModel = ConfirmDialogViewModel.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resources = await ResourcesManager.GetResource();
+        
+        _viewModel = new ConfirmDialogViewModel(
+            resources[Messages.ConfirmDialog_Yes],
+            resources[Messages.ConfirmDialog_No]);
+    }
+
+    public void Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+    }
+
+    private async Task Close(EventCallback? confirm = null)
+    {
+        _isOpen = false;
+        
+        if (confirm.HasValue)
+            await confirm.Value.InvokeAsync();
+        else
+            StateHasChanged();
+    }
+}

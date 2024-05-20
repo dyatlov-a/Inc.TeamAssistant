@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,10 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCheckInApplication(this IServiceCollection services, CheckInOptions options)
     {
-        if (services is null)
-            throw new ArgumentNullException(nameof(services));
-        if (options is null)
-            throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         services
             .AddSingleton(options)

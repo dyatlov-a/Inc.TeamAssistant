@@ -14,10 +14,10 @@ public sealed class AssessmentSessionsController : ControllerBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
-    [HttpGet("story/{teamId}/current")]
-    public async Task<IActionResult> GetStoryDetails(Guid teamId, CancellationToken token)
+    [HttpGet("story/{teamId}/active")]
+    public async Task<IActionResult> GetActiveStory(Guid teamId, CancellationToken token)
     {
-        return Ok(await _service.GetStoryDetails(teamId, token));
+        return Ok(await _service.GetActiveStory(teamId, token));
     }
     
     [HttpGet("history")]
@@ -30,11 +30,5 @@ public sealed class AssessmentSessionsController : ControllerBase
     public async Task<IActionResult> GetStories(Guid teamId, DateOnly assessmentDate, CancellationToken token)
     {
         return Ok(await _service.GetStories(teamId, assessmentDate, token));
-    }
-    
-    [HttpGet("story/{storyId}")]
-    public async Task<IActionResult> GetStoryById(Guid storyId, CancellationToken token)
-    {
-        return Ok(await _service.GetStoryById(storyId, token));
     }
 }

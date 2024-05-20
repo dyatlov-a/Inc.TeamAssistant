@@ -11,20 +11,20 @@ internal sealed class TelegramBotMessageHandler
     private readonly CommandFactory _commandFactory;
     private readonly ICommandExecutor _commandExecutor;
     private readonly MessageContextBuilder _messageContextBuilder;
-    private readonly IBotRepository _botRepository;
+    private readonly IBotReader _botReader;
 
     public TelegramBotMessageHandler(
         ILogger<TelegramBotMessageHandler> logger,
         CommandFactory commandFactory,
         ICommandExecutor commandExecutor,
         MessageContextBuilder messageContextBuilder,
-        IBotRepository botRepository)
+        IBotReader botReader)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
         _messageContextBuilder = messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
+        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
     public async Task Handle(Update update, Guid botId, CancellationToken token)
@@ -33,7 +33,7 @@ internal sealed class TelegramBotMessageHandler
 
         try
         {
-            var bot = await _botRepository.Find(botId, token);
+            var bot = await _botReader.Find(botId, token);
             if (bot is null)
                 return;
             

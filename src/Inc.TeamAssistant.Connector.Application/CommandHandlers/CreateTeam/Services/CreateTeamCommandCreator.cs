@@ -18,8 +18,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
 
         return Task.FromResult<IEndDialogCommand>(new CreateTeamCommand(
             messageContext,
-            messageContext.Bot.Name,
-            messageContext.Text,
-            teamContext.Properties));
+            messageContext.Bot.UserName,
+            messageContext.Text));
     }
 }

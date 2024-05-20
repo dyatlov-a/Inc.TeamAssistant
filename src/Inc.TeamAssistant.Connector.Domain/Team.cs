@@ -29,7 +29,7 @@ public sealed class Team
         ChatId = chatId;
         OwnerId = ownerId;
         Name = name;
-        Properties = properties;
+        Properties = properties ?? throw new ArgumentNullException(nameof(properties));
     }
 
     public Team AddTeammate(Person person)

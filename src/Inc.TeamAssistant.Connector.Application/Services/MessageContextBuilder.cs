@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -79,7 +80,10 @@ internal sealed class MessageContextBuilder
             token);
     }
 
-    private async Task<MessageContext?> CreateFromMessage(Bot bot, Message message, CancellationToken token)
+    private async Task<MessageContext?> CreateFromMessage(
+        Bot bot,
+        Message message,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(message);
@@ -117,7 +121,7 @@ internal sealed class MessageContextBuilder
             
         return new(
             new ChatMessage(chatId, messageId),
-            new BotContext(bot.Id, bot.Name),
+            new BotContext(bot.Id, bot.Name, bot.Properties),
             teams,
             text,
             person,

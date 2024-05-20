@@ -1,17 +1,42 @@
-.main__video {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    z-index: -1;
-}
-.feedback__container {
+.about-bots__container {
     max-width: 90%;
     padding-top: 100px;
 }
+.about-bots__header {
+    font-size: 2.3rem;
+    line-height: 3.6rem;
+}
+.about-bots__description {
+    font-size: 1.3rem;
+    line-height: 2.6rem;
+}
+.about-bots__item {
+    background: rgba(0, 0, 0, .3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-shadow: #000 0 0 10px;
+}
+.about-bots__actions {
+    margin-top: 20px;
+    text-align: center;
+    float: left;
+}
+.about-bots__link {
+    margin-top: 10px;
+    display: block;
+}
 @media (max-width: 767.98px) {
-    .feedback__container {
+    .about-bots__container {
         padding-top: 60px;
+    }
+}
+@media (max-width: 479.98px) {
+    .about-bots__header {
+        font-size: 1.8rem;
+        line-height: 3.1rem;
+    }
+    .about-bots__description {
+        font-size: 1rem;
+        line-height: 2rem;
     }
 }

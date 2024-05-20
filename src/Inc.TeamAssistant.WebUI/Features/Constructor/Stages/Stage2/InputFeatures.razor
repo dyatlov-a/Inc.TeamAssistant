@@ -1,0 +1,109 @@
+@inherits InputBase<List<Guid>>
+
+<div class="input-features">
+    <div class="form-control input-features__items">
+        @if (AvailableFeatures.Any())
+        {
+            foreach (var feature in AvailableFeatures)
+            {
+                <DefaultCard Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                    <Buttons>
+                        <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
+                            @AddText
+                        </button>
+                    </Buttons>
+                </DefaultCard>
+            }
+        }
+        else
+        {
+            <p class="input-features__text">@FeaturesAvailableEmptyText</p>
+        }
+    </div>
+    <div class="form-control input-features__items @CssClass">
+        @if (SelectedFeatures.Any())
+        {
+            foreach (var feature in SelectedFeatures)
+            {
+                <DefaultCard Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                    <Buttons>
+                        <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
+                            @RemoveText
+                        </button>
+                    </Buttons>
+                </DefaultCard>
+            }
+        }
+        else
+        {
+            <p class="input-features__text">@FeaturesSelectedEmptyText</p>
+        }
+        @if (Validation is not null)
+        {
+            @Validation
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<StagesState.Feature> Features { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, string> FeatureNames { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string AddText { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string RemoveText { get; set; } = default!;
+    
+    [Parameter]
+    public string? FeaturesAvailableEmptyText { get; set; }
+    
+    [Parameter]
+    public string? FeaturesSelectedEmptyText { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Validation { get; set; }
+    
+    private IEnumerable<StagesState.Feature> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
+    private IEnumerable<StagesState.Feature> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out List<Guid> result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool IsSelected(Guid id) => CurrentValue?.Contains(id) == true;
+
+    private string GetName(StagesState.Feature feature)
+    {
+        return FeatureNames.TryGetValue(feature.Name, out var name)
+            ? name
+            : feature.Name;
+    }
+    
+    private Type FeatureType(string featureName) => featureName switch
+    {
+        "Appraiser" => typeof(AppraiserIcon),
+        "CheckIn" => typeof(CheckInIcon),
+        "RandomCoffee" => typeof(RandomCoffeeIcon),
+        "Reviewer" => typeof(ReviewerIcon),
+        _ => typeof(UnknownIcon)
+    };
+
+    private void ToggleFeature(Guid id)
+    {
+        if (CurrentValue is null)
+            return;
+
+        if (CurrentValue.Contains(id))
+            CurrentValue.Remove(id);
+        else
+            CurrentValue.Add(id);
+    }
+}

@@ -1,15 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
-        <ScopedCssEnabled>true</ScopedCssEnabled>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\main\logo.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\main\phone__mockup.png" />
     </ItemGroup>
 </Project>

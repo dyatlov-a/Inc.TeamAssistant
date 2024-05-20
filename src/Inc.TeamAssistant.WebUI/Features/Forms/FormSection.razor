@@ -1,0 +1,37 @@
+<div class="form-section@(CssClass)">
+    <div class="form-section__legend@(CssClass)">
+        <h4 class="form-section__title">@Title</h4>
+        <p class="form-section__help">
+            @if (HelpContent is not null)
+            {
+                @HelpContent
+            }
+            else
+            {
+                @HelpText
+            }
+        </p>
+    </div>
+    <div class="form-section__content@(CssClass)">
+        @Content
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter]
+    public bool AsRows { get; set; }
+    
+    [Parameter]
+    public string? HelpText { get; set; }
+    
+    [Parameter]
+    public RenderFragment? HelpContent { get; set; }
+    
+    private string CssClass => AsRows ? "_rows" : string.Empty;
+}

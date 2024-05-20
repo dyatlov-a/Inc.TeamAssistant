@@ -1,11 +1,53 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <Error404 />
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@using System.Globalization
+@using FluentValidation
+
+@implements IDisposable
+
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <AuthorizingDetails />
+                </Authorizing>
+                <NotAuthorized>
+                    <Error401 />
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <Error404 />
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+@code {
+    protected override void OnInitialized()
+    {
+        SetCurrentLanguage();
+        
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetCurrentLanguage();
+    }
+    
+    private void SetCurrentLanguage()
+    {
+        var currentLanguage = RenderContext.GetCurrentLanguageId();
+        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo(currentLanguage.Language.Value);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

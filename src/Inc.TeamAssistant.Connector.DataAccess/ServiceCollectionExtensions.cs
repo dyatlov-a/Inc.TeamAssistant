@@ -11,14 +11,11 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         
         services
+            .AddSingleton<IPhotosRepository, PhotosRepository>()
             .AddSingleton<ITeamRepository, TeamRepository>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
             
-            .AddSingleton<BotRepository>()
-            .AddSingleton<IBotRepository>(sp => ActivatorUtilities.CreateInstance<CachedBotRepository>(
-                sp,
-                sp.GetRequiredService<BotRepository>(),
-                cacheTimeout))
+            .AddSingleton<IBotReader, BotReader>()
             
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(

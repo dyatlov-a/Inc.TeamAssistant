@@ -1,0 +1,33 @@
+@page "/constructor"
+@page "/en/constructor"
+@page "/ru/constructor"
+
+@inherits PersistentComponent<ConstructorPageViewModel>
+
+<PageTitle>@ViewModel.Title</PageTitle>
+
+<NavigationLogin />
+
+<div class="constructor">
+    <div class="constructor__container">
+        <h1 class="title constructor__title">@ViewModel.Title</h1>
+        <AuthorizeView>
+            <Authorized>
+                <p class="text constructor__text">@ViewModel.SelectBotText</p>
+                <BotSelector OwnerId="@context.User.ToPerson().Id" />
+            </Authorized>
+            <NotAuthorized>
+                <TelegramLogin />
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    protected override Task<ConstructorPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new ConstructorPageViewModel(
+            resources[Messages.Constructor_Title],
+            resources[Messages.Constructor_SelectBotText]));
+    }
+}

@@ -1,0 +1,15 @@
+<div class="form-section__field-set">
+    <label for="@FieldId" class="form-section__label">@Label</label>
+    @Content
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+}

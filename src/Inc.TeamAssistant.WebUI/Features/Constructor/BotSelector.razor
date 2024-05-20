@@ -1,0 +1,85 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner
+
+@inherits PersistentComponent<BotSelectorViewModel>
+
+@inject IBotService BotService
+@inject NavigationManager NavigationManager
+
+<ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
+    <Content>
+        <p>@string.Format(ViewModel.RemoveConfirmationTemplate, _selectedBot?.Name)</p>
+    </Content>
+</ConfirmDialog>
+
+<div class="bot-selector">
+    @foreach(var bot in ViewModel.Bots)
+    {
+        <DefaultCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+            <Buttons>
+                <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
+                    @ViewModel.Edit
+                </button>
+                <button type="button" class="button button_black bot-selector__button" @onclick="() => MoveToRemove(bot)">
+                    @ViewModel.Remove
+                </button>
+            </Buttons>
+        </DefaultCard>
+    }
+    <DefaultCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+        <Buttons>
+            <button type="button" class="button button_white bot-selector__button" @onclick="MoveToAdd">
+                @ViewModel.AddBot
+            </button>
+        </Buttons>
+    </DefaultCard>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public long OwnerId { get; set; }
+
+    private ConfirmDialog _confirmDialog = default!;
+    private BotDto? _selectedBot;
+    
+    protected override async Task<BotSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
+        
+        return new BotSelectorViewModel(
+            resources[Messages.Constructor_NewBot],
+            resources[Messages.Constructor_AddBot],
+            resources[Messages.Constructor_Edit],
+            resources[Messages.Constructor_Remove],
+            resources[Messages.Constructor_RemoveConfirmationText],
+            getBotsByOwnerResult.Result.Bots);
+    }
+
+    private void MoveToAdd() => MoveToEdit(botId: null);
+
+    private void MoveToEdit(Guid? botId)
+    {
+        var stage = Stage.CheckBot.ToString().ToLower();
+        var link = botId.HasValue
+            ? $"constructor/{botId.Value:N}/{stage}"
+            : $"constructor/{stage}";
+        
+        NavigationManager.NavigateTo(LinkBuilder(link));
+    }
+
+    private void MoveToRemove(BotDto bot)
+    {
+        _selectedBot = bot;
+        
+        _confirmDialog.Open();
+    }
+
+    private async Task Remove()
+    {
+        if (_selectedBot is null)
+            return;
+        
+        await BotService.Remove(_selectedBot.Id);
+
+        await Update();
+    }
+}

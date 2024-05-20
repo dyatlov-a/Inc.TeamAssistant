@@ -1,0 +1,10 @@
+.form-section__field-set {
+    margin-bottom: 20px;
+}
+.form-section__label {
+    display: block;
+    margin-bottom: 5px;
+}
+::deep .validation-message {
+    margin-top: 5px;
+}

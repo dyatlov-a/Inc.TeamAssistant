@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
@@ -49,19 +48,15 @@ internal sealed class StoryReader : IStoryReader
             .ToArray();
     }
 
-    public async Task<IReadOnlyCollection<StoryDto>> GetStories(
+    public async Task<IReadOnlyCollection<Story>> GetStories(
         Guid teamId,
         DateOnly assessmentDate,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
-            SELECT
-                s.id AS id,
-                s.created AS created,
-                s.title AS title
+            SELECT s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND DATE(s.created) = @assessment_date
-            ORDER BY s.created;",
+            WHERE s.team_id = @team_id AND DATE(s.created) = @assessment_date;",
             new
             {
                 team_id = teamId,
@@ -72,8 +67,11 @@ internal sealed class StoryReader : IStoryReader
         
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<StoryDto>(command);
-        return results.ToArray();
+        var storyIds = await connection.QueryAsync<Guid>(command);
+        var stories = await GetStoryQuery.Get(connection, storyIds.ToArray(), token);
+        var results = stories.OrderBy(p => p.Created).ToArray();
+        
+        return results;
     }
 
     public async Task<Story?> FindLast(Guid teamId, CancellationToken token)
@@ -82,8 +80,8 @@ internal sealed class StoryReader : IStoryReader
             SELECT
                 s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id
-            ORDER BY s.created DESC
+            WHERE s.team_id = @team_id AND accepted = false
+            ORDER BY s.created
             OFFSET 0
             LIMIT 1;",
             new { team_id = teamId },
@@ -93,16 +91,10 @@ internal sealed class StoryReader : IStoryReader
         await using var connection = _connectionFactory.Create();
 
         var storyId = await connection.QuerySingleOrDefaultAsync<Guid?>(command);
-        if (storyId.HasValue)
-            return await FindStoryByIdQuery.Find(connection, storyId.Value, token);
-
-        return null;
-    }
-
-    public async Task<Story?> Find(Guid storyId, CancellationToken token)
-    {
-        await using var connection = _connectionFactory.Create();
+        if (!storyId.HasValue)
+            return null;
         
-        return await FindStoryByIdQuery.Find(connection, storyId, token);
+        var stories = await GetStoryQuery.Get(connection, new[] { storyId.Value }, token);
+        return stories.SingleOrDefault();
     }
 }

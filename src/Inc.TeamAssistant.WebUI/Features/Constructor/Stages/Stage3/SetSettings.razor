@@ -1,0 +1,73 @@
+@inherits PersistentComponent<SetSettingsViewModel>
+
+@inject NavigationManager NavigationManager
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <div class="constructor__form">
+        @foreach (var property in _formModel.Properties)
+        {
+            if (ViewModel.SettingSections.TryGetValue(property.Name, out var item))
+            {
+                <FormSection Title="@item.Header" HelpText="@item.Help">
+                    <Content>
+                        @foreach (var settingItem in item.SettingItems)
+                        {
+                            <FormFieldSet FieldId="@settingItem.PropertyName" Label="@settingItem.Label">
+                                <Content>
+                                    <InputSelect id="@settingItem.PropertyName" @bind-Value="property.Value" class="form-control">
+                                        <option value=""></option>
+                                        @foreach (var value in settingItem.Values)
+                                        {
+                                            <option value="@value.Value">@value.Text</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => property.Value)"/>
+                                </Content>
+                            </FormFieldSet>
+                        }
+                    </Content>
+                </FormSection>
+            }
+        }
+    </div>
+    <div class="constructor__actions">
+        <button type="submit" class="button button_white">@ViewModel.MoveNextTitle</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    private readonly SetSettingsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        
+        base.OnParametersSet();
+    }
+    
+    protected override Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new SetSettingsViewModel(
+            BotSettingsFactory.Create(resources),
+            resources[Messages.Constructor_MoveNextTitle]));
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+        
+        StagesState.Apply(_formModel);
+        
+        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+    }
+}

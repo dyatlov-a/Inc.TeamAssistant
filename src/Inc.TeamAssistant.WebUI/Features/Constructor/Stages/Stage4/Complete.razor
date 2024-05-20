@@ -1,0 +1,124 @@
+@using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
+@using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
+
+@inherits PersistentComponent<CompleteViewModel>
+
+@inject NavigationManager NavigationManager
+@inject IBotService BotService
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <div class="constructor__form">
+        <ValidationSummary />
+        <FormSection Title="@ViewModel.FormSectionTokenTitle" HelpText="@ViewModel.FormSectionTokenHelp">
+            <Content>
+                <a href="@LinkFactory(Stage.CheckBot)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
+                <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
+                    <Content>
+                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="true"/>
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </FormSection>
+        <FormSection Title="@ViewModel.FormSectionFeaturesTitle" HelpText="@ViewModel.FormSectionFeaturesHelp">
+            <Content>
+                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
+                @foreach (var feature in StagesState.Features)
+                {
+                    var fieldId = feature.Id.ToString();
+                    var selected = StagesState.FeatureIds.Contains(feature.Id)
+                        ? ViewModel.BooleanTrueText
+                        : ViewModel.BooleanFalseText;
+
+                    <FormFieldSet FieldId="@fieldId" Label="@ViewModel.FeatureNames.GetValueOrDefault(feature.Name, string.Empty)">
+                        <Content>
+                            <input type="text" id="@fieldId" value="@selected" class="form-control" disabled="disabled"/>
+                        </Content>
+                    </FormFieldSet>
+                }
+            </Content>
+        </FormSection>
+        @foreach (var property in _formModel.Properties)
+        {
+            if (ViewModel.SettingSections.TryGetValue(property.Key, out var item))
+            {
+                <FormSection Title="@item.Header" HelpText="@item.Help">
+                    <Content>
+                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
+                        @foreach (var settingItem in item.SettingItems)
+                        {
+                            <FormFieldSet FieldId="@settingItem.PropertyName" Label="@settingItem.Label">
+                                <Content>
+                                    <input type="text" id="@settingItem.PropertyName" value="@settingItem.GetValueAsText(property.Value)" class="form-control" disabled="disabled"/>
+                                </Content>
+                            </FormFieldSet>
+                        }
+                    </Content>
+                </FormSection>
+            }
+        }
+    </div>
+    <div class="constructor__actions">
+        <button type="submit" class="button button_white">
+            @(StagesState.Id.HasValue ? ViewModel.ButtonUpdateText : ViewModel.ButtonCreateText)
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+
+    private readonly CompleteFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        
+        base.OnParametersSet();
+    }
+    
+    protected override Task<CompleteViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new CompleteViewModel(
+            resources[Messages.GetStageTitle(Stage.CheckBot)],
+            resources[Messages.Constructor_FormSectionTokenCheckHelp],
+            resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
+            resources[Messages.GetStageTitle(Stage.SelectFeatures)],
+            resources[Messages.Constructor_FormSectionFeaturesCheckHelp],
+            BotSettingsFactory.Create(resources),
+            resources[Messages.Constructor_ButtonCreateText],
+            resources[Messages.Constructor_ButtonUpdateText],
+            resources[Messages.Constructor_BooleanTrueText],
+            resources[Messages.Constructor_BooleanFalseText],
+            resources[Messages.Constructor_Edit],
+            Messages.BuildFeatureNames(resources)));
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!await _fluentValidationValidator!.ValidateAsync())
+            return;
+
+        if (StagesState.Id.HasValue)
+            await BotService.Update(new UpdateBotCommand(
+                StagesState.Id.Value,
+                _formModel.UserName,
+                _formModel.Token,
+                _formModel.FeatureIds,
+                _formModel.Properties));
+        else
+            await BotService.Create(new CreateBotCommand(
+                _formModel.UserName,
+                _formModel.Token,
+                _formModel.FeatureIds,
+                _formModel.Properties));
+        
+        NavigationManager.NavigateTo(LinkFactory(null));
+    }
+}

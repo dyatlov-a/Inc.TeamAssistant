@@ -1,6 +1,9 @@
+using Inc.TeamAssistant.WebUI.Features.Common;
+
 namespace Inc.TeamAssistant.WebUI.Features.Errors;
 
-internal sealed record Error404ViewModel(string Title, string Description)
+public sealed record Error404ViewModel(string Title, string Description)
+    : IViewModel<Error404ViewModel>
 {
-    public static readonly Error404ViewModel Empty = new(string.Empty, string.Empty);
+    public static Error404ViewModel Empty { get; } = new(string.Empty, string.Empty);
 }

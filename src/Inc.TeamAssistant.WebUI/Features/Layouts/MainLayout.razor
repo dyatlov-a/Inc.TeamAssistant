@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-@inject LanguageManager LanguageManager
+@inject ResourcesManager ResourcesManager
 
 <Meta Model="_metaModel" />
 
@@ -20,7 +20,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var resources = await LanguageManager.GetResource();
+        var resources = await ResourcesManager.GetResource();
         
         const string title = "Team assistant";
         var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";

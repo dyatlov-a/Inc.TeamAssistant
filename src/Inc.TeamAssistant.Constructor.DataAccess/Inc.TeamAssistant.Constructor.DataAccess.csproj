@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Application\Inc.TeamAssistant.Constructor.Application.csproj" />
+    <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
+  </ItemGroup>
+</Project>

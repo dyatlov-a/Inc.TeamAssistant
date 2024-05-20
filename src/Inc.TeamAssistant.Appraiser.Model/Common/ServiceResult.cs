@@ -1,9 +1,6 @@
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
-public sealed record ServiceResult<T>(ServiceResultState State, T Result, string ErrorMessage)
-{
-	public static readonly ServiceResult<T> Empty = new(ServiceResultState.IsLoading, default!, string.Empty);
-}
+public sealed record ServiceResult<T>(ServiceResultState State, T Result, string ErrorMessage);
 
 public static class ServiceResult
 {

@@ -12,11 +12,16 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 {
 	private readonly IStoryRepository _storyRepository;
     private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly IMessagesSender _messagesSender;
 
-	public AcceptEstimateCommandHandler(IStoryRepository storyRepository, SummaryByStoryBuilder summaryByStoryBuilder)
+	public AcceptEstimateCommandHandler(
+		IStoryRepository storyRepository,
+		SummaryByStoryBuilder summaryByStoryBuilder,
+		IMessagesSender messagesSender)
 	{
 		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
 		_summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
 	}
 
 	public async Task<CommandResult> Handle(AcceptEstimateCommand command, CancellationToken token)
@@ -30,6 +35,8 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 		story.Accept(command.MessageContext.Person.Id);
 
 		await _storyRepository.Upsert(story, token);
+		
+		await _messagesSender.StoryChanged(story.TeamId);
 
 		return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
     }

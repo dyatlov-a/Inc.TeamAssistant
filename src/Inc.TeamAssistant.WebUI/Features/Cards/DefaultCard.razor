@@ -1,0 +1,39 @@
+<div class="default-card">
+    <div class="default-card__header">
+        <div class="default-card__avatar">
+            <DynamicComponent Type="Icon" Parameters="IconParameters" />
+        </div>
+    </div>
+    <div class="default-card__content">
+        <h3 class="default-card__name">@Name</h3>
+        
+        @Content
+        
+        @if (Buttons is not null)
+        {
+            <div class="default-card__actions">
+                @Buttons
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Type Icon { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+    
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Buttons { get; set; }
+    
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "60px",
+        ["Color"] = "#000"
+    };
+}

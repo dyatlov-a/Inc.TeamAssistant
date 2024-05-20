@@ -5,10 +5,9 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
 
-@implements IAsyncDisposable
+@inherits PersistentComponent<MapPageViewModel>
 
 @inject ICheckInService CheckInService
-@inject LanguageManager LanguageManager
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 
@@ -22,10 +21,6 @@
 
     private ElementReference _map;
     private IJSObjectReference? _mapModule;
-    
-    private MapPageViewModel _pageViewModel = MapPageViewModel.Empty;
-
-    private ServiceResult<GetLocationsResult?> _model = ServiceResult<GetLocationsResult?>.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -35,15 +30,9 @@
                 "import",
                 "./Features/Map/MapPage.razor.js");
             
-            var resources = await LanguageManager.GetResource();
-            _pageViewModel = new MapPageViewModel(
-                resources[Messages.CheckIn_DefaultLayerTitle],
-                resources[Messages.CheckIn_RouteShow],
-                resources[Messages.CheckIn_RouteHide]);
-            
-            _model = await CheckInService.GetLocations(Id);
-            if (_model.State == ServiceResultState.Success)
-                await Build(_mapModule, _model.Result!);
+            var locations = await CheckInService.GetLocations(Id);
+            if (locations.State == ServiceResultState.Success)
+                await Build(_mapModule, locations.Result!);
         }
     }
 
@@ -61,7 +50,7 @@
             await AddMarker(module, locations.Value.First(), data.HasHistory(locations.Value), index);
         }
 
-        await module.InvokeVoidAsync("addLayer", _pageViewModel.DefaultLayerTitle);
+        await module.InvokeVoidAsync("addLayer", ViewModel.DefaultLayerTitle);
 
         foreach (var locations in data.OrderedLocations())
         {
@@ -104,13 +93,23 @@
             index,
             isActual,
             hasHistory,
-            _pageViewModel.ShowRouteText,
-            _pageViewModel.HideRouteText);
+            ViewModel.ShowRouteText,
+            ViewModel.HideRouteText);
     }
 
-    public async ValueTask DisposeAsync()
+    protected override Task<MapPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new MapPageViewModel(
+            resources[Messages.CheckIn_DefaultLayerTitle],
+            resources[Messages.CheckIn_RouteShow],
+            resources[Messages.CheckIn_RouteHide]));
+    }
+
+    public override async ValueTask DisposeAsync()
     {
         if (_mapModule is not null)
             await _mapModule.DisposeAsync();
+
+        await base.DisposeAsync();
     }
 }

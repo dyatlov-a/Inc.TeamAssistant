@@ -25,7 +25,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public OpenGraphViewModel Model { get; set; } = default!;
+    public OpenGraphViewModel Model { get; set; } = OpenGraphViewModel.Empty;
 
     private LanguageId _languageId = default!;
 

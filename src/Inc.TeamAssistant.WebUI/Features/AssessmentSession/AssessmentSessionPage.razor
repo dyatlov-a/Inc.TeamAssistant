@@ -2,51 +2,42 @@
 @page "/en/assessment-session/{id:guid}"
 @page "/ru/assessment-session/{id:guid}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Common
+@inherits PersistentComponent<AssessmentSessionPageViewModel>
 
-@implements IAsyncDisposable
-
-@inject PersistentComponentState ApplicationState
-@inject IAppraiserService Service
+@inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
-@inject LanguageManager LanguageManager
 
-<PageTitle>@_viewModel.TaskAssess</PageTitle>
+<PageTitle>@ViewModel.TaskAssess</PageTitle>
 
-<div class="assessment-session">
-    <div class="assessment-session__container">
-        <div class="assessment-session__body">
-            <div class="assessment-session__card">
-                <h1 class="assessment-session__title">@_viewModel.TaskAssess</h1>
-                @if (_viewModel.Data is { State: ServiceResultState.Success, Result: not null })
-                {
-                    <StoryDetails Item="_viewModel.Data.Result.Story" IsFullScreen="true"/>
-                }
-                else
-                {
-                    <p class="assessment-session__text">@StateMessage</p>
-                }
+<div class="assessment-session-header white">
+    <div class="assessment-session-header__container">
+        <div class="assessment-session__header">
+            <div class="assessment-session__about">
+                <h1 class="title">@ViewModel.TaskAssess</h1>
+                <p class="assessment-session__text text">@string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)</p>
+                <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
             </div>
-            <div class="phone phone_hidden-on-tablet">
-                <div class="phone__screen">
-                    <div class="phone__content">
-                        <div class="qr-code">
-                            @if (_viewModel.Data is { State: ServiceResultState.Success, Result: not null })
-                            {
-                                <div class="qr-code__content">
-                                    @((MarkupString) _viewModel.Data.Result.CodeForConnect)
-                                </div>
-                                <span class="qr-code__text">@_viewModel.Scan</span>
-                                <span class="qr-code__text qr-code__text_sub">@_viewModel.ToConnect</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="phone__mockup"></div>
-                </div>
+            <div class="assessment-session__link">
+                @((MarkupString)ViewModel.CodeForConnect)
             </div>
         </div>
-        
-        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" @ref="_history" />
+    </div>
+</div>
+<div class="assessment-session-content">
+    <div class="assessment-session-content__container">
+        @if (ViewModel.Story is not null)
+        {
+            <Story Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
+        }
+        else
+        {
+            <h2 class="text">@ViewModel.HasNotTasks</h2>
+        }
+    </div>
+</div>
+<div class="assessment-session-footer white">
+    <div class="assessment-session-footer__container">
+        <AssessmentSessionHistory TeamId="Id" HistoryDepth="5" @ref="_history"/>
     </div>
 </div>
 
@@ -54,76 +45,41 @@
     [Parameter, EditorRequired]
     public Guid Id { get; set; }
     
-    private const string StateKey = nameof(AssessmentSessionPage);
-    private PersistingComponentStateSubscription _persistingSubscription;
     private EventsProvider? _eventsProvider;
-
-    private AssessmentSessionPageViewModel _viewModel = AssessmentSessionPageViewModel.Empty;
     private AssessmentSessionHistory _history = default!;
 
-    private string StateMessage => _viewModel.Data.State switch
+    protected override async Task OnParametersSetAsync()
     {
-        ServiceResultState.NotFound => _viewModel.AssessmentSessionNotFound,
-        ServiceResultState.Failed => _viewModel.Data.ErrorMessage,
-        _ => _viewModel.Loading
-    };
-
-    protected override async Task OnInitializedAsync()
-    {
-        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
-
-        if (ApplicationState.TryTakeFromJson<AssessmentSessionPageViewModel>(StateKey, out var restored) && restored is not null)
-            _viewModel = restored;
-        else
-            await Initialize();
-
+        await base.OnParametersSetAsync();
+        
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null)
-        {
-            await eventsProvider.OnStoryChanged(Id, StoryChanged);
-            _eventsProvider = eventsProvider;
-        }
-    }
-    
-    private Task PersistData()
-    {
-        ApplicationState.PersistAsJson(StateKey, _viewModel);
-
-        return Task.CompletedTask;
+        if (eventsProvider is not null && _eventsProvider is null)
+            _eventsProvider = await eventsProvider.OnStoryChanged(Id, Update);
     }
 
-    private async Task Initialize()
+    protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var resources = await LanguageManager.GetResource();
+        var newStoryState = await AppraiserService.GetActiveStory(Id);
 
-        var newStoryState = await Service.GetStoryDetails(Id);
-
-        if (_viewModel.Data.Result is not null && _viewModel.Data.Result.Story.Id != newStoryState.Result?.Story.Id)
+        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id)
             await _history.Update();
 
-        _viewModel = new(
+        return new(
             resources[Messages.GUI_TaskAssess],
-            resources[Messages.GUI_CardNotSelected],
-            resources[Messages.GUI_Scan],
-            resources[Messages.GUI_ToConnect],
-            resources[Messages.GUI_AssessmentSessionCard],
-            resources[Messages.GUI_AssessmentSessionNotFound],
-            resources[Messages.GUI_Loading],
-            newStoryState);
+            resources[Messages.GUI_AverageRating],
+            resources[Messages.GUI_AssessmentSessionAbout],
+            resources[Messages.GUI_AssessmentSessionConnect],
+            resources[Messages.GUI_AssessmentSessionHasNotTasks],
+            newStoryState.Result.TeamName,
+            newStoryState.Result.CodeForConnect,
+            newStoryState.Result.Story);
     }
     
-    private async Task StoryChanged()
+    public override async ValueTask DisposeAsync()
     {
-        await Initialize();
-
-        StateHasChanged();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        _persistingSubscription.Dispose();
-        
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
+
+        await base.DisposeAsync();
     }
 }

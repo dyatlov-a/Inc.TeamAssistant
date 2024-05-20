@@ -11,12 +11,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help;
 
 internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandResult>
 {
-    private readonly IBotRepository _botRepository;
+    private readonly IBotReader _botReader;
     private readonly IMessageBuilder _messageBuilder;
 
-    public HelpCommandHandler(IBotRepository botRepository, IMessageBuilder messageBuilder)
+    public HelpCommandHandler(IBotReader botReader, IMessageBuilder messageBuilder)
     {
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
+        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
@@ -24,7 +24,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var bot = await _botRepository.Find(command.MessageContext.Bot.Id, token);
+        var bot = await _botReader.Find(command.MessageContext.Bot.Id, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.Bot.Id);
 

@@ -2,50 +2,50 @@
 @page "/en"
 @page "/ru"
 
-@implements IAsyncDisposable
+@using Inc.TeamAssistant.Primitives
+@using Inc.TeamAssistant.WebUI.Features.Videos
 
-@inject IRenderContext RenderContext
-@inject IJSRuntime JsRuntime
+@inherits PersistentComponent<MainPageViewModel>
 
-@if (RenderContext.IsBrowser)
-{
-    <video autoplay muted playsinline loop poster="@(_fileName).jpg" @ref="_video" class="main__video">
-        <source src="@(_fileName).mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
-    </video>
-}
-else
-{
-    <img src="@(_fileName).jpg" alt="A video about users writing bots' source code" class="main__video" />
-}
+<MainVideo FileName="source-tree-02" NotSupportedMessage="@ViewModel.NotSupportedMessage" />
 
-<section id="feedback" class="feedback white">
-    <div class="feedback__container">
-        <RequestDemo />
+<section id="about-bots" class="about-bots">
+    <div class="about-bots__container">
+        <h1 class="about-bots__header">
+            <span class="about-bots__item">@ViewModel.Header</span>
+            <br/>
+            <span class="about-bots__item">@ViewModel.SubHeader</span>
+        </h1>
+        <br/>
+        <p class="about-bots__description">
+            <span class="about-bots__item">👌 @ViewModel.ToolAppraiser<br/></span>
+            <span class="about-bots__item">🤝 @ViewModel.ToolReviewer<br/></span>
+            <span class="about-bots__item">💬 @ViewModel.ToolRandomCoffee</span>
+        </p>
+        <div class="about-bots__actions">
+            <a href="@MoveToConstructor()" class="button button_black">@ViewModel.CreateBotLink</a>
+            <a href="mailto:@(GlobalSettings.RequestDemoEmail)?body=@(ViewModel.RequestDemoBody)&subject=@(ViewModel.RequestDemoSubject)" class="link link_black about-bots__link">@ViewModel.RequestDemo</a>
+        </div>
     </div>
 </section>
 
 @code {
-    private ElementReference _video;
-    private IJSObjectReference? _videoModule;
+    private string MoveToConstructor() => LinkBuilder("constructor");
     
-    private readonly string _fileName = "source-tree-02";
+    protected override Task<MainPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var requestDemo = resources[Messages.GUI_RequestDemo];
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && RenderContext.IsBrowser)
-        {
-            _videoModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import",
-                "./Features/Main/MainPage.razor.js");
-            
-            await _videoModule.InvokeVoidAsync("play", _video);
-        }
-    }
-    
-    public async ValueTask DisposeAsync()
-    {
-        if (_videoModule is not null)
-            await _videoModule.DisposeAsync();
+        return Task.FromResult(new MainPageViewModel(
+            requestDemo,
+            $"{requestDemo} [TeamAssistant]",
+            resources[Messages.GUI_RequestDemoBody],
+            resources[Messages.GUI_MainHeader],
+            resources[Messages.GUI_MainSubHeader],
+            resources[Messages.GUI_ToolAppraiser],
+            resources[Messages.GUI_ToolReviewer],
+            resources[Messages.GUI_ToolRandomCoffee],
+            resources[Messages.GUI_CreateBotLink],
+            resources[Messages.GUI_VideoNotSupported]));
     }
 }

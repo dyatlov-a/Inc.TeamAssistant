@@ -52,6 +52,15 @@ html {
 	margin: 0 auto;
 	padding: 0 1rem;
 }
+.wrapper {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.main {
+    flex: 1 1 auto;
+}
 /* PC */
 @media (max-width: 1080px) {
 	[class*="__container"] {
@@ -73,16 +82,6 @@ html {
 /* MOBILE SMALL */
 @media (max-width: 479.98px) {
 }
-/* CUSTOM */
-.dark {
-    position: absolute;
-    background-color: #000;
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 100%;
-    opacity: .4;
-}
 /* BUTTON */
 .button {
     display: inline-block;
@@ -94,6 +93,8 @@ html {
     padding: .875rem 1.25rem;
     border-radius: 1rem;
     transition: background-color 0.3s ease 0s;
+    background-color: transparent;
+    cursor: pointer;
 }
 .button_white {
     border: .1875rem solid #fff;
@@ -111,59 +112,17 @@ html {
     background-color: #000;
     color: #fff;
 }
-/* PHONE */
-.phone {
-    flex: 0 0 248px;
+.link {
+    font-size: 1rem;
 }
-.phone__screen {
-    position: relative;
-    width: 248px;
-    height: 500px;
+.link:hover {
+    text-decoration: underline;
 }
-.phone__mockup {
-    position: absolute;
-    background-image: url('../main/phone__mockup.png');
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+.link_white {
+    color: #fff;
 }
-.phone__content {
-    width: 100%;
-    height: 100%;
-    padding: 12px 14px;
-    position: absolute;
-}
-.qr-code {
-    width: 100%;
-    height: 100%;
-    padding: 136px 0 0 0;
-    background-color: #fff;
-    text-align: center;
-}
-.qr-code__content {
-    margin: 0 0 20px 0;
-}
-.qr-code__content svg {
-    width: 140px;
-}
-.qr-code__text {
+.link_black {
     color: #000;
-    font-size: 16px;
-    line-height: 20px;
-    padding: 0 20px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-weight: bold;
-    display: block;
-}
-.qr-code__text_sub {
-    font-size: 12px;
-}
-@media (max-width: 767.98px) {
-    .phone_hidden-on-tablet {
-        display: none;
-    }
 }
 /* MAP */
 .marker-btn {
@@ -177,4 +136,34 @@ html {
 }
 .marker-btn:hover {
     text-decoration: none;
+}
+/* FORMS */
+.form-control {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: 3px solid #555;
+}
+.is-valid {
+    border: 3px solid #28a745;
+}
+.is-invalid {
+    border: 3px solid #dc3545;
+}
+.validation-message {
+    font-size: 1rem;
+    color: #dc3545;
+}
+/* ROOT COMPONENTS */
+.title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+}
+.text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+}
+.white {
+    background-color: #fff;
+    color: #000;
 }

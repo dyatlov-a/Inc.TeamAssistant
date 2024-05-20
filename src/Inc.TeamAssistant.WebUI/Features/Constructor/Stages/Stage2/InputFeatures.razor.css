@@ -1,0 +1,30 @@
+.input-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.input-features__items {
+    flex: 0 1 48%;
+    min-height: 220px;
+    color: #fff;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+.input-features__text {
+    font-size: 1.2rem;
+    color: #555;
+    height: 100%;
+    align-content: center;
+}
+::deep .default-card {
+    margin-bottom: 20px;
+    background-color: #555;
+    width: 100%;
+}
+@media (max-width: 991.98px) {
+    .input-features__items {
+        flex: 0 1 100%;
+        margin-bottom: 20px;
+    }
+}

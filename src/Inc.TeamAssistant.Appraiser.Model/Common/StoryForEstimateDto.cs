@@ -1,3 +1,3 @@
 namespace Inc.TeamAssistant.Appraiser.Model.Common;
 
-public sealed record StoryForEstimateDto(string ParticipantName, string DisplayValue);
+public sealed record StoryForEstimateDto(long ParticipantId, string ParticipantName, string DisplayValue);
