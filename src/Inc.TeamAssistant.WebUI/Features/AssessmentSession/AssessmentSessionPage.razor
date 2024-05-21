@@ -46,22 +46,22 @@
     public Guid Id { get; set; }
     
     private EventsProvider? _eventsProvider;
-    private AssessmentSessionHistory _history = default!;
+    private AssessmentSessionHistory? _history;
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
         
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null && _eventsProvider is null)
-            _eventsProvider = await eventsProvider.OnStoryChanged(Id, Update);
+        if (eventsProvider is not null)
+            _eventsProvider ??= await eventsProvider.OnStoryChanged(Id, Update);
     }
 
     protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
         var newStoryState = await AppraiserService.GetActiveStory(Id);
 
-        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id)
+        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id && _history is not null)
             await _history.Update();
 
         return new(

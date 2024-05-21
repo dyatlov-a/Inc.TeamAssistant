@@ -38,7 +38,7 @@
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
 
-    private ConfirmDialog _confirmDialog = default!;
+    private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
     
     protected override async Task<BotSelectorViewModel> Initialize(Dictionary<string, string> resources)
@@ -70,7 +70,7 @@
     {
         _selectedBot = bot;
         
-        _confirmDialog.Open();
+        _confirmDialog?.Open();
     }
 
     private async Task Remove()

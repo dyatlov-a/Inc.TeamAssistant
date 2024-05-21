@@ -102,7 +102,7 @@
     
     private async Task SubmitForm()
     {
-        if (!await _fluentValidationValidator!.ValidateAsync())
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
         if (StagesState.Id.HasValue)
