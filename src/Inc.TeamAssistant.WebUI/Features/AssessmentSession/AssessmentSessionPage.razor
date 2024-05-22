@@ -9,31 +9,35 @@
 
 <PageTitle>@ViewModel.TaskAssess</PageTitle>
 
-<div class="assessment-session-header white">
-    <div class="assessment-session-header__container">
-        <div class="assessment-session__header">
-            <div class="assessment-session__about">
-                <h1 class="title">@ViewModel.TaskAssess</h1>
-                <p class="assessment-session__text text">@string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)</p>
-                <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
-            </div>
-            <div class="assessment-session__link">
-                @((MarkupString)ViewModel.CodeForConnect)
+<div class="wrapper">
+    <main class="main">
+        <div class="assessment-session-header white">
+            <div class="assessment-session-header__container">
+                <div class="assessment-session__header">
+                    <div class="assessment-session__about">
+                        <h1 class="title">@ViewModel.TaskAssess</h1>
+                        <p class="assessment-session__text text">@string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)</p>
+                        <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
+                    </div>
+                    <div class="assessment-session__link">
+                        @((MarkupString)ViewModel.CodeForConnect)
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="assessment-session-content">
-    <div class="assessment-session-content__container">
-        @if (ViewModel.Story is not null)
-        {
-            <Story Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
-        }
-        else
-        {
-            <h2 class="text">@ViewModel.HasNotTasks</h2>
-        }
-    </div>
+        <div class="assessment-session-content">
+            <div class="assessment-session-content__container">
+                @if (ViewModel.Story is not null)
+                {
+                    <Story Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
+                }
+                else
+                {
+                    <h2 class="text">@ViewModel.HasNotTasks</h2>
+                }
+            </div>
+        </div>
+    </main>
 </div>
 <div class="assessment-session-footer white">
     <div class="assessment-session-footer__container">
@@ -46,22 +50,22 @@
     public Guid Id { get; set; }
     
     private EventsProvider? _eventsProvider;
-    private AssessmentSessionHistory _history = default!;
+    private AssessmentSessionHistory? _history;
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
         
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null && _eventsProvider is null)
-            _eventsProvider = await eventsProvider.OnStoryChanged(Id, Update);
+        if (eventsProvider is not null)
+            _eventsProvider ??= await eventsProvider.OnStoryChanged(Id, Update);
     }
 
     protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
         var newStoryState = await AppraiserService.GetActiveStory(Id);
 
-        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id)
+        if (ViewModel.Story?.Id != newStoryState.Result.Story?.Id && _history is not null)
             await _history.Update();
 
         return new(

@@ -41,7 +41,22 @@ Collect a random coffee meetings 💬.
 
 ## How to use
 
-- section in the work 💤
+Use my backend [constructor](https://team-assistant.online/constructor) for adding your bot
+In the constructor, you can create a bot, add commands, and set up the bot's behavior.
+
+1. Login with your telegram account
+
+![login with telegram](docs/login_tg.png "login with telegram")
+
+2. Add your bot
+
+![add your bot](docs/add_bot.png "add your bot")
+
+3. Select features for the bot
+
+![select features](docs/select_features.png "select features")
+
+4. Enjoy the bot 😀
 
 ## How to install
 
@@ -49,16 +64,20 @@ Local deployment
 1. Clone the repository `git clone https://github.com/dyatlov-a/Inc.TeamAssistant`
 2. Go to the project folder `cd Inc.TeamAssistant/cicd`
 3. Set password for postgres user in `docker-compose.yml`
-4. Run `docker-compose up -d`
-5. Create bot in telegram and get token
-6. Execute script `bot_config__dev.sql` with your bot token
-7. Restart service `gateway`
+4. Set ports in `docker-compose.yml`
+5. Run `docker-compose up -d`
+6. Move to url `http://localhost:{your_port}/constructor`
+7. Login as super user
+8. Create bot in telegram and get token
+9. Add the bot to the system on the constructor page
 
 ## How to contribute
 
 First off, thanks for taking the time to contribute!
 
 All types of contributions are encouraged and valued. See the to do list for different ways to help.
+Before starting work, please create an issue to discuss your idea.
+
 The community looks forward to your contributions.
 
 ## To do
@@ -70,8 +89,12 @@ The community looks forward to your contributions.
 - [X] Create a bot to help with organizing random coffee
 - [X] Create a page to request a [demo](https://team-assistant.online/)
 - [X] Update blazor app
+- [X] Add a constructor for the Telegram bot
+- [ ] Add dashboard for the team (review stats, estimate stats...)
+- [ ] Redesign UI/UX
+- [ ] Integrate with GitLab (code review)
+- [ ] Integrate with Jira (estimate tasks)
 - [ ] Add a feature for use world map
-- [ ] Add a constructor for the Telegram bot
 - [ ] Split the monolith into separate services
 
 ## Team members
