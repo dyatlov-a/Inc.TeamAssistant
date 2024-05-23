@@ -16,11 +16,17 @@
         </div>
         @if (ViewModel.Data is not null)
         {
+            var index = 0;
+            
             foreach (var story in ViewModel.Data.Items)
             {
-                <div class="assessment-history-content">
+                index++;
+                var isDark = index % 2 == 0;
+                var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
+                
+                <div class="assessment-history-content @cssClass">
                     <div class="assessment-history-content__container">
-                        <Story Item="story" AverageRating="@ViewModel.AverageRating"/>
+                        <Story Item="story" IsDarkTheme="isDark" AverageRating="@ViewModel.AverageRating"/>
                     </div>
                 </div>
             }

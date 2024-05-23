@@ -32,6 +32,12 @@
     font-size: 2rem;
     font-weight: bold;
 }
+.story, .story .link {
+    color: #fff;
+}
+.story_dark, .story_dark .link {
+    color: #000;
+}
 @media (max-width: 991.98px) {
     ::deep .user-card {
         flex: 0 1 calc(33.333% - 40px);

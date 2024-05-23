@@ -1,4 +1,4 @@
-<div class="user-card">
+<div class="user-card @CssClass">
     <div class="user-card__header">
         <img src="/photos/@PersonId" alt="user avatar" class="user-card__avatar" />
     </div>
@@ -18,4 +18,9 @@
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool IsDarkTheme { get; set; }
+    
+    private string CssClass => IsDarkTheme ? "user-card_dark" : string.Empty;
 }
