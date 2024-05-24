@@ -56,7 +56,7 @@ internal sealed class ReassignReviewService
                 history,
                 lastReviewerId,
                 taskForReview.ReviewerId)
-            .MoveToNextRound();
+            .MoveToNextRound(DateTimeOffset.UtcNow);
         
         var newReviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (newReviewer is null)

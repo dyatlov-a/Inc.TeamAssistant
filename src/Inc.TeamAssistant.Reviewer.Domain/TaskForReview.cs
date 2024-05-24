@@ -20,14 +20,17 @@ public sealed class TaskForReview
     public int? MessageId { get; private set; }
     public bool HasConcreteReviewer { get; private set; }
     public long? OriginalReviewerId { get; private set; }
+    public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
 
     private TaskForReview()
     {
+        ReviewIntervals = new List<ReviewInterval>();
     }
 
     public TaskForReview(
         Guid botId,
         Guid teamId,
+        DateTimeOffset now,
         NextReviewerType strategy,
         long ownerId,
         long chatId,
@@ -40,60 +43,74 @@ public sealed class TaskForReview
         Id = Guid.NewGuid();
         BotId = botId;
         Strategy = strategy;
-        Created = DateTimeOffset.UtcNow;
+        Created = now;
         TeamId = teamId;
         OwnerId = ownerId;
         ChatId = chatId;
         Description = description;
         State = TaskForReviewState.New;
-        NextNotification = DateTimeOffset.UtcNow;
+        NextNotification = now;
     }
 
     public void AttachMessage(int messageId) => MessageId = messageId;
 
-    public void SetNextNotificationTime(TimeSpan notificationInterval)
+    public void SetNextNotificationTime(DateTimeOffset now, TimeSpan notificationInterval)
     {
         const int inProgressIndex = 2;
         var interval = State == TaskForReviewState.InProgress
             ? notificationInterval * inProgressIndex
             : notificationInterval;
-        NextNotification = DateTimeOffset.UtcNow.Add(interval);
+        NextNotification = now.Add(interval);
     }
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
-    public void Accept()
+    public void Accept(DateTimeOffset now)
     {
-        AcceptDate = DateTimeOffset.UtcNow;
+        AddReviewInterval(ReviewIntervalType.Review, now);
+        
+        AcceptDate = now;
 
         MoveToArchive();
     }
     
-    public void MoveToArchive()
-    {
-        State = TaskForReviewState.IsArchived;
-    }
+    public void MoveToArchive() => State = TaskForReviewState.IsArchived;
 
-    public void Decline()
+    public void Decline(DateTimeOffset now)
     {
+        AddReviewInterval(ReviewIntervalType.Review, now);
+        
         State = TaskForReviewState.OnCorrection;
-        NextNotification = DateTimeOffset.UtcNow;
+        NextNotification = now;
     }
 
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
 
-    public void MoveToNextRound()
+    public void MoveToNextRound(DateTimeOffset now)
     {
+        AddReviewInterval(ReviewIntervalType.Correction, now);
+        
         State = TaskForReviewState.New;
-        NextNotification = DateTimeOffset.UtcNow;
+        NextNotification = now;
     }
 
     public bool CanMoveToInProgress() => State == TaskForReviewState.New;
 
-    public void MoveToInProgress(TimeSpan notificationInterval)
+    public void MoveToInProgress(TimeSpan notificationInterval, DateTimeOffset now)
     {
+        AddReviewInterval(ReviewIntervalType.FirstTouch, now);
+        
         State = TaskForReviewState.InProgress;
-        SetNextNotificationTime(notificationInterval);
+        SetNextNotificationTime(now, notificationInterval);
+    }
+
+    private void AddReviewInterval(ReviewIntervalType type, DateTimeOffset end)
+    {
+        var start = ReviewIntervals.MaxBy(i => i.End)?.End ?? Created;
+        
+        ReviewIntervals = ReviewIntervals
+            .Append(new ReviewInterval(type, start, end))
+            .ToArray();
     }
 
     public TaskForReview SetConcreteReviewer(long reviewerId)

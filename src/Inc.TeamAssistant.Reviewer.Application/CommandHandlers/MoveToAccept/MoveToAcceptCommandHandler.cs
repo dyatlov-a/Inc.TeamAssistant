@@ -41,7 +41,7 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.Accept();
+        taskForReview.Accept(DateTimeOffset.UtcNow);
         
         var notifications = new[]
         {

@@ -41,7 +41,7 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.MoveToNextRound();
+        taskForReview.MoveToNextRound(DateTimeOffset.UtcNow);
         
         var notifications = new[]
         {

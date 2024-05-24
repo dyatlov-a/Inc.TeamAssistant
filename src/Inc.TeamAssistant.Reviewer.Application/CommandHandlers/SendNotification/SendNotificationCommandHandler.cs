@@ -42,7 +42,7 @@ internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotif
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.SetNextNotificationTime(_options.NotificationInterval);
+        taskForReview.SetNextNotificationTime(DateTimeOffset.UtcNow, _options.NotificationInterval);
 
         var notifications = taskForReview.State switch
         {

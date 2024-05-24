@@ -29,6 +29,7 @@ using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
@@ -111,6 +112,7 @@ builder.Services
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	.AddJsonType<ICollection<ReviewInterval>>()
 	.Build()
 	
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)

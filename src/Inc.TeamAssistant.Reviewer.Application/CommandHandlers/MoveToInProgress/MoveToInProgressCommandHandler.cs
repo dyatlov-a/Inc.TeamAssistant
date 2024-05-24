@@ -45,7 +45,7 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.MoveToInProgress(_options.NotificationInterval);
+        taskForReview.MoveToInProgress(_options.NotificationInterval, DateTimeOffset.UtcNow);
         
         var notifications = new[]
         {

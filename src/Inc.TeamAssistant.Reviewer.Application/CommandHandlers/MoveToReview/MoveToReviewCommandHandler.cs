@@ -46,6 +46,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var taskForReview = new TaskForReview(
             command.MessageContext.Bot.Id,
             command.TeamId,
+            DateTimeOffset.UtcNow,
             Enum.Parse<NextReviewerType>(command.Strategy),
             ownerId,
             targetTeam.ChatId,

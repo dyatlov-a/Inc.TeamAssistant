@@ -41,7 +41,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.Decline();
+        taskForReview.Decline(DateTimeOffset.UtcNow);
 
         var notifications = new[]
         {

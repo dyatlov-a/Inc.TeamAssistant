@@ -38,7 +38,8 @@ SELECT
     t.accept_date AS acceptdate,
     t.message_id AS messageid,
     t.chat_id AS chatid,
-    t.original_reviewer_id AS originalreviewerid
+    t.original_reviewer_id AS originalreviewerid,
+    t.review_intervals AS reviewintervals
 FROM review.task_for_reviews AS t
 WHERE t.state = ANY(@states) AND t.next_notification < @now
 ORDER BY t.next_notification
@@ -83,7 +84,8 @@ SELECT
     t.accept_date AS acceptdate,
     t.message_id AS messageid,
     t.chat_id AS chatid,
-    t.original_reviewer_id AS originalreviewerid
+    t.original_reviewer_id AS originalreviewerid,
+    t.review_intervals AS reviewintervals
 FROM review.task_for_reviews AS t
 WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);",
             new
