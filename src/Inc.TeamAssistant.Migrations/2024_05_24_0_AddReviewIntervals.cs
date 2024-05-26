@@ -12,10 +12,32 @@ public sealed class AddReviewIntervals : Migration
             .OnTable("task_for_reviews")
             .InSchema("review")
             .AsCustom("jsonb").NotNullable().SetExistingRowsTo("[]");
+        
+        Create
+            .Column("owner_message_id")
+            .OnTable("task_for_reviews")
+            .InSchema("review")
+            .AsInt32().Nullable();
+
+        Create
+            .Column("reviewer_message_id")
+            .OnTable("task_for_reviews")
+            .InSchema("review")
+            .AsInt32().Nullable();
     }
 
     public override void Down()
     {
+        Delete
+            .Column("reviewer_message_id")
+            .FromTable("task_for_reviews")
+            .InSchema("review");
+        
+        Delete
+            .Column("owner_message_id")
+            .FromTable("task_for_reviews")
+            .InSchema("review");
+        
         Delete
             .Column("review_intervals")
             .FromTable("task_for_reviews")

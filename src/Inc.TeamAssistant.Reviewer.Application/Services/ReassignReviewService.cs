@@ -50,13 +50,12 @@ internal sealed class ReassignReviewService
             taskForReview.OwnerId,
             token);
 
-        taskForReview
-            .DetectReviewer(
-                teammates.Select(t => t.Id).ToArray(),
-                history,
-                lastReviewerId,
-                taskForReview.ReviewerId)
-            .MoveToNextRound(DateTimeOffset.UtcNow);
+        taskForReview.Reassign(
+            DateTimeOffset.UtcNow,
+            teammates.Select(t => t.Id).ToArray(),
+            history,
+            taskForReview.ReviewerId,
+            lastReviewerId);
         
         var newReviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (newReviewer is null)

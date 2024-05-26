@@ -58,7 +58,11 @@ internal sealed class MessageBuilderService : IMessageBuilderService
             : NotificationMessage
                 .Create(taskForReview.ChatId, message)
                 .AttachPerson(attachedPersonId)
-                .AddHandler((c, p) => new AttachMessageCommand(c, taskForReview.Id, int.Parse(p)));
+                .AddHandler((c, p) => new AttachMessageCommand(
+                    c,
+                    taskForReview.Id,
+                    int.Parse(p),
+                    MessageType.Shared.ToString()));
 
         return notification;
     }

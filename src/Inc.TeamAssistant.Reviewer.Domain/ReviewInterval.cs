@@ -1,3 +1,3 @@
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
-public sealed record ReviewInterval(ReviewIntervalType Type, DateTimeOffset Start, DateTimeOffset End);
+public sealed record ReviewInterval(TaskForReviewState State, DateTimeOffset End, long UserId);

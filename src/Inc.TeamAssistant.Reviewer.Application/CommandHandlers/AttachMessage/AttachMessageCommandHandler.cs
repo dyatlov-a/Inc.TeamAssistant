@@ -1,6 +1,6 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
 using MediatR;
 
@@ -22,7 +22,7 @@ internal sealed class AttachMessageCommandHandler : IRequestHandler<AttachMessag
 
         var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
         
-        taskForReview.AttachMessage(command.MessageId);
+        taskForReview.AttachMessage(Enum.Parse<MessageType>(command.MessageType), command.MessageId);
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
 

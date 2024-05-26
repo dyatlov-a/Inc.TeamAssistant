@@ -10,7 +10,9 @@ public sealed class TaskForReview
     public NextReviewerType Strategy { get; private set; }
     public Guid TeamId { get; private set; }
     public long OwnerId { get; private set; }
+    public int? OwnerMessageId { get; private set; }
     public long ReviewerId { get; private set; }
+    public int? ReviewerMessageId { get; private set; }
     public long ChatId { get; private set; }
     public string Description { get; private set; } = default!;
     public TaskForReviewState State { get; private set; }
@@ -52,7 +54,23 @@ public sealed class TaskForReview
         NextNotification = now;
     }
 
-    public void AttachMessage(int messageId) => MessageId = messageId;
+    public void AttachMessage(MessageType messageType, int messageId)
+    {
+        switch (messageType)
+        {
+            case MessageType.Shared:
+                MessageId = messageId;
+                break;
+            case MessageType.Reviewer:
+                ReviewerMessageId = messageId;
+                break;
+            case MessageType.Owner:
+                OwnerMessageId = messageId;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(messageType));
+        }
+    }
 
     public void SetNextNotificationTime(DateTimeOffset now, TimeSpan notificationInterval)
     {
@@ -67,7 +85,7 @@ public sealed class TaskForReview
 
     public void Accept(DateTimeOffset now)
     {
-        AddReviewInterval(ReviewIntervalType.Review, now);
+        AddReviewInterval(ReviewerId, now);
         
         AcceptDate = now;
 
@@ -78,7 +96,7 @@ public sealed class TaskForReview
 
     public void Decline(DateTimeOffset now)
     {
-        AddReviewInterval(ReviewIntervalType.Review, now);
+        AddReviewInterval(ReviewerId, now);
         
         State = TaskForReviewState.OnCorrection;
         NextNotification = now;
@@ -88,9 +106,9 @@ public sealed class TaskForReview
 
     public void MoveToNextRound(DateTimeOffset now)
     {
-        AddReviewInterval(ReviewIntervalType.Correction, now);
+        AddReviewInterval(OwnerId, now);
         
-        State = TaskForReviewState.New;
+        State = TaskForReviewState.InProgress;
         NextNotification = now;
     }
 
@@ -98,19 +116,15 @@ public sealed class TaskForReview
 
     public void MoveToInProgress(TimeSpan notificationInterval, DateTimeOffset now)
     {
-        AddReviewInterval(ReviewIntervalType.FirstTouch, now);
+        AddReviewInterval(ReviewerId, now);
         
         State = TaskForReviewState.InProgress;
         SetNextNotificationTime(now, notificationInterval);
     }
 
-    private void AddReviewInterval(ReviewIntervalType type, DateTimeOffset end)
+    private void AddReviewInterval(long userId, DateTimeOffset end)
     {
-        var start = ReviewIntervals.MaxBy(i => i.End)?.End ?? Created;
-        
-        ReviewIntervals = ReviewIntervals
-            .Append(new ReviewInterval(type, start, end))
-            .ToArray();
+        ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
 
     public TaskForReview SetConcreteReviewer(long reviewerId)
@@ -119,6 +133,25 @@ public sealed class TaskForReview
         HasConcreteReviewer = true;
         
         return this;
+    }
+
+    public TaskForReview Reassign(
+        DateTimeOffset now,
+        IReadOnlyCollection<long> teammates,
+        IReadOnlyDictionary<long, int> history,
+        long excludedPersonId,
+        long? lastReviewerId)
+    {
+        ArgumentNullException.ThrowIfNull(teammates);
+        ArgumentNullException.ThrowIfNull(history);
+        
+        AddReviewInterval(ReviewerId, now);
+        
+        State = TaskForReviewState.New;
+        NextNotification = now;
+        ReviewerMessageId = null;
+
+        return DetectReviewer(teammates, history, lastReviewerId, excludedPersonId);
     }
 
     public TaskForReview DetectReviewer(
