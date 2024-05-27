@@ -192,6 +192,7 @@ internal sealed class CommandExecutor : ICommandExecutor
                     notificationMessage.Text,
                     replyMarkup: notificationMessage.ToReplyMarkup(),
                     entities: entities,
+                    replyToMessageId: notificationMessage.ReplyToMessageId,
                     cancellationToken: token);
 
             if (notificationMessage.Pinned)

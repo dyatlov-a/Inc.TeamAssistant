@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
 using MediatR;
@@ -47,19 +48,16 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
 
         taskForReview.MoveToInProgress(_options.NotificationInterval, DateTimeOffset.UtcNow);
         
-        var notifications = new[]
+        var notifications = new List<NotificationMessage>
         {
-            await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token),
-            await _messageBuilderService.BuildNeedReview(
-                taskForReview,
-                reviewer,
-                hasInProgressAction: false,
-                command.MessageContext.ChatMessage,
-                token)
+            await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token)
         };
+        
+        await foreach(var item in _messageBuilderService.BuildMoveToReviewActions(taskForReview, reviewer, isPush: false, hasActions: true, token))
+            notifications.Add(item);
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(notifications);
+        return CommandResult.Build(notifications.ToArray());
     }
 }

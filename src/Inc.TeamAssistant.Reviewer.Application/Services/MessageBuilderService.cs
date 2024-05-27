@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using System.Text;
+using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -12,11 +14,19 @@ internal sealed class MessageBuilderService : IMessageBuilderService
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
+    private readonly IHolidayService _holidayService;
+    private readonly ITaskForReviewReader _taskForReviewReader;
 
-    public MessageBuilderService(IMessageBuilder messageBuilder, ITeamAccessor teamAccessor)
+    public MessageBuilderService(
+        IMessageBuilder messageBuilder,
+        ITeamAccessor teamAccessor,
+        IHolidayService holidayService,
+        ITaskForReviewReader taskForReviewReader)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+        _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
+        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
     }
 
     public async Task<NotificationMessage> BuildNewTaskForReview(
@@ -42,7 +52,7 @@ internal sealed class MessageBuilderService : IMessageBuilderService
             TaskForReviewState.New => "⏳",
             TaskForReviewState.InProgress => "🤩",
             TaskForReviewState.OnCorrection => "😱",
-            TaskForReviewState.IsArchived => "👍",
+            TaskForReviewState.Accept => "👍",
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
         
@@ -67,57 +77,126 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         return notification;
     }
     
-    public async Task<NotificationMessage> BuildNeedReview(
+    public async IAsyncEnumerable<NotificationMessage> BuildMoveToInProgress(
         TaskForReview task,
         Person reviewer,
-        bool? hasInProgressAction,
-        ChatMessage? chatMessage,
-        CancellationToken token)
+        bool isPush,
+        [EnumeratorCancellation]CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+        ArgumentNullException.ThrowIfNull(reviewer);
+        
+        var languageId = await _teamAccessor.GetClientLanguage(reviewer.Id, token);
+        var message = await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId, task.Description);
+        var notification = task.ReviewerMessageId.HasValue
+            ? NotificationMessage.Edit(new(reviewer.Id, task.ReviewerMessageId.Value), message)
+            : NotificationMessage.Create(reviewer.Id, message);
+
+        var inProgressButton = await _messageBuilder.Build(Messages.Reviewer_MoveToInProgress, languageId);
+        notification.WithButton(new Button(inProgressButton, $"{CommandList.MoveToInProgress}{task.Id:N}"));
+
+        var fromDate = _holidayService.GetLastDayOfWeek(DayOfWeek.Monday, DateTimeOffset.UtcNow);
+        var hasReassign = await _taskForReviewReader.HasReassignFromDate(reviewer.Id, fromDate, token);
+        
+        if (!task.OriginalReviewerId.HasValue && !hasReassign)
+        {
+            var reassignReviewButton = await _messageBuilder.Build(Messages.Reviewer_Reassign, languageId);
+            notification.WithButton(new Button(reassignReviewButton, $"{CommandList.ReassignReview}{task.Id:N}"));
+        }
+
+        if (!task.ReviewerMessageId.HasValue)
+            notification.AddHandler((c, p) => new AttachMessageCommand(
+                c,
+                task.Id,
+                int.Parse(p),
+                MessageType.Reviewer.ToString()));
+        
+        yield return notification;
+        
+        if (isPush && task.ReviewerMessageId.HasValue)
+        {
+            var reviewerNotificationText = await _messageBuilder.Build(Messages.Reviewer_NeedEndReview, languageId);
+            yield return NotificationMessage
+                .Create(reviewer.Id, reviewerNotificationText)
+                .ReplyTo(task.ReviewerMessageId.Value);
+        }
+    }
+
+    public async IAsyncEnumerable<NotificationMessage> BuildMoveToReviewActions(
+        TaskForReview task,
+        Person reviewer,
+        bool isPush,
+        bool hasActions,
+        [EnumeratorCancellation]CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(reviewer);
 
+        if (!task.ReviewerMessageId.HasValue)
+            throw new ApplicationException($"TaskForReview {task.Id} has not value for ReviewerMessageId.");
+
         var languageId = await _teamAccessor.GetClientLanguage(reviewer.Id, token);
         var message = await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId, task.Description);
+        var notification = NotificationMessage.Edit(new(reviewer.Id, task.ReviewerMessageId.Value), message);
 
-        var notification = chatMessage is null
-            ? NotificationMessage.Create(reviewer.Id, message)
-            : NotificationMessage.Edit(chatMessage, message);
-        notification.SetButtonsInRow(2);
+        if (hasActions)
+        {
+            var moveToAcceptButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAccept, languageId);
+            notification.WithButton(new Button(moveToAcceptButton, $"{CommandList.Accept}{task.Id:N}"));
+        
+            var moveToDeclineButton = await _messageBuilder.Build(Messages.Reviewer_MoveToDecline, languageId);
+            notification.WithButton(new Button(moveToDeclineButton, $"{CommandList.Decline}{task.Id:N}"));
+        }
 
-        if (hasInProgressAction.HasValue)
-            foreach (var command in GetReviewerCommands(
-                         hasReassign: !task.OriginalReviewerId.HasValue,
-                         hasInProgressAction: hasInProgressAction.Value))
-            {
-                var text = await _messageBuilder.Build(command.MessageId, languageId);
-                notification.WithButton(new Button(text, $"{command.Command}{task.Id:N}"));
-            }
-
-        return notification;
+        yield return notification;
+        
+        if (isPush)
+        {
+            var reviewerNotificationText = await _messageBuilder.Build(Messages.Reviewer_NeedEndReview, languageId);
+            yield return NotificationMessage
+                .Create(reviewer.Id, reviewerNotificationText)
+                .ReplyTo(task.ReviewerMessageId.Value);
+        }
     }
 
-    public async Task<NotificationMessage> BuildMoveToNextRound(
+    public async IAsyncEnumerable<NotificationMessage> BuildMoveToNextRound(
         TaskForReview task,
         Person owner,
-        ChatMessage? chatMessage,
+        bool isPush,
+        bool hasActions,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(owner);
-
+        
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
         var message = await _messageBuilder.Build(Messages.Reviewer_ReviewDeclined, languageId, task.Description);
+        var notification = task.OwnerMessageId.HasValue
+            ? NotificationMessage.Edit(new(owner.Id, task.OwnerMessageId.Value), message)
+            : NotificationMessage.Create(owner.Id, message);
 
-        if (chatMessage is not null)
-            return NotificationMessage.Edit(chatMessage, message);
+        if (hasActions)
+        {
+            var moveToNextRoundButton = await _messageBuilder.Build(Messages.Reviewer_MoveToNextRound, languageId);
+            notification.WithButton(new Button(moveToNextRoundButton, $"{CommandList.MoveToNextRound}{task.Id:N}"));
+        }
 
-        var text = await _messageBuilder.Build(Messages.Reviewer_MoveToNextRound, languageId);
-        var notification = NotificationMessage
-            .Create(owner.Id, message)
-            .WithButton(new Button(text, $"{CommandList.MoveToNextRound}{task.Id:N}"));
+        if (!task.OwnerMessageId.HasValue)
+            notification.AddHandler((c, p) => new AttachMessageCommand(
+                c,
+                task.Id,
+                int.Parse(p),
+                MessageType.Owner.ToString()));
         
-        return notification;
+        yield return notification;
+        
+        if (isPush && task.OwnerMessageId.HasValue)
+        {
+            var ownerNotificationText = await _messageBuilder.Build(Messages.Reviewer_NeedRevisions, languageId);
+            yield return NotificationMessage
+                .Create(owner.Id, ownerNotificationText)
+                .ReplyTo(task.OwnerMessageId.Value);
+        }
     }
 
     public async Task<NotificationMessage> BuildReviewAccepted(
@@ -135,19 +214,5 @@ internal sealed class MessageBuilderService : IMessageBuilderService
         var notification = NotificationMessage.Create(owner.Id, message);
 
         return notification;
-    }
-    
-    private IEnumerable<(MessageId MessageId, string Command)> GetReviewerCommands(
-        bool hasReassign,
-        bool hasInProgressAction)
-    {
-        yield return (Messages.Reviewer_MoveToAccept, CommandList.Accept);
-        yield return (Messages.Reviewer_MoveToDecline, CommandList.Decline);
-        
-        if (hasInProgressAction)
-            yield return (Messages.Reviewer_MoveToInProgress, CommandList.MoveToInProgress);
-        
-        if (hasReassign)
-            yield return (Messages.Reviewer_Reassign, CommandList.ReassignReview);
     }
 }

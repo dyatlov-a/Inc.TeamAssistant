@@ -89,10 +89,10 @@ public sealed class TaskForReview
         
         AcceptDate = now;
 
-        MoveToArchive();
+        MoveToAccept();
     }
     
-    public void MoveToArchive() => State = TaskForReviewState.IsArchived;
+    public void MoveToAccept() => State = TaskForReviewState.Accept;
 
     public void Decline(DateTimeOffset now)
     {
@@ -108,7 +108,7 @@ public sealed class TaskForReview
     {
         AddReviewInterval(OwnerId, now);
         
-        State = TaskForReviewState.InProgress;
+        State = TaskForReviewState.New;
         NextNotification = now;
     }
 

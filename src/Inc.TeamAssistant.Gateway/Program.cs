@@ -112,7 +112,7 @@ builder.Services
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
-	.AddJsonType<ICollection<ReviewInterval>>()
+	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.Build()
 	
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)

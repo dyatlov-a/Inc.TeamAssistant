@@ -12,17 +12,24 @@ public interface IMessageBuilderService
         Person owner,
         CancellationToken token);
     
-    Task<NotificationMessage> BuildNeedReview(
+    IAsyncEnumerable<NotificationMessage> BuildMoveToInProgress(
         TaskForReview task,
         Person reviewer,
-        bool? hasInProgressAction,
-        ChatMessage? chatMessage,
+        bool isPush,
         CancellationToken token);
     
-    Task<NotificationMessage> BuildMoveToNextRound(
+    IAsyncEnumerable<NotificationMessage> BuildMoveToReviewActions(
+        TaskForReview task,
+        Person reviewer,
+        bool isPush,
+        bool hasActions,
+        CancellationToken token);
+    
+    IAsyncEnumerable<NotificationMessage> BuildMoveToNextRound(
         TaskForReview task,
         Person owner,
-        ChatMessage? chatMessage,
+        bool isPush,
+        bool hasActions,
         CancellationToken token);
 
     Task<NotificationMessage> BuildReviewAccepted(

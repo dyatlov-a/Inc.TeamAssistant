@@ -46,28 +46,40 @@ internal sealed class SendNotificationCommandHandler : IRequestHandler<SendNotif
 
         var notifications = taskForReview.State switch
         {
-            TaskForReviewState.New => [await _messageBuilderService.BuildNeedReview(
+            TaskForReviewState.New => await Unwrap(_messageBuilderService.BuildMoveToInProgress(
                 taskForReview,
                 reviewer,
-                hasInProgressAction: true,
-                chatMessage: null,
-                token)],
-            TaskForReviewState.InProgress => [await _messageBuilderService.BuildNeedReview(
+                isPush: true,
+                token)),
+            TaskForReviewState.InProgress => await Unwrap(_messageBuilderService.BuildMoveToReviewActions(
                 taskForReview,
                 reviewer,
-                hasInProgressAction: false,
-                chatMessage: null,
-                token)],
-            TaskForReviewState.OnCorrection => [await _messageBuilderService.BuildMoveToNextRound(
+                isPush: true,
+                hasActions: true,
+                token)),
+            TaskForReviewState.OnCorrection => await Unwrap(_messageBuilderService.BuildMoveToNextRound(
                 taskForReview,
                 owner,
-                chatMessage: null,
-                token)],
-            _ => Array.Empty<NotificationMessage>()
+                isPush: true,
+                hasActions: true,
+                token)),
+            _ => []
         };
 
         await _repository.Upsert(taskForReview, token);
 
         return CommandResult.Build(notifications);
+    }
+
+    private async Task<NotificationMessage[]> Unwrap(IAsyncEnumerable<NotificationMessage> notifications)
+    {
+        ArgumentNullException.ThrowIfNull(notifications);
+        
+        var messages = new List<NotificationMessage>();
+        
+        await foreach(var item in notifications)
+            messages.Add(item);
+
+        return messages.ToArray();
     }
 }
