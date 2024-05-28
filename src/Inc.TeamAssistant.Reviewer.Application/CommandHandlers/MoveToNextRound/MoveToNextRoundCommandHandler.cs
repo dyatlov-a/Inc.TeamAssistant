@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToNextRound;
 using MediatR;
@@ -11,18 +10,18 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound
 internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNextRoundCommand, CommandResult>
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
-    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
 
     public MoveToNextRoundCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
-        IMessageBuilderService messageBuilderService,
+        IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _messageBuilderService =
-            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _reviewMessageBuilder =
+            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -43,14 +42,13 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
         taskForReview.MoveToNextRound(DateTimeOffset.UtcNow);
-        
-        var notifications = new List<NotificationMessage>
-        {
-            await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token)
-        };
-        
-        await foreach(var item in _messageBuilderService.BuildMoveToNextRound(taskForReview, owner, isPush: false, hasActions: false, token))
-            notifications.Add(item);
+
+        var notifications = await _reviewMessageBuilder.Build(
+            command.MessageContext.ChatMessage.MessageId,
+            taskForReview,
+            reviewer,
+            owner,
+            token);
 
         await _taskForReviewRepository.Upsert(taskForReview, token);
         

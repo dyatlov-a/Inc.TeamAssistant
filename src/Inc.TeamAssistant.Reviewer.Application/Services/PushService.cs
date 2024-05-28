@@ -2,26 +2,26 @@ using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Inc.TeamAssistant.Reviewer.Model.Commands.SendNotification;
+using Inc.TeamAssistant.Reviewer.Model.Commands.SendPush;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class NotificationsService : BackgroundService
+internal sealed class PushService : BackgroundService
 {
     private readonly ICommandExecutor _commandExecutor;
     private readonly ITaskForReviewReader _reader;
     private readonly IHolidayService _holidayService;
     private readonly ReviewerOptions _options;
-    private readonly ILogger<NotificationsService> _logger;
+    private readonly ILogger<PushService> _logger;
 
-    public NotificationsService(
+    public PushService(
         ICommandExecutor commandExecutor,
         ITaskForReviewReader reader,
         IHolidayService holidayService,
         ReviewerOptions options,
-        ILogger<NotificationsService> logger)
+        ILogger<PushService> logger)
     {
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
@@ -36,7 +36,7 @@ internal sealed class NotificationsService : BackgroundService
         {
             try
             {
-                await SendNotifications(token);
+                await Push(token);
             }
             catch (Exception ex)
             {
@@ -47,7 +47,7 @@ internal sealed class NotificationsService : BackgroundService
         }
     }
 
-    private async Task SendNotifications(CancellationToken token)
+    private async Task Push(CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow;
 
@@ -61,7 +61,7 @@ internal sealed class NotificationsService : BackgroundService
 
             foreach (var task in tasksForNotifications)
                 await _commandExecutor.Execute(
-                    new SendNotificationCommand(MessageContext.CreateIdle(task.BotId, task.ChatId), task.Id),
+                    new SendPushCommand(MessageContext.CreateIdle(task.BotId, task.ChatId), task.Id),
                     token);
         }
     }

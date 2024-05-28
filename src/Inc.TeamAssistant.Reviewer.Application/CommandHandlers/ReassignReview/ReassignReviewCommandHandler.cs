@@ -19,7 +19,10 @@ internal sealed class ReassignReviewCommandHandler : IRequestHandler<ReassignRev
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var notifications = await _reassignReviewService.ReassignReview(command.TaskId, token);
+        var notifications = await _reassignReviewService.ReassignReview(
+            command.MessageContext.ChatMessage.MessageId,
+            command.TaskId,
+            token);
         
         return CommandResult.Build(notifications.ToArray());
     }

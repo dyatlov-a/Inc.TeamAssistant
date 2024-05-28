@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
 using MediatR;
@@ -11,18 +10,18 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline;
 internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclineCommand, CommandResult>
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
-    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
 
     public MoveToDeclineCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
-        IMessageBuilderService messageBuilderService,
+        IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _messageBuilderService =
-            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _reviewMessageBuilder =
+            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -30,29 +29,28 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var task = await _taskForReviewRepository.GetById(command.TaskId, token);
-        if (!task.CanAccept())
+        var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
+        if (!taskForReview.CanAccept())
             return CommandResult.Empty;
         
-        var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
+        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (reviewer is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
         
-        var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
+        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
         if (owner is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        task.Decline(DateTimeOffset.UtcNow);
+        taskForReview.Decline(DateTimeOffset.UtcNow);
 
-        var notifications = new List<NotificationMessage>()
-        {
-            await _messageBuilderService.BuildNewTaskForReview(task, reviewer, owner, token)
-        };
+        var notifications = await _reviewMessageBuilder.Build(
+            command.MessageContext.ChatMessage.MessageId,
+            taskForReview,
+            reviewer,
+            owner,
+            token);
         
-        await foreach(var item in _messageBuilderService.BuildMoveToReviewActions(task, reviewer, isPush: false, hasActions: false, token))
-            notifications.Add(item);
-
-        await _taskForReviewRepository.Upsert(task, token);
+        await _taskForReviewRepository.Upsert(taskForReview, token);
         
         return CommandResult.Build(notifications.ToArray());
     }

@@ -9,36 +9,31 @@ internal sealed class ReassignReviewService
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ReviewHistoryService _reviewHistoryService;
     
     public ReassignReviewService(
         ITaskForReviewRepository taskForReviewRepository,
         ITeamAccessor teamAccessor,
-        IMessageBuilderService messageBuilderService,
+        IReviewMessageBuilder reviewMessageBuilder,
         ReviewHistoryService reviewHistoryService)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _messageBuilderService =
-            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _reviewMessageBuilder =
+            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _reviewHistoryService = reviewHistoryService ?? throw new ArgumentNullException(nameof(reviewHistoryService));
     }
     
-    public async Task<IEnumerable<NotificationMessage>> ReassignReview(Guid taskId, CancellationToken token)
+    public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
+        int messageId,
+        Guid taskId,
+        CancellationToken token)
     {
         var task = await _taskForReviewRepository.GetById(taskId, token);
         if (!task.CanAccept())
             return Array.Empty<NotificationMessage>();
-        
-        var reviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
-        if (reviewer is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
-        
-        var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
         
         var history = await _reviewHistoryService.GetHistory(task.TeamId, token);
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, token);
@@ -51,21 +46,19 @@ internal sealed class ReassignReviewService
             task.ReviewerId,
             lastReviewerId);
         
+        var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
+        if (owner is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
         var newReviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
         if (newReviewer is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);
 
-        var notifications = new List<NotificationMessage>
-        {
-            await _messageBuilderService.BuildNewTaskForReview(
-                task,
-                newReviewer,
-                owner,
-                token)
-        };
-
-        await foreach (var item in _messageBuilderService.BuildMoveToInProgress(task, reviewer, isPush: false, token))
-            notifications.Add(item);
+        var notifications = await _reviewMessageBuilder.Build(
+            messageId,
+            task,
+            newReviewer,
+            owner,
+            token);
 
         await _taskForReviewRepository.Upsert(task, token);
 

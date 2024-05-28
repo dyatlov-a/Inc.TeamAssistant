@@ -33,6 +33,7 @@ public sealed class TaskForReview
         Guid botId,
         Guid teamId,
         DateTimeOffset now,
+        TimeSpan notificationInterval,
         NextReviewerType strategy,
         long ownerId,
         long chatId,
@@ -51,7 +52,7 @@ public sealed class TaskForReview
         ChatId = chatId;
         Description = description;
         State = TaskForReviewState.New;
-        NextNotification = now;
+        SetNextNotificationTime(now, notificationInterval);
     }
 
     public void AttachMessage(MessageType messageType, int messageId)
@@ -108,7 +109,7 @@ public sealed class TaskForReview
     {
         AddReviewInterval(OwnerId, now);
         
-        State = TaskForReviewState.New;
+        State = TaskForReviewState.InProgress;
         NextNotification = now;
     }
 
