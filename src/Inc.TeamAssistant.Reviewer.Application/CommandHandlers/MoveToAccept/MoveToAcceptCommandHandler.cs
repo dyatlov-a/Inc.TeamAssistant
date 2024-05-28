@@ -12,17 +12,18 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
+    private readonly IReviewAverageStatsProvider _reviewAverageStatsProvider;
 
     public MoveToAcceptCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
         IReviewMessageBuilder reviewMessageBuilder,
-        ITeamAccessor teamAccessor)
+        ITeamAccessor teamAccessor,
+        IReviewAverageStatsProvider reviewAverageStatsProvider)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _reviewMessageBuilder =
-            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
+        _taskForReviewRepository = taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _reviewMessageBuilder = reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+        _reviewAverageStatsProvider = reviewAverageStatsProvider ?? throw new ArgumentNullException(nameof(reviewAverageStatsProvider));
     }
 
     public async Task<CommandResult> Handle(MoveToAcceptCommand command, CancellationToken token)
@@ -51,6 +52,8 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
             token);
 
         await _taskForReviewRepository.Upsert(taskForReview, token);
+
+        _reviewAverageStatsProvider.Add(taskForReview);
 
         return CommandResult.Build(notifications.ToArray());
     }

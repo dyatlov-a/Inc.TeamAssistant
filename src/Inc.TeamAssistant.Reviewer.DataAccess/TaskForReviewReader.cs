@@ -128,6 +128,43 @@ WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@sta
         return await connection.QuerySingleOrDefaultAsync<bool>(command);
     }
 
+    public async Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(DateTimeOffset date, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+SELECT
+    t.id AS id,
+    bot_id AS botid,
+    t.team_id AS teamid,
+    t.strategy AS strategy,
+    t.owner_id AS ownerid,
+    t.reviewer_id AS reviewerid,
+    t.description AS description,
+    t.state AS state,
+    t.created AS created,
+    t.next_notification AS nextnotification,
+    t.accept_date AS acceptdate,
+    t.message_id AS messageid,
+    t.chat_id AS chatid,
+    t.original_reviewer_id AS originalreviewerid,
+    t.review_intervals AS reviewintervals
+FROM review.task_for_reviews AS t
+WHERE t.state = @target_status AND t.created > @date
+ORDER BY t.created;",
+            new
+            {
+                date,
+                target_status = (int)TaskForReviewState.Accept
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var results = await connection.QueryAsync<TaskForReview>(command);
+
+        return results.ToArray();
+    }
+
     public async Task<IReadOnlyDictionary<long, int>> GetHistory(
         Guid teamId,
         DateTimeOffset date,

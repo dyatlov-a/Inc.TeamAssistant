@@ -25,7 +25,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
             .AddSingleton<ReviewHistoryService>()
+            .AddSingleton<IReviewAverageStatsProvider, ReviewAverageStatsProvider>()
             .AddHostedService<PushService>()
+            .AddHostedService<ReviewAverageStatsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()
