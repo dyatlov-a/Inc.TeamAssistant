@@ -125,9 +125,7 @@ public sealed class TaskForReview
 
     private void AddReviewInterval(long userId, DateTimeOffset end)
     {
-        var start = ReviewIntervals.MaxBy(i => i.End)?.End ?? Created;
-        
-        ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, start, end, userId)).ToArray();
+        ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
 
     public TaskForReview SetConcreteReviewer(long reviewerId)
@@ -150,7 +148,6 @@ public sealed class TaskForReview
         
         AddReviewInterval(ReviewerId, now);
         
-        State = TaskForReviewState.New;
         NextNotification = now;
         ReviewerMessageId = null;
 

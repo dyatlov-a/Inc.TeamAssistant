@@ -4,19 +4,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class ReviewAverageStatsService : IHostedService
+internal sealed class ReviewMetricsService : IHostedService
 {
     private readonly ITaskForReviewReader _taskForReviewReader;
-    private readonly IReviewAverageStatsProvider _reviewAverageStatsProvider;
-    private readonly ILogger<ReviewAverageStatsService> _logger;
+    private readonly IReviewMetricsLoader _reviewMetricsLoader;
+    private readonly ILogger<ReviewMetricsService> _logger;
 
-    public ReviewAverageStatsService(
+    public ReviewMetricsService(
         ITaskForReviewReader taskForReviewReader,
-        IReviewAverageStatsProvider reviewAverageStatsProvider,
-        ILogger<ReviewAverageStatsService> logger)
+        IReviewMetricsLoader reviewMetricsLoader,
+        ILogger<ReviewMetricsService> logger)
     {
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
-        _reviewAverageStatsProvider = reviewAverageStatsProvider ?? throw new ArgumentNullException(nameof(reviewAverageStatsProvider));
+        _reviewMetricsLoader = reviewMetricsLoader ?? throw new ArgumentNullException(nameof(reviewMetricsLoader));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -28,7 +28,7 @@ internal sealed class ReviewAverageStatsService : IHostedService
 
             var taskForReviews = await _taskForReviewReader.GetTasksFrom(fromDate, token);
 
-            _reviewAverageStatsProvider.Initialize(taskForReviews);
+            await _reviewMetricsLoader.Load(taskForReviews, token);
         }
         catch (Exception ex)
         {
