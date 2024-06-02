@@ -1,5 +1,5 @@
 using System.Text;
-using Inc.TeamAssistant.Holidays;
+using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -13,18 +13,15 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly IHolidayService _holidayService;
     private readonly ITaskForReviewReader _taskForReviewReader;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        IHolidayService holidayService,
         ITaskForReviewReader taskForReviewReader)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
     }
 
@@ -166,7 +163,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             var inProgressButton = await _messageBuilder.Build(Messages.Reviewer_MoveToInProgress, languageId);
             notification.WithButton(new Button(inProgressButton, $"{CommandList.MoveToInProgress}{taskForReview.Id:N}"));
 
-            var fromDate = _holidayService.GetLastDayOfWeek(DayOfWeek.Monday, DateTimeOffset.UtcNow);
+            var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
             var hasReassign = await _taskForReviewReader.HasReassignFromDate(taskForReview.ReviewerId, fromDate, token);
             if (!taskForReview.OriginalReviewerId.HasValue && !hasReassign)
             {

@@ -8,8 +8,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 internal sealed class ReviewMetricsProvider : IReviewMetricsProvider, IReviewMetricsLoader
 {
     private readonly ConcurrentDictionary<Guid, ReviewTeamMetrics> _statsByTeams = new();
-    private bool _isLoading = true;
-    private static readonly TimeSpan TimeWindow = TimeSpan.FromMinutes(5);
 
     private readonly IHolidayService _holidayService;
 
@@ -24,16 +22,13 @@ internal sealed class ReviewMetricsProvider : IReviewMetricsProvider, IReviewMet
 
         foreach (var taskForReview in taskForReviews.Where(t => t.ReviewIntervals.Any()))
             await Add(taskForReview, token);
-
-        _isLoading = false;
     }
 
     async Task IReviewMetricsProvider.Add(TaskForReview taskForReview, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
-
-        if (!_isLoading)
-            await Add(taskForReview, token);
+        
+        await Add(taskForReview, token);
     }
 
     public ReviewTeamMetrics Get(Guid teamId) => _statsByTeams.GetValueOrDefault(teamId, ReviewTeamMetrics.Empty);
@@ -42,27 +37,11 @@ internal sealed class ReviewMetricsProvider : IReviewMetricsProvider, IReviewMet
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
-        var reviewAverageStats = await ReviewTeamMetrics.CreateFrom(taskForReview, CalculateWorkInterval, token);
+        var reviewAverageStats = await ReviewTeamMetrics.CreateFrom(
+            taskForReview,
+            _holidayService.CalculateWorkTime,
+            token);
 
         _statsByTeams.AddOrUpdate(taskForReview.TeamId, reviewAverageStats, (_, v) => v.Add(reviewAverageStats));
-    }
-    
-    private async Task<TimeSpan> CalculateWorkInterval(
-        DateTimeOffset start,
-        DateTimeOffset end,
-        CancellationToken token)
-    {
-        var interval = TimeSpan.Zero;
-        var current = start + TimeWindow;
-
-        while (current <= end)
-        {
-            if (await _holidayService.IsWorkTime(current, token))
-                interval += TimeWindow;
-            
-            current += TimeWindow;
-        }
-
-        return interval;
     }
 }

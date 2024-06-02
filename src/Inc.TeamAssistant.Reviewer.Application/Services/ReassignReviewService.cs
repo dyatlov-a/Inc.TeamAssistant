@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -10,20 +11,20 @@ internal sealed class ReassignReviewService
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
-    private readonly ReviewHistoryService _reviewHistoryService;
+    private readonly ITaskForReviewReader _taskForReviewReader;
     
     public ReassignReviewService(
         ITaskForReviewRepository taskForReviewRepository,
         ITeamAccessor teamAccessor,
         IReviewMessageBuilder reviewMessageBuilder,
-        ReviewHistoryService reviewHistoryService)
+        ITaskForReviewReader taskForReviewReader)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _reviewMessageBuilder =
             reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
-        _reviewHistoryService = reviewHistoryService ?? throw new ArgumentNullException(nameof(reviewHistoryService));
+        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
     }
     
     public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
@@ -35,7 +36,10 @@ internal sealed class ReassignReviewService
         if (!task.CanAccept())
             return Array.Empty<NotificationMessage>();
         
-        var history = await _reviewHistoryService.GetHistory(task.TeamId, token);
+        var history = await _taskForReviewReader.GetHistory(
+            task.TeamId,
+            DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
+            token);
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, token);
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(task.TeamId, task.OwnerId, token);
 

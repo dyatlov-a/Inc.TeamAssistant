@@ -24,7 +24,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton(options)
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
-            .AddSingleton<ReviewHistoryService>()
             .AddHostedService<PushService>()
             
             .AddSingleton<ReviewMetricsProvider>()

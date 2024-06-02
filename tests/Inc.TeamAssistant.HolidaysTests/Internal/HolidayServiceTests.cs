@@ -17,10 +17,12 @@ public sealed class HolidayServiceTests
         {
             WorkOnHoliday = false,
             StartTimeUtc = TimeSpan.FromHours(7),
-            EndTimeUtc = TimeSpan.FromHours(16)
+            EndTimeUtc = TimeSpan.FromHours(16),
+            Timezone = TimeSpan.FromHours(3),
+            Weekends = [DayOfWeek.Saturday, DayOfWeek.Sunday]
         };
         _reader = Substitute.For<IHolidayReader>();
-        _reader.GetAll(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new Dictionary<DateOnly, HolidayType>()));
+        _reader.GetAll(Arg.Any<CancellationToken>()).Returns(new Dictionary<DateOnly, HolidayType>());
         _target = new(_reader, options);
     }
 
@@ -72,31 +74,34 @@ public sealed class HolidayServiceTests
     }
 
     [Theory]
-    [InlineData(DayOfWeek.Monday, "2024-04-15T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-16T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-17T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-18T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-19T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-20T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Monday, "2024-04-21T04:00:00+03:00", "2024-04-15T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-15T04:00:00+03:00", "2024-04-12T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-16T04:00:00+03:00", "2024-04-12T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-17T04:00:00+03:00", "2024-04-12T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-18T04:00:00+03:00", "2024-04-12T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-19T04:00:00+03:00", "2024-04-19T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-20T04:00:00+03:00", "2024-04-19T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Friday, "2024-04-21T04:00:00+03:00", "2024-04-19T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-15T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-16T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-17T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-18T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-19T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-20T04:00:00+03:00", "2024-04-14T04:00:00+03:00")]
-    [InlineData(DayOfWeek.Sunday, "2024-04-21T04:00:00+03:00", "2024-04-21T04:00:00+03:00")]
-    public void GetLastDayOfWeek_Dates_ShouldBe(DayOfWeek dayOfWeek, string date, string expected)
+    [InlineData("2024-06-03T05:00:00Z", "2024-06-03T06:00:00Z", "00:00:00")]
+    [InlineData("2024-06-03T06:00:00Z", "2024-06-03T08:00:00Z", "01:00:00")]
+    [InlineData("2024-06-03T07:00:00Z", "2024-06-03T09:00:00Z", "02:00:00")]
+    [InlineData("2024-06-03T10:00:00Z", "2024-06-03T12:00:00Z", "02:00:00")]
+    [InlineData("2024-06-03T14:00:00Z", "2024-06-03T16:00:00Z", "02:00:00")]
+    [InlineData("2024-06-03T15:00:00Z", "2024-06-03T17:00:00Z", "01:00:00")]
+    [InlineData("2024-06-03T16:00:00Z", "2024-06-03T18:00:00Z", "00:00:00")]
+    public async Task CalculateWorkTime_Intervals_ShouldBe(string start, string end, string expected)
     {
-        var actual = _target.GetLastDayOfWeek(dayOfWeek, DateTimeOffset.Parse(date));
+        var startValue = DateTimeOffset.Parse(start);
+        var endValue = DateTimeOffset.Parse(end);
+
+        var actual = await _target.CalculateWorkTime(startValue, endValue, CancellationToken.None);
         
-        Assert.Equal(DateTimeOffset.Parse(expected), actual);
+        Assert.Equal(TimeSpan.Parse(expected), actual);
+    }
+    
+    [Theory]
+    [InlineData("2024-05-31T15:00:00Z", "2024-06-02T08:00:00Z", "01:00:00")]
+    [InlineData("2024-05-31T15:00:00Z", "2024-06-03T08:00:00Z", "02:00:00")]
+    [InlineData("2024-06-01T15:00:00Z", "2024-06-03T08:00:00Z", "01:00:00")]
+    public async Task CalculateWorkTime_IntervalsWithHoliday_ShouldBe(string start, string end, string expected)
+    {
+        var startValue = DateTimeOffset.Parse(start);
+        var endValue = DateTimeOffset.Parse(end);
+
+        var actual = await _target.CalculateWorkTime(startValue, endValue, CancellationToken.None);
+        
+        Assert.Equal(TimeSpan.Parse(expected), actual);
     }
 }

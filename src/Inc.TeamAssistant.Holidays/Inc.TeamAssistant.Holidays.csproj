@@ -5,9 +5,8 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     </ItemGroup>
     <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>Inc.TeamAssistant.HolidaysTests</_Parameter1>
-        </AssemblyAttribute>
+        <InternalsVisibleTo Include="$(AssemblyName)Tests" />
+        <InternalsVisibleTo Include="Inc.TeamAssistant.Reviewer.ApplicationTests" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />

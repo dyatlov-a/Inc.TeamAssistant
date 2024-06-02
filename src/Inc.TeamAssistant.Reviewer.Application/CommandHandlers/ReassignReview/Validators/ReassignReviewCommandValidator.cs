@@ -1,5 +1,5 @@
 using FluentValidation;
-using Inc.TeamAssistant.Holidays;
+using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.ReassignReview;
 
@@ -7,15 +7,12 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.
 
 internal sealed class ReassignReviewCommandValidator : AbstractValidator<ReassignReviewCommand>
 {
-    private readonly IHolidayService _holidayService;
     private readonly ITaskForReviewReader _taskForReviewReader;
     
-    public ReassignReviewCommandValidator(IHolidayService holidayService, ITaskForReviewReader taskForReviewReader)
+    public ReassignReviewCommandValidator(ITaskForReviewReader taskForReviewReader)
     {
-        ArgumentNullException.ThrowIfNull(holidayService);
         ArgumentNullException.ThrowIfNull(taskForReviewReader);
-
-        _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
+        
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
         
         RuleFor(e => e.TaskId)
@@ -30,7 +27,7 @@ internal sealed class ReassignReviewCommandValidator : AbstractValidator<Reassig
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var fromDate = _holidayService.GetLastDayOfWeek(DayOfWeek.Monday, DateTimeOffset.UtcNow);
+        var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
 
         var hasReassign = await _taskForReviewReader.HasReassignFromDate(
             command.MessageContext.Person.Id,

@@ -96,6 +96,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Construct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Constructor.Application", "src\Inc.TeamAssistant.Constructor.Application\Inc.TeamAssistant.Constructor.Application.csproj", "{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.ApplicationTests", "tests\Inc.TeamAssistant.Reviewer.ApplicationTests\Inc.TeamAssistant.Reviewer.ApplicationTests.csproj", "{504EF63F-2C47-44FC-BB22-F199C7DF7251}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -244,6 +246,10 @@ Global
 		{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B9C88CA2-123E-4D55-A931-91B0CFA08447} = {BF819FCA-A383-4283-B680-4B80B7B5CA32}
@@ -290,5 +296,6 @@ Global
 		{8B745884-0474-47A7-A1B8-D21F4B819075} = {406F731E-8D99-4D37-88F1-EE5D38C54662}
 		{98154587-A8B7-4A69-A301-1EADC4549067} = {406F731E-8D99-4D37-88F1-EE5D38C54662}
 		{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8} = {406F731E-8D99-4D37-88F1-EE5D38C54662}
+		{504EF63F-2C47-44FC-BB22-F199C7DF7251} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
 	EndGlobalSection
 EndGlobal
