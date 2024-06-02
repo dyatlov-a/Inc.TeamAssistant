@@ -177,6 +177,12 @@ public sealed class TaskForReview
 
         return this;
     }
+
+    public int? GetAttempts()
+    {
+        var corrections = ReviewIntervals.Count(i => i.State == TaskForReviewState.OnCorrection);
+        return corrections == 0 ? null : corrections + 1;
+    }
     
     private void SetReviewer(long reviewerId)
     {
