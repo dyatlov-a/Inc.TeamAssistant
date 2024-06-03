@@ -52,8 +52,8 @@ internal sealed class HolidayService : IHolidayService
     {
         if (_options.WorkOnHoliday)
         {
-            var startDefault = new DateTimeOffset(date, TimeOnly.MinValue, _options.Timezone);
-            var endDefault = new DateTimeOffset(date, TimeOnly.MaxValue, _options.Timezone);
+            var startDefault = new DateTimeOffset(date, TimeOnly.MinValue, TimeSpan.Zero);
+            var endDefault = new DateTimeOffset(date, TimeOnly.MaxValue, TimeSpan.Zero);
 
             return (startDefault, endDefault);
         }

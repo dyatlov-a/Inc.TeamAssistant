@@ -12,6 +12,8 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 {
+    private const string TimeFormat = @"d\.hh\:mm\:ss";
+    
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
     private readonly ITaskForReviewReader _taskForReviewReader;
@@ -79,7 +81,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             var reviewerNotificationText = await _messageBuilder.Build(
                 Messages.Reviewer_NeedEndReview,
                 languageId,
-                workTimeTotal);
+                workTimeTotal.ToString(TimeFormat));
             return NotificationMessage
                 .Create(taskForReview.ReviewerId, reviewerNotificationText)
                 .ReplyTo(taskForReview.ReviewerMessageId.Value);
@@ -91,7 +93,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             var ownerNotificationText = await _messageBuilder.Build(
                 Messages.Reviewer_NeedRevisions,
                 languageId,
-                workTimeTotal);
+                workTimeTotal.ToString(TimeFormat));
             return NotificationMessage
                 .Create(taskForReview.OwnerId, ownerNotificationText)
                 .ReplyTo(taskForReview.OwnerMessageId.Value);
@@ -295,7 +297,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             Messages.Reviewer_Accepted,
             await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token),
             taskForReview.Description,
-            workTimeTotal);
+            workTimeTotal.ToString(TimeFormat));
         var notification = NotificationMessage.Create(taskForReview.OwnerId, message);
 
         return notification;
@@ -316,7 +318,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTask);
         ArgumentNullException.ThrowIfNull(languageId);
 
-        const string format = @"d\.hh\:mm\:ss";
+        const string firstTouchIcon = "🕛 ";
+        const string reviewTouchIcon = "🔍 ";
+        const string correctionTouchIcon = "💻 ";
+        
         var attempts = taskForReview.GetAttempts();
         if (attempts.HasValue)
             builder.AppendLine(await _messageBuilder.Build(
@@ -328,44 +333,44 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         {
             if (hasReviewMetrics)
             {
-                builder.AppendLine(await _messageBuilder.Build(
+                builder.AppendLine(firstTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsFirstTouch,
                     languageId,
-                    metricsByTask.FirstTouch.ToString(format),
-                    metricsByTeam.FirstTouch.ToString(format)));
-                builder.AppendLine(await _messageBuilder.Build(
+                    metricsByTask.FirstTouch.ToString(TimeFormat),
+                    metricsByTeam.FirstTouch.ToString(TimeFormat)));
+                builder.AppendLine(reviewTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsReview,
                     languageId,
-                    metricsByTask.Review.ToString(format),
-                    metricsByTeam.Review.ToString(format)));
+                    metricsByTask.Review.ToString(TimeFormat),
+                    metricsByTeam.Review.ToString(TimeFormat)));
             }
 
             if (hasCorrectionMetrics && attempts.HasValue)
-                builder.AppendLine(await _messageBuilder.Build(
+                builder.AppendLine(correctionTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsCorrection,
                     languageId,
-                    metricsByTask.Correction.ToString(format),
-                    metricsByTeam.Correction.ToString(format)));
+                    metricsByTask.Correction.ToString(TimeFormat),
+                    metricsByTeam.Correction.ToString(TimeFormat)));
         }
         else
         {
             if (hasReviewMetrics)
             {
-                builder.AppendLine(await _messageBuilder.Build(
+                builder.AppendLine(firstTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsFirstTouchAverage,
                     languageId,
-                    metricsByTeam.FirstTouch.ToString(format)));
-                builder.AppendLine(await _messageBuilder.Build(
+                    metricsByTeam.FirstTouch.ToString(TimeFormat)));
+                builder.AppendLine(reviewTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsReviewAverage,
                     languageId,
-                    metricsByTeam.Review.ToString(format)));
+                    metricsByTeam.Review.ToString(TimeFormat)));
             }
             
             if (hasCorrectionMetrics && attempts.HasValue)
-                builder.AppendLine(await _messageBuilder.Build(
+                builder.AppendLine(correctionTouchIcon + await _messageBuilder.Build(
                     Messages.Reviewer_StatsCorrectionAverage,
                     languageId,
-                    metricsByTeam.Correction.ToString(format)));
+                    metricsByTeam.Correction.ToString(TimeFormat)));
         }
     }
 }

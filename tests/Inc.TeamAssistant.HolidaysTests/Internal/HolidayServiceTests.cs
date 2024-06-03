@@ -18,7 +18,6 @@ public sealed class HolidayServiceTests
             WorkOnHoliday = false,
             StartTimeUtc = TimeSpan.FromHours(7),
             EndTimeUtc = TimeSpan.FromHours(16),
-            Timezone = TimeSpan.FromHours(3),
             Weekends = [DayOfWeek.Saturday, DayOfWeek.Sunday]
         };
         _reader = Substitute.For<IHolidayReader>();
