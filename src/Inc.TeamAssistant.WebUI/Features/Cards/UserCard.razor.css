@@ -20,10 +20,10 @@
     bottom: 0;
     margin: 0 0 -40px -40px;
 }
-.user-card_dark .user-card__header {
-    background-color: #9d9d9d;
-}
-.user-card_dark .user-card__content {
+.user-card_dark {
     color: #fff;
     background-color: #616161;
+}
+.user-card_dark .user-card__header {
+    background-color: #9d9d9d;
 }

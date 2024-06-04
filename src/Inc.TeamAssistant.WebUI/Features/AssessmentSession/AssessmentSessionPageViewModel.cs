@@ -5,7 +5,8 @@ namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
 public sealed record AssessmentSessionPageViewModel(
     string TaskAssess,
-    string AverageRating,
+    string MeanRating,
+    string MedianRating,
     string AboutTemplate,
     string ConnectToTeam,
     string HasNotTasks,
@@ -15,6 +16,7 @@ public sealed record AssessmentSessionPageViewModel(
     : IViewModel<AssessmentSessionPageViewModel>
 {
     public static AssessmentSessionPageViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

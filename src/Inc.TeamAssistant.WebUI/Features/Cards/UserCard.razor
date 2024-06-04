@@ -16,8 +16,8 @@
     [Parameter, EditorRequired]
     public string Name { get; set; } = default!;
     
-    [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    [Parameter]
+    public RenderFragment? Content { get; set; }
     
     [Parameter, EditorRequired]
     public bool IsDarkTheme { get; set; }

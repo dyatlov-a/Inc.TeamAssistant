@@ -11,7 +11,8 @@ internal static class Messages
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
     public static readonly string GUI_TaskAssess = nameof(GUI_TaskAssess);
-    public static readonly string GUI_AverageRating = nameof(GUI_AverageRating);
+    public static readonly string GUI_MeanRating = nameof(GUI_MeanRating);
+    public static readonly string GUI_MedianRating = nameof(GUI_MedianRating);
     public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
     public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
     public static readonly string GUI_AssessmentSessionHasNotTasks = nameof(GUI_AssessmentSessionHasNotTasks);

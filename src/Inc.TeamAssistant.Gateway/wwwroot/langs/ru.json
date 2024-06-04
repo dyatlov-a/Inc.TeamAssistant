@@ -28,7 +28,8 @@
   "Appraiser_Xxl": "XXL",
   
   "GUI_TaskAssess": "Оценка задач",
-  "GUI_AverageRating": "средняя оценка",
+  "GUI_MeanRating": "среднее",
+  "GUI_MedianRating": "медиана",
   "GUI_AssessmentSessionAbout": "На этой странице показан текущий процесс оценки заданий команды «{0}». Оценка происходит с помощью бота в чате Telegram.",
   "GUI_AssessmentSessionConnect": "Отсканируйте QR-код, чтобы присоединиться к команде",
   "GUI_AssessmentSessionHasNotTasks": "Нет задач для оценки",

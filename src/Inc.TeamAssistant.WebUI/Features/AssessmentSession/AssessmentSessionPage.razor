@@ -1,6 +1,9 @@
 @page "/assessment-session/{id:guid}"
 @page "/en/assessment-session/{id:guid}"
 @page "/ru/assessment-session/{id:guid}"
+@page "/assessment-session/{id:guid}/{View}"
+@page "/en/assessment-session/{id:guid}/{View}"
+@page "/ru/assessment-session/{id:guid}/{View}"
 
 @using Inc.TeamAssistant.WebUI.Services.ClientCore
 @inherits PersistentComponent<AssessmentSessionPageViewModel>
@@ -10,8 +13,6 @@
 
 <PageTitle>@ViewModel.TaskAssess</PageTitle>
 
-<div class="wrapper">
-    <main class="main">
         <div class="assessment-session-header white">
             <div class="assessment-session-header__container">
                 <div class="assessment-session__header">
@@ -26,19 +27,25 @@
                 </div>
             </div>
         </div>
-        <div class="assessment-session-content">
-            <div class="assessment-session-content__container">
-                @if (ViewModel.Story is not null)
-                {
-                    <Story IsDarkTheme="false" Item="ViewModel.Story" AverageRating="@ViewModel.AverageRating"/>
-                }
-                else
-                {
-                    <h2 class="text">@ViewModel.HasNotTasks</h2>
-                }
-            </div>
+<div class="assessment-session-content">
+    <div class="assessment-session-content__container">
+        <div class="view-controls">
+            @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
+            {
+                <a href="@MoveToView(assessmentType)" class="view-controls__item @ViewControlsItemCss(assessmentType)">
+                    <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
+                </a>
+            }
         </div>
-    </main>
+        @if (ViewModel.Story is not null)
+        {
+            <DynamicComponent Type="ViewType" Parameters="ViewParameters"/>
+        }
+        else
+        {
+            <h2 class="text">@ViewModel.HasNotTasks</h2>
+        }
+    </div>
 </div>
 <div class="assessment-session-footer white">
     <div class="assessment-session-footer__container">
@@ -49,6 +56,39 @@
 @code {
     [Parameter, EditorRequired]
     public Guid Id { get; set; }
+    
+    [Parameter]
+    public string View { get; set; } = default!;
+    
+    private AssessmentType SelectedView => Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value)
+        ? value
+        : Enum.GetValues<AssessmentType>().First();
+
+    private Type ViewType => SelectedView switch
+    {
+        AssessmentType.Individual => typeof(AssessmentIndividual),
+        _ => typeof(AssessmentGroup)
+    };
+
+    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
+    {
+        AssessmentType.Individual => typeof(GridHorizontalIcon),
+        _ => typeof(GridDividersIcon)
+    };
+    
+    private Dictionary<string, object> ViewParameters => new()
+    {
+        ["Item"] = ViewModel.Story!,
+        ["MeanRating"] = ViewModel.MeanRating,
+        ["MedianRating"] = ViewModel.MedianRating,
+        ["IsDarkTheme"] = false
+    };
+    
+    private Dictionary<string, object> ViewIconParameters => new()
+    {
+        ["Size"] = "40px",
+        ["Color"] = "#fff"
+    };
     
     private EventsProvider? _eventsProvider;
     private AssessmentSessionHistory? _history;
@@ -71,13 +111,26 @@
 
         return new(
             resources[Messages.GUI_TaskAssess],
-            resources[Messages.GUI_AverageRating],
+            resources[Messages.GUI_MeanRating],
+            resources[Messages.GUI_MedianRating],
             resources[Messages.GUI_AssessmentSessionAbout],
             resources[Messages.GUI_AssessmentSessionConnect],
             resources[Messages.GUI_AssessmentSessionHasNotTasks],
             newStoryState.Result.TeamName,
             newStoryState.Result.CodeForConnect,
             newStoryState.Result.Story);
+    }
+
+    private string MoveToView(AssessmentType assessmentType)
+    {
+        var view = assessmentType.ToString().ToLower();
+        
+        return LinkBuilder($"assessment-session/{Id}/{view}");
+    }
+
+    private string ViewControlsItemCss(AssessmentType assessmentType)
+    {
+        return assessmentType == SelectedView ? "view-controls__item_active" : string.Empty;
     }
     
     public override async ValueTask DisposeAsync()

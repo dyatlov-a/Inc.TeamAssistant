@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 public sealed record AssessmentSessionHistoryPageViewModel(
     string LinkToBackText,
     string StoryList,
-    string AverageRating,
+    string MeanRating,
     GetStoriesResult? Data)
     : IViewModel<AssessmentSessionHistoryPageViewModel>
 {

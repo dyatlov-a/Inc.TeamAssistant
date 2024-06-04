@@ -1,39 +1,35 @@
-@page "/assessment-session/{teamId:guid}/{date}"
-@page "/en/assessment-session/{teamId:guid}/{date}"
-@page "/ru/assessment-session/{teamId:guid}/{date}"
+@page "/assessment-history/{teamId:guid}/{date}"
+@page "/en/assessment-history/{teamId:guid}/{date}"
+@page "/ru/assessment-history/{teamId:guid}/{date}"
 
 @inherits PersistentComponent<AssessmentSessionHistoryPageViewModel>
 
 @inject IAppraiserService AppraiserService
 
-<div class="wrapper">
-    <main class="main">
-        <div class="assessment-history-header white">
-            <div class="assessment-history-header__container">
-                <a href="@MoveToBack()" class="link link_black assessment-history__link">@ViewModel.LinkToBackText</a>
-                <h1 class="title">@ViewModel.StoryList @Date</h1>
+<div class="assessment-history-header white">
+    <div class="assessment-history-header__container">
+        <a href="@MoveToBack()" class="link link_black assessment-history__link">@ViewModel.LinkToBackText</a>
+        <h1 class="title">@ViewModel.StoryList @Date</h1>
+    </div>
+</div>
+@if (ViewModel.Data is not null)
+{
+    var index = 0;
+    
+    foreach (var story in ViewModel.Data.Items)
+    {
+        index++;
+        var isDark = index % 2 == 0;
+        var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
+        
+        <div class="assessment-history-content @cssClass">
+            <div class="assessment-history-content__container">
+                <AssessmentIndividual Item="story" IsDarkTheme="isDark" MeanRating="@ViewModel.MeanRating"/>
             </div>
         </div>
-        @if (ViewModel.Data is not null)
-        {
-            var index = 0;
-            
-            foreach (var story in ViewModel.Data.Items)
-            {
-                index++;
-                var isDark = index % 2 == 0;
-                var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
-                
-                <div class="assessment-history-content @cssClass">
-                    <div class="assessment-history-content__container">
-                        <Story Item="story" IsDarkTheme="isDark" AverageRating="@ViewModel.AverageRating"/>
-                    </div>
-                </div>
-            }
-        }
-    </main>
-</div>
-
+    }
+}
+        
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
@@ -51,7 +47,7 @@
         return new AssessmentSessionHistoryPageViewModel(
             resources[Messages.GUI_Back],
             resources[Messages.GUI_StoryList],
-            resources[Messages.GUI_AverageRating],
+            resources[Messages.GUI_MeanRating],
             getStoriesResult.Result);
     }
 }

@@ -1,0 +1,67 @@
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+<div class="story @CssClass">
+    <h2 class="story__title">@Item.Title</h2>
+    @if (Item.Links.Any())
+    {
+        <ul class="story__items">
+            @foreach (var link in Item.Links)
+            {
+                <li class="story__item">
+                    <a class="link" href="@link" target="_blank">@link</a>
+                </li>
+            }
+        </ul>
+    }
+    <div class="story__content">
+        @foreach (var group in EstimatesByGroup().OrderByDescending(g => g.Key.ValueGroup))
+        {
+            <div class="estimate-group">
+                <div>
+                    <div class="estimate-group__title">@group.Key.DisplayValue</div>
+                </div>
+                <div class="estimate-group__content">
+                    <div class="story__cards">
+                        @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
+                        {
+                            <UserCard IsDarkTheme="IsDarkTheme" PersonId="storyForEstimate.ParticipantId" Name="@storyForEstimate.ParticipantName" />
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div class="estimate-group__summary">@CalculatePercents(group.Count()).ToString("#")%</div>
+                </div>
+            </div>
+        }
+    </div>
+    <span class="story__value-total"><b>@Item.Total</b> @MeanRating</span>
+    @if (Item.HasMedian)
+    {
+        <span class="story__value-total"><b>@Item.Median</b> @MedianRating</span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Item { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string MeanRating { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string MedianRating { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool IsDarkTheme { get; set; }
+
+    private ILookup<(int ValueGroup, string DisplayValue), StoryForEstimateDto> EstimatesByGroup()
+    {
+        return Item.StoryForEstimates
+            .Where(s => s.ValueGroup.HasValue)
+            .ToLookup(s => (s.ValueGroup!.Value, s.DisplayValue));
+    }
+
+    private decimal CalculatePercents(int countInGroup) => countInGroup / (decimal)Item.StoryForEstimates.Count * 100;
+    
+    private string CssClass => IsDarkTheme ? "story_dark" : string.Empty;
+}

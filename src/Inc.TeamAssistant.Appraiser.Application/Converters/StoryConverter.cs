@@ -11,12 +11,23 @@ internal static class StoryConverter
         ArgumentNullException.ThrowIfNull(story);
 
         var items = story.StoryForEstimates
+            .OrderByDescending(e => e.Value)
+            .ThenBy(e => e.ParticipantDisplayName)
             .Select(e => new StoryForEstimateDto(
                 e.ParticipantId,
                 e.ParticipantDisplayName,
-                story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue()))
+                story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue(),
+                e.Value == AssessmentValue.Value.None ? null : (int)e.Value))
             .ToArray();
 
-        return new(story.Id, story.Title, story.Links.ToArray(), items, story.GetTotalValue());
+        return new(
+            story.Id,
+            story.Title,
+            story.Links.ToArray(),
+            items,
+            story.EstimateEnded,
+            story.GetTotalValue(),
+            HasMedian: story.StoryType == StoryType.Scrum,
+            story.CalculateMedian());
     }
 }
