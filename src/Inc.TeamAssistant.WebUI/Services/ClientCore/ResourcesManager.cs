@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Core;
+namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 public sealed class ResourcesManager
 {

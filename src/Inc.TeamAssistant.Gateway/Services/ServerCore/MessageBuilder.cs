@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.Gateway.Services.Core;
+namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class MessageBuilder : IMessageBuilder
 {

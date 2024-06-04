@@ -1,7 +1,7 @@
 using FluentValidation;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Services.Core;
+using Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 

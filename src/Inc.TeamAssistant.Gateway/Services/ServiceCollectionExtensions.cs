@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Services.Clients;
-using Inc.TeamAssistant.Gateway.Services.Core;
+using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Gateway.Services.Render;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;

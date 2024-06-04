@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Inc.TeamAssistant.Gateway.Services.Core;
+namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGenerator
 {

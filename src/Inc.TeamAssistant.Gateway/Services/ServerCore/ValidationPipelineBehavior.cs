@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace Inc.TeamAssistant.Gateway.Services.Core;
+namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

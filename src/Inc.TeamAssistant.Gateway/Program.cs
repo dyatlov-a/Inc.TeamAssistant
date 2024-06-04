@@ -21,7 +21,7 @@ using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Inc.TeamAssistant.Gateway.Components;
-using Inc.TeamAssistant.Gateway.Services.Core;
+using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;

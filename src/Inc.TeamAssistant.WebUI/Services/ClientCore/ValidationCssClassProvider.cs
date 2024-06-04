@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace Inc.TeamAssistant.WebUI.Services.Core;
+namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 internal class ValidationCssClassProvider : FieldCssClassProvider
 {
