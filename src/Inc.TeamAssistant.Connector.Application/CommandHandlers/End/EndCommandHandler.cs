@@ -19,8 +19,9 @@ internal sealed class EndCommandHandler : IRequestHandler<EndCommand, CommandRes
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        if (_dialogContinuation.Find(command.MessageContext.TargetChat) is null)
+        if (_dialogContinuation.Find(command.MessageContext.Bot.Id, command.MessageContext.TargetChat) is null)
             _dialogContinuation.Begin(
+                command.MessageContext.Bot.Id,
                 command.MessageContext.TargetChat,
                 CommandList.Cancel,
                 CommandStage.None,

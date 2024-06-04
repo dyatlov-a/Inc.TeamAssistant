@@ -53,7 +53,12 @@ internal sealed class SingleLineCommandFactory
             teamContext,
             token);
         
-        _dialogContinuation.Begin(messageContext.TargetChat, cmd, CommandStage.None, messageContext.ChatMessage);
+        _dialogContinuation.Begin(
+            messageContext.Bot.Id,
+            messageContext.TargetChat,
+            cmd,
+            CommandStage.None,
+            messageContext.ChatMessage);
         
         return command;
 

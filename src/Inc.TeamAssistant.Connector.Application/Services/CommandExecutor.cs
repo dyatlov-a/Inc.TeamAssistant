@@ -49,7 +49,7 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         var botId = command.MessageContext.Bot.Id;
         var client = await _provider.Get(command.MessageContext.Bot.Id, token);
-        var dialog = _dialogContinuation.Find(command.MessageContext.TargetChat);
+        var dialog = _dialogContinuation.Find(command.MessageContext.Bot.Id, command.MessageContext.TargetChat);
         
         try
         {

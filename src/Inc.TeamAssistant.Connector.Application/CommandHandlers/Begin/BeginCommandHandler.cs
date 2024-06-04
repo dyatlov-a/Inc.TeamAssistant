@@ -17,10 +17,10 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
 
     public Task<CommandResult> Handle(BeginCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var dialogState = _dialogContinuation.Begin(
+            command.MessageContext.Bot.Id,
             command.MessageContext.TargetChat,
             command.Command,
             command.NextStage,
