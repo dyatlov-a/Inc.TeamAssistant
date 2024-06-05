@@ -317,10 +317,6 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
         ArgumentNullException.ThrowIfNull(languageId);
-
-        const string firstTouchIcon = "🕛 ";
-        const string reviewTouchIcon = "🔍 ";
-        const string correctionTouchIcon = "💻 ";
         
         var attempts = taskForReview.GetAttempts();
         if (attempts.HasValue)
@@ -331,43 +327,55 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         if (taskForReview.State == TaskForReviewState.Accept)
         {
+            const string trendUp = "⬆️";
+            const string trendDown = "⬇️";
+            
             if (hasReviewMetrics)
             {
-                builder.AppendLine(firstTouchIcon + await _messageBuilder.Build(
+                var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch ? trendUp : trendDown;
+                var firstTouchMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsFirstTouch,
                     languageId,
                     metricsByTask.FirstTouch.ToString(TimeFormat),
-                    metricsByTeam.FirstTouch.ToString(TimeFormat)));
-                builder.AppendLine(reviewTouchIcon + await _messageBuilder.Build(
+                    metricsByTeam.FirstTouch.ToString(TimeFormat));
+                builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
+                
+                var reviewTrend = metricsByTask.Review <= metricsByTeam.Review ? trendUp : trendDown;
+                var reviewMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsReview,
                     languageId,
                     metricsByTask.Review.ToString(TimeFormat),
-                    metricsByTeam.Review.ToString(TimeFormat)));
+                    metricsByTeam.Review.ToString(TimeFormat));
+                builder.AppendLine($"{reviewMessage} {reviewTrend}");
             }
 
             if (hasCorrectionMetrics && attempts.HasValue)
-                builder.AppendLine(correctionTouchIcon + await _messageBuilder.Build(
+            {
+                var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction ? trendUp : trendDown;
+                var correctionMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsCorrection,
                     languageId,
                     metricsByTask.Correction.ToString(TimeFormat),
-                    metricsByTeam.Correction.ToString(TimeFormat)));
+                    metricsByTeam.Correction.ToString(TimeFormat));
+                builder.AppendLine($"{correctionMessage} {correctionTrend}");
+            }
         }
         else
         {
             if (hasReviewMetrics)
             {
-                builder.AppendLine(firstTouchIcon + await _messageBuilder.Build(
+                builder.AppendLine(await _messageBuilder.Build(
                     Messages.Reviewer_StatsFirstTouchAverage,
                     languageId,
                     metricsByTeam.FirstTouch.ToString(TimeFormat)));
-                builder.AppendLine(reviewTouchIcon + await _messageBuilder.Build(
+                builder.AppendLine(await _messageBuilder.Build(
                     Messages.Reviewer_StatsReviewAverage,
                     languageId,
                     metricsByTeam.Review.ToString(TimeFormat)));
             }
             
             if (hasCorrectionMetrics && attempts.HasValue)
-                builder.AppendLine(correctionTouchIcon + await _messageBuilder.Build(
+                builder.AppendLine(await _messageBuilder.Build(
                     Messages.Reviewer_StatsCorrectionAverage,
                     languageId,
                     metricsByTeam.Correction.ToString(TimeFormat)));
