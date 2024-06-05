@@ -1,0 +1,18 @@
+@page "/dashboard"
+@page "/ru/dashboard"
+@page "/en/dashboard"
+
+@attribute [Authorize]
+
+<DashboardTopPanel />
+
+<AuthorizeView>
+    <Authorized>
+        <div class="dashboard-content">
+            <h1>Dashboard</h1>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <TelegramLogin />
+    </NotAuthorized>
+</AuthorizeView>

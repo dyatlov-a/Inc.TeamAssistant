@@ -34,7 +34,7 @@ public static class ClaimsPrincipalExtensions
         
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, person.DisplayName),
+            new(ClaimTypes.Name, person.Name),
             new(nameof(Person.Id), person.Id.ToString())
         };
         

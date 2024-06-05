@@ -1,0 +1,34 @@
+@using Inc.TeamAssistant.Primitives.Languages
+
+@inherits PersistentComponent<DashboardTopPanelViewModel>
+
+@inject IRenderContext RenderContext
+
+<div class="navbar">
+    @foreach (var culture in LanguageSettings.LanguageIds)
+    {
+        <a href="/@culture.Value/dashboard" class="link link_white navbar__item">@culture.Value</a>
+    }
+    <AuthorizeView>
+        <Authorized>
+            <span class="navbar__item">@context.User.Identity?.Name</span>
+            <a href="/accounts/logout" class="link link_white navbar__item">@ViewModel.Logout</a>
+        </Authorized>
+        <NotAuthorized>
+            @if (ViewModel.HasLoginAsSuperUser)
+            {
+                <a href="/accounts/as-super-user" class="link link_white navbar__item">@ViewModel.LoginAsSuperuser</a>
+            }
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    protected override async Task<DashboardTopPanelViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return await Task.FromResult(new DashboardTopPanelViewModel(
+            RenderContext.IsDevelopment(),
+            resources[Messages.Navigation_Logout],
+            resources[Messages.Navigation_LoginAsSuperuser]));
+    }
+}
