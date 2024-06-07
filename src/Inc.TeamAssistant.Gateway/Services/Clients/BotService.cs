@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
@@ -61,6 +62,20 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetBotResult?>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetBotsQuery(userId), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetBotsResult>(ex.Message);
         }
     }
 

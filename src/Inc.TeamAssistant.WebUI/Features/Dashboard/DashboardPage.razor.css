@@ -1,3 +1,13 @@
+.dashboard {
+    display: flex;
+}
+.dashboard-toolbar__content {
+    width: 300px;
+    padding: 0 20px 20px 20px;
+}
 .dashboard-content {
+    flex-grow: 1;
+}
+.dashboard-widget {
     margin-top: 40px;
 }

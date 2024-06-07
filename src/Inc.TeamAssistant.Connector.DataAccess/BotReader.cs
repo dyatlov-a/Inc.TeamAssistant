@@ -29,6 +29,51 @@ internal sealed class BotReader : IBotReader
         return results.ToArray();
     }
 
+    public async Task<IReadOnlyCollection<Bot>> GetBotsByUser(long userId, CancellationToken token)
+    {
+        var teamsByUserCommand = new CommandDefinition(@"
+            SELECT DISTINCT
+                t.id AS id,
+                t.bot_id AS botid,
+                t.chat_id AS chatid,
+                t.owner_id AS ownerid,
+                t.name AS name,
+                t.properties AS properties
+            FROM connector.teams AS t
+            JOIN connector.teammates AS tm ON t.id = tm.team_id
+            WHERE t.owner_id = @user_id OR tm.person_id = @user_id;",
+            new { user_id = userId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        var teams = (await connection.QueryAsync<Team>(teamsByUserCommand)).ToArray();
+        var botIds = teams
+            .Select(t => t.BotId)
+            .Distinct()
+            .ToArray();
+        
+        var botsCommand = new CommandDefinition(@"
+            SELECT
+                b.id AS id,
+                b.name AS name,
+                b.token AS token,
+                b.properties AS properties
+            FROM connector.bots AS b
+            WHERE b.id = ANY(@bot_ids);",
+            new { bot_ids = botIds },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        var bots = (await connection.QueryAsync<Bot>(botsCommand)).ToDictionary(b => b.Id);
+
+        foreach (var team in teams)
+            bots[team.BotId].AddTeam(team);
+
+        return bots.Values;
+    }
+
     public async Task<Bot?> Find(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(@"

@@ -12,6 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
     </ItemGroup>
     <ItemGroup>

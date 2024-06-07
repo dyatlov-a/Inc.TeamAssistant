@@ -1,6 +1,6 @@
 @using Inc.TeamAssistant.Primitives.Languages
 
-@inherits PersistentComponent<DashboardTopPanelViewModel>
+@inherits PersistentComponent<DashboardNavbarViewModel>
 
 @inject IRenderContext RenderContext
 
@@ -24,9 +24,9 @@
 </div>
 
 @code {
-    protected override async Task<DashboardTopPanelViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<DashboardNavbarViewModel> Initialize(Dictionary<string, string> resources)
     {
-        return await Task.FromResult(new DashboardTopPanelViewModel(
+        return await Task.FromResult(new DashboardNavbarViewModel(
             RenderContext.IsDevelopment(),
             resources[Messages.Navigation_Logout],
             resources[Messages.Navigation_LoginAsSuperuser]));

@@ -1,18 +1,46 @@
 @page "/dashboard"
 @page "/ru/dashboard"
 @page "/en/dashboard"
+@page "/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/ru/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/en/dashboard/{BotId:guid}/{TeamId:guid}"
 
 @attribute [Authorize]
 
-<DashboardTopPanel />
+<PageTitle>Dashboard</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-        <div class="dashboard-content">
-            <h1>Dashboard</h1>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <TelegramLogin />
-    </NotAuthorized>
-</AuthorizeView>
+<DashboardNavbar />
+
+<div class="dashboard">
+    <div class="dashboard-toolbar">
+        <AuthorizeView>
+            <Authorized>
+                <div class="dashboard-toolbar__content">
+                    <DashboardTeamSelector UserId="context.User.ToPerson().Id" BotId="BotId" TeamId="TeamId" />
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+    <div class="dashboard-content">
+        <AuthorizeView>
+            <Authorized>
+                <div class="dashboard-widget">
+                    <h1>Dashboard</h1>
+                    <p>BotId @BotId</p>
+                    <span>TeamId @TeamId</span>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <TelegramLogin />
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+    
+    [Parameter]
+    public Guid? TeamId { get; set; }
+}
