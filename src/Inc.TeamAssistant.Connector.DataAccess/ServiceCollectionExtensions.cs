@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITeamAccessor, TeamAccessor>()
             
             .AddSingleton<IBotReader, BotReader>()
+            .AddSingleton<ITeamReader, TeamReader>()
             
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(

@@ -8,6 +8,27 @@
 .dashboard-content {
     flex-grow: 1;
 }
-.dashboard-widget {
-    margin-top: 40px;
+.dashboard-widgets {
+    display: flex;
+    flex-wrap: wrap;
+}
+.dashboard-widgets__widget {
+    flex: 0 1 calc(50% - 40px);
+    padding: 30px 20px 20px 20px;
+}
+.dashboard-widgets__content {
+    padding: 10px;
+    border-top: 5px #555 solid;
+    background-color: #9d9d9d;
+}
+@media (max-width: 767.98px) {
+    .dashboard {
+        display: block;
+    }
+    .dashboard-toolbar__content {
+        width: 100%;
+    }
+    .dashboard-widgets__widget {
+        flex: 0 1 100%;
+    }
 }

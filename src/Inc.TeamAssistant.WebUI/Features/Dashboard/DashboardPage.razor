@@ -22,18 +22,23 @@
         </AuthorizeView>
     </div>
     <div class="dashboard-content">
-        <AuthorizeView>
-            <Authorized>
-                <div class="dashboard-widget">
-                    <h1>Dashboard</h1>
-                    <p>BotId @BotId</p>
-                    <span>TeamId @TeamId</span>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <TelegramLogin />
-            </NotAuthorized>
-        </AuthorizeView>
+        <div class="dashboard-widgets">
+            <AuthorizeView>
+                <Authorized>
+                    @if (TeamId.HasValue)
+                    {
+                        <div class="dashboard-widgets__widget">
+                            <div class="dashboard-widgets__content">
+                                <TeammatesWidget TeamId="TeamId.Value"/>
+                            </div>
+                        </div>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <TelegramLogin/>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
     </div>
 </div>
 

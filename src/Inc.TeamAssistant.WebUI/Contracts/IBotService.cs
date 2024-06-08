@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
@@ -18,6 +19,8 @@ public interface IBotService
     Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, CancellationToken token = default);
     
     Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token = default);
+    
+    Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token = default);
     
     Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token = default);
 

@@ -1,0 +1,20 @@
+@inherits PersistentComponent<TeammatesWidgetViewModel>
+
+@inject IBotService BotService
+
+<QuickGrid Items="ViewModel.Teammates.AsQueryable()" Theme="" class="quick-data-grid">
+    <PropertyColumn Property="@(t => t.Name)" Sortable="true" />
+    <TemplateColumn>Ban</TemplateColumn>
+</QuickGrid>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+
+    protected override async Task<TeammatesWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var getTeammatesResult = await BotService.GetTeammates(TeamId);
+
+        return new TeammatesWidgetViewModel(getTeammatesResult.Result.Teammates);
+    }
+}

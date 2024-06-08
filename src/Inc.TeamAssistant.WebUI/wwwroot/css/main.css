@@ -167,3 +167,7 @@ html {
     background-color: #fff;
     color: #000;
 }
+/* GRID */
+.quick-data-grid {
+    width: 100%;
+}

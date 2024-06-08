@@ -41,6 +41,12 @@ public sealed class BotsController : ControllerBase
         return Ok(await _botService.GetByUser(userId, token));
     }
 
+    [HttpGet("{teamId:guid}/teammates")]
+    public async Task<IActionResult> GetTeammates(Guid teamId, CancellationToken token)
+    {
+        return Ok(await _botService.GetTeammates(teamId, token));
+    }
+
     [HttpPost("check")]
     public async Task<IActionResult> Check(GetBotUserNameQuery query, CancellationToken token)
     {
