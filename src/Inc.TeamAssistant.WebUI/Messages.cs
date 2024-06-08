@@ -78,6 +78,15 @@ internal static class Messages
     public static readonly string Constructor_BooleanTrueText = nameof(Constructor_BooleanTrueText);
     public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
 
+    public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
+    public static readonly string Dashboard_Title = nameof(Dashboard_Title);
+    public static readonly string Dashboard_SelectTeam = nameof(Dashboard_SelectTeam);
+    public static readonly string Dashboard_CreateBot = nameof(Dashboard_CreateBot);
+    public static readonly string Dashboard_SelectTeamTitle = nameof(Dashboard_SelectTeamTitle);
+    public static readonly string Dashboard_TeamField = nameof(Dashboard_TeamField);
+    public static readonly string Dashboard_BotField = nameof(Dashboard_BotField);
+    public static readonly string Dashboard_ExcludeFromTeam = nameof(Dashboard_ExcludeFromTeam);
+
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
 

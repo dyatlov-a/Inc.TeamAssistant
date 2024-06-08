@@ -2,9 +2,9 @@
 
 @inject IBotService BotService
 
-<QuickGrid Items="ViewModel.Teammates.AsQueryable()" Theme="" class="quick-data-grid">
+<QuickGrid Items="ViewModel.Teammates.AsQueryable()" class="quick-data-grid">
     <PropertyColumn Property="@(t => t.Name)" Sortable="true" />
-    <TemplateColumn>Ban</TemplateColumn>
+    <TemplateColumn>@ViewModel.ExcludeFromTeam</TemplateColumn>
 </QuickGrid>
 
 @code {
@@ -15,6 +15,8 @@
     {
         var getTeammatesResult = await BotService.GetTeammates(TeamId);
 
-        return new TeammatesWidgetViewModel(getTeammatesResult.Result.Teammates);
+        return new TeammatesWidgetViewModel(
+            resources[Messages.Dashboard_ExcludeFromTeam],
+            getTeammatesResult.Result.Teammates);
     }
 }

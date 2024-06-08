@@ -5,10 +5,13 @@
         </div>
     </div>
     <div class="default-card__content">
-        <h3 class="default-card__name">@Name</h3>
-        
+        @if (!string.IsNullOrWhiteSpace(Name))
+        {
+            <h3 class="default-card__name">@Name</h3>
+        }
+
         @Content
-        
+
         @if (Buttons is not null)
         {
             <div class="default-card__actions">
@@ -22,8 +25,8 @@
     [Parameter, EditorRequired]
     public Type Icon { get; set; } = default!;
     
-    [Parameter, EditorRequired]
-    public string Name { get; set; } = default!;
+    [Parameter]
+    public string? Name { get; set; }
     
     [Parameter]
     public RenderFragment? Content { get; set; }

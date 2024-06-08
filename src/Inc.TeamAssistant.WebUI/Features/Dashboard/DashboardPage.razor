@@ -1,13 +1,18 @@
 @page "/dashboard"
 @page "/ru/dashboard"
 @page "/en/dashboard"
+@page "/dashboard/{BotId:guid}"
+@page "/ru/dashboard/{BotId:guid}"
+@page "/en/dashboard/{BotId:guid}"
 @page "/dashboard/{BotId:guid}/{TeamId:guid}"
 @page "/ru/dashboard/{BotId:guid}/{TeamId:guid}"
 @page "/en/dashboard/{BotId:guid}/{TeamId:guid}"
 
 @attribute [Authorize]
 
-<PageTitle>Dashboard</PageTitle>
+@inherits PersistentComponent<DashboardPageViewModel>
+
+<PageTitle>@ViewModel.Title</PageTitle>
 
 <DashboardNavbar />
 
@@ -33,10 +38,19 @@
                             </div>
                         </div>
                     }
+                    else
+                    {
+                        <div class="dashboard-widgets__widget">
+                            <FormSection Title="Bot widgets" AsRows="true">
+                                <HelpContent>
+                                    @ViewModel.SelectTeam <a href="@MoveToCreateBot()" class="link link_white">@ViewModel.CreateBot</a>
+                                </HelpContent>
+                                <Content>
+                                </Content>
+                            </FormSection>
+                        </div>
+                    }
                 </Authorized>
-                <NotAuthorized>
-                    <TelegramLogin/>
-                </NotAuthorized>
             </AuthorizeView>
         </div>
     </div>
@@ -48,4 +62,14 @@
     
     [Parameter]
     public Guid? TeamId { get; set; }
+
+    protected override Task<DashboardPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new DashboardPageViewModel(
+            resources[Messages.Dashboard_Title],
+            resources[Messages.Dashboard_SelectTeam],
+            resources[Messages.Dashboard_CreateBot]));
+    }
+
+    private string MoveToCreateBot() => LinkBuilder("constructor");
 }

@@ -9,10 +9,12 @@ public sealed record BotSelectorViewModel(
     string Edit,
     string Remove,
     string RemoveConfirmationTemplate,
+    string MoveToStats,
     IReadOnlyCollection<BotDto> Bots)
     : IViewModel<BotSelectorViewModel>
 {
     public static BotSelectorViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

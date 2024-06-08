@@ -119,6 +119,15 @@
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
   
+  "Dashboard_MoveToStats": "stats",
+  "Dashboard_Title": "Dashboard",
+  "Dashboard_SelectTeam": "Please select the team from the bot",
+  "Dashboard_CreateBot": "or create new bot for your team",
+  "Dashboard_SelectTeamTitle": "Select team",
+  "Dashboard_TeamField": "Team",
+  "Dashboard_BotField": "Bot",
+  "Dashboard_ExcludeFromTeam": "Exclude",
+  
   "Validation_TokenInvalid": "The token is invalid.",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",

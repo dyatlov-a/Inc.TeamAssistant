@@ -4,9 +4,9 @@
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
 
-<FormSection Title="Select team" HelpText="Please select the team from the bot" AsRows="true">
+<FormSection Title="@ViewModel.SelectTeamTitle" HelpText="@ViewModel.SelectTeam" AsRows="true">
     <Content>
-        <FormFieldSet Label="Bot" FieldId="bot-selector">
+        <FormFieldSet Label="@ViewModel.BotField" FieldId="bot-selector">
             <Content>
                 <InputSelect id="bot-selector" Value="_currentBotId" ValueExpression="@(() => _currentBotId)" ValueChanged="@((Guid? v) => SelectBot(v))" class="form-control">
                     <option value=""></option>
@@ -17,7 +17,7 @@
                 </InputSelect>
             </Content>
         </FormFieldSet>
-        <FormFieldSet Label="Team" FieldId="team-selector">
+        <FormFieldSet Label="@ViewModel.TeamField" FieldId="team-selector">
             <Content>
                 <InputSelect id="team-selector" Value="_currentTeamId" ValueExpression="@(() => _currentTeamId)" ValueChanged="@((Guid? v) => SelectTeam(v))" class="form-control">
                     <option value=""></option>
@@ -44,19 +44,27 @@
     private Guid? _currentBotId;
     private Guid? _currentTeamId;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+        
         _currentBotId = BotId;
         _currentTeamId = TeamId;
-        
-        base.OnParametersSet();
+
+        if (_currentBotId.HasValue && !_currentTeamId.HasValue)
+            SelectBot(_currentBotId);
     }
 
     protected override async Task<DashboardTeamSelectorViewModel> Initialize(Dictionary<string, string> resources)
     {
         var getBotsResult = await BotService.GetByUser(UserId);
         
-        return new DashboardTeamSelectorViewModel(getBotsResult.Result.Bots);
+        return new DashboardTeamSelectorViewModel(
+            resources[Messages.Dashboard_SelectTeamTitle],
+            resources[Messages.Dashboard_SelectTeam],
+            resources[Messages.Dashboard_TeamField],
+            resources[Messages.Dashboard_BotField],
+            getBotsResult.Result.Bots);
     }
 
     private void SelectTeam(Guid? value)

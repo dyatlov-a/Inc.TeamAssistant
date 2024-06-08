@@ -118,6 +118,15 @@
   "Connector_HasNotRightsForRemoveTeam": "У вас нет прав на удаление команды «{0}»",
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
   "Connector_Help": "Отобразить список команд",
+  
+  "Dashboard_MoveToStats": "статистика",
+  "Dashboard_Title": "Панель управления",
+  "Dashboard_SelectTeam": "Пожалуйста выберите бота и команду",
+  "Dashboard_CreateBot": "или создайте бота",
+  "Dashboard_SelectTeamTitle": "Выбор команды",
+  "Dashboard_TeamField": "Команда",
+  "Dashboard_BotField": "Бот",
+  "Dashboard_ExcludeFromTeam": "Исключить",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

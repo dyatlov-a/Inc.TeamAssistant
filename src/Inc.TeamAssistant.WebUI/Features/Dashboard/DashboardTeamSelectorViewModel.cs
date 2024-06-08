@@ -3,8 +3,18 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard;
 
-public sealed record DashboardTeamSelectorViewModel(IReadOnlyCollection<BotDto> Bots)
+public sealed record DashboardTeamSelectorViewModel(
+    string SelectTeamTitle,
+    string SelectTeam,
+    string TeamField,
+    string BotField,
+    IReadOnlyCollection<BotDto> Bots)
     : IViewModel<DashboardTeamSelectorViewModel>
 {
-    public static DashboardTeamSelectorViewModel Empty { get; } = new(Array.Empty<BotDto>());
+    public static DashboardTeamSelectorViewModel Empty { get; } = new(
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        Array.Empty<BotDto>());
 }
