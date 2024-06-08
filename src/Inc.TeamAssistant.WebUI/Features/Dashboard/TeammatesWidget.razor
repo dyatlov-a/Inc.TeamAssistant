@@ -1,15 +1,42 @@
+@using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate
+@using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates
 @inherits PersistentComponent<TeammatesWidgetViewModel>
 
 @inject IBotService BotService
 
-<QuickGrid Items="ViewModel.Teammates.AsQueryable()" class="quick-data-grid">
+<ConfirmDialog OnConfirm="RemoveTeammate" @ref="_confirmDialog">
+    <Content>
+        <p>@ViewModel.LeaveTeammate @_selectedTeammate?.Name</p>
+        @if (_leaveUntil.HasValue)
+        {
+            <p>@_leaveUntil.Value @ViewModel.Days</p>
+        }
+        else
+        {
+            <p>@ViewModel.Forever</p>
+        }
+    </Content>
+</ConfirmDialog>
+
+<QuickGrid Items="GetTeammates()" class="quick-data-grid">
     <PropertyColumn Property="@(t => t.Name)" Sortable="true" />
-    <TemplateColumn>@ViewModel.ExcludeFromTeam</TemplateColumn>
+    <PropertyColumn Property="@(t => t.LeaveUntil)" Sortable="false" Format="dd.MM.yyyy" />
+    <TemplateColumn Title="@ViewModel.ExcludeFromTeam">
+        <a href="#" @onclick="() => ExcludeFromTeam(context, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+    </TemplateColumn>
 </QuickGrid>
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
+
+    private ConfirmDialog? _confirmDialog;
+    
+    private TeammateDto? _selectedTeammate;
+    private int? _leaveUntil;
 
     protected override async Task<TeammatesWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
@@ -17,6 +44,39 @@
 
         return new TeammatesWidgetViewModel(
             resources[Messages.Dashboard_ExcludeFromTeam],
+            resources[Messages.Dashboard_LeaveTeammate],
+            resources[Messages.Dashboard_Days],
+            resources[Messages.Dashboard_Forever],
             getTeammatesResult.Result.Teammates);
+    }
+    
+    private IQueryable<TeammateDto> GetTeammates() => ViewModel.Teammates.AsQueryable();
+    
+    private void ExcludeFromTeam(TeammateDto teammate, int? leaveUntil = null)
+    {
+        _leaveUntil = leaveUntil;
+        _selectedTeammate = teammate;
+        
+        _confirmDialog?.Open();
+    }
+
+    private async Task RemoveTeammate()
+    {
+        if (_selectedTeammate is null)
+            return;
+        
+        var leaveUntil = _leaveUntil.HasValue
+            ? DateTimeOffset.UtcNow.AddDays(_leaveUntil.Value)
+            : (DateTimeOffset?)null;
+        
+        await BotService.RemoveTeammate(new RemoveTeammateCommand(
+            _selectedTeammate.TeamId,
+            _selectedTeammate.PersonId,
+            leaveUntil));
+
+        _leaveUntil = null;
+        _selectedTeammate = null;
+
+        await Update();
     }
 }

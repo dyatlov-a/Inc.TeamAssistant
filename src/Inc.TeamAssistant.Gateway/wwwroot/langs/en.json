@@ -126,7 +126,10 @@
   "Dashboard_SelectTeamTitle": "Select team",
   "Dashboard_TeamField": "Team",
   "Dashboard_BotField": "Bot",
-  "Dashboard_ExcludeFromTeam": "Exclude",
+  "Dashboard_ExcludeFromTeam": "Exclude (days)",
+  "Dashboard_LeaveTeammate": "Leave teammate",
+  "Dashboard_Days": "days",
+  "Dashboard_Forever": "forever",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

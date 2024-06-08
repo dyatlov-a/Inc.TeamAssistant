@@ -9,4 +9,5 @@ public interface IPersonRepository
     Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token);
     Task Upsert(Person person, CancellationToken token);
     Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token);
+    Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset until, CancellationToken token);
 }

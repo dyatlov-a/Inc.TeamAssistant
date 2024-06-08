@@ -111,4 +111,24 @@ internal sealed class PersonRepository : IPersonRepository
 
         await connection.ExecuteAsync(command);
     }
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset until, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            UPDATE connector.teammates
+            SET leave_until = @leave_until
+            WHERE person_id = @person_id AND team_id = @team_id;",
+            new
+            {
+                team_id = teamId,
+                person_id = personId,
+                leave_until = until
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        await connection.ExecuteAsync(command);
+    }
 }

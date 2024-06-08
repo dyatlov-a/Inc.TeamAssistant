@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
@@ -45,6 +46,16 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> GetTeammates(Guid teamId, CancellationToken token)
     {
         return Ok(await _botService.GetTeammates(teamId, token));
+    }
+
+    [HttpPut("teammate")]
+    public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _botService.RemoveTeammate(command, token);
+        
+        return Ok();
     }
 
     [HttpPost("check")]

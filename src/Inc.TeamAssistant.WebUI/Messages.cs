@@ -86,6 +86,9 @@ internal static class Messages
     public static readonly string Dashboard_TeamField = nameof(Dashboard_TeamField);
     public static readonly string Dashboard_BotField = nameof(Dashboard_BotField);
     public static readonly string Dashboard_ExcludeFromTeam = nameof(Dashboard_ExcludeFromTeam);
+    public static readonly string Dashboard_LeaveTeammate = nameof(Dashboard_LeaveTeammate);
+    public static readonly string Dashboard_Days = nameof(Dashboard_Days);
+    public static readonly string Dashboard_Forever = nameof(Dashboard_Forever);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

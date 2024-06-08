@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -91,6 +92,18 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
+        }
+    }
+
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default)
+    {
+        try
+        {
+            await _mediator.Send(command, token);
+        }
+        catch
+        {
+            // ignored
         }
     }
 

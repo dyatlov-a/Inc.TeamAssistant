@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -21,6 +22,8 @@ public interface IBotService
     Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token = default);
     
     Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token = default);
+
+    Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default);
     
     Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token = default);
 

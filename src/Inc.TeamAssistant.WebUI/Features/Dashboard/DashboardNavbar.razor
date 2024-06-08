@@ -11,7 +11,7 @@
     }
     <AuthorizeView>
         <Authorized>
-            <span class="navbar__item">@context.User.Identity?.Name</span>
+            <span class="navbar__item">@context.User.ToPerson().DisplayName</span>
             <a href="/accounts/logout" class="link link_white navbar__item">@ViewModel.Logout</a>
         </Authorized>
         <NotAuthorized>

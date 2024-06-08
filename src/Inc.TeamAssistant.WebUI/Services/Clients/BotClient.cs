@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -95,7 +96,7 @@ internal sealed class BotClient : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token = default)
+    public async Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token)
     {
         try
         {
@@ -110,6 +111,18 @@ internal sealed class BotClient : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
+        }
+    }
+
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
+    {
+        try
+        {
+            await _client.PutAsJsonAsync("bots/teammate", command, token);
+        }
+        catch
+        {
+            // ignored
         }
     }
 

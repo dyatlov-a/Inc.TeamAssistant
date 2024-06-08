@@ -126,7 +126,10 @@
   "Dashboard_SelectTeamTitle": "Выбор команды",
   "Dashboard_TeamField": "Команда",
   "Dashboard_BotField": "Бот",
-  "Dashboard_ExcludeFromTeam": "Исключить",
+  "Dashboard_ExcludeFromTeam": "Исключить (дни)",
+  "Dashboard_LeaveTeammate": "Удалить участника",
+  "Dashboard_Days": "дня",
+  "Dashboard_Forever": "навсегда",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

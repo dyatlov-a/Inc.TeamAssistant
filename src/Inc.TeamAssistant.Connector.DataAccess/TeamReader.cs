@@ -21,7 +21,9 @@ internal sealed class TeamReader : ITeamReader
             SELECT
                 p.id AS id,
                 p.name AS name,
-                p.username AS username
+                p.username AS username,
+                tm.team_id AS teamid,
+                tm.leave_until AS leaveuntil
             FROM connector.teammates AS tm
             JOIN connector.persons AS p ON p.id = tm.person_id
             WHERE tm.team_id = @team_id;",
@@ -31,10 +33,15 @@ internal sealed class TeamReader : ITeamReader
         
         await using var connection = _connectionFactory.Create();
 
-        var persons = await connection.QueryAsync<Person>(command);
+        var teammates = await connection
+            .QueryAsync<(long Id, string Name, string? Username, Guid TeamId, DateTimeOffset? LeaveUntil)>(command);
         
-        return persons
-            .Select(p => new TeammateDto(teamId, p.Id, p.DisplayName))
+        return teammates
+            .Select(t => new TeammateDto(
+                t.TeamId,
+                t.Id,
+                new Person(t.Id, t.Name, t.Username).DisplayName,
+                t.LeaveUntil))
             .ToArray();
     }
 }
