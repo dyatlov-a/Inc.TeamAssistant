@@ -74,7 +74,7 @@ internal sealed class BotReader : IBotReader
         return bots.Values;
     }
 
-    public async Task<Bot?> Find(Guid id, CancellationToken token)
+    public async Task<Bot?> Find(Guid id, DateTimeOffset now, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
@@ -101,7 +101,7 @@ internal sealed class BotReader : IBotReader
                 p.username AS username,
                 tm.team_id AS teamid
             FROM connector.persons AS p
-            JOIN connector.teammates AS tm ON p.id = tm.person_id
+            JOIN connector.teammates AS tm ON p.id = tm.person_id AND (tm.leave_until IS NULL OR tm.leave_until < @now)
             JOIN connector.teams AS t ON t.id = tm.team_id
             WHERE t.bot_id = @id;
 
@@ -124,7 +124,11 @@ internal sealed class BotReader : IBotReader
                 bcs.dialog_message_id AS dialogmessageid,
                 bcs.position AS position
             FROM connector.bot_command_stages AS bcs;",
-            new { id },
+            new
+            {
+                id,
+                now
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         

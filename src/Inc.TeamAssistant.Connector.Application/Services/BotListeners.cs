@@ -42,7 +42,7 @@ internal sealed class BotListeners : IBotListeners
         try
         {
             var consumeTokenSource = new CancellationTokenSource();
-            var bot = await _botReader.Find(botId, consumeTokenSource.Token);
+            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, consumeTokenSource.Token);
             var client = new TelegramBotClient(bot!.Token);
 
             await _botConstructor.TrySetup(client, bot, consumeTokenSource.Token);

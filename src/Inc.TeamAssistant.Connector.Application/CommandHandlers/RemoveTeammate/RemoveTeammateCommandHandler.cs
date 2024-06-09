@@ -17,9 +17,9 @@ internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeamm
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        if (command.UntilDate.HasValue)
-            await _personRepository.LeaveFromTeam(command.TeamId, command.PersonId, command.UntilDate.Value, token);
-        else
+        if (command.Exclude)
             await _personRepository.LeaveFromTeam(command.TeamId, command.PersonId, token);
+        else
+            await _personRepository.LeaveFromTeam(command.TeamId, command.PersonId, command.UntilDate, token);
     }
 }

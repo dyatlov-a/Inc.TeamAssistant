@@ -23,7 +23,8 @@ internal sealed class TelegramBotMessageHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
-        _messageContextBuilder = messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
+        _messageContextBuilder =
+            messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
@@ -33,7 +34,7 @@ internal sealed class TelegramBotMessageHandler
 
         try
         {
-            var bot = await _botReader.Find(botId, token);
+            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
             if (bot is null)
                 return;
             

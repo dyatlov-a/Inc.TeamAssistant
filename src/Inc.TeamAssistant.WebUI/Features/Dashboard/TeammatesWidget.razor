@@ -6,26 +6,39 @@
 
 <ConfirmDialog OnConfirm="RemoveTeammate" @ref="_confirmDialog">
     <Content>
-        <p>@ViewModel.LeaveTeammate @_selectedTeammate?.Name</p>
-        @if (_leaveUntil.HasValue)
+        @if (_exclude || _leaveUntil.HasValue)
         {
-            <p>@_leaveUntil.Value @ViewModel.Days</p>
+            <p>@ViewModel.LeaveTeammate @_selectedTeammate?.Name</p>
+            @if (_leaveUntil.HasValue)
+            {
+                <p>@_leaveUntil.Value @ViewModel.Days</p>
+            }
+            else
+            {
+                <p>@ViewModel.Forever</p>
+            }
         }
         else
         {
-            <p>@ViewModel.Forever</p>
+            <p>@ViewModel.RecoveryTeammate @_selectedTeammate?.Name</p>
         }
     </Content>
 </ConfirmDialog>
 
 <QuickGrid Items="GetTeammates()" class="quick-data-grid">
-    <PropertyColumn Property="@(t => t.Name)" Sortable="true" />
-    <PropertyColumn Property="@(t => t.LeaveUntil)" Sortable="false" Format="dd.MM.yyyy" />
-    <TemplateColumn Title="@ViewModel.ExcludeFromTeam">
-        <a href="#" @onclick="() => ExcludeFromTeam(context, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+    <PropertyColumn Title="@ViewModel.PersonName" Property="@(t => t.Name)" Sortable="true" />
+    <TemplateColumn Title="@ViewModel.LeaveUntil" Sortable="false">
+        @if (context.LeaveUntil.HasValue)
+        {
+            <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
+            <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
+        }
+    </TemplateColumn>
+    <TemplateColumn Title="@ViewModel.ExcludeFromTeam" Sortable="false">
+        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+        <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
     </TemplateColumn>
 </QuickGrid>
 
@@ -36,6 +49,7 @@
     private ConfirmDialog? _confirmDialog;
     
     private TeammateDto? _selectedTeammate;
+    private bool _exclude;
     private int? _leaveUntil;
 
     protected override async Task<TeammatesWidgetViewModel> Initialize(Dictionary<string, string> resources)
@@ -43,19 +57,23 @@
         var getTeammatesResult = await BotService.GetTeammates(TeamId);
 
         return new TeammatesWidgetViewModel(
+            resources[Messages.Dashboard_PersonName],
+            resources[Messages.Dashboard_LeaveUntil],
             resources[Messages.Dashboard_ExcludeFromTeam],
             resources[Messages.Dashboard_LeaveTeammate],
             resources[Messages.Dashboard_Days],
             resources[Messages.Dashboard_Forever],
+            resources[Messages.Dashboard_RecoveryTeammate],
             getTeammatesResult.Result.Teammates);
     }
     
     private IQueryable<TeammateDto> GetTeammates() => ViewModel.Teammates.AsQueryable();
     
-    private void ExcludeFromTeam(TeammateDto teammate, int? leaveUntil = null)
+    private void ExcludeFromTeam(TeammateDto teammate, bool exclude, int? leaveUntil = null)
     {
         _leaveUntil = leaveUntil;
         _selectedTeammate = teammate;
+        _exclude = exclude;
         
         _confirmDialog?.Open();
     }
@@ -72,7 +90,8 @@
         await BotService.RemoveTeammate(new RemoveTeammateCommand(
             _selectedTeammate.TeamId,
             _selectedTeammate.PersonId,
-            leaveUntil));
+            leaveUntil,
+            _exclude));
 
         _leaveUntil = null;
         _selectedTeammate = null;

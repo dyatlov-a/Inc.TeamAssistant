@@ -130,6 +130,9 @@
   "Dashboard_LeaveTeammate": "Leave teammate",
   "Dashboard_Days": "days",
   "Dashboard_Forever": "forever",
+  "Dashboard_PersonName": "Name",
+  "Dashboard_LeaveUntil": "Leave until",
+  "Dashboard_RecoveryTeammate": "Recovery teammate",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

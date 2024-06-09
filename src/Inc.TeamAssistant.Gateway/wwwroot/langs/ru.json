@@ -130,6 +130,9 @@
   "Dashboard_LeaveTeammate": "Удалить участника",
   "Dashboard_Days": "дня",
   "Dashboard_Forever": "навсегда",
+  "Dashboard_PersonName": "Имя",
+  "Dashboard_LeaveUntil": "Отключен до",
+  "Dashboard_RecoveryTeammate": "Восстановить участника",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

@@ -5,5 +5,6 @@ namespace Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 public sealed record RemoveTeammateCommand(
     Guid TeamId,
     long PersonId,
-    DateTimeOffset? UntilDate)
+    DateTimeOffset? UntilDate,
+    bool Exclude)
     : IRequest;

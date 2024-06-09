@@ -40,7 +40,7 @@ internal sealed class ReassignReviewService
             task.TeamId,
             DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
             token);
-        var teammates = await _teamAccessor.GetTeammates(task.TeamId, token);
+        var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
         var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(task.TeamId, task.OwnerId, token);
 
         task.Reassign(

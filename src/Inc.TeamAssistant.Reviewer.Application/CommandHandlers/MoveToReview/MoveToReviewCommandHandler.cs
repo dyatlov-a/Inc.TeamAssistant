@@ -41,7 +41,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
-        var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
+        var teammates = await _teamAccessor.GetTeammates(command.TeamId, DateTimeOffset.UtcNow, token);
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
 
