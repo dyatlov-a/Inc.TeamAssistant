@@ -172,6 +172,7 @@ html {
     width: 100%;
     word-break: break-all;
     font-size: .8rem;
+    border-spacing: 0;
 }
 .quick-data-grid .link {
     font-size: .8rem;
@@ -183,6 +184,7 @@ html {
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: #555;
 }
+/* CHARTS */
 .apexcharts-svg {
     background: none !important;
 }

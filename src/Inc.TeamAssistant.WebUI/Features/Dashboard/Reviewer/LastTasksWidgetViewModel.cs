@@ -4,7 +4,6 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 
 public sealed record LastTasksWidgetViewModel(
-    string CreatedTitle,
     string DescriptionTitle,
     string ReviewerNameTitle,
     string OwnerNameTitle,
@@ -13,7 +12,6 @@ public sealed record LastTasksWidgetViewModel(
     : IViewModel<LastTasksWidgetViewModel>
 {
     public static LastTasksWidgetViewModel Empty { get; } = new(
-        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

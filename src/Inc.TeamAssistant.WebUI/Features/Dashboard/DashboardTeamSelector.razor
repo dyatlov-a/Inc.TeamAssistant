@@ -1,7 +1,6 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBots
 @inherits PersistentComponent<DashboardTeamSelectorViewModel>
 
-@inject IBotService BotService
 @inject NavigationManager NavigationManager
 
 <FormSection Title="@ViewModel.SelectTeamTitle" HelpText="@ViewModel.SelectTeam" AsRows="true">
@@ -10,7 +9,7 @@
             <Content>
                 <InputSelect id="bot-selector" Value="_currentBotId" ValueExpression="@(() => _currentBotId)" ValueChanged="@((Guid? v) => SelectBot(v))" class="form-control">
                     <option value=""></option>
-                    @foreach (var bot in ViewModel.Bots)
+                    @foreach (var bot in Bots)
                     {
                         <option value="@bot.Id">@bot.Name</option>
                     }
@@ -33,13 +32,13 @@
 
 @code {
     [Parameter, EditorRequired]
-    public long UserId { get; set; }
-    
-    [Parameter, EditorRequired]
     public Guid? BotId { get; set; }
     
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
     
     private Guid? _currentBotId;
     private Guid? _currentTeamId;
@@ -55,16 +54,13 @@
             SelectBot(_currentBotId);
     }
 
-    protected override async Task<DashboardTeamSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<DashboardTeamSelectorViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var getBotsResult = await BotService.GetByUser(UserId);
-        
-        return new DashboardTeamSelectorViewModel(
+        return Task.FromResult(new DashboardTeamSelectorViewModel(
             resources[Messages.Dashboard_SelectTeamTitle],
             resources[Messages.Dashboard_SelectTeam],
             resources[Messages.Dashboard_TeamField],
-            resources[Messages.Dashboard_BotField],
-            getBotsResult.Result.Bots);
+            resources[Messages.Dashboard_BotField]));
     }
 
     private void SelectTeam(Guid? value)
@@ -82,10 +78,10 @@
         if (!_currentBotId.HasValue)
             return;
         
-        var bot = ViewModel.Bots.Single(b => b.Id == _currentBotId);
-        var team = bot.Teams.FirstOrDefault();
+        var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
+        var team = bot?.Teams.FirstOrDefault();
             
-        ChangeTeamContext((bot.Id, team?.Id));
+        ChangeTeamContext((_currentBotId.Value, team?.Id));
     }
 
     private void ChangeTeamContext((Guid BotId, Guid? TeamId) teamContext)
@@ -96,7 +92,7 @@
 
     private IEnumerable<TeamDto> GetTeams()
     {
-        var bot = ViewModel.Bots.FirstOrDefault(b => b.Id == _currentBotId);
+        var bot = Bots.FirstOrDefault(b => b.Id == _currentBotId);
 
         return bot is not null
             ? bot.Teams

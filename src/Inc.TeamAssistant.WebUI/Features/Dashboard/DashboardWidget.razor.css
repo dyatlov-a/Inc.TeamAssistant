@@ -1,0 +1,16 @@
+.dashboard-widgets__widget {
+    flex: 0 1 50%;
+    padding: 0 10px;
+}
+.dashboard-widgets__content {
+    margin-top: 30px;
+    padding: 10px 0;
+    border-top: 5px #555 solid;
+    background-color: #9d9d9d;
+    min-height: 260px;
+}
+@media (max-width: 1080px) {
+    .dashboard-widgets__widget {
+        flex: 0 1 100%;
+    }
+}

@@ -18,13 +18,7 @@ internal sealed class GetBotsQueryHandler : IRequestHandler<GetBotsQuery, GetBot
         ArgumentNullException.ThrowIfNull(query);
 
         var bots = await _botReader.GetBotsByUser(query.UserId, token);
-        var items = bots
-            .Select(b => new BotDto(
-                b.Id,
-                b.Name,
-                b.Teams.Select(t => new TeamDto(t.Id, t.Name)).ToArray()))
-            .ToArray();
 
-        return new GetBotsResult(items);
+        return new GetBotsResult(bots);
     }
 }

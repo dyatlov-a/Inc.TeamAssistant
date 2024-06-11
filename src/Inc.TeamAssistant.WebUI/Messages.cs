@@ -98,7 +98,6 @@ internal static class Messages
     public static readonly string Dashboard_ReviewAverageFirstTouch = nameof(Dashboard_ReviewAverageFirstTouch);
     public static readonly string Dashboard_ReviewAverageReview = nameof(Dashboard_ReviewAverageReview);
     public static readonly string Dashboard_ReviewAverageCorrection = nameof(Dashboard_ReviewAverageCorrection);
-    public static readonly string Dashboard_ReviewCreatedTitle = nameof(Dashboard_ReviewCreatedTitle);
     public static readonly string Dashboard_ReviewDescriptionTitle = nameof(Dashboard_ReviewDescriptionTitle);
     public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
     public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);

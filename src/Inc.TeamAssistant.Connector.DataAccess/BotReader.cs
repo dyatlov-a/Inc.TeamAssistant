@@ -1,6 +1,7 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
@@ -29,7 +30,7 @@ internal sealed class BotReader : IBotReader
         return results.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<Bot>> GetBotsByUser(long userId, CancellationToken token)
+    public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token)
     {
         var teamsByUserCommand = new CommandDefinition(@"
             SELECT DISTINCT
@@ -47,31 +48,38 @@ internal sealed class BotReader : IBotReader
             cancellationToken: token);
         
         await using var connection = _connectionFactory.Create();
-        
-        var teams = (await connection.QueryAsync<Team>(teamsByUserCommand)).ToArray();
-        var botIds = teams
-            .Select(t => t.BotId)
-            .Distinct()
-            .ToArray();
+
+        var teams = (await connection.QueryAsync<Team>(teamsByUserCommand)).ToLookup(t => t.BotId);
+        var botIds = teams.Select(t => t.Key).ToArray();
         
         var botsCommand = new CommandDefinition(@"
             SELECT
-                b.id AS id,
-                b.name AS name,
-                b.token AS token,
-                b.properties AS properties
+                b.id AS botid,
+                b.name AS name
             FROM connector.bots AS b
-            WHERE b.id = ANY(@bot_ids);",
+            WHERE b.id = ANY(@bot_ids);
+
+            SELECT
+                af.bot_id AS botid,
+                f.name AS featurename
+            FROM connector.features AS f
+            JOIN connector.activated_features AS af ON f.id = af.feature_id
+            WHERE af.bot_id = ANY(@bot_ids);",
             new { bot_ids = botIds },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        var bots = (await connection.QueryAsync<Bot>(botsCommand)).ToDictionary(b => b.Id);
 
-        foreach (var team in teams)
-            bots[team.BotId].AddTeam(team);
+        var query = await connection.QueryMultipleAsync(botsCommand);
+        var bots = await query.ReadAsync<(Guid BotId, string Name)>();
+        var features = (await query.ReadAsync<(Guid BotId, string FeatureName)>()).ToLookup(f => f.BotId);
+        var results = bots.Select(b => new BotDto(
+                b.BotId,
+                b.Name,
+                features[b.BotId].Select(f => f.FeatureName).ToArray(),
+                teams[b.BotId].Select(t => new TeamDto(t.Id, t.Name)).ToArray()))
+            .ToArray();
 
-        return bots.Values;
+        return results;
     }
 
     public async Task<Bot?> Find(Guid id, DateTimeOffset now, CancellationToken token)

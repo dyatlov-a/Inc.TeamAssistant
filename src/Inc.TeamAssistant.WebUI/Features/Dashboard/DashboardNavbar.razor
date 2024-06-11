@@ -3,11 +3,13 @@
 @inherits PersistentComponent<DashboardNavbarViewModel>
 
 @inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
 
 <div class="navbar">
     @foreach (var culture in LanguageSettings.LanguageIds)
     {
-        <a href="/@culture.Value/dashboard" class="link link_white navbar__item">@culture.Value</a>
+        var path = ChangeCulture(culture.Value);
+        <a href="@path" @onclick="() => MoveTo(path)" class="link link_white navbar__item" @onclick:preventDefault="true">@culture.Value</a>
     }
     <AuthorizeView>
         <Authorized>
@@ -30,5 +32,20 @@
             RenderContext.IsDevelopment(),
             resources[Messages.Navigation_Logout],
             resources[Messages.Navigation_LoginAsSuperuser]));
+    }
+
+    private string ChangeCulture(string culture)
+    {
+        var cleanUri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        
+        foreach (var languageId in LanguageSettings.LanguageIds)
+            cleanUri = cleanUri.Replace($"{languageId.Value}/", string.Empty);
+
+        return $"/{culture}/{cleanUri}";
+    }
+
+    private void MoveTo(string path)
+    {
+        NavigationManager.NavigateTo(path, forceLoad: true);
     }
 }

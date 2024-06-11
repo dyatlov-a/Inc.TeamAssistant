@@ -7,14 +7,12 @@ public sealed record DashboardTeamSelectorViewModel(
     string SelectTeamTitle,
     string SelectTeam,
     string TeamField,
-    string BotField,
-    IReadOnlyCollection<BotDto> Bots)
+    string BotField)
     : IViewModel<DashboardTeamSelectorViewModel>
 {
     public static DashboardTeamSelectorViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,
-        string.Empty,
-        Array.Empty<BotDto>());
+        string.Empty);
 }
