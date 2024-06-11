@@ -39,7 +39,12 @@
                         </div>
                         <div class="dashboard-widgets__widget">
                             <div class="dashboard-widgets__content">
-                                <ReviewStatsWidget TeamId="TeamId.Value" Depth="90" />
+                                <ReviewTotalStatsWidget TeamId="TeamId.Value" Depth="_statsDepth" />
+                            </div>
+                        </div>
+                        <div class="dashboard-widgets__widget">
+                            <div class="dashboard-widgets__content">
+                                <ReviewAverageStatsWidget TeamId="TeamId.Value" Depth="_statsDepth" />
                             </div>
                         </div>
                     }
@@ -67,6 +72,8 @@
     
     [Parameter]
     public Guid? TeamId { get; set; }
+
+    private readonly int _statsDepth = 90;
 
     protected override Task<DashboardPageViewModel> Initialize(Dictionary<string, string> resources)
     {

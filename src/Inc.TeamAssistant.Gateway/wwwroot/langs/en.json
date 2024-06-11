@@ -135,6 +135,10 @@
   "Dashboard_RecoveryTeammate": "Recovery teammate",
   "Dashboard_ReviewByReviewerTemplate": "Reviewed ({0} days)",
   "Dashboard_ReviewByOwnerTemplate": "Submitted ({0} days)",
+  "Dashboard_ReviewAverageStatsTitle": "Average daily stats (in minutes)",
+  "Dashboard_ReviewAverageFirstTouch": "First touch",
+  "Dashboard_ReviewAverageReview": "Review",
+  "Dashboard_ReviewAverageCorrection": "Correction",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

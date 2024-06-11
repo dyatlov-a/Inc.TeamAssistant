@@ -1,11 +1,11 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
 
-@inherits PersistentComponent<ReviewStatsWidgetViewModel>
+@inherits PersistentComponent<ReviewTotalStatsWidgetViewModel>
 
 @inject IReviewService ReviewService
 
-<div class="review-stats">
-    <div class="review-stats__item">
+<div class="review-total-stats">
+    <div class="review-total-stats__item">
         <ApexChart
             TItem="HistoryByTeamItemDto"
             Title="@ViewModel.ReviewByReviewer"
@@ -15,11 +15,11 @@
                              Items="ViewModel.Review"
                              SeriesType="SeriesType.Donut"
                              XValue="@(e => e.PersonName)"
-                             YAggregate="@(e => e.Sum(i => i.Count))"
+                             YValue="@(e => e.Count)"
                              OrderByDescending="e => e.Y!" />
         </ApexChart>
     </div>
-    <div class="review-stats__item">
+    <div class="review-total-stats__item">
         <ApexChart
             TItem="HistoryByTeamItemDto"
             Title="@ViewModel.ReviewByOwner"
@@ -29,7 +29,7 @@
                              Items="ViewModel.Requests"
                              SeriesType="SeriesType.Donut"
                              XValue="@(e => e.PersonName)"
-                             YAggregate="@(e => e.Sum(i => i.Count))"
+                             YValue="@(e => e.Count)"
                              OrderByDescending="e => e.Y!" />
         </ApexChart>
     </div>
@@ -45,11 +45,11 @@
     private ApexChartOptions<HistoryByTeamItemDto> _reviewByReviewerOptions = CreateChartOptions();
     private ApexChartOptions<HistoryByTeamItemDto> _reviewByOwnerOptions = CreateChartOptions();
 
-    protected override async Task<ReviewStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<ReviewTotalStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
         var history = await ReviewService.GetHistory(TeamId, Depth);
 
-        return new ReviewStatsWidgetViewModel(
+        return new ReviewTotalStatsWidgetViewModel(
             string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], Depth),
             string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], Depth),
             history.Result.Review,

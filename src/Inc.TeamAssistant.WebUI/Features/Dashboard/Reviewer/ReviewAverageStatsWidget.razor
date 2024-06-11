@@ -1,0 +1,91 @@
+@using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam
+
+@inherits PersistentComponent<ReviewAverageStatsWidgetViewModel>
+
+@inject IReviewService ReviewService
+
+<ApexChart TItem="ReviewAverageStatsDto"
+           Title="@ViewModel.Title"
+           Options="_options">
+    <ApexPointSeries TItem="ReviewAverageStatsDto"
+                     Items="ViewModel.Items"
+                     SeriesType="@SeriesType.Area"
+                     Name="@ViewModel.FirstTouch"
+                     XValue="@(e => e.Created)"
+                     YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"
+                     OrderByDescending="e => e.X" />
+    <ApexPointSeries TItem="ReviewAverageStatsDto"
+                     Items="ViewModel.Items"
+                     SeriesType="@SeriesType.Area"
+                     Name="@ViewModel.Review"
+                     XValue="@(e => e.Created)"
+                     YValue="@(e => (decimal)e.Review.TotalMinutes)"
+                     OrderByDescending="e => e.X" />
+    <ApexPointSeries TItem="ReviewAverageStatsDto"
+                     Items="ViewModel.Items"
+                     SeriesType="@SeriesType.Area"
+                     Name="@ViewModel.Correction"
+                     XValue="@(e => e.Created)"
+                     YValue="@(e => (decimal)e.Correction.TotalMinutes)"
+                     OrderByDescending="e => e.X" />
+</ApexChart>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public int Depth { get; set; }
+    
+    private ApexChartOptions<ReviewAverageStatsDto> _options = CreateChartOptions();
+    
+    protected override async Task<ReviewAverageStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var averageMetrics = await ReviewService.GetAverage(TeamId, Depth);
+
+        return new(
+            resources[Messages.Dashboard_ReviewAverageStatsTitle],
+            resources[Messages.Dashboard_ReviewAverageFirstTouch],
+            resources[Messages.Dashboard_ReviewAverageReview],
+            resources[Messages.Dashboard_ReviewAverageCorrection],
+            averageMetrics.Result.Items);
+    }
+    
+    private static ApexChartOptions<ReviewAverageStatsDto> CreateChartOptions()
+    {
+        return new()
+        {
+            Legend = new Legend
+            {
+                Position = LegendPosition.Bottom,
+                HorizontalAlign = ApexCharts.Align.Center
+            },
+            Title = new Title
+            {
+                Align = ApexCharts.Align.Center
+            },
+            Theme = new Theme
+            {
+                Mode = Mode.Dark,
+                Palette = PaletteType.Palette1
+            },
+            Chart = new Chart
+            {
+                Toolbar = new Toolbar
+                {
+                    Show = false,
+                    Tools = new Tools
+                    {
+                        Download = false,
+                        Selection = false,
+                        Zoom = false,
+                        Zoomin = false,
+                        Zoomout = false,
+                        Pan = false,
+                        Reset = false
+                    }
+                }
+            }
+        };
+    }
+}

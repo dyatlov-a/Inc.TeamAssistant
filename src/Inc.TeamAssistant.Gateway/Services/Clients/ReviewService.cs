@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -25,6 +26,20 @@ internal sealed class ReviewService : IReviewService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetHistoryByTeamResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(Guid teamId, int depth, CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetAverageByTeamQuery(teamId, depth), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetAverageByTeamResult>(ex.Message);
         }
     }
 }

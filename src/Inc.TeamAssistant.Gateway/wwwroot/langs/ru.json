@@ -135,6 +135,10 @@
   "Dashboard_RecoveryTeammate": "Восстановить участника",
   "Dashboard_ReviewByReviewerTemplate": "Проведено ревью ({0} дней)",
   "Dashboard_ReviewByOwnerTemplate": "Отправлено на ревью ({0} дней)",
+  "Dashboard_ReviewAverageStatsTitle": "Средняя статистика по дням (в минутах)",
+  "Dashboard_ReviewAverageFirstTouch": "Первое касание",
+  "Dashboard_ReviewAverageReview": "Ревью",
+  "Dashboard_ReviewAverageCorrection": "Правки",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

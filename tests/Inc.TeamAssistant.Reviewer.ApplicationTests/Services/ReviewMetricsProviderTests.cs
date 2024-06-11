@@ -26,7 +26,7 @@ public sealed class ReviewMetricsProviderTests
             holidayReader,
             new WorkdayOptions { WorkOnHoliday = true, Weekends = [] });
         
-        _target = new ReviewMetricsProvider(holidayService);
+        _target = new ReviewMetricsProvider(new ReviewTeamMetricsFactory(holidayService));
     }
 
     [Theory]

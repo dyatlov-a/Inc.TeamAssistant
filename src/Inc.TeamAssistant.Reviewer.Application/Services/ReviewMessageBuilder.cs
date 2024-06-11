@@ -19,19 +19,22 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private readonly ITaskForReviewReader _taskForReviewReader;
     private readonly IHolidayService _holidayService;
     private readonly IReviewMetricsProvider _reviewMetricsProvider;
+    private readonly ReviewTeamMetricsFactory _metricsFactory;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
         ITaskForReviewReader taskForReviewReader,
         IHolidayService holidayService,
-        IReviewMetricsProvider reviewMetricsProvider)
+        IReviewMetricsProvider reviewMetricsProvider,
+        ReviewTeamMetricsFactory metricsFactory)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
         _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _reviewMetricsProvider = reviewMetricsProvider ?? throw new ArgumentNullException(nameof(reviewMetricsProvider));
+        _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
     }
 
     public async Task<IReadOnlyCollection<NotificationMessage>> Build(
@@ -46,7 +49,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(owner);
 
         var metricsByTeam = _reviewMetricsProvider.Get(taskForReview.TeamId);
-        var metricsByTask = await _reviewMetricsProvider.Create(taskForReview, token);
+        var metricsByTask = await _metricsFactory.Create(taskForReview, token);
 
         var notifications = new List<NotificationMessage>
         {

@@ -3,14 +3,14 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 
-public sealed record ReviewStatsWidgetViewModel(
+public sealed record ReviewTotalStatsWidgetViewModel(
     string ReviewByReviewer,
     string ReviewByOwner,
     IReadOnlyCollection<HistoryByTeamItemDto> Review,
     IReadOnlyCollection<HistoryByTeamItemDto> Requests)
-    : IViewModel<ReviewStatsWidgetViewModel>
+    : IViewModel<ReviewTotalStatsWidgetViewModel>
 {
-    public static ReviewStatsWidgetViewModel Empty { get; } = new(
+    public static ReviewTotalStatsWidgetViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         Array.Empty<HistoryByTeamItemDto>(),
