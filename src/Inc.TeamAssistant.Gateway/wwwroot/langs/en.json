@@ -133,6 +133,8 @@
   "Dashboard_PersonName": "Name",
   "Dashboard_LeaveUntil": "Leave until",
   "Dashboard_RecoveryTeammate": "Recovery teammate",
+  "Dashboard_ReviewByReviewerTemplate": "Reviewed ({0} days)",
+  "Dashboard_ReviewByOwnerTemplate": "Submitted ({0} days)",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

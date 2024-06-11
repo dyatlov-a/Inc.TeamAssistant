@@ -170,9 +170,13 @@ html {
 /* GRID */
 .quick-data-grid {
     width: 100%;
+    word-break: break-all;
+    font-size: .8rem;
+}
+.quick-data-grid .link {
+    font-size: .8rem;
 }
 .quick-data-grid .col-title {
     color: #000;
-    font-size: 1.2rem;
     font-weight: normal !important;
 }

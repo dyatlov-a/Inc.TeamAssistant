@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
             .AddScoped<IBotService, BotClient>()
+            .AddScoped<IReviewService, ReviewClient>()
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()

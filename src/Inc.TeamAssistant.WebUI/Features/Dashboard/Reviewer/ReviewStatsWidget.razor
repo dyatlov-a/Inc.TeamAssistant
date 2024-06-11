@@ -1,0 +1,74 @@
+@using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
+
+@inherits PersistentComponent<ReviewStatsWidgetViewModel>
+
+@inject IReviewService ReviewService
+
+<div class="review-stats">
+    <div class="review-stats__item">
+        <ApexChart
+            TItem="HistoryByTeamItemDto"
+            Title="@ViewModel.ReviewByReviewer"
+            Options="_reviewByReviewerOptions"
+            Width="@("100%")">
+            <ApexPointSeries TItem="HistoryByTeamItemDto"
+                             Items="ViewModel.Review"
+                             SeriesType="SeriesType.Donut"
+                             XValue="@(e => e.PersonName)"
+                             YAggregate="@(e => e.Sum(i => i.Count))"
+                             OrderByDescending="e => e.Y!" />
+        </ApexChart>
+    </div>
+    <div class="review-stats__item">
+        <ApexChart
+            TItem="HistoryByTeamItemDto"
+            Title="@ViewModel.ReviewByOwner"
+            Options="_reviewByOwnerOptions"
+            Width="@("100%")">
+            <ApexPointSeries TItem="HistoryByTeamItemDto"
+                             Items="ViewModel.Requests"
+                             SeriesType="SeriesType.Donut"
+                             XValue="@(e => e.PersonName)"
+                             YAggregate="@(e => e.Sum(i => i.Count))"
+                             OrderByDescending="e => e.Y!" />
+        </ApexChart>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public int Depth { get; set; }
+
+    private ApexChartOptions<HistoryByTeamItemDto> _reviewByReviewerOptions = CreateChartOptions();
+    private ApexChartOptions<HistoryByTeamItemDto> _reviewByOwnerOptions = CreateChartOptions();
+
+    protected override async Task<ReviewStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var history = await ReviewService.GetHistory(TeamId, Depth);
+
+        return new ReviewStatsWidgetViewModel(
+            string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], Depth),
+            string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], Depth),
+            history.Result.Review,
+            history.Result.Requests);
+    }
+
+    private static ApexChartOptions<HistoryByTeamItemDto> CreateChartOptions()
+    {
+        return new()
+        {
+            Legend = new Legend
+            {
+                Position = LegendPosition.Bottom,
+                HorizontalAlign = ApexCharts.Align.Center
+            },
+            Title = new Title
+            {
+                Align = ApexCharts.Align.Center
+            }
+        };
+    }
+}

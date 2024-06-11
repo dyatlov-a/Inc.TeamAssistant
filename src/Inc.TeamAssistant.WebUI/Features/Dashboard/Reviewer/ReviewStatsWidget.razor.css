@@ -1,0 +1,6 @@
+.review-stats {
+    display: flex;
+}
+.review-stats__item {
+    flex: 0 1 50%;
+}

@@ -2,8 +2,8 @@
     display: flex;
 }
 .dashboard-toolbar__content {
-    width: 300px;
-    padding: 0 20px;
+    width: 280px;
+    padding: 0 10px;
 }
 .dashboard-content {
     flex-grow: 1;
@@ -13,8 +13,8 @@
     flex-wrap: wrap;
 }
 .dashboard-widgets__widget {
-    flex: 0 1 calc(50% - 40px);
-    padding: 0 20px;
+    flex: 0 1 50%;
+    padding: 0 10px;
 }
 .dashboard-widgets__content {
     margin-top: 30px;
@@ -22,10 +22,13 @@
     border-top: 5px #555 solid;
     background-color: #9d9d9d;
 }
-@media (max-width: 991.98px) {
+@media (max-width: 1080px) {
     .dashboard-widgets__widget {
         flex: 0 1 100%;
     }
+}
+@media (max-width: 991.98px) {
+    
 }
 @media (max-width: 767.98px) {
     .dashboard {
