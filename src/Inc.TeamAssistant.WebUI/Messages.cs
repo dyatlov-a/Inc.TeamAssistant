@@ -94,11 +94,15 @@ internal static class Messages
     public static readonly string Dashboard_RecoveryTeammate = nameof(Dashboard_RecoveryTeammate);
     public static readonly string Dashboard_ReviewByReviewerTemplate = nameof(Dashboard_ReviewByReviewerTemplate);
     public static readonly string Dashboard_ReviewByOwnerTemplate = nameof(Dashboard_ReviewByOwnerTemplate);
-    
     public static readonly string Dashboard_ReviewAverageStatsTitle = nameof(Dashboard_ReviewAverageStatsTitle);
     public static readonly string Dashboard_ReviewAverageFirstTouch = nameof(Dashboard_ReviewAverageFirstTouch);
     public static readonly string Dashboard_ReviewAverageReview = nameof(Dashboard_ReviewAverageReview);
     public static readonly string Dashboard_ReviewAverageCorrection = nameof(Dashboard_ReviewAverageCorrection);
+    public static readonly string Dashboard_ReviewCreatedTitle = nameof(Dashboard_ReviewCreatedTitle);
+    public static readonly string Dashboard_ReviewDescriptionTitle = nameof(Dashboard_ReviewDescriptionTitle);
+    public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
+    public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
+    public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

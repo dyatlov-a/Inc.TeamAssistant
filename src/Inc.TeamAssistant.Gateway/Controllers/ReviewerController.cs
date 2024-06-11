@@ -29,4 +29,11 @@ public sealed class ReviewerController : ControllerBase
         var result = await _reviewService.GetAverage(teamId, depth);
         return Ok(result);
     }
+    
+    [HttpGet("last/{teamId:guid}/{count:int}")]
+    public async Task<IActionResult> GetLast(Guid teamId, int count)
+    {
+        var result = await _reviewService.GetLast(teamId, count);
+        return Ok(result);
+    }
 }

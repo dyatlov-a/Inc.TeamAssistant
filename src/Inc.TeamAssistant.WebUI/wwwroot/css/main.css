@@ -180,6 +180,9 @@ html {
     color: #000;
     font-weight: normal !important;
 }
+.quick-data-grid tbody tr:nth-child(2n - 1){
+    background-color: #555;
+}
 .apexcharts-svg {
     background: none !important;
 }

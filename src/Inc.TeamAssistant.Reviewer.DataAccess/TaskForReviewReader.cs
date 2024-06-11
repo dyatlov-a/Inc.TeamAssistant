@@ -1,7 +1,9 @@
 using Dapper;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
@@ -188,5 +190,62 @@ ORDER BY t.created;",
         var history = await connection.QueryAsync<(long ReviewerId, int Count)>(command);
 
         return history.ToDictionary(h => h.ReviewerId, h => h.Count);
+    }
+
+    public async Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(
+        Guid teamId,
+        int count,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+SELECT
+    t.id AS id,
+    t.created AS created,
+    t.description AS description,
+    t.state AS state,
+    r.id AS reviewerid,
+    r.name AS reviewername,
+    r.username AS reviewerusername,
+    r.id AS ownerid,
+    r.name AS ownername,
+    r.username AS ownerusername
+FROM review.task_for_reviews AS t
+JOIN connector.persons AS r ON r.id = t.reviewer_id
+JOIN connector.persons AS o ON o.id = t.owner_id
+WHERE t.team_id = @team_id
+ORDER BY t.created DESC
+LIMIT @count;",
+            new
+            {
+                team_id = teamId,
+                count
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var tasks = await connection.QueryAsync<(
+            Guid Id,
+            DateTimeOffset Created,
+            string Description,
+            TaskForReviewState State,
+            long ReviewerId,
+            string ReviewerName,
+            string? ReviewerUsername,
+            long OwnerId,
+            string OwnerName,
+            string? OwnerUsername)>(command);
+        var results = tasks
+            .Select(t => new TaskForReviewDto(
+                t.Id,
+                t.Created,
+                t.Description,
+                new Person(t.ReviewerId, t.ReviewerName, t.ReviewerUsername).DisplayName,
+                new Person(t.OwnerId, t.OwnerName, t.OwnerUsername).DisplayName,
+                t.State.ToString()))
+            .ToArray();
+
+        return results;
     }
 }
