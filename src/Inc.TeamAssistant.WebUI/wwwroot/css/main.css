@@ -179,7 +179,6 @@ html {
 }
 .quick-data-grid .col-title {
     color: #000;
-    font-weight: normal !important;
 }
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: #555;
