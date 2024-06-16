@@ -42,7 +42,8 @@ public static class ServiceCollectionExtensions
             .AddOptions()
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<ResourcesManager>();
+            .AddScoped<ResourcesManager>()
+            .AddScoped(typeof(DragAndDropService<>));
 
         return services;
     }
