@@ -27,6 +27,9 @@
 .view-controls__item:hover, .view-controls__item_active {
     background-color: #9d9d9d;
 }
+::deep svg {
+    margin-bottom: -4px;
+}
 @media (max-width: 479.98px) {
     .assessment-session__header {
         flex-direction: column;

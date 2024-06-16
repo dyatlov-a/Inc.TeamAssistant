@@ -34,11 +34,26 @@
             </div>
         }
     </div>
-    <span class="story__value-total"><b>@Item.Total</b> @MeanRating</span>
-    @if (Item.HasMedian)
-    {
-        <span class="story__value-total"><b>@Item.Median</b> @MedianRating</span>
-    }
+    <div class="story__total">
+        <div class="story__total-divider"></div>
+        <div>
+            <table>
+                <tbody>
+                <tr>
+                    <td><span class="story__total-item"><b>@Item.Total</b></span></td>
+                    <td><span class="story__total-item">@MeanRating</span></td>
+                </tr>
+                @if (Item.HasMedian)
+                {
+                <tr>
+                    <td><span class="story__total-item"><b>@Item.Median</b></span></td>
+                    <td><span class="story__total-item">@MedianRating</span></td>
+                </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @code {

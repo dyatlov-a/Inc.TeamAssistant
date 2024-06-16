@@ -13,11 +13,17 @@
 .story__item {
     line-height: 2rem;
 }
-.story__value-total {
-    text-align: right;
+.story__total {
+    display: flex;
+}
+.story__total-divider {
+    flex-grow: 1;
+}
+.story__total-item {
     display: block;
     font-size: 1.8rem;
     line-height: 2.2rem;
+    padding-right: 20px;
 }
 ::deep .user-card {
     margin: 20px;
