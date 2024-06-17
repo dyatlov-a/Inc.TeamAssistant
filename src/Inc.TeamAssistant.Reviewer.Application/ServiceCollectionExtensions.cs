@@ -22,10 +22,15 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(options)
-            .AddScoped<IMessageBuilderService, MessageBuilderService>()
+            .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
-            .AddSingleton<ReviewHistoryService>()
-            .AddHostedService<NotificationsService>()
+            .AddHostedService<PushService>()
+            
+            .AddSingleton<ReviewMetricsProvider>()
+            .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
+            .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
+            .AddSingleton<ReviewTeamMetricsFactory>()
+            .AddHostedService<ReviewMetricsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()

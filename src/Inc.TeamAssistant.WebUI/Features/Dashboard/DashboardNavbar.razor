@@ -1,0 +1,51 @@
+@using Inc.TeamAssistant.Primitives.Languages
+
+@inherits PersistentComponent<DashboardNavbarViewModel>
+
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+
+<div class="navbar">
+    @foreach (var culture in LanguageSettings.LanguageIds)
+    {
+        var path = ChangeCulture(culture.Value);
+        <a href="@path" @onclick="() => MoveTo(path)" class="link link_white navbar__item" @onclick:preventDefault="true">@culture.Value</a>
+    }
+    <AuthorizeView>
+        <Authorized>
+            <span class="navbar__item">@context.User.ToPerson().DisplayName</span>
+            <a href="/accounts/logout" class="link link_white navbar__item">@ViewModel.Logout</a>
+        </Authorized>
+        <NotAuthorized>
+            @if (ViewModel.HasLoginAsSuperUser)
+            {
+                <a href="/accounts/as-super-user" class="link link_white navbar__item">@ViewModel.LoginAsSuperuser</a>
+            }
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    protected override async Task<DashboardNavbarViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return await Task.FromResult(new DashboardNavbarViewModel(
+            RenderContext.IsDevelopment(),
+            resources[Messages.Navigation_Logout],
+            resources[Messages.Navigation_LoginAsSuperuser]));
+    }
+
+    private string ChangeCulture(string culture)
+    {
+        var cleanUri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        
+        foreach (var languageId in LanguageSettings.LanguageIds)
+            cleanUri = cleanUri.Replace($"{languageId.Value}/", string.Empty);
+
+        return $"/{culture}/{cleanUri}";
+    }
+
+    private void MoveTo(string path)
+    {
+        NavigationManager.NavigateTo(path, forceLoad: true);
+    }
+}

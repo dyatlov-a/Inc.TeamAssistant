@@ -36,7 +36,7 @@ internal sealed class CommandFactory
         if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
             return new EndCommand(messageContext);
 
-        var dialogState = _dialogContinuation.Find(messageContext.TargetChat);
+        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
         var input = dialogState is null ? _aliasService.OverrideCommand(messageContext.Text) : dialogState.Command;
         
         var botCommand = bot.FindCommand(input);

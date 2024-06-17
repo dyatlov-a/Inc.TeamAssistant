@@ -1,0 +1,22 @@
+.dashboard {
+    display: flex;
+}
+.dashboard-toolbar__content {
+    width: 260px;
+    padding: 0 10px;
+}
+.dashboard-content {
+    flex-grow: 1;
+}
+.dashboard-widgets {
+    display: flex;
+    flex-wrap: wrap;
+}
+@media (max-width: 767.98px) {
+    .dashboard {
+        display: block;
+    }
+    .dashboard-toolbar__content {
+        width: 100%;
+    }
+}

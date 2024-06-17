@@ -4,6 +4,9 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName)Tests" />
+    </ItemGroup>
+    <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />

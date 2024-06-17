@@ -17,7 +17,8 @@ internal sealed class TeamAccessor : ITeamAccessor
         ITeamRepository teamRepository)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
-        _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
+        _clientLanguageRepository =
+            clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
     }
 
@@ -30,9 +31,12 @@ internal sealed class TeamAccessor : ITeamAccessor
         return (team.BotId, team.Name);
     }
 
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Person>> GetTeammates(
+        Guid teamId,
+        DateTimeOffset now,
+        CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, token);
+        return await _personRepository.GetTeammates(teamId, now, token);
     }
 
     public async Task<Person?> FindPerson(long personId, CancellationToken token)

@@ -19,6 +19,7 @@ public sealed class NotificationMessage
     public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
     public long? TargetPersonId { get; private set; }
+    public int? ReplyToMessageId { get; private set; }
 
     private NotificationMessage(
         long? targetChatId,
@@ -53,9 +54,8 @@ public sealed class NotificationMessage
 
     public NotificationMessage WithButton(Button button)
     {
-        if (button is null)
-            throw new ArgumentNullException(nameof(button));
-        
+        ArgumentNullException.ThrowIfNull(button);
+
         _buttons.Add(button);
 
         return this;
@@ -77,6 +77,13 @@ public sealed class NotificationMessage
 
         return this;
     }
+    
+    public NotificationMessage ReplyTo(int messageId)
+    {
+        ReplyToMessageId = messageId;
+
+        return this;
+    }
 
     public static NotificationMessage Create(long targetChatId, string text, bool pinned = false)
     {
@@ -88,8 +95,8 @@ public sealed class NotificationMessage
 
     public static NotificationMessage Edit(ChatMessage targetMessage, string text)
     {
-        if (targetMessage is null)
-            throw new ArgumentNullException(nameof(targetMessage));
+        ArgumentNullException.ThrowIfNull(targetMessage);
+        
         if (string.IsNullOrWhiteSpace(text))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
 
@@ -98,9 +105,8 @@ public sealed class NotificationMessage
 
     public static NotificationMessage Delete(ChatMessage deleteMessage)
     {
-        if (deleteMessage is null)
-            throw new ArgumentNullException(nameof(deleteMessage));
-        
+        ArgumentNullException.ThrowIfNull(deleteMessage);
+
         return new(targetChatId: null, targetMessage: null, deleteMessage, string.Empty);
     }
 }

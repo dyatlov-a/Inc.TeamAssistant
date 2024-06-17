@@ -24,7 +24,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var bot = await _botReader.Find(command.MessageContext.Bot.Id, token);
+        var bot = await _botReader.Find(command.MessageContext.Bot.Id, DateTimeOffset.UtcNow, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.Bot.Id);
 
@@ -35,8 +35,11 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
         var notification = NotificationMessage
             .Create(command.MessageContext.ChatMessage.ChatId, notificationText)
             .SetButtonsInRow(1);
+        var commands = bot.Commands.Where(c =>
+            c.HelpMessageId is not null &&
+            !CommandList.Help.Equals(c.Value, StringComparison.InvariantCultureIgnoreCase));
 
-        foreach (var cmd in bot.Commands.Where(c => c.HelpMessageId is not null && !CommandList.Help.Equals(c.Value, StringComparison.InvariantCultureIgnoreCase)))
+        foreach (var cmd in commands)
         {
             var text = await _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
 

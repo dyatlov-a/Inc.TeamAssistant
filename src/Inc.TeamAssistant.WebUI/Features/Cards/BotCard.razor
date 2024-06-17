@@ -1,0 +1,42 @@
+<div class="bot-card">
+    <div class="bot-card__header">
+        <div class="bot-card__avatar">
+            <DynamicComponent Type="Icon" Parameters="IconParameters" />
+        </div>
+    </div>
+    <div class="bot-card__content">
+        @if (!string.IsNullOrWhiteSpace(Name))
+        {
+            <h3 class="bot-card__name">@Name</h3>
+        }
+
+        @Content
+
+        @if (Buttons is not null)
+        {
+            <div class="bot-card__actions">
+                @Buttons
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Type Icon { get; set; } = default!;
+    
+    [Parameter]
+    public string? Name { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Buttons { get; set; }
+    
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "60px",
+        ["Color"] = "#000"
+    };
+}

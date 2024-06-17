@@ -32,9 +32,12 @@ internal sealed class CachedPersonRepository : IPersonRepository
         return await _personRepository.Find(username, token);
     }
 
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Person>> GetTeammates(
+        Guid teamId,
+        DateTimeOffset now,
+        CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, token);
+        return await _personRepository.GetTeammates(teamId, now, token);
     }
 
     public async Task Upsert(Person person, CancellationToken token)
@@ -53,6 +56,11 @@ internal sealed class CachedPersonRepository : IPersonRepository
     public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
     {
         await _personRepository.LeaveFromTeam(teamId, personId, token);
+    }
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset? until, CancellationToken token)
+    {
+        await _personRepository.LeaveFromTeam(teamId, personId, until, token);
     }
 
     private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_{personId}";

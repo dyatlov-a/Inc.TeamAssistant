@@ -1,0 +1,45 @@
+@using Inc.TeamAssistant.Appraiser.Model.Common
+
+<div class="story @CssClass">
+    <h2 class="story__title">@Item.Title</h2>
+    @if (Item.Links.Any())
+    {
+        <ul class="story__items">
+            @foreach (var link in Item.Links)
+            {
+                <li class="story__item">
+                    <a class="link" href="@link" target="_blank">@link</a>
+                </li>
+            }
+        </ul>
+    }
+    <div class="story__content">
+        <div class="story__cards">
+            @foreach (var storyForEstimate in Item.StoryForEstimates)
+            {
+            <UserCard IsDarkTheme="IsDarkTheme" PersonId="storyForEstimate.ParticipantId" Name="@storyForEstimate.ParticipantName">
+                <Content>
+                    <span class="story__value">@storyForEstimate.DisplayValue</span>
+                </Content>
+            </UserCard>
+            }
+        </div>
+    </div>
+    <span class="story__value-total"><b>@Item.Total</b> @MeanRating</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Item { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string MeanRating { get; set; } = default!;
+    
+    [Parameter]
+    public string? MedianRating { get; set; }
+    
+    [Parameter, EditorRequired]
+    public bool IsDarkTheme { get; set; }
+    
+    private string CssClass => IsDarkTheme ? "story_dark" : string.Empty;
+}

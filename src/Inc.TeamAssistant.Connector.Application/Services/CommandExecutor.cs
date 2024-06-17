@@ -49,7 +49,7 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         var botId = command.MessageContext.Bot.Id;
         var client = await _provider.Get(command.MessageContext.Bot.Id, token);
-        var dialog = _dialogContinuation.Find(command.MessageContext.TargetChat);
+        var dialog = _dialogContinuation.Find(command.MessageContext.Bot.Id, command.MessageContext.TargetChat);
         
         try
         {
@@ -192,6 +192,7 @@ internal sealed class CommandExecutor : ICommandExecutor
                     notificationMessage.Text,
                     replyMarkup: notificationMessage.ToReplyMarkup(),
                     entities: entities,
+                    replyToMessageId: notificationMessage.ReplyToMessageId,
                     cancellationToken: token);
 
             if (notificationMessage.Pinned)

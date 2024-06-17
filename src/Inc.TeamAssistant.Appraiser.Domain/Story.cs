@@ -5,6 +5,8 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed class Story
 {
+	const string UnknownValue = "?";
+	
 	public Guid Id { get; private set; }
 	public Guid BotId { get; private set; }
 	public StoryType StoryType { get; private set; }
@@ -54,16 +56,14 @@ public sealed class Story
 
 	public string GetTotalValue()
 	{
-		const string unknownValue = "?";
-
 		if (!EstimateEnded)
-			return unknownValue;
+			return UnknownValue;
 		
 		return StoryType switch
 		{
-			StoryType.Scrum => GetScrumTotal()?.ToString(".## SP") ?? unknownValue,
-			StoryType.Kanban => GetKanbanTotal()?.ToString().ToUpperInvariant() ?? unknownValue,
-			_ => unknownValue
+			StoryType.Scrum => CalculateMean()?.ToString(".## SP") ?? UnknownValue,
+			StoryType.Kanban => CalculateMedianValue()?.ToString().ToUpperInvariant() ?? UnknownValue,
+			_ => UnknownValue
 		};
 	}
 
@@ -140,7 +140,7 @@ public sealed class Story
 	
 	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
 	
-	private decimal? GetScrumTotal()
+	private decimal? CalculateMean()
 	{
 		var values = _storyForEstimates
 			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
@@ -154,18 +154,43 @@ public sealed class Story
 		return result;
 	}
 
-	private AssessmentValue.Value? GetKanbanTotal()
+	private AssessmentValue.Value? CalculateMedianValue()
 	{
 		var values = _storyForEstimates
 			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
 			.OrderBy(i => i.Value)
 			.Select(i => i.Value)
 			.ToArray();
-
+		
 		if (!values.Any())
 			return null;
 
-		var index = values.Length / 2;
-		return values[index];
+		var middle = values.Length / 2;
+		return values[middle];
+	}
+
+	public string? CalculateMedian()
+	{
+		if (StoryType == StoryType.Kanban)
+			return null;
+		if (!EstimateEnded)
+			return UnknownValue;
+		
+		var values = _storyForEstimates
+			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
+			.OrderBy(i => i.Value)
+			.Select(i => (int)i.Value)
+			.ToArray();
+		
+		if (!values.Any())
+			return null;
+
+		var middle = values.Length / 2;
+		
+		var value = values.Length % 2 == 0
+			? (values[middle] + values[middle - 1]) / 2m
+			: values[middle];
+
+		return value.ToString(".## SP");
 	}
 }

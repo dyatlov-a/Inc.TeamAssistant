@@ -1,0 +1,54 @@
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
+@inject DragAndDropService<Guid> DragAndDropService
+
+<div draggable="true" class="feature-card" @ondragstart="@(() => HandleDragStart(FeatureId))">
+    <div class="feature-card__header">
+        <div class="feature-card__avatar">
+            <DynamicComponent Type="Icon" Parameters="IconParameters" />
+        </div>
+    </div>
+    <div class="feature-card__content">
+        @if (!string.IsNullOrWhiteSpace(Name))
+        {
+            <h3 class="feature-card__name">@Name</h3>
+        }
+
+        @Content
+
+        @if (Buttons is not null)
+        {
+            <div class="feature-card__actions">
+                @Buttons
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Type Icon { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Guid FeatureId { get; set; }
+    
+    [Parameter]
+    public string? Name { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Buttons { get; set; }
+    
+    private Dictionary<string, object> IconParameters => new()
+    {
+        ["Size"] = "60px",
+        ["Color"] = "#000"
+    };
+    
+    private void HandleDragStart(Guid id)
+    {
+        DragAndDropService.Start(id);
+    }
+}

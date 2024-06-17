@@ -14,24 +14,27 @@
 <div class="bot-selector">
     @foreach(var bot in ViewModel.Bots)
     {
-        <DefaultCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+        <BotCard Icon="@typeof(BotIcon)">
+            <Content>
+                <h3 class="bot-selector__card-content">@bot.Name <a href="@MoveToDashboardLink(bot)" class="link link_black">@ViewModel.MoveToStats</a></h3>
+            </Content>
             <Buttons>
                 <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
                     @ViewModel.Edit
                 </button>
-                <button type="button" class="button button_black bot-selector__button" @onclick="() => MoveToRemove(bot)">
+                <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToRemove(bot)">
                     @ViewModel.Remove
                 </button>
             </Buttons>
-        </DefaultCard>
+        </BotCard>
     }
-    <DefaultCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+    <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
         <Buttons>
             <button type="button" class="button button_white bot-selector__button" @onclick="MoveToAdd">
                 @ViewModel.AddBot
             </button>
         </Buttons>
-    </DefaultCard>
+    </BotCard>
 </div>
 
 @code {
@@ -51,6 +54,7 @@
             resources[Messages.Constructor_Edit],
             resources[Messages.Constructor_Remove],
             resources[Messages.Constructor_RemoveConfirmationText],
+            resources[Messages.Dashboard_MoveToStats],
             getBotsByOwnerResult.Result.Bots);
     }
 
@@ -72,6 +76,8 @@
         
         _confirmDialog?.Open();
     }
+
+    private string MoveToDashboardLink(BotDto bot) => LinkBuilder($"dashboard/{bot.Id:N}");
 
     private async Task Remove()
     {

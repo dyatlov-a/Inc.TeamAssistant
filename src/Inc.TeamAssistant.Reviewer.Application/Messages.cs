@@ -16,4 +16,13 @@ internal static class Messages
     public static readonly MessageId Connector_PersonNotFound = new(nameof(Connector_PersonNotFound));
     public static readonly MessageId Reviewer_TeamWithoutUsers = new(nameof(Reviewer_TeamWithoutUsers));
     public static readonly MessageId Reviewer_Reassign = new(nameof(Reviewer_Reassign));
+    public static readonly MessageId Reviewer_NeedEndReview = new(nameof(Reviewer_NeedEndReview));
+    public static readonly MessageId Reviewer_NeedRevisions = new(nameof(Reviewer_NeedRevisions));
+    public static readonly MessageId Reviewer_StatsAttempts = new(nameof(Reviewer_StatsAttempts));
+    public static readonly MessageId Reviewer_StatsFirstTouch = new(nameof(Reviewer_StatsFirstTouch));
+    public static readonly MessageId Reviewer_StatsFirstTouchAverage = new(nameof(Reviewer_StatsFirstTouchAverage));
+    public static readonly MessageId Reviewer_StatsReview = new(nameof(Reviewer_StatsReview));
+    public static readonly MessageId Reviewer_StatsReviewAverage = new(nameof(Reviewer_StatsReviewAverage));
+    public static readonly MessageId Reviewer_StatsCorrection = new(nameof(Reviewer_StatsCorrection));
+    public static readonly MessageId Reviewer_StatsCorrectionAverage = new(nameof(Reviewer_StatsCorrectionAverage));
 }

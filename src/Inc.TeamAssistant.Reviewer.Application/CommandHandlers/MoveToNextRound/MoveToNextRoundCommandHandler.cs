@@ -10,18 +10,18 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound
 internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNextRoundCommand, CommandResult>
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
-    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
 
     public MoveToNextRoundCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
-        IMessageBuilderService messageBuilderService,
+        IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _messageBuilderService =
-            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _reviewMessageBuilder =
+            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -41,20 +41,17 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.MoveToNextRound();
-        
-        var notifications = new[]
-        {
-            await _messageBuilderService.BuildNewTaskForReview(taskForReview, reviewer, owner, token),
-            await _messageBuilderService.BuildMoveToNextRound(
-                taskForReview,
-                owner,
-                command.MessageContext.ChatMessage,
-                token)
-        };
+        taskForReview.MoveToNextRound(DateTimeOffset.UtcNow);
+
+        var notifications = await _reviewMessageBuilder.Build(
+            command.MessageContext.ChatMessage.MessageId,
+            taskForReview,
+            reviewer,
+            owner,
+            token);
 
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(notifications);
+        return CommandResult.Build(notifications.ToArray());
     }
 }

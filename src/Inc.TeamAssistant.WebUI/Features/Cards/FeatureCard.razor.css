@@ -1,0 +1,34 @@
+.feature-card {
+    margin-bottom: 20px;
+    background-color: #555;
+    width: 100%;
+}
+.feature-card__name {
+    font-size: 1.1rem;
+    word-break: break-all;
+    text-align: center;
+}
+.feature-card__header {
+    background-color: #fff;
+    position: relative;
+    height: 60px;
+}
+.feature-card__content {
+    padding: 60px 20px 20px 20px;
+}
+.feature-card__avatar {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    left: 50%;
+    bottom: 0;
+    margin: 0 0 -40px -40px;
+    border: 4px solid #000;
+    background-color: #fff;
+    padding: 6px;
+}
+.feature-card__actions {
+    text-align: center;
+    margin-top: 15px;
+}

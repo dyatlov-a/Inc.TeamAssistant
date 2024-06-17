@@ -15,7 +15,7 @@ internal sealed class BotAccessor : IBotAccessor
 
     public async Task<BotContext> GetBotContext(Guid botId, CancellationToken token)
     {
-        var bot = await _botReader.Find(botId, token);
+        var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 

@@ -23,7 +23,7 @@ internal sealed class RemoveTeamHandler : IRemoveTeamHandler
 
         foreach (var task in tasks)
         {
-            task.MoveToArchive();
+            task.MoveToAccept();
             
             await _taskForReviewRepository.Upsert(task, token);
         }

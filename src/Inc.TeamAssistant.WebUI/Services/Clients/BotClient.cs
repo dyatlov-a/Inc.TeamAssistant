@@ -1,5 +1,8 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
@@ -75,6 +78,52 @@ internal sealed class BotClient : IBotService
         {
             return ServiceResult.Failed<GetBotResult?>(ex.Message);
         } 
+    }
+
+    public async Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetBotsResult>>($"bots/{userId}/user", token);
+            if (result is null)
+                throw new TeamAssistantException("Parse response with error.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetBotsResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetTeammatesResult>>(
+                $"bots/{teamId}/teammates",
+                token);
+            if (result is null)
+                throw new TeamAssistantException("Parse response with error.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
+        }
+    }
+
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
+    {
+        try
+        {
+            await _client.PutAsJsonAsync("bots/teammate", command, token);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public async Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token)

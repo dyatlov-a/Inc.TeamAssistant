@@ -1,4 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
@@ -61,6 +64,46 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetBotResult?>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetBotsQuery(userId), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetBotsResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetTeammatesQuery(teamId), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
+        }
+    }
+
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default)
+    {
+        try
+        {
+            await _mediator.Send(command, token);
+        }
+        catch
+        {
+            // ignored
         }
     }
 

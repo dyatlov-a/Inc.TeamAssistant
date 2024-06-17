@@ -1,18 +1,8 @@
 .assessment-history-header, .assessment-history-content {
     padding: 60px 0 40px 0;
 }
-.assessment-history-content:nth-child(2n-1) {
+.assessment-history-content_dark {
     background-color: #fff;
-}
-.assessment-history-content:nth-child(2n-1) ::deep {
-    color: #000;
-}
-.assessment-history-content:nth-child(2n-1) ::deep .user-card {
-    color: #fff;
-    background-color: #616161;
-}
-.assessment-history-content:nth-child(2n-1) ::deep .user-card__header {
-    background-color: #9d9d9d;
 }
 .assessment-history__link {
     display: block;

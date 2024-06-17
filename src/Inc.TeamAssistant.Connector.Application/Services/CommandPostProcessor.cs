@@ -28,6 +28,7 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             throw new ArgumentNullException(nameof(command));
         
         await _dialogContinuation.End(
+            command.MessageContext.Bot.Id,
             command.MessageContext.TargetChat,
             command.MessageContext.ChatMessage,
             async (ms, t) =>

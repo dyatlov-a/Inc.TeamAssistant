@@ -28,7 +28,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(teamContext);
 
         var separator = ' ';
-        var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, token);
+        var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, DateTimeOffset.UtcNow, token);
         var storyItems = messageContext.Text.Split(separator);
         var links = new List<string>();
         var text = new List<string>();

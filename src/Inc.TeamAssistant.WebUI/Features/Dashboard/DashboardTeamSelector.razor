@@ -1,0 +1,101 @@
+@using Inc.TeamAssistant.Connector.Model.Queries.GetBots
+@inherits PersistentComponent<DashboardTeamSelectorViewModel>
+
+@inject NavigationManager NavigationManager
+
+<FormSection Title="@ViewModel.SelectTeamTitle" HelpText="@ViewModel.SelectTeam" AsRows="true">
+    <Content>
+        <FormFieldSet Label="@ViewModel.BotField" FieldId="bot-selector">
+            <Content>
+                <InputSelect id="bot-selector" Value="_currentBotId" ValueExpression="@(() => _currentBotId)" ValueChanged="@((Guid? v) => SelectBot(v))" class="form-control">
+                    <option value=""></option>
+                    @foreach (var bot in Bots)
+                    {
+                        <option value="@bot.Id">@bot.Name</option>
+                    }
+                </InputSelect>
+            </Content>
+        </FormFieldSet>
+        <FormFieldSet Label="@ViewModel.TeamField" FieldId="team-selector">
+            <Content>
+                <InputSelect id="team-selector" Value="_currentTeamId" ValueExpression="@(() => _currentTeamId)" ValueChanged="@((Guid? v) => SelectTeam(v))" class="form-control">
+                    <option value=""></option>
+                    @foreach (var team in GetTeams())
+                    {
+                        <option value="@team.Id">@team.Name</option>
+                    }
+                </InputSelect>
+            </Content>
+        </FormFieldSet>
+    </Content>
+</FormSection>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
+    
+    private Guid? _currentBotId;
+    private Guid? _currentTeamId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        
+        _currentBotId = BotId;
+        _currentTeamId = TeamId;
+
+        if (_currentBotId.HasValue && !_currentTeamId.HasValue)
+            SelectBot(_currentBotId);
+    }
+
+    protected override Task<DashboardTeamSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new DashboardTeamSelectorViewModel(
+            resources[Messages.Dashboard_SelectTeamTitle],
+            resources[Messages.Dashboard_SelectTeam],
+            resources[Messages.Dashboard_TeamField],
+            resources[Messages.Dashboard_BotField]));
+    }
+
+    private void SelectTeam(Guid? value)
+    {
+        _currentTeamId = value;
+        
+        if (_currentBotId.HasValue && _currentTeamId.HasValue)
+            ChangeTeamContext((_currentBotId.Value, _currentTeamId.Value));
+    }
+    
+    private void SelectBot(Guid? value)
+    {
+        _currentBotId = value;
+        
+        if (!_currentBotId.HasValue)
+            return;
+        
+        var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
+        var team = bot?.Teams.FirstOrDefault();
+            
+        ChangeTeamContext((_currentBotId.Value, team?.Id));
+    }
+
+    private void ChangeTeamContext((Guid BotId, Guid? TeamId) teamContext)
+    {
+        if ((BotId, TeamId) != teamContext)
+            NavigationManager.NavigateTo(LinkBuilder($"dashboard/{teamContext.BotId:N}/{teamContext.TeamId:N}"));
+    }
+
+    private IEnumerable<TeamDto> GetTeams()
+    {
+        var bot = Bots.FirstOrDefault(b => b.Id == _currentBotId);
+
+        return bot is not null
+            ? bot.Teams
+            : Array.Empty<TeamDto>();
+    }
+}

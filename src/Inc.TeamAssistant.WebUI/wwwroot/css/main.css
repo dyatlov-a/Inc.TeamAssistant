@@ -167,3 +167,23 @@ html {
     background-color: #fff;
     color: #000;
 }
+/* GRID */
+.quick-data-grid {
+    width: 100%;
+    word-break: break-all;
+    font-size: .8rem;
+    border-spacing: 0;
+}
+.quick-data-grid .link {
+    font-size: .8rem;
+}
+.quick-data-grid .col-title {
+    color: #000;
+}
+.quick-data-grid tbody tr:nth-child(2n - 1){
+    background-color: #555;
+}
+/* CHARTS */
+.apexcharts-svg {
+    background: none !important;
+}

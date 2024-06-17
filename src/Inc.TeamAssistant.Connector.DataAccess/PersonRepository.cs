@@ -50,7 +50,10 @@ internal sealed class PersonRepository : IPersonRepository
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
     
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Person>> GetTeammates(
+        Guid teamId,
+        DateTimeOffset now,
+        CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
@@ -58,9 +61,13 @@ internal sealed class PersonRepository : IPersonRepository
                 p.name AS name,
                 p.username AS username
             FROM connector.persons AS p
-            JOIN connector.teammates AS tm ON p.id = tm.person_id
+            JOIN connector.teammates AS tm ON p.id = tm.person_id AND (tm.leave_until IS NULL OR tm.leave_until < @now)
             WHERE tm.team_id = @team_id;",
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId,
+                now
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -103,6 +110,26 @@ internal sealed class PersonRepository : IPersonRepository
             {
                 team_id = teamId,
                 person_id = personId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        await connection.ExecuteAsync(command);
+    }
+
+    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset? until, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            UPDATE connector.teammates
+            SET leave_until = @leave_until
+            WHERE person_id = @person_id AND team_id = @team_id;",
+            new
+            {
+                team_id = teamId,
+                person_id = personId,
+                leave_until = until
             },
             flags: CommandFlags.None,
             cancellationToken: token);

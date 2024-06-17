@@ -26,7 +26,7 @@ internal sealed class TelegramBotClientProvider
         if (_clientMap.TryGetValue(botId, out var cachedClient))
             return cachedClient;
 
-        var bot = await _botReader.Find(botId, token);
+        var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
 

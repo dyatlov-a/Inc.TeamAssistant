@@ -18,7 +18,7 @@ internal sealed class MarkMessageForDeleteCommandHandler : IRequestHandler<MarkM
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var dialogState = _dialogContinuation.Find(command.MainContext.TargetChat);
+        var dialogState = _dialogContinuation.Find(command.MainContext.Bot.Id, command.MainContext.TargetChat);
         dialogState?.Attach(command.MainContext.ChatMessage with { MessageId = command.MessageId });
         
         return Task.FromResult(CommandResult.Empty);

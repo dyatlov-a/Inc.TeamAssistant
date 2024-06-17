@@ -1,3 +1,4 @@
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
 @inherits LayoutComponentBase
 
 @inject ResourcesManager ResourcesManager
@@ -6,7 +7,11 @@
 
 <OpenGraph Model="_openGraphModel" />
 
-@Body
+<div class="wrapper">
+    <main class="main">
+        @Body
+    </main>
+</div>
 
 <AcceptCookieDialog />
 

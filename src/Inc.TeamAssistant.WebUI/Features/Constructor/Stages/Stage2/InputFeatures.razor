@@ -1,18 +1,27 @@
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
 @inherits InputBase<List<Guid>>
 
+@inject DragAndDropService<Guid> DragAndDropService
+
 <div class="input-features">
-    <div class="form-control input-features__items">
+    <div
+        ondragover="event.preventDefault();"
+        ondragstart="event.dataTransfer.setData('', event.target.id);"
+        @ondrop="() => HandleDrop(AvailableFeatures)"
+        @ondragenter="HandleDragEnter"
+        class="form-control input-features__items @_availableFeaturesCssClass">
         @if (AvailableFeatures.Any())
         {
             foreach (var feature in AvailableFeatures)
             {
-                <DefaultCard Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @AddText
                         </button>
                     </Buttons>
-                </DefaultCard>
+                </FeatureCard>
             }
         }
         else
@@ -20,18 +29,23 @@
             <p class="input-features__text">@FeaturesAvailableEmptyText</p>
         }
     </div>
-    <div class="form-control input-features__items @CssClass">
+    <div
+        ondragover="event.preventDefault();"
+        ondragstart="event.dataTransfer.setData('', event.target.id);"
+        @ondrop="() => HandleDrop(SelectedFeatures)"
+        @ondragenter="HandleDragEnter"
+        class="form-control input-features__items @CssClass @_selectedFeaturesCssClass">
         @if (SelectedFeatures.Any())
         {
             foreach (var feature in SelectedFeatures)
             {
-                <DefaultCard Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @RemoveText
                         </button>
                     </Buttons>
-                </DefaultCard>
+                </FeatureCard>
             }
         }
         else
@@ -66,7 +80,9 @@
     
     [Parameter]
     public RenderFragment? Validation { get; set; }
-    
+
+    private string _availableFeaturesCssClass = string.Empty;
+    private string _selectedFeaturesCssClass = string.Empty;
     private IEnumerable<StagesState.Feature> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
     private IEnumerable<StagesState.Feature> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
     
@@ -105,5 +121,26 @@
             CurrentValue.Remove(id);
         else
             CurrentValue.Add(id);
+    }
+    
+    private void HandleDrop(IEnumerable<StagesState.Feature> features)
+    {
+        var featureId = DragAndDropService.End();
+        
+        if (features.All(f => f.Id != featureId))
+            ToggleFeature(featureId);
+        
+        _availableFeaturesCssClass = string.Empty;
+        _selectedFeaturesCssClass = string.Empty;
+    }
+    
+    private void HandleDragEnter()
+    {
+        var cssClass = "can-drop";
+
+        if (AvailableFeatures.Any(f => f.Id == DragAndDropService.Current))
+            _selectedFeaturesCssClass = cssClass;
+        else
+            _availableFeaturesCssClass = cssClass;
     }
 }

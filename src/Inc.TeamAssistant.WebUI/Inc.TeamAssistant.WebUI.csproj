@@ -3,8 +3,10 @@
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
         <PackageReference Include="Blazored.FluentValidation" Version="2.1.0" />
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
@@ -12,10 +14,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\main\logo.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\main\phone__mockup.png" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
@@ -18,5 +19,9 @@ public interface ITaskForReviewReader
     
     Task<bool> HasReassignFromDate(long personId, DateTimeOffset date, CancellationToken token);
     
+    Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(DateTimeOffset date, CancellationToken token);
+    
     Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
+    
+    Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(Guid teamId, int count, CancellationToken token);
 }

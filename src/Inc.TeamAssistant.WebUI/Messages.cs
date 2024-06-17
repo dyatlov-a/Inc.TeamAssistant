@@ -11,7 +11,8 @@ internal static class Messages
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
     public static readonly string GUI_TaskAssess = nameof(GUI_TaskAssess);
-    public static readonly string GUI_AverageRating = nameof(GUI_AverageRating);
+    public static readonly string GUI_MeanRating = nameof(GUI_MeanRating);
+    public static readonly string GUI_MedianRating = nameof(GUI_MedianRating);
     public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
     public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
     public static readonly string GUI_AssessmentSessionHasNotTasks = nameof(GUI_AssessmentSessionHasNotTasks);
@@ -76,6 +77,31 @@ internal static class Messages
     public static readonly string Constructor_ButtonUpdateText = nameof(Constructor_ButtonUpdateText);
     public static readonly string Constructor_BooleanTrueText = nameof(Constructor_BooleanTrueText);
     public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
+
+    public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
+    public static readonly string Dashboard_Title = nameof(Dashboard_Title);
+    public static readonly string Dashboard_SelectTeam = nameof(Dashboard_SelectTeam);
+    public static readonly string Dashboard_CreateBot = nameof(Dashboard_CreateBot);
+    public static readonly string Dashboard_SelectTeamTitle = nameof(Dashboard_SelectTeamTitle);
+    public static readonly string Dashboard_TeamField = nameof(Dashboard_TeamField);
+    public static readonly string Dashboard_BotField = nameof(Dashboard_BotField);
+    public static readonly string Dashboard_ExcludeFromTeam = nameof(Dashboard_ExcludeFromTeam);
+    public static readonly string Dashboard_LeaveTeammate = nameof(Dashboard_LeaveTeammate);
+    public static readonly string Dashboard_Days = nameof(Dashboard_Days);
+    public static readonly string Dashboard_Forever = nameof(Dashboard_Forever);
+    public static readonly string Dashboard_PersonName = nameof(Dashboard_PersonName);
+    public static readonly string Dashboard_LeaveUntil = nameof(Dashboard_LeaveUntil);
+    public static readonly string Dashboard_RecoveryTeammate = nameof(Dashboard_RecoveryTeammate);
+    public static readonly string Dashboard_ReviewByReviewerTemplate = nameof(Dashboard_ReviewByReviewerTemplate);
+    public static readonly string Dashboard_ReviewByOwnerTemplate = nameof(Dashboard_ReviewByOwnerTemplate);
+    public static readonly string Dashboard_ReviewAverageStatsTitle = nameof(Dashboard_ReviewAverageStatsTitle);
+    public static readonly string Dashboard_ReviewAverageFirstTouch = nameof(Dashboard_ReviewAverageFirstTouch);
+    public static readonly string Dashboard_ReviewAverageReview = nameof(Dashboard_ReviewAverageReview);
+    public static readonly string Dashboard_ReviewAverageCorrection = nameof(Dashboard_ReviewAverageCorrection);
+    public static readonly string Dashboard_ReviewDescriptionTitle = nameof(Dashboard_ReviewDescriptionTitle);
+    public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
+    public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
+    public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);

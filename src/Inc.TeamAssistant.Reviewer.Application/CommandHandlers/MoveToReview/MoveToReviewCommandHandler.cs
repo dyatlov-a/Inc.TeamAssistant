@@ -1,8 +1,8 @@
+using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
-using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 using MediatR;
@@ -12,22 +12,25 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview;
 internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewCommand, CommandResult>
 {
     private readonly ITaskForReviewRepository _taskForReviewRepository;
-    private readonly IMessageBuilderService _messageBuilderService;
+    private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly ReviewHistoryService _reviewHistoryService;
+    private readonly ReviewerOptions _options;
+    private readonly ITaskForReviewReader _taskForReviewReader;
 
     public MoveToReviewCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
-        IMessageBuilderService messageBuilderService,
+        IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor,
-        ReviewHistoryService reviewHistoryService)
+        ReviewerOptions options,
+        ITaskForReviewReader taskForReviewReader)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _messageBuilderService =
-            messageBuilderService ?? throw new ArgumentNullException(nameof(messageBuilderService));
+        _reviewMessageBuilder =
+            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _reviewHistoryService = reviewHistoryService ?? throw new ArgumentNullException(nameof(reviewHistoryService));
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
     }
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
@@ -38,7 +41,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
-        var teammates = await _teamAccessor.GetTeammates(command.TeamId, token);
+        var teammates = await _teamAccessor.GetTeammates(command.TeamId, DateTimeOffset.UtcNow, token);
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, command.TeamId);
 
@@ -46,6 +49,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var taskForReview = new TaskForReview(
             command.MessageContext.Bot.Id,
             command.TeamId,
+            DateTimeOffset.UtcNow,
+            _options.NotificationInterval,
             Enum.Parse<NextReviewerType>(command.Strategy),
             ownerId,
             targetTeam.ChatId,
@@ -56,7 +61,10 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         else
         {
             var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(command.TeamId, ownerId, token);
-            var history = await _reviewHistoryService.GetHistory(taskForReview.TeamId, token);
+            var history = await _taskForReviewReader.GetHistory(
+                taskForReview.TeamId,
+                DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
+                token);
             
             taskForReview.DetectReviewer(teammates.Select(t => t.Id).ToArray(), history, lastReviewerId);
         }
@@ -69,7 +77,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
         
-        var taskForReviewMessage = await _messageBuilderService.BuildNewTaskForReview(
+        var notifications = await _reviewMessageBuilder.Build(
+            command.MessageContext.ChatMessage.MessageId,
             taskForReview,
             reviewer,
             owner,
@@ -77,6 +86,6 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         
         await _taskForReviewRepository.Upsert(taskForReview, token);
         
-        return CommandResult.Build(taskForReviewMessage);
+        return CommandResult.Build(notifications.ToArray());
     }
 }

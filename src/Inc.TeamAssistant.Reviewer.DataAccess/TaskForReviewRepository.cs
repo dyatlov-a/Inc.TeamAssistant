@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -29,7 +30,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.team_id AS teamid,
                 t.strategy AS strategy,
                 t.owner_id AS ownerid,
+                t.owner_message_id AS ownermessageid,
                 t.reviewer_id AS reviewerid,
+                t.reviewer_message_id AS reviewermessageid,
                 t.description AS description,
                 t.state AS state,
                 t.created AS created,
@@ -38,7 +41,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.has_concrete_reviewer AS hasconcretereviewer,
-                t.original_reviewer_id AS originalreviewerid
+                t.original_reviewer_id AS originalreviewerid,
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.state = ANY(@states);",
             new
@@ -65,7 +69,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.team_id AS teamid,
                 t.strategy AS strategy,
                 t.owner_id AS ownerid,
+                t.owner_message_id AS ownermessageid,
                 t.reviewer_id AS reviewerid,
+                t.reviewer_message_id AS reviewermessageid,
                 t.description AS description,
                 t.state AS state,
                 t.created AS created,
@@ -74,7 +80,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.has_concrete_reviewer AS hasconcretereviewer,
-                t.original_reviewer_id AS originalreviewerid
+                t.original_reviewer_id AS originalreviewerid,
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;",
             new { id = taskForReviewId },
@@ -90,6 +97,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
+        var reviewIntervals = JsonSerializer.Serialize(taskForReview.ReviewIntervals);
+
         var command = new CommandDefinition(@"
             INSERT INTO review.task_for_reviews (
                 id,
@@ -97,7 +106,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 team_id,
                 strategy,
                 owner_id,
+                owner_message_id,
                 reviewer_id,
+                reviewer_message_id,
                 description,
                 state,
                 created,
@@ -106,14 +117,17 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id,
                 chat_id,
                 has_concrete_reviewer,
-                original_reviewer_id)
+                original_reviewer_id,
+                review_intervals)
             VALUES (
                 @id,
                 @bot_id,
                 @team_id,
                 @strategy,
                 @owner_id,
+                @owner_message_id,
                 @reviewer_id,
+                @reviewer_message_id,
                 @description,
                 @state,
                 @created,
@@ -122,13 +136,16 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @message_id,
                 @chat_id,
                 @has_concrete_reviewer,
-                @original_reviewer_id)
+                @original_reviewer_id,
+                @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
                 team_id = excluded.team_id,
                 strategy = excluded.strategy,
                 owner_id = excluded.owner_id,
+                owner_message_id = excluded.owner_message_id,
                 reviewer_id = excluded.reviewer_id,
+                reviewer_message_id = excluded.reviewer_message_id,
                 description = excluded.description,
                 state = excluded.state,
                 created = excluded.created,
@@ -137,7 +154,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
                 has_concrete_reviewer = excluded.has_concrete_reviewer,
-                original_reviewer_id = excluded.original_reviewer_id;",
+                original_reviewer_id = excluded.original_reviewer_id,
+                review_intervals = excluded.review_intervals;",
             new
             {
                 id = taskForReview.Id,
@@ -152,9 +170,12 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id = taskForReview.MessageId,
                 chat_id = taskForReview.ChatId,
                 owner_id = taskForReview.OwnerId,
+                owner_message_id = taskForReview.OwnerMessageId,
                 reviewer_id = taskForReview.ReviewerId,
+                reviewer_message_id = taskForReview.ReviewerMessageId,
                 has_concrete_reviewer = taskForReview.HasConcreteReviewer,
-                original_reviewer_id = taskForReview.OriginalReviewerId
+                original_reviewer_id = taskForReview.OriginalReviewerId,
+                review_intervals = reviewIntervals
             },
             flags: CommandFlags.None,
             cancellationToken: token);

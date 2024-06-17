@@ -1,7 +1,7 @@
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
-using Inc.TeamAssistant.WebUI.Services.Core;
 using Inc.TeamAssistant.WebUI.Services.Render;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
             .AddScoped<IBotService, BotClient>()
+            .AddScoped<IReviewService, ReviewClient>()
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()
@@ -41,7 +42,8 @@ public static class ServiceCollectionExtensions
             .AddOptions()
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<ResourcesManager>();
+            .AddScoped<ResourcesManager>()
+            .AddScoped(typeof(DragAndDropService<>));
 
         return services;
     }

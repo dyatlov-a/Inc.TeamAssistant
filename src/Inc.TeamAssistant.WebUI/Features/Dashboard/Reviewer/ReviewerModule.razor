@@ -1,0 +1,26 @@
+<DashboardWidget>
+    <Content>
+        <ReviewTotalStatsWidget TeamId="TeamId" Depth="StatsDepth" />
+    </Content>
+</DashboardWidget>
+<DashboardWidget>
+    <Content>
+        <LastTasksWidget TeamId="TeamId" Count="TasksCount" />
+    </Content>
+</DashboardWidget>
+<DashboardWidget>
+    <Content>
+        <ReviewAverageStatsWidget TeamId="TeamId" Depth="StatsDepth" />
+    </Content>
+</DashboardWidget>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public int StatsDepth { get; set; }
+    
+    [Parameter, EditorRequired]
+    public int TasksCount { get; set; }
+}

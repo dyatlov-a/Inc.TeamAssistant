@@ -11,7 +11,8 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<ITaskForReviewRepository, TaskForReviewRepository>()
-            .AddSingleton<ITaskForReviewReader, TaskForReviewReader>();
+            .AddSingleton<ITaskForReviewReader, TaskForReviewReader>()
+            .AddSingleton<IReviewAnalyticsReader, ReviewAnalyticsReader>();
 
         return services;
     }

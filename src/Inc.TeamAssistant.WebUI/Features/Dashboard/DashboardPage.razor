@@ -1,0 +1,89 @@
+@page "/dashboard"
+@page "/ru/dashboard"
+@page "/en/dashboard"
+@page "/dashboard/{BotId:guid}"
+@page "/ru/dashboard/{BotId:guid}"
+@page "/en/dashboard/{BotId:guid}"
+@page "/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/ru/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/en/dashboard/{BotId:guid}/{TeamId:guid}"
+
+@attribute [Authorize]
+
+@inherits PersistentComponent<DashboardPageViewModel>
+
+@inject IBotService BotService
+
+<PageTitle>@ViewModel.Title</PageTitle>
+
+<DashboardNavbar />
+
+<div class="dashboard">
+    <div class="dashboard-toolbar">
+        <div class="dashboard-toolbar__content">
+            <DashboardTeamSelector BotId="BotId" TeamId="TeamId" Bots="ViewModel.Bots" />
+        </div>
+    </div>
+    <div class="dashboard-content">
+        <div class="dashboard-widgets">
+            @if (TeamId.HasValue)
+            {
+                <DashboardWidget>
+                    <Content>
+                        <TeammatesWidget TeamId="TeamId.Value"/>
+                    </Content>
+                </DashboardWidget>
+                        
+                if (HasFeature("Reviewer"))
+                {
+                    <ReviewerModule TeamId="TeamId.Value" StatsDepth="90" TasksCount="10" />   
+                }
+            }
+            else
+            {
+                <div class="dashboard-widgets__widget">
+                    <FormSection Title="Bot widgets" AsRows="true">
+                        <HelpContent>
+                            @ViewModel.SelectTeam <a href="@MoveToCreateBot()" class="link link_white">@ViewModel.CreateBot</a>
+                        </HelpContent>
+                        <Content>
+                        </Content>
+                    </FormSection>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+    
+    [Parameter]
+    public Guid? TeamId { get; set; }
+    
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+
+    protected override async Task<DashboardPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var authenticationState = await AuthenticationStateTask;
+        var currentPerson = authenticationState.User.ToPerson();
+        var getByUser = await BotService.GetByUser(currentPerson.Id);
+        
+        return new DashboardPageViewModel(
+            resources[Messages.Dashboard_Title],
+            resources[Messages.Dashboard_SelectTeam],
+            resources[Messages.Dashboard_CreateBot],
+            getByUser.Result.Bots);
+    }
+
+    private bool HasFeature(string feature)
+    {
+        var bot = ViewModel.Bots.SingleOrDefault(b => b.Id == BotId);
+
+        return bot?.Features.Contains(feature, StringComparer.InvariantCultureIgnoreCase) == true;
+    }
+
+    private string MoveToCreateBot() => LinkBuilder("constructor");
+}

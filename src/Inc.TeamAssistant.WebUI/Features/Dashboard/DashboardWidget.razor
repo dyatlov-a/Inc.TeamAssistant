@@ -1,0 +1,10 @@
+<div class="dashboard-widgets__widget">
+    <div class="dashboard-widgets__content">
+        @Content
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+}
