@@ -143,6 +143,11 @@
   "Dashboard_ReviewReviewerNameTitle": "Ревьювер",
   "Dashboard_ReviewOwnerNameTitle": "Автор",
   "Dashboard_ReviewStateTitle": "Статус",
+  "Dashboard_NoData": "Нет данных",
+  "Dashboard_TeammatesWidgetTitle": "Товарищи по команде",
+  "Dashboard_ReviewTotalStatsWidgetTitle": "Общая статистика по ревью",
+  "Dashboard_LastTasksWidgetTitle": "Последние задания для обзора",
+  "Dashboard_ReviewAverageStatsWidgetTitle": "Статистика по ревью (средняя)",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

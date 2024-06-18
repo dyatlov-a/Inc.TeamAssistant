@@ -23,30 +23,45 @@ internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageB
         ArgumentNullException.ThrowIfNull(query);
         
         var from = DateTimeOffset.UtcNow.AddDays(-query.Depth);
-        var tasks = await _taskForReviewReader.GetTasksFrom(from, token);
+        var tasks = await _taskForReviewReader.GetTasksFrom(query.TeamId, from, token);
         var tasksByDays = tasks.ToLookup(t => new DateOnly(t.Created.Year, t.Created.Month, t.Created.Day));
-        
+        ReviewAverageStatsDto? previous = null;
         var items = new List<ReviewAverageStatsDto>();
 
         foreach (var tasksByDay in tasksByDays.OrderBy(t => t.Key))
         {
-            var averageByGroup = ReviewTeamMetrics.Empty;
+            var current = ReviewTeamMetrics.Empty;
             
             foreach (var task in tasksByDay)
             {
                 var metrics = await _metricsFactory.Create(task, token);
-                averageByGroup = averageByGroup == ReviewTeamMetrics.Empty
+                current = current == ReviewTeamMetrics.Empty
                     ? metrics
-                    : averageByGroup.Add(metrics);
+                    : current.Add(metrics);
             }
-            
-            items.Add(new ReviewAverageStatsDto(
-                tasksByDay.Key,
-                averageByGroup.FirstTouch,
-                averageByGroup.Review,
-                averageByGroup.Correction));
+
+            if (current.FirstTouch != TimeSpan.Zero ||
+                current.Review != TimeSpan.Zero ||
+                current.Correction != TimeSpan.Zero)
+            {
+                previous = new ReviewAverageStatsDto(
+                    tasksByDay.Key,
+                    GetValue(current.FirstTouch, previous?.FirstTouch),
+                    GetValue(current.Review, previous?.Review),
+                    GetValue(current.Correction, previous?.Correction));
+                
+                items.Add(previous);
+            }
         }
 
         return new GetAverageByTeamResult(items);
+    }
+
+    private TimeSpan GetValue(TimeSpan current, TimeSpan? previous)
+    {
+        if (current != TimeSpan.Zero)
+            return current;
+        
+        return previous ?? TimeSpan.Zero;
     }
 }

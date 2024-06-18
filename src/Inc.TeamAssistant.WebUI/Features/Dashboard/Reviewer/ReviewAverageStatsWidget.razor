@@ -4,31 +4,37 @@
 
 @inject IReviewService ReviewService
 
-<ApexChart TItem="ReviewAverageStatsDto"
-           Title="@ViewModel.Title"
-           Options="_options">
-    <ApexPointSeries TItem="ReviewAverageStatsDto"
-                     Items="ViewModel.Items"
-                     SeriesType="@SeriesType.Area"
-                     Name="@ViewModel.FirstTouch"
-                     XValue="@(e => e.Created)"
-                     YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"
-                     OrderByDescending="e => e.X" />
-    <ApexPointSeries TItem="ReviewAverageStatsDto"
-                     Items="ViewModel.Items"
-                     SeriesType="@SeriesType.Area"
-                     Name="@ViewModel.Review"
-                     XValue="@(e => e.Created)"
-                     YValue="@(e => (decimal)e.Review.TotalMinutes)"
-                     OrderByDescending="e => e.X" />
-    <ApexPointSeries TItem="ReviewAverageStatsDto"
-                     Items="ViewModel.Items"
-                     SeriesType="@SeriesType.Area"
-                     Name="@ViewModel.Correction"
-                     XValue="@(e => e.Created)"
-                     YValue="@(e => (decimal)e.Correction.TotalMinutes)"
-                     OrderByDescending="e => e.X" />
-</ApexChart>
+@if (ViewModel.Items.Any())
+{
+    <ApexChart TItem="ReviewAverageStatsDto"
+               Title="@ViewModel.Title"
+               Options="_options"
+               FormatYAxisLabel="@(y => y.ToString("N2"))"
+               @ref="_chart">
+        <ApexPointSeries TItem="ReviewAverageStatsDto"
+                         Items="ViewModel.Items"
+                         SeriesType="@SeriesType.Area"
+                         Name="@ViewModel.FirstTouch"
+                         XValue="@(e => e.Created)"
+                         YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)" />
+        <ApexPointSeries TItem="ReviewAverageStatsDto"
+                         Items="ViewModel.Items"
+                         SeriesType="@SeriesType.Area"
+                         Name="@ViewModel.Review"
+                         XValue="@(e => e.Created)"
+                         YValue="@(e => (decimal)e.Review.TotalMinutes)" />
+        <ApexPointSeries TItem="ReviewAverageStatsDto"
+                         Items="ViewModel.Items"
+                         SeriesType="@SeriesType.Area"
+                         Name="@ViewModel.Correction"
+                         XValue="@(e => e.Created)"
+                         YValue="@(e => (decimal)e.Correction.TotalMinutes)" />
+    </ApexChart>
+}
+else
+{
+    <NoData />
+}
 
 @code {
     [Parameter, EditorRequired]
@@ -37,7 +43,15 @@
     [Parameter, EditorRequired]
     public int Depth { get; set; }
     
+    private ApexChart<ReviewAverageStatsDto>? _chart;
     private ApexChartOptions<ReviewAverageStatsDto> _options = CreateChartOptions();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _chart?.RenderAsync();
+    }
     
     protected override async Task<ReviewAverageStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
@@ -75,6 +89,8 @@
             },
             Chart = new Chart
             {
+                FontFamily = "'Roboto', sans-serif",
+                Background = "none",
                 Toolbar = new Toolbar
                 {
                     Show = false,

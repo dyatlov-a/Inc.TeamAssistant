@@ -143,6 +143,11 @@
   "Dashboard_ReviewReviewerNameTitle": "Reviewer",
   "Dashboard_ReviewOwnerNameTitle": "Owner",
   "Dashboard_ReviewStateTitle": "State",
+  "Dashboard_NoData": "No data",
+  "Dashboard_TeammatesWidgetTitle": "Teammates",
+  "Dashboard_ReviewTotalStatsWidgetTitle": "Review total stats",
+  "Dashboard_LastTasksWidgetTitle": "Last tasks for review",
+  "Dashboard_ReviewAverageStatsWidgetTitle": "Review average stats",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

@@ -1,0 +1,12 @@
+@inherits PersistentComponent<NoDataViewModel>
+
+<div class="dashboard-widgets__no-data">
+    <p>@ViewModel.Text</p>
+</div>
+
+@code {
+    protected override Task<NoDataViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new NoDataViewModel(resources[Messages.Dashboard_NoData]));
+    }
+}

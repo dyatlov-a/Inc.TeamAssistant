@@ -26,7 +26,7 @@ internal sealed class ReviewMetricsService : IHostedService
         {
             var fromDate = DateTimeOffset.UtcNow.AddDays(-90);
 
-            var taskForReviews = await _taskForReviewReader.GetTasksFrom(fromDate, token);
+            var taskForReviews = await _taskForReviewReader.GetTasksFrom(teamId: null, fromDate, token);
 
             await _reviewMetricsLoader.Load(taskForReviews, token);
         }

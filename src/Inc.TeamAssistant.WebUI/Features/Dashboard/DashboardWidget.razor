@@ -1,10 +1,14 @@
 <div class="dashboard-widgets__widget">
     <div class="dashboard-widgets__content">
+        <h2 class="dashboard-widgets__title">@Title</h2>
         @Content
     </div>
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
 }

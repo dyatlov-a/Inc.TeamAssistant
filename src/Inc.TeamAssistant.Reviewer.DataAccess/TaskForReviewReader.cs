@@ -130,7 +130,10 @@ WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@sta
         return await connection.QuerySingleOrDefaultAsync<bool>(command);
     }
 
-    public async Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(DateTimeOffset date, CancellationToken token)
+    public async Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(
+        Guid? teamId,
+        DateTimeOffset date,
+        CancellationToken token)
     {
         var command = new CommandDefinition(@"
 SELECT
@@ -150,10 +153,11 @@ SELECT
     t.original_reviewer_id AS originalreviewerid,
     t.review_intervals AS reviewintervals
 FROM review.task_for_reviews AS t
-WHERE t.state = @target_status AND t.created > @date
+WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
 ORDER BY t.created;",
             new
             {
+                team_id = teamId,
                 date,
                 target_status = (int)TaskForReviewState.Accept
             },
@@ -206,9 +210,9 @@ SELECT
     r.id AS reviewerid,
     r.name AS reviewername,
     r.username AS reviewerusername,
-    r.id AS ownerid,
-    r.name AS ownername,
-    r.username AS ownerusername
+    o.id AS ownerid,
+    o.name AS ownername,
+    o.username AS ownerusername
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id
 JOIN connector.persons AS o ON o.id = t.owner_id

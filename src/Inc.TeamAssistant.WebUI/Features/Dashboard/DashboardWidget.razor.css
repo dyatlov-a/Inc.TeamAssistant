@@ -6,6 +6,10 @@
 .dashboard-widgets__content {
     border-top: 5px #555 solid;
     padding: 10px 0;
+    height: 100%;
+}
+.dashboard-widgets__title {
+    padding: 0 10px 10px;
 }
 @media (max-width: 1080px) {
     .dashboard-widgets__widget {

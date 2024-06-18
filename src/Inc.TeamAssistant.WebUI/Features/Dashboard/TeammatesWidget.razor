@@ -1,5 +1,6 @@
 @using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate
 @using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates
+
 @inherits PersistentComponent<TeammatesWidgetViewModel>
 
 @inject IBotService BotService
@@ -25,22 +26,29 @@
     </Content>
 </ConfirmDialog>
 
-<QuickGrid Items="GetTeammates()" class="quick-data-grid">
-    <PropertyColumn Title="@ViewModel.PersonName" Property="@(t => t.Name)" Sortable="true" />
-    <TemplateColumn Title="@ViewModel.LeaveUntil" Sortable="false">
-        @if (context.LeaveUntil.HasValue)
-        {
-            <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-            <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
-        }
-    </TemplateColumn>
-    <TemplateColumn Title="@ViewModel.ExcludeFromTeam" Sortable="false">
-        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
-        <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
-    </TemplateColumn>
-</QuickGrid>
+@if (Teammates.Any())
+{
+    <QuickGrid Items="Teammates" class="quick-data-grid">
+        <PropertyColumn Title="@ViewModel.PersonName" Property="@(t => t.Name)" Sortable="true" />
+        <TemplateColumn Title="@ViewModel.LeaveUntil" Sortable="false">
+            @if (context.LeaveUntil.HasValue)
+            {
+                <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
+            }
+        </TemplateColumn>
+        <TemplateColumn Title="@ViewModel.ExcludeFromTeam" Sortable="false">
+            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
+            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
+            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+            <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+        </TemplateColumn>
+    </QuickGrid>
+}
+else
+{
+    <NoData />
+}
 
 @code {
     [Parameter, EditorRequired]
@@ -67,7 +75,7 @@
             getTeammatesResult.Result.Teammates);
     }
     
-    private IQueryable<TeammateDto> GetTeammates() => ViewModel.Teammates.AsQueryable();
+    private IQueryable<TeammateDto> Teammates => ViewModel.Teammates.AsQueryable();
     
     private void ExcludeFromTeam(TeammateDto teammate, bool exclude, int? leaveUntil = null)
     {

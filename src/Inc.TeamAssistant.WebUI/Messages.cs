@@ -102,6 +102,11 @@ internal static class Messages
     public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
     public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
     public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
+    public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
+    public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
+    public static readonly string Dashboard_ReviewTotalStatsWidgetTitle = nameof(Dashboard_ReviewTotalStatsWidgetTitle);
+    public static readonly string Dashboard_LastTasksWidgetTitle = nameof(Dashboard_LastTasksWidgetTitle);
+    public static readonly string Dashboard_ReviewAverageStatsWidgetTitle = nameof(Dashboard_ReviewAverageStatsWidgetTitle);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
