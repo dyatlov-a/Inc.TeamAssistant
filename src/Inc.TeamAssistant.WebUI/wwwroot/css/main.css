@@ -175,6 +175,7 @@ html {
     width: 100%;
     font-size: 13px;
     border-spacing: 0;
+    word-break: break-all;
 }
 .quick-data-grid .link {
     font-size: 13px;

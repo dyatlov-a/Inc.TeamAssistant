@@ -12,6 +12,10 @@
 .dashboard-widgets__title {
     padding: 0 10px 10px;
 }
+.dashboard-widgets__chart {
+    width: 98%;
+    margin-left: 1%;
+}
 @media (max-width: 1080px) {
     .dashboard-widgets__widget {
         flex: 0 1 100%;

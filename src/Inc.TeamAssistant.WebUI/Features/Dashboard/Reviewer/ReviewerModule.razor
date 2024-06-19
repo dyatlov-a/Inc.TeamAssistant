@@ -1,6 +1,6 @@
 @inherits PersistentComponent<ReviewerModuleViewModel>
 
-<DashboardWidget Title="@ViewModel.ReviewTotalStatsWidgetTitle">
+<DashboardWidget Title="@ViewModel.ReviewTotalStatsWidgetTitle" HasChart="true">
     <Content>
         <ReviewTotalStatsWidget TeamId="TeamId" Depth="StatsDepth" />
     </Content>
@@ -10,7 +10,7 @@
         <LastTasksWidget TeamId="TeamId" Count="TasksCount" />
     </Content>
 </DashboardWidget>
-<DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle">
+<DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle" HasChart="true">
     <Content>
         <ReviewAverageStatsWidget TeamId="TeamId" Depth="StatsDepth" />
     </Content>
