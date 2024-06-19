@@ -167,6 +167,9 @@ html {
     background-color: #fff;
     color: #000;
 }
+.draggable {
+    cursor: grab;
+}
 /* GRID */
 .quick-data-grid {
     width: 100%;

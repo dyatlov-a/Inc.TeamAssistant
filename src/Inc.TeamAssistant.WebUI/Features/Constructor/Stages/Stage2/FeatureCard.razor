@@ -2,7 +2,7 @@
 
 @inject DragAndDropService<Guid> DragAndDropService
 
-<div draggable="true" class="feature-card" @ondragstart="@(() => HandleDragStart(FeatureId))">
+<div draggable="true" @ondragstart="@(() => HandleDragStart(FeatureId))" class="feature-card draggable">
     <div class="feature-card__header">
         <div class="feature-card__avatar">
             <DynamicComponent Type="Icon" Parameters="IconParameters" />
