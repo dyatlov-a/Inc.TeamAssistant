@@ -1,4 +1,5 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<ReviewTotalStatsWidgetViewModel>
 
@@ -11,8 +12,7 @@
             <ApexChart
                 TItem="HistoryByTeamItemDto"
                 Title="@ViewModel.ReviewByReviewer"
-                Options="_reviewByReviewerOptions"
-                Width="@("100%")"
+                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
                 @ref="_reviewChart">
                 <ApexPointSeries TItem="HistoryByTeamItemDto"
                                  Items="ViewModel.Review"
@@ -26,8 +26,7 @@
             <ApexChart
                 TItem="HistoryByTeamItemDto"
                 Title="@ViewModel.ReviewByOwner"
-                Options="_reviewByOwnerOptions"
-                Width="@("100%")"
+                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
                 @ref="_requestsChart">
                 <ApexPointSeries TItem="HistoryByTeamItemDto"
                                  Items="ViewModel.Requests"
@@ -53,8 +52,6 @@ else
 
     private ApexChart<HistoryByTeamItemDto>? _reviewChart;
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
-    private ApexChartOptions<HistoryByTeamItemDto> _reviewByReviewerOptions = CreateChartOptions();
-    private ApexChartOptions<HistoryByTeamItemDto> _reviewByOwnerOptions = CreateChartOptions();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -73,35 +70,5 @@ else
             string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], Depth),
             history.Result.Review,
             history.Result.Requests);
-    }
-
-    private static ApexChartOptions<HistoryByTeamItemDto> CreateChartOptions()
-    {
-        return new()
-        {
-            Legend = new Legend
-            {
-                Position = LegendPosition.Bottom,
-                HorizontalAlign = ApexCharts.Align.Center
-            },
-            Title = new Title
-            {
-                Align = ApexCharts.Align.Center,
-                Style = new TitleStyle
-                {
-                    Color = "#000"
-                }
-            },
-            Theme = new Theme
-            {
-                Mode = Mode.Dark,
-                Palette = PaletteType.Palette1
-            },
-            Chart = new Chart
-            {
-                FontFamily = "'Roboto', sans-serif",
-                Background = "none"
-            }
-        };
     }
 }

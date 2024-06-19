@@ -170,7 +170,6 @@ html {
 /* GRID */
 .quick-data-grid {
     width: 100%;
-    word-break: break-all;
     font-size: 13px;
     border-spacing: 0;
 }

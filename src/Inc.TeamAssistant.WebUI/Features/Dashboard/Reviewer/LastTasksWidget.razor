@@ -7,15 +7,27 @@
 @if (Tasks.Any())
 {
     <QuickGrid Items="Tasks" class="quick-data-grid">
-        <PropertyColumn Title="@ViewModel.OwnerNameTitle" Property="@(t => t.OwnerName)" Sortable="true"/>
-        <TemplateColumn Title="@ViewModel.DescriptionTitle" Sortable="false">
-            <span title="@context.Description">@Substring(context.Description, 50)</span>
+        <TemplateColumn Title="@ViewModel.OwnerNameTitle" Sortable="true">
+            @context.OwnerName
+            @if (!string.IsNullOrWhiteSpace(context.OwnerUserName))
+            {
+                <br/>
+                @context.OwnerUserName
+            }
         </TemplateColumn>
-        <PropertyColumn Title="@ViewModel.ReviewerNameTitle" Property="@(t => t.ReviewerName)" Sortable="true"/>
+        <TemplateColumn Title="@ViewModel.DescriptionTitle" Sortable="false">
+            <span title="@context.Description">@context.Description.ToShort()</span>
+        </TemplateColumn>
+        <TemplateColumn Title="@ViewModel.ReviewerNameTitle" Sortable="true">
+            @context.ReviewerName
+            @if (!string.IsNullOrWhiteSpace(context.ReviewerUserName))
+            {
+                <br/>
+                @context.ReviewerUserName
+            }
+        </TemplateColumn>
         <TemplateColumn Title="@ViewModel.StateTitle" Sortable="false">
-            @context.Created.ToString("yyyy.MM.dd")
-            <br/>
-            @context.Created.ToString("HH:mm")
+            @context.Created.ToString("yyyy.MM.dd HH:mm")
             <br/>
             @context.State
         </TemplateColumn>
@@ -44,10 +56,6 @@ else
             resources[Messages.Dashboard_ReviewStateTitle],
             tasks.Result.Items);
     }
-    
-    private IQueryable<TaskForReviewDto> Tasks => ViewModel.Tasks.AsQueryable();
 
-    private string Substring(string value, int count) => value.Length <= count
-        ? value
-        : value[..count] + "...";
+    private IQueryable<TaskForReviewDto> Tasks => ViewModel.Tasks.AsQueryable();
 }

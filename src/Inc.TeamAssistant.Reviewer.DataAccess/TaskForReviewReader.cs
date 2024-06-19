@@ -203,53 +203,40 @@ ORDER BY t.created;",
     {
         var command = new CommandDefinition(@"
 SELECT
+    'state' AS state,
     t.id AS id,
     t.created AS created,
     t.description AS description,
-    t.state AS state,
     r.id AS reviewerid,
     r.name AS reviewername,
     r.username AS reviewerusername,
     o.id AS ownerid,
     o.name AS ownername,
-    o.username AS ownerusername
+    o.username AS ownerusername,
+    t.state AS state
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id
 JOIN connector.persons AS o ON o.id = t.owner_id
 WHERE t.team_id = @team_id
 ORDER BY t.created DESC
-LIMIT @count;",
+OFFSET @offset
+LIMIT @limit;",
             new
             {
                 team_id = teamId,
-                count
+                offset = 0,
+                limit = count
             },
-            flags: CommandFlags.None,
+            flags: CommandFlags.Buffered,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var tasks = await connection.QueryAsync<(
-            Guid Id,
-            DateTimeOffset Created,
-            string Description,
-            TaskForReviewState State,
-            long ReviewerId,
-            string ReviewerName,
-            string? ReviewerUsername,
-            long OwnerId,
-            string OwnerName,
-            string? OwnerUsername)>(command);
-        var results = tasks
-            .Select(t => new TaskForReviewDto(
-                t.Id,
-                t.Created,
-                t.Description,
-                new Person(t.ReviewerId, t.ReviewerName, t.ReviewerUsername).DisplayName,
-                new Person(t.OwnerId, t.OwnerName, t.OwnerUsername).DisplayName,
-                t.State.ToString()))
-            .ToArray();
+        var results = await connection.QueryAsync<TaskForReviewDto, TaskForReviewState, TaskForReviewDto>(
+            command,
+            (t, s) => t with { State = s.ToString() },
+            splitOn: "state");
 
-        return results;
+        return results.ToArray();
     }
 }

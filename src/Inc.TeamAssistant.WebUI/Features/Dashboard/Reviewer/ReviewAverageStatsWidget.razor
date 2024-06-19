@@ -1,4 +1,5 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<ReviewAverageStatsWidgetViewModel>
 
@@ -8,7 +9,7 @@
 {
     <ApexChart TItem="ReviewAverageStatsDto"
                Title="@ViewModel.Title"
-               Options="_options"
+               Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
                FormatYAxisLabel="@(y => y.ToString("N2"))"
                @ref="_chart">
         <ApexPointSeries TItem="ReviewAverageStatsDto"
@@ -44,7 +45,6 @@ else
     public int Depth { get; set; }
     
     private ApexChart<ReviewAverageStatsDto>? _chart;
-    private ApexChartOptions<ReviewAverageStatsDto> _options = CreateChartOptions();
     
     protected override async Task OnParametersSetAsync()
     {
@@ -63,49 +63,5 @@ else
             resources[Messages.Dashboard_ReviewAverageReview],
             resources[Messages.Dashboard_ReviewAverageCorrection],
             averageMetrics.Result.Items);
-    }
-    
-    private static ApexChartOptions<ReviewAverageStatsDto> CreateChartOptions()
-    {
-        return new()
-        {
-            Legend = new Legend
-            {
-                Position = LegendPosition.Bottom,
-                HorizontalAlign = ApexCharts.Align.Center
-            },
-            Title = new Title
-            {
-                Align = ApexCharts.Align.Center,
-                Style = new TitleStyle
-                {
-                    Color = "#000"
-                }
-            },
-            Theme = new Theme
-            {
-                Mode = Mode.Dark,
-                Palette = PaletteType.Palette1
-            },
-            Chart = new Chart
-            {
-                FontFamily = "'Roboto', sans-serif",
-                Background = "none",
-                Toolbar = new Toolbar
-                {
-                    Show = false,
-                    Tools = new Tools
-                    {
-                        Download = false,
-                        Selection = false,
-                        Zoom = false,
-                        Zoomin = false,
-                        Zoomout = false,
-                        Pan = false,
-                        Reset = false
-                    }
-                }
-            }
-        };
     }
 }
