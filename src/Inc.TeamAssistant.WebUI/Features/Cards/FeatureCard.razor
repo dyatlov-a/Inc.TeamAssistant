@@ -1,3 +1,4 @@
+@using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2
 @using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inject DragAndDropService<Guid> DragAndDropService
@@ -9,19 +10,11 @@
         </div>
     </div>
     <div class="feature-card__content">
-        @if (!string.IsNullOrWhiteSpace(Name))
-        {
-            <h3 class="feature-card__name">@Name</h3>
-        }
-
-        @Content
-
-        @if (Buttons is not null)
-        {
-            <div class="feature-card__actions">
-                @Buttons
-            </div>
-        }
+        <h3 class="feature-card__name">@Data.Name</h3>
+        <p class="feature-card__description">@Data.Description</p>
+        <div class="feature-card__actions">
+            @Buttons
+        </div>
     </div>
 </div>
 
@@ -32,14 +25,11 @@
     [Parameter, EditorRequired]
     public Guid FeatureId { get; set; }
     
-    [Parameter]
-    public string? Name { get; set; }
+    [Parameter, EditorRequired]
+    public SelectFeaturesViewModel.FeatureData Data { get; set; } = default!;
     
-    [Parameter]
-    public RenderFragment? Content { get; set; }
-    
-    [Parameter]
-    public RenderFragment? Buttons { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment Buttons { get; set; } = default!;
     
     private Dictionary<string, object> IconParameters => new()
     {
@@ -47,8 +37,5 @@
         ["Color"] = "#000"
     };
     
-    private void HandleDragStart(Guid id)
-    {
-        DragAndDropService.Start(id);
-    }
+    private void HandleDragStart(Guid id) => DragAndDropService.Start(id);
 }

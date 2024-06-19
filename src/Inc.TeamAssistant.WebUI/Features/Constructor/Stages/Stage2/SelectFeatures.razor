@@ -11,7 +11,7 @@
                 <InputFeatures
                     @bind-Value="_formModel.FeatureIds"
                     Features="StagesState.Features"
-                    FeatureNames="ViewModel.Features"
+                    FeatureData="ViewModel.Features"
                     AddText="@ViewModel.FormSectionFeaturesAddText"
                     RemoveText="@ViewModel.FormSectionFeaturesRemoveText"
                     FeaturesAvailableEmptyText="@ViewModel.FormSectionFeaturesAvailableEmptyText"
@@ -57,7 +57,7 @@
             resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText],
             resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText],
             resources[Messages.Constructor_MoveNextTitle],
-            Messages.BuildFeatureNames(resources)));
+            Messages.BuildFeatureData(resources)));
     }
 
     private async Task SubmitForm()

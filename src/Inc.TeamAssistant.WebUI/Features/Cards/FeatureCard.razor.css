@@ -5,8 +5,12 @@
 }
 .feature-card__name {
     font-size: 1.1rem;
-    word-break: break-all;
+    line-height: 3rem;
     text-align: center;
+}
+.feature-card__description {
+    text-align: center;
+    font-size: .9rem;
 }
 .feature-card__header {
     background-color: #fff;
