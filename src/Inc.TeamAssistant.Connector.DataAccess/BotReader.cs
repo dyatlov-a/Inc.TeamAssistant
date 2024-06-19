@@ -41,8 +41,9 @@ internal sealed class BotReader : IBotReader
                 t.name AS name,
                 t.properties AS properties
             FROM connector.teams AS t
-            JOIN connector.teammates AS tm ON t.id = tm.team_id
-            WHERE t.owner_id = @user_id OR tm.person_id = @user_id;",
+            JOIN connector.bots AS b ON t.bot_id = b.id
+            LEFT JOIN connector.teammates AS tm ON t.id = tm.team_id
+            WHERE t.owner_id = @user_id OR tm.person_id = @user_id OR b.owner_id = @user_id;",
             new { user_id = userId },
             flags: CommandFlags.None,
             cancellationToken: token);

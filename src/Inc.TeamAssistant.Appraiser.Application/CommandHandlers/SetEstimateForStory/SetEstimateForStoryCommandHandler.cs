@@ -27,19 +27,20 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 
     public async Task<CommandResult> Handle(SetEstimateForStoryCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var story = await _storyRepository.Find(command.StoryId, token);
         if (story is null)
 	        throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
 
-        story.Estimate(command.MessageContext.Person.Id, command.Value.ToAssessmentValue());
+        var alreadyHasValue = story.Estimate(command.MessageContext.Person.Id, command.Value.ToAssessmentValue());
 
         await _storyRepository.Upsert(story, token);
         
         await _messagesSender.StoryChanged(story.TeamId);
 
-        return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+        return alreadyHasValue
+	        ? CommandResult.Empty
+	        : CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
     }
 }

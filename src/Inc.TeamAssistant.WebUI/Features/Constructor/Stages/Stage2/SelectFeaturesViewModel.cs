@@ -10,7 +10,7 @@ public sealed record SelectFeaturesViewModel(
     string FormSectionFeaturesAvailableEmptyText,
     string FormSectionFeaturesSelectedEmptyText,
     string MoveNextTitle,
-    IReadOnlyDictionary<string, string> Features)
+    IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> Features)
     : IViewModel<SelectFeaturesViewModel>
 {
     public static SelectFeaturesViewModel Empty { get; } = new(
@@ -21,5 +21,7 @@ public sealed record SelectFeaturesViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
-        new Dictionary<string, string>());
+        new Dictionary<string, FeatureData>());
+
+    public sealed record FeatureData(string Name, string Description);
 }

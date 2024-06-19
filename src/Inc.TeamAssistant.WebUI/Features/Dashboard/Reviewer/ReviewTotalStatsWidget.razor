@@ -1,39 +1,47 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<ReviewTotalStatsWidgetViewModel>
 
 @inject IReviewService ReviewService
 
-<div class="review-total-stats">
-    <div class="review-total-stats__item">
-        <ApexChart
-            TItem="HistoryByTeamItemDto"
-            Title="@ViewModel.ReviewByReviewer"
-            Options="_reviewByReviewerOptions"
-            Width="@("100%")">
-            <ApexPointSeries TItem="HistoryByTeamItemDto"
-                             Items="ViewModel.Review"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.PersonName)"
-                             YValue="@(e => e.Count)"
-                             OrderByDescending="e => e.Y!" />
-        </ApexChart>
+@if (ViewModel.Review.Any())
+{
+    <div class="review-total-stats">
+        <div class="review-total-stats__item">
+            <ApexChart
+                TItem="HistoryByTeamItemDto"
+                Title="@ViewModel.ReviewByReviewer"
+                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
+                @ref="_reviewChart">
+                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                 Items="ViewModel.Review"
+                                 SeriesType="SeriesType.Donut"
+                                 XValue="@(e => e.PersonName)"
+                                 YValue="@(e => e.Count)"
+                                 OrderByDescending="e => e.Y!" />
+            </ApexChart>
+        </div>
+        <div class="review-total-stats__item">
+            <ApexChart
+                TItem="HistoryByTeamItemDto"
+                Title="@ViewModel.ReviewByOwner"
+                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
+                @ref="_requestsChart">
+                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                 Items="ViewModel.Requests"
+                                 SeriesType="SeriesType.Donut"
+                                 XValue="@(e => e.PersonName)"
+                                 YValue="@(e => e.Count)"
+                                 OrderByDescending="e => e.Y!" />
+            </ApexChart>
+        </div>
     </div>
-    <div class="review-total-stats__item">
-        <ApexChart
-            TItem="HistoryByTeamItemDto"
-            Title="@ViewModel.ReviewByOwner"
-            Options="_reviewByOwnerOptions"
-            Width="@("100%")">
-            <ApexPointSeries TItem="HistoryByTeamItemDto"
-                             Items="ViewModel.Requests"
-                             SeriesType="SeriesType.Donut"
-                             XValue="@(e => e.PersonName)"
-                             YValue="@(e => e.Count)"
-                             OrderByDescending="e => e.Y!" />
-        </ApexChart>
-    </div>
-</div>
+}
+else
+{
+    <NoData />
+}
 
 @code {
     [Parameter, EditorRequired]
@@ -42,8 +50,16 @@
     [Parameter, EditorRequired]
     public int Depth { get; set; }
 
-    private ApexChartOptions<HistoryByTeamItemDto> _reviewByReviewerOptions = CreateChartOptions();
-    private ApexChartOptions<HistoryByTeamItemDto> _reviewByOwnerOptions = CreateChartOptions();
+    private ApexChart<HistoryByTeamItemDto>? _reviewChart;
+    private ApexChart<HistoryByTeamItemDto>? _requestsChart;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _reviewChart?.RenderAsync();
+        _requestsChart?.RenderAsync();
+    }
 
     protected override async Task<ReviewTotalStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
@@ -54,30 +70,5 @@
             string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], Depth),
             history.Result.Review,
             history.Result.Requests);
-    }
-
-    private static ApexChartOptions<HistoryByTeamItemDto> CreateChartOptions()
-    {
-        return new()
-        {
-            Legend = new Legend
-            {
-                Position = LegendPosition.Bottom,
-                HorizontalAlign = ApexCharts.Align.Center
-            },
-            Title = new Title
-            {
-                Align = ApexCharts.Align.Center,
-                Style = new TitleStyle
-                {
-                    Color = "#000"
-                }
-            },
-            Theme = new Theme
-            {
-                Mode = Mode.Dark,
-                Palette = PaletteType.Palette1
-            }
-        };
     }
 }

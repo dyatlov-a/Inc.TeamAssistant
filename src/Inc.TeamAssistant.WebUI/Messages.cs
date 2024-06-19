@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 
 namespace Inc.TeamAssistant.WebUI;
 
@@ -57,6 +58,10 @@ internal static class Messages
     public static readonly string Constructor_FeatureReviewerName = nameof(Constructor_FeatureReviewerName);
     public static readonly string Constructor_FeatureRandomCoffeeName = nameof(Constructor_FeatureRandomCoffeeName);
     public static readonly string Constructor_FeatureCheckInName = nameof(Constructor_FeatureCheckInName);
+    public static readonly string Constructor_FeatureAppraiserDescription = nameof(Constructor_FeatureAppraiserDescription);
+    public static readonly string Constructor_FeatureReviewerDescription = nameof(Constructor_FeatureReviewerDescription);
+    public static readonly string Constructor_FeatureRandomCoffeeDescription = nameof(Constructor_FeatureRandomCoffeeDescription);
+    public static readonly string Constructor_FeatureCheckInDescription = nameof(Constructor_FeatureCheckInDescription);
     public static readonly string Constructor_FeatureAdd = nameof(Constructor_FeatureAdd);
     public static readonly string Constructor_FeatureRemove = nameof(Constructor_FeatureRemove);
     public static readonly string Constructor_FormSectionFeaturesAvailableEmptyText = nameof(Constructor_FormSectionFeaturesAvailableEmptyText);
@@ -102,6 +107,11 @@ internal static class Messages
     public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
     public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
     public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
+    public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
+    public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
+    public static readonly string Dashboard_ReviewTotalStatsWidgetTitle = nameof(Dashboard_ReviewTotalStatsWidgetTitle);
+    public static readonly string Dashboard_LastTasksWidgetTitle = nameof(Dashboard_LastTasksWidgetTitle);
+    public static readonly string Dashboard_ReviewAverageStatsWidgetTitle = nameof(Dashboard_ReviewAverageStatsWidgetTitle);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
@@ -125,16 +135,16 @@ internal static class Messages
     
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
 
-    public static IReadOnlyDictionary<string, string> BuildFeatureNames(IReadOnlyDictionary<string, string> resources)
+    public static IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> BuildFeatureData(IReadOnlyDictionary<string, string> resources)
     {
         ArgumentNullException.ThrowIfNull(resources);
         
-        return new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        return new Dictionary<string, SelectFeaturesViewModel.FeatureData>(StringComparer.InvariantCultureIgnoreCase)
         {
-            ["Appraiser"] = resources[Constructor_FeatureAppraiserName],
-            ["Reviewer"] = resources[Constructor_FeatureReviewerName],
-            ["RandomCoffee"] = resources[Constructor_FeatureRandomCoffeeName],
-            ["CheckIn"] = resources[Constructor_FeatureCheckInName]
+            ["Appraiser"] = new(resources[Constructor_FeatureAppraiserName], resources[Constructor_FeatureAppraiserDescription]),
+            ["Reviewer"] = new(resources[Constructor_FeatureReviewerName], resources[Constructor_FeatureReviewerDescription]),
+            ["RandomCoffee"] = new(resources[Constructor_FeatureRandomCoffeeName], resources[Constructor_FeatureRandomCoffeeDescription]),
+            ["CheckIn"] = new(resources[Constructor_FeatureCheckInName], resources[Constructor_FeatureCheckInDescription])
         };
     }
 }

@@ -17,11 +17,14 @@
         <div class="story__cards">
             @foreach (var storyForEstimate in Item.StoryForEstimates)
             {
-            <UserCard IsDarkTheme="IsDarkTheme" PersonId="storyForEstimate.ParticipantId" Name="@storyForEstimate.ParticipantName">
-                <Content>
-                    <span class="story__value">@storyForEstimate.DisplayValue</span>
-                </Content>
-            </UserCard>
+                <EstimateCard
+                    IsDarkTheme="IsDarkTheme"
+                    PersonId="storyForEstimate.ParticipantId"
+                    Name="@storyForEstimate.ParticipantName">
+                    <Content>
+                        <span class="story__value">@storyForEstimate.DisplayValue</span>
+                    </Content>
+                </EstimateCard>
             }
         </div>
     </div>

@@ -1,14 +1,16 @@
-<DashboardWidget>
+@inherits PersistentComponent<ReviewerModuleViewModel>
+
+<DashboardWidget Title="@ViewModel.ReviewTotalStatsWidgetTitle" HasChart="true">
     <Content>
         <ReviewTotalStatsWidget TeamId="TeamId" Depth="StatsDepth" />
     </Content>
 </DashboardWidget>
-<DashboardWidget>
+<DashboardWidget Title="@ViewModel.LastTasksWidgetTitle">
     <Content>
         <LastTasksWidget TeamId="TeamId" Count="TasksCount" />
     </Content>
 </DashboardWidget>
-<DashboardWidget>
+<DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle" HasChart="true">
     <Content>
         <ReviewAverageStatsWidget TeamId="TeamId" Depth="StatsDepth" />
     </Content>
@@ -23,4 +25,12 @@
     
     [Parameter, EditorRequired]
     public int TasksCount { get; set; }
+
+    protected override Task<ReviewerModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new ReviewerModuleViewModel(
+            resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],
+            resources[Messages.Dashboard_LastTasksWidgetTitle],
+            resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]));
+    }
 }

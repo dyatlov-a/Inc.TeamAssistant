@@ -143,6 +143,11 @@
   "Dashboard_ReviewReviewerNameTitle": "Reviewer",
   "Dashboard_ReviewOwnerNameTitle": "Owner",
   "Dashboard_ReviewStateTitle": "State",
+  "Dashboard_NoData": "No data",
+  "Dashboard_TeammatesWidgetTitle": "Teammates",
+  "Dashboard_ReviewTotalStatsWidgetTitle": "Review total stats",
+  "Dashboard_LastTasksWidgetTitle": "Last tasks for review",
+  "Dashboard_ReviewAverageStatsWidgetTitle": "Review average stats",
   
   "Validation_TokenInvalid": "The token is invalid.",
 
@@ -178,6 +183,10 @@
   "Constructor_FeatureReviewerName": "Tasks review",
   "Constructor_FeatureRandomCoffeeName": "Random coffee",
   "Constructor_FeatureCheckInName": "Check in on map",
+  "Constructor_FeatureAppraiserDescription": "Conduct an estimate of tasks",
+  "Constructor_FeatureReviewerDescription": "Organize code review process",
+  "Constructor_FeatureRandomCoffeeDescription": "Collect a random coffee meetings",
+  "Constructor_FeatureCheckInDescription": "Manage distributed development teams",
   "Constructor_FeatureAdd": "Add",
   "Constructor_FeatureRemove": "Remove",
   "Constructor_FormSectionFeaturesAvailableEmptyText": "No available features",

@@ -56,10 +56,10 @@
     font-weight: bold;
 }
 .estimate-group__title {
-    padding: 80px 40px 0 0;
+    padding: 40px 40px 0 0;
 }
 .estimate-group__summary {
-    padding: 80px 0 0 40px;
+    padding: 40px 0 0 40px;
 }
 .estimate-group__content {
     flex-grow: 1;

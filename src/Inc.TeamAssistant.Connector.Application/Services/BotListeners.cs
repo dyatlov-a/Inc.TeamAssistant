@@ -10,7 +10,7 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class BotListeners : IBotListeners
 {
-    private readonly TelegramBotMessageHandler _handler;
+    private readonly UpdateHandlerFactory _updateHandlerFactory;
     private readonly IBotReader _botReader;
     private readonly BotConstructor _botConstructor;
     private readonly ILogger<BotListeners> _logger;
@@ -23,12 +23,12 @@ internal sealed class BotListeners : IBotListeners
     private int _isWorking = 1;
 
     public BotListeners(
-        TelegramBotMessageHandler handler,
+        UpdateHandlerFactory updateHandlerFactory,
         IBotReader botReader,
         BotConstructor botConstructor,
         ILogger<BotListeners> logger)
     {
-        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        _updateHandlerFactory = updateHandlerFactory ?? throw new ArgumentNullException(nameof(updateHandlerFactory));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _botConstructor = botConstructor ?? throw new ArgumentNullException(nameof(botConstructor));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -44,14 +44,11 @@ internal sealed class BotListeners : IBotListeners
             var consumeTokenSource = new CancellationTokenSource();
             var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, consumeTokenSource.Token);
             var client = new TelegramBotClient(bot!.Token);
+            var handler = _updateHandlerFactory.Create(botId);
 
             await _botConstructor.TrySetup(client, bot, consumeTokenSource.Token);
             
-            client.StartReceiving(
-                (c, m, t) => _handler.Handle(m, bot.Id, t),
-                (c, e, t) => _handler.OnError(e, bot.Id, t),
-                ReceiverOptions,
-                cancellationToken: consumeTokenSource.Token);
+            client.StartReceiving(handler, ReceiverOptions, cancellationToken: consumeTokenSource.Token);
             
             _listeners.TryAdd(botId, consumeTokenSource);
         }

@@ -1,24 +1,28 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.Logging;
+using Telegram.Bot;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class TelegramBotMessageHandler
+internal sealed class TelegramBotMessageHandler : IUpdateHandler
 {
-    private readonly ILogger<TelegramBotMessageHandler> _logger;
+    private readonly ILogger _logger;
     private readonly CommandFactory _commandFactory;
     private readonly ICommandExecutor _commandExecutor;
     private readonly MessageContextBuilder _messageContextBuilder;
     private readonly IBotReader _botReader;
+    private readonly Guid _botId;
 
     public TelegramBotMessageHandler(
-        ILogger<TelegramBotMessageHandler> logger,
+        ILogger logger,
         CommandFactory commandFactory,
         ICommandExecutor commandExecutor,
         MessageContextBuilder messageContextBuilder,
-        IBotReader botReader)
+        IBotReader botReader,
+        Guid botId)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
@@ -26,15 +30,17 @@ internal sealed class TelegramBotMessageHandler
         _messageContextBuilder =
             messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
+        _botId = botId;
     }
 
-    public async Task Handle(Update update, Guid botId, CancellationToken token)
+    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(botClient);
         ArgumentNullException.ThrowIfNull(update);
 
         try
         {
-            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
+            var bot = await _botReader.Find(_botId, DateTimeOffset.UtcNow, token);
             if (bot is null)
                 return;
             
@@ -48,13 +54,15 @@ internal sealed class TelegramBotMessageHandler
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Bot {BotId} unhandled exception on handle message", botId);
+            _logger.LogCritical(ex, "Bot {BotId} unhandled exception on handle message", _botId);
         }
     }
 
-    public Task OnError(Exception exception, Guid botId, CancellationToken token)
+    public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken token)
     {
-        _logger.LogError(exception, "Bot {BotId} listened message with error", botId);
+        ArgumentNullException.ThrowIfNull(botClient);
+        
+        _logger.LogError(exception, "Bot {BotId} listened message with error", _botId);
 
         return Task.CompletedTask;
     }

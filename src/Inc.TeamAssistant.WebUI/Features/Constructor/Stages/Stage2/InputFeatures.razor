@@ -15,7 +15,7 @@
         {
             foreach (var feature in AvailableFeatures)
             {
-                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)"  Data="@GetFeatureData(feature)">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @AddText
@@ -39,7 +39,7 @@
         {
             foreach (var feature in SelectedFeatures)
             {
-                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Name="@GetName(feature)">
+                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Data="@GetFeatureData(feature)">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @RemoveText
@@ -64,7 +64,7 @@
     public IReadOnlyCollection<StagesState.Feature> Features { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public IReadOnlyDictionary<string, string> FeatureNames { get; set; } = default!;
+    public IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> FeatureData { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public string AddText { get; set; } = default!;
@@ -96,13 +96,13 @@
 
     private bool IsSelected(Guid id) => CurrentValue?.Contains(id) == true;
 
-    private string GetName(StagesState.Feature feature)
+    private SelectFeaturesViewModel.FeatureData GetFeatureData(StagesState.Feature feature)
     {
-        return FeatureNames.TryGetValue(feature.Name, out var name)
-            ? name
-            : feature.Name;
+        return FeatureData.TryGetValue(feature.Name, out var value)
+            ? value
+            : new (feature.Name, string.Empty);
     }
-    
+
     private Type FeatureType(string featureName) => featureName switch
     {
         "Appraiser" => typeof(AppraiserIcon),

@@ -14,9 +14,9 @@
 <div class="bot-selector">
     @foreach(var bot in ViewModel.Bots)
     {
-        <BotCard Icon="@typeof(BotIcon)">
+        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Content>
-                <h3 class="bot-selector__card-content">@bot.Name <a href="@MoveToDashboardLink(bot)" class="link link_black">@ViewModel.MoveToStats</a></h3>
+                <a href="@MoveToDashboardLink(bot)" class="link link_black">@ViewModel.MoveToStats</a>
             </Content>
             <Buttons>
                 <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">

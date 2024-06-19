@@ -98,7 +98,7 @@
             resources[Messages.Constructor_BooleanTrueText],
             resources[Messages.Constructor_BooleanFalseText],
             resources[Messages.Constructor_Edit],
-            Messages.BuildFeatureNames(resources)));
+            Messages.BuildFeatureData(resources).ToDictionary(i => i.Key, i => i.Value.Name)));
     }
     
     private async Task SubmitForm()

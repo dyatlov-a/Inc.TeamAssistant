@@ -4,7 +4,6 @@
     </div>
     <div class="user-card__content">
         <h3 class="user-card__name">@Name</h3>
-        
         @Content
     </div>
 </div>
@@ -16,11 +15,11 @@
     [Parameter, EditorRequired]
     public string Name { get; set; } = default!;
     
-    [Parameter]
-    public RenderFragment? Content { get; set; }
-    
     [Parameter, EditorRequired]
     public bool IsDarkTheme { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Content { get; set; }
     
     private string CssClass => IsDarkTheme ? "user-card_dark" : string.Empty;
 }

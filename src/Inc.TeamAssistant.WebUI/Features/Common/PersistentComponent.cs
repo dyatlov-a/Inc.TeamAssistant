@@ -18,7 +18,7 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
 
     protected override async Task OnParametersSetAsync()
     {
-        var key = typeof(TViewModel).FullName!;
+        var key = TViewModel.PersistentKey;
         LinkBuilder = ResourcesManager.CreateLinkBuilder();
         _persistingSubscription ??= ApplicationState.RegisterOnPersisting(() =>
         {
