@@ -3,11 +3,6 @@
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.bot-selector__card-content {
-    font-size: 1.1rem;
-    word-break: break-all;
-    text-align: center;
-}
 .bot-selector__button {
     margin: 5px;
     min-width: 166px;

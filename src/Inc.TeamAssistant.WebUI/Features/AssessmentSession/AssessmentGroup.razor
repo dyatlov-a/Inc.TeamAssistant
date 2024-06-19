@@ -24,7 +24,10 @@
                     <div class="story__cards">
                         @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
                         {
-                            <UserCard IsDarkTheme="IsDarkTheme" PersonId="storyForEstimate.ParticipantId" Name="@storyForEstimate.ParticipantName" />
+                            <EstimateCard
+                                IsDarkTheme="IsDarkTheme"
+                                PersonId="storyForEstimate.ParticipantId"
+                                Name="@storyForEstimate.ParticipantName" />
                         }
                     </div>
                 </div>
@@ -45,10 +48,10 @@
                 </tr>
                 @if (Item.HasMedian)
                 {
-                <tr>
-                    <td><span class="story__total-item"><b>@Item.Median</b></span></td>
-                    <td><span class="story__total-item">@MedianRating</span></td>
-                </tr>
+                    <tr>
+                        <td><span class="story__total-item"><b>@Item.Median</b></span></td>
+                        <td><span class="story__total-item">@MedianRating</span></td>
+                    </tr>
                 }
                 </tbody>
             </table>
