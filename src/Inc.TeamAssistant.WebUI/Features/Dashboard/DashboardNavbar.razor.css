@@ -1,9 +1,17 @@
 .navbar {
-    background-color: #9d9d9d;
-    text-align: right;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
     padding: 0 20px;
+    background-color: #9d9d9d;
 }
-.navbar__item {
-    display: inline-block;
-    padding: 20px 10px;
+.navbar__item, ::deep .navbar__item {
+    display: block;
+    padding: 15px 10px;
+}
+.user-avatar {
+    width: 50px;
+    border-radius: 50%;
+    margin: -5px 10px;
+    float: left;
 }
