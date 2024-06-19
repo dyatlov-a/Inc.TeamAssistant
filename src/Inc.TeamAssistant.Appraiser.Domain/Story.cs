@@ -67,17 +67,17 @@ public sealed class Story
 		};
 	}
 
-	public void Estimate(long participantId, AssessmentValue.Value value)
+	public bool Estimate(long participantId, AssessmentValue.Value value)
     {
 	    if (Accepted)
-		    return;
+		    return false;
 	    
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
 
         if (storyForEstimate is null)
             throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
-
-        storyForEstimate.SetValue(value);
+        
+        return storyForEstimate.SetValue(value);
 	}
 
 	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)

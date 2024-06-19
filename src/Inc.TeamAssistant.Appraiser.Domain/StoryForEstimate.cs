@@ -25,7 +25,14 @@ public sealed class StoryForEstimate
 		Value = AssessmentValue.Value.None;
 	}
 
-	internal void SetValue(AssessmentValue.Value value) => Value = value;
+    internal bool SetValue(AssessmentValue.Value value)
+    {
+	    var alreadyHasValue = Value != AssessmentValue.Value.None;
+	    
+	    Value = value;
+
+	    return alreadyHasValue;
+    }
 
 	internal void Reset() => Value = AssessmentValue.Value.None;
 }
