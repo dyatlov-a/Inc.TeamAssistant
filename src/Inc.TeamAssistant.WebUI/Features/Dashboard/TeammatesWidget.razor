@@ -30,7 +30,10 @@
 {
     <QuickGrid Items="Teammates" class="quick-data-grid">
         <PropertyColumn Title="@ViewModel.PersonName" Property="@(t => t.Name)" Sortable="true" />
-        <TemplateColumn Title="@ViewModel.LeaveUntil" Sortable="false">
+        <TemplateColumn
+            Title="@ViewModel.LeaveUntil"
+            Sortable="true"
+            SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
             @if (context.LeaveUntil.HasValue)
             {
                 <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
