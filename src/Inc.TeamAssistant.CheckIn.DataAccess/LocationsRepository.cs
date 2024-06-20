@@ -14,13 +14,35 @@ internal sealed class LocationsRepository : ILocationsRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
+    public async Task<IReadOnlyCollection<Map>> GetByBot(Guid botId, CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                id AS id,
+                chat_id AS chatid,
+                bot_id AS botid,
+                name AS name
+            FROM maps.maps
+            WHERE bot_id = @bot_id;",
+            new { bot_id = botId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var results = await connection.QueryAsync<Map>(command);
+
+        return results.ToArray();
+    }
+
     public async Task<Map?> Find(long chatId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
                 id AS id,
                 chat_id AS chatid,
-                bot_id AS botid
+                bot_id AS botid,
+                name AS name
             FROM maps.maps
             WHERE chat_id = @chat_id;",
             new {chat_id = chatId},
@@ -58,20 +80,21 @@ internal sealed class LocationsRepository : ILocationsRepository
 
     public async Task Insert(LocationOnMap locationOnMap, CancellationToken token)
     {
-        if (locationOnMap is null)
-            throw new ArgumentNullException(nameof(locationOnMap));
+        ArgumentNullException.ThrowIfNull(locationOnMap);
 
         var upsertMap = new CommandDefinition(@"
-            INSERT INTO maps.maps (id, chat_id, bot_id)
-            VALUES (@id, @chat_id, @bot_id)
+            INSERT INTO maps.maps (id, chat_id, bot_id, name)
+            VALUES (@id, @chat_id, @bot_id, @name)
             ON CONFLICT (id) DO UPDATE SET
                 chat_id = excluded.chat_id,
-                bot_id = excluded.bot_id;",
+                bot_id = excluded.bot_id,
+                name = excluded.name;",
             new
             {
                 id = locationOnMap.Map.Id,
                 chat_id = locationOnMap.Map.ChatId,
-                bot_id = locationOnMap.Map.BotId
+                bot_id = locationOnMap.Map.BotId,
+                name = locationOnMap.Map.Name
             },
             flags: CommandFlags.None,
             cancellationToken: token);

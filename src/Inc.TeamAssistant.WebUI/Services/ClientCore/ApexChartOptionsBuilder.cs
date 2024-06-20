@@ -25,7 +25,13 @@ public static class ApexChartOptionsBuilder
             Theme = new Theme
             {
                 Mode = Mode.Dark,
-                Palette = PaletteType.Palette1
+                Palette = PaletteType.Palette1,
+                Monochrome = new ThemeMonochrome
+                {
+                    Enabled = true,
+                    Color = "#555555",
+                    ShadeTo = Mode.Dark
+                }
             },
             Chart = new Chart
             {

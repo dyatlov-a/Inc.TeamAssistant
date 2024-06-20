@@ -54,6 +54,7 @@ internal sealed class MessageContextBuilder
             bot,
             messageId: 0,
             chatId: 0,
+            chatName: null,
             pollAnswer.User,
             text,
             targetPersonId: null,
@@ -73,6 +74,7 @@ internal sealed class MessageContextBuilder
             bot,
             callbackQuery.Message!.MessageId,
             callbackQuery.Message.Chat.Id,
+            callbackQuery.Message.Chat.Title,
             callbackQuery.From,
             callbackQuery.Data!,
             targetPersonId: null,
@@ -94,6 +96,7 @@ internal sealed class MessageContextBuilder
             bot,
             message.MessageId,
             message.Chat.Id,
+            message.Chat.Title,
             message.From!,
             parsedText.Text,
             targetPersonId: parsedText.TargetPersonId,
@@ -105,6 +108,7 @@ internal sealed class MessageContextBuilder
         Bot bot,
         int messageId,
         long chatId,
+        string? chatName,
         User user,
         string text,
         long? targetPersonId,
@@ -127,7 +131,8 @@ internal sealed class MessageContextBuilder
             person,
             language,
             location is not null ? new (location.Longitude, location.Latitude) : null,
-            targetPersonId);
+            targetPersonId,
+            chatName);
     }
     
     private async Task<LanguageId> EnsureLanguage(User user, CancellationToken token)

@@ -1,0 +1,63 @@
+@inherits PersistentComponent<MapWidgetViewModel>
+
+@inject ICheckInService CheckInService
+@inject IRenderContext RenderContext
+
+<div class="map-selector">
+    <InputSelect id="map-selector" @bind-Value="_mapId" class="form-control">
+        <option value=""></option>
+        @foreach (var map in ViewModel.Maps)
+        {
+            <option value="@map.Id">@map.Name</option>
+        }
+    </InputSelect>
+</div>
+
+@if (_mapId.HasValue)
+{
+    var mapUrl = GetMapUrl(_mapId.Value);
+    
+    <div class="checkin-map">
+        <iframe src="@mapUrl" class="checkin-map__body"></iframe>
+        <div class="checkin-map__bg"></div>
+        <div class="checkin-map__controls">
+            <div class="checkin-map__controls-body">
+                <a href="@mapUrl" target="_blank" class="button button_white">@ViewModel.MoveToMapTitle</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <NoData />
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+
+    private Guid? _mapId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        
+        _mapId = ViewModel.Maps.FirstOrDefault()?.Id;
+    }
+
+    protected override async Task<MapWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var maps = await CheckInService.GetMaps(BotId);
+
+        return new MapWidgetViewModel(
+            resources[Messages.Dashboard_CheckInMoveToMapTitle],
+            maps.Result.Items);
+    }
+
+    private string GetMapUrl(Guid mapId)
+    {
+        var currentLanguage = RenderContext.GetCurrentLanguageId();
+
+        return $"/{currentLanguage.Language.Value}/map/{mapId:N}";
+    }
+}

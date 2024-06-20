@@ -42,7 +42,7 @@ internal static class GetStoryQuery
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        var query = await connection.QueryMultipleAsync(command);
+        await using var query = await connection.QueryMultipleAsync(command);
 
         var stories = await query.ReadAsync<Story>();
         var storiesLookup = stories.ToDictionary(s => s.Id);

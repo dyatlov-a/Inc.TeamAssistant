@@ -64,7 +64,7 @@ internal sealed class BotRepository : IBotRepository
 
         await using var connection = _connectionFactory.Create();
 
-        var query = await connection.QueryMultipleAsync(command);
+        await using var query = await connection.QueryMultipleAsync(command);
 
         var bot = await query.ReadSingleOrDefaultAsync<Bot>();
         var features = await query.ReadAsync<Guid>();
