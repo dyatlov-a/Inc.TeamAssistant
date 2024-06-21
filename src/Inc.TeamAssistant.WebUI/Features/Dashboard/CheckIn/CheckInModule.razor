@@ -1,0 +1,18 @@
+@inherits PersistentComponent<CheckInModuleViewModel>
+
+<DashboardWidget Title="@ViewModel.MapWidgetTitle">
+    <Content>
+        <MapWidget BotId="BotId" />
+    </Content>
+</DashboardWidget>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+
+    protected override Task<CheckInModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new CheckInModuleViewModel(
+            resources[Messages.Dashboard_CheckInMapWidgetTitle]));
+    }
+}

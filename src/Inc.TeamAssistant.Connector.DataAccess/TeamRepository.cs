@@ -42,7 +42,7 @@ internal sealed class TeamRepository : ITeamRepository
 
         await using var connection = _connectionFactory.Create();
         
-        var query = await connection.QueryMultipleAsync(command);
+        await using var query = await connection.QueryMultipleAsync(command);
 
         var team = await query.ReadSingleOrDefaultAsync<Team>();
         var persons = await query.ReadAsync<Person>();

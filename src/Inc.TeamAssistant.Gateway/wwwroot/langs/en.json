@@ -145,9 +145,12 @@
   "Dashboard_ReviewStateTitle": "State",
   "Dashboard_NoData": "No data",
   "Dashboard_TeammatesWidgetTitle": "Teammates",
+  "Dashboard_BotWidgetTitle": "Bot has not selected",
   "Dashboard_ReviewTotalStatsWidgetTitle": "Review total stats",
   "Dashboard_LastTasksWidgetTitle": "Last tasks for review",
   "Dashboard_ReviewAverageStatsWidgetTitle": "Review average stats",
+  "Dashboard_CheckInMoveToMapTitle": "Move to map",
+  "Dashboard_CheckInMapWidgetTitle": "Checkin maps by chats",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

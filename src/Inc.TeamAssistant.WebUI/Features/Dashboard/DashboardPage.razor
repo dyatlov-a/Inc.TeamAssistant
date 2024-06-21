@@ -39,15 +39,23 @@
                     <ReviewerModule TeamId="TeamId.Value" StatsDepth="90" TasksCount="10" />   
                 }
             }
+            
+            @if (BotId.HasValue)
+            {
+                if (HasFeature("CheckIn"))
+                {
+                    <CheckInModule BotId="BotId.Value" />
+                }
+            }
             else
             {
                 <div class="dashboard-widgets__widget">
-                    <FormSection Title="Bot widgets" AsRows="true">
+                    <FormSection Title="@ViewModel.BotWidgetTitle" AsRows="true">
                         <HelpContent>
-                            @ViewModel.SelectTeam <a href="@MoveToCreateBot()" class="link link_white">@ViewModel.CreateBot</a>
+                            @ViewModel.SelectTeam
+                            <a href="@MoveToCreateBot()" class="link link_white">@ViewModel.CreateBot</a>
                         </HelpContent>
-                        <Content>
-                        </Content>
+                        <Content />
                     </FormSection>
                 </div>
             }
@@ -76,6 +84,7 @@
             resources[Messages.Dashboard_SelectTeam],
             resources[Messages.Dashboard_CreateBot],
             resources[Messages.Dashboard_TeammatesWidgetTitle],
+            resources[Messages.Dashboard_BotWidgetTitle],
             getByUser.Result.Bots);
     }
 

@@ -12,7 +12,8 @@ public sealed record MessageContext(
     Person Person,
     LanguageId LanguageId,
     Point? Location,
-    long? TargetPersonId)
+    long? TargetPersonId,
+    string? ChatName)
 {
     public bool Shared => ChatMessage.ChatId != Person.Id;
 
@@ -28,7 +29,8 @@ public sealed record MessageContext(
             Person.Empty,
             LanguageId: LanguageSettings.DefaultLanguageId,
             Location: null,
-            TargetPersonId: null);
+            TargetPersonId: null,
+            ChatName: null);
     }
         
     public TeamContext? FindTeam(Guid teamId) => Teams.SingleOrDefault(t => t.Id == teamId);

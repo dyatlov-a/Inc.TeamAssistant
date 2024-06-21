@@ -145,9 +145,12 @@
   "Dashboard_ReviewStateTitle": "Статус",
   "Dashboard_NoData": "Нет данных",
   "Dashboard_TeammatesWidgetTitle": "Товарищи по команде",
+  "Dashboard_BotWidgetTitle": "Бот не выбран",
   "Dashboard_ReviewTotalStatsWidgetTitle": "Общая статистика по ревью",
   "Dashboard_LastTasksWidgetTitle": "Последние задания для обзора",
   "Dashboard_ReviewAverageStatsWidgetTitle": "Статистика по ревью (средняя)",
+  "Dashboard_CheckInMoveToMapTitle": "Перейти к карте",
+  "Dashboard_CheckInMapWidgetTitle": "Карты по чатам",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

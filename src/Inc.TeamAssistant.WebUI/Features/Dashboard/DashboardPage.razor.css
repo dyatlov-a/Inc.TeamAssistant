@@ -1,5 +1,6 @@
 .dashboard {
     display: flex;
+    margin-bottom: 60px;
 }
 .dashboard-toolbar__content {
     width: 260px;

@@ -14,7 +14,15 @@ public sealed class CheckInController : ControllerBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
-    [HttpGet("{mapId}")]
-    public async Task<IActionResult> GetStoryDetails(Guid mapId, CancellationToken cancellationToken)
-        => Ok(await _service.GetLocations(mapId, cancellationToken));
+    [HttpGet("maps/{botId}")]
+    public async Task<IActionResult> GetMaps(Guid botId, CancellationToken token)
+    {
+        return Ok(await _service.GetMaps(botId, token));
+    }
+
+    [HttpGet("locations/{mapId}")]
+    public async Task<IActionResult> GetStoryDetails(Guid mapId, CancellationToken token)
+    {
+        return Ok(await _service.GetLocations(mapId, token));
+    }
 }

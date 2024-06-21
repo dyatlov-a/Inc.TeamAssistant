@@ -200,7 +200,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        var query = await connection.QueryMultipleAsync(command);
+        await using var query = await connection.QueryMultipleAsync(command);
         
         var randomCoffeeEntry = await query.ReadSingleOrDefaultAsync<RandomCoffeeEntry>();
         var randomCoffeeHistory = await query.ReadAsync<RandomCoffeeHistory>();
