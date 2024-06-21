@@ -77,32 +77,44 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             taskForReview.Created,
             DateTimeOffset.UtcNow,
             token);
-        
-        if (taskForReview is { State: TaskForReviewState.New or TaskForReviewState.InProgress, ReviewerMessageId: not null })
-        {
-            var languageId = await _teamAccessor.GetClientLanguage(taskForReview.ReviewerId, token);
-            var reviewerNotificationText = await _messageBuilder.Build(
-                Messages.Reviewer_NeedEndReview,
-                languageId,
-                workTimeTotal.ToString(TimeFormat));
-            return NotificationMessage
-                .Create(taskForReview.ReviewerId, reviewerNotificationText)
-                .ReplyTo(taskForReview.ReviewerMessageId.Value);
-        }
-        
-        if (taskForReview is { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null })
-        {
-            var languageId = await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token);
-            var ownerNotificationText = await _messageBuilder.Build(
-                Messages.Reviewer_NeedRevisions,
-                languageId,
-                workTimeTotal.ToString(TimeFormat));
-            return NotificationMessage
-                .Create(taskForReview.OwnerId, ownerNotificationText)
-                .ReplyTo(taskForReview.OwnerMessageId.Value);
-        }
 
-        return null;
+        return taskForReview switch
+        {
+            { State: TaskForReviewState.New or TaskForReviewState.InProgress, ReviewerMessageId: not null } =>
+                await CreatePushMessage(
+                    taskForReview.ReviewerId,
+                    taskForReview.ReviewerMessageId.Value,
+                    workTimeTotal,
+                    token),
+            { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null } =>
+                await CreatePushMessage(
+                    taskForReview.OwnerId,
+                    taskForReview.OwnerMessageId.Value,
+                    workTimeTotal,
+                    token),
+            _ => null
+        };
+    }
+
+    private async Task<NotificationMessage?> CreatePushMessage(
+        long personId,
+        int messageId,
+        TimeSpan workTimeTotal,
+        CancellationToken token)
+    {
+        var languageId = await _teamAccessor.GetClientLanguage(personId, token);
+        
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedEndReview, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(await _messageBuilder.Build(
+            Messages.Reviewer_TotalTime,
+            languageId,
+            workTimeTotal.ToString(TimeFormat)));
+        
+        return NotificationMessage
+            .Create(personId, messageBuilder.ToString())
+            .ReplyTo(messageId);
     }
     
     private async Task<NotificationMessage> MessageForTeam(
@@ -122,33 +134,35 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
         var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Username);
         var attachedPersonId = hasUsername ? null : (long?)reviewer.Id;
-        var text = await _messageBuilder.Build(
-            Messages.Reviewer_NewTaskForReview,
-            languageId,
-            taskForReview.Description,
-            owner.DisplayName,
-            hasUsername ? $"@{reviewer.Username}" : reviewer.Name);
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
             TaskForReviewState.InProgress => "🤩",
             TaskForReviewState.OnCorrection => "😱",
-            TaskForReviewState.Accept => "👍",
+            TaskForReviewState.Accept => "🤝",
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
         
-        var builder = new StringBuilder();
-        builder.AppendLine(text);
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
+        messageBuilder.AppendLine(await _messageBuilder.Build(
+            Messages.Reviewer_Target,
+            languageId,
+            hasUsername ? $"@{reviewer.Username}" : reviewer.Name));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(taskForReview.Description);
+        messageBuilder.AppendLine(state);
+        
         await AddStats(
-            builder,
+            messageBuilder,
             taskForReview,
             metricsByTeam,
             metricsByTask,
             languageId,
             hasReviewMetrics: true,
             hasCorrectionMetrics: true);
-        builder.AppendLine(state);
-        var message = builder.ToString();
+        var message = messageBuilder.ToString();
         
         var notification = taskForReview.MessageId.HasValue
             ? NotificationMessage
@@ -175,10 +189,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(taskForReview);
 
         var languageId = await _teamAccessor.GetClientLanguage(reviewerId, token);
-        var message = await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId, taskForReview.Description);
-        var notification = NotificationMessage.Edit(new(reviewerId, messageId), message);
-
-        return notification;
+        
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(taskForReview.Description);
+        
+        return NotificationMessage.Edit(new(reviewerId, messageId), messageBuilder.ToString());
     }
 
     private async Task<NotificationMessage> MessageForReviewer(
@@ -193,10 +210,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var languageId = await _teamAccessor.GetClientLanguage(taskForReview.ReviewerId, token);
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(await _messageBuilder.Build(
-            Messages.Reviewer_NeedReview,
-            languageId,
-            taskForReview.Description));
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(taskForReview.Description);
+        
         await AddStats(
             messageBuilder,
             taskForReview,
@@ -205,6 +222,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             languageId,
             hasReviewMetrics: true,
             hasCorrectionMetrics: false);
+        
         var message = messageBuilder.ToString();
         var notification = taskForReview.ReviewerMessageId.HasValue
             ? NotificationMessage.Edit(new(taskForReview.ReviewerId, taskForReview.ReviewerMessageId.Value), message)
@@ -254,10 +272,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
         var languageId = await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token);
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(await _messageBuilder.Build(
-            Messages.Reviewer_ReviewDeclined,
-            languageId,
-            taskForReview.Description));
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_ReviewDeclined, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(taskForReview.Description);
+        
         await AddStats(
             messageBuilder,
             taskForReview,
@@ -266,6 +284,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             languageId,
             hasReviewMetrics: false,
             hasCorrectionMetrics: true);
+        
         var message = messageBuilder.ToString();
         var notification = taskForReview.OwnerMessageId.HasValue
             ? NotificationMessage.Edit(new(taskForReview.OwnerId, taskForReview.OwnerMessageId.Value), message)
@@ -290,20 +309,24 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private async Task<NotificationMessage> ReviewFinish(TaskForReview taskForReview, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
-        
+
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token);
         var workTimeTotal = await _holidayService.CalculateWorkTime(
             taskForReview.Created,
             DateTimeOffset.UtcNow,
             token);
         
-        var message = await _messageBuilder.Build(
-            Messages.Reviewer_Accepted,
-            await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token),
-            taskForReview.Description,
-            workTimeTotal.ToString(TimeFormat));
-        var notification = NotificationMessage.Create(taskForReview.OwnerId, message);
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Accepted, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(taskForReview.Description);
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(await _messageBuilder.Build(
+            Messages.Reviewer_TotalTime,
+            languageId,
+            workTimeTotal.ToString(TimeFormat)));
 
-        return notification;
+        return NotificationMessage.Create(taskForReview.OwnerId, messageBuilder.ToString());
     }
     
     private async Task AddStats(
@@ -320,7 +343,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
         ArgumentNullException.ThrowIfNull(languageId);
-        
+
+        builder.AppendLine();
         var attempts = taskForReview.GetAttempts();
         if (attempts.HasValue)
             builder.AppendLine(await _messageBuilder.Build(
@@ -330,8 +354,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         if (taskForReview.State == TaskForReviewState.Accept)
         {
-            const string trendUp = "⬆️";
-            const string trendDown = "⬇️";
+            const string trendUp = "👍";
+            const string trendDown = "👎";
             
             if (hasReviewMetrics)
             {
