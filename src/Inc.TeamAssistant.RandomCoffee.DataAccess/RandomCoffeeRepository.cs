@@ -89,7 +89,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 next_round,
                 state,
                 poll_id,
-                participant_ids)
+                participant_ids,
+                name)
             VALUES (
                 @id,
                 @created,
@@ -99,7 +100,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 @next_round,
                 @state,
                 @poll_id,
-                @participant_ids::jsonb)
+                @participant_ids::jsonb,
+                @name)
             ON CONFLICT (id) DO UPDATE SET
                 created = excluded.created,
                 bot_id = excluded.bot_id,
@@ -108,7 +110,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 next_round = excluded.next_round,
                 state = excluded.state,
                 poll_id = excluded.poll_id,
-                participant_ids = excluded.participant_ids;",
+                participant_ids = excluded.participant_ids,
+                name = excluded.name;",
             new
             {
                 id = randomCoffeeEntry.Id,
@@ -119,7 +122,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 next_round = randomCoffeeEntry.NextRound,
                 state = randomCoffeeEntry.State,
                 poll_id = randomCoffeeEntry.PollId,
-                participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds)
+                participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
+                name = randomCoffeeEntry.Name
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -177,7 +181,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.next_round AS nextround,
                 e.state AS state,
                 e.poll_id AS pollid,
-                e.participant_ids AS participantids
+                e.participant_ids AS participantids,
+                e.name AS name
             FROM random_coffee.entries AS e
             WHERE e.id = @id;
 

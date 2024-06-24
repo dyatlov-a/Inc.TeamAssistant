@@ -154,6 +154,10 @@
   "Dashboard_ReviewAverageStatsWidgetTitle": "Статистика по ревью (средняя)",
   "Dashboard_CheckInMoveToMapTitle": "Перейти к карте",
   "Dashboard_CheckInMapWidgetTitle": "Карты по чатам",
+  "Dashboard_RandomCoffeeHistoryWidgetTitle": "История встреч (Random coffee)",
+  "Dashboard_RandomCoffeeNoPair": "Пара не найдена",
+  "Dashboard_RandomCoffeeFirstTitle": "Первый участник",
+  "Dashboard_RandomCoffeeSecondTitle": "Второй участник",
   "Dashboard_GoToCurrentSessionButtonText": "Перейти к текущей сессии",
   "Dashboard_AssessmentDate": "Дата проведения оценки",
 

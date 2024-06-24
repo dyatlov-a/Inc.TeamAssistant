@@ -5,7 +5,6 @@
 
 <div class="map-selector">
     <InputSelect id="map-selector" @bind-Value="_mapId" class="form-control">
-        <option value=""></option>
         @foreach (var map in ViewModel.Maps)
         {
             <option value="@map.Id">@map.Name</option>

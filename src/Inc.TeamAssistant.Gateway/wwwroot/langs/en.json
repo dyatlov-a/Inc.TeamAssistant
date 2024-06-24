@@ -154,6 +154,10 @@
   "Dashboard_ReviewAverageStatsWidgetTitle": "Review average stats",
   "Dashboard_CheckInMoveToMapTitle": "Move to map",
   "Dashboard_CheckInMapWidgetTitle": "Checkin maps by chats",
+  "Dashboard_RandomCoffeeHistoryWidgetTitle": "Random coffee history",
+  "Dashboard_RandomCoffeeNoPair": "No match found",
+  "Dashboard_RandomCoffeeFirstTitle": "First participant",
+  "Dashboard_RandomCoffeeSecondTitle": "Second participant",
   "Dashboard_GoToCurrentSessionButtonText": "Go to current session",
   "Dashboard_AssessmentDate": "Assessment date",
   

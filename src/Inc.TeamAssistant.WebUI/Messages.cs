@@ -115,6 +115,10 @@ internal static class Messages
     public static readonly string Dashboard_ReviewAverageStatsWidgetTitle = nameof(Dashboard_ReviewAverageStatsWidgetTitle);
     public static readonly string Dashboard_CheckInMoveToMapTitle = nameof(Dashboard_CheckInMoveToMapTitle);
     public static readonly string Dashboard_CheckInMapWidgetTitle = nameof(Dashboard_CheckInMapWidgetTitle);
+    public static readonly string Dashboard_RandomCoffeeHistoryWidgetTitle = nameof(Dashboard_RandomCoffeeHistoryWidgetTitle);
+    public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
+    public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
+    public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
 

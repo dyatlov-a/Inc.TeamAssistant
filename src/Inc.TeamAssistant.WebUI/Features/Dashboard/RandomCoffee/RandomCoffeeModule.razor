@@ -1,0 +1,18 @@
+@inherits PersistentComponent<RandomCoffeeModuleViewModel>
+
+<DashboardWidget Title="@ViewModel.RandomCoffeeHistoryWidgetTitle">
+    <Content>
+        <RandomCoffeeHistoryWidget BotId="BotId" Depth="5" />
+    </Content>
+</DashboardWidget>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    protected override Task<RandomCoffeeModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new RandomCoffeeModuleViewModel(
+            resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]));
+    }
+}
