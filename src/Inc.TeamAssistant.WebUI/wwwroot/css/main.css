@@ -143,6 +143,8 @@ html {
     padding: 10px 20px;
     font-size: 1rem;
     border: 3px solid #555;
+    border-radius: 0;
+    color: #000;
 }
 .is-valid {
     border: 3px solid #28a745;

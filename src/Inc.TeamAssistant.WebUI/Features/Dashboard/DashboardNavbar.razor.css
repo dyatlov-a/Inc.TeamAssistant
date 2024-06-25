@@ -12,6 +12,11 @@
 .user-avatar {
     width: 50px;
     border-radius: 50%;
-    margin: -5px 10px;
+    margin: -5px 10px -5px 0;
     float: left;
+}
+@media (max-width: 767.98px) {
+    .navbar__divider {
+        flex-grow: 1;
+    }
 }
