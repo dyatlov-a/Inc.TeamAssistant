@@ -29,8 +29,22 @@
         }
     </div>
     <QuickGrid Items="@Pairs" class="quick-data-grid">
-        <PropertyColumn Title="@ViewModel.FirstTitle" Property="@(p => p.First)" />
-        <PropertyColumn Title="@ViewModel.SecondTitle" Property="@(p => p.Second)" />
+        <TemplateColumn
+            Title="@ViewModel.FirstTitle"
+            Sortable="true"
+            SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+            @context.FirstName
+            <br/>
+            @context.FirstUserName
+        </TemplateColumn>
+        <TemplateColumn
+            Title="@ViewModel.FirstTitle"
+            Sortable="true"
+            SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+            @context.SecondName
+            <br/>
+            @context.SecondUserName
+        </TemplateColumn>
     </QuickGrid>
 }
 else
@@ -93,13 +107,16 @@ else
         get
         {
             var historyItems = ViewModel.HistoryItems.FirstOrDefault(i => !_date.HasValue || i.Created == _date.Value);
-            var excludedPerson = historyItems?.ExcludedPerson;
 
             var pairs = new List<PairDto>();
             if (historyItems?.Pairs is not null)
                 pairs.AddRange(historyItems.Pairs);
-            if (!string.IsNullOrWhiteSpace(excludedPerson))
-                pairs.Add(new PairDto(excludedPerson, ViewModel.NoPair));
+            if (!string.IsNullOrWhiteSpace(historyItems?.ExcludedPersonName))
+                pairs.Add(new PairDto(
+                    historyItems.ExcludedPersonName,
+                    historyItems.ExcludedPersonUserName,
+                    ViewModel.NoPair,
+                    SecondUserName: null));
 
             return pairs.AsQueryable();
         }

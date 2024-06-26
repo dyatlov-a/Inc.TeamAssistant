@@ -29,10 +29,10 @@
         <TemplateColumn
             Title="@ViewModel.StateTitle"
             Sortable="true"
-            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.State).ThenAscending(e => e.Created)">
+            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => ViewModel.StateLookup[e.State]).ThenAscending(e => e.Created)">
             @context.Created.ToString("yyyy.MM.dd HH:mm")
             <br/>
-            @context.State
+            @ViewModel.StateLookup[context.State]
         </TemplateColumn>
     </QuickGrid>
 }
@@ -57,6 +57,14 @@ else
             resources[Messages.Dashboard_ReviewReviewerNameTitle],
             resources[Messages.Dashboard_ReviewOwnerNameTitle],
             resources[Messages.Dashboard_ReviewStateTitle],
+            new Dictionary<string, string>
+            {
+                ["None"] = resources[Messages.Dashboard_ReviewStateNone],
+                ["New"] = resources[Messages.Dashboard_ReviewStateNew],
+                ["InProgress"] = resources[Messages.Dashboard_ReviewStateInProgress],
+                ["OnCorrection"] = resources[Messages.Dashboard_ReviewStateOnCorrection],
+                ["Accept"] = resources[Messages.Dashboard_ReviewStateAccept]
+            },
             tasks.Result.Items);
     }
 

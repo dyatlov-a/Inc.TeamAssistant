@@ -2,9 +2,10 @@
     padding: 0 10px 10px 10px;
 }
 .date-selector {
-    padding: 5px;
+    padding: 0 5px;
 }
 .date-selector__item {
+    display: inline-block;
     background-color: #555;
     padding: 3px 10px;
     border-radius: 3px;

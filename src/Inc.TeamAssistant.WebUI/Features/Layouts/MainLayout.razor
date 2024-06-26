@@ -1,4 +1,5 @@
 ﻿@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
 @inherits LayoutComponentBase
 
 @inject ResourcesManager ResourcesManager
@@ -22,8 +23,7 @@
     protected override async Task OnInitializedAsync()
     {
         var resources = await ResourcesManager.GetResource();
-        
-        const string title = "Team assistant";
+        var title = resources[Messages.GUI_MainTitle];
         var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
         var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
         

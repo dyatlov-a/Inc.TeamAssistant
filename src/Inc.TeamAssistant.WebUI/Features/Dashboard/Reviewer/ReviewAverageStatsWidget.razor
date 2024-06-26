@@ -10,7 +10,7 @@
     <ApexChart TItem="ReviewAverageStatsDto"
                Title="@ViewModel.Title"
                Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
-               FormatYAxisLabel="@(y => y.ToString("N2"))"
+               FormatYAxisLabel="@(y => y.ToString("N1"))"
                @ref="_chart">
         <ApexPointSeries TItem="ReviewAverageStatsDto"
                          Items="ViewModel.Items"

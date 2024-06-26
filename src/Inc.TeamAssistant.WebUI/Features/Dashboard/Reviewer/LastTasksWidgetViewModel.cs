@@ -8,6 +8,7 @@ public sealed record LastTasksWidgetViewModel(
     string ReviewerNameTitle,
     string OwnerNameTitle,
     string StateTitle,
+    IReadOnlyDictionary<string, string> StateLookup,
     IReadOnlyCollection<TaskForReviewDto> Tasks)
     : IViewModel<LastTasksWidgetViewModel>
 {
@@ -16,5 +17,6 @@ public sealed record LastTasksWidgetViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
+        new Dictionary<string, string>(),
         Array.Empty<TaskForReviewDto>());
 }

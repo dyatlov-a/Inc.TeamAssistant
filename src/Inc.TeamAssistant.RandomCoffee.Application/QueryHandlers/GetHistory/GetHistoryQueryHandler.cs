@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
+using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory;
 using MediatR;
 
@@ -19,30 +20,36 @@ internal sealed class GetHistoryQueryHandler : IRequestHandler<GetHistoryQuery, 
     public async Task<GetHistoryResult> Handle(GetHistoryQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
-        
-        var historyItems = await _reader.GetHistory(query.BotId, query.ChatId, query.Depth, token);
 
+        var historyItems = await _reader.GetHistory(query.BotId, query.ChatId, query.Depth, token);
+        var personLookup = await BuildPersonLookup(historyItems, token);
+        var results = historyItems
+            .Select(i => RandomCoffeeHistoryConverter.ConvertTo(i, personLookup))
+            .ToArray();
+        
+        return new GetHistoryResult(results);
+    }
+
+    private async Task<IReadOnlyDictionary<long, Person>> BuildPersonLookup(
+        IReadOnlyCollection<RandomCoffeeHistory> historyItems,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(historyItems);
+        
         var personIds = historyItems
             .SelectMany(i => i.Pairs.Select(p => p.FirstId).Union(i.Pairs.Select(p => p.SecondId)))
             .Union(historyItems.Where(h => h.ExcludedPersonId.HasValue).Select(h => h.ExcludedPersonId!.Value))
-            .Distinct()
-            .ToArray();
-        var personLookup = new Dictionary<long, string>();
+            .Distinct();
+        
+        var personLookup = new Dictionary<long, Person>();
 
         foreach (var personId in personIds)
         {
             var person = await _teamAccessor.FindPerson(personId, token);
 
-            personLookup.Add(personId, person?.DisplayName ?? personId.ToString());
+            personLookup.Add(personId, person ?? new Person(personId, personId.ToString(), Username: null));
         }
 
-        var results = historyItems
-            .Select(i => new RandomCoffeeHistoryDto(
-                new DateOnly(i.Created.Year, i.Created.Month, i.Created.Day),
-                i.Pairs.Select(p => new PairDto(personLookup[p.FirstId], personLookup[p.SecondId])).ToArray(),
-                i.ExcludedPersonId.HasValue ? personLookup[i.ExcludedPersonId.Value] : null))
-            .ToArray();
-
-        return new GetHistoryResult(results);
+        return personLookup;
     }
 }

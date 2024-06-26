@@ -28,6 +28,7 @@ internal static class Messages
     
     public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
     public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
+    public static readonly string GUI_MainTitle = nameof(GUI_MainTitle);
     public static readonly string GUI_MainHeader = nameof(GUI_MainHeader);
     public static readonly string GUI_MainSubHeader = nameof(GUI_MainSubHeader);
     public static readonly string GUI_ToolAppraiser = nameof(GUI_ToolAppraiser);
@@ -107,6 +108,11 @@ internal static class Messages
     public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
     public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
     public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
+    public static readonly string Dashboard_ReviewStateNone = nameof(Dashboard_ReviewStateNone);
+    public static readonly string Dashboard_ReviewStateNew = nameof(Dashboard_ReviewStateNew);
+    public static readonly string Dashboard_ReviewStateInProgress = nameof(Dashboard_ReviewStateInProgress);
+    public static readonly string Dashboard_ReviewStateOnCorrection = nameof(Dashboard_ReviewStateOnCorrection);
+    public static readonly string Dashboard_ReviewStateAccept = nameof(Dashboard_ReviewStateAccept);
     public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
     public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
     public static readonly string Dashboard_BotWidgetTitle = nameof(Dashboard_BotWidgetTitle);
