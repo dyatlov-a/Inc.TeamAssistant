@@ -125,6 +125,7 @@ internal static class Messages
     public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
     public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
     public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
+    public static readonly string Dashboard_ConnectToTeam = nameof(Dashboard_ConnectToTeam);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
 

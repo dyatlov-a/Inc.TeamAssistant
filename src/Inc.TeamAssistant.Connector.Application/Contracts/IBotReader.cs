@@ -7,7 +7,10 @@ public interface IBotReader
 {
     Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token);
 
-    Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token);
+    Task<IReadOnlyCollection<BotDto>> GetBotsByUser(
+        long userId,
+        Func<string, Guid, string> linkBuilder,
+        CancellationToken token);
     
     Task<Bot?> Find(Guid id, DateTimeOffset now, CancellationToken token);
     
