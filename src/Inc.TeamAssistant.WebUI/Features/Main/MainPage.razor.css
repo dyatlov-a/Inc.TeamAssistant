@@ -2,6 +2,9 @@
     max-width: 90%;
     padding-top: 100px;
 }
+.about-bots {
+    color: #000;
+}
 .about-bots__header {
     font-size: 2.3rem;
     line-height: 3.6rem;
@@ -11,10 +14,8 @@
     line-height: 2.6rem;
 }
 .about-bots__item {
-    background: rgba(0, 0, 0, .3);
     padding: 4px 10px;
     border-radius: 4px;
-    text-shadow: #000 0 0 10px;
 }
 .about-bots__actions {
     margin-top: 20px;

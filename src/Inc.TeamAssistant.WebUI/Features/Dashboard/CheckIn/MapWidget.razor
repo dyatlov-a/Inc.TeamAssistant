@@ -17,7 +17,7 @@
     var mapUrl = GetMapUrl(_mapId.Value);
     
     <div class="checkin-map">
-        <iframe src="@mapUrl" class="checkin-map__body"></iframe>
+        <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
         <div class="checkin-map__bg"></div>
         <div class="checkin-map__controls">
             <div class="checkin-map__controls-body">
@@ -57,6 +57,6 @@ else
     {
         var currentLanguage = RenderContext.GetCurrentLanguageId();
 
-        return $"/{currentLanguage.Language.Value}/map/{mapId:N}/true";
+        return $"/{currentLanguage.Language.Value}/map/{mapId:N}";
     }
 }

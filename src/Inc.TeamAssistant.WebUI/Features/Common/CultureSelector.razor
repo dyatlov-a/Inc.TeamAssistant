@@ -1,0 +1,39 @@
+@using Inc.TeamAssistant.Primitives.Languages
+
+@inject NavigationManager NavigationManager
+
+@foreach (var culture in LanguageSettings.LanguageIds)
+{
+    var path = $"/{culture.Value}/{_cleanUrl}";
+    
+    <a href="@path" @onclick="() => MoveTo(path)" class="link link_white navbar__item" @onclick:preventDefault="true">
+        @culture.Value
+    </a>
+}
+
+@code {
+    private string _cleanUrl = default!;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        Update();
+
+        NavigationManager.LocationChanged += (s, e) => Update();
+    }
+    
+    private void Update()
+    {
+        var cleanUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        
+        foreach (var languageId in LanguageSettings.LanguageIds)
+            cleanUrl = cleanUrl.TrimStart($"/{languageId.Value}".ToArray());
+
+        _cleanUrl = cleanUrl;
+        
+        StateHasChanged();
+    }
+
+    private void MoveTo(string path) => NavigationManager.NavigateTo(path, forceLoad: true);
+}

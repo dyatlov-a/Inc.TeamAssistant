@@ -55,7 +55,7 @@ public sealed class AccountsController : ControllerBase
     }
     
     [HttpGet("as-super-user")]
-    public async Task<IActionResult> LoginAsSuperUser()
+    public async Task<IActionResult> LoginAsSuperUser(string redirectToUrl)
     {
         if (_webHostEnvironment.IsProduction())
             return BadRequest();
@@ -63,15 +63,15 @@ public sealed class AccountsController : ControllerBase
         var principal = _authOptions.SuperUser.ToClaimsPrincipal();
         
         await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
-
-        return Redirect("/constructor");
+        
+        return Redirect(redirectToUrl);
     }
 
     [HttpGet("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Logout(string redirectToUrl)
     {
         await HttpContext.SignOutAsync(ApplicationContext.AuthenticationScheme);
 
-        return Redirect("/");
+        return Redirect(redirectToUrl);
     }
 }

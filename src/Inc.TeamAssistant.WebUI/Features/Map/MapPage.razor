@@ -1,9 +1,9 @@
 @page "/map/{id:guid}"
 @page "/en/map/{id:guid}"
 @page "/ru/map/{id:guid}"
-@page "/map/{id:guid}/{DisableCookie:bool}"
-@page "/en/map/{id:guid}/{DisableCookie:bool}"
-@page "/ru/map/{id:guid}/{DisableCookie:bool}"
+@page "/map/{id:guid}/{DisableLayout:bool}"
+@page "/en/map/{id:guid}/{DisableLayout:bool}"
+@page "/ru/map/{id:guid}/{DisableLayout:bool}"
 
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
@@ -16,9 +16,15 @@
 
 @layout MapLayout
 
-<div @ref="_map" class="map"></div>
+@if (!DisableLayout)
+{
+    <div class="map-navbar">
+        <MainNavbar/>
+    </div>
+}
+<div @ref="_map" class="map @CssClass"></div>
 
-@if (!DisableCookie)
+@if (!DisableLayout)
 {
     <AcceptCookieDialog />
 }
@@ -28,7 +34,9 @@
     public Guid Id { get; set; }
     
     [Parameter]
-    public bool DisableCookie { get; set; }
+    public bool DisableLayout { get; set; }
+
+    private string CssClass => DisableLayout ? string.Empty : "map_navbar";
 
     private ElementReference _map;
     private IJSObjectReference? _mapModule;

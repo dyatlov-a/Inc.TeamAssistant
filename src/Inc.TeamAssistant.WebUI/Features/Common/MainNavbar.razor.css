@@ -1,13 +1,15 @@
 .navbar {
     display: flex;
-    flex-direction: row-reverse;
     align-items: center;
     padding: 0 20px;
-    background-color: #9d9d9d;
+    background: rgba(0, 0, 0, .3);
 }
 .navbar__item, ::deep .navbar__item {
     display: block;
     padding: 15px 10px;
+}
+.navbar__divider {
+    flex-grow: 1;
 }
 .user-avatar {
     width: 50px;
@@ -15,8 +17,8 @@
     margin: -5px 10px -5px 0;
     float: left;
 }
-@media (max-width: 767.98px) {
-    .navbar__divider {
-        flex-grow: 1;
+@media (max-width: 479.98px) {
+    .navbar__item_avatar {
+        display: none;
     }
 }

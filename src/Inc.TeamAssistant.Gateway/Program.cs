@@ -133,6 +133,7 @@ builder.Services
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()
+	.AddOutputCache(c => c.AddBasePolicy(b => b.Expire(TimeSpan.FromHours(1))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 
@@ -154,6 +155,7 @@ if (builder.Environment.IsDevelopment())
 app
 	.UseStaticFiles()
 	.UseRouting()
+	.UseOutputCache()
 	.UseAuthentication()
 	.UseAuthorization()
 	.UseAntiforgery()

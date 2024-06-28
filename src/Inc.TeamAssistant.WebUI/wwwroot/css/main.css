@@ -137,6 +137,9 @@ html {
 .marker-btn:hover {
     text-decoration: none;
 }
+.map_navbar .leaflet-top {
+    top: 80px;
+}
 /* FORMS */
 .form-control {
     width: 100%;
