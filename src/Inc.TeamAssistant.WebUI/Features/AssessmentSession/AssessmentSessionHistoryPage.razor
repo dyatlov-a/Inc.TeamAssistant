@@ -8,8 +8,8 @@
 
 <div class="assessment-history-header white">
     <div class="assessment-history-header__container">
-        <a href="@MoveToBack()" class="link link_black assessment-history__link">@ViewModel.LinkToBackText</a>
-        <h1 class="title">@ViewModel.StoryList @Date</h1>
+        <Breadcrumbs Items="ViewModel.Items" />
+        <h1 class="title">@ViewModel.StoryList</h1>
     </div>
 </div>
 @if (ViewModel.Data is not null)
@@ -36,8 +36,6 @@
 
     [Parameter, EditorRequired]
     public string Date { get; set; } = default!;
-
-    private string MoveToBack() => LinkBuilder($"assessment-session/{TeamId:N}");
     
     protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(
         Dictionary<string, string> resources)
@@ -45,9 +43,13 @@
         var getStoriesResult = await AppraiserService.GetStories(TeamId, DateOnly.Parse(Date));
         
         return new AssessmentSessionHistoryPageViewModel(
-            resources[Messages.GUI_Back],
             resources[Messages.GUI_StoryList],
             resources[Messages.GUI_MeanRating],
+            new BreadcrumbItem[]
+            {
+                new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{TeamId:N}")),
+                new (Date, LinkBuilder($"assessment-history/{TeamId:N}/{Date}"))
+            },
             getStoriesResult.Result);
     }
 }

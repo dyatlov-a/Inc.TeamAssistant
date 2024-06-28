@@ -12,6 +12,7 @@ public sealed record AssessmentSessionPageViewModel(
     string HasNotTasks,
     string TeamName,
     string CodeForConnect,
+    IReadOnlyCollection<BreadcrumbItem> Items,
     StoryDto? Story)
     : IViewModel<AssessmentSessionPageViewModel>
 {
@@ -24,5 +25,6 @@ public sealed record AssessmentSessionPageViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
+        Array.Empty<BreadcrumbItem>(),
         null);
 }
