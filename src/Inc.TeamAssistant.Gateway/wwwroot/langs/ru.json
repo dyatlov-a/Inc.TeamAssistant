@@ -168,6 +168,14 @@
   "Dashboard_GoToCurrentSessionButtonText": "Перейти к текущей сессии",
   "Dashboard_AssessmentDate": "Дата проведения оценки",
 
+  "Footer_GroupNavigation": "Навигация",
+  "Footer_GroupTech": "Технологии",
+  "Footer_GroupStorage": "Хранилище",
+  "Footer_GroupTools": "Инструменты",
+  "Footer_LinkMain": "Главная",
+  "Footer_LinkConstructor": "Конструктор",
+  "Footer_LinkDashboard": "Дашборд",
+
   "Validation_TokenInvalid": "Токен недействителен.",
   
   "RandomCoffee_Question": "Желаете участвовать в random coffee в этом спринте?",

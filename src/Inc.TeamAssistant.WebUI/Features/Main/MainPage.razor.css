@@ -1,6 +1,7 @@
 .about-bots__container {
     max-width: 90%;
-    padding-top: 100px;
+    overflow: hidden;
+    padding: 60px 0;
 }
 .about-bots {
     color: #000;
@@ -25,11 +26,6 @@
 .about-bots__link {
     margin-top: 10px;
     display: block;
-}
-@media (max-width: 767.98px) {
-    .about-bots__container {
-        padding-top: 60px;
-    }
 }
 @media (max-width: 479.98px) {
     .about-bots__header {

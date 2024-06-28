@@ -1,0 +1,25 @@
+.footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: rgba(0, 0, 0, .3);
+}
+.footer-group {
+    padding: 10px 0;
+}
+.footer-group__header {
+    display: block;
+    color: #000;
+    font-size: .8rem;
+    padding-bottom: 5px;
+}
+.footer-group__link {
+    display: block;
+    font-size: .9rem;
+    line-height: 1.5rem;
+}
+@media (max-width: 767.98px) {
+    .footer {
+        display: block;
+    }
+}

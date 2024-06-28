@@ -168,6 +168,14 @@
   "Dashboard_GoToCurrentSessionButtonText": "Go to current session",
   "Dashboard_AssessmentDate": "Assessment date",
   
+  "Footer_GroupNavigation": "Navigation",
+  "Footer_GroupTech": "Tech",
+  "Footer_GroupStorage": "Storage",
+  "Footer_GroupTools": "Tools",
+  "Footer_LinkMain": "Main",
+  "Footer_LinkConstructor": "Constructor",
+  "Footer_LinkDashboard": "Dashboard",
+  
   "Validation_TokenInvalid": "The token is invalid.",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",

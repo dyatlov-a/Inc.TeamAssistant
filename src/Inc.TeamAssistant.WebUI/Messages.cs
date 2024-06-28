@@ -128,6 +128,14 @@ internal static class Messages
     public static readonly string Dashboard_ConnectToTeam = nameof(Dashboard_ConnectToTeam);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
+    
+    public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
+    public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);
+    public static readonly string Footer_GroupStorage = nameof(Footer_GroupStorage);
+    public static readonly string Footer_GroupTools = nameof(Footer_GroupTools);
+    public static readonly string Footer_LinkMain = nameof(Footer_LinkMain);
+    public static readonly string Footer_LinkConstructor = nameof(Footer_LinkConstructor);
+    public static readonly string Footer_LinkDashboard = nameof(Footer_LinkDashboard);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
