@@ -99,6 +99,7 @@ builder.Services
 		o.ExpireTimeSpan = TimeSpan.FromDays(2);
 		o.SlidingExpiration = true;
 		o.AccessDeniedPath = "/";
+		o.LoginPath = "/login";
 	});
 
 builder.Services

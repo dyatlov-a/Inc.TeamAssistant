@@ -1,15 +1,16 @@
 .footer {
+    background: rgba(0, 0, 0, .3);
+}
+.footer__content {
     display: flex;
     justify-content: space-between;
-    padding: 0 20px;
-    background: rgba(0, 0, 0, .3);
 }
 .footer-group {
     padding: 10px 0;
 }
 .footer-group__header {
     display: block;
-    color: #000;
+    color: #555;
     font-size: .8rem;
     padding-bottom: 5px;
 }
@@ -19,7 +20,10 @@
     line-height: 1.5rem;
 }
 @media (max-width: 767.98px) {
-    .footer {
+    .footer__content {
         display: block;
+    }
+    .footer {
+        background-color: #000;
     }
 }

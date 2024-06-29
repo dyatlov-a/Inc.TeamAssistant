@@ -6,8 +6,6 @@ namespace Inc.TeamAssistant.WebUI;
 internal static class Messages
 {
     public static readonly string GUI_Authorizing = nameof(GUI_Authorizing);
-    public static readonly string GUI_Error401 = nameof(GUI_Error401);
-    public static readonly string GUI_Unauthorized = nameof(GUI_Unauthorized);
     public static readonly string GUI_Error404 = nameof(GUI_Error404);
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
@@ -37,8 +35,8 @@ internal static class Messages
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
     public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
 
+    public static readonly string Navigation_Login = nameof(Navigation_Login);
     public static readonly string Navigation_Logout = nameof(Navigation_Logout);
-    public static readonly string Navigation_LoginAsSuperuser = nameof(Navigation_LoginAsSuperuser);
 
     public static readonly string Constructor_NewBot = nameof(Constructor_NewBot);
     public static readonly string Constructor_AddBot = nameof(Constructor_AddBot);
@@ -46,7 +44,6 @@ internal static class Messages
     public static readonly string Constructor_Remove = nameof(Constructor_Remove);
     public static readonly string Constructor_Title = nameof(Constructor_Title);
     public static readonly string Constructor_SelectBotText = nameof(Constructor_SelectBotText);
-    public static readonly string Constructor_LoginTelegramText = nameof(Constructor_LoginTelegramText);
     public static readonly string Constructor_RemoveConfirmationText = nameof(Constructor_RemoveConfirmationText);
     public static readonly string Constructor_FormSectionTokenTitle = nameof(Constructor_FormSectionTokenTitle);
     public static readonly string Constructor_FormSectionTokenHelpTemplate = nameof(Constructor_FormSectionTokenHelpTemplate);
@@ -136,7 +133,12 @@ internal static class Messages
     public static readonly string Footer_LinkMain = nameof(Footer_LinkMain);
     public static readonly string Footer_LinkConstructor = nameof(Footer_LinkConstructor);
     public static readonly string Footer_LinkDashboard = nameof(Footer_LinkDashboard);
-
+    
+    public static readonly string Login_AsSuperuserText = nameof(Login_AsSuperuserText);
+    public static readonly string Login_Title = nameof(Login_Title);
+    public static readonly string Login_CreateBot = nameof(Login_CreateBot);
+    public static readonly string Login_TelegramText = nameof(Login_TelegramText);
+    
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
 

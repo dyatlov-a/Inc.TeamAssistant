@@ -3,21 +3,25 @@
 @inject IRenderContext RenderContext
 
 <div class="footer">
-    @foreach(var group in ViewModel.Links)
-    {
-        <div class="footer-group">
-            <span class="footer-group__header">@group.Key</span>
-            @foreach (var link in group.Value)
+    <div class="footer__container">
+        <div class="footer__content">
+            @foreach (var group in ViewModel.Links)
             {
-                <a
-                    href="@link.Url"
-                    class="link link_white footer-group__link"
-                    target="@(link.External ? "_blank" : "_self")">
-                    @link.Title
-                </a>
+                <div class="footer-group">
+                    <span class="footer-group__header">@group.Key</span>
+                    @foreach (var link in group.Value)
+                    {
+                        <a
+                            href="@link.Url"
+                            class="link link_white footer-group__link"
+                            target="@(link.External ? "_blank" : "_self")">
+                            @link.Title
+                        </a>
+                    }
+                </div>
             }
         </div>
-    }
+    </div>
 </div>
 
 @code {

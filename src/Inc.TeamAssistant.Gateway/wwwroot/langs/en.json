@@ -34,8 +34,6 @@
   "GUI_AssessmentSessionConnect": "Scan the QR code to join the team",
   "GUI_AssessmentSessionHasNotTasks": "The team has not tasks",
   "GUI_Authorizing": "Authorizing...",
-  "GUI_Error401": "Not authorized",
-  "GUI_Unauthorized": "You're not authorized to reach this page. You need to log in.",
   "GUI_Error404": "Error 404",
   "GUI_PageNotFound": "Page not found",
   "MetaTitle": "Telegram bot to estimate tasks via planning poker",
@@ -61,8 +59,8 @@
   "GUI_CreateBotLink": "Create your bot",
   "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
   
+  "Navigation_Login": "Login",
   "Navigation_Logout": "Logout",
-  "Navigation_LoginAsSuperuser": "Login as superuser",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
   "CheckIn_OgTitle": "CheckIn",
@@ -175,6 +173,11 @@
   "Footer_LinkMain": "Main",
   "Footer_LinkConstructor": "Constructor",
   "Footer_LinkDashboard": "Dashboard",
+
+  "Login_AsSuperuserText": "Login as superuser",
+  "Login_Title": "Login",
+  "Login_CreateBot": "Create your bot",
+  "Login_TelegramText": "To start working, please log in to Telegram.",
   
   "Validation_TokenInvalid": "The token is invalid.",
 
@@ -193,7 +196,6 @@
   "Constructor_Remove": "Delete",
   "Constructor_Title": "Build your bot",
   "Constructor_SelectBotText": "In the constructor, you can create a new bot or modify the settings of an existing one. You can select an existing bot or create a new one by clicking the \"Add\" button.",
-  "Constructor_LoginTelegramText": "To start working with the bot constructor, please log in to Telegram.",
   "Constructor_RemoveConfirmationText": "You confirm the removal of the bot named \"{0}\"?",
   "Constructor_StageCheckBot": "Connecting to the bot",
   "Constructor_StageSelectFeatures": "Features",
