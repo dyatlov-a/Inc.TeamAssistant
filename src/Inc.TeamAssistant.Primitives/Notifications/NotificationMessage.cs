@@ -6,6 +6,7 @@ public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
     private readonly List<string> _options = new();
+    private readonly List<(Person Person, int Offset)> _targetPersons = new();
     
 	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, string parameter);
     
@@ -18,7 +19,7 @@ public sealed class NotificationMessage
     public IReadOnlyCollection<string> Options => _options;
     public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
-    public long? TargetPersonId { get; private set; }
+    public IReadOnlyCollection<(Person Person, int Offset)> TargetPersons => _targetPersons;
     public int? ReplyToMessageId { get; private set; }
 
     private NotificationMessage(
@@ -71,9 +72,11 @@ public sealed class NotificationMessage
         return this;
     }
 
-    public NotificationMessage AttachPerson(long? targetPersonId)
+    public NotificationMessage AttachPerson(Person person, int offset)
     {
-        TargetPersonId = targetPersonId;
+        ArgumentNullException.ThrowIfNull(person);
+
+        _targetPersons.Add((person, offset));
 
         return this;
     }

@@ -131,9 +131,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
 
+        Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
-        var hasUsername = !string.IsNullOrWhiteSpace(reviewer.Username);
-        var attachedPersonId = hasUsername ? null : (long?)reviewer.Id;
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
@@ -146,10 +145,11 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
-        messageBuilder.AppendLine(await _messageBuilder.Build(
-            Messages.Reviewer_Target,
-            languageId,
-            hasUsername ? $"@{reviewer.Username}" : reviewer.Name));
+        
+        messageBuilder.AppendLine();
+        messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_Target, languageId));
+        reviewer.Append(messageBuilder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+        
         messageBuilder.AppendLine();
         messageBuilder.AppendLine(taskForReview.Description);
         messageBuilder.AppendLine(state);
@@ -165,19 +165,16 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var message = messageBuilder.ToString();
         
         var notification = taskForReview.MessageId.HasValue
-            ? NotificationMessage
-                .Edit(new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value), message)
-                .AttachPerson(attachedPersonId)
+            ? NotificationMessage.Edit(new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value), message)
             : NotificationMessage
                 .Create(taskForReview.ChatId, message)
-                .AttachPerson(attachedPersonId)
                 .AddHandler((c, p) => new AttachMessageCommand(
                     c,
                     taskForReview.Id,
                     int.Parse(p),
                     MessageType.Shared.ToString()));
 
-        return notification;
+        return attachPersons(notification);
     }
 
     private async Task<NotificationMessage> HideControlsForReviewer(
