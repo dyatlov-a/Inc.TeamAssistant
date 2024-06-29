@@ -16,7 +16,7 @@ public sealed class PhotosController : ControllerBase
     }
 
     [HttpGet("{personId}")]
-    [OutputCache]
+    [OutputCache(PolicyName = "photos")]
     [ResponseCache(Duration = 60 * 60)]
     public async Task<IActionResult> Get(long personId, CancellationToken token)
     {
