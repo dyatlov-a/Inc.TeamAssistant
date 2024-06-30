@@ -129,6 +129,8 @@ internal static class Messages
     public static readonly string Dashboard_TwelveWeeks = nameof(Dashboard_TwelveWeeks);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
+    public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);
+    public static readonly string Dashboard_TotalStories = nameof(Dashboard_TotalStories);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);

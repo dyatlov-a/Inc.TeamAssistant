@@ -31,28 +31,28 @@
                         <TeammatesWidget TeamId="TeamId.Value"/>
                     </Content>
                 </DashboardWidget>
-                        
+
                 if (HasFeature("Reviewer"))
                 {
-                    <ReviewerModule TeamId="TeamId.Value" />   
+                    <ReviewerModule TeamId="TeamId.Value"/>
+                }
+                
+                if (HasFeature("Appraiser"))
+                {
+                    <AppraiserModule TeamId="TeamId.Value"/>
                 }
             }
-            
+
             @if (BotId.HasValue)
             {
+                if (HasFeature("RandomCoffee"))
+                {
+                    <RandomCoffeeModule BotId="BotId.Value"/>
+                }
+                
                 if (HasFeature("CheckIn"))
                 {
                     <CheckInModule BotId="BotId.Value" />
-                }
-
-                if (HasFeature("RandomCoffee"))
-                {
-                    <RandomCoffeeModule BotId="BotId.Value" />
-                }
-
-                if (HasFeature("Appraiser") && TeamId.HasValue)
-                {
-                    <AppraiserModule TeamId="TeamId.Value" />
                 }
             }
             else

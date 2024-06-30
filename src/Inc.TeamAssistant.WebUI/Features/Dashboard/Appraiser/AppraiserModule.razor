@@ -2,7 +2,7 @@
 
 <DashboardWidget Title="@ViewModel.SessionHistoryWidgetTitle">
     <Content>
-        <SessionHistoryWidget TeamId="TeamId" HistoryDepth="5"/>
+        <SessionHistoryWidget TeamId="TeamId" HistoryDepth="5" />
     </Content>
 </DashboardWidget>
 
@@ -14,6 +14,6 @@
     protected override Task<AppraiserModuleViewModel> Initialize(Dictionary<string, string> resources)
     {
         return Task.FromResult(new AppraiserModuleViewModel(
-            resources[Messages.GUI_History]));
+            resources[Messages.Dashboard_AppraiserHistoryTitle]));
     }
 }
