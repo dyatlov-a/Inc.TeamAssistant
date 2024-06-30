@@ -26,6 +26,7 @@
   "Appraiser_L": "L",
   "Appraiser_Xl": "XL",
   "Appraiser_Xxl": "XXL",
+  "Appraiser_OgImageText": "Оценщик - телеграм бот для оценки задач через planning poker",
   
   "GUI_TaskAssess": "Оценка задач",
   "GUI_MeanRating": "среднее",
@@ -42,6 +43,7 @@
   "MetaAuthor": "Александр Дятлов",
   "OgTitle": "Оценщик",
   "OgDescription": "Телеграм бот для оценки задач через planning poker",
+  "OgImageText": "Team assistant - чат боты для оптимизации процессов в командах",
   "GUI_AcceptCookieText": "Мы используем файлы cookies, чтобы сделать работу нашего сайта наиболее удобной для Вас. Продолжая пользоваться нашим сайтом, Вы соглашаетесь с использованием файлов cookies",
   "GUI_AcceptCookieButton": "Принять",
   "GUI_History": "История",
@@ -65,6 +67,7 @@
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_OgTitle": "Перемещения",
   "CheckIn_OgDescription": "Телеграм бот для регистрации перемещений",
+  "CheckIn_OgImageText": "CheckIn - телеграм бот для регистрации перемещений",
   "CheckIn_PageTitle": "Наше местоположение",
   "CheckIn_DefaultLayerTitle": "Все",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",

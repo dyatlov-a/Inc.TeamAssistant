@@ -148,13 +148,17 @@ internal static class Messages
 
     public static readonly string Validation_TokenInvalid = nameof(Validation_TokenInvalid);
     
+    public static readonly string Appraiser_OgImageText = nameof(Appraiser_OgImageText);
+    
     public static readonly string OgTitle = nameof(OgTitle);
     public static readonly string OgDescription = nameof(OgDescription);
+    public static readonly string OgImageText = nameof(OgImageText);
     
     public static readonly string CheckIn_PageTitle = nameof(CheckIn_PageTitle);
     public static readonly string CheckIn_DefaultLayerTitle = nameof(CheckIn_DefaultLayerTitle);
     public static readonly string CheckIn_OgTitle = nameof(CheckIn_OgTitle);
     public static readonly string CheckIn_OgDescription = nameof(CheckIn_OgDescription);
+    public static readonly string CheckIn_OgImageText = nameof(CheckIn_OgImageText);
     public static readonly string CheckIn_RouteShow = nameof(CheckIn_RouteShow);
     public static readonly string CheckIn_RouteHide = nameof(CheckIn_RouteHide);
     

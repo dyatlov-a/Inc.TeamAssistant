@@ -26,6 +26,7 @@
   "Appraiser_L": "L",
   "Appraiser_Xl": "XL",
   "Appraiser_Xxl": "XXL",
+  "Appraiser_OgImageText": "Appraiser - telegram bot for task estimate via planning poker",
   
   "GUI_TaskAssess": "Task assessment",
   "GUI_MeanRating": "mean",
@@ -42,6 +43,7 @@
   "MetaAuthor": "Aleksandr Diatlov",
   "OgTitle": "Appraiser",
   "OgDescription": "Telegram bot to estimate tasks via planning poker",
+  "OgImageText": "Team assistant - chatbots for optimization processes in teams",
   "GUI_AcceptCookieText": "We use cookies to make your experience on our site as convenient as possible. By continuing to browse our site, you are agreeing to the use of these cookies",
   "GUI_AcceptCookieButton": "Accept",
   "GUI_History": "History",
@@ -65,6 +67,7 @@
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
   "CheckIn_OgTitle": "CheckIn",
   "CheckIn_OgDescription": "Locations tracking telegram bot",
+  "CheckIn_OgImageText": "CheckIn - locations tracking telegram bot",
   "CheckIn_PageTitle": "Our locations",
   "CheckIn_DefaultLayerTitle": "All",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
