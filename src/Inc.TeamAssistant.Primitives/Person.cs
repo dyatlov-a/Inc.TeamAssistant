@@ -15,9 +15,9 @@ public sealed record Person(long Id, string Name, string? Username)
         if (string.IsNullOrWhiteSpace(Username))
         {
             attach?.Invoke(this, builder.Length);
-            builder.AppendLine(Name);
+            builder.Append(Name);
         }
         else
-            builder.AppendLine($"@{Username}");
+            builder.Append($"@{Username}");
     }
 }

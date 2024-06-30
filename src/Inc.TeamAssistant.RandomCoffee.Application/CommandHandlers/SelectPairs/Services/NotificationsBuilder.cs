@@ -37,10 +37,10 @@ internal sealed class NotificationsBuilder
 
             if (firstPerson is not null && secondPerson is not null)
             {
-                builder.AppendLine();
                 firstPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
                 builder.Append(" - ");
                 secondPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+                builder.AppendLine();
             }
         }
 
@@ -51,11 +51,13 @@ internal sealed class NotificationsBuilder
             if (excludedPerson is not null)
             {
                 builder.AppendLine();
-                builder.AppendLine(await _messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId));
+                builder.Append(await _messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId));
                 excludedPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+                builder.AppendLine();
             }
         }
 
+        builder.AppendLine();
         builder.AppendLine(await _messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId));
         
         return attachPersons(NotificationMessage.Create(chatId, builder.ToString()));

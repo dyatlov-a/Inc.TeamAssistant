@@ -146,9 +146,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
         
-        messageBuilder.AppendLine();
         messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_Target, languageId));
         reviewer.Append(messageBuilder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+        messageBuilder.AppendLine();
         
         messageBuilder.AppendLine();
         messageBuilder.AppendLine(taskForReview.Description);
