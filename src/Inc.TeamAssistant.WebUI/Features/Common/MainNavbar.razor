@@ -1,0 +1,65 @@
+@inherits PersistentComponent<MainNavbarViewModel>
+
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+
+<div class="navbar">
+    <div class="navbar-container">
+        <AuthorizeView>
+            <Authorized>
+                @{ var person = context.User.ToPerson(); }
+
+                <a href="/@ViewModel.CurrentLanguage" class="link navbar__item">
+                    <HomeIcon Size="40px" Color="#fff"/>
+                </a>
+                <CultureSelector/>
+                <div class="navbar__divider"></div>
+                <span class="navbar__item navbar__item_avatar">
+                <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
+                    @person.Name
+                    <br/>
+                    @person.Username
+            </span>
+                <a href="/accounts/logout?returnUrl=@(CurrentUrl)" class="link link_white navbar__item">
+                    @ViewModel.Logout
+                </a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/@ViewModel.CurrentLanguage" class="link navbar__item">
+                    <HomeIcon Size="40px" Color="#fff"/>
+                </a>
+                <CultureSelector/>
+                <div class="navbar__divider"></div>
+                @if (ViewModel.HasLoginControls)
+                {
+                <a href="/@ViewModel.CurrentLanguage/login?returnUrl=@(CurrentUrl)" class="link link_white navbar__item">
+                    @ViewModel.Login
+                </a>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private string CurrentUrl => NavigationManager.Uri;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        NavigationManager.LocationChanged += async (s, e) => await Update();
+    }
+
+    protected override async Task<MainNavbarViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var currentLanguage = RenderContext.GetCurrentLanguageId();
+        var hasLoginControls = !CurrentUrl.Contains("/login");
+        
+        return await Task.FromResult(new MainNavbarViewModel(
+            hasLoginControls,
+            currentLanguage.Language.Value,
+            resources[Messages.Navigation_Login],
+            resources[Messages.Navigation_Logout]));
+    }
+}

@@ -7,9 +7,15 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IReviewService
 {
-    Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(Guid teamId, int depth, CancellationToken token = default);
+    Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token = default);
 
-    Task<ServiceResult<GetAverageByTeamResult>> GetAverage(Guid teamId, int depth, CancellationToken token = default);
+    Task<ServiceResult<GetAverageByTeamResult>> GetAverage(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token = default);
     
-    Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, int count, CancellationToken token = default);
+    Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token = default);
 }

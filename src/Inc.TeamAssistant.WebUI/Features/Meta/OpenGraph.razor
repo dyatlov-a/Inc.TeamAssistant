@@ -10,7 +10,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
     <meta property="og:site_name" content="@GlobalSettings.CanonicalName">
-    <meta property="og:image" content="@GetImageUrl(_languageId, Model.ImageName)">
+    <meta property="og:image" content="@ImageUrl">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     
@@ -18,9 +18,9 @@
     <meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
     <meta name="twitter:title" content="@Model.Title">
     <meta name="twitter:description" content="@Model.Description">
-    <meta name="twitter:image" content="@GetImageUrl(_languageId, Model.ImageName)">
+    <meta name="twitter:image" content="@ImageUrl">
     
-    <meta property="vk:image" content="@GetImageUrl(_languageId, Model.ImageName)">
+    <meta property="vk:image" content="@ImageUrl">
 </HeadContent>
 
 @code {
@@ -38,5 +38,5 @@
     
     private string GetLocale(LanguageId languageId) => $"{languageId.Value.ToLower()}_{languageId.Value.ToUpper()}";
 
-    private string GetImageUrl(LanguageId languageId, string imageName) => $"https://{GlobalSettings.CanonicalName}/og/{imageName}_{languageId.Value}.png";
+    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{Model.Image}?text={Model.ImageText}";
 }

@@ -1,4 +1,7 @@
-.assessment-session-header, .assessment-session-content, .assessment-session-footer {
+.assessment-session-header {
+    padding: 140px 0 40px 0;
+}
+.assessment-session-content, .assessment-session-footer {
     padding: 60px 0 40px 0;
 }
 .assessment-session__header {

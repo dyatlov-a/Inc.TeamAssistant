@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -15,17 +16,20 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
     private readonly ITeamAccessor _teamAccessor;
     private readonly RandomCoffeeOptions _options;
     private readonly NotificationsBuilder _notificationsBuilder;
+    private readonly IMessageBuilder _messageBuilder;
 
     public SelectPairsCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
         RandomCoffeeOptions options,
-        NotificationsBuilder notificationsBuilder)
+        NotificationsBuilder notificationsBuilder,
+        IMessageBuilder messageBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _notificationsBuilder = notificationsBuilder ?? throw new ArgumentNullException(nameof(notificationsBuilder));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
     public async Task<CommandResult> Handle(SelectPairsCommand command, CancellationToken token)
@@ -41,15 +45,20 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
         
         var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
-        var randomCoffeeHistory = randomCoffeeEntry.CanSelectPairs()
-            ? randomCoffeeEntry.SelectPairs()
-            : null;
-        var message = await _notificationsBuilder.Build(languageId, randomCoffeeHistory, token);
+        var notificationMessage = randomCoffeeEntry.CanSelectPairs()
+            ? await _notificationsBuilder.Build(
+                randomCoffeeEntry.ChatId,
+                languageId,
+                randomCoffeeEntry.SelectPairs(),
+                token)
+            : NotificationMessage.Create(
+                randomCoffeeEntry.ChatId,
+                await _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
         
         randomCoffeeEntry.MoveToNextRound(_options.RoundInterval - _options.WaitingInterval);
         
         await _repository.Upsert(randomCoffeeEntry, token);
         
-        return CommandResult.Build(NotificationMessage.Create(randomCoffeeEntry.ChatId, message));
+        return CommandResult.Build(notificationMessage);
     }
 }

@@ -99,6 +99,7 @@ builder.Services
 		o.ExpireTimeSpan = TimeSpan.FromDays(2);
 		o.SlidingExpiration = true;
 		o.AccessDeniedPath = "/";
+		o.LoginPath = "/login";
 	});
 
 builder.Services
@@ -133,6 +134,7 @@ builder.Services
 	
 	.AddMemoryCache()
 	.AddHttpContextAccessor()
+	.AddOutputCache(c => c.AddPolicy("photos", b => b.Expire(TimeSpan.FromHours(1))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 
@@ -154,6 +156,7 @@ if (builder.Environment.IsDevelopment())
 app
 	.UseStaticFiles()
 	.UseRouting()
+	.UseOutputCache()
 	.UseAuthentication()
 	.UseAuthorization()
 	.UseAntiforgery()

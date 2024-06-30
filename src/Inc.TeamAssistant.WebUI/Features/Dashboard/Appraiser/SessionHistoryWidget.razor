@@ -1,4 +1,3 @@
-@using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
 
 @inherits PersistentComponent<SessionHistoryWidgetViewModel>
@@ -7,23 +6,21 @@
 @inject IRenderContext RenderContext
 @inject NavigationManager NavigationManager
 
-@if (ViewModel.HistoryItems.Any())
+@if (ViewModel.Items.Any())
 {
     <QuickGrid Items="HistoryItems" class="quick-data-grid">
-        <TemplateColumn
-            Title=@ViewModel.AssessmentDate>
-            <a href="@(MoveToItem(context))" class="link link_black">
+        <TemplateColumn Title="@ViewModel.AssessmentDate">
+            <a href="@MoveToItem(context.AssessmentDate)" class="link link_white">
                 @context.AssessmentDate.ToString("dd-MM-yyyy")
             </a>
         </TemplateColumn>
         <PropertyColumn Title="@ViewModel.TasksName" Property="@(t => t.StoriesCount)"/>
     </QuickGrid>
-    @if (ViewModel.CurrentStory is not null)
-    {
-        <button type="button" class="button button_white" @onclick="() => MoveToCurrentSession(TeamId, ViewModel.CurrentStory)">
+    <div class="appraiser-actions">
+        <button type="button" class="button button_white" @onclick="MoveToAssessmentSession">
             @ViewModel.GoToCurrentSessionButtonText
         </button>
-    }
+    </div>
 }
 else
 {
@@ -37,41 +34,23 @@ else
     [Parameter, EditorRequired]
     public int HistoryDepth { get; set; }
 
-    private IQueryable<AssessmentHistoryDto> HistoryItems => ViewModel.HistoryItems.AsQueryable();
-
-    private const string LinkTemplate = "{0}/assessment-session/{1}";
+    private IQueryable<AssessmentHistoryDto> HistoryItems => ViewModel.Items.AsQueryable();
     
     protected override async Task<SessionHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
        var getSessionHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, HistoryDepth);
 
-       var activeSession = await AppraiserService.GetActiveStory(TeamId);
-
        return new SessionHistoryWidgetViewModel(
-           resources[Messages.GUI_Tasks],
-           getSessionHistoryResult.Result.Items,
-           activeSession.Result.Story,
+           resources[Messages.Dashboard_TotalStories],
            resources[Messages.Dashboard_GoToCurrentSessionButtonText],
-           resources[Messages.Dashboard_AssessmentDate]);
+           resources[Messages.Dashboard_AssessmentDate],
+           getSessionHistoryResult.Result.Items);
     }
 
-    private void MoveToCurrentSession(Guid teamId, StoryDto? currentStory)
+    private void MoveToAssessmentSession()
     {
-        if (currentStory is null)
-        {
-            throw new ArgumentNullException(nameof(currentStory));
-        }
-        
-        var lang = RenderContext.GetCurrentLanguageId().Language.Value;
-
-        NavigationManager.NavigateTo(LinkBuilder($"{lang}/assessment-session/{TeamId:N}"));
+        NavigationManager.NavigateTo(LinkBuilder($"assessment-session/{TeamId:N}"));
     }
     
-    private string MoveToItem(AssessmentHistoryDto historyItem)
-    {
-        if (historyItem is null)
-            throw new ArgumentNullException(nameof(historyItem));
-    
-        return LinkBuilder($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
-    }
+    private string MoveToItem(DateOnly date) => LinkBuilder($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 }

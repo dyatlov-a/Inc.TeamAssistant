@@ -124,6 +124,9 @@ html {
 .link_black {
     color: #000;
 }
+.hidden {
+    display: none;
+}
 /* MAP */
 .marker-btn {
     background-color: #fff;
@@ -137,12 +140,17 @@ html {
 .marker-btn:hover {
     text-decoration: none;
 }
+.map_navbar .leaflet-top {
+    top: 80px;
+}
 /* FORMS */
 .form-control {
     width: 100%;
     padding: 10px 20px;
     font-size: 1rem;
     border: 3px solid #555;
+    border-radius: 0;
+    color: #000;
 }
 .is-valid {
     border: 3px solid #28a745;

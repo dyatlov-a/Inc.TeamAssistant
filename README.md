@@ -90,7 +90,7 @@ The community looks forward to your contributions.
 - [X] Create a page to request a [demo](https://team-assistant.online/)
 - [X] Update blazor app
 - [X] Add a constructor for the Telegram bot
-- [ ] Add dashboard for the team (review stats, estimate stats...)
+- [X] Add dashboard for the team (review stats, estimate stats...)
 - [ ] Redesign UI/UX
 - [ ] Integrate with GitLab (code review)
 - [ ] Integrate with Jira (estimate tasks)

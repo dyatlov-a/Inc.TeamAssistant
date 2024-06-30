@@ -8,6 +8,7 @@ public sealed record ReviewAverageStatsWidgetViewModel(
     string FirstTouch,
     string Review,
     string Correction,
+    IReadOnlyCollection<DateSelectorItem> DateItems,
     IReadOnlyCollection<ReviewAverageStatsDto> Items)
     : IViewModel<ReviewAverageStatsWidgetViewModel>
 {
@@ -16,5 +17,6 @@ public sealed record ReviewAverageStatsWidgetViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
+        Array.Empty<DateSelectorItem>(),
         Array.Empty<ReviewAverageStatsDto>());
 }

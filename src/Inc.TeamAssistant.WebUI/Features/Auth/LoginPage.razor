@@ -1,0 +1,67 @@
+@page "/login"
+@page "/ru/login"
+@page "/en/login"
+
+@inherits PersistentComponent<LoginPageViewModel>
+
+@inject IUserService UserService
+@inject IRenderContext RenderContext
+
+<PageTitle>@ViewModel.Title</PageTitle>
+
+<div class="login">
+    <div class="login-container">
+        <div class="login-action">
+            <div class="login-action-container">
+                <h1 class="telegram-login__header">@ViewModel.Title</h1>
+                <p class="telegram-login__text">@ViewModel.LoginTelegramText</p>
+                <div class="telegram-login__actions">
+                    @if (ViewModel != LoginPageViewModel.Empty)
+                    {
+                        if (ViewModel.HasLoginAsSuperUser)
+                        {
+                            <a href="/accounts/login-as-super-user?returnUrl=@ReturnUrl" class="button button_telegram">
+                                @ViewModel.LoginAsSuperUserText
+                            </a>
+                        }
+                        else
+                        {
+                            <script
+                                async
+                                src="https://telegram.org/js/telegram-widget.js?22"
+                                data-telegram-login="@ViewModel.BotUserName"
+                                data-size="large"
+                                data-userpic="false"
+                                data-auth-url="accounts/login-tg?return_url=@ReturnUrl"
+                                data-request-access="write">
+                            </script> 
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="login-motivation">
+            <div class="login-motivation-container">
+                <h2 class="login-motivation__header">@ViewModel.CreateBotText</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+    
+    protected override async Task<LoginPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var botContext = await UserService.GetAuthBotContext();
+
+        return new LoginPageViewModel(
+            HasLoginAsSuperUser: RenderContext.IsDevelopment(),
+            resources[Messages.Login_AsSuperuserText],
+            resources[Messages.Login_Title],
+            resources[Messages.Login_CreateBot],
+            resources[Messages.Login_TelegramText],
+            botContext.UserName);
+    }
+}

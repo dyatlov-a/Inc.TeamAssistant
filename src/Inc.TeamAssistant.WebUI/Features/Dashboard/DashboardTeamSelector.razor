@@ -27,6 +27,15 @@
                 </InputSelect>
             </Content>
         </FormFieldSet>
+        @{
+            var team = GetTeam(_currentTeamId);
+            if (team is not null)
+            {
+                <a id="team-connector" href="@team.ConnectLink" class="button button_white team-connector" target="_blank">
+                    @ViewModel.ConnectToTeam @team.Name
+                </a>
+            }
+        }
     </Content>
 </FormSection>
 
@@ -60,7 +69,8 @@
             resources[Messages.Dashboard_SelectTeamTitle],
             resources[Messages.Dashboard_SelectTeam],
             resources[Messages.Dashboard_TeamField],
-            resources[Messages.Dashboard_BotField]));
+            resources[Messages.Dashboard_BotField],
+            resources[Messages.Dashboard_ConnectToTeam]));
     }
 
     private void SelectTeam(Guid? value)
@@ -92,10 +102,12 @@
 
     private IEnumerable<TeamDto> GetTeams()
     {
-        var bot = Bots.FirstOrDefault(b => b.Id == _currentBotId);
+        var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
 
         return bot is not null
             ? bot.Teams
             : Array.Empty<TeamDto>();
     }
+
+    private TeamDto? GetTeam(Guid? teamId) => GetTeams().SingleOrDefault(t => t.Id == teamId);
 }

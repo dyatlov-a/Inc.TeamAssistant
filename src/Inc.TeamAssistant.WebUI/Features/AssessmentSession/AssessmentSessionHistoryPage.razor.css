@@ -1,10 +1,9 @@
-.assessment-history-header, .assessment-history-content {
+.assessment-history-header {
+    padding: 140px 0 40px 0;
+}
+.assessment-history-content {
     padding: 60px 0 40px 0;
 }
 .assessment-history-content_dark {
     background-color: #fff;
-}
-.assessment-history__link {
-    display: block;
-    text-align: right;
 }

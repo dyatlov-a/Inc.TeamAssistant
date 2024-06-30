@@ -16,11 +16,14 @@ internal sealed class ReviewService : IReviewService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(Guid teamId, int depth, CancellationToken token)
+    public async Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetHistoryByTeamQuery(teamId, depth), token);
+            var result = await _mediator.Send(new GetHistoryByTeamQuery(teamId, from), token);
 
             return ServiceResult.Success(result);
         }
@@ -30,11 +33,14 @@ internal sealed class ReviewService : IReviewService
         }
     }
 
-    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(Guid teamId, int depth, CancellationToken token)
+    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetAverageByTeamQuery(teamId, depth), token);
+            var result = await _mediator.Send(new GetAverageByTeamQuery(teamId, from), token);
 
             return ServiceResult.Success(result);
         }
@@ -44,11 +50,11 @@ internal sealed class ReviewService : IReviewService
         }
     }
 
-    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, int count, CancellationToken token)
+    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetLastTasksQuery(teamId, count), token);
+            var result = await _mediator.Send(new GetLastTasksQuery(teamId, from), token);
 
             return ServiceResult.Success(result);
         }

@@ -1,11 +1,8 @@
 .constructor {
-    margin-bottom: 60px;
+    margin: 140px 0 60px 0;
 }
 .constructor__nav {
     margin-top: 30px;
-}
-.constructor__title {
-    margin-top: 60px;
 }
 ::deep .constructor__form {
     margin-bottom: 20px;

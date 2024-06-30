@@ -1,0 +1,64 @@
+.login {
+    height: 100vh;
+    margin-bottom: -200px;
+    background-color: #000;
+}
+.login-container {
+    display: flex;
+    height: 100%;
+}
+.login-action {
+    display: flex;
+    align-items: center;
+}
+.login-action-container {
+    padding: 0 60px;
+}
+.login-motivation {
+    background-image: url('imgs/login-bg.png');
+    background-size: cover;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+.login-motivation-container {
+    width: 100%;
+}
+.button_telegram {
+    padding: 9px 21px 11px;
+    border-radius: 20px;
+    background-color: #54a9eb;
+    color: #fff;
+    text-transform: none;
+    cursor: pointer;
+}
+.login-motivation__header {
+    text-align: center;
+    font-size: 3rem;
+    line-height: 4.2rem;
+}
+.telegram-login__header {
+    font-size: 2.2rem;
+    line-height: 3.6rem;
+}
+.telegram-login__text {
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+}
+.telegram-login__actions {
+    margin-top: 20px;
+}
+@media (max-width: 991.98px) {
+    .login-motivation {
+        display: none;
+    }
+    .login-container {
+        justify-content: center;
+    }
+}
+@media (max-width: 767.98px) {
+    .login-action {
+        align-items: start;
+        margin-top: 200px;
+    }
+}

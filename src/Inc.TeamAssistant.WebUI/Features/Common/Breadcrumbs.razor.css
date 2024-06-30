@@ -1,0 +1,11 @@
+.breadcrumbs {
+    padding: 10px 0;
+}
+.breadcrumbs__item {
+    display: inline-block;
+}
+.breadcrumbs__item+.breadcrumbs__item:before {
+    padding: 8px;
+    color: #000;
+    content: "/\00a0";
+}

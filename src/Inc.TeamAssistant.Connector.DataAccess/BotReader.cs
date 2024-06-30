@@ -30,8 +30,13 @@ internal sealed class BotReader : IBotReader
         return results.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token)
+    public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(
+        long userId,
+        Func<string, Guid, string> linkBuilder,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(linkBuilder);
+        
         var botsCommand = new CommandDefinition(@"
             SELECT DISTINCT b.id AS id, b.name AS name
             FROM connector.bots AS b
@@ -67,14 +72,20 @@ internal sealed class BotReader : IBotReader
             new { bot_ids = botIds },
             flags: CommandFlags.None,
             cancellationToken: token);
-
+        
         await using var query = await connection.QueryMultipleAsync(dataCommand);
-        var teams = (await query.ReadAsync<Team>())
-            .ToLookup(t => t.BotId, t => new TeamDto(t.Id, t.Name));
+        
+        var teams = (await query.ReadAsync<Team>()).ToLookup(t => t.BotId);
         var features = (await query.ReadAsync<(Guid BotId, string FeatureName)>())
             .ToLookup(f => f.BotId, f => f.FeatureName);
         var results = bots
-            .Select(b => new BotDto(b.BotId, b.Name, features[b.BotId].ToArray(), teams[b.BotId].ToArray()))
+            .Select(b => new BotDto(
+                b.BotId,
+                b.Name,
+                features[b.BotId].ToArray(),
+                teams[b.BotId]
+                    .Select(t => new TeamDto(t.Id, t.Name, linkBuilder(b.Name, t.Id)))
+                    .ToArray()))
             .ToArray();
         
         return results;

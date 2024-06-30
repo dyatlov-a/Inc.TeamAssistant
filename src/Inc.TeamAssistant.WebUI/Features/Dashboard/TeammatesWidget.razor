@@ -29,9 +29,16 @@
 @if (Teammates.Any())
 {
     <QuickGrid Items="Teammates" class="quick-data-grid">
-        <PropertyColumn Title="@ViewModel.PersonName" Property="@(t => t.Name)" Sortable="true" />
         <TemplateColumn
-            Title="@ViewModel.LeaveUntil"
+            Title="@ViewModel.PersonTitle"
+            Sortable="true"
+            SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
+            @context.Name
+            <br/>
+            @context.UserName
+        </TemplateColumn>
+        <TemplateColumn
+            Title="@ViewModel.LeaveUntilTitle"
             Sortable="true"
             SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
             @if (context.LeaveUntil.HasValue)
@@ -40,10 +47,11 @@
                 <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
             }
         </TemplateColumn>
-        <TemplateColumn Title="@ViewModel.ExcludeFromTeam" Sortable="false">
+        <TemplateColumn Title="@ViewModel.ExcludeFromTeamTitle" Sortable="false">
             <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
             <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
             <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+            <br/>
             <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
         </TemplateColumn>
     </QuickGrid>

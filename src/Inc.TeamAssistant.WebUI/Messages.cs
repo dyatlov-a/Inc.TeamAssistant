@@ -6,8 +6,6 @@ namespace Inc.TeamAssistant.WebUI;
 internal static class Messages
 {
     public static readonly string GUI_Authorizing = nameof(GUI_Authorizing);
-    public static readonly string GUI_Error401 = nameof(GUI_Error401);
-    public static readonly string GUI_Unauthorized = nameof(GUI_Unauthorized);
     public static readonly string GUI_Error404 = nameof(GUI_Error404);
     public static readonly string GUI_PageNotFound = nameof(GUI_PageNotFound);
 
@@ -24,10 +22,11 @@ internal static class Messages
     public static readonly string GUI_History = nameof(GUI_History);
     public static readonly string GUI_Tasks = nameof(GUI_Tasks);
     public static readonly string GUI_StoryList = nameof(GUI_StoryList);
-    public static readonly string GUI_Back = nameof(GUI_Back);
+    public static readonly string GUI_AssessmentSession = nameof(GUI_AssessmentSession);
     
     public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
     public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
+    public static readonly string GUI_MainTitle = nameof(GUI_MainTitle);
     public static readonly string GUI_MainHeader = nameof(GUI_MainHeader);
     public static readonly string GUI_MainSubHeader = nameof(GUI_MainSubHeader);
     public static readonly string GUI_ToolAppraiser = nameof(GUI_ToolAppraiser);
@@ -36,8 +35,8 @@ internal static class Messages
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
     public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
 
+    public static readonly string Navigation_Login = nameof(Navigation_Login);
     public static readonly string Navigation_Logout = nameof(Navigation_Logout);
-    public static readonly string Navigation_LoginAsSuperuser = nameof(Navigation_LoginAsSuperuser);
 
     public static readonly string Constructor_NewBot = nameof(Constructor_NewBot);
     public static readonly string Constructor_AddBot = nameof(Constructor_AddBot);
@@ -45,7 +44,6 @@ internal static class Messages
     public static readonly string Constructor_Remove = nameof(Constructor_Remove);
     public static readonly string Constructor_Title = nameof(Constructor_Title);
     public static readonly string Constructor_SelectBotText = nameof(Constructor_SelectBotText);
-    public static readonly string Constructor_LoginTelegramText = nameof(Constructor_LoginTelegramText);
     public static readonly string Constructor_RemoveConfirmationText = nameof(Constructor_RemoveConfirmationText);
     public static readonly string Constructor_FormSectionTokenTitle = nameof(Constructor_FormSectionTokenTitle);
     public static readonly string Constructor_FormSectionTokenHelpTemplate = nameof(Constructor_FormSectionTokenHelpTemplate);
@@ -107,6 +105,11 @@ internal static class Messages
     public static readonly string Dashboard_ReviewReviewerNameTitle = nameof(Dashboard_ReviewReviewerNameTitle);
     public static readonly string Dashboard_ReviewOwnerNameTitle = nameof(Dashboard_ReviewOwnerNameTitle);
     public static readonly string Dashboard_ReviewStateTitle = nameof(Dashboard_ReviewStateTitle);
+    public static readonly string Dashboard_ReviewStateNone = nameof(Dashboard_ReviewStateNone);
+    public static readonly string Dashboard_ReviewStateNew = nameof(Dashboard_ReviewStateNew);
+    public static readonly string Dashboard_ReviewStateInProgress = nameof(Dashboard_ReviewStateInProgress);
+    public static readonly string Dashboard_ReviewStateOnCorrection = nameof(Dashboard_ReviewStateOnCorrection);
+    public static readonly string Dashboard_ReviewStateAccept = nameof(Dashboard_ReviewStateAccept);
     public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
     public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
     public static readonly string Dashboard_BotWidgetTitle = nameof(Dashboard_BotWidgetTitle);
@@ -115,21 +118,49 @@ internal static class Messages
     public static readonly string Dashboard_ReviewAverageStatsWidgetTitle = nameof(Dashboard_ReviewAverageStatsWidgetTitle);
     public static readonly string Dashboard_CheckInMoveToMapTitle = nameof(Dashboard_CheckInMoveToMapTitle);
     public static readonly string Dashboard_CheckInMapWidgetTitle = nameof(Dashboard_CheckInMapWidgetTitle);
+    public static readonly string Dashboard_RandomCoffeeHistoryWidgetTitle = nameof(Dashboard_RandomCoffeeHistoryWidgetTitle);
+    public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
+    public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
+    public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
+    public static readonly string Dashboard_ConnectToTeam = nameof(Dashboard_ConnectToTeam);
+    public static readonly string Dashboard_OneWeek = nameof(Dashboard_OneWeek);
+    public static readonly string Dashboard_TwoWeeks = nameof(Dashboard_TwoWeeks);
+    public static readonly string Dashboard_FourWeeks = nameof(Dashboard_FourWeeks);
+    public static readonly string Dashboard_TwelveWeeks = nameof(Dashboard_TwelveWeeks);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
-
+    public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);
+    public static readonly string Dashboard_TotalStories = nameof(Dashboard_TotalStories);
+    
+    public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
+    public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);
+    public static readonly string Footer_GroupStorage = nameof(Footer_GroupStorage);
+    public static readonly string Footer_GroupTools = nameof(Footer_GroupTools);
+    public static readonly string Footer_LinkMain = nameof(Footer_LinkMain);
+    public static readonly string Footer_LinkConstructor = nameof(Footer_LinkConstructor);
+    public static readonly string Footer_LinkDashboard = nameof(Footer_LinkDashboard);
+    
+    public static readonly string Login_AsSuperuserText = nameof(Login_AsSuperuserText);
+    public static readonly string Login_Title = nameof(Login_Title);
+    public static readonly string Login_CreateBot = nameof(Login_CreateBot);
+    public static readonly string Login_TelegramText = nameof(Login_TelegramText);
+    
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
 
     public static readonly string Validation_TokenInvalid = nameof(Validation_TokenInvalid);
     
+    public static readonly string Appraiser_OgImageText = nameof(Appraiser_OgImageText);
+    
     public static readonly string OgTitle = nameof(OgTitle);
     public static readonly string OgDescription = nameof(OgDescription);
+    public static readonly string OgImageText = nameof(OgImageText);
     
     public static readonly string CheckIn_PageTitle = nameof(CheckIn_PageTitle);
     public static readonly string CheckIn_DefaultLayerTitle = nameof(CheckIn_DefaultLayerTitle);
     public static readonly string CheckIn_OgTitle = nameof(CheckIn_OgTitle);
     public static readonly string CheckIn_OgDescription = nameof(CheckIn_OgDescription);
+    public static readonly string CheckIn_OgImageText = nameof(CheckIn_OgImageText);
     public static readonly string CheckIn_RouteShow = nameof(CheckIn_RouteShow);
     public static readonly string CheckIn_RouteHide = nameof(CheckIn_RouteHide);
     

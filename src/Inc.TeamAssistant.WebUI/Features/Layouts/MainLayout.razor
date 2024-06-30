@@ -1,4 +1,5 @@
 ﻿@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
 @inherits LayoutComponentBase
 
 @inject ResourcesManager ResourcesManager
@@ -8,9 +9,13 @@
 <OpenGraph Model="_openGraphModel" />
 
 <div class="wrapper">
+    <MainNavbar />
+    
     <main class="main">
         @Body
     </main>
+
+    <MainFooter />
 </div>
 
 <AcceptCookieDialog />
@@ -22,8 +27,7 @@
     protected override async Task OnInitializedAsync()
     {
         var resources = await ResourcesManager.GetResource();
-        
-        const string title = "Team assistant";
+        var title = resources[Messages.GUI_MainTitle];
         var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
         var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
         
@@ -33,6 +37,10 @@
             keywords,
             resources[Messages.MetaAuthor]);
         
-        _openGraphModel = new(title, description, "card_main");
+        _openGraphModel = new(
+            title,
+            description,
+            "main.jpg",
+            resources[Messages.OgImageText]);
     }
 }

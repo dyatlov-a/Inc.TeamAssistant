@@ -2,23 +2,20 @@
 @page "/en/constructor"
 @page "/ru/constructor"
 
+@attribute [Authorize]
+
 @inherits PersistentComponent<ConstructorPageViewModel>
 
 <PageTitle>@ViewModel.Title</PageTitle>
 
-<NavigationLogin />
-
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title constructor__title">@ViewModel.Title</h1>
+        <h1 class="title">@ViewModel.Title</h1>
         <AuthorizeView>
             <Authorized>
                 <p class="text constructor__text">@ViewModel.SelectBotText</p>
                 <BotSelector OwnerId="@context.User.ToPerson().Id" />
             </Authorized>
-            <NotAuthorized>
-                <TelegramLogin />
-            </NotAuthorized>
         </AuthorizeView>
     </div>
 </div>

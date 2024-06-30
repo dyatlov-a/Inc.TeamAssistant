@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IUserService, UserClient>()
             .AddScoped<IBotService, BotClient>()
             .AddScoped<IReviewService, ReviewClient>()
+            .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()

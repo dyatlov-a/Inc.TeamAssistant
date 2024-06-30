@@ -16,24 +16,24 @@ public sealed class ReviewerController : ControllerBase
         _reviewService = reviewService ?? throw new ArgumentNullException(nameof(reviewService));
     }
     
-    [HttpGet("history/{teamId:guid}/{depth:int}")]
-    public async Task<IActionResult> GetHistory(Guid teamId, int depth)
+    [HttpGet("history/{teamId:guid}/{from}")]
+    public async Task<IActionResult> GetHistory(Guid teamId, DateOnly from)
     {
-        var result = await _reviewService.GetHistory(teamId, depth);
+        var result = await _reviewService.GetHistory(teamId, from);
         return Ok(result);
     }
 
-    [HttpGet("average/{teamId:guid}/{depth:int}")]
-    public async Task<IActionResult> GetAverage(Guid teamId, int depth)
+    [HttpGet("average/{teamId:guid}/{from}")]
+    public async Task<IActionResult> GetAverage(Guid teamId, DateOnly from)
     {
-        var result = await _reviewService.GetAverage(teamId, depth);
+        var result = await _reviewService.GetAverage(teamId, from);
         return Ok(result);
     }
     
-    [HttpGet("last/{teamId:guid}/{count:int}")]
-    public async Task<IActionResult> GetLast(Guid teamId, int count)
+    [HttpGet("last/{teamId:guid}/{from}")]
+    public async Task<IActionResult> GetLast(Guid teamId, DateOnly from)
     {
-        var result = await _reviewService.GetLast(teamId, count);
+        var result = await _reviewService.GetLast(teamId, from);
         return Ok(result);
     }
 }

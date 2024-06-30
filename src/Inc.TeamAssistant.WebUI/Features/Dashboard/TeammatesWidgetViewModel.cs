@@ -4,9 +4,9 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard;
 
 public sealed record TeammatesWidgetViewModel(
-    string PersonName,
-    string LeaveUntil,
-    string ExcludeFromTeam,
+    string PersonTitle,
+    string LeaveUntilTitle,
+    string ExcludeFromTeamTitle,
     string LeaveTeammate,
     string Days,
     string Forever,

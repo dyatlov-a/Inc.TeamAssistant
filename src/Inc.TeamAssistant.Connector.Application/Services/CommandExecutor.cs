@@ -137,31 +137,33 @@ internal sealed class CommandExecutor : ICommandExecutor
     }
 
     private async Task<IReadOnlyCollection<MessageEntity>> BuildMessageEntities(
-        string text,
-        long personId,
+        NotificationMessage notificationMessage,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentNullException.ThrowIfNull(notificationMessage);
         
-        var person = await _teamAccessor.FindPerson(personId, token);
-        var languageId = await _teamAccessor.GetClientLanguage(personId, token);
+        var results = new List<MessageEntity>();
 
-        return person is not null
-            ? [new MessageEntity
+        foreach (var target in notificationMessage.TargetPersons)
+        {
+            var languageId = await _teamAccessor.GetClientLanguage(target.Person.Id, token);
+            
+            results.Add(new MessageEntity
+            {
+                Type = MessageEntityType.TextMention,
+                Offset = target.Offset,
+                Length = target.Person.Name.Length,
+                User = new User
                 {
-                    Type = MessageEntityType.TextMention,
-                    Offset = text.LastIndexOf(person.Name, StringComparison.InvariantCultureIgnoreCase),
-                    Length = person.Name.Length,
-                    User = new User
-                    {
-                        Id = person.Id,
-                        LanguageCode = languageId.Value,
-                        FirstName = person.Name,
-                        Username = person.Username
-                    }
-                }]
-            : Array.Empty<MessageEntity>();
+                    Id = target.Person.Id,
+                    LanguageCode = languageId.Value,
+                    FirstName = target.Person.Name,
+                    Username = target.Person.Username
+                }
+            });
+        }
+        
+        return results;
     }
     
     private async Task ProcessNotification(
@@ -174,8 +176,8 @@ internal sealed class CommandExecutor : ICommandExecutor
         ArgumentNullException.ThrowIfNull(notificationMessage);
         ArgumentNullException.ThrowIfNull(messageContext);
 
-        var entities = notificationMessage.TargetPersonId.HasValue
-            ? await BuildMessageEntities(notificationMessage.Text, notificationMessage.TargetPersonId.Value, token)
+        var entities = notificationMessage.TargetPersons.Any()
+            ? await BuildMessageEntities(notificationMessage, token)
             : Array.Empty<MessageEntity>();
 
         if (notificationMessage.TargetChatId.HasValue)

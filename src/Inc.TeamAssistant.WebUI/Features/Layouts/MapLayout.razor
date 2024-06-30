@@ -1,4 +1,5 @@
 ﻿@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
 @inherits LayoutComponentBase
 
 @inject ResourcesManager ResourcesManager
@@ -8,8 +9,6 @@
 <OpenGraph Model="_openGraphModel" />
 
 @Body
-
-<AcceptCookieDialog />
 
 @code {
     private MetaViewModel _metaModel = MetaViewModel.Empty;
@@ -25,6 +24,10 @@
             resources[Messages.MetaKeywords],
             resources[Messages.MetaAuthor]);
 
-        _openGraphModel = new(resources[Messages.CheckIn_OgTitle], resources[Messages.CheckIn_OgDescription], "card_checkin");
+        _openGraphModel = new(
+            resources[Messages.CheckIn_OgTitle],
+            resources[Messages.CheckIn_OgDescription],
+            "map.jpg",
+            resources[Messages.CheckIn_OgImageText]);
     }
 }

@@ -23,5 +23,5 @@ public interface ITaskForReviewReader
     
     Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
     
-    Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(Guid teamId, int count, CancellationToken token);
+    Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(Guid teamId, DateTimeOffset from, CancellationToken token);
 }

@@ -4,4 +4,5 @@ public sealed record TeammateDto(
     Guid TeamId,
     long PersonId,
     string Name,
+    string? UserName,
     DateTimeOffset? LeaveUntil);

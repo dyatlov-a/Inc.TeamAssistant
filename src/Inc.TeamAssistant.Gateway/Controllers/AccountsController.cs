@@ -38,11 +38,12 @@ public sealed class AccountsController : ControllerBase
     public async Task<IActionResult> Login(
         [FromQuery(Name = "id")] long id,
         [FromQuery(Name = "first_name")] string firstName,
+        [FromQuery(Name = "auth_date")] string authDate,
+        [FromQuery(Name = "hash")] string hash,
         [FromQuery(Name = "last_name")] string? lastName,
         [FromQuery(Name = "username")] string? username,
         [FromQuery(Name = "photo_url")] string? photoUrl,
-        [FromQuery(Name = "auth_date")] string authDate,
-        [FromQuery(Name = "hash")] string hash)
+        [FromQuery(Name = "return_url")] string? returnUrl)
     {
         if (!await _telegramAuthService.CanLogin(id, firstName, lastName, username, photoUrl, authDate, hash))
             return BadRequest();
@@ -50,12 +51,12 @@ public sealed class AccountsController : ControllerBase
         var principal = new Person(id, firstName, username).ToClaimsPrincipal();
         
         await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
-
-        return Redirect("/constructor");
+        
+        return Redirect(DetectTargetUrl(returnUrl));
     }
     
-    [HttpGet("as-super-user")]
-    public async Task<IActionResult> LoginAsSuperUser()
+    [HttpGet("login-as-super-user")]
+    public async Task<IActionResult> LoginAsSuperUser(string? returnUrl)
     {
         if (_webHostEnvironment.IsProduction())
             return BadRequest();
@@ -63,15 +64,19 @@ public sealed class AccountsController : ControllerBase
         var principal = _authOptions.SuperUser.ToClaimsPrincipal();
         
         await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
-
-        return Redirect("/constructor");
+        
+        return Redirect(DetectTargetUrl(returnUrl));
     }
 
     [HttpGet("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Logout(string? returnUrl)
     {
         await HttpContext.SignOutAsync(ApplicationContext.AuthenticationScheme);
 
-        return Redirect("/");
+        return Redirect(DetectTargetUrl(returnUrl));
     }
+    
+    private string DetectTargetUrl(string? returnUrl) => string.IsNullOrWhiteSpace(returnUrl)
+        ? "/constructor"
+        : returnUrl;
 }

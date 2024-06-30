@@ -22,7 +22,7 @@ internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageB
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var from = DateTimeOffset.UtcNow.AddDays(-query.Depth);
+        var from = new DateTimeOffset(query.From, TimeOnly.MinValue, TimeSpan.Zero);
         var tasks = await _taskForReviewReader.GetTasksFrom(query.TeamId, from, token);
         var tasksByDays = tasks.ToLookup(t => new DateOnly(t.Created.Year, t.Created.Month, t.Created.Day));
         ReviewAverageStatsDto? previous = null;
