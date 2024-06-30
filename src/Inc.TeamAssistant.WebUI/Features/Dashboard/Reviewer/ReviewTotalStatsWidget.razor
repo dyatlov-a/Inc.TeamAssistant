@@ -5,6 +5,8 @@
 
 @inject IReviewService ReviewService
 
+<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
+
 @if (ViewModel.Review.Any())
 {
     <div class="review-total-stats">
@@ -46,29 +48,44 @@ else
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-    
-    [Parameter, EditorRequired]
-    public int Depth { get; set; }
 
+    private DateOnly? _date;
     private ApexChart<HistoryByTeamItemDto>? _reviewChart;
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-
+        
+        _date ??= ViewModel.DateItems.First().Date;
+        
         _reviewChart?.RenderAsync();
         _requestsChart?.RenderAsync();
     }
 
     protected override async Task<ReviewTotalStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var history = await ReviewService.GetHistory(TeamId, Depth);
+        var dateItems = DateSelectorDataFactory.Create(resources);
+        _date ??= dateItems.First().Date;
+        var interval = DateTimeOffset.UtcNow - new DateTimeOffset(_date.Value, TimeOnly.MinValue, TimeSpan.Zero);
+        var intervalInDays = (int)interval.TotalDays;
+        var history = await ReviewService.GetHistory(TeamId, _date.Value);
 
         return new ReviewTotalStatsWidgetViewModel(
-            string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], Depth),
-            string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], Depth),
+            string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], intervalInDays),
+            string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], intervalInDays),
+            dateItems,
             history.Result.Review,
             history.Result.Requests);
+    }
+
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        
+        await Update();
+
+        _reviewChart?.RenderAsync();
+        _requestsChart?.RenderAsync();
     }
 }

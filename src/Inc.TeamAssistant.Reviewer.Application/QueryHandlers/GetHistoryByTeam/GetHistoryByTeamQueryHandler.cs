@@ -18,8 +18,7 @@ internal sealed class GetHistoryByTeamQueryHandler : IRequestHandler<GetHistoryB
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var from = DateTimeOffset.UtcNow.AddDays(-query.Depth);
-        
+        var from = new DateTimeOffset(query.From, TimeOnly.MinValue, TimeSpan.Zero);
         var reviewHistory = await _reviewAnalyticsReader.GetReviewHistory(query.TeamId, from, token);
         var requestsHistory = await _reviewAnalyticsReader.GetRequestsHistory(query.TeamId, from, token);
 

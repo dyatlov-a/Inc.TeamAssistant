@@ -163,6 +163,10 @@
   "Dashboard_RandomCoffeeFirstTitle": "First participant",
   "Dashboard_RandomCoffeeSecondTitle": "Second participant",
   "Dashboard_ConnectToTeam": "Connect to",
+  "Dashboard_OneWeek": "1 week",
+  "Dashboard_TwoWeeks": "2 weeks",
+  "Dashboard_FourWeeks": "4 weeks",
+  "Dashboard_TwelveWeeks": "12 weeks",
   "Dashboard_GoToCurrentSessionButtonText": "Go to current session",
   "Dashboard_AssessmentDate": "Assessment date",
   

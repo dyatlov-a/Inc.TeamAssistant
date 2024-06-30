@@ -2,7 +2,7 @@
 
 <DashboardWidget Title="@ViewModel.ReviewTotalStatsWidgetTitle" HasChart="true">
     <Content>
-        <ReviewTotalStatsWidget TeamId="TeamId" Depth="StatsDepth" />
+        <ReviewTotalStatsWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
 <DashboardWidget Title="@ViewModel.LastTasksWidgetTitle">
@@ -12,16 +12,13 @@
 </DashboardWidget>
 <DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle" HasChart="true">
     <Content>
-        <ReviewAverageStatsWidget TeamId="TeamId" Depth="StatsDepth" />
+        <ReviewAverageStatsWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-    
-    [Parameter, EditorRequired]
-    public int StatsDepth { get; set; }
     
     [Parameter, EditorRequired]
     public int TasksCount { get; set; }

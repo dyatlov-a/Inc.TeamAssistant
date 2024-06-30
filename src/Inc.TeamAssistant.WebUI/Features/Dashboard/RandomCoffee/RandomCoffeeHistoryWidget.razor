@@ -20,14 +20,7 @@
 
 @if (ViewModel.HistoryItems.Any())
 {
-    <div class="date-selector">
-        @foreach (var item in ViewModel.HistoryItems)
-        {
-            <span class="date-selector__item @DateCssClass(item.Created)" @onclick="() => Selected(item.Created)">
-                @item.Created.ToString("yyyy-MM-dd")
-            </span>
-        }
-    </div>
+    <DateSelector Date="_date" Items="DateItems" OnSelected="d => _date = d" />
     <QuickGrid Items="@Pairs" class="quick-data-grid">
         <TemplateColumn
             Title="@ViewModel.FirstTitle"
@@ -38,7 +31,7 @@
             @context.FirstUserName
         </TemplateColumn>
         <TemplateColumn
-            Title="@ViewModel.FirstTitle"
+            Title="@ViewModel.SecondTitle"
             Sortable="true"
             SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
             @context.SecondName
@@ -53,19 +46,23 @@ else
 }
 
 @code {
-    [Parameter, EditorRequired]
+    [Parameter, EditorRequired] 
     public Guid BotId { get; set; }
-    
-    [Parameter, EditorRequired]
+
+    [Parameter, EditorRequired] 
     public int Depth { get; set; }
 
     private long? _chatId;
     private DateOnly? _date;
 
+    private IReadOnlyCollection<DateSelectorItem> DateItems => ViewModel.HistoryItems
+        .Select(i => new DateSelectorItem(i.Created.ToString("yyyy-MM-dd"), i.Created))
+        .ToArray();
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        
+
         _chatId = ViewModel.Chats.FirstOrDefault()?.Id;
         _date = ViewModel.HistoryItems.FirstOrDefault()?.Created;
     }
@@ -96,11 +93,9 @@ else
         _chatId = chatId;
 
         await Update();
-        
+
         _date = ViewModel.HistoryItems.FirstOrDefault()?.Created;
     }
-
-    private void Selected(DateOnly? date) => _date = date;
 
     private IQueryable<PairDto> Pairs
     {
@@ -121,6 +116,4 @@ else
             return pairs.AsQueryable();
         }
     }
-
-    private string DateCssClass(DateOnly date) => _date == date ? "date-selector__item_selected" : string.Empty;
 }

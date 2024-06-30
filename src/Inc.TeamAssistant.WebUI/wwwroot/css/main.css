@@ -124,6 +124,9 @@ html {
 .link_black {
     color: #000;
 }
+.hidden {
+    display: none;
+}
 /* MAP */
 .marker-btn {
     background-color: #fff;

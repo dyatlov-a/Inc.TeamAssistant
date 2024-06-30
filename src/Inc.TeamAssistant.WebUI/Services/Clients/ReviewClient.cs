@@ -17,12 +17,15 @@ internal sealed class ReviewClient : IReviewService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(Guid teamId, int depth, CancellationToken token)
+    public async Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token)
     {
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetHistoryByTeamResult>>(
-                $"reviewer/history/{teamId:N}/{depth}",
+                $"reviewer/history/{teamId:N}/{from:yyyy-MM-dd}",
                 token);
 
             if (result is null)
@@ -36,12 +39,15 @@ internal sealed class ReviewClient : IReviewService
         }
     }
 
-    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(Guid teamId, int depth, CancellationToken token)
+    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(
+        Guid teamId,
+        DateOnly from,
+        CancellationToken token)
     {
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetAverageByTeamResult>>(
-                $"reviewer/average/{teamId:N}/{depth}",
+                $"reviewer/average/{teamId:N}/{from:yyyy-MM-dd}",
                 token);
 
             if (result is null)

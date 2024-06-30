@@ -123,6 +123,10 @@ internal static class Messages
     public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
     public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
     public static readonly string Dashboard_ConnectToTeam = nameof(Dashboard_ConnectToTeam);
+    public static readonly string Dashboard_OneWeek = nameof(Dashboard_OneWeek);
+    public static readonly string Dashboard_TwoWeeks = nameof(Dashboard_TwoWeeks);
+    public static readonly string Dashboard_FourWeeks = nameof(Dashboard_FourWeeks);
+    public static readonly string Dashboard_TwelveWeeks = nameof(Dashboard_TwelveWeeks);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
     
