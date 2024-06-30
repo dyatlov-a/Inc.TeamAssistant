@@ -1,0 +1,19 @@
+@inherits PersistentComponent<AppraiserModuleViewModel>
+
+<DashboardWidget Title="@ViewModel.SessionHistoryWidgetTitle">
+    <Content>
+        <SessionHistoryWidget TeamId="TeamId" HistoryDepth="5"/>
+    </Content>
+</DashboardWidget>
+
+@code {
+    
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+
+    protected override Task<AppraiserModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new AppraiserModuleViewModel(
+            resources[Messages.GUI_History]));
+    }
+}

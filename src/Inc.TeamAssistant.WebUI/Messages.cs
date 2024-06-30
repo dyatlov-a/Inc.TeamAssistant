@@ -115,6 +115,8 @@ internal static class Messages
     public static readonly string Dashboard_ReviewAverageStatsWidgetTitle = nameof(Dashboard_ReviewAverageStatsWidgetTitle);
     public static readonly string Dashboard_CheckInMoveToMapTitle = nameof(Dashboard_CheckInMoveToMapTitle);
     public static readonly string Dashboard_CheckInMapWidgetTitle = nameof(Dashboard_CheckInMapWidgetTitle);
+    public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
+    public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
 
     public static readonly string ConfirmDialog_Yes = nameof(ConfirmDialog_Yes);
     public static readonly string ConfirmDialog_No = nameof(ConfirmDialog_No);
