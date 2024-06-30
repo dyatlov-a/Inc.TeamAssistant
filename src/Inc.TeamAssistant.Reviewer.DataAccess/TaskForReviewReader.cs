@@ -198,7 +198,7 @@ ORDER BY t.created;",
 
     public async Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(
         Guid teamId,
-        int count,
+        DateTimeOffset from,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
@@ -217,15 +217,12 @@ SELECT
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id
 JOIN connector.persons AS o ON o.id = t.owner_id
-WHERE t.team_id = @team_id
-ORDER BY t.created DESC
-OFFSET @offset
-LIMIT @limit;",
+WHERE t.team_id = @team_id AND t.created >= @from
+ORDER BY t.created DESC;",
             new
             {
                 team_id = teamId,
-                offset = 0,
-                limit = count
+                from
             },
             flags: CommandFlags.Buffered,
             cancellationToken: token);

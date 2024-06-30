@@ -50,11 +50,11 @@ internal sealed class ReviewService : IReviewService
         }
     }
 
-    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, int count, CancellationToken token)
+    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetLastTasksQuery(teamId, count), token);
+            var result = await _mediator.Send(new GetLastTasksQuery(teamId, from), token);
 
             return ServiceResult.Success(result);
         }

@@ -30,10 +30,10 @@ public sealed class ReviewerController : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("last/{teamId:guid}/{count:int}")]
-    public async Task<IActionResult> GetLast(Guid teamId, int count)
+    [HttpGet("last/{teamId:guid}/{from}")]
+    public async Task<IActionResult> GetLast(Guid teamId, DateOnly from)
     {
-        var result = await _reviewService.GetLast(teamId, count);
+        var result = await _reviewService.GetLast(teamId, from);
         return Ok(result);
     }
 }

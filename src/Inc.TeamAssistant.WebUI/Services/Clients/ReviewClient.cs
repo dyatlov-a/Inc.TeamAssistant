@@ -61,12 +61,12 @@ internal sealed class ReviewClient : IReviewService
         }
     }
 
-    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, int count, CancellationToken token)
+    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token)
     {
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetLastTasksResult>>(
-                $"reviewer/last/{teamId:N}/{count}",
+                $"reviewer/last/{teamId:N}/{from:yyyy-MM-dd}",
                 token);
 
             if (result is null)

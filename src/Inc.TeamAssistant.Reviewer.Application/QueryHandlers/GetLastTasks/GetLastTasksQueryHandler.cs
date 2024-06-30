@@ -17,7 +17,8 @@ internal sealed class GetLastTasksQueryHandler : IRequestHandler<GetLastTasksQue
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var tasks = await _taskForReviewReader.GetLastTasks(query.TeamId, query.Count, token);
+        var from = new DateTimeOffset(query.From, TimeOnly.MinValue, TimeSpan.Zero);
+        var tasks = await _taskForReviewReader.GetLastTasks(query.TeamId, from, token);
 
         return new GetLastTasksResult(tasks);
     }

@@ -17,5 +17,5 @@ public interface IReviewService
         DateOnly from,
         CancellationToken token = default);
     
-    Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, int count, CancellationToken token = default);
+    Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token = default);
 }

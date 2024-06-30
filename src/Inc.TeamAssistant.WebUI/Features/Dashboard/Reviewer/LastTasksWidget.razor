@@ -1,12 +1,15 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<LastTasksWidgetViewModel>
 
 @inject IReviewService ReviewService
 
+<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
+
 @if (Tasks.Any())
 {
-    <QuickGrid Items="Tasks" class="quick-data-grid">
+    <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
         <TemplateColumn
             Title="@ViewModel.OwnerNameTitle"
             Sortable="true"
@@ -35,6 +38,9 @@
             @ViewModel.StateLookup[context.State]
         </TemplateColumn>
     </QuickGrid>
+    <div class="paginator-container">
+        <Paginator State="_pagination" />
+    </div>
 }
 else
 {
@@ -45,28 +51,50 @@ else
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
     
-    [Parameter, EditorRequired]
-    public int Count { get; set; }
+    private DateOnly? _date;
+    private readonly PaginationState _pagination = new();
+    
+    private IQueryable<TaskForReviewDto> Tasks => ViewModel.Tasks.AsQueryable();
+
+    private Dictionary<string, string> BuildStateLookup(Dictionary<string, string> resources)
+    {
+        return new Dictionary<string, string>
+        {
+            ["None"] = resources[Messages.Dashboard_ReviewStateNone],
+            ["New"] = resources[Messages.Dashboard_ReviewStateNew],
+            ["InProgress"] = resources[Messages.Dashboard_ReviewStateInProgress],
+            ["OnCorrection"] = resources[Messages.Dashboard_ReviewStateOnCorrection],
+            ["Accept"] = resources[Messages.Dashboard_ReviewStateAccept]
+        };
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _date ??= ViewModel.DateItems.First().Date;
+    }
     
     protected override async Task<LastTasksWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var tasks = await ReviewService.GetLast(TeamId, Count);
+        var dateItems = DateSelectorDataFactory.Create(resources);
+        _date ??= dateItems.First().Date;
+        var tasks = await ReviewService.GetLast(TeamId, _date.Value);
 
         return new LastTasksWidgetViewModel(
             resources[Messages.Dashboard_ReviewDescriptionTitle],
             resources[Messages.Dashboard_ReviewReviewerNameTitle],
             resources[Messages.Dashboard_ReviewOwnerNameTitle],
             resources[Messages.Dashboard_ReviewStateTitle],
-            new Dictionary<string, string>
-            {
-                ["None"] = resources[Messages.Dashboard_ReviewStateNone],
-                ["New"] = resources[Messages.Dashboard_ReviewStateNew],
-                ["InProgress"] = resources[Messages.Dashboard_ReviewStateInProgress],
-                ["OnCorrection"] = resources[Messages.Dashboard_ReviewStateOnCorrection],
-                ["Accept"] = resources[Messages.Dashboard_ReviewStateAccept]
-            },
+            BuildStateLookup(resources),
+            dateItems,
             tasks.Result.Items);
     }
-
-    private IQueryable<TaskForReviewDto> Tasks => ViewModel.Tasks.AsQueryable();
+    
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        
+        await Update();
+    }
 }

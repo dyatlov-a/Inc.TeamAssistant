@@ -7,7 +7,7 @@
 </DashboardWidget>
 <DashboardWidget Title="@ViewModel.LastTasksWidgetTitle">
     <Content>
-        <LastTasksWidget TeamId="TeamId" Count="TasksCount" />
+        <LastTasksWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
 <DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle" HasChart="true">
@@ -19,9 +19,6 @@
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-    
-    [Parameter, EditorRequired]
-    public int TasksCount { get; set; }
 
     protected override Task<ReviewerModuleViewModel> Initialize(Dictionary<string, string> resources)
     {
