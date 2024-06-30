@@ -151,6 +151,8 @@
   "Dashboard_ReviewAverageStatsWidgetTitle": "Review average stats",
   "Dashboard_CheckInMoveToMapTitle": "Move to map",
   "Dashboard_CheckInMapWidgetTitle": "Checkin maps by chats",
+  "Dashboard_GoToCurrentSessionButtonText": "Go to current session",
+  "Dashboard_AssessmentDate": "Assessment date",
   
   "Validation_TokenInvalid": "The token is invalid.",
 

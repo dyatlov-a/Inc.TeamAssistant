@@ -46,6 +46,11 @@
                 {
                     <CheckInModule BotId="BotId.Value" />
                 }
+
+                if (HasFeature("Appraiser") && TeamId.HasValue)
+                {
+                    <AppraiserModule TeamId="TeamId.Value" />
+                }
             }
             else
             {
