@@ -9,32 +9,26 @@
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
 
-                <a href="/@ViewModel.CurrentLanguage" class="link navbar__item">
+                <a href="@ViewModel.MainUrl" class="link navbar__item">
                     <HomeIcon Size="40px" Color="#fff"/>
                 </a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 <span class="navbar__item navbar__item_avatar">
-                <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
+                    <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
                     @person.Name
                     <br/>
                     @person.Username
-            </span>
-                <a href="/accounts/logout?returnUrl=@(CurrentUrl)" class="link link_white navbar__item">
-                    @ViewModel.Logout
-                </a>
+                </span>
+                <a href="@ViewModel.LogoutUrl" class="link link_white navbar__item">@ViewModel.LogoutText</a>
             </Authorized>
             <NotAuthorized>
-                <a href="/@ViewModel.CurrentLanguage" class="link navbar__item">
-                    <HomeIcon Size="40px" Color="#fff"/>
-                </a>
+                <a href="@ViewModel.MainUrl" class="link navbar__item"><HomeIcon Size="40px" Color="#fff"/></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 @if (ViewModel.HasLoginControls)
                 {
-                <a href="/@ViewModel.CurrentLanguage/login?returnUrl=@(CurrentUrl)" class="link link_white navbar__item">
-                    @ViewModel.Login
-                </a>
+                    <a href="@ViewModel.LoginUrl" class="link link_white navbar__item">@ViewModel.LoginText</a>
                 }
             </NotAuthorized>
         </AuthorizeView>
@@ -53,13 +47,14 @@
 
     protected override async Task<MainNavbarViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
         var hasLoginControls = !CurrentUrl.Contains("/login");
         
         return await Task.FromResult(new MainNavbarViewModel(
             hasLoginControls,
-            currentLanguage.Language.Value,
+            LinkBuilder(null),
+            LinkBuilder($"login?returnUrl={CurrentUrl}"),
             resources[Messages.Navigation_Login],
+            LinkBuilder($"accounts/logout?returnUrl={CurrentUrl}"),
             resources[Messages.Navigation_Logout]));
     }
 }

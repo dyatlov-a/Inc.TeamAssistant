@@ -1,8 +1,11 @@
 .assessment-session-header {
     padding: 140px 0 40px 0;
 }
-.assessment-session-content, .assessment-session-footer {
+.assessment-session-content {
     padding: 60px 0 40px 0;
+}
+.assessment-session-footer {
+    padding: 10px 0;
 }
 .assessment-session__header {
     display: flex;

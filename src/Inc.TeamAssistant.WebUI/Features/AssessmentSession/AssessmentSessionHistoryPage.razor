@@ -6,29 +6,34 @@
 
 @inject IAppraiserService AppraiserService
 
-<div class="assessment-history-header white">
-    <div class="assessment-history-header__container">
-        <Breadcrumbs Items="ViewModel.Items" />
-        <h1 class="title">@ViewModel.StoryList</h1>
-    </div>
-</div>
-@if (ViewModel.Data is not null)
-{
-    var index = 0;
-    
-    foreach (var story in ViewModel.Data.Items)
-    {
-        index++;
-        var isDark = index % 2 == 0;
-        var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
-        
-        <div class="assessment-history-content @cssClass">
-            <div class="assessment-history-content__container">
-                <AssessmentIndividual Item="story" IsDarkTheme="isDark" MeanRating="@ViewModel.MeanRating"/>
-            </div>
+<PageTitle>@ViewModel.StoryList</PageTitle>
+
+<main class="main">
+    <div class="assessment-history-header white">
+        <div class="assessment-history-header__container">
+            <Breadcrumbs Items="ViewModel.Items" />
+            <h1 class="title">@ViewModel.StoryList</h1>
         </div>
+    </div>
+    @if (ViewModel.Data is not null)
+    {
+        var index = 0;
+    
+        foreach (var story in ViewModel.Data.Items)
+        {
+            index++;
+            var isDark = index % 2 == 0;
+            var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
+        
+            <div class="assessment-history-content @cssClass">
+                <div class="assessment-history-content__container">
+                    <AssessmentIndividual Item="story" IsDarkTheme="isDark" MeanRating="@ViewModel.MeanRating"/>
+                </div>
+            </div>
+        }
     }
-}
+</main>
+<MainFooter />
         
 @code {
     [Parameter, EditorRequired]

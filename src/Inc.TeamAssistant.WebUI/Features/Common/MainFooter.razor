@@ -28,23 +28,22 @@
     protected override Task<MainFooterViewModel> Initialize(Dictionary<string, string> resources)
     {
         const bool external = true;
-
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
+        
         var links = new Dictionary<string, IReadOnlyCollection<MainFooterViewModel.FooterLink>>
         {
             [resources[Messages.Footer_GroupNavigation]] = new[]
             {
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkMain],
-                    $"/{currentLanguage.Language.Value}",
+                    LinkBuilder(null),
                     !external),
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkConstructor],
-                    $"/{currentLanguage.Language.Value}/constructor",
+                    LinkBuilder("constructor"),
                     !external),
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkDashboard],
-                    $"/{currentLanguage.Language.Value}/dashboard",
+                    LinkBuilder("dashboard"),
                     !external)
             },
             [resources[Messages.Footer_GroupTech]] = new[]
@@ -63,7 +62,7 @@
             {
                 new MainFooterViewModel.FooterLink("Telegram.Bot", "https://github.com/TelegramBots/Telegram.Bot", external),
                 new MainFooterViewModel.FooterLink("FluentValidator", "https://docs.fluentvalidation.net/", external),
-                new MainFooterViewModel.FooterLink("MediatR", "https://github.com/jbogard/MediatR", external)
+                new MainFooterViewModel.FooterLink("GitHub", "https://github.com/dyatlov-a/Inc.TeamAssistant", external)
             }
         };
         

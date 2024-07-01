@@ -1,6 +1,5 @@
 .login {
     height: 100vh;
-    margin-bottom: -200px;
     background-color: #000;
 }
 .login-container {
@@ -54,11 +53,5 @@
     }
     .login-container {
         justify-content: center;
-    }
-}
-@media (max-width: 767.98px) {
-    .login-action {
-        align-items: start;
-        margin-top: 200px;
     }
 }
