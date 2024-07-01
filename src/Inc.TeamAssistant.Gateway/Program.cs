@@ -57,6 +57,7 @@ var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOp
 var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
+var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
@@ -116,6 +117,7 @@ builder.Services
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.Build()
 	
+	.AddSingleton(openGraphOptions)
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
 	.AddServices(authOptions, builder.Environment.WebRootPath, cacheAbsoluteExpiration)
 	.AddIsomorphic()
@@ -132,9 +134,9 @@ builder.Services
 	.AddConnectorDataAccess(cacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
 	
-	.AddMemoryCache()
 	.AddHttpContextAccessor()
-	.AddOutputCache(c => c.AddPolicy("photos", b => b.Expire(TimeSpan.FromHours(1))))
+	.AddMemoryCache()
+	.AddOutputCache(c => c.AddPolicy(OutputCachePolicies.Images, b => b.Expire(TimeSpan.FromHours(1))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 

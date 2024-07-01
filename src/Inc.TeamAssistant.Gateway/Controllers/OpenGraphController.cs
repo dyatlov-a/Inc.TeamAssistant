@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using SixLabors.Fonts;
 
 namespace Inc.TeamAssistant.Gateway.Controllers;
 
@@ -17,7 +16,7 @@ public sealed class OpenGraphController : ControllerBase
     }
 
     [HttpGet("create-card/{img}")]
-    [OutputCache(PolicyName = "photos")]
+    [OutputCache(PolicyName = OutputCachePolicies.Images)]
     [ResponseCache(Duration = 60 * 60)]
     public async Task<IActionResult> Create(string img, string text, CancellationToken token)
     {
@@ -25,18 +24,7 @@ public sealed class OpenGraphController : ControllerBase
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
         
         const string contentType = "image/jpeg";
-        const string textFont = "Arial";
-        const float fontSize = 32;
-        const int padding = 30;
-        
-        var stream = await _openGraphService.CreateCard(
-            img,
-            text,
-            textFont,
-            fontSize,
-            FontStyle.Regular,
-            padding,
-            token);
+        var stream = await _openGraphService.CreateCard(img, text, token);
         
         return File(stream, contentType);
     }
