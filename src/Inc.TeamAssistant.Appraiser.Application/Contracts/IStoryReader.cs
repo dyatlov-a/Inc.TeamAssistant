@@ -7,6 +7,7 @@ public interface IStoryReader
 {
     Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
         Guid teamId,
+        DateTimeOffset before,
         int depth,
         CancellationToken token);
     

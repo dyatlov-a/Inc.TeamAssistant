@@ -12,6 +12,9 @@ ENV APP_DIR="/app" \
 # Add timezones
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 
+# Add fonts
+RUN apt-get install -y fontconfig
+
 # create app user and ko
 RUN mkdir -p ${APP_DIR} \
   && useradd -s /bin/bash -u 1000 -d ${APP_DIR} ${APP_USER} \

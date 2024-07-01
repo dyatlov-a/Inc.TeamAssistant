@@ -16,14 +16,15 @@ public sealed class PhotosController : ControllerBase
     }
 
     [HttpGet("{personId}")]
-    [OutputCache(PolicyName = "photos")]
+    [OutputCache(PolicyName = OutputCachePolicies.Images)]
     [ResponseCache(Duration = 60 * 60)]
     public async Task<IActionResult> Get(long personId, CancellationToken token)
     {
+        const string contentType = "image/jpeg";
         var photo = await _photosRepository.Find(personId, token);
-        if (photo is not null)
-            return File(photo.Data, "image/jpeg");
-        
-        return File("imgs/user_stub.jpg", "image/jpeg");
+
+        return photo is null
+            ? File("imgs/user_stub.jpg", contentType)
+            : File(photo.Data, contentType);
     }
 }

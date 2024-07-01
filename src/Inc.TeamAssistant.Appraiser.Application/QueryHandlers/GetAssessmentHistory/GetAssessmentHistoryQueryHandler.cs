@@ -18,7 +18,9 @@ internal sealed class GetAssessmentHistoryQueryHandler
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var history = await _reader.GetAssessmentHistory(query.TeamId, query.Depth, token);
+        var now = DateTimeOffset.UtcNow;
+        var before = new DateTimeOffset(new DateOnly(now.Year, now.Month, now.Day), TimeOnly.MinValue, TimeSpan.Zero);
+        var history = await _reader.GetAssessmentHistory(query.TeamId, before, query.Depth, token);
 
         return new GetAssessmentHistoryResult(history);
     }

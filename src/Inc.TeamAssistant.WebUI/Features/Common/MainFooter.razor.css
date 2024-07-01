@@ -10,7 +10,7 @@
 }
 .footer-group__header {
     display: block;
-    color: #555;
+    color: #000;
     font-size: .8rem;
     padding-bottom: 5px;
 }
@@ -22,8 +22,5 @@
 @media (max-width: 767.98px) {
     .footer__content {
         display: block;
-    }
-    .footer {
-        background-color: #000;
     }
 }

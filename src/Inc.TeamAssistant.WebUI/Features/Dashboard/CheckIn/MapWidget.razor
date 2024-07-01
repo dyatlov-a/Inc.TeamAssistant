@@ -53,10 +53,5 @@ else
             maps.Result.Items);
     }
 
-    private string GetMapUrl(Guid mapId)
-    {
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
-
-        return $"/{currentLanguage.Language.Value}/map/{mapId:N}";
-    }
+    private string GetMapUrl(Guid mapId) => LinkBuilder($"map/{mapId:N}");
 }

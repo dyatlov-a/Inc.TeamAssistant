@@ -1,4 +1,4 @@
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
+﻿@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits LayoutComponentBase
 
@@ -11,7 +11,9 @@
 <div class="wrapper">
     <MainNavbar />
     
-    @Body
+    <main class="main">
+        @Body
+    </main>
 </div>
 
 <AcceptCookieDialog />
@@ -23,17 +25,20 @@
     protected override async Task OnInitializedAsync()
     {
         var resources = await ResourcesManager.GetResource();
+        var title = resources[Messages.GUI_MainTitle];
+        var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
+        var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
         
         _metaModel = new(
-            resources[Messages.MetaTitle],
-            resources[Messages.MetaDescription],
-            resources[Messages.MetaKeywords],
+            title,
+            description,
+            keywords,
             resources[Messages.MetaAuthor]);
-
+        
         _openGraphModel = new(
-            resources[Messages.OgTitle],
-            resources[Messages.OgDescription],
+            title,
+            description,
             "main.jpg",
-            resources[Messages.Appraiser_OgImageText]);
+            resources[Messages.OgImageText]);
     }
 }
