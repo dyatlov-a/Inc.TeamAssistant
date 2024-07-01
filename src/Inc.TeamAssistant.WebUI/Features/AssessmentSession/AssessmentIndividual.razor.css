@@ -38,9 +38,6 @@
 .story_dark, .story_dark .link {
     color: #000;
 }
-.story__content {
-    min-height: 500px;
-}
 @media (max-width: 991.98px) {
     ::deep .user-card {
         flex: 0 1 calc(33.333% - 40px);
