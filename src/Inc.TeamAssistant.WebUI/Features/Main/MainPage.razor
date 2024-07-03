@@ -5,12 +5,14 @@
 @using Inc.TeamAssistant.Primitives
 @using Inc.TeamAssistant.WebUI.Features.Videos
 
+@inject IRenderContext RenderContext
+
 @inherits PersistentComponent<MainPageViewModel>
 
 <MainVideo FileName="source-tree-02" NotSupportedMessage="@ViewModel.NotSupportedMessage" />
 
 <section id="about-bots" class="about-bots">
-    <div class="about-bots__container">
+    <div class="about-bots__container @CssClass">
         <h1 class="about-bots__header">
             <span class="about-bots__item">@ViewModel.Header</span>
             <br/>
@@ -31,6 +33,8 @@
 
 @code {
     private string MoveToConstructor() => LinkBuilder("constructor");
+
+    private string CssClass => RenderContext.IsBrowser ? "animation_slide-left" : string.Empty;
     
     protected override Task<MainPageViewModel> Initialize(Dictionary<string, string> resources)
     {

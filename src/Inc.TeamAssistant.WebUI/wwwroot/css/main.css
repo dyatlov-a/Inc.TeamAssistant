@@ -195,3 +195,12 @@ html {
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: #555;
 }
+/* animations */
+.animation_slide-left {
+    transform: translateX(-150%);
+    animation: slide-left 2s forwards;
+}
+@keyframes slide-left {
+    0% { transform: translateX(-150%); }
+    100% { transform: translateY(0); }
+}
