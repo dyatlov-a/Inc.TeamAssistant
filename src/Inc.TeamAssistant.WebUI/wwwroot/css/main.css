@@ -88,9 +88,9 @@ html {
     text-transform: uppercase;
     font-weight: 700;
     font-size: .75rem;
-    line-height: .9rem;
+    line-height: 1.3rem;
     letter-spacing: .0625rem;
-    padding: .875rem 1.25rem;
+    padding: .7rem 1rem;
     border-radius: 1rem;
     transition: background-color 0.3s ease 0s;
     background-color: transparent;
