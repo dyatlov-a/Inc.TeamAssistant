@@ -54,7 +54,7 @@
             LinkBuilder(null),
             LinkBuilder($"login?returnUrl={CurrentUrl}"),
             resources[Messages.Navigation_Login],
-            LinkBuilder($"accounts/logout?returnUrl={CurrentUrl}"),
+            $"accounts/logout?returnUrl={CurrentUrl}",
             resources[Messages.Navigation_Logout]));
     }
 }

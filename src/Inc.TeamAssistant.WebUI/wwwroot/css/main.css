@@ -124,9 +124,6 @@ html {
 .link_black {
     color: #000;
 }
-.hidden {
-    display: none;
-}
 /* MAP */
 .marker-btn {
     background-color: #fff;
@@ -196,9 +193,13 @@ html {
     background-color: #555;
 }
 /* animations */
+.hidden {
+    visibility: hidden;
+}
 .animation_slide-left {
     transform: translateX(-150%);
     animation: slide-left 2s forwards;
+    visibility: visible;
 }
 @keyframes slide-left {
     0% { transform: translateX(-150%); }

@@ -35,6 +35,7 @@
     text-align: center;
     font-size: 3rem;
     line-height: 4.2rem;
+    text-shadow: 2px 2px 4px #000;
 }
 .telegram-login__header {
     font-size: 2.2rem;
