@@ -26,11 +26,7 @@
         <div class="dashboard-widgets">
             @if (TeamId.HasValue)
             {
-                <DashboardWidget Title="@ViewModel.TeammatesWidgetTitle">
-                    <Content>
-                        <TeammatesWidget TeamId="TeamId.Value"/>
-                    </Content>
-                </DashboardWidget>
+                <TeamModule TeamId="TeamId.Value" />
 
                 if (HasFeature("Reviewer"))
                 {
@@ -57,15 +53,11 @@
             }
             else
             {
-                <div class="dashboard-widgets__widget">
-                    <FormSection Title="@ViewModel.BotWidgetTitle" AsRows="true">
-                        <HelpContent>
-                            @ViewModel.SelectTeam
-                            <a href="@MoveToCreateBot()" class="link link_white">@ViewModel.CreateBot</a>
-                        </HelpContent>
-                        <Content />
-                    </FormSection>
-                </div>
+                <DashboardWidget Title="@ViewModel.BotWidgetTitle">
+                    <Content>
+                        <BotNotSelected />
+                    </Content>
+                </DashboardWidget>
             }
         </div>
     </div>
@@ -89,9 +81,6 @@
         
         return new DashboardPageViewModel(
             resources[Messages.Dashboard_Title],
-            resources[Messages.Dashboard_SelectTeam],
-            resources[Messages.Dashboard_CreateBot],
-            resources[Messages.Dashboard_TeammatesWidgetTitle],
             resources[Messages.Dashboard_BotWidgetTitle],
             getByUser.Result.Bots);
     }
@@ -102,6 +91,4 @@
 
         return bot?.Features.Contains(feature, StringComparer.InvariantCultureIgnoreCase) == true;
     }
-
-    private string MoveToCreateBot() => LinkBuilder("constructor");
 }

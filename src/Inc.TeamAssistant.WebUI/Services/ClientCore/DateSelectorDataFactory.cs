@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.WebUI.Features.Dashboard;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Shared;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 

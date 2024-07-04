@@ -1,0 +1,18 @@
+@inherits PersistentComponent<TeamModuleViewModel>
+
+<DashboardWidget Title="@ViewModel.TeammatesWidgetTitle">
+    <Content>
+        <TeammatesWidget TeamId="TeamId"/>
+    </Content>
+</DashboardWidget>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    protected override Task<TeamModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new TeamModuleViewModel(
+            resources[Messages.Dashboard_TeammatesWidgetTitle]));
+    }
+}
