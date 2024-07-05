@@ -30,13 +30,8 @@ internal sealed class BotReader : IBotReader
         return results.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(
-        long userId,
-        Func<string, Guid, string> linkBuilder,
-        CancellationToken token)
+    public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(linkBuilder);
-        
         var botsCommand = new CommandDefinition(@"
             SELECT DISTINCT b.id AS id, b.name AS name
             FROM connector.bots AS b
@@ -83,9 +78,7 @@ internal sealed class BotReader : IBotReader
                 b.BotId,
                 b.Name,
                 features[b.BotId].ToArray(),
-                teams[b.BotId]
-                    .Select(t => new TeamDto(t.Id, t.Name, linkBuilder(b.Name, t.Id)))
-                    .ToArray()))
+                teams[b.BotId].Select(t => new TeamDto(t.Id, t.Name)).ToArray()))
             .ToArray();
         
         return results;

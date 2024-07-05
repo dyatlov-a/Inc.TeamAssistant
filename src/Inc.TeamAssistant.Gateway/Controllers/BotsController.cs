@@ -47,6 +47,12 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetTeammates(teamId, token));
     }
+    
+    [HttpGet("{teamId:guid}/connector")]
+    public async Task<IActionResult> GetConnector(Guid teamId, CancellationToken token)
+    {
+        return Ok(await _botService.GetConnector(teamId, token));
+    }
 
     [HttpPut("teammate")]
     public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)

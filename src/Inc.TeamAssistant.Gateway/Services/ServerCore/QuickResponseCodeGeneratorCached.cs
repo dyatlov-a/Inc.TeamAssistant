@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;

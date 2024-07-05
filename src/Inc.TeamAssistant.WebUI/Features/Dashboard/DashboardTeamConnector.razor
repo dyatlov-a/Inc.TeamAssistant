@@ -1,0 +1,31 @@
+@inherits PersistentComponent<DashboardTeamConnectorViewModel>
+
+@inject IBotService BotService
+
+<div class="team-connector">
+    <FormSection Title="@ViewModel.TeamConnector.TeamName" HelpText="@ViewModel.ConnectToTeamHelp" AsRows="true">
+        <Content>
+            <div class="team-connector__code">
+                @((MarkupString)ViewModel.TeamConnector.Code)
+            </div>
+            <a href="@ViewModel.TeamConnector.LinkForConnect" class="button button_white team-connector__link" target="_blank">
+                @ViewModel.ConnectToTeamButton
+            </a>
+        </Content>
+    </FormSection>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    protected override async Task<DashboardTeamConnectorViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var teamConnector = await BotService.GetConnector(TeamId);
+
+        return new DashboardTeamConnectorViewModel(
+            resources[Messages.Dashboard_ConnectToTeamHelp],
+            resources[Messages.Dashboard_ConnectToTeamButton],
+            teamConnector.Result);
+    }
+}

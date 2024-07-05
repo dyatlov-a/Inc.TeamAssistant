@@ -20,6 +20,11 @@
     <div class="dashboard-toolbar">
         <div class="dashboard-toolbar__content">
             <DashboardTeamSelector BotId="BotId" TeamId="TeamId" Bots="ViewModel.Bots" />
+
+            @if (TeamId.HasValue)
+            {
+                <DashboardTeamConnector TeamId="TeamId.Value" />
+            }
         </div>
     </div>
     <div class="dashboard-content">

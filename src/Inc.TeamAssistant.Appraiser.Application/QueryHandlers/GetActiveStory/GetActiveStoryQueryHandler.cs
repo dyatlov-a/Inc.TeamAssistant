@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.Application.Converters;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetActiveStory;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetActiveStory;
@@ -10,39 +9,25 @@ namespace Inc.TeamAssistant.Appraiser.Application.QueryHandlers.GetActiveStory;
 internal sealed class GetActiveStoryQueryHandler : IRequestHandler<GetActiveStoryQuery, GetActiveStoryResult>
 {
 	private readonly IStoryReader _reader;
-	private readonly ITeamAccessor _teamAccessor;
-	private readonly IQuickResponseCodeGenerator _codeGenerator;
-	private readonly ILinkBuilder _linkBuilder;
-	private readonly IBotAccessor _botAccessor;
+	private readonly ITeamLinkBuilder _teamLinkBuilder;
 
-	public GetActiveStoryQueryHandler(
-		IStoryReader reader,
-		ITeamAccessor teamAccessor,
-		IQuickResponseCodeGenerator codeGenerator,
-		ILinkBuilder linkBuilder,
-		IBotAccessor botAccessor)
+	public GetActiveStoryQueryHandler(IStoryReader reader, ITeamLinkBuilder teamLinkBuilder)
 	{
 		_reader = reader ?? throw new ArgumentNullException(nameof(reader));
-		_teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-		_codeGenerator = codeGenerator ?? throw new ArgumentNullException(nameof(codeGenerator));
-		_linkBuilder = linkBuilder ?? throw new ArgumentNullException(nameof(linkBuilder));
-		_botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
+		_teamLinkBuilder = teamLinkBuilder ?? throw new ArgumentNullException(nameof(teamLinkBuilder));
 	}
 
 	public async Task<GetActiveStoryResult> Handle(GetActiveStoryQuery query, CancellationToken token)
 	{
 		ArgumentNullException.ThrowIfNull(query);
-
-		var teamContext = await _teamAccessor.GetTeamContext(query.TeamId, token);
-		var botContext = await _botAccessor.GetBotContext(teamContext.BotId, token);
-		var link = _linkBuilder.BuildLinkForConnect(botContext.UserName, query.TeamId);
-		var codeForConnect = _codeGenerator.Generate(link);
+		
+		var teamConnector = await _teamLinkBuilder.GenerateTeamConnector(query.TeamId, token);
 		
 		var story = await _reader.FindLast(query.TeamId, token);
 		var details = story is not null
 			? StoryConverter.Convert(story)
 			: null;
 
-		return new(teamContext.TeamName, codeForConnect, details);
+		return new(teamConnector.TeamName, teamConnector.Code, details);
 	}
 }

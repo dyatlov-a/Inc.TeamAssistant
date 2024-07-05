@@ -165,7 +165,6 @@
   "Dashboard_RandomCoffeeNoPair": "Пара не найдена",
   "Dashboard_RandomCoffeeFirstTitle": "Первый участник",
   "Dashboard_RandomCoffeeSecondTitle": "Второй участник",
-  "Dashboard_ConnectToTeam": "Подключиться к",
   "Dashboard_OneWeek": "1 неделя",
   "Dashboard_TwoWeeks": "2 недели",
   "Dashboard_FourWeeks": "4 недели",
@@ -178,6 +177,8 @@
   "Dashboard_AssessmentDate": "Дата проведения оценки",
   "Dashboard_AppraiserHistoryTitle": "История оценок",
   "Dashboard_TotalStories": "Всего историй",
+  "Dashboard_ConnectToTeamHelp": "Для подключения к команде перейдите по ссылке или отсканируйте QR-код",
+  "Dashboard_ConnectToTeamButton": "Подключиться к команде",
 
   "Footer_GroupNavigation": "Навигация",
   "Footer_GroupTech": "Технологии",

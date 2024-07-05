@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
                 cacheAbsoluteExpiration))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
-            .AddSingleton<ILinkBuilder, LinkBuilder>();
+            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>();
 
         return services;
 	}

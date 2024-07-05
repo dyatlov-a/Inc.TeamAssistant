@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
@@ -92,6 +93,20 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(Guid teamId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetTeamConnectorQuery(teamId), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetTeamConnectorResult>(ex.Message);
         }
     }
 
