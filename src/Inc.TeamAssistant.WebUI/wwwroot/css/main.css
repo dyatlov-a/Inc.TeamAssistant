@@ -114,15 +114,20 @@ html {
 }
 .link {
     font-size: 1rem;
-}
-.link:hover {
-    text-decoration: underline;
+    text-decoration: underline 0.15em rgba(255, 255, 255, 0);
+    transition: text-decoration-color 300ms;
 }
 .link_white {
     color: #fff;
 }
+.link_white:hover {
+    text-decoration-color: rgba(255, 255, 255, 1);
+}
 .link_black {
     color: #000;
+}
+.link_black:hover {
+    text-decoration-color: rgba(0, 0, 0, 1);
 }
 /* MAP */
 .marker-btn {
@@ -198,7 +203,7 @@ html {
 }
 .animation_slide-left {
     transform: translateX(-150%);
-    animation: slide-left 2s forwards;
+    animation: slide-left 1.5s forwards;
     visibility: visible;
 }
 @keyframes slide-left {
