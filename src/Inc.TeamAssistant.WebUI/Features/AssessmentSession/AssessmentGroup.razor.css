@@ -43,6 +43,9 @@
 .story_dark, .story_dark .link {
     color: #000;
 }
+.estimate-group-container {
+    min-height: 220px;
+}
 .estimate-group {
     display: flex;
 }

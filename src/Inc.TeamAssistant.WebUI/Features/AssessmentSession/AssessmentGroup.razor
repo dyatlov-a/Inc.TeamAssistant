@@ -13,26 +13,51 @@
             }
         </ul>
     }
-    <div>
-        @foreach (var group in EstimatesByGroup().OrderByDescending(g => g.Key.ValueGroup))
+    <div class="estimate-group-container">
+        @if (Item.EstimateEnded)
+        {
+            foreach (var group in EstimatesByGroup().OrderByDescending(g => g.Key.ValueGroup))
+            {
+                <div class="estimate-group">
+                    <div>
+                        <div class="estimate-group__title">@group.Key.DisplayValue</div>
+                    </div>
+                    <div class="estimate-group__content">
+                        <div class="story__cards">
+                            @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
+                            {
+                                <EstimateCard
+                                    IsDarkTheme="IsDarkTheme"
+                                    PersonId="storyForEstimate.ParticipantId"
+                                    Name="@storyForEstimate.ParticipantName"/>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <div class="estimate-group__summary">@CalculatePercents(group.Count()).ToString("#")%</div>
+                    </div>
+                </div>
+            }
+        }
+        else
         {
             <div class="estimate-group">
                 <div>
-                    <div class="estimate-group__title">@group.Key.DisplayValue</div>
+                    <div class="estimate-group__title">-</div>
                 </div>
                 <div class="estimate-group__content">
                     <div class="story__cards">
-                        @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
+                        @foreach (var storyForEstimate in Estimates().OrderBy(i => i.ParticipantName))
                         {
                             <EstimateCard
                                 IsDarkTheme="IsDarkTheme"
                                 PersonId="storyForEstimate.ParticipantId"
-                                Name="@storyForEstimate.ParticipantName" />
+                                Name="@storyForEstimate.ParticipantName"/>
                         }
                     </div>
                 </div>
                 <div>
-                    <div class="estimate-group__summary">@CalculatePercents(group.Count()).ToString("#")%</div>
+                    <div class="estimate-group__summary">-</div>
                 </div>
             </div>
         }
@@ -78,6 +103,8 @@
             .Where(s => s.ValueGroup.HasValue)
             .ToLookup(s => (s.ValueGroup!.Value, s.DisplayValue));
     }
+
+    private IEnumerable<StoryForEstimateDto> Estimates() => Item.StoryForEstimates.Where(s => s.ValueGroup.HasValue);
 
     private decimal CalculatePercents(int countInGroup) => countInGroup / (decimal)Item.StoryForEstimates.Count * 100;
     
