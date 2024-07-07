@@ -6,6 +6,7 @@
 @page "/ru/assessment-session/{id:guid}/{View}"
 
 @using Inc.TeamAssistant.WebUI.Services.ClientCore
+
 @inherits PersistentComponent<AssessmentSessionPageViewModel>
 
 @inject IAppraiserService AppraiserService
@@ -107,7 +108,7 @@
     protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        var newStoryState = await AppraiserService.GetActiveStory(Id);
+        var newStoryState = await AppraiserService.GetActiveStory(Id, "000", "fff");
 
         return new(
             resources[Messages.GUI_TaskAssess],

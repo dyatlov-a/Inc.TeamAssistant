@@ -24,7 +24,11 @@ public interface IBotService
     
     Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token = default);
 
-    Task<ServiceResult<GetTeamConnectorResult>> GetConnector(Guid teamId, CancellationToken token = default);
+    Task<ServiceResult<GetTeamConnectorResult>> GetConnector(
+        Guid teamId,
+        string foreground,
+        string background,
+        CancellationToken token = default);
 
     Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default);
     

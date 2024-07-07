@@ -34,7 +34,7 @@
 @code {
     private string MoveToConstructor() => LinkBuilder("constructor");
 
-    private string CssClass => RenderContext.IsBrowser ? "animation_slide-left" : "hidden";
+    private string CssClass => RenderContext.IsBrowser ? "animation__slide-left" : "hidden";
     
     protected override Task<MainPageViewModel> Initialize(Dictionary<string, string> resources)
     {

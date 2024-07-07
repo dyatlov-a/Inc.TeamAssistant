@@ -21,7 +21,11 @@ internal sealed class GetActiveStoryQueryHandler : IRequestHandler<GetActiveStor
 	{
 		ArgumentNullException.ThrowIfNull(query);
 		
-		var teamConnector = await _teamLinkBuilder.GenerateTeamConnector(query.TeamId, token);
+		var teamConnector = await _teamLinkBuilder.GenerateTeamConnector(
+			query.TeamId,
+			query.Foreground,
+			query.Background,
+			token);
 		
 		var story = await _reader.FindLast(query.TeamId, token);
 		var details = story is not null

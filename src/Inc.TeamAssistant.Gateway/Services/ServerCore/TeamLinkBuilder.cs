@@ -29,12 +29,19 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
 
     public async Task<(string TeamName, string Link, string Code)> GenerateTeamConnector(
         Guid teamId,
+        string foreground,
+        string background,
         CancellationToken token)
     {
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
         var teamContext = await _teamAccessor.GetTeamContext(teamId, token);
         var botContext = await _botAccessor.GetBotContext(teamContext.BotId, token);
         var link = BuildLinkForConnect(botContext.UserName, teamId);
-        var code = _codeGenerator.Generate(link);
+        var code = _codeGenerator.Generate(link, foreground, background);
         
         return (teamContext.TeamName, link, code);
     }

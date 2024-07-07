@@ -96,11 +96,20 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(Guid teamId, CancellationToken token)
+    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(
+        Guid teamId,
+        string foreground,
+        string background,
+        CancellationToken token)
     {
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
         try
         {
-            var result = await _mediator.Send(new GetTeamConnectorQuery(teamId), token);
+            var result = await _mediator.Send(new GetTeamConnectorQuery(teamId, foreground, background), token);
 
             return ServiceResult.Success(result);
         }

@@ -17,12 +17,21 @@ internal sealed class AppraiserClient : IAppraiserService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(Guid teamId, CancellationToken token)
-	{
-		try
+    public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(
+	    Guid teamId,
+	    string foreground,
+	    string background,
+	    CancellationToken token)
+    {
+	    if (string.IsNullOrWhiteSpace(foreground))
+		    throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+	    if (string.IsNullOrWhiteSpace(background))
+		    throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+	    
+	    try
 		{
 			var result = await _client.GetFromJsonAsync<ServiceResult<GetActiveStoryResult>>(
-				$"assessment-sessions/story/{teamId}/active",
+				$"assessment-sessions/story/{teamId}/active?foreground={foreground}&background={background}",
 				token);
 
 			if (result is null)
@@ -34,7 +43,7 @@ internal sealed class AppraiserClient : IAppraiserService
 		{
 			return ServiceResult.Failed<GetActiveStoryResult>(ex.Message);
 		}
-	}
+    }
 
 	public async Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
 		Guid teamId,

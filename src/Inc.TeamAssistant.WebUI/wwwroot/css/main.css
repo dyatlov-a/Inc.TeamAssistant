@@ -201,7 +201,7 @@ html {
 .hidden {
     visibility: hidden;
 }
-.animation_slide-left {
+.animation__slide-left {
     transform: translateX(-150%);
     animation: slide-left 1.5s forwards;
     visibility: visible;
@@ -209,4 +209,11 @@ html {
 @keyframes slide-left {
     0% { transform: translateX(-150%); }
     100% { transform: translateY(0); }
+}
+.animation__fade-in {
+    animation: 1.5s fade-in ease;
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

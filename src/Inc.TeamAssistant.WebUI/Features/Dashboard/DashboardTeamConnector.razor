@@ -21,7 +21,7 @@
     
     protected override async Task<DashboardTeamConnectorViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var teamConnector = await BotService.GetConnector(TeamId);
+        var teamConnector = await BotService.GetConnector(TeamId, "000", "9d9d9d");
 
         return new DashboardTeamConnectorViewModel(
             resources[Messages.Dashboard_ConnectToTeamHelp],

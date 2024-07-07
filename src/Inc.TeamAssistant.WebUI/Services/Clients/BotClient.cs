@@ -12,7 +12,6 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Exception = System.Exception;
 
 namespace Inc.TeamAssistant.WebUI.Services.Clients;
 
@@ -116,12 +115,21 @@ internal sealed class BotClient : IBotService
         }
     }
 
-    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(Guid teamId, CancellationToken token)
+    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(
+        Guid teamId,
+        string foreground,
+        string background,
+        CancellationToken token)
     {
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
         try
         {
             var result = await _client.GetFromJsonAsync<ServiceResult<GetTeamConnectorResult>>(
-                $"bots/{teamId}/connector",
+                $"bots/{teamId}/connector?foreground={foreground}&background={background}",
                 token);
             if (result is null)
                 throw new TeamAssistantException("Parse response with error.");

@@ -7,7 +7,11 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IAppraiserService
 {
-	Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(Guid teamId, CancellationToken token = default);
+	Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(
+		Guid teamId,
+		string foreground,
+		string background,
+		CancellationToken token = default);
 	
 	Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
 		Guid teamId,
