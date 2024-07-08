@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
@@ -18,8 +17,9 @@ internal sealed class GetBotUserNameQueryHandler : IRequestHandler<GetBotUserNam
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var userName = await _botConnector.CheckAccess(query.Token, token);
-
-        return new GetBotUserNameResult(HasAccess: !string.IsNullOrWhiteSpace(userName), userName);
+        var userName = await _botConnector.GetUsername(query.Token, token);
+        
+        var hasAccess = !string.IsNullOrWhiteSpace(userName);
+        return new GetBotUserNameResult(hasAccess, userName ?? string.Empty);
     }
 }

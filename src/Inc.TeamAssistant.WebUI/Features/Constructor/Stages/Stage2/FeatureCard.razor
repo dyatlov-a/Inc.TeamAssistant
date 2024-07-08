@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
-
 @inject DragAndDropService<Guid> DragAndDropService
 
 <div draggable="true" @ondragstart="@(() => HandleDragStart(FeatureId))" class="feature-card draggable">

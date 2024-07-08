@@ -11,15 +11,18 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
     private readonly IBotRepository _botRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
     private readonly IBotListeners _botListeners;
+    private readonly IBotConnector _botConnector;
 
     public UpdateBotCommandHandler(
         IBotRepository botRepository,
         ICurrentPersonResolver currentPersonResolver,
-        IBotListeners botListeners)
+        IBotListeners botListeners,
+        IBotConnector botConnector)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
+        _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }
     
     public async Task Handle(UpdateBotCommand command, CancellationToken token)
@@ -41,7 +44,8 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
             bot.ChangeProperty(property.Key, property.Value);
         
         await _botRepository.Upsert(bot, token);
-        
+
+        await _botConnector.Setup(bot.Id, token);
         await _botListeners.Restart(bot.Id);
     }
 }

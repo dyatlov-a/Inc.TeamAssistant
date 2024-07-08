@@ -12,15 +12,18 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
     private readonly IBotRepository _botRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
     private readonly IBotListeners _botListeners;
+    private readonly IBotConnector _botConnector;
 
     public CreateBotCommandHandler(
         IBotRepository botRepository,
         ICurrentPersonResolver currentPersonResolver,
-        IBotListeners botListeners)
+        IBotListeners botListeners,
+        IBotConnector botConnector)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
+        _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }
 
     public async Task Handle(CreateBotCommand command, CancellationToken token)
@@ -39,6 +42,7 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
         
         await _botRepository.Upsert(bot, token);
 
+        await _botConnector.Setup(bot.Id, token);
         await _botListeners.Start(bot.Id);
     }
 }

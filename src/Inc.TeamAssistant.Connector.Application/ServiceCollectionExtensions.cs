@@ -31,7 +31,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<AliasService>()
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
-            .AddSingleton<BotConstructor>()
             .AddSingleton<IBotAccessor, BotAccessor>()
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
