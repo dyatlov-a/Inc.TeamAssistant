@@ -124,7 +124,8 @@ internal sealed class BotReader : IBotReader
             SELECT
                 bc.id AS id,
                 bc.value AS value,
-                bc.help_message_id AS helpmessageid
+                bc.help_message_id AS helpmessageid,
+                bc.scopes AS scopes
             FROM connector.bot_commands AS bc;
 
             SELECT

@@ -11,40 +11,6 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class BotConnector : IBotConnector
 {
-    private static readonly IReadOnlyDictionary<BotCommandScope, IReadOnlyCollection<string>> CommandsByScopes =
-        new Dictionary<BotCommandScope, IReadOnlyCollection<string>>
-        {
-            [BotCommandScope.AllGroupChats()] = new[]
-            {
-                "/location",
-                "/invite",
-                "/new_team",
-                "/leave_team",
-                "/cancel",
-                "/add",
-                "/move_to_sp",
-                "/move_to_tshirts",
-                "/need_review",
-                "/change_to_round_robin",
-                "/change_to_random",
-                "/remove_team",
-                "/help"
-            },
-            [BotCommandScope.Default()] = new[]
-            {
-                "/leave_team",
-                "/cancel",
-                "/add",
-                "/move_to_sp",
-                "/move_to_tshirts",
-                "/need_review",
-                "/change_to_round_robin",
-                "/change_to_random",
-                "/remove_team",
-                "/help"
-            }
-        };
-    
     private readonly IMessageBuilder _messageBuilder;
     private readonly IBotReader _botReader;
 
@@ -116,26 +82,25 @@ internal sealed class BotConnector : IBotConnector
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(languageId);
-        
-        var allBotCommands = (await Convert(bot.Commands, languageId)).ToDictionary(
-            c => c.Command,
-            StringComparer.InvariantCultureIgnoreCase);
 
-        foreach (var commandsByScope in CommandsByScopes)
-        {
-            var botCommandsByScope = commandsByScope.Value
-                .Where(c => allBotCommands.ContainsKey(c))
-                .Select(c => allBotCommands[c])
-                .OrderBy(c => c.Command)
-                .ToArray();
-            var currentBotCommandsByScope = (await client.GetMyCommandsAsync(commandsByScope.Key, languageId.Value, token))
-                .OrderBy(c => c.Command)
-                .ToArray();
+        foreach (var commandScope in Enum.GetValues<CommandScope>())
+            if (commandScope.TryConvert(out var scope))
+            {
+                var commandsByScopes = (await Build(bot.Commands, commandScope, languageId))
+                    .OrderBy(c => c.Command)
+                    .ToArray();
+                var currentBotCommandsByScope = (await client.GetMyCommandsAsync(scope, languageId.Value, token))
+                    .OrderBy(c => c.Command)
+                    .ToArray();
 
-            if (botCommandsByScope.Length != currentBotCommandsByScope.Length ||
-                botCommandsByScope.Zip(currentBotCommandsByScope).Any(c => c.First.Command != c.Second.Command || c.First.Description != c.Second.Description))
-                await client.SetMyCommandsAsync(botCommandsByScope, commandsByScope.Key, languageCode: languageId.Value, cancellationToken: token);
-        }
+                if (commandsByScopes.Length != currentBotCommandsByScope.Length ||
+                    commandsByScopes.Zip(currentBotCommandsByScope).Any(c => !c.First.FieldsEqual(c.Second)))
+                    await client.SetMyCommandsAsync(
+                        commandsByScopes,
+                        scope,
+                        languageCode: languageId.Value,
+                        cancellationToken: token);
+            }
     }
 
     private async Task EnsureShortDescription(ITelegramBotClient client, LanguageId languageId, CancellationToken token)
@@ -164,22 +129,24 @@ internal sealed class BotConnector : IBotConnector
             await client.SetMyDescriptionAsync(description, languageId.Value, token);
     }
     
-    private async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Convert(
+    private async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Build(
         IEnumerable<Domain.BotCommand> botCommands,
+        CommandScope commandScope,
         LanguageId languageId)
     {
         ArgumentNullException.ThrowIfNull(botCommands);
         ArgumentNullException.ThrowIfNull(languageId);
-        
+
         var commands = new List<Telegram.Bot.Types.BotCommand>();
 
-        foreach (var botCommand in botCommands.Where(c => c.HelpMessageId is not null))
-            commands.Add(new Telegram.Bot.Types.BotCommand
-            {
-                Command = botCommand.Value,
-                Description = await _messageBuilder.Build(botCommand.HelpMessageId!, languageId)
-            });
-
+        foreach (var botCommand in botCommands)
+            if (botCommand.HelpMessageId is not null && botCommand.Scopes.Any(s => s == commandScope))
+                commands.Add(new Telegram.Bot.Types.BotCommand
+                {
+                    Command = botCommand.Value,
+                    Description = await _messageBuilder.Build(botCommand.HelpMessageId, languageId)
+                });
+        
         return commands;
     }
 }

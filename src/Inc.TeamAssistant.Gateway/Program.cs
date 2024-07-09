@@ -11,6 +11,7 @@ using Inc.TeamAssistant.CheckIn.DataAccess;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.DataAccess;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.DataAccess;
 using Inc.TeamAssistant.Gateway;
@@ -115,6 +116,7 @@ builder.Services
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
+	.AddJsonType<ICollection<CommandScope>>()
 	.Build()
 	
 	.AddSingleton(openGraphOptions)
