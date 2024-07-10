@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Properties;
 using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
@@ -8,7 +9,7 @@ public sealed record CompleteViewModel(
     string FormSectionTokenFieldUserNameLabel,
     string FormSectionFeaturesTitle,
     string FormSectionFeaturesHelp,
-    IReadOnlyDictionary<string, BotSettingsFactory.SettingSection> SettingSections,
+    IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> SettingSections,
     string ButtonCreateText,
     string ButtonUpdateText,
     string BooleanTrueText,
@@ -23,7 +24,7 @@ public sealed record CompleteViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
-        new Dictionary<string, BotSettingsFactory.SettingSection>(),
+        new Dictionary<string, IReadOnlyCollection<SettingSection>>(),
         string.Empty,
         string.Empty,
         string.Empty,

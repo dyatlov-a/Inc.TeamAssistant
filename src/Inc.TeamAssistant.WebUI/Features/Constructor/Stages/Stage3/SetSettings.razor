@@ -1,25 +1,41 @@
 @inherits PersistentComponent<SetSettingsViewModel>
 
+@inject IBotService BotService
 @inject NavigationManager NavigationManager
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="constructor__form">
-        @foreach (var property in _formModel.Properties)
+        @foreach (var feature in StagesState.SelectedFeatures)
         {
-            if (ViewModel.SettingSections.TryGetValue(property.Name, out var item))
+            if (!ViewModel.SettingSections.TryGetValue(feature.Name, out var settingSections))
+                continue;
+
+            foreach (var settingSection in settingSections)
             {
-                <FormSection Title="@item.Header" HelpText="@item.Help">
+                <FormSection
+                    Title="@ResourceProvider(settingSection.HeaderMessageId)"
+                    HelpText="@ResourceProvider(settingSection.HelpMessageId)">
                     <Content>
-                        @foreach (var settingItem in item.SettingItems)
+                        @foreach (var settingItem in settingSection.SettingItems)
                         {
-                            <FormFieldSet FieldId="@settingItem.PropertyName" Label="@settingItem.Label">
+                            var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
+                                settingItem.PropertyName,
+                                StringComparison.InvariantCultureIgnoreCase));
+                            if (property is null)
+                                continue;
+                            
+                            <FormFieldSet
+                                FieldId="@settingItem.PropertyName"
+                                Label="@ResourceProvider(settingItem.LabelMessageId)">
                                 <Content>
-                                    <InputSelect id="@settingItem.PropertyName" @bind-Value="property.Value" class="form-control">
-                                        <option value=""></option>
+                                    <InputSelect
+                                        id="@settingItem.PropertyName"
+                                        @bind-Value="property.Value"
+                                        class="form-control">
                                         @foreach (var value in settingItem.Values)
                                         {
-                                            <option value="@value.Value">@value.Text</option>
+                                            <option value="@value.Value">@ResourceProvider(value.MessageId)</option>
                                         }
                                     </InputSelect>
                                     <ValidationMessage For="@(() => property.Value)"/>
@@ -54,16 +70,18 @@
         base.OnParametersSet();
     }
     
-    protected override Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
     {
-        return Task.FromResult(new SetSettingsViewModel(
-            BotSettingsFactory.Create(resources),
-            resources[Messages.Constructor_MoveNextTitle]));
+        var result = await BotService.GetProperties();
+        
+        return new SetSettingsViewModel(
+            result.Result.Properties,
+            resources[Messages.Constructor_MoveNextTitle]);
     }
     
     private async Task SubmitForm()
     {
-        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
         StagesState.Apply(_formModel);

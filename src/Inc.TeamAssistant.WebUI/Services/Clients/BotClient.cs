@@ -10,6 +10,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
@@ -170,6 +171,25 @@ internal sealed class BotClient : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetPropertiesResult>> GetProperties(CancellationToken token)
+    {
+        try
+        {
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetPropertiesResult>>(
+                "bots/properties",
+                token);
+
+            if (result is null)
+                throw new TeamAssistantException("Parse response with error.");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetPropertiesResult>(ex.Message);
         }
     }
 

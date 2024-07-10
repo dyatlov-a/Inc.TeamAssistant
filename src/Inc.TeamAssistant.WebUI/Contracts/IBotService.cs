@@ -9,6 +9,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
 
@@ -33,6 +34,8 @@ public interface IBotService
     Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default);
     
     Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token = default);
+    
+    Task<ServiceResult<GetPropertiesResult>> GetProperties(CancellationToken token = default);
 
     Task Create(CreateBotCommand command, CancellationToken token = default);
 

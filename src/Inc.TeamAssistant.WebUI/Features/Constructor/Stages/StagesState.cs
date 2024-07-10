@@ -32,6 +32,10 @@ public sealed class StagesState
         Features = features;
     }
 
+    public IReadOnlyCollection<Feature> SelectedFeatures => Features
+        .Where(f => FeatureIds.Contains(f.Id))
+        .ToArray();
+
     public static readonly StagesState Empty = new(
         null,
         string.Empty,
@@ -61,8 +65,7 @@ public sealed class StagesState
         ArgumentNullException.ThrowIfNull(formModel);
         
         FeatureIds = formModel.FeatureIds.ToArray();
-        PropertyKeys = Features
-            .Where(f => formModel.FeatureIds.Contains(f.Id))
+        PropertyKeys = SelectedFeatures
             .SelectMany(f => f.Properties)
             .ToArray();
         Properties = Properties

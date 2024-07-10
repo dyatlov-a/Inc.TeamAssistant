@@ -10,6 +10,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -119,7 +120,7 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default)
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
     {
         try
         {
@@ -142,6 +143,20 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetPropertiesResult>> GetProperties(CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetPropertiesQuery(), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetPropertiesResult>(ex.Message);
         }
     }
 

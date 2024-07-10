@@ -86,6 +86,12 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetFeatures(token));
     }
+    
+    [HttpGet("properties")]
+    public async Task<IActionResult> GetProperties(CancellationToken token)
+    {
+        return Ok(await _botService.GetProperties(token));
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateBotCommand command, CancellationToken token)
