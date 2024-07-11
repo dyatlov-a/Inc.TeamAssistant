@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 
 namespace Inc.TeamAssistant.WebUI;
 
@@ -175,17 +174,6 @@ internal static class Messages
     public static readonly string MetaAuthor = nameof(MetaAuthor);
     
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
-
-    public static IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> BuildFeatureData(IReadOnlyDictionary<string, string> resources)
-    {
-        ArgumentNullException.ThrowIfNull(resources);
-        
-        return new Dictionary<string, SelectFeaturesViewModel.FeatureData>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            ["Appraiser"] = new(resources[Constructor_FeatureAppraiserName], resources[Constructor_FeatureAppraiserDescription]),
-            ["Reviewer"] = new(resources[Constructor_FeatureReviewerName], resources[Constructor_FeatureReviewerDescription]),
-            ["RandomCoffee"] = new(resources[Constructor_FeatureRandomCoffeeName], resources[Constructor_FeatureRandomCoffeeDescription]),
-            ["CheckIn"] = new(resources[Constructor_FeatureCheckInName], resources[Constructor_FeatureCheckInDescription])
-        };
-    }
+    public static string GetFeatureProperty(string featureName, string propertyName)
+        => $"Constructor_Feature{featureName}{propertyName}";
 }

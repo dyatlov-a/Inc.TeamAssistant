@@ -1,6 +1,9 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
+
 @inherits InputBase<List<Guid>>
 
 @inject DragAndDropService<Guid> DragAndDropService
+@inject ResourcesManager ResourcesManager
 
 <div class="input-features">
     <div
@@ -13,7 +16,11 @@
         {
             foreach (var feature in AvailableFeatures)
             {
-                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)"  Data="@GetFeatureData(feature)">
+                <FeatureCard
+                    FeatureId="feature.Id"
+                    Icon="@FeatureType(feature.Name)"
+                    Title="@GetFeatureMessage(feature.Name, "Name")"
+                    Description="@GetFeatureMessage(feature.Name, "Description")">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @AddText
@@ -37,7 +44,11 @@
         {
             foreach (var feature in SelectedFeatures)
             {
-                <FeatureCard FeatureId="feature.Id" Icon="@FeatureType(feature.Name)" Data="@GetFeatureData(feature)">
+                <FeatureCard
+                    FeatureId="feature.Id"
+                    Icon="@FeatureType(feature.Name)"
+                    Title="@GetFeatureMessage(feature.Name, "Name")"
+                    Description="@GetFeatureMessage(feature.Name, "Description")">
                     <Buttons>
                         <button type="button" class="button button_white" @onclick="() => ToggleFeature(feature.Id)">
                             @RemoveText
@@ -59,10 +70,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<StagesState.Feature> Features { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> FeatureData { get; set; } = default!;
+    public IReadOnlyCollection<FeatureDto> Features { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public string AddText { get; set; } = default!;
@@ -79,11 +87,19 @@
     [Parameter]
     public RenderFragment? Validation { get; set; }
 
+    private Dictionary<string, string> _resources = new();
     private string _availableFeaturesCssClass = string.Empty;
     private string _selectedFeaturesCssClass = string.Empty;
-    private IEnumerable<StagesState.Feature> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
-    private IEnumerable<StagesState.Feature> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
-    
+    private IEnumerable<FeatureDto> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
+    private IEnumerable<FeatureDto> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _resources = await ResourcesManager.GetResource();
+        
+        await base.OnInitializedAsync();
+    }
+
     protected override bool TryParseValueFromString(
         string? value,
         out List<Guid> result,
@@ -94,11 +110,11 @@
 
     private bool IsSelected(Guid id) => CurrentValue?.Contains(id) == true;
 
-    private SelectFeaturesViewModel.FeatureData GetFeatureData(StagesState.Feature feature)
+    private string GetFeatureMessage(string featureName, string propertyName)
     {
-        return FeatureData.TryGetValue(feature.Name, out var value)
-            ? value
-            : new (feature.Name, string.Empty);
+        var messageId = Messages.GetFeatureProperty(featureName, propertyName);
+        
+        return _resources.GetValueOrDefault(messageId, messageId);
     }
 
     private Type FeatureType(string featureName) => featureName switch
@@ -121,7 +137,7 @@
             CurrentValue.Add(id);
     }
     
-    private void HandleDrop(IEnumerable<StagesState.Feature> features)
+    private void HandleDrop(IEnumerable<FeatureDto> features)
     {
         var featureId = DragAndDropService.End();
         

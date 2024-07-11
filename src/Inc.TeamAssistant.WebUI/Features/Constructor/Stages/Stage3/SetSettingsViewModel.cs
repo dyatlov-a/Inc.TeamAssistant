@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;

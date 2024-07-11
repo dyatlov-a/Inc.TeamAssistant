@@ -1,6 +1,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
-@using Inc.TeamAssistant.Primitives.Properties
+@using Inc.TeamAssistant.Primitives.FeatureProperties
 
 @inherits PersistentComponent<CompleteViewModel>
 
@@ -41,7 +41,7 @@
 
                     <FormFieldSet
                         FieldId="@fieldId"
-                        Label="@ViewModel.FeatureNames.GetValueOrDefault(feature.Name, string.Empty)">
+                        Label="@ViewModel.FeaturesLookup.GetValueOrDefault(feature.Name, feature.Name)">
                         <Content>
                             <input
                                 type="text"
@@ -116,6 +116,13 @@
     protected override async Task<CompleteViewModel> Initialize(Dictionary<string, string> resources)
     {
         var result = await BotService.GetProperties();
+        var featuresLookup = new[]
+        {
+            "Appraiser",
+            "CheckIn",
+            "RandomCoffee",
+            "Reviewer"
+        };
         
         return new CompleteViewModel(
             resources[Messages.GetStageTitle(Stage.CheckBot)],
@@ -129,10 +136,10 @@
             resources[Messages.Constructor_BooleanTrueText],
             resources[Messages.Constructor_BooleanFalseText],
             resources[Messages.Constructor_Edit],
-            Messages.BuildFeatureData(resources).ToDictionary(i => i.Key, i => i.Value.Name));
+            featuresLookup.ToDictionary(i => i, i => resources[Messages.GetFeatureProperty(i, "Name")]));
     }
 
-    public string GetValueAsText(SettingItem settingItem, string value)
+    private string GetValueAsText(SettingItem settingItem, string value)
     {
         var item = settingItem.Values.SingleOrDefault(s => s.Value == value);
         

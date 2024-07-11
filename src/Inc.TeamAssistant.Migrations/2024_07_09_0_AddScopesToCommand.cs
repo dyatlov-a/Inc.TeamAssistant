@@ -19,7 +19,7 @@ public sealed class AddScopesToCommand : Migration
         Execute.Sql(
             """
             UPDATE connector.bot_commands
-            SET scopes = '["Default", "AllGroupChats"]'::jsonb
+            SET scopes = '[1, 2]'::jsonb
             WHERE value IN (
                 '/leave_team',
                 '/cancel',
@@ -33,12 +33,13 @@ public sealed class AddScopesToCommand : Migration
                 '/help');
 
             UPDATE connector.bot_commands
-            SET scopes = '["AllGroupChats"]'::jsonb
+            SET scopes = '[2]'::jsonb
             WHERE value IN (
                 '/location',
                 '/invite',
                 '/new_team');
-            """);
+            """,
+            "Set scopes for bot commands");
     }
 
     public override void Down()

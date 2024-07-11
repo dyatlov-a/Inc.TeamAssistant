@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
@@ -15,7 +15,7 @@ public sealed record CompleteViewModel(
     string BooleanTrueText,
     string BooleanFalseText,
     string EditText,
-    IReadOnlyDictionary<string, string> FeatureNames)
+    IReadOnlyDictionary<string, string> FeaturesLookup)
     : IViewModel<CompleteViewModel>
 {
     public static CompleteViewModel Empty { get; } = new(

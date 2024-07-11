@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgress.Services;

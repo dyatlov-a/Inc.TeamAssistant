@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
@@ -25,12 +25,19 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
                     new(
                         "storyType",
                         "Constructor_FormSectionSetSettingsStoryTypeFieldLabel",
-                        new[] { new SelectListItem(string.Empty, string.Empty) }
-                            .Union(Enum.GetValues<StoryType>()
-                                .Where(i => _storyType.ContainsKey(i))
-                                .Select(i => new SelectListItem(_storyType[i], i.ToString())))
-                            .ToArray())
+                        GetValuesForStoryType().ToArray())
                 })
         };
+    }
+
+    private IEnumerable<SelectValue> GetValuesForStoryType()
+    {
+        yield return new SelectValue(string.Empty, string.Empty);
+
+        foreach (var item in Enum.GetValues<StoryType>())
+        {
+            if (_storyType.TryGetValue(item, out var value))
+                yield return new SelectValue(value, item.ToString());
+        }
     }
 }

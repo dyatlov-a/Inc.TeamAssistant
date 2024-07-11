@@ -5,12 +5,14 @@
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="constructor__form">
-        <FormSection Title="@ViewModel.FormSectionFeaturesTitle" HelpText="@ViewModel.FormSectionFeaturesHelp" AsRows="true">
+        <FormSection
+            Title="@ViewModel.FormSectionFeaturesTitle"
+            HelpText="@ViewModel.FormSectionFeaturesHelp"
+            AsRows="true">
             <Content>
                 <InputFeatures
                     @bind-Value="_formModel.FeatureIds"
                     Features="StagesState.Features"
-                    FeatureData="ViewModel.Features"
                     AddText="@ViewModel.FormSectionFeaturesAddText"
                     RemoveText="@ViewModel.FormSectionFeaturesRemoveText"
                     FeaturesAvailableEmptyText="@ViewModel.FormSectionFeaturesAvailableEmptyText"
@@ -55,8 +57,7 @@
             resources[Messages.Constructor_FeatureRemove],
             resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText],
             resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText],
-            resources[Messages.Constructor_MoveNextTitle],
-            Messages.BuildFeatureData(resources)));
+            resources[Messages.Constructor_MoveNextTitle]));
     }
 
     private async Task SubmitForm()

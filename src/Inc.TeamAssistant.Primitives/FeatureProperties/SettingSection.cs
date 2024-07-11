@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Primitives.Properties;
+namespace Inc.TeamAssistant.Primitives.FeatureProperties;
 
 public sealed record SettingSection(
     string HeaderMessageId,

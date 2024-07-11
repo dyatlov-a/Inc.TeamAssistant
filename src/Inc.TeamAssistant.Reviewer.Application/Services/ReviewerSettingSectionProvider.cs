@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
@@ -25,12 +25,19 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
                     new(
                         "nextReviewerStrategy",
                         "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel",
-                        new[] { new SelectListItem(string.Empty, string.Empty) }
-                            .Union(Enum.GetValues<NextReviewerType>()
-                                .Where(i => _storyType.ContainsKey(i))
-                                .Select(i => new SelectListItem(_storyType[i], i.ToString())))
-                            .ToArray())
+                        GetValuesForNextReviewerType().ToArray())
                 })
         };
+    }
+    
+    private IEnumerable<SelectValue> GetValuesForNextReviewerType()
+    {
+        yield return new SelectValue(string.Empty, string.Empty);
+
+        foreach (var item in Enum.GetValues<NextReviewerType>())
+        {
+            if (_storyType.TryGetValue(item, out var value))
+                yield return new SelectValue(value, item.ToString());
+        }
     }
 }

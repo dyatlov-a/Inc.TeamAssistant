@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.Properties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
 
 namespace Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 
