@@ -3,16 +3,18 @@ using Inc.TeamAssistant.WebUI.Features.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 
-public record SessionHistoryWidgetViewModel(
+public record AssessmentHistoryWidgetViewModel(
     string TasksName,
     string GoToCurrentSessionButtonText,
     string AssessmentDate,
+    IReadOnlyCollection<DateSelectorItem> DateItems,
     IReadOnlyCollection<AssessmentHistoryDto> Items)
-    : IViewModel<SessionHistoryWidgetViewModel>
+    : IViewModel<AssessmentHistoryWidgetViewModel>
 {
-    public static SessionHistoryWidgetViewModel Empty { get; } = new(
+    public static AssessmentHistoryWidgetViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,
+        Array.Empty<DateSelectorItem>(),
         Array.Empty<AssessmentHistoryDto>());
 }

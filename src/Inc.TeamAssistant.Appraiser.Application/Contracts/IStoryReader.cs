@@ -8,7 +8,7 @@ public interface IStoryReader
     Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
         Guid teamId,
         DateTimeOffset before,
-        int depth,
+        DateTimeOffset? from,
         CancellationToken token);
     
     Task<IReadOnlyCollection<Story>> GetStories(Guid teamId, DateOnly assessmentDate, CancellationToken token);

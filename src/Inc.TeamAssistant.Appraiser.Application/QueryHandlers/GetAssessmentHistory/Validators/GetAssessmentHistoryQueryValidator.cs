@@ -9,9 +9,5 @@ internal sealed class GetAssessmentHistoryQueryValidator : AbstractValidator<Get
     {
         RuleFor(e => e.TeamId)
             .NotEmpty();
-
-        RuleFor(e => e.Depth)
-            .GreaterThan(0)
-            .LessThanOrEqualTo(20);
     }
 }

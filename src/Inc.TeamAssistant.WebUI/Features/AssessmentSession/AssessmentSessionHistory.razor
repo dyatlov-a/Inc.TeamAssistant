@@ -9,7 +9,7 @@
     <div class="history__body">
         @if (ViewModel.Data is not null)
         {
-            foreach (var item in ViewModel.Data.Items)
+            foreach (var item in ViewModel.Data.Items.Take(3))
             {
                 <a href="@MoveToItem(item)" class="link link_black history__item">
                     @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName
@@ -22,9 +22,7 @@
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-    
-    [Parameter, EditorRequired]
-    public int HistoryDepth { get; set; }
+   
 
     private string MoveToItem(AssessmentHistoryDto historyItem)
     {
@@ -36,7 +34,7 @@
     
     protected override async Task<AssessmentSessionHistoryViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, HistoryDepth);
+        var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, null);
         
         return new AssessmentSessionHistoryViewModel(
             resources[Messages.GUI_History],

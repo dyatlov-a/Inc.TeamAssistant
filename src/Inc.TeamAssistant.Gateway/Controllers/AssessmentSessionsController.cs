@@ -21,9 +21,9 @@ public sealed class AssessmentSessionsController : ControllerBase
     }
     
     [HttpGet("history")]
-    public async Task<IActionResult> GetHistory(Guid teamId, int depth, CancellationToken token)
+    public async Task<IActionResult> GetHistory(Guid teamId, DateOnly? from, CancellationToken token)
     {
-        return Ok(await _service.GetAssessmentHistory(teamId, depth, token));
+        return Ok(await _service.GetAssessmentHistory(teamId, from, token));
     }
     
     [HttpGet("stories/{teamId}/{assessmentDate}")]

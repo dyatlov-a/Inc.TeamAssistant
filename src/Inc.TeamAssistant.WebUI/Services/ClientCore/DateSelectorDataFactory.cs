@@ -24,4 +24,24 @@ internal static class DateSelectorDataFactory
                 DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-84).Date))
         };
     }
+    public static IReadOnlyCollection<DateSelectorItem> CreateLongPeriod(Dictionary<string, string> resources)
+    {
+        ArgumentNullException.ThrowIfNull(resources);
+        
+        return new[]
+        {
+            new DateSelectorItem(
+                resources[Messages.Dashboard_OneMonth],
+                DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-1).Date)),
+            new DateSelectorItem(
+                resources[Messages.Dashboard_ThreeMonths],
+                DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-3).Date)),
+            new DateSelectorItem(
+                resources[Messages.Dashboard_SixMonths],
+                DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-6).Date)),
+            new DateSelectorItem(
+                resources[Messages.Dashboard_OneYear],
+                DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-12).Date))
+        };
+    }
 }
