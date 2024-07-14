@@ -19,7 +19,7 @@ internal sealed class StoryReader : IStoryReader
     public async Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
         Guid teamId,
         DateTimeOffset before,
-        int depth,
+        DateTimeOffset? from,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
@@ -28,15 +28,14 @@ internal sealed class StoryReader : IStoryReader
                 COUNT(*) AS storiescount
             FROM appraiser.stories AS s
             WHERE s.team_id = @team_id AND s.created <= @before
+            AND (@from is null OR s.created >= @from)
             GROUP BY DATE(s.created)
-            ORDER BY DATE(s.created) DESC
-            OFFSET 0
-            LIMIT @depth;",
+            ORDER BY DATE(s.created) DESC;",
             new
             {
                 team_id = teamId,
                 before,
-                depth
+                from
             },
             flags: CommandFlags.None,
             cancellationToken: token);

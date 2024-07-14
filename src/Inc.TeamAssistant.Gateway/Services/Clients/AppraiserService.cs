@@ -32,12 +32,12 @@ internal sealed class AppraiserService : IAppraiserService
 
 	public async Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
 		Guid teamId,
-		int depth,
+		DateOnly? from,
 		CancellationToken token)
 	{
 		try
 		{
-			var result = await _mediator.Send(new GetAssessmentHistoryQuery(teamId, depth), token);
+			var result = await _mediator.Send(new GetAssessmentHistoryQuery(teamId, from), token);
 
 			return ServiceResult.Success(result);
 		}

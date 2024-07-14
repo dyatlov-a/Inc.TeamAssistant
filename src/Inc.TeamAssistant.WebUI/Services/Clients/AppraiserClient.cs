@@ -38,13 +38,13 @@ internal sealed class AppraiserClient : IAppraiserService
 
 	public async Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
 		Guid teamId,
-		int depth,
+		DateOnly? from,
 		CancellationToken token)
 	{
 		try
 		{
 			var result = await _client.GetFromJsonAsync<ServiceResult<GetAssessmentHistoryResult>>(
-				$"assessment-sessions/history?teamid={teamId}&depth={depth}",
+				$"assessment-sessions/history?teamid={teamId}&from={from:yyyy-MM-dd}",
 				token);
 
 			if (result is null)

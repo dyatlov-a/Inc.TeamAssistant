@@ -17,10 +17,12 @@ internal sealed class GetAssessmentHistoryQueryHandler
     public async Task<GetAssessmentHistoryResult> Handle(GetAssessmentHistoryQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
-
+        
         var now = DateTimeOffset.UtcNow;
-        var before = new DateTimeOffset(new DateOnly(now.Year, now.Month, now.Day), TimeOnly.MinValue, TimeSpan.Zero);
-        var history = await _reader.GetAssessmentHistory(query.TeamId, before, query.Depth, token);
+        var to = new DateTimeOffset(new DateOnly(now.Year, now.Month, now.Day), TimeOnly.MinValue, TimeSpan.Zero);
+        var from = query.From is null ? (DateTimeOffset?)null : new DateTimeOffset(query.From.Value, TimeOnly.MinValue, TimeSpan.Zero);
+        
+        var history = await _reader.GetAssessmentHistory(query.TeamId, to, from, token);
 
         return new GetAssessmentHistoryResult(history);
     }

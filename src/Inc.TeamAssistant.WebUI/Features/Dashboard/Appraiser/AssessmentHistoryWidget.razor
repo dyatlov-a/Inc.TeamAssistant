@@ -1,0 +1,81 @@
+@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
+@using Inc.TeamAssistant.WebUI.Services.ClientCore
+
+@inherits PersistentComponent<AssessmentHistoryWidgetViewModel>
+
+@inject IAppraiserService AppraiserService
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+
+<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
+
+@if (ViewModel.Items.Any())
+{
+    <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
+        <TemplateColumn Title="@ViewModel.AssessmentDate"
+                        Sortable="true"
+                        SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
+            <a href="@MoveToItem(context.AssessmentDate)" class="link link_white">
+                @context.AssessmentDate.ToString("dd-MM-yyyy")
+            </a>
+        </TemplateColumn>
+        <PropertyColumn Title="@ViewModel.TasksName" Property="@(t => t.StoriesCount)"
+                        Sortable="true"/>
+    </QuickGrid>
+    <div class="paginator-container">
+        <Paginator State="_pagination"/>
+    </div>
+    <div class="appraiser-actions">
+        <button type="button" class="button button_white" @onclick="MoveToAssessmentSession">
+            @ViewModel.GoToCurrentSessionButtonText
+        </button>
+    </div>
+}
+else
+{
+    <NoData />
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    private DateOnly? _date;
+    private readonly PaginationState _pagination = new();
+
+    private IQueryable<AssessmentHistoryDto> HistoryItems => ViewModel.Items.AsQueryable();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        _date ??= ViewModel.DateItems.First().Date;
+    }
+    
+    protected override async Task<AssessmentHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var dateItems = DateSelectorDataFactory.CreateLongPeriod(resources); 
+        _date ??= dateItems.First().Date; 
+        var getSessionHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, _date.Value);
+
+       return new AssessmentHistoryWidgetViewModel(
+           resources[Messages.Dashboard_TotalStories],
+           resources[Messages.Dashboard_GoToCurrentSessionButtonText],
+           resources[Messages.Dashboard_AssessmentDate],
+           dateItems,
+           getSessionHistoryResult.Result.Items);
+    }
+
+    private void MoveToAssessmentSession()
+    {
+        NavigationManager.NavigateTo(LinkBuilder($"assessment-session/{TeamId:N}"));
+    }
+    
+    private string MoveToItem(DateOnly date) => LinkBuilder($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
+
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        await Update();
+    }
+}

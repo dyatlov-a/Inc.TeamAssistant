@@ -17,7 +17,15 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
             .MaximumLength(2000)
             .Must(e => !e.StartsWith("/"))
             .WithMessage("'{PropertyName}' please enter text value")
-            .Must(e => reviewerOptions.LinksPrefix.Any(e.Contains))
-            .WithMessage("'{PropertyName}' must contains a link to the source code");
+            .Must(e => HasDescriptionAndLinks(e, reviewerOptions))
+            .WithMessage("'{PropertyName}' must contains a link to the source code and some description");
+    }
+
+    private static bool HasDescriptionAndLinks(string description, ReviewerOptions reviewerOptions)
+    {
+        string[] splittedDescription = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var links = splittedDescription.Where(t => reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();
+
+        return links.Any() && splittedDescription.Length > links.Length;
     }
 }
