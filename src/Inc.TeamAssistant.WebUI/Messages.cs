@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 
 namespace Inc.TeamAssistant.WebUI;
 
@@ -122,7 +121,6 @@ internal static class Messages
     public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
     public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
     public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
-    public static readonly string Dashboard_ConnectToTeam = nameof(Dashboard_ConnectToTeam);
     public static readonly string Dashboard_OneWeek = nameof(Dashboard_OneWeek);
     public static readonly string Dashboard_TwoWeeks = nameof(Dashboard_TwoWeeks);
     public static readonly string Dashboard_FourWeeks = nameof(Dashboard_FourWeeks);
@@ -135,6 +133,8 @@ internal static class Messages
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
     public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);
     public static readonly string Dashboard_TotalStories = nameof(Dashboard_TotalStories);
+    public static readonly string Dashboard_ConnectToTeamHelp = nameof(Dashboard_ConnectToTeamHelp);
+    public static readonly string Dashboard_ConnectToTeamButton = nameof(Dashboard_ConnectToTeamButton);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);
@@ -174,17 +174,6 @@ internal static class Messages
     public static readonly string MetaAuthor = nameof(MetaAuthor);
     
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
-
-    public static IReadOnlyDictionary<string, SelectFeaturesViewModel.FeatureData> BuildFeatureData(IReadOnlyDictionary<string, string> resources)
-    {
-        ArgumentNullException.ThrowIfNull(resources);
-        
-        return new Dictionary<string, SelectFeaturesViewModel.FeatureData>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            ["Appraiser"] = new(resources[Constructor_FeatureAppraiserName], resources[Constructor_FeatureAppraiserDescription]),
-            ["Reviewer"] = new(resources[Constructor_FeatureReviewerName], resources[Constructor_FeatureReviewerDescription]),
-            ["RandomCoffee"] = new(resources[Constructor_FeatureRandomCoffeeName], resources[Constructor_FeatureRandomCoffeeDescription]),
-            ["CheckIn"] = new(resources[Constructor_FeatureCheckInName], resources[Constructor_FeatureCheckInDescription])
-        };
-    }
+    public static string GetFeatureProperty(string featureName, string propertyName)
+        => $"Constructor_Feature{featureName}{propertyName}";
 }

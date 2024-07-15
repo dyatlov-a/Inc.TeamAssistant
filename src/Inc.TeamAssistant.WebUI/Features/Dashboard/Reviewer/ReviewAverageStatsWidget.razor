@@ -1,5 +1,4 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<ReviewAverageStatsWidgetViewModel>
 
@@ -42,8 +41,7 @@ else
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
-    private string CssClass => ViewModel.Items.Any() ? string.Empty : "hidden";
+    
     private DateOnly? _date;
     private ApexChart<ReviewAverageStatsDto>? _chart;
 

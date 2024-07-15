@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Gateway.Services.Render;
@@ -40,7 +39,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
-            .AddScoped<ICurrentUserResolver, CurrentUserResolver>()
+            .AddScoped<ICurrentPersonResolver, CurrentPersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
@@ -52,7 +51,7 @@ public static class ServiceCollectionExtensions
                 cacheAbsoluteExpiration))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
-            .AddSingleton<ILinkBuilder, LinkBuilder>();
+            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>();
 
         return services;
 	}

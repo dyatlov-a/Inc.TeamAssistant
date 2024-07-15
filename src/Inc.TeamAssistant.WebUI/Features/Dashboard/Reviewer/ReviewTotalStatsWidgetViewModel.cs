@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam;
 using Inc.TeamAssistant.WebUI.Features.Common;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Shared;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 

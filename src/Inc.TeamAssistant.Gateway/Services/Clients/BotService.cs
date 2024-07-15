@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
@@ -9,6 +10,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -95,7 +97,30 @@ internal sealed class BotService : IBotService
         }
     }
 
-    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token = default)
+    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(
+        Guid teamId,
+        string foreground,
+        string background,
+        CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
+        try
+        {
+            var result = await _mediator.Send(new GetTeamConnectorQuery(teamId, foreground, background), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetTeamConnectorResult>(ex.Message);
+        }
+    }
+
+    public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
     {
         try
         {
@@ -118,6 +143,20 @@ internal sealed class BotService : IBotService
         catch (Exception ex)
         {
             return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
+        }
+    }
+
+    public async Task<ServiceResult<GetPropertiesResult>> GetProperties(CancellationToken token)
+    {
+        try
+        {
+            var result = await _mediator.Send(new GetPropertiesQuery(), token);
+
+            return ServiceResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult.Failed<GetPropertiesResult>(ex.Message);
         }
     }
 

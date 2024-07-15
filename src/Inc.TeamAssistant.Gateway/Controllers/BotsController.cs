@@ -47,6 +47,21 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetTeammates(teamId, token));
     }
+    
+    [HttpGet("{teamId:guid}/connector")]
+    public async Task<IActionResult> GetConnector(
+        Guid teamId,
+        [FromQuery]string foreground,
+        [FromQuery]string background,
+        CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
+        return Ok(await _botService.GetConnector(teamId, foreground, background, token));
+    }
 
     [HttpPut("teammate")]
     public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
@@ -70,6 +85,12 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> GetFeatures(CancellationToken token)
     {
         return Ok(await _botService.GetFeatures(token));
+    }
+    
+    [HttpGet("properties")]
+    public async Task<IActionResult> GetProperties(CancellationToken token)
+    {
+        return Ok(await _botService.GetProperties(token));
     }
 
     [HttpPost]

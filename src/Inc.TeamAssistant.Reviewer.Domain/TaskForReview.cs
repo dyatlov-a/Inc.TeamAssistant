@@ -165,8 +165,8 @@ public sealed class TaskForReview
 
         INextReviewerStrategy reviewerStrategy = Strategy switch
         {
-            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history),
             NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
+            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history),
             _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
         };
 

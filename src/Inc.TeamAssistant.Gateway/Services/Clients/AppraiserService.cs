@@ -16,11 +16,20 @@ internal sealed class AppraiserService : IAppraiserService
 		_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 	}
 
-	public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(Guid teamId, CancellationToken token)
+	public async Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(
+		Guid teamId,
+		string foreground,
+		string background,
+		CancellationToken token)
 	{
+		if (string.IsNullOrWhiteSpace(foreground))
+			throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+		if (string.IsNullOrWhiteSpace(background))
+			throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+		
 		try
 		{
-			var result = await _mediator.Send(new GetActiveStoryQuery(teamId), token);
+			var result = await _mediator.Send(new GetActiveStoryQuery(teamId, foreground, background), token);
 
 			return ServiceResult.Success(result);
 		}

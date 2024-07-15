@@ -1,0 +1,14 @@
+.team-connector__link {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.team-connector__code {
+    width: 100%;
+    margin-bottom: 20px;
+}
+@media (max-width: 767.98px) {
+    .team-connector {
+        display: none;
+    }
+}

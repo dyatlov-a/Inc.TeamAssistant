@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.WebUI.Features.Common;
 
-namespace Inc.TeamAssistant.WebUI.Features.Dashboard;
+namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Shared;
 
 public sealed record NoDataViewModel(string Text)
     : IViewModel<NoDataViewModel>

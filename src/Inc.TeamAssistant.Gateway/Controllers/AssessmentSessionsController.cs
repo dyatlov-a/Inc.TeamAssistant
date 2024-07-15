@@ -15,9 +15,18 @@ public sealed class AssessmentSessionsController : ControllerBase
     }
 
     [HttpGet("story/{teamId}/active")]
-    public async Task<IActionResult> GetActiveStory(Guid teamId, CancellationToken token)
+    public async Task<IActionResult> GetActiveStory(
+        Guid teamId,
+        [FromQuery]string foreground,
+        [FromQuery]string background,
+        CancellationToken token)
     {
-        return Ok(await _service.GetActiveStory(teamId, token));
+        if (string.IsNullOrWhiteSpace(foreground))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
+        if (string.IsNullOrWhiteSpace(background))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        
+        return Ok(await _service.GetActiveStory(teamId, foreground, background, token));
     }
     
     [HttpGet("history")]

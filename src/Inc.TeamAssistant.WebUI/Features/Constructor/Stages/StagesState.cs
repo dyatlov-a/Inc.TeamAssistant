@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
@@ -12,7 +13,7 @@ public sealed class StagesState
     public IReadOnlyCollection<Guid> FeatureIds { get; private set; }
     public IReadOnlyCollection<string> PropertyKeys { get; private set; }
     public IReadOnlyDictionary<string, string> Properties { get; private set; }
-    public IReadOnlyCollection<Feature> Features { get; private set; }
+    public IReadOnlyCollection<FeatureDto> Features { get; private set; }
 
     public StagesState(
         Guid? id,
@@ -21,7 +22,7 @@ public sealed class StagesState
         IReadOnlyCollection<Guid> featureIds,
         IReadOnlyCollection<string> propertyKeys,
         IReadOnlyDictionary<string, string> properties,
-        IReadOnlyCollection<Feature> features)
+        IReadOnlyCollection<FeatureDto> features)
     {
         Id = id;
         UserName = userName;
@@ -32,6 +33,10 @@ public sealed class StagesState
         Features = features;
     }
 
+    public IReadOnlyCollection<FeatureDto> SelectedFeatures => Features
+        .Where(f => FeatureIds.Contains(f.Id))
+        .ToArray();
+
     public static readonly StagesState Empty = new(
         null,
         string.Empty,
@@ -39,14 +44,7 @@ public sealed class StagesState
         Array.Empty<Guid>(),
         Array.Empty<string>(),
         new Dictionary<string, string>(),
-        Array.Empty<Feature>());
-    
-    public sealed class Feature
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public IReadOnlyCollection<string> Properties { get; set; } = Array.Empty<string>();
-    }
+        Array.Empty<FeatureDto>());
 
     public void Apply(CheckBotFormModel formModel)
     {
@@ -61,8 +59,7 @@ public sealed class StagesState
         ArgumentNullException.ThrowIfNull(formModel);
         
         FeatureIds = formModel.FeatureIds.ToArray();
-        PropertyKeys = Features
-            .Where(f => formModel.FeatureIds.Contains(f.Id))
+        PropertyKeys = SelectedFeatures
             .SelectMany(f => f.Properties)
             .ToArray();
         Properties = Properties

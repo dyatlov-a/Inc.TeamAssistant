@@ -1,4 +1,5 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBots
+
 @inherits PersistentComponent<DashboardTeamSelectorViewModel>
 
 @inject NavigationManager NavigationManager
@@ -27,15 +28,6 @@
                 </InputSelect>
             </Content>
         </FormFieldSet>
-        @{
-            var team = GetTeam(_currentTeamId);
-            if (team is not null)
-            {
-                <a id="team-connector" href="@team.ConnectLink" class="button button_white team-connector" target="_blank">
-                    @ViewModel.ConnectToTeam @team.Name
-                </a>
-            }
-        }
     </Content>
 </FormSection>
 
@@ -69,8 +61,7 @@
             resources[Messages.Dashboard_SelectTeamTitle],
             resources[Messages.Dashboard_SelectTeam],
             resources[Messages.Dashboard_TeamField],
-            resources[Messages.Dashboard_BotField],
-            resources[Messages.Dashboard_ConnectToTeam]));
+            resources[Messages.Dashboard_BotField]));
     }
 
     private void SelectTeam(Guid? value)
@@ -108,6 +99,4 @@
             ? bot.Teams
             : Array.Empty<TeamDto>();
     }
-
-    private TeamDto? GetTeam(Guid? teamId) => GetTeams().SingleOrDefault(t => t.Id == teamId);
 }

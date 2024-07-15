@@ -1,6 +1,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
+@using Inc.TeamAssistant.Primitives.FeatureProperties
 
 @inherits PersistentComponent<CompleteViewModel>
 
@@ -13,17 +13,25 @@
         <ValidationSummary />
         <FormSection Title="@ViewModel.FormSectionTokenTitle" HelpText="@ViewModel.FormSectionTokenHelp">
             <Content>
-                <a href="@LinkFactory(Stage.CheckBot)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
+                <a href="@LinkFactory(Stage.CheckBot)" class="link link_black constructor__edit-link">
+                    @ViewModel.EditText
+                </a>
                 <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
                     <Content>
-                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="true"/>
+                        <InputText
+                            @bind-Value="_formModel.UserName"
+                            class="form-control"
+                            id="bot-username"
+                            disabled="true"/>
                     </Content>
                 </FormFieldSet>
             </Content>
         </FormSection>
         <FormSection Title="@ViewModel.FormSectionFeaturesTitle" HelpText="@ViewModel.FormSectionFeaturesHelp">
             <Content>
-                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
+                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_black constructor__edit-link">
+                    @ViewModel.EditText
+                </a>
                 @foreach (var feature in StagesState.Features)
                 {
                     var fieldId = feature.Id.ToString();
@@ -31,9 +39,16 @@
                         ? ViewModel.BooleanTrueText
                         : ViewModel.BooleanFalseText;
 
-                    <FormFieldSet FieldId="@fieldId" Label="@ViewModel.FeatureNames.GetValueOrDefault(feature.Name, string.Empty)">
+                    <FormFieldSet
+                        FieldId="@fieldId"
+                        Label="@ViewModel.FeaturesLookup.GetValueOrDefault(feature.Name, feature.Name)">
                         <Content>
-                            <input type="text" id="@fieldId" value="@selected" class="form-control" disabled="disabled"/>
+                            <input
+                                type="text"
+                                id="@fieldId"
+                                value="@selected"
+                                class="form-control"
+                                disabled="disabled" />
                         </Content>
                     </FormFieldSet>
                 }
@@ -41,21 +56,35 @@
         </FormSection>
         @foreach (var property in _formModel.Properties)
         {
-            if (ViewModel.SettingSections.TryGetValue(property.Key, out var item))
+            if (ViewModel.SettingSections.TryGetValue(property.Key, out var items))
             {
-                <FormSection Title="@item.Header" HelpText="@item.Help">
-                    <Content>
-                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">@ViewModel.EditText</a>
-                        @foreach (var settingItem in item.SettingItems)
-                        {
-                            <FormFieldSet FieldId="@settingItem.PropertyName" Label="@settingItem.Label">
-                                <Content>
-                                    <input type="text" id="@settingItem.PropertyName" value="@settingItem.GetValueAsText(property.Value)" class="form-control" disabled="disabled"/>
-                                </Content>
-                            </FormFieldSet>
-                        }
-                    </Content>
-                </FormSection>
+                foreach (var item in items)
+                {
+                    <FormSection
+                        Title="@ResourceProvider(item.HeaderMessageId)"
+                        HelpText="@ResourceProvider(item.HelpMessageId)">
+                        <Content>
+                            <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
+                                @ViewModel.EditText
+                            </a>
+                            @foreach (var settingItem in item.SettingItems)
+                            {
+                                <FormFieldSet
+                                    FieldId="@settingItem.PropertyName"
+                                    Label="@ResourceProvider(settingItem.LabelMessageId)">
+                                    <Content>
+                                        <input
+                                            type="text"
+                                            id="@settingItem.PropertyName"
+                                            value="@GetValueAsText(settingItem, property.Value)"
+                                            class="form-control"
+                                            disabled="disabled"/>
+                                    </Content>
+                                </FormFieldSet>
+                            }
+                        </Content>
+                    </FormSection>
+                }
             }
         }
     </div>
@@ -84,21 +113,37 @@
         base.OnParametersSet();
     }
     
-    protected override Task<CompleteViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<CompleteViewModel> Initialize(Dictionary<string, string> resources)
     {
-        return Task.FromResult(new CompleteViewModel(
+        var result = await BotService.GetProperties();
+        var featuresLookup = new[]
+        {
+            "Appraiser",
+            "CheckIn",
+            "RandomCoffee",
+            "Reviewer"
+        };
+        
+        return new CompleteViewModel(
             resources[Messages.GetStageTitle(Stage.CheckBot)],
             resources[Messages.Constructor_FormSectionTokenCheckHelp],
             resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
             resources[Messages.GetStageTitle(Stage.SelectFeatures)],
             resources[Messages.Constructor_FormSectionFeaturesCheckHelp],
-            BotSettingsFactory.Create(resources),
+            result.Result.Properties,
             resources[Messages.Constructor_ButtonCreateText],
             resources[Messages.Constructor_ButtonUpdateText],
             resources[Messages.Constructor_BooleanTrueText],
             resources[Messages.Constructor_BooleanFalseText],
             resources[Messages.Constructor_Edit],
-            Messages.BuildFeatureData(resources).ToDictionary(i => i.Key, i => i.Value.Name)));
+            featuresLookup.ToDictionary(i => i, i => resources[Messages.GetFeatureProperty(i, "Name")]));
+    }
+
+    private string GetValueAsText(SettingItem settingItem, string value)
+    {
+        var item = settingItem.Values.SingleOrDefault(s => s.Value == value);
+        
+        return item is null ? string.Empty : ResourceProvider(item.MessageId);
     }
     
     private async Task SubmitForm()

@@ -13,7 +13,32 @@ internal sealed class TeamReader : ITeamReader
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT true
+            FROM connector.teams AS t
+            JOIN connector.bots AS b ON t.bot_id = b.id
+            WHERE t.id = @team_id AND (t.owner_id = @person_id OR b.owner_id = @person_id)
+            LIMIT 1;
+            """,
+            new
+            {
+                team_id = teamId,
+                person_id = personId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        var hasManagerAccess = await connection.QuerySingleOrDefaultAsync<bool>(command);
+        
+        return hasManagerAccess;
+    }
+
     public async Task<IReadOnlyCollection<TeammateDto>> GetTeammates(Guid teamId, CancellationToken token)
     {
         var command = new CommandDefinition(@"

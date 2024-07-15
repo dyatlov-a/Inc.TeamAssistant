@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
-
 @inject DragAndDropService<Guid> DragAndDropService
 
 <div draggable="true" @ondragstart="@(() => HandleDragStart(FeatureId))" class="feature-card draggable">
@@ -9,8 +7,8 @@
         </div>
     </div>
     <div class="feature-card__content">
-        <h3 class="feature-card__name">@Data.Name</h3>
-        <p class="feature-card__description">@Data.Description</p>
+        <h3 class="feature-card__name">@Title</h3>
+        <p class="feature-card__description">@Description</p>
         <div class="feature-card__actions">
             @Buttons
         </div>
@@ -25,7 +23,10 @@
     public Guid FeatureId { get; set; }
     
     [Parameter, EditorRequired]
-    public SelectFeaturesViewModel.FeatureData Data { get; set; } = default!;
+    public string Title { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string Description { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public RenderFragment Buttons { get; set; } = default!;

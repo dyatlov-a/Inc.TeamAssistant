@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Connector.Domain;
@@ -8,12 +7,14 @@ public sealed class BotCommand
     public Guid Id { get; private set; }
     public string Value { get; private set; } = default!;
     public MessageId? HelpMessageId { get; private set; }
+    public ICollection<CommandScope> Scopes { get; private set; }
 
     private readonly List<BotCommandStage> _stages = new();
     public IReadOnlyCollection<BotCommandStage> Stages => _stages.OrderBy(s => s.Position).ToArray();
 
     private BotCommand()
     {
+        Scopes = new List<CommandScope>();
     }
     
     public BotCommand(string value, MessageId? helpMessageId)

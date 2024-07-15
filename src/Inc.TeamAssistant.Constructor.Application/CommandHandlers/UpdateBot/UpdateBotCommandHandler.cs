@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
@@ -8,27 +9,31 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot;
 internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand>
 {
     private readonly IBotRepository _botRepository;
-    private readonly ICurrentUserResolver _currentUserResolver;
+    private readonly ICurrentPersonResolver _currentPersonResolver;
     private readonly IBotListeners _botListeners;
+    private readonly IBotConnector _botConnector;
 
     public UpdateBotCommandHandler(
         IBotRepository botRepository,
-        ICurrentUserResolver currentUserResolver,
-        IBotListeners botListeners)
+        ICurrentPersonResolver currentPersonResolver,
+        IBotListeners botListeners,
+        IBotConnector botConnector)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _currentUserResolver = currentUserResolver ?? throw new ArgumentNullException(nameof(currentUserResolver));
+        _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
+        _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }
     
     public async Task Handle(UpdateBotCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        var currentPerson = _currentPersonResolver.GetCurrentPerson();
         
-        var currentUserId = _currentUserResolver.GetUserId();
         var bot = await _botRepository.FindById(command.Id, token);
-        if (bot?.OwnerId != currentUserId)
-            throw new ApplicationException($"User {currentUserId} has not access to bot {command.Id}.");
+        if (bot?.OwnerId != currentPerson.Id)
+            throw new ApplicationException($"User {currentPerson.Id} has not access to bot {command.Id}.");
         
         bot
             .ChangeName(command.Name)
@@ -39,7 +44,8 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
             bot.ChangeProperty(property.Key, property.Value);
         
         await _botRepository.Upsert(bot, token);
-        
+
+        await _botConnector.Setup(bot.Id, token);
         await _botListeners.Restart(bot.Id);
     }
 }

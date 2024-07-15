@@ -44,15 +44,25 @@
             @if (context.LeaveUntil.HasValue)
             {
                 <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-                <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
+                @if (ViewModel.HasManagerAccess)
+                {
+                    <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
+                }
             }
         </TemplateColumn>
         <TemplateColumn Title="@ViewModel.ExcludeFromTeamTitle" Sortable="false">
-            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
-            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
-            <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
-            <br/>
-            <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+            @if (ViewModel.HasManagerAccess)
+            {
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+                <br/>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+            }
+            else
+            {
+                <p>-</p>
+            }
         </TemplateColumn>
     </QuickGrid>
 }
@@ -66,7 +76,7 @@ else
     public Guid TeamId { get; set; }
 
     private ConfirmDialog? _confirmDialog;
-    
+
     private TeammateDto? _selectedTeammate;
     private bool _exclude;
     private int? _leaveUntil;
@@ -76,6 +86,7 @@ else
         var getTeammatesResult = await BotService.GetTeammates(TeamId);
 
         return new TeammatesWidgetViewModel(
+            getTeammatesResult.Result.HasManagerAccess,
             resources[Messages.Dashboard_PersonName],
             resources[Messages.Dashboard_LeaveUntil],
             resources[Messages.Dashboard_ExcludeFromTeam],
@@ -85,15 +96,15 @@ else
             resources[Messages.Dashboard_RecoveryTeammate],
             getTeammatesResult.Result.Teammates);
     }
-    
+
     private IQueryable<TeammateDto> Teammates => ViewModel.Teammates.AsQueryable();
-    
+
     private void ExcludeFromTeam(TeammateDto teammate, bool exclude, int? leaveUntil = null)
     {
         _leaveUntil = leaveUntil;
         _selectedTeammate = teammate;
         _exclude = exclude;
-        
+
         _confirmDialog?.Open();
     }
 
@@ -101,11 +112,11 @@ else
     {
         if (_selectedTeammate is null)
             return;
-        
+
         var leaveUntil = _leaveUntil.HasValue
             ? DateTimeOffset.UtcNow.AddDays(_leaveUntil.Value)
             : (DateTimeOffset?)null;
-        
+
         await BotService.RemoveTeammate(new RemoveTeammateCommand(
             _selectedTeammate.TeamId,
             _selectedTeammate.PersonId,
