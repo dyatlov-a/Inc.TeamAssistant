@@ -150,7 +150,7 @@ public sealed class Build : NukeBuild
         .DependsOn(PushImages)
         .Executes(() =>
         {
-            var appDirectory = "/home/inc_teamassistant_appraiser/prod";
+            var appDirectory = "/home/teamassist/prod";
             var appraiserImage = GetImageName("inc.teamassistant.gateway");
             var migrationsRunnerImage = GetImageName("inc.teamassistant.migrationsrunner");
 
@@ -164,10 +164,10 @@ public sealed class Build : NukeBuild
             client.RunCommand($"docker pull {migrationsRunnerImage}");
             Console.WriteLine($"Image {migrationsRunnerImage} pulled");
 
-            client.RunCommand($"cd {appDirectory} && docker-compose down");
+            client.RunCommand($"cd {appDirectory} && docker compose down");
             Console.WriteLine("App stopped");
 
-            client.RunCommand($"cd {appDirectory} && docker-compose up -d");
+            client.RunCommand($"cd {appDirectory} && docker compose up -d");
             Console.WriteLine("App started");
 
             client.Disconnect();
