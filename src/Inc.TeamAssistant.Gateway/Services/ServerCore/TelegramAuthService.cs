@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Telegram.Bot.Extensions.LoginWidget;
 
@@ -7,11 +8,13 @@ public sealed class TelegramAuthService
 {
     private readonly AuthOptions _options;
     private readonly IBotAccessor _botAccessor;
+    private readonly ILogger<TelegramAuthService> _logger;
 
-    public TelegramAuthService(AuthOptions options, IBotAccessor botAccessor)
+    public TelegramAuthService(AuthOptions options, IBotAccessor botAccessor, ILogger<TelegramAuthService> logger)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<bool> CanLogin(
@@ -34,8 +37,20 @@ public sealed class TelegramAuthService
         var token = await _botAccessor.GetToken(_options.BotId);
         var loginWidget = new LoginWidget(token);
         var authState = loginWidget.CheckAuthorization(fields);
-        
-        return authState == Authorization.Valid;
+        var canLogin = authState == Authorization.Valid;
+
+        if (!canLogin)
+        {
+            var person = new Person(id, firstName, username);
+            
+            _logger.LogError(
+                "User {Id} {UserName} is not valid {AuthState}",
+                person.Id,
+                person.DisplayName,
+                authState);
+        }
+
+        return canLogin;
     }
 
     private Dictionary<string, string> CreateFieldSet(
@@ -62,10 +77,10 @@ public sealed class TelegramAuthService
         
         if (lastName is not null)
             fields.Add("last_name", lastName);
-        if (lastName is not null)
-            fields.Add("username", username!);
-        if (lastName is not null)
-            fields.Add("photo_url", photoUrl!);
+        if (username is not null)
+            fields.Add("username", username);
+        if (photoUrl is not null)
+            fields.Add("photo_url", photoUrl);
         
         fields.Add("auth_date", authDate);
         fields.Add("hash", hash);
