@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICurrentPersonResolver, CurrentPersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
+            .AddSingleton<IDataEditor, DataEditor>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
 
             .AddSingleton<QuickResponseCodeGenerator>()
