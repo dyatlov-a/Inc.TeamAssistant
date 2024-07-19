@@ -20,7 +20,7 @@
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title">@ViewModel.Title</h1>
+        <h1 class="title">@ViewModel.Title @BotName</h1>
         <div class="constructor__nav">
             <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
         </div>
@@ -37,6 +37,9 @@
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
     private StagesState _stagesState = StagesState.Empty;
+    private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
+        ? string.Empty
+        : $"@{_stagesState.UserName}";
     
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
