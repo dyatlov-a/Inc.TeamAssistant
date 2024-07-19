@@ -14,12 +14,13 @@ internal sealed class MessageProviderClient : IMessageProvider
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get()
+    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
     {
         try
         {
-            var result = await _client
-                .GetFromJsonAsync<ServiceResult<Dictionary<string, Dictionary<string, string>>>>("resources");
+            var result = await _client.GetFromJsonAsync<ServiceResult<Dictionary<string, Dictionary<string, string>>>>(
+                "resources",
+                token);
 
             if (result is null)
                 throw new TeamAssistantException("Parse response with error.");

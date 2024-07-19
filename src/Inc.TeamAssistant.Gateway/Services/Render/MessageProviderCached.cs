@@ -23,7 +23,7 @@ internal sealed class MessageProviderCached : IMessageProvider
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get()
+    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
     {
         var cacheKey = $"{nameof(MessageProviderCached)}_{nameof(Get)}";
         var cacheItem = await _memoryCache.GetOrCreateAsync(
@@ -31,13 +31,13 @@ internal sealed class MessageProviderCached : IMessageProvider
             async c =>
             {
                 c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
-                return await _messageProvider.Get();
+                return await _messageProvider.Get(token);
             });
         
         if (cacheItem is null)
         {
             _logger.LogWarning("Can not get object with key {CacheKey} from cache", cacheKey);
-            return await _messageProvider.Get();
+            return await _messageProvider.Get(token);
         }
 
         return cacheItem;

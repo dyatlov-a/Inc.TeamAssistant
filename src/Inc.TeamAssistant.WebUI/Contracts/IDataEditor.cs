@@ -4,7 +4,9 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IDataEditor
 {
-    Task<ServiceResult<string?>> Get(Guid dataId, CancellationToken token = default);
+    Task<ServiceResult<string?>> Get(string key, CancellationToken token = default);
     
-    Task Attach(Guid dataId, string data, CancellationToken token = default);
+    Task Attach(string key, string data, CancellationToken token = default);
+
+    Task Detach(string key, CancellationToken token = default);
 }

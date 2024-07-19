@@ -24,22 +24,22 @@ internal sealed class MessageProviderClientCached : IMessageProvider
         _appVersion = appVersion;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get()
+    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
     {
         var key = GetKey();
 
-        if (!await _localStorage.ContainKeyAsync(key))
+        if (!await _localStorage.ContainKeyAsync(key, token))
         {
-            await _localStorage.ClearAsync();
-            var response = await _messageProvider.Get();
+            await _localStorage.ClearAsync(token);
+            var response = await _messageProvider.Get(token);
 
             if (response.State == ServiceResultState.Success)
-                await _localStorage.SetItemAsync(key, response.Result);
+                await _localStorage.SetItemAsync(key, response.Result, token);
             else
                 throw new TeamAssistantException("Can't load resources.");
         }
 
-        var data = await _localStorage.GetItemAsync<Dictionary<string, Dictionary<string, string>>>(key);
+        var data = await _localStorage.GetItemAsync<Dictionary<string, Dictionary<string, string>>>(key, token);
         return ServiceResult.Success(data!);
     }
 

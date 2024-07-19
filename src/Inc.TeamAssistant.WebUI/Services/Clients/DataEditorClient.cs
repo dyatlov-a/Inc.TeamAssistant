@@ -14,21 +14,39 @@ internal sealed class DataEditorClient : IDataEditor
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<ServiceResult<string?>> Get(Guid dataId, CancellationToken token)
+    public async Task<ServiceResult<string?>> Get(string key, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<ServiceResult<string?>>($"user-data/{dataId:N}", token);
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        
+        var result = await _client.GetFromJsonAsync<ServiceResult<string?>>($"data/{key}", token);
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
     }
 
-    public async Task Attach(Guid dataId, string data, CancellationToken token)
+    public async Task Attach(string key, string data, CancellationToken token)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(data);
+        
         try
         {
-            await _client.PostAsJsonAsync($"user-data/{dataId:N}", data, token);
+            await _client.PostAsJsonAsync($"data/{key}", data, token);
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+
+    public async Task Detach(string key, CancellationToken token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        
+        try
+        {
+            await _client.DeleteAsync($"data/{key}", token);
         }
         catch
         {

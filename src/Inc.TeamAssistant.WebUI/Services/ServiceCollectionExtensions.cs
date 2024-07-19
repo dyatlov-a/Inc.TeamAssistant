@@ -22,7 +22,10 @@ public static class ServiceCollectionExtensions
             .AddScoped<IBotService, BotClient>()
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
-            .AddSingleton<IDataEditor, DataEditorClient>()
+            .AddSingleton<DataEditorClient>()
+            .AddSingleton<IDataEditor>(sp => new DataEditorClientCached(
+                sp.GetRequiredService<ILocalStorageService>(),
+                sp.GetRequiredService<DataEditorClient>()))
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()
