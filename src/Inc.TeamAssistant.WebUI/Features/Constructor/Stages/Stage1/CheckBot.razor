@@ -1,6 +1,7 @@
 @inherits PersistentComponent<CheckBotViewModel>
 
 @inject NavigationManager NavigationManager
+@inject IDataEditor DataEditor
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -37,6 +38,9 @@
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+    
     private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
@@ -64,6 +68,7 @@
             return;
 
         StagesState.Apply(_formModel);
+        await DataEditor.Attach(BotStorageKey, StagesState);
         
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }

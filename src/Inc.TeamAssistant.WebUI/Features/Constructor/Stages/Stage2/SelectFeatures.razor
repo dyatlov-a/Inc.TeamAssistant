@@ -1,6 +1,7 @@
 @inherits PersistentComponent<SelectFeaturesViewModel>
 
 @inject NavigationManager NavigationManager
+@inject IDataEditor DataEditor
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -38,6 +39,9 @@
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
 
     private EditContext? _editContext;
     
@@ -66,6 +70,7 @@
             return;
 
         StagesState.Apply(_formModel);
+        await DataEditor.Attach(BotStorageKey, StagesState);
         
         var stage = StagesState.PropertyKeys.Any() ? Stage.SetSettings : Stage.Complete;
         NavigationManager.NavigateTo(LinkFactory(stage));

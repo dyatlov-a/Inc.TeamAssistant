@@ -6,6 +6,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IBotService BotService
+@inject IDataEditor DataEditor
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -101,6 +102,9 @@
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
 
     private readonly CompleteFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -164,6 +168,8 @@
                 _formModel.Token,
                 _formModel.FeatureIds,
                 _formModel.Properties));
+
+        await DataEditor.Detach(BotStorageKey);
         
         NavigationManager.NavigateTo(LinkFactory(null));
     }

@@ -10,9 +10,11 @@
 
 @attribute [Authorize]
 
+@using System.Text.Json
 @inherits PersistentComponent<StagesPageViewModel>
 
 @inject IBotService BotService
+@inject IDataEditor DataEditor
 
 <PageTitle>@ViewModel.Title</PageTitle>
 
@@ -32,6 +34,9 @@
 
     [Parameter]
     public string Selected { get; set; } = default!;
+
+    private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
+    private StagesState _stagesState = StagesState.Empty;
     
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
@@ -47,30 +52,40 @@
 
     private Dictionary<string, object> StageParameters => new()
     {
-        ["StagesState"] = ViewModel.StagesState,
-        ["LinkFactory"] = (object)LinkFactory
+        ["StagesState"] = _stagesState,
+        ["LinkFactory"] = (object)LinkFactory,
+        ["BotStorageKey"] = BotStorageKey
     };
-    
-    protected override async Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
+
+    protected override async Task OnParametersSetAsync()
     {
-        var getFeaturesResult = await BotService.GetFeatures();
-
-        if (ViewModel.StagesState.Id == BotId && ViewModel.StagesState.Features.Any())
-            return ViewModel;
+        await base.OnParametersSetAsync();
         
-        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
+        var data = await DataEditor.Get(BotStorageKey);
+        
+        if (data.Result is not null)
+            _stagesState = JsonSerializer.Deserialize<StagesState>(data.Result)!;
+        else
+        {
+            var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
+            var getFeaturesResult = await BotService.GetFeatures();
 
-        return new StagesPageViewModel(
-            resources[Messages.Constructor_Title],
-            new StagesState(
+            _stagesState = new StagesState(
                 bot?.Result?.Id,
                 bot?.Result?.UserName ?? string.Empty,
                 bot?.Result?.Token ?? string.Empty,
                 bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
                 bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
                 bot?.Result?.Properties ?? new Dictionary<string, string>(),
-                getFeaturesResult.Result.Features));
+                getFeaturesResult.Result.Features);
+            
+            await DataEditor.Attach(BotStorageKey, _stagesState);
+        }
+    }
 
+    protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
     }
 
     private string LinkFactory(Stage? stage)
@@ -79,8 +94,8 @@
             return LinkBuilder("constructor");
         
         var target = stage.Value.ToString().ToLower();
-        var link = ViewModel.StagesState.Id.HasValue
-            ? $"constructor/{ViewModel.StagesState.Id.Value:N}/{target}"
+        var link = _stagesState.Id.HasValue
+            ? $"constructor/{_stagesState.Id.Value:N}/{target}"
             : $"constructor/{target}";
 
         return LinkBuilder(link);
