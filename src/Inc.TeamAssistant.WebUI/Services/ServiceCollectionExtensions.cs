@@ -22,8 +22,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IBotService, BotClient>()
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
-            .AddSingleton<DataEditorClient>()
-            .AddSingleton<IDataEditor>(sp => new DataEditorClientCached(
+            .AddScoped<DataEditorClient>()
+            .AddScoped<IDataEditor>(sp => new DataEditorClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
                 sp.GetRequiredService<DataEditorClient>()))
             
