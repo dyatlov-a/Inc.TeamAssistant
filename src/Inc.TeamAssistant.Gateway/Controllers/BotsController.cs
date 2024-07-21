@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -91,6 +92,14 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> GetProperties(CancellationToken token)
     {
         return Ok(await _botService.GetProperties(token));
+    }
+
+    [HttpPost("details")]
+    public async Task<IActionResult> GetDetails(GetBotDetailsQuery query, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+        
+        return Ok(await _botService.GetDetails(query, token));
     }
 
     [HttpPost]

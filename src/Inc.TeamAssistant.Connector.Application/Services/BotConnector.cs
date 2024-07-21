@@ -37,6 +37,30 @@ internal sealed class BotConnector : IBotConnector
         }
     }
 
+    public async Task<IReadOnlyCollection<BotDetails>> GetDetails(string botToken, CancellationToken token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botToken);
+
+        var client = new TelegramBotClient(botToken);
+        var results = new List<BotDetails>();
+
+        foreach (var languageId in LanguageSettings.LanguageIds)
+        {
+            var languageCode = languageId.Value;
+            var name = await client.GetMyNameAsync(languageCode, token);
+            var shortDescription = await client.GetMyShortDescriptionAsync(languageCode, token);
+            var description = await client.GetMyDescriptionAsync(languageCode, token);
+            
+            results.Add(new BotDetails(
+                languageCode,
+                name.Name,
+                shortDescription.ShortDescription,
+                description.Description));
+        }
+
+        return results;
+    }
+
     public async Task Setup(Guid botId, CancellationToken token)
     {
         var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
