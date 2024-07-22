@@ -10,11 +10,13 @@
 
 @attribute [Authorize]
 
-@using System.Text.Json
+@using Inc.TeamAssistant.Primitives.Bots
+@using Inc.TeamAssistant.Primitives.Languages
+
 @inherits PersistentComponent<StagesPageViewModel>
 
 @inject IBotService BotService
-@inject IDataEditor DataEditor
+@inject IServiceProvider ServiceProvider
 
 <PageTitle>@ViewModel.Title</PageTitle>
 
@@ -59,36 +61,36 @@
         ["LinkFactory"] = (object)LinkFactory,
         ["BotStorageKey"] = BotStorageKey
     };
-
+    
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        
-        var data = await DataEditor.Get(BotStorageKey);
-        
-        if (data.Result is not null)
-            _stagesState = JsonSerializer.Deserialize<StagesState>(data.Result)!;
-        else
-        {
-            var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
-            var getFeaturesResult = await BotService.GetFeatures();
 
-            _stagesState = new StagesState(
-                bot?.Result?.Id,
-                bot?.Result?.UserName ?? string.Empty,
-                bot?.Result?.Token ?? string.Empty,
-                bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
-                bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
-                bot?.Result?.Properties ?? new Dictionary<string, string>(),
-                getFeaturesResult.Result.Features);
-            
-            await DataEditor.Attach(BotStorageKey, _stagesState);
-        }
+        var dataEditor = ServiceProvider.GetService<DataEditor>();
+        if (dataEditor is not null)
+            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, _ => CreateState());
     }
 
     protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
     {
         return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
+    }
+
+    private async Task<StagesState> CreateState()
+    {
+        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
+        var getFeaturesResult = await BotService.GetFeatures();
+
+        return new StagesState(
+            bot?.Result?.Id,
+            bot?.Result?.UserName ?? string.Empty,
+            bot?.Result?.Token ?? string.Empty,
+            bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
+            bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
+            bot?.Result?.Properties ?? new Dictionary<string, string>(),
+            getFeaturesResult.Result.Features,
+            bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
+            Array.Empty<BotDetails>());
     }
 
     private string LinkFactory(Stage? stage)

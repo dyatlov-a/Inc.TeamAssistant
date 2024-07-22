@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        var appVersion = ApplicationContext.GetVersion();
+        
         services
             .AddBlazoredLocalStorage()
             
@@ -22,17 +24,14 @@ public static class ServiceCollectionExtensions
             .AddScoped<IBotService, BotClient>()
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
-            .AddScoped<DataEditorClient>()
-            .AddScoped<IDataEditor>(sp => new DataEditorClientCached(
-                sp.GetRequiredService<ILocalStorageService>(),
-                sp.GetRequiredService<DataEditorClient>()))
+            .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
                 sp.GetRequiredService<MessageProviderClient>(),
-                ApplicationContext.GetVersion()))
+                appVersion))
             
             .AddTransient<EventsProvider>();
 

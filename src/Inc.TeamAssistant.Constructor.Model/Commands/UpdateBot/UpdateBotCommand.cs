@@ -7,5 +7,6 @@ public sealed record UpdateBotCommand(
     string Name,
     string Token,
     IReadOnlyCollection<Guid> FeatureIds,
-    IReadOnlyDictionary<string, string> Properties)
+    IReadOnlyDictionary<string, string> Properties,
+    IReadOnlyCollection<string> SupportedLanguages)
     : IRequest;

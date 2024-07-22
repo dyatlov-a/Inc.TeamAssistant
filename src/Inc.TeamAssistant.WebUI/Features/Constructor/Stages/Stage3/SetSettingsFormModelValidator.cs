@@ -18,5 +18,8 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
                 c.RuleFor(e => e.Value)
                     .NotEmpty();
             });
+
+        RuleFor(e => e.SupportedLanguages)
+            .NotEmpty();
     }
 }

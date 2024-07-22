@@ -1,7 +1,10 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
+
 @inherits PersistentComponent<CheckBotViewModel>
 
+@inject IBotService BotService
 @inject NavigationManager NavigationManager
-@inject IDataEditor DataEditor
+@inject IServiceProvider ServiceProvider
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -67,9 +70,12 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        StagesState.Apply(_formModel);
-        await DataEditor.Attach(BotStorageKey, StagesState);
+        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
         
+        await ServiceProvider.GetRequiredService<DataEditor>().Attach(
+            BotStorageKey,
+            StagesState.Apply(getBotDetailsResult.Result.Items).Apply(_formModel));
+
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }
 }

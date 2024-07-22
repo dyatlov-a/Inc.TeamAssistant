@@ -38,7 +38,8 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
         bot
             .ChangeName(command.Name)
             .ChangeToken(command.Token)
-            .ChangeFeatures(command.FeatureIds);
+            .ChangeFeatures(command.FeatureIds)
+            .ChangeSupportedLanguages(command.SupportedLanguages);
 
         foreach (var property in command.Properties)
             bot.ChangeProperty(property.Key, property.Value);

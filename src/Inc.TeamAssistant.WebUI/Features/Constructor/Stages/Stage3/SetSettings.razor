@@ -1,8 +1,10 @@
+@using Inc.TeamAssistant.Primitives.Languages
+
 @inherits PersistentComponent<SetSettingsViewModel>
 
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
-@inject IDataEditor DataEditor
+@inject IServiceProvider ServiceProvider
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -47,6 +49,66 @@
                 </FormSection>
             }
         }
+        <FormSection
+            Title="Supported languages"
+            HelpText="Please select languages">
+            <Content>
+                <FormFieldSet
+                    FieldId="supported-languages"
+                    Label="Supported languages">
+                    <Content>
+                        <select id="supported-languages" multiple="multiple" class="form-control">
+                            @foreach(var languageId in LanguageSettings.LanguageIds)
+                            {
+                                <option
+                                    value="@languageId.Value"
+                                    selected="@CssClass(languageId)"
+                                    @onclick="() => ToggleLanguage(languageId)">
+                                    @languageId.Value
+                                </option>
+                            }
+                        </select>
+                    </Content>
+                </FormFieldSet>
+                @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                {
+                    var botNameId = $"bot-name-{item.LanguageId}";
+                    var botShortDescriptionId = $"bot-short-description-{item.LanguageId}";
+                    var botDescriptionId = $"bot-description-{item.LanguageId}";
+
+                    <FormFieldSet
+                        FieldId="@botNameId"
+                        Label="@AddLanguage("Name", item.LanguageId)">
+                        <Content>
+                            <InputText @bind-Value="item.Name" class="form-control" id="@botNameId" />
+                            <ValidationMessage For="@(() => item.Name)"/>
+                        </Content>
+                    </FormFieldSet>
+                    <FormFieldSet
+                        FieldId="@botShortDescriptionId"
+                        Label="@AddLanguage("Short description", item.LanguageId)">
+                        <Content>
+                            <InputText
+                                @bind-Value="item.ShortDescription"
+                                class="form-control"
+                                id="@botShortDescriptionId" />
+                            <ValidationMessage For="@(() => item.ShortDescription)"/>
+                        </Content>
+                    </FormFieldSet>
+                    <FormFieldSet
+                        FieldId="@botDescriptionId"
+                        Label="@AddLanguage("Description", item.LanguageId)">
+                        <Content>
+                            <InputText
+                                @bind-Value="item.Description"
+                                class="form-control"
+                                id="@botDescriptionId" />
+                            <ValidationMessage For="@(() => item.Description)"/>
+                        </Content>
+                    </FormFieldSet>
+                }
+            </Content>
+        </FormSection>
     </div>
     <div class="constructor__actions">
         <button type="submit" class="button button_white">@ViewModel.MoveNextTitle</button>
@@ -76,10 +138,10 @@
     
     protected override async Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var result = await BotService.GetProperties();
+        var getPropertiesResult = await BotService.GetProperties();
         
         return new SetSettingsViewModel(
-            result.Result.Properties,
+            getPropertiesResult.Result.Properties,
             resources[Messages.Constructor_MoveNextTitle]);
     }
     
@@ -88,9 +150,27 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
-        StagesState.Apply(_formModel);
-        await DataEditor.Attach(BotStorageKey, StagesState);
+        await ServiceProvider.GetRequiredService<DataEditor>().Attach(BotStorageKey, StagesState.Apply(_formModel));
         
         NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
     }
+    
+    private string CssClass(LanguageId languageId)
+    {
+        return _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
+            ? "selected"
+            : string.Empty;
+    }
+
+    private void ToggleLanguage(LanguageId languageId)
+    {
+        var languageCode = languageId.Value;
+        
+        if (_formModel.SupportedLanguages.Contains(languageCode, StringComparer.InvariantCultureIgnoreCase))
+            _formModel.SupportedLanguages.Remove(languageCode);
+        else
+            _formModel.SupportedLanguages.Add(languageCode);
+    }
+    
+    private string AddLanguage(string message, string languageCode) => $"{message} ({languageCode})";
 }

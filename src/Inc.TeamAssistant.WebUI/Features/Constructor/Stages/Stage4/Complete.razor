@@ -6,7 +6,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IBotService BotService
-@inject IDataEditor DataEditor
+@inject IServiceProvider ServiceProvider
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -161,15 +161,17 @@
                 _formModel.UserName,
                 _formModel.Token,
                 _formModel.FeatureIds,
-                _formModel.Properties));
+                _formModel.Properties,
+                _formModel.SupportedLanguages));
         else
             await BotService.Create(new CreateBotCommand(
                 _formModel.UserName,
                 _formModel.Token,
                 _formModel.FeatureIds,
-                _formModel.Properties));
+                _formModel.Properties,
+                _formModel.SupportedLanguages));
 
-        await DataEditor.Detach(BotStorageKey);
+        await ServiceProvider.GetRequiredService<DataEditor>().Detach(BotStorageKey);
         
         NavigationManager.NavigateTo(LinkFactory(null));
     }

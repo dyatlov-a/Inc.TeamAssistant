@@ -10,6 +10,7 @@ public sealed class Bot
     private readonly List<Guid> _featureIds = new();
     public IReadOnlyCollection<Guid> FeatureIds => _featureIds;
     public IReadOnlyDictionary<string, string> Properties { get; private set; } = default!;
+    public IReadOnlyCollection<string> SupportedLanguages { get; private set; } = default!;
 
     private Bot()
     {
@@ -21,10 +22,12 @@ public sealed class Bot
         string token,
         long ownerId,
         IReadOnlyDictionary<string, string> properties,
-        IReadOnlyCollection<Guid> featureIds)
+        IReadOnlyCollection<Guid> featureIds,
+        IReadOnlyCollection<string> supportedLanguages)
         : this()
     {
         ArgumentNullException.ThrowIfNull(featureIds);
+        ArgumentNullException.ThrowIfNull(supportedLanguages);
         
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
@@ -37,6 +40,7 @@ public sealed class Bot
         OwnerId = ownerId;
         Properties = properties ?? throw new ArgumentNullException(nameof(properties));
         ChangeFeatures(featureIds);
+        ChangeSupportedLanguages(supportedLanguages);
     }
 
     public Bot ChangeName(string value)
@@ -65,6 +69,15 @@ public sealed class Bot
         
         _featureIds.Clear();
         _featureIds.AddRange(featureIds);
+        
+        return this;
+    }
+    
+    public Bot ChangeSupportedLanguages(IReadOnlyCollection<string> supportedLanguages)
+    {
+        ArgumentNullException.ThrowIfNull(supportedLanguages);
+
+        SupportedLanguages = supportedLanguages;
         
         return this;
     }

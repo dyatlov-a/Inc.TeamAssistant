@@ -47,15 +47,23 @@ internal sealed class BotConnector : IBotConnector
         foreach (var languageId in LanguageSettings.LanguageIds)
         {
             var languageCode = languageId.Value;
-            var name = await client.GetMyNameAsync(languageCode, token);
-            var shortDescription = await client.GetMyShortDescriptionAsync(languageCode, token);
-            var description = await client.GetMyDescriptionAsync(languageCode, token);
+            
+            var botName = await client.GetMyNameAsync(languageCode, token);
+            var botShortDescription = await client.GetMyShortDescriptionAsync(languageCode, token);
+            var botDescription = await client.GetMyDescriptionAsync(languageCode, token);
+            
+            var shortDescription = string.IsNullOrWhiteSpace(botShortDescription.ShortDescription)
+                ? await _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId)
+                : botShortDescription.ShortDescription;
+            var description = string.IsNullOrWhiteSpace(botDescription.Description)
+                ? await _messageBuilder.Build(Messages.Connector_BotDescription, languageId)
+                : botDescription.Description;
             
             results.Add(new BotDetails(
                 languageCode,
-                name.Name,
-                shortDescription.ShortDescription,
-                description.Description));
+                botName.Name,
+                shortDescription,
+                description));
         }
 
         return results;
