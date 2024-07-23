@@ -1,5 +1,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
+@using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
 @inherits PersistentComponent<CompleteViewModel>
@@ -85,7 +86,6 @@
                                         value="@GetValueAsText(settingItem, property.Value)"
                                         class="form-control"
                                         disabled="disabled"/>
-                                    <ValidationMessage For="@(() => property.Value)"/>
                                 </Content>
                             </FormFieldSet>
                         }
@@ -185,6 +185,14 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
+        var botDetails = _formModel.BotDetails
+            .Select(i => new BotDetails(
+                i.LanguageId,
+                i.Name,
+                i.ShortDescription,
+                i.Description))
+            .ToArray();
+
         if (StagesState.Id.HasValue)
             await BotService.Update(new UpdateBotCommand(
                 StagesState.Id.Value,
@@ -192,14 +200,16 @@
                 _formModel.Token,
                 _formModel.FeatureIds,
                 _formModel.Properties,
-                _formModel.SupportedLanguages));
+                _formModel.SupportedLanguages,
+                botDetails));
         else
             await BotService.Create(new CreateBotCommand(
                 _formModel.UserName,
                 _formModel.Token,
                 _formModel.FeatureIds,
                 _formModel.Properties,
-                _formModel.SupportedLanguages));
+                _formModel.SupportedLanguages,
+                botDetails));
 
         await ServiceProvider.GetRequiredService<DataEditor>().Detach(BotStorageKey);
         

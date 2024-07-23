@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
 using Inc.TeamAssistant.WebUI.Services.Render;
@@ -25,6 +26,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
+            .AddScoped<BotDetailsFormModelValidator>()
             
             .AddScoped<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()

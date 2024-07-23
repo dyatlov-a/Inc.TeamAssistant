@@ -6,5 +6,5 @@ public interface IBotConnector
     
     Task<IReadOnlyCollection<BotDetails>> GetDetails(string botToken, CancellationToken token);
 
-    Task Setup(Guid botId, CancellationToken token);
+    Task Update(Guid botId, IReadOnlyCollection<BotDetails> botDetails, CancellationToken token);
 }

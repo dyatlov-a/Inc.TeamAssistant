@@ -69,8 +69,10 @@ internal sealed class BotConnector : IBotConnector
         return results;
     }
 
-    public async Task Setup(Guid botId, CancellationToken token)
+    public async Task Update(Guid botId, IReadOnlyCollection<BotDetails> botDetails, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(botDetails);
+        
         var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
         if (bot is null)
             throw new TeamAssistantUserException(Messages.Connector_BotNotFound, botId);
@@ -79,12 +81,24 @@ internal sealed class BotConnector : IBotConnector
         
         await SetDefaultAdministratorRights(client, token);
 
-        foreach (var languageId in LanguageSettings.LanguageIds)
+        foreach (var item in botDetails)
         {
-            await SetCommands(client, bot, languageId, token);
-            await SetShortDescription(client, languageId, token);
-            await SetDescription(client, languageId, token);
+            await SetCommands(client, bot, new LanguageId(item.LanguageId), item.LanguageId, token);
+            await SetDetails(client, item.Name, item.ShortDescription, item.Description, item.LanguageId, token);
         }
+
+        var botDetailsItem = botDetails.Count == 1
+            ? botDetails.Single()
+            : botDetails.Single(b => b.LanguageId == LanguageSettings.DefaultLanguageId.Value);
+        
+        await SetCommands(client, bot, new LanguageId(botDetailsItem.LanguageId), targetLanguageId: null, token);
+        await SetDetails(
+            client,
+            botDetailsItem.Name,
+            botDetailsItem.ShortDescription,
+            botDetailsItem.Description,
+            targetLanguageId: null,
+            token);
     }
 
     private async Task SetDefaultAdministratorRights(ITelegramBotClient client, CancellationToken token)
@@ -101,7 +115,12 @@ internal sealed class BotConnector : IBotConnector
         await client.SetMyDefaultAdministratorRightsAsync(rights, cancellationToken: token);
     }
 
-    private async Task SetCommands(ITelegramBotClient client, Bot bot, LanguageId languageId, CancellationToken token)
+    private async Task SetCommands(
+        ITelegramBotClient client,
+        Bot bot,
+        LanguageId languageId,
+        string? targetLanguageId,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(bot);
@@ -110,36 +129,32 @@ internal sealed class BotConnector : IBotConnector
         foreach (var commandScope in Enum.GetValues<CommandScope>())
             if (TryConvert(commandScope, out var scope))
             {
-                var commandsByScopes = (await Build(bot.Commands, commandScope, languageId))
-                    .OrderBy(c => c.Command)
-                    .ToArray();
+                var commandsByScopes = await Build(bot.Commands, commandScope, languageId);
 
                 await client.SetMyCommandsAsync(
-                    commandsByScopes,
+                    commandsByScopes.OrderBy(c => c.Command).ToArray(),
                     scope,
-                    languageCode: languageId.Value,
+                    languageCode: targetLanguageId,
                     cancellationToken: token);
             }
     }
 
-    private async Task SetShortDescription(ITelegramBotClient client, LanguageId languageId, CancellationToken token)
+    private async Task SetDetails(
+        ITelegramBotClient client,
+        string name,
+        string shortDescription,
+        string description,
+        string? targetLanguageId,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(client);
-        ArgumentNullException.ThrowIfNull(languageId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(shortDescription);
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
-        var shortDescription = await _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId);
-        
-        await client.SetMyShortDescriptionAsync(shortDescription, languageId.Value, token);
-    }
-    
-    private async Task SetDescription(ITelegramBotClient client, LanguageId languageId, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(client);
-        ArgumentNullException.ThrowIfNull(languageId);
-        
-        var description = await _messageBuilder.Build(Messages.Connector_BotDescription, languageId);
-        
-        await client.SetMyDescriptionAsync(description, languageId.Value, token);
+        await client.SetMyNameAsync(name, targetLanguageId, token);
+        await client.SetMyShortDescriptionAsync(shortDescription, targetLanguageId, token);
+        await client.SetMyDescriptionAsync(description, targetLanguageId, token);
     }
     
     private async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Build(

@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 

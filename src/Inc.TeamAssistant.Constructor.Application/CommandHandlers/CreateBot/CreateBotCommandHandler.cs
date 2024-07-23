@@ -43,7 +43,7 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
         
         await _botRepository.Upsert(bot, token);
 
-        await _botConnector.Setup(bot.Id, token);
+        await _botConnector.Update(bot.Id, command.BotDetails, token);
         await _botListeners.Start(bot.Id);
     }
 }
