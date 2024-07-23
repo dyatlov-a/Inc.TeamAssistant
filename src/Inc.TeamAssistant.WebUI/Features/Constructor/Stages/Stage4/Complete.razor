@@ -23,7 +23,7 @@
                             @bind-Value="_formModel.UserName"
                             class="form-control"
                             id="bot-username"
-                            disabled="true"/>
+                            disabled="disabled"/>
                     </Content>
                 </FormFieldSet>
             </Content>
@@ -55,39 +55,62 @@
                 }
             </Content>
         </FormSection>
-        @foreach (var property in _formModel.Properties)
+        @foreach (var feature in StagesState.SelectedFeatures)
         {
-            if (ViewModel.SettingSections.TryGetValue(property.Key, out var items))
+            if (!ViewModel.SettingSections.TryGetValue(feature.Name, out var settingSections))
+                continue;
+
+            foreach (var settingSection in settingSections)
             {
-                foreach (var item in items)
-                {
-                    <FormSection
-                        Title="@ResourceProvider(item.HeaderMessageId)"
-                        HelpText="@ResourceProvider(item.HelpMessageId)">
-                        <Content>
-                            <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
-                                @ViewModel.EditText
-                            </a>
-                            @foreach (var settingItem in item.SettingItems)
-                            {
-                                <FormFieldSet
-                                    FieldId="@settingItem.PropertyName"
-                                    Label="@ResourceProvider(settingItem.LabelMessageId)">
-                                    <Content>
-                                        <input
-                                            type="text"
-                                            id="@settingItem.PropertyName"
-                                            value="@GetValueAsText(settingItem, property.Value)"
-                                            class="form-control"
-                                            disabled="disabled"/>
-                                    </Content>
-                                </FormFieldSet>
-                            }
-                        </Content>
-                    </FormSection>
-                }
+                <FormSection
+                    Title="@ResourceProvider(settingSection.HeaderMessageId)"
+                    HelpText="@ResourceProvider(settingSection.HelpMessageId)">
+                    <Content>
+                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
+                            @ViewModel.EditText
+                        </a>
+                        @foreach (var settingItem in settingSection.SettingItems)
+                        {
+                            var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                settingItem.PropertyName,
+                                StringComparison.InvariantCultureIgnoreCase));
+
+                            <FormFieldSet
+                                FieldId="@settingItem.PropertyName"
+                                Label="@ResourceProvider(settingItem.LabelMessageId)">
+                                <Content>
+                                    <input
+                                        type="text"
+                                        id="@settingItem.PropertyName"
+                                        value="@GetValueAsText(settingItem, property.Value)"
+                                        class="form-control"
+                                        disabled="disabled"/>
+                                    <ValidationMessage For="@(() => property.Value)"/>
+                                </Content>
+                            </FormFieldSet>
+                        }
+                    </Content>
+                </FormSection>
             }
         }
+        <FormSection
+            Title="@ViewModel.BotInformation"
+            HelpText="@ViewModel.BotInformationHelp">
+            <Content>
+                <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
+                    @ViewModel.EditText
+                </a>
+                @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                {
+                    <BotDetailsEditor
+                        BotDetails="item"
+                        BotName="@ViewModel.BotName"
+                        BotShortDescription="@ViewModel.BotShortDescription"
+                        BotDescription="@ViewModel.BotDescription"
+                        IsDisabled="true"/>
+                }
+            </Content>
+        </FormSection>
     </div>
     <div class="constructor__actions">
         <button type="submit" class="button button_white">
@@ -127,8 +150,8 @@
             "RandomCoffee",
             "Reviewer"
         };
-        
-        return new CompleteViewModel(
+
+        var viewModel = new CompleteViewModel(
             resources[Messages.GetStageTitle(Stage.CheckBot)],
             resources[Messages.Constructor_FormSectionTokenCheckHelp],
             resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
@@ -140,12 +163,19 @@
             resources[Messages.Constructor_BooleanTrueText],
             resources[Messages.Constructor_BooleanFalseText],
             resources[Messages.Constructor_Edit],
-            featuresLookup.ToDictionary(i => i, i => resources[Messages.GetFeatureProperty(i, "Name")]));
+            featuresLookup.ToDictionary(i => i, i => resources[Messages.GetFeatureProperty(i, "Name")]),
+            resources[Messages.Constructor_BotInformation],
+            resources[Messages.Constructor_BotInformationHelp],
+            resources[Messages.Constructor_BotName],
+            resources[Messages.Constructor_BotShortDescription],
+            resources[Messages.Constructor_BotDescription]);
+        
+        return viewModel;
     }
 
     private string GetValueAsText(SettingItem settingItem, string value)
     {
-        var item = settingItem.Values.SingleOrDefault(s => s.Value == value);
+        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(value, StringComparison.InvariantCultureIgnoreCase));
         
         return item is null ? string.Empty : ResourceProvider(item.MessageId);
     }

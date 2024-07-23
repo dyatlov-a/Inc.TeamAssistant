@@ -15,7 +15,12 @@ public sealed record CompleteViewModel(
     string BooleanTrueText,
     string BooleanFalseText,
     string EditText,
-    IReadOnlyDictionary<string, string> FeaturesLookup)
+    IReadOnlyDictionary<string, string> FeaturesLookup,
+    string BotInformation,
+    string BotInformationHelp,
+    string BotName,
+    string BotShortDescription,
+    string BotDescription)
     : IViewModel<CompleteViewModel>
 {
     public static CompleteViewModel Empty { get; } = new(
@@ -30,5 +35,10 @@ public sealed record CompleteViewModel(
         string.Empty,
         string.Empty,
         string.Empty,
-        new Dictionary<string, string>());
+        new Dictionary<string, string>(),
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty);
 }

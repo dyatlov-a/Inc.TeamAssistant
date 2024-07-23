@@ -256,6 +256,8 @@
   "Constructor_BotName": "Bot name (will be available on Telegram)",
   "Constructor_BotShortDescription": "Bot short description (will be available on Telegram)",
   "Constructor_BotDescription": "Bot description (will be available on Telegram)",
+  "Constructor_BotInformation": "Bot's properties",
+  "Constructor_BotInformationHelp": "Please check and confirm the bot's properties",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

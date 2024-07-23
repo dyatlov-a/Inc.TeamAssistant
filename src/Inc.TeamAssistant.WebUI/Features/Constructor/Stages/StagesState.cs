@@ -12,7 +12,6 @@ public sealed class StagesState
     public string UserName { get; private set; }
     public string Token { get; private set; }
     public IReadOnlyCollection<Guid> FeatureIds { get; private set; }
-    public IReadOnlyCollection<string> PropertyKeys { get; private set; }
     public IReadOnlyDictionary<string, string> Properties { get; private set; }
     public IReadOnlyCollection<FeatureDto> Features { get; private set; }
     public IReadOnlyCollection<string> SupportedLanguages { get; private set; }
@@ -23,7 +22,6 @@ public sealed class StagesState
         string userName,
         string token,
         IReadOnlyCollection<Guid> featureIds,
-        IReadOnlyCollection<string> propertyKeys,
         IReadOnlyDictionary<string, string> properties,
         IReadOnlyCollection<FeatureDto> features,
         IReadOnlyCollection<string> supportedLanguages,
@@ -33,7 +31,6 @@ public sealed class StagesState
         UserName = userName;
         Token = token;
         FeatureIds = featureIds;
-        PropertyKeys = propertyKeys;
         Properties = properties;
         Features = features;
         SupportedLanguages = supportedLanguages;
@@ -49,7 +46,6 @@ public sealed class StagesState
         string.Empty,
         string.Empty,
         Array.Empty<Guid>(),
-        Array.Empty<string>(),
         new Dictionary<string, string>(),
         Array.Empty<FeatureDto>(),
         Array.Empty<string>(),
@@ -76,12 +72,13 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        FeatureIds = formModel.FeatureIds.ToArray();
-        PropertyKeys = SelectedFeatures
+        var selectedProperties = SelectedFeatures
             .SelectMany(f => f.Properties)
             .ToArray();
+        
+        FeatureIds = formModel.FeatureIds.ToArray();
         Properties = Properties
-            .Where(p => PropertyKeys.Contains(p.Key, StringComparer.InvariantCultureIgnoreCase))
+            .Where(p => selectedProperties.Contains(p.Key, StringComparer.InvariantCultureIgnoreCase))
             .ToDictionary();
         
         return this;

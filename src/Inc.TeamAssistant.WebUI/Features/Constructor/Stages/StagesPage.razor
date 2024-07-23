@@ -86,7 +86,6 @@
             bot?.Result?.UserName ?? string.Empty,
             bot?.Result?.Token ?? string.Empty,
             bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
-            bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
             bot?.Result?.Properties ?? new Dictionary<string, string>(),
             getFeaturesResult.Result.Features,
             bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },

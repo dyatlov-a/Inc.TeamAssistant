@@ -67,47 +67,16 @@
                                 </span>
                             }
                         </div>
+                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
                     </Content>
                 </FormFieldSet>
                 @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
                 {
-                    var botNameId = $"bot-name-{item.LanguageId}";
-                    var botShortDescriptionId = $"bot-short-description-{item.LanguageId}";
-                    var botDescriptionId = $"bot-description-{item.LanguageId}";
-
-                    <FormFieldSet
-                        FieldId="@botNameId"
-                        Label="@MessageWithLanguage(ViewModel.BotName, item.LanguageId)">
-                        <Content>
-                            <InputText
-                                @bind-Value="item.Name"
-                                class="form-control form-control_white"
-                                id="@botNameId" />
-                            <ValidationMessage For="@(() => item.Name)"/>
-                        </Content>
-                    </FormFieldSet>
-                    <FormFieldSet
-                        FieldId="@botShortDescriptionId"
-                        Label="@MessageWithLanguage(ViewModel.BotShortDescription, item.LanguageId)">
-                        <Content>
-                            <InputText
-                                @bind-Value="item.ShortDescription"
-                                class="form-control"
-                                id="@botShortDescriptionId" />
-                            <ValidationMessage For="@(() => item.ShortDescription)"/>
-                        </Content>
-                    </FormFieldSet>
-                    <FormFieldSet
-                        FieldId="@botDescriptionId"
-                        Label="@MessageWithLanguage(ViewModel.BotDescription, item.LanguageId)">
-                        <Content>
-                            <InputTextArea
-                                @bind-Value="item.Description"
-                                class="form-control form-control_textarea"
-                                id="@botDescriptionId" />
-                            <ValidationMessage For="@(() => item.Description)"/>
-                        </Content>
-                    </FormFieldSet>
+                    <BotDetailsEditor
+                        BotDetails="item"
+                        BotName="@ViewModel.BotName"
+                        BotShortDescription="@ViewModel.BotShortDescription"
+                        BotDescription="@ViewModel.BotDescription" />
                 }
             </Content>
         </FormSection>
@@ -179,6 +148,4 @@
         else
             _formModel.SupportedLanguages.Add(languageCode);
     }
-    
-    private string MessageWithLanguage(string message, string languageCode) => $"{message} {languageCode}";
 }

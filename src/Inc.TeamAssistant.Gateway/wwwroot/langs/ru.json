@@ -256,6 +256,8 @@
   "Constructor_BotName": "Имя бота (будет отображаться в telegram)",
   "Constructor_BotShortDescription": "Короткое описание бота (будет отображаться в telegram)",
   "Constructor_BotDescription": "Описание бота (будет отображаться в telegram)",
+  "Constructor_BotInformation": "Свойства бота",
+  "Constructor_BotInformationHelp": "Пожалуйста, проверьте и подтвердите свойства бота",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"
