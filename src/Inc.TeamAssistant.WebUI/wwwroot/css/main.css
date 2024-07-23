@@ -153,7 +153,13 @@ html {
     border: 3px solid #555;
     border-radius: 0;
     color: #000;
+}
+.form-control_white {
     background-color: #fff;
+}
+.form-control_textarea {
+    resize: none;
+    height: 102px;
 }
 .is-valid {
     border: 3px solid #28a745;

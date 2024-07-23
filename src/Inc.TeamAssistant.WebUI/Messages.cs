@@ -79,6 +79,12 @@ internal static class Messages
     public static readonly string Constructor_ButtonUpdateText = nameof(Constructor_ButtonUpdateText);
     public static readonly string Constructor_BooleanTrueText = nameof(Constructor_BooleanTrueText);
     public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
+    public static readonly string Constructor_SupportedLanguages = nameof(Constructor_SupportedLanguages);
+    public static readonly string Constructor_SupportedLanguagesHelp = nameof(Constructor_SupportedLanguagesHelp);
+    public static readonly string Constructor_Languages = nameof(Constructor_Languages);
+    public static readonly string Constructor_BotName = nameof(Constructor_BotName);
+    public static readonly string Constructor_BotShortDescription = nameof(Constructor_BotShortDescription);
+    public static readonly string Constructor_BotDescription = nameof(Constructor_BotDescription);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);

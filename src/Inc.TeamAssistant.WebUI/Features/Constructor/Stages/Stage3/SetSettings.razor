@@ -50,12 +50,12 @@
             }
         }
         <FormSection
-            Title="Supported languages"
-            HelpText="Please select languages">
+            Title="@ViewModel.SupportedLanguages"
+            HelpText="@ViewModel.SupportedLanguagesHelp">
             <Content>
                 <FormFieldSet
                     FieldId="supported-languages"
-                    Label="Supported languages">
+                    Label="@ViewModel.Languages">
                     <Content>
                         <div class="form-control">
                             @foreach (var languageId in LanguageSettings.LanguageIds)
@@ -77,15 +77,18 @@
 
                     <FormFieldSet
                         FieldId="@botNameId"
-                        Label="@AddLanguage("Name", item.LanguageId)">
+                        Label="@MessageWithLanguage(ViewModel.BotName, item.LanguageId)">
                         <Content>
-                            <InputText @bind-Value="item.Name" class="form-control" id="@botNameId" />
+                            <InputText
+                                @bind-Value="item.Name"
+                                class="form-control form-control_white"
+                                id="@botNameId" />
                             <ValidationMessage For="@(() => item.Name)"/>
                         </Content>
                     </FormFieldSet>
                     <FormFieldSet
                         FieldId="@botShortDescriptionId"
-                        Label="@AddLanguage("Short description", item.LanguageId)">
+                        Label="@MessageWithLanguage(ViewModel.BotShortDescription, item.LanguageId)">
                         <Content>
                             <InputText
                                 @bind-Value="item.ShortDescription"
@@ -96,11 +99,11 @@
                     </FormFieldSet>
                     <FormFieldSet
                         FieldId="@botDescriptionId"
-                        Label="@AddLanguage("Description", item.LanguageId)">
+                        Label="@MessageWithLanguage(ViewModel.BotDescription, item.LanguageId)">
                         <Content>
-                            <InputText
+                            <InputTextArea
                                 @bind-Value="item.Description"
-                                class="form-control"
+                                class="form-control form-control_textarea"
                                 id="@botDescriptionId" />
                             <ValidationMessage For="@(() => item.Description)"/>
                         </Content>
@@ -141,7 +144,13 @@
         
         return new SetSettingsViewModel(
             getPropertiesResult.Result.Properties,
-            resources[Messages.Constructor_MoveNextTitle]);
+            resources[Messages.Constructor_MoveNextTitle],
+            resources[Messages.Constructor_SupportedLanguages],
+            resources[Messages.Constructor_SupportedLanguagesHelp],
+            resources[Messages.Constructor_Languages],
+            resources[Messages.Constructor_BotName],
+            resources[Messages.Constructor_BotShortDescription],
+            resources[Messages.Constructor_BotDescription]);
     }
     
     private async Task SubmitForm()
@@ -171,5 +180,5 @@
             _formModel.SupportedLanguages.Add(languageCode);
     }
     
-    private string AddLanguage(string message, string languageCode) => $"{message} ({languageCode})";
+    private string MessageWithLanguage(string message, string languageCode) => $"{message} {languageCode}";
 }

@@ -250,6 +250,12 @@
   "Constructor_ButtonUpdateText": "Update",
   "Constructor_BooleanTrueText": "Yes",
   "Constructor_BooleanFalseText": "No",
+  "Constructor_SupportedLanguages": "Supported languages",
+  "Constructor_SupportedLanguagesHelp": "Please select the languages that the bot will support",
+  "Constructor_Languages": "Languages",
+  "Constructor_BotName": "Bot name (will be available on Telegram)",
+  "Constructor_BotShortDescription": "Bot short description (will be available on Telegram)",
+  "Constructor_BotDescription": "Bot description (will be available on Telegram)",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

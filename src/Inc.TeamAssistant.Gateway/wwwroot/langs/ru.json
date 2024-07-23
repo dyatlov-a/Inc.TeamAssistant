@@ -250,6 +250,12 @@
   "Constructor_ButtonUpdateText": "Обновить",
   "Constructor_BooleanTrueText": "Да",
   "Constructor_BooleanFalseText": "Нет",
+  "Constructor_SupportedLanguages": "Поддерживаемые языки",
+  "Constructor_SupportedLanguagesHelp": "Пожалуйста, выберите языки, которые будет поддерживать бот",
+  "Constructor_Languages": "Языки",
+  "Constructor_BotName": "Имя бота (будет отображаться в telegram)",
+  "Constructor_BotShortDescription": "Короткое описание бота (будет отображаться в telegram)",
+  "Constructor_BotDescription": "Описание бота (будет отображаться в telegram)",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"
