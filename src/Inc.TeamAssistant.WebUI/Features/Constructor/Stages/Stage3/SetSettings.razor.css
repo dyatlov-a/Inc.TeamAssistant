@@ -1,0 +1,10 @@
+.supported-language {
+    display: inline-block;
+    padding: 3px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.supported-language_selected {
+    background-color: #555;
+    color: #fff;
+}

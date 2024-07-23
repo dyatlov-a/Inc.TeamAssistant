@@ -57,17 +57,16 @@
                     FieldId="supported-languages"
                     Label="Supported languages">
                     <Content>
-                        <select id="supported-languages" multiple="multiple" class="form-control">
-                            @foreach(var languageId in LanguageSettings.LanguageIds)
+                        <div class="form-control">
+                            @foreach (var languageId in LanguageSettings.LanguageIds)
                             {
-                                <option
-                                    value="@languageId.Value"
-                                    selected="@CssClass(languageId)"
+                                <span
+                                    class="supported-language @CssClass(languageId)"
                                     @onclick="() => ToggleLanguage(languageId)">
                                     @languageId.Value
-                                </option>
+                                </span>
                             }
-                        </select>
+                        </div>
                     </Content>
                 </FormFieldSet>
                 @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
@@ -158,7 +157,7 @@
     private string CssClass(LanguageId languageId)
     {
         return _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
-            ? "selected"
+            ? "supported-language_selected"
             : string.Empty;
     }
 

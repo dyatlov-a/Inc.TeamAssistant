@@ -153,6 +153,7 @@ html {
     border: 3px solid #555;
     border-radius: 0;
     color: #000;
+    background-color: #fff;
 }
 .is-valid {
     border: 3px solid #28a745;
