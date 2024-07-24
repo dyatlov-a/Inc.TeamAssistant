@@ -187,6 +187,9 @@ html {
 .draggable {
     cursor: grab;
 }
+.hint {
+    cursor: context-menu;
+}
 /* GRID */
 .quick-data-grid {
     width: 100%;

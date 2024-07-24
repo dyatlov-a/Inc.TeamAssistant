@@ -1,5 +1,4 @@
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
-@using Inc.TeamAssistant.WebUI.Services.ClientCore
 
 @inherits PersistentComponent<AssessmentHistoryWidgetViewModel>
 
@@ -26,7 +25,7 @@
         <Paginator State="_pagination"/>
     </div>
     <div class="appraiser-actions">
-        <button type="button" class="button button_white" @onclick="MoveToAssessmentSession">
+        <button type="button" class="button button_black" @onclick="MoveToAssessmentSession">
             @ViewModel.GoToCurrentSessionButtonText
         </button>
     </div>

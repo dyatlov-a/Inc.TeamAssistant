@@ -19,13 +19,15 @@
             @context.OwnerUserName
         </TemplateColumn>
         <TemplateColumn Title="@ViewModel.DescriptionTitle" Sortable="false">
-            <span title="@context.Description">@context.Description.ToShort()</span>
+            <span title="@context.Description" class="hint">
+                @context.Description.ToShort()
+            </span>
         </TemplateColumn>
         <TemplateColumn
             Title="@ViewModel.ReviewerNameTitle"
             Sortable="true"
             SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-            <span title="@GetReviewerTitle(context)">
+            <span title="@GetReviewerTitle(context)" class="hint">
                 @context.ReviewerName
                 <br/>
                 @context.ReviewerUserName
