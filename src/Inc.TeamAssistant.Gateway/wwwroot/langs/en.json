@@ -179,6 +179,8 @@
   "Dashboard_TotalStories": "Total stories",
   "Dashboard_ConnectToTeamHelp": "Follow the link or scan the QR code to join the team.",
   "Dashboard_ConnectToTeamButton": "Connect to the team",
+  "Dashboard_HasConcreteReviewer": "Assigned to a concrete reviewer",
+  "Dashboard_IsOriginalReviewer": "Has been reassigned",
   
   "Footer_GroupNavigation": "Navigation",
   "Footer_GroupTech": "Tech",

@@ -179,6 +179,8 @@
   "Dashboard_TotalStories": "Всего историй",
   "Dashboard_ConnectToTeamHelp": "Для подключения к команде перейдите по ссылке или отсканируйте QR-код",
   "Dashboard_ConnectToTeamButton": "Подключиться к команде",
+  "Dashboard_HasConcreteReviewer": "Назначена на конкретного ревьювера",
+  "Dashboard_IsOriginalReviewer": "Была переназначена",
 
   "Footer_GroupNavigation": "Навигация",
   "Footer_GroupTech": "Технологии",

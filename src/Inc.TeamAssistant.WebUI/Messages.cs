@@ -143,6 +143,8 @@ internal static class Messages
     public static readonly string Dashboard_TotalStories = nameof(Dashboard_TotalStories);
     public static readonly string Dashboard_ConnectToTeamHelp = nameof(Dashboard_ConnectToTeamHelp);
     public static readonly string Dashboard_ConnectToTeamButton = nameof(Dashboard_ConnectToTeamButton);
+    public static readonly string Dashboard_HasConcreteReviewer = nameof(Dashboard_HasConcreteReviewer);
+    public static readonly string Dashboard_IsOriginalReviewer = nameof(Dashboard_IsOriginalReviewer);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);

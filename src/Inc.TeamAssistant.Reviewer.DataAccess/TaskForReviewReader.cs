@@ -213,6 +213,8 @@ SELECT
     o.id AS ownerid,
     o.name AS ownername,
     o.username AS ownerusername,
+    t.has_concrete_reviewer AS hasconcretereviewer,
+    t.original_reviewer_id IS NULL AS isoriginalreviewer,
     t.state AS state
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id
