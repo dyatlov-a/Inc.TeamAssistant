@@ -1,0 +1,54 @@
+@using Inc.TeamAssistant.Primitives
+
+@inherits PersistentComponent<MetaDataViewModel>
+
+<PageTitle>@ViewModel.Title</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="@ViewModel.Description">
+    <meta name="keywords" content="@ViewModel.Keywords">
+    <meta name="author" content="@ViewModel.Author">
+
+    <meta name="robots" content="index, archive" />
+
+    <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
+</HeadContent>
+
+@code {
+    [Parameter, EditorRequired]
+    public WebsiteSection WebsiteSection { get; set; }
+    
+    protected override Task<MetaDataViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var data = WebsiteSection switch
+        {
+            WebsiteSection.Dashboard => new MetaDataViewModel(
+                resources[Messages.Dashboard_Title],
+                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
+                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
+                resources[Messages.MetaAuthor]),
+            WebsiteSection.Assessment => new MetaDataViewModel(
+                resources[Messages.MetaTitle],
+                resources[Messages.MetaDescription],
+                resources[Messages.MetaKeywords],
+                resources[Messages.MetaAuthor]),
+            WebsiteSection.Map => new MetaDataViewModel(
+                resources[Messages.CheckIn_PageTitle],
+                resources[Messages.MetaDescription],
+                resources[Messages.MetaKeywords],
+                resources[Messages.MetaAuthor]),
+            WebsiteSection.Error404 => new MetaDataViewModel(
+                resources[Messages.GUI_Error404],
+                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
+                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
+                resources[Messages.MetaAuthor]),
+            _ => new MetaDataViewModel(
+                resources[Messages.GUI_MainTitle],
+                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
+                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
+                resources[Messages.MetaAuthor])
+        };
+
+        return Task.FromResult(data);
+    }
+}

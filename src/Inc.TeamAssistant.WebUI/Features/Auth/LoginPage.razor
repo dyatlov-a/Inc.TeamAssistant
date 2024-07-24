@@ -2,14 +2,14 @@
 @page "/ru/login"
 @page "/en/login"
 
-@layout LoginLayout
-
 @inherits PersistentComponent<LoginPageViewModel>
+
+@layout LoginLayout
 
 @inject IUserService UserService
 @inject IRenderContext RenderContext
 
-<PageTitle>@ViewModel.Title</PageTitle>
+<MetaModule WebsiteSection="WebsiteSection.Login" />
 
 <div class="login">
     <div class="login-container">
