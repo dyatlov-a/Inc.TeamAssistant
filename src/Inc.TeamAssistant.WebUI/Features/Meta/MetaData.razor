@@ -18,37 +18,37 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
     
+    [Parameter]
+    public string? OverrideTitle { get; set; }
+    
     protected override Task<MetaDataViewModel> Initialize(Dictionary<string, string> resources)
     {
         var data = WebsiteSection switch
         {
-            WebsiteSection.Dashboard => new MetaDataViewModel(
-                resources[Messages.Dashboard_Title],
-                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
-                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
-                resources[Messages.MetaAuthor]),
             WebsiteSection.Assessment => new MetaDataViewModel(
-                resources[Messages.MetaTitle],
+                GetTitle(resources[Messages.MetaTitle]),
                 resources[Messages.MetaDescription],
                 resources[Messages.MetaKeywords],
                 resources[Messages.MetaAuthor]),
             WebsiteSection.Map => new MetaDataViewModel(
-                resources[Messages.CheckIn_PageTitle],
+                GetTitle(resources[Messages.CheckIn_PageTitle]),
                 resources[Messages.MetaDescription],
                 resources[Messages.MetaKeywords],
                 resources[Messages.MetaAuthor]),
-            WebsiteSection.Error404 => new MetaDataViewModel(
-                resources[Messages.GUI_Error404],
-                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
-                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
-                resources[Messages.MetaAuthor]),
             _ => new MetaDataViewModel(
-                resources[Messages.GUI_MainTitle],
+                GetTitle(resources[Messages.GUI_MainTitle]),
                 $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
                 $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
                 resources[Messages.MetaAuthor])
         };
 
         return Task.FromResult(data);
+    }
+
+    private string GetTitle(string title)
+    {
+        return string.IsNullOrWhiteSpace(OverrideTitle)
+            ? title
+            : OverrideTitle;
     }
 }

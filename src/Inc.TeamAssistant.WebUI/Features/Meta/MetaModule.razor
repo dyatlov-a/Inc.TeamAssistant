@@ -1,7 +1,10 @@
-<MetaData WebsiteSection="WebsiteSection" />
+<MetaData WebsiteSection="WebsiteSection" OverrideTitle="@MetaOverrideTitle" />
 <OpenGraph WebsiteSection="WebsiteSection" />
 
 @code {
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
+    
+    [Parameter]
+    public string? MetaOverrideTitle { get; set; }
 }

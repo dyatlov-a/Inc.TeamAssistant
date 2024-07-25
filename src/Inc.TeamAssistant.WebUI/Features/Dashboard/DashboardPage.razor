@@ -14,7 +14,7 @@
 
 @inject IBotService BotService
 
-<MetaModule WebsiteSection="WebsiteSection.Dashboard" />
+<MetaModule WebsiteSection="WebsiteSection.Dashboard" MetaOverrideTitle="@ViewModel.Title" />
 
 <div class="dashboard">
     <div class="dashboard-toolbar">
@@ -85,6 +85,7 @@
         var getByUser = await BotService.GetByUser(currentPerson.Id);
         
         return new DashboardPageViewModel(
+            resources[Messages.Dashboard_Title],
             resources[Messages.Dashboard_BotWidgetTitle],
             getByUser.Result.Bots);
     }
