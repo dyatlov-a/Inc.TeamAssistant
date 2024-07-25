@@ -164,24 +164,31 @@ internal static class Messages
 
     public static readonly string Validation_TokenInvalid = nameof(Validation_TokenInvalid);
     
-    public static readonly string Appraiser_OgImageText = nameof(Appraiser_OgImageText);
-    
-    public static readonly string OgTitle = nameof(OgTitle);
-    public static readonly string OgDescription = nameof(OgDescription);
-    public static readonly string OgImageText = nameof(OgImageText);
+    public static readonly string OgMainTitle = nameof(OgMainTitle);
+    public static readonly string OgMainDescription = nameof(OgMainDescription);
+    public static readonly string OgMainImageText = nameof(OgMainImageText);
+    public static readonly string OgAppraiserTitle = nameof(OgAppraiserTitle);
+    public static readonly string OgAppraiserDescription = nameof(OgAppraiserDescription);
+    public static readonly string OgAppraiserImageText = nameof(OgAppraiserImageText);
+    public static readonly string OgCheckInTitle = nameof(OgCheckInTitle);
+    public static readonly string OgCheckInDescription = nameof(OgCheckInDescription);
+    public static readonly string OgCheckInImageText = nameof(OgCheckInImageText);
     
     public static readonly string CheckIn_PageTitle = nameof(CheckIn_PageTitle);
     public static readonly string CheckIn_DefaultLayerTitle = nameof(CheckIn_DefaultLayerTitle);
-    public static readonly string CheckIn_OgTitle = nameof(CheckIn_OgTitle);
-    public static readonly string CheckIn_OgDescription = nameof(CheckIn_OgDescription);
-    public static readonly string CheckIn_OgImageText = nameof(CheckIn_OgImageText);
     public static readonly string CheckIn_RouteShow = nameof(CheckIn_RouteShow);
     public static readonly string CheckIn_RouteHide = nameof(CheckIn_RouteHide);
     
-    public static readonly string MetaTitle = nameof(MetaTitle);
-    public static readonly string MetaDescription = nameof(MetaDescription);
-    public static readonly string MetaKeywords = nameof(MetaKeywords);
     public static readonly string MetaAuthor = nameof(MetaAuthor);
+    public static readonly string MetaMainTitle = nameof(MetaMainTitle);
+    public static readonly string MetaMainDescription = nameof(MetaMainDescription);
+    public static readonly string MetaMainKeywords = nameof(MetaMainKeywords);
+    public static readonly string MetaAppraiserTitle = nameof(MetaAppraiserTitle);
+    public static readonly string MetaAppraiserDescription = nameof(MetaAppraiserDescription);
+    public static readonly string MetaAppraiserKeywords = nameof(MetaAppraiserKeywords);
+    public static readonly string MetaCheckInTitle = nameof(MetaCheckInTitle);
+    public static readonly string MetaCheckInDescription = nameof(MetaCheckInDescription);
+    public static readonly string MetaCheckInKeywords = nameof(MetaCheckInKeywords);
     
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
     public static string GetFeatureProperty(string featureName, string propertyName)

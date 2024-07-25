@@ -1,5 +1,11 @@
-<MetaData WebsiteSection="WebsiteSection" OverrideTitle="@MetaOverrideTitle" />
-<OpenGraph WebsiteSection="WebsiteSection" />
+@inherits PersistentComponent<MetaModuleViewModel>
+
+<PageTitle>@ViewModel.Title</PageTitle>
+
+<HeadContent>
+    <MetaData WebsiteSection="WebsiteSection" />
+    <OpenGraph WebsiteSection="WebsiteSection" />
+</HeadContent>
 
 @code {
     [Parameter, EditorRequired]
@@ -7,4 +13,18 @@
     
     [Parameter]
     public string? MetaOverrideTitle { get; set; }
+
+    protected override Task<MetaModuleViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        var title = string.IsNullOrWhiteSpace(MetaOverrideTitle)
+            ? WebsiteSection switch
+            {
+                WebsiteSection.Assessment => resources[Messages.MetaAppraiserTitle],
+                WebsiteSection.Map => resources[Messages.MetaCheckInTitle],
+                _ => resources[Messages.MetaMainTitle]
+            }
+            : MetaOverrideTitle;
+        
+        return Task.FromResult(new MetaModuleViewModel(title));
+    }
 }

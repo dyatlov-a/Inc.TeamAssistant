@@ -2,56 +2,39 @@
 
 @inherits PersistentComponent<MetaDataViewModel>
 
-<PageTitle>@ViewModel.Title</PageTitle>
+<meta name="description" content="@ViewModel.Description">
+<meta name="keywords" content="@ViewModel.Keywords">
+<meta name="author" content="@ViewModel.Author">
 
-<HeadContent>
-    <meta name="description" content="@ViewModel.Description">
-    <meta name="keywords" content="@ViewModel.Keywords">
-    <meta name="author" content="@ViewModel.Author">
+<meta name="robots" content="@ViewModel.RobotsValue" />
 
-    <meta name="robots" content="@ViewModel.RobotsValue" />
-
-    <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
-</HeadContent>
+<link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
 
 @code {
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
-    
-    [Parameter]
-    public string? OverrideTitle { get; set; }
     
     protected override Task<MetaDataViewModel> Initialize(Dictionary<string, string> resources)
     {
         var data = WebsiteSection switch
         {
             WebsiteSection.Assessment => new MetaDataViewModel(
-                GetTitle(resources[Messages.MetaTitle]),
-                resources[Messages.MetaDescription],
-                resources[Messages.MetaKeywords],
+                resources[Messages.MetaAppraiserDescription],
+                resources[Messages.MetaAppraiserKeywords],
                 resources[Messages.MetaAuthor],
                 "noindex"),
             WebsiteSection.Map => new MetaDataViewModel(
-                GetTitle(resources[Messages.CheckIn_PageTitle]),
-                resources[Messages.MetaDescription],
-                resources[Messages.MetaKeywords],
+                resources[Messages.MetaCheckInDescription],
+                resources[Messages.MetaCheckInKeywords],
                 resources[Messages.MetaAuthor],
                 "noindex"),
             _ => new MetaDataViewModel(
-                GetTitle(resources[Messages.GUI_MainTitle]),
-                $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
-                $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
+                resources[Messages.MetaMainDescription],
+                resources[Messages.MetaMainKeywords],
                 resources[Messages.MetaAuthor],
                 "index")
         };
 
         return Task.FromResult(data);
-    }
-
-    private string GetTitle(string title)
-    {
-        return string.IsNullOrWhiteSpace(OverrideTitle)
-            ? title
-            : OverrideTitle;
     }
 }
