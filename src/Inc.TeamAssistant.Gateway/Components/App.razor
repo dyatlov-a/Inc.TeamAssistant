@@ -4,28 +4,30 @@
 @using Inc.TeamAssistant.WebUI.Features
 
 @inject IRenderContext RenderContext
-@inject IWebHostEnvironment WebHostEnvironment
+@inject AnalyticsOptions AnalyticsOptions
 
 <!DOCTYPE html>
 <html lang="@_lang">
 
 <head>
-    @if (AnalyticsEnabled())
+    @if (!string.IsNullOrWhiteSpace(AnalyticsOptions.GoogleVerificationValue))
     {
         <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-T9P8VHE1T6"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@AnalyticsOptions.GoogleVerificationValue"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
     
-            gtag('config', 'G-T9P8VHE1T6');
+            gtag('config', '@AnalyticsOptions.GoogleVerificationValue');
         </script>
-    
-        <!-- yandex webmaster -->
-        <meta name="yandex-verification" content="01d3226feee68038" />
     }
-    
+    @if (!string.IsNullOrWhiteSpace(AnalyticsOptions.YandexVerificationValue))
+    {
+        <!-- yandex webmaster -->
+        <meta name="yandex-verification" content="@AnalyticsOptions.YandexVerificationValue)"/>
+    }
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
@@ -60,6 +62,4 @@
     {
         _lang = RenderContext.GetCurrentLanguageId().Language.Value;
     }
-    
-    private bool AnalyticsEnabled() => WebHostEnvironment.IsProduction();
 }

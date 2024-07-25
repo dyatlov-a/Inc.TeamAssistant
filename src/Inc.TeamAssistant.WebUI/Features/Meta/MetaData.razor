@@ -9,7 +9,7 @@
     <meta name="keywords" content="@ViewModel.Keywords">
     <meta name="author" content="@ViewModel.Author">
 
-    <meta name="robots" content="index, archive" />
+    <meta name="robots" content="@ViewModel.RobotsValue" />
 
     <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
 </HeadContent>
@@ -29,17 +29,20 @@
                 GetTitle(resources[Messages.MetaTitle]),
                 resources[Messages.MetaDescription],
                 resources[Messages.MetaKeywords],
-                resources[Messages.MetaAuthor]),
+                resources[Messages.MetaAuthor],
+                "noindex"),
             WebsiteSection.Map => new MetaDataViewModel(
                 GetTitle(resources[Messages.CheckIn_PageTitle]),
                 resources[Messages.MetaDescription],
                 resources[Messages.MetaKeywords],
-                resources[Messages.MetaAuthor]),
+                resources[Messages.MetaAuthor],
+                "noindex"),
             _ => new MetaDataViewModel(
                 GetTitle(resources[Messages.GUI_MainTitle]),
                 $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}",
                 $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}",
-                resources[Messages.MetaAuthor])
+                resources[Messages.MetaAuthor],
+                "index")
         };
 
         return Task.FromResult(data);

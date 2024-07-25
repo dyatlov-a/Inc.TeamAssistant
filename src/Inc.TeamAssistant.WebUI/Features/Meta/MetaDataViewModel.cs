@@ -6,10 +6,12 @@ public sealed record MetaDataViewModel(
     string Title,
     string Description,
     string Keywords,
-    string Author)
+    string Author,
+    string RobotsValue)
     : IViewModel<MetaDataViewModel>
 {
     public static MetaDataViewModel Empty { get; } = new(
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

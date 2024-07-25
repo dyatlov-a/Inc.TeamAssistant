@@ -59,6 +59,9 @@ var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOpti
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
 var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
+var analyticsOptions = builder.Configuration
+	.GetSection(nameof(AnalyticsOptions))
+	.Get<AnalyticsOptions>() ?? new AnalyticsOptions();
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
@@ -105,6 +108,7 @@ builder.Services
 	});
 
 builder.Services
+	.AddSingleton(analyticsOptions)
 	.AddDataAccess(connectionString)
 	.AddMessageIdType()
 	.AddLanguageIdType()
