@@ -2,9 +2,10 @@ namespace Inc.TeamAssistant.WebUI.Features.Meta;
 
 public enum WebsiteSection
 {
-    Main = 1,
-    Constructor = 2,
-    Dashboard = 3,
-    Assessment = 4,
-    Map = 5
+    Error404 = 1,
+    Main = 2,
+    Constructor = 3,
+    Dashboard = 4,
+    Assessment = 5,
+    Map = 6
 }

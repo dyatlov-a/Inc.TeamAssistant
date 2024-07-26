@@ -18,6 +18,11 @@
     {
         var data = WebsiteSection switch
         {
+            WebsiteSection.Error404 => new MetaDataViewModel(
+                resources[Messages.MetaMainDescription],
+                resources[Messages.MetaMainKeywords],
+                resources[Messages.MetaAuthor],
+                "noindex"),
             WebsiteSection.Assessment => new MetaDataViewModel(
                 resources[Messages.MetaAppraiserDescription],
                 resources[Messages.MetaAppraiserKeywords],

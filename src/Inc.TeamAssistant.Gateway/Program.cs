@@ -162,6 +162,7 @@ if (builder.Environment.IsDevelopment())
 	app.UseWebAssemblyDebugging();
 
 app
+	.UseStatusCodePagesWithReExecute("/error404")
 	.UseStaticFiles()
 	.UseRouting()
 	.UseOutputCache()
