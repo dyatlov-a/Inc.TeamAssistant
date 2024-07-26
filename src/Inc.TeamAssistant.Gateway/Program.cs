@@ -37,6 +37,8 @@ using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Prometheus.DotNetRuntime;
+using Serilog;
+using Serilog.Events;
 
 DotNetRuntimeStatsBuilder
 	.Customize()
@@ -59,9 +61,19 @@ var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOpti
 var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
 var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
 var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
-var analyticsOptions = builder.Configuration
-	.GetSection(nameof(AnalyticsOptions))
-	.Get<AnalyticsOptions>() ?? new AnalyticsOptions();
+var analyticsOptions = builder.Configuration.GetRequiredSection(nameof(AnalyticsOptions)).Get<AnalyticsOptions>()!;
+
+builder.Host.UseSerilog((_, c) => c
+	.Enrich.FromLogContext()
+	.MinimumLevel.Information()
+	.WriteTo.Console()
+	.WriteTo.Sentry(s =>
+	{
+		s.Environment = builder.Environment.EnvironmentName;
+		s.Dsn = analyticsOptions.SentryDsn;
+		s.MinimumBreadcrumbLevel = LogEventLevel.Information;
+		s.MinimumEventLevel = LogEventLevel.Error;
+	}));
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
@@ -162,6 +174,7 @@ if (builder.Environment.IsDevelopment())
 	app.UseWebAssemblyDebugging();
 
 app
+	.UseSerilogRequestLogging()
 	.UseStatusCodePagesWithReExecute("/error404")
 	.UseStaticFiles()
 	.UseRouting()
