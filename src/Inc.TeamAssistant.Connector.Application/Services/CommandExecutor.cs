@@ -137,6 +137,7 @@ internal sealed class CommandExecutor : ICommandExecutor
     }
 
     private async Task<IReadOnlyCollection<MessageEntity>> BuildMessageEntities(
+        Guid botId,
         NotificationMessage notificationMessage,
         CancellationToken token)
     {
@@ -146,7 +147,7 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         foreach (var target in notificationMessage.TargetPersons)
         {
-            var languageId = await _teamAccessor.GetClientLanguage(target.Person.Id, token);
+            var languageId = await _teamAccessor.GetClientLanguage(botId, target.Person.Id, token);
             
             results.Add(new MessageEntity
             {
@@ -177,7 +178,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         ArgumentNullException.ThrowIfNull(messageContext);
 
         var entities = notificationMessage.TargetPersons.Any()
-            ? await BuildMessageEntities(notificationMessage, token)
+            ? await BuildMessageEntities(messageContext.Bot.Id, notificationMessage, token)
             : Array.Empty<MessageEntity>();
 
         if (notificationMessage.TargetChatId.HasValue)

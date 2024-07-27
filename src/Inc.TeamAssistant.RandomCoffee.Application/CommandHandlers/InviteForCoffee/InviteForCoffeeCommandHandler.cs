@@ -53,7 +53,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
 
         await _repository.Upsert(randomCoffeeEntry, token);
 
-        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
+        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, owner.Id, token);
         var notification = NotificationMessage
             .Create(
                 randomCoffeeEntry.ChatId,

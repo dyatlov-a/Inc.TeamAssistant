@@ -35,16 +35,15 @@ public sealed class OpenGraphService
         var wrappingLength = imageWidth - totalPadding;
         
         var textArea = TextMeasurer.MeasureAdvance(text, CreateTextOptions(font, wrappingLength));
-        var x = imageWidth / 2f - textArea.Width / 2;
-        var y = imageHeight / 2f - textArea.Height / 2;
+        var marginTop = imageHeight / 2f - textArea.Height / 2;
         
         image.Mutate(i => i
             .Fill(
                 CreateDrawingOptions(),
                 Color.Black,
-                new RectangleF(0, y - _options.Padding, imageWidth, textArea.Height + totalPadding))
+                new RectangleF(0, marginTop - _options.Padding, imageWidth, textArea.Height + totalPadding))
             .DrawText(
-                CreateTextOptions(font, wrappingLength, new Vector2(x, y)),
+                CreateTextOptions(font, wrappingLength, new Vector2(_options.Padding, marginTop)),
                 text,
                 Color.White));
 

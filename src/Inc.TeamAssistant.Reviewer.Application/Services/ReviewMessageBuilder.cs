@@ -82,12 +82,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         {
             { State: TaskForReviewState.New or TaskForReviewState.InProgress, ReviewerMessageId: not null } =>
                 await CreatePushMessage(
+                    taskForReview.BotId,
                     taskForReview.ReviewerId,
                     taskForReview.ReviewerMessageId.Value,
                     workTimeTotal,
                     token),
             { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null } =>
                 await CreatePushMessage(
+                    taskForReview.BotId,
                     taskForReview.OwnerId,
                     taskForReview.OwnerMessageId.Value,
                     workTimeTotal,
@@ -97,12 +99,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     }
 
     private async Task<NotificationMessage?> CreatePushMessage(
+        Guid botId,
         long personId,
         int messageId,
         TimeSpan workTimeTotal,
         CancellationToken token)
     {
-        var languageId = await _teamAccessor.GetClientLanguage(personId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(botId, personId, token);
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedEndReview, languageId));
@@ -132,7 +135,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTask);
 
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
-        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, owner.Id, token);
         var state = taskForReview.State switch
         {
             TaskForReviewState.New => "⏳",
@@ -185,7 +188,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
-        var languageId = await _teamAccessor.GetClientLanguage(reviewerId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, reviewerId, token);
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId));
@@ -205,7 +208,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
         
-        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.ReviewerId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, taskForReview.ReviewerId, token);
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedReview, languageId));
         messageBuilder.AppendLine();
@@ -267,7 +270,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
 
-        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, taskForReview.OwnerId, token);
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_ReviewDeclined, languageId));
         messageBuilder.AppendLine();
@@ -307,7 +310,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
-        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.OwnerId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, taskForReview.OwnerId, token);
         var workTimeTotal = await _holidayService.CalculateWorkTime(
             taskForReview.Created,
             DateTimeOffset.UtcNow,

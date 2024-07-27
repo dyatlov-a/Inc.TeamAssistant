@@ -109,7 +109,7 @@ else
     private string GetReviewerTitle(TaskForReviewDto task)
     {
         var hasConcreteReviewer = task.HasConcreteReviewer ? ViewModel.BooleanTrueText : ViewModel.BooleanFalseText;
-        var isOriginalReviewer = task.IsOriginalReviewer ? ViewModel.BooleanTrueText : ViewModel.BooleanFalseText;
+        var isOriginalReviewer = task.IsOriginalReviewer ? ViewModel.BooleanFalseText : ViewModel.BooleanTrueText;
         var builder = new StringBuilder();
         
         builder.AppendLine($"{ViewModel.HasConcreteReviewer} - {hasConcreteReviewer}");

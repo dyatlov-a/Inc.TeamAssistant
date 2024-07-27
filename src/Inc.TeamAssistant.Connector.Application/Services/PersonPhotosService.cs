@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 
@@ -16,8 +15,8 @@ internal sealed class PersonPhotosService
         ILogger<PersonPhotosService> logger,
         IPersonRepository personRepository)
     {
-        _telegramBotClientProvider = telegramBotClientProvider ??
-                                     throw new ArgumentNullException(nameof(telegramBotClientProvider));
+        _telegramBotClientProvider =
+            telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
     }
@@ -30,12 +29,18 @@ internal sealed class PersonPhotosService
             var telegramBotClient = await _telegramBotClientProvider.Get(telegramBotId, token);
             var userProfilePhotos = await telegramBotClient.GetUserProfilePhotosAsync(personId, 0, 1, token);
             var userProfilePhoto = userProfilePhotos.Photos.FirstOrDefault()?.MinBy(p => p.Width * p.Height);
+            if (userProfilePhoto is null)
+                return null;
+            
             var fileInfo = await telegramBotClient.GetFileAsync(userProfilePhoto.FileId, token);
-
+            if (string.IsNullOrWhiteSpace(fileInfo.FilePath))
+                return null;
+            
             var stream = new MemoryStream();
+            
             await telegramBotClient.DownloadFileAsync(fileInfo.FilePath, stream, token);
+            
             stream.Position = 0;
-
             return stream;
         }
         catch(Exception e)
