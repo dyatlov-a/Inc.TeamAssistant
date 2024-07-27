@@ -36,44 +36,39 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
-using Prometheus.DotNetRuntime;
 using Serilog;
-using Serilog.Events;
 
-DotNetRuntimeStatsBuilder
-	.Customize()
-	.WithGcStats()
-	.WithThreadPoolStats()
-	.StartCollecting();
+ValidatorOptions.Global.Configure(LanguageSettings.DefaultLanguageId);
 
-ValidatorOptions.Global.LanguageManager.Culture = new(LanguageSettings.DefaultLanguageId.Value);
-ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
-ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+var builder = WebApplication
+	.CreateBuilder(args)
+	.UseTelemetry();
 
-var builder = WebApplication.CreateBuilder(args);
-
-var cacheAbsoluteExpiration = builder.Configuration.GetRequiredSection("CacheAbsoluteExpiration").Get<TimeSpan>();
-var appraiserOptions = builder.Configuration.GetRequiredSection(nameof(AppraiserOptions)).Get<AppraiserOptions>()!;
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOptions)).Get<CheckInOptions>()!;
-var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
-var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
-var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
-var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
-var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
-var analyticsOptions = builder.Configuration.GetRequiredSection(nameof(AnalyticsOptions)).Get<AnalyticsOptions>()!;
-
-builder.Host.UseSerilog((_, c) => c
-	.Enrich.FromLogContext()
-	.MinimumLevel.Information()
-	.WriteTo.Console()
-	.WriteTo.Sentry(s =>
-	{
-		s.Environment = builder.Environment.EnvironmentName;
-		s.Dsn = analyticsOptions.SentryDsn;
-		s.MinimumBreadcrumbLevel = LogEventLevel.Information;
-		s.MinimumEventLevel = LogEventLevel.Error;
-	}));
+var cacheAbsoluteExpiration = builder.Configuration
+	.GetRequiredSection("CacheAbsoluteExpiration")
+	.Get<TimeSpan>();
+var appraiserOptions = builder.Configuration
+	.GetRequiredSection(nameof(AppraiserOptions))
+	.Get<AppraiserOptions>()!;
+var checkInOptions = builder.Configuration
+	.GetRequiredSection(nameof(CheckInOptions))
+	.Get<CheckInOptions>()!;
+var reviewerOptions = builder.Configuration
+	.GetRequiredSection(nameof(ReviewerOptions))
+	.Get<ReviewerOptions>()!;
+var workdayOptions = builder.Configuration
+	.GetRequiredSection(nameof(WorkdayOptions))
+	.Get<WorkdayOptions>()!;
+var randomCoffeeOptions = builder.Configuration
+	.GetRequiredSection(nameof(RandomCoffeeOptions))
+	.Get<RandomCoffeeOptions>()!;
+var authOptions = builder.Configuration
+	.GetRequiredSection(nameof(AuthOptions))
+	.Get<AuthOptions>()!;
+var openGraphOptions = builder.Configuration
+	.GetRequiredSection(nameof(OpenGraphOptions))
+	.Get<OpenGraphOptions>()!;
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
@@ -120,7 +115,6 @@ builder.Services
 	});
 
 builder.Services
-	.AddSingleton(analyticsOptions)
 	.AddDataAccess(connectionString)
 	.AddMessageIdType()
 	.AddLanguageIdType()

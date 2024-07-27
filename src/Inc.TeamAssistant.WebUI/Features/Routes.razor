@@ -1,5 +1,5 @@
-﻿@using System.Globalization
-@using FluentValidation
+﻿@using FluentValidation
+@using Inc.TeamAssistant.WebUI.Services
 
 @implements IDisposable
 
@@ -43,7 +43,7 @@
     private void SetCurrentLanguage()
     {
         var currentLanguage = RenderContext.GetCurrentLanguageId();
-        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo(currentLanguage.Language.Value);
+        ValidatorOptions.Global.Configure(currentLanguage.Language);
     }
 
     public void Dispose()
