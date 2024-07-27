@@ -1,10 +1,11 @@
 using FluentValidation;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
 {
-    public SetSettingsFormModelValidator()
+    public SetSettingsFormModelValidator(BotDetailsFormModelValidator botDetailsFormModelValidator)
     {
         RuleFor(e => e.Properties)
             .NotEmpty();
@@ -18,5 +19,11 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
                 c.RuleFor(e => e.Value)
                     .NotEmpty();
             });
+
+        RuleFor(e => e.SupportedLanguages)
+            .NotEmpty();
+
+        RuleForEach(e => e.BotDetails)
+            .SetValidator(botDetailsFormModelValidator);
     }
 }

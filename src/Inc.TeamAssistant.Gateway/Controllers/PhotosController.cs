@@ -24,8 +24,8 @@ public sealed class PhotosController : ControllerBase
         const string contentType = "image/jpeg";
         var result = await _mediator.Send(new GetPersonPhotoQuery(personId), token);
         
-        return result.PhotoData is null
+        return result.Photo is null
             ? File("imgs/user_stub.jpg", contentType)
-            : File(result.PhotoData, contentType);
+            : File(result.Photo, contentType);
     }
 }

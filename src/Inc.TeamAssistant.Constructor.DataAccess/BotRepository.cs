@@ -23,7 +23,8 @@ internal sealed class BotRepository : IBotRepository
                 b.name AS name,
                 b.token AS token,
                 b.owner_id AS ownerid,
-                b.properties AS properties
+                b.properties AS properties,
+                b.supported_languages AS supportedlanguages
             FROM connector.bots AS b
             WHERE b.owner_id = @owner_id;",
             new
@@ -47,7 +48,8 @@ internal sealed class BotRepository : IBotRepository
                 b.name AS name,
                 b.token AS token,
                 b.owner_id AS ownerid,
-                b.properties AS properties
+                b.properties AS properties,
+                b.supported_languages AS supportedlanguages
             FROM connector.bots AS b
             WHERE b.id = @id;
 
@@ -75,20 +77,22 @@ internal sealed class BotRepository : IBotRepository
     public async Task Upsert(Bot bot, CancellationToken token)
     {
         var upsertBotCommand = new CommandDefinition(@"
-            INSERT INTO connector.bots (id, name, token, owner_id, properties)
-            VALUES (@id, @name, @token, @owner_id, @properties::jsonb)
+            INSERT INTO connector.bots (id, name, token, owner_id, properties, supported_languages)
+            VALUES (@id, @name, @token, @owner_id, @properties::jsonb, @supported_languages::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
                 token = EXCLUDED.token,
                 owner_id = EXCLUDED.owner_id,
-                properties = EXCLUDED.properties;",
+                properties = EXCLUDED.properties,
+                supported_languages = EXCLUDED.supported_languages;",
             new
             {
                 id = bot.Id,
                 name = bot.Name,
                 token = bot.Token,
                 owner_id = bot.OwnerId,
-                properties = JsonSerializer.Serialize(bot.Properties)
+                properties = JsonSerializer.Serialize(bot.Properties),
+                supported_languages = JsonSerializer.Serialize(bot.SupportedLanguages)
             },
             flags: CommandFlags.None,
             cancellationToken: token);

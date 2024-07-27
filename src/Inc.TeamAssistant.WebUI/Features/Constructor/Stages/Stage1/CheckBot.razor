@@ -1,6 +1,10 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
+
 @inherits PersistentComponent<CheckBotViewModel>
 
+@inject IBotService BotService
 @inject NavigationManager NavigationManager
+@inject IServiceProvider ServiceProvider
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -19,7 +23,7 @@
                 </FormFieldSet>
                 <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
                     <Content>
-                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="true"/>
+                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="disabled"/>
                     </Content>
                 </FormFieldSet>
             </Content>
@@ -36,6 +40,9 @@
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
     
     private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -63,8 +70,12 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        StagesState.Apply(_formModel);
+        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
         
+        await ServiceProvider.GetRequiredService<DataEditor>().Attach(
+            BotStorageKey,
+            StagesState.Apply(getBotDetailsResult.Result.Items).Apply(_formModel));
+
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }
 }

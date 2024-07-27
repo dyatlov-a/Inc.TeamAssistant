@@ -1,10 +1,11 @@
 using FluentValidation;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
 public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormModel>
 {
-    public CompleteFormModelValidator()
+    public CompleteFormModelValidator(BotDetailsFormModelValidator botDetailsFormModelValidator)
     {
         RuleFor(e => e.UserName)
             .NotEmpty();
@@ -27,5 +28,8 @@ public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormM
                 c.RuleFor(e => e.Value)
                     .NotEmpty();
             });
+        
+        RuleForEach(e => e.BotDetails)
+            .SetValidator(botDetailsFormModelValidator);
     }
 }

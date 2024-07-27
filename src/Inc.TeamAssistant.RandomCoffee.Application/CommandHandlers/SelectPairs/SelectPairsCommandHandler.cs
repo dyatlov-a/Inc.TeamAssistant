@@ -44,7 +44,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (owner is null)
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
         
-        var languageId = await _teamAccessor.GetClientLanguage(owner.Id, token);
+        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, owner.Id, token);
         var notificationMessage = randomCoffeeEntry.CanSelectPairs()
             ? await _notificationsBuilder.Build(
                 randomCoffeeEntry.ChatId,

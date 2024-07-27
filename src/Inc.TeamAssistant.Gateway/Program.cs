@@ -36,29 +36,39 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
-using Prometheus.DotNetRuntime;
+using Serilog;
 
-DotNetRuntimeStatsBuilder
-	.Customize()
-	.WithGcStats()
-	.WithThreadPoolStats()
-	.StartCollecting();
+ValidatorOptions.Global.Configure(LanguageSettings.DefaultLanguageId);
 
-ValidatorOptions.Global.LanguageManager.Culture = new(LanguageSettings.DefaultLanguageId.Value);
-ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Continue;
-ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+var builder = WebApplication
+	.CreateBuilder(args)
+	.UseTelemetry();
 
-var builder = WebApplication.CreateBuilder(args);
-
-var cacheAbsoluteExpiration = builder.Configuration.GetRequiredSection("CacheAbsoluteExpiration").Get<TimeSpan>();
-var appraiserOptions = builder.Configuration.GetRequiredSection(nameof(AppraiserOptions)).Get<AppraiserOptions>()!;
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var checkInOptions = builder.Configuration.GetRequiredSection(nameof(CheckInOptions)).Get<CheckInOptions>()!;
-var reviewerOptions = builder.Configuration.GetRequiredSection(nameof(ReviewerOptions)).Get<ReviewerOptions>()!;
-var workdayOptions = builder.Configuration.GetRequiredSection(nameof(WorkdayOptions)).Get<WorkdayOptions>()!;
-var randomCoffeeOptions = builder.Configuration.GetRequiredSection(nameof(RandomCoffeeOptions)).Get<RandomCoffeeOptions>()!;
-var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
-var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
+var cacheAbsoluteExpiration = builder.Configuration
+	.GetRequiredSection("CacheAbsoluteExpiration")
+	.Get<TimeSpan>();
+var appraiserOptions = builder.Configuration
+	.GetRequiredSection(nameof(AppraiserOptions))
+	.Get<AppraiserOptions>()!;
+var checkInOptions = builder.Configuration
+	.GetRequiredSection(nameof(CheckInOptions))
+	.Get<CheckInOptions>()!;
+var reviewerOptions = builder.Configuration
+	.GetRequiredSection(nameof(ReviewerOptions))
+	.Get<ReviewerOptions>()!;
+var workdayOptions = builder.Configuration
+	.GetRequiredSection(nameof(WorkdayOptions))
+	.Get<WorkdayOptions>()!;
+var randomCoffeeOptions = builder.Configuration
+	.GetRequiredSection(nameof(RandomCoffeeOptions))
+	.Get<RandomCoffeeOptions>()!;
+var authOptions = builder.Configuration
+	.GetRequiredSection(nameof(AuthOptions))
+	.Get<AuthOptions>()!;
+var openGraphOptions = builder.Configuration
+	.GetRequiredSection(nameof(OpenGraphOptions))
+	.Get<OpenGraphOptions>()!;
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
@@ -158,6 +168,9 @@ if (builder.Environment.IsDevelopment())
 	app.UseWebAssemblyDebugging();
 
 app
+	.UseSerilogRequestLogging()
+	.UseStatusCodePagesWithReExecute("/error404")
+	.UseExceptionHandler()
 	.UseStaticFiles()
 	.UseRouting()
 	.UseOutputCache()

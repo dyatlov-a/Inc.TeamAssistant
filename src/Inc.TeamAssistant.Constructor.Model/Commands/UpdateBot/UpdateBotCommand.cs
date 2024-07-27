@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
@@ -7,5 +8,7 @@ public sealed record UpdateBotCommand(
     string Name,
     string Token,
     IReadOnlyCollection<Guid> FeatureIds,
-    IReadOnlyDictionary<string, string> Properties)
+    IReadOnlyDictionary<string, string> Properties,
+    IReadOnlyCollection<string> SupportedLanguages,
+    IReadOnlyCollection<BotDetails> BotDetails)
     : IRequest;

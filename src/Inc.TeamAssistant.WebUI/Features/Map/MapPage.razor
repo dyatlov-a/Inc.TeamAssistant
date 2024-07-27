@@ -5,6 +5,8 @@
 @page "/en/map/{id:guid}/{DisableLayout:bool}"
 @page "/ru/map/{id:guid}/{DisableLayout:bool}"
 
+@layout CleanLayout
+
 @using Inc.TeamAssistant.Appraiser.Model.Common
 @using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
 
@@ -14,7 +16,7 @@
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 
-@layout MapLayout
+<MetaModule WebsiteSection="WebsiteSection.Map" />
 
 @if (!DisableLayout)
 {

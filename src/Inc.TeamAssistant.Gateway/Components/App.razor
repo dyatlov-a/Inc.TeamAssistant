@@ -4,36 +4,39 @@
 @using Inc.TeamAssistant.WebUI.Features
 
 @inject IRenderContext RenderContext
-@inject IWebHostEnvironment WebHostEnvironment;
+@inject AnalyticsOptions AnalyticsOptions
 
 <!DOCTYPE html>
 <html lang="@_lang">
 
 <head>
-    @if (AnalyticsEnabled())
+    @if (!string.IsNullOrWhiteSpace(AnalyticsOptions.GoogleVerificationValue))
     {
         <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-T9P8VHE1T6"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@AnalyticsOptions.GoogleVerificationValue"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
     
-            gtag('config', 'G-T9P8VHE1T6');
+            gtag('config', '@AnalyticsOptions.GoogleVerificationValue');
         </script>
-    
-        <!-- yandex webmaster -->
-        <meta name="yandex-verification" content="01d3226feee68038" />
     }
-    
+    @if (!string.IsNullOrWhiteSpace(AnalyticsOptions.YandexVerificationValue))
+    {
+        <!-- yandex webmaster -->
+        <meta name="yandex-verification" content="@AnalyticsOptions.YandexVerificationValue)"/>
+    }
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <link rel="stylesheet" href="leaflet/leaflet.css?v=@_appVersion"/>
     <link href="css/main.css?v=@_appVersion" rel="stylesheet"/>
@@ -60,6 +63,4 @@
     {
         _lang = RenderContext.GetCurrentLanguageId().Language.Value;
     }
-    
-    private bool AnalyticsEnabled() => WebHostEnvironment.IsProduction();
 }

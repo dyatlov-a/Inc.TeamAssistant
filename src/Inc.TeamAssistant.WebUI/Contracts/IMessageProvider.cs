@@ -4,5 +4,5 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IMessageProvider
 {
-    Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get();
+    Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token = default);
 }

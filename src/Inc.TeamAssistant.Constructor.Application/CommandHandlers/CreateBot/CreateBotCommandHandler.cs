@@ -38,11 +38,12 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
             command.Token,
             currentPerson.Id,
             command.Properties,
-            command.FeatureIds);
+            command.FeatureIds,
+            command.SupportedLanguages);
         
         await _botRepository.Upsert(bot, token);
 
-        await _botConnector.Setup(bot.Id, token);
+        await _botConnector.Update(bot.Id, command.BotDetails, token);
         await _botListeners.Start(bot.Id);
     }
 }

@@ -5,4 +5,5 @@ public sealed record GetBotResult(
     string UserName,
     string Token,
     IReadOnlyCollection<Guid> FeatureIds,
-    IReadOnlyDictionary<string, string> Properties);
+    IReadOnlyDictionary<string, string> Properties,
+    IReadOnlyCollection<string> SupportedLanguages);

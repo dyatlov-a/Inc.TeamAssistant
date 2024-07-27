@@ -1,42 +1,61 @@
 @using Inc.TeamAssistant.Primitives
-@using Inc.TeamAssistant.Primitives.Languages
 
 @inject IRenderContext RenderContext
 
-<HeadContent>
-    <meta property="og:locale" content="@GetLocale(_languageId)">
-    <meta property="og:title" content="@Model.Title">
-    <meta property="og:description" content="@Model.Description">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
-    <meta property="og:site_name" content="@GlobalSettings.CanonicalName">
-    <meta property="og:image" content="@ImageUrl">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
-    <meta name="twitter:title" content="@Model.Title">
-    <meta name="twitter:description" content="@Model.Description">
-    <meta name="twitter:image" content="@ImageUrl">
-    
-    <meta property="vk:image" content="@ImageUrl">
-</HeadContent>
+@inherits PersistentComponent<OpenGraphViewModel>
+
+<meta property="og:locale" content="@GetLocale(ViewModel.LanguageId)">
+<meta property="og:title" content="@ViewModel.Title">
+<meta property="og:description" content="@ViewModel.Description">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
+<meta property="og:site_name" content="@GlobalSettings.CanonicalName">
+<meta property="og:image" content="@ImageUrl">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
+<meta name="twitter:title" content="@ViewModel.Title">
+<meta name="twitter:description" content="@ViewModel.Description">
+<meta name="twitter:image" content="@ImageUrl">
+
+<meta property="vk:image" content="@ImageUrl">
 
 @code {
     [Parameter, EditorRequired]
-    public OpenGraphViewModel Model { get; set; } = OpenGraphViewModel.Empty;
+    public WebsiteSection WebsiteSection { get; set; }
 
-    private LanguageId _languageId = default!;
-
-    protected override void OnInitialized()
+    protected override Task<OpenGraphViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
+        var languageId = RenderContext.GetCurrentLanguageId().Language.Value;
+        var data = WebsiteSection switch
+        {
+            WebsiteSection.Assessment => new OpenGraphViewModel(
+                languageId,
+                resources[Messages.OgAppraiserTitle],
+                resources[Messages.OgAppraiserDescription],
+                "main.jpg",
+                resources[Messages.OgAppraiserImageText]),
+            WebsiteSection.Map => new OpenGraphViewModel(
+                languageId,
+                resources[Messages.OgCheckInTitle],
+                resources[Messages.OgCheckInDescription],
+                "map.jpg",
+                resources[Messages.OgCheckInImageText]),
+            _ => new OpenGraphViewModel(
+                languageId,
+                resources[Messages.OgMainTitle],
+                resources[Messages.OgMainDescription],
+                "main.jpg",
+                resources[Messages.OgMainImageText])
+        };
 
-        _languageId = currentLanguage.Language;
+        return Task.FromResult(data);
     }
-    
-    private string GetLocale(LanguageId languageId) => $"{languageId.Value.ToLower()}_{languageId.Value.ToUpper()}";
 
-    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{Model.Image}?text={Model.ImageText}";
+    private string GetLocale(string languageId) => $"{languageId.ToLower()}_{languageId.ToUpper()}";
+
+    private string ImageUrl =>
+        $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{ViewModel.Image}?text={ViewModel.ImageText}";
 }

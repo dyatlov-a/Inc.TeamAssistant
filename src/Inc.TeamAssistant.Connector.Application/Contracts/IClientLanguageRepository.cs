@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Connector.Application.Contracts;
 
 public interface IClientLanguageRepository
 {
-    Task<LanguageId> Get(long personId, CancellationToken token);
+    Task<LanguageId> Get(Guid botId, long personId, CancellationToken token);
     
-    Task Upsert(long personId, string languageId, CancellationToken token);
+    Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token);
 }

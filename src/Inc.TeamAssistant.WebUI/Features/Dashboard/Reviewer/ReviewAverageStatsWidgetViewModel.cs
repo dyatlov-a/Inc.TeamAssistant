@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
 using Inc.TeamAssistant.WebUI.Features.Common;
-using Inc.TeamAssistant.WebUI.Features.Dashboard.Shared;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 

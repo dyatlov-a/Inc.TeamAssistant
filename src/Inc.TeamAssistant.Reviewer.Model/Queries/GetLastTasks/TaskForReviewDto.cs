@@ -10,4 +10,6 @@ public sealed record TaskForReviewDto(
     string? ReviewerUserName,
     long OwnerId,
     string OwnerName,
-    string? OwnerUserName);
+    string? OwnerUserName,
+    bool HasConcreteReviewer,
+    bool IsOriginalReviewer);

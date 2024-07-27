@@ -17,14 +17,14 @@ internal sealed class MessageProvider : IMessageProvider
         _webRootPath = webRootPath;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get()
+    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
     {
         var result = new Dictionary<string, Dictionary<string, string>>();
 
         foreach (var languageId in LanguageSettings.LanguageIds)
         {
             var language = Path.Combine(_webRootPath, "langs", $"{languageId.Value}.json");
-            var resourcesAsString = await File.ReadAllTextAsync(language);
+            var resourcesAsString = await File.ReadAllTextAsync(language, token);
             var resources = JsonSerializer.Deserialize<Dictionary<string, string>>(resourcesAsString);
 
             result.Add(languageId.Value, resources!);

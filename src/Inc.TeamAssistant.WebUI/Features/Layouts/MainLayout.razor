@@ -1,44 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
-@inject ResourcesManager ResourcesManager
-
-<Meta Model="_metaModel" />
-
-<OpenGraph Model="_openGraphModel" />
-
 <div class="wrapper">
-    <MainNavbar />
+    <MainNavbar/>
     
     <main class="main">
         @Body
     </main>
-
-    <MainFooter />
+    
+    <MainFooter/>
 </div>
 
 <AcceptCookieDialog />
-
-@code {
-    private MetaViewModel _metaModel = MetaViewModel.Empty;
-    private OpenGraphViewModel _openGraphModel = OpenGraphViewModel.Empty;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        var resources = await ResourcesManager.GetResource();
-        var title = resources[Messages.GUI_MainTitle];
-        var description = $"{resources[Messages.GUI_MainHeader]} {resources[Messages.GUI_MainSubHeader]}";
-        var keywords = $"{resources[Messages.GUI_ToolAppraiser]}, {resources[Messages.GUI_ToolReviewer]}, {resources[Messages.GUI_ToolRandomCoffee]}";
-        
-        _metaModel = new(
-            title,
-            description,
-            keywords,
-            resources[Messages.MetaAuthor]);
-        
-        _openGraphModel = new(
-            title,
-            description,
-            "main.jpg",
-            resources[Messages.OgImageText]);
-    }
-}

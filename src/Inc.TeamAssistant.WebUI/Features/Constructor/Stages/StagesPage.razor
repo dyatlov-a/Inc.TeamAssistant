@@ -10,15 +10,19 @@
 
 @attribute [Authorize]
 
+@using Inc.TeamAssistant.Primitives.Bots
+@using Inc.TeamAssistant.Primitives.Languages
+
 @inherits PersistentComponent<StagesPageViewModel>
 
 @inject IBotService BotService
+@inject IServiceProvider ServiceProvider
 
-<PageTitle>@ViewModel.Title</PageTitle>
+<MetaModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title">@ViewModel.Title</h1>
+        <h1 class="title">@ViewModel.Title @BotName</h1>
         <div class="constructor__nav">
             <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
         </div>
@@ -32,6 +36,12 @@
 
     [Parameter]
     public string Selected { get; set; } = default!;
+
+    private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
+    private StagesState _stagesState = StagesState.Empty;
+    private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
+        ? string.Empty
+        : $"@{_stagesState.UserName}";
     
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
@@ -47,30 +57,39 @@
 
     private Dictionary<string, object> StageParameters => new()
     {
-        ["StagesState"] = ViewModel.StagesState,
-        ["LinkFactory"] = (object)LinkFactory
+        ["StagesState"] = _stagesState,
+        ["LinkFactory"] = (object)LinkFactory,
+        ["BotStorageKey"] = BotStorageKey
     };
     
-    protected override async Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+
+        var dataEditor = ServiceProvider.GetService<DataEditor>();
+        if (dataEditor is not null)
+            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, _ => CreateState());
+    }
+
+    protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
+    }
+
+    private async Task<StagesState> CreateState()
+    {
+        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
         var getFeaturesResult = await BotService.GetFeatures();
 
-        if (ViewModel.StagesState.Id == BotId && ViewModel.StagesState.Features.Any())
-            return ViewModel;
-        
-        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
-
-        return new StagesPageViewModel(
-            resources[Messages.Constructor_Title],
-            new StagesState(
-                bot?.Result?.Id,
-                bot?.Result?.UserName ?? string.Empty,
-                bot?.Result?.Token ?? string.Empty,
-                bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
-                bot?.Result?.Properties.Keys.ToArray() ?? Array.Empty<string>(),
-                bot?.Result?.Properties ?? new Dictionary<string, string>(),
-                getFeaturesResult.Result.Features));
-
+        return new StagesState(
+            bot?.Result?.Id,
+            bot?.Result?.UserName ?? string.Empty,
+            bot?.Result?.Token ?? string.Empty,
+            bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
+            bot?.Result?.Properties ?? new Dictionary<string, string>(),
+            getFeaturesResult.Result.Features,
+            bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
+            Array.Empty<BotDetails>());
     }
 
     private string LinkFactory(Stage? stage)
@@ -79,8 +98,8 @@
             return LinkBuilder("constructor");
         
         var target = stage.Value.ToString().ToLower();
-        var link = ViewModel.StagesState.Id.HasValue
-            ? $"constructor/{ViewModel.StagesState.Id.Value:N}/{target}"
+        var link = _stagesState.Id.HasValue
+            ? $"constructor/{_stagesState.Id.Value:N}/{target}"
             : $"constructor/{target}";
 
         return LinkBuilder(link);

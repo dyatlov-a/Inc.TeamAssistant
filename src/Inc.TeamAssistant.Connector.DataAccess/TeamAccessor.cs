@@ -44,8 +44,8 @@ internal sealed class TeamAccessor : ITeamAccessor
         return await _personRepository.Find(personId, token);
     }
 
-    public async Task<LanguageId> GetClientLanguage(long personId, CancellationToken token)
+    public async Task<LanguageId> GetClientLanguage(Guid botId, long personId, CancellationToken token)
     {
-        return await _clientLanguageRepository.Get(personId, token);
+        return await _clientLanguageRepository.Get(botId, personId, token);
     }
 }

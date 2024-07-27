@@ -1,7 +1,10 @@
+@using Inc.TeamAssistant.Primitives.Languages
+
 @inherits PersistentComponent<SetSettingsViewModel>
 
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
+@inject IServiceProvider ServiceProvider
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -46,6 +49,37 @@
                 </FormSection>
             }
         }
+        <FormSection
+            Title="@ViewModel.SupportedLanguages"
+            HelpText="@ViewModel.SupportedLanguagesHelp">
+            <Content>
+                <FormFieldSet
+                    FieldId="supported-languages"
+                    Label="@ViewModel.Languages">
+                    <Content>
+                        <div class="form-control form-control_white">
+                            @foreach (var languageId in LanguageSettings.LanguageIds)
+                            {
+                                <span
+                                    class="supported-language @CssClass(languageId)"
+                                    @onclick="() => ToggleLanguage(languageId)">
+                                    @languageId.Value
+                                </span>
+                            }
+                        </div>
+                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                    </Content>
+                </FormFieldSet>
+                @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                {
+                    <BotDetailsEditor
+                        BotDetails="item"
+                        BotName="@ViewModel.BotName"
+                        BotShortDescription="@ViewModel.BotShortDescription"
+                        BotDescription="@ViewModel.BotDescription" />
+                }
+            </Content>
+        </FormSection>
     </div>
     <div class="constructor__actions">
         <button type="submit" class="button button_white">@ViewModel.MoveNextTitle</button>
@@ -58,6 +92,9 @@
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
     
     private readonly SetSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -72,11 +109,17 @@
     
     protected override async Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
     {
-        var result = await BotService.GetProperties();
+        var getPropertiesResult = await BotService.GetProperties();
         
         return new SetSettingsViewModel(
-            result.Result.Properties,
-            resources[Messages.Constructor_MoveNextTitle]);
+            getPropertiesResult.Result.Properties,
+            resources[Messages.Constructor_MoveNextTitle],
+            resources[Messages.Constructor_SupportedLanguages],
+            resources[Messages.Constructor_SupportedLanguagesHelp],
+            resources[Messages.Constructor_Languages],
+            resources[Messages.Constructor_BotName],
+            resources[Messages.Constructor_BotShortDescription],
+            resources[Messages.Constructor_BotDescription]);
     }
     
     private async Task SubmitForm()
@@ -84,8 +127,25 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
-        StagesState.Apply(_formModel);
+        await ServiceProvider.GetRequiredService<DataEditor>().Attach(BotStorageKey, StagesState.Apply(_formModel));
         
         NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+    }
+    
+    private string CssClass(LanguageId languageId)
+    {
+        return _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
+            ? "supported-language_selected"
+            : string.Empty;
+    }
+
+    private void ToggleLanguage(LanguageId languageId)
+    {
+        var languageCode = languageId.Value;
+        
+        if (_formModel.SupportedLanguages.Contains(languageCode, StringComparer.InvariantCultureIgnoreCase))
+            _formModel.SupportedLanguages.Remove(languageCode);
+        else
+            _formModel.SupportedLanguages.Add(languageCode);
     }
 }

@@ -20,29 +20,29 @@ internal sealed class CachedClientLanguageRepository : IClientLanguageRepository
         _cacheTimeout = cacheTimeout;
     }
 
-    public async Task<LanguageId> Get(long personId, CancellationToken token)
+    public async Task<LanguageId> Get(Guid botId, long personId, CancellationToken token)
     {
-        return await _memoryCache.GetOrCreateAsync(GetKey(personId), async c =>
+        return await _memoryCache.GetOrCreateAsync(GetKey(botId, personId), async c =>
         {
             c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
 
-            return await _clientLanguageRepository.Get(personId, token);
-        }) ?? await _clientLanguageRepository.Get(personId, token);
+            return await _clientLanguageRepository.Get(botId, personId, token);
+        }) ?? await _clientLanguageRepository.Get(botId, personId, token);
     }
 
-    public async Task Upsert(long personId, string languageId, CancellationToken token)
+    public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(languageId))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(languageId));
         
-        var key = GetKey(personId);
+        var key = GetKey(botId, personId);
 
         if (_memoryCache.TryGetValue(key, out LanguageId? cachedLanguageId) && cachedLanguageId?.Value == languageId)
             return;
 
-        await _clientLanguageRepository.Upsert(personId, languageId, token);
+        await _clientLanguageRepository.Upsert(botId, personId, languageId, now, token);
         _memoryCache.Remove(key);
     }
 
-    private string GetKey(long personId) => $"{nameof(CachedClientLanguageRepository)}_{personId}";
+    private string GetKey(Guid botId, long personId) => $"{nameof(CachedClientLanguageRepository)}_{botId}_{personId}";
 }

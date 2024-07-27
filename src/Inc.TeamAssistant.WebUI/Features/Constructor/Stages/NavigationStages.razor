@@ -20,7 +20,7 @@
 
     private IReadOnlyCollection<Stage> Stages => Enum.GetValues<Stage>();
     
-    private bool CanMove(Stage stage) => false;
+    private bool CanMove(Stage stage) => Current > stage;
 
     private string CssClass(Stage stage) => stage == Current
         ? "nav-stages__item_active"

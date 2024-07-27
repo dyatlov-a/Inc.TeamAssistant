@@ -120,7 +120,7 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(text);
 
         var person = await EnsurePerson(user, token);
-        var language = await EnsureLanguage(user, token);
+        var language = await EnsureLanguage(bot.Id, user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
         return new(
@@ -135,14 +135,14 @@ internal sealed class MessageContextBuilder
             chatName);
     }
     
-    private async Task<LanguageId> EnsureLanguage(User user, CancellationToken token)
+    private async Task<LanguageId> EnsureLanguage(Guid botId, User user, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(user);
         
         if (!string.IsNullOrWhiteSpace(user.LanguageCode))
-            await _clientLanguageRepository.Upsert(user.Id, user.LanguageCode, token);
+            await _clientLanguageRepository.Upsert(botId, user.Id, user.LanguageCode, DateTimeOffset.UtcNow, token);
         
-        var language = await _clientLanguageRepository.Get(user.Id, token);
+        var language = await _clientLanguageRepository.Get(botId, user.Id, token);
         return language;
     }
 

@@ -11,14 +11,4 @@ public sealed record LanguageId
 
         Value = value.ToLowerInvariant();
     }
-
-    public static LanguageId? Build(string? languageCode)
-    {
-        if (string.IsNullOrWhiteSpace(languageCode))
-            return null;
-
-        var languageId = new LanguageId(languageCode);
-        
-        return LanguageSettings.LanguageIds.Contains(languageId) ? languageId : null;
-    }
 }

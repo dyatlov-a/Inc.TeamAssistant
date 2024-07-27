@@ -1,3 +1,4 @@
+@using System.Text
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks
 
 @inherits PersistentComponent<LastTasksWidgetViewModel>
@@ -18,15 +19,19 @@
             @context.OwnerUserName
         </TemplateColumn>
         <TemplateColumn Title="@ViewModel.DescriptionTitle" Sortable="false">
-            <span title="@context.Description">@context.Description.ToShort()</span>
+            <span title="@context.Description" class="hint">
+                @context.Description.ToShort()
+            </span>
         </TemplateColumn>
         <TemplateColumn
             Title="@ViewModel.ReviewerNameTitle"
             Sortable="true"
             SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-            @context.ReviewerName
-            <br/>
-            @context.ReviewerUserName
+            <span title="@GetReviewerTitle(context)" class="hint">
+                @context.ReviewerName
+                <br/>
+                @context.ReviewerUserName
+            </span>
         </TemplateColumn>
         <TemplateColumn
             Title="@ViewModel.StateTitle"
@@ -85,6 +90,10 @@ else
             resources[Messages.Dashboard_ReviewReviewerNameTitle],
             resources[Messages.Dashboard_ReviewOwnerNameTitle],
             resources[Messages.Dashboard_ReviewStateTitle],
+            resources[Messages.Dashboard_HasConcreteReviewer],
+            resources[Messages.Dashboard_IsOriginalReviewer],
+            resources[Messages.Constructor_BooleanTrueText],
+            resources[Messages.Constructor_BooleanFalseText],
             BuildStateLookup(resources),
             dateItems,
             tasks.Result.Items);
@@ -95,5 +104,17 @@ else
         _date = date;
         
         await Update();
+    }
+
+    private string GetReviewerTitle(TaskForReviewDto task)
+    {
+        var hasConcreteReviewer = task.HasConcreteReviewer ? ViewModel.BooleanTrueText : ViewModel.BooleanFalseText;
+        var isOriginalReviewer = task.IsOriginalReviewer ? ViewModel.BooleanFalseText : ViewModel.BooleanTrueText;
+        var builder = new StringBuilder();
+        
+        builder.AppendLine($"{ViewModel.HasConcreteReviewer} - {hasConcreteReviewer}");
+        builder.Append($"{ViewModel.IsOriginalReviewer} - {isOriginalReviewer}");
+        
+        return builder.ToString();
     }
 }
