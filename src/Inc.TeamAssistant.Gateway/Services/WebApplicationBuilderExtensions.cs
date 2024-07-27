@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.ExceptionHandlers;
 using Serilog;
 using Serilog.Events;
 using Prometheus.DotNetRuntime;
@@ -20,7 +21,11 @@ public static class WebApplicationBuilderExtensions
             .WithThreadPoolStats()
             .StartCollecting();
 
-        builder.Services.AddSingleton(analyticsOptions);
+        builder.Services
+            .AddSingleton(analyticsOptions)
+            .AddProblemDetails()
+            .AddExceptionHandler<UnhandledExceptionHandler>();
+        
         builder.Host.UseSerilog((_, c) =>
         {
             c.Enrich.FromLogContext();

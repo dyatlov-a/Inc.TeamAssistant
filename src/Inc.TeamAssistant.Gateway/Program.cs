@@ -170,6 +170,7 @@ if (builder.Environment.IsDevelopment())
 app
 	.UseSerilogRequestLogging()
 	.UseStatusCodePagesWithReExecute("/error404")
+	.UseExceptionHandler()
 	.UseStaticFiles()
 	.UseRouting()
 	.UseOutputCache()
