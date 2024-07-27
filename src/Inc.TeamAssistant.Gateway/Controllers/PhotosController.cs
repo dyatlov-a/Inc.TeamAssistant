@@ -1,4 +1,5 @@
-using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Model.Queries.GetPersonPhoto;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
@@ -8,11 +9,11 @@ namespace Inc.TeamAssistant.Gateway.Controllers;
 [Route("photos")]
 public sealed class PhotosController : ControllerBase
 {
-    private readonly IPhotosRepository _photosRepository;
+    private readonly IMediator _mediator;
 
-    public PhotosController(IPhotosRepository photosRepository)
+    public PhotosController(IMediator mediator)
     {
-        _photosRepository = photosRepository ?? throw new ArgumentNullException(nameof(photosRepository));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpGet("{personId}")]
@@ -21,10 +22,10 @@ public sealed class PhotosController : ControllerBase
     public async Task<IActionResult> Get(long personId, CancellationToken token)
     {
         const string contentType = "image/jpeg";
-        var photo = await _photosRepository.Find(personId, token);
-
-        return photo is null
+        var result = await _mediator.Send(new GetPersonPhotoQuery(personId), token);
+        
+        return result.PhotoData is null
             ? File("imgs/user_stub.jpg", contentType)
-            : File(photo.Data, contentType);
+            : File(result.PhotoData, contentType);
     }
 }

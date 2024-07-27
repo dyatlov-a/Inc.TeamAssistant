@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IBotAccessor, BotAccessor>()
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
-            .AddHostedService<PhotosService>()
+            .AddSingleton<PersonPhotosService>()
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             

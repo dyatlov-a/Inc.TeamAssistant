@@ -138,4 +138,24 @@ internal sealed class PersonRepository : IPersonRepository
 
         await connection.ExecuteAsync(command);
     }
+    
+    public async Task<Guid> GetBotId(
+        long personId,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(@"
+            SELECT
+                t.bot_id AS botid
+            FROM connector.teammates AS tm
+            JOIN connector.teams AS t ON tm.team_id = t.id
+            WHERE tm.person_id = @person_id
+            LIMIT 1;",
+            new { person_id = personId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        return await connection.QuerySingleOrDefaultAsync<Guid>(command);
+    }
 }
