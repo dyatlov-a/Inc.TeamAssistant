@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
 public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormModel>
 {
-    public CompleteFormModelValidator(BotDetailsFormModelValidator botDetailsFormModelValidator)
+    public CompleteFormModelValidator(IValidator<BotDetailsFormModel> botDetailsFormModelValidator)
     {
         RuleFor(e => e.UserName)
             .NotEmpty();
@@ -28,6 +28,9 @@ public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormM
                 c.RuleFor(e => e.Value)
                     .NotEmpty();
             });
+        
+        RuleFor(e => e.BotDetails)
+            .NotEmpty();
         
         RuleForEach(e => e.BotDetails)
             .SetValidator(botDetailsFormModelValidator);
