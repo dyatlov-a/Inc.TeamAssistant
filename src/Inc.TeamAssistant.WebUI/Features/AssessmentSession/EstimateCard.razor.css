@@ -4,7 +4,7 @@
     text-align: center;
 }
 .user-card__header {
-    background-color: #fff;
+    background-color: #dfdfdf;
     position: relative;
     height: 60px;
 }
@@ -21,7 +21,7 @@
     margin: 0 0 -40px -40px;
 }
 .user-card_dark {
-    color: #fff;
+    color: #dfdfdf;
     background-color: #616161;
 }
 .user-card_dark .user-card__header {

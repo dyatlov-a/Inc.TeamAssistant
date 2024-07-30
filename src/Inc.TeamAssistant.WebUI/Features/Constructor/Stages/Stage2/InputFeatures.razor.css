@@ -6,11 +6,12 @@
 .input-features__items {
     flex: 0 1 48%;
     min-height: 220px;
-    color: #fff;
+    color: #dfdfdf;
     display: flex;
     flex-flow: column;
     align-items: center;
     padding: 20px 20px 0 20px;
+    background-color: #9d9d9d;
 }
 .input-features__text {
     font-size: 1.2rem;
