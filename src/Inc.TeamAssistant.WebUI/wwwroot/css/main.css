@@ -114,20 +114,15 @@ html {
 }
 .link {
     font-size: 1rem;
-    text-decoration: underline 0.15em rgba(255, 255, 255, 0);
-    transition: text-decoration-color 300ms;
+}
+.link:hover {
+    text-decoration: underline;
 }
 .link_white {
     color: #fff;
 }
-.link_white:hover {
-    text-decoration-color: rgba(255, 255, 255, 1);
-}
 .link_black {
     color: #000;
-}
-.link_black:hover {
-    text-decoration-color: rgba(0, 0, 0, 1);
 }
 /* MAP */
 .marker-btn {
@@ -142,7 +137,7 @@ html {
 .marker-btn:hover {
     text-decoration: none;
 }
-.map_navbar .leaflet-top {
+.map__navbar .leaflet-top {
     top: 80px;
 }
 /* FORMS */
@@ -217,8 +212,8 @@ html {
     visibility: visible;
 }
 @keyframes slide-left {
-    0% { transform: translateX(-150%); }
-    100% { transform: translateY(0); }
+    from { transform: translateX(-150%); }
+    to { transform: translateY(0); }
 }
 .animation__fade-in {
     animation: 1.5s fade-in ease;

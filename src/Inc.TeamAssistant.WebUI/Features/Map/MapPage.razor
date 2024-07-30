@@ -20,9 +20,7 @@
 
 @if (!DisableLayout)
 {
-    <div class="map-navbar">
-        <MainNavbar/>
-    </div>
+    <MainNavbar/>
 }
 <div @ref="_map" class="map @CssClass"></div>
 
@@ -38,7 +36,7 @@
     [Parameter]
     public bool DisableLayout { get; set; }
 
-    private string CssClass => DisableLayout ? string.Empty : "map_navbar";
+    private string CssClass => DisableLayout ? string.Empty : "map__navbar";
 
     private ElementReference _map;
     private IJSObjectReference? _mapModule;
