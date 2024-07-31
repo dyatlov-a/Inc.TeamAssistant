@@ -6,7 +6,7 @@
 {
     var path = $"/{culture.Value}/{_cleanUrl}";
     
-    <a href="@path" @onclick="() => MoveTo(path)" class="link link_white navbar__item" @onclick:preventDefault="true">
+    <a href="@path" @onclick="() => MoveTo(path)" class="link link_light navbar__item" @onclick:preventDefault="true">
         @culture.Value
     </a>
 }

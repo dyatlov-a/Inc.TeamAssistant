@@ -12,7 +12,7 @@
     <div class="constructor__form">
         <FormSection Title="@ViewModel.FormSectionTokenTitle">
             <HelpContent>
-                @((MarkupString)string.Format(ViewModel.FormSectionTokenHelpTemplate, "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_black\">BotFather</a>"))
+                @((MarkupString)string.Format(ViewModel.FormSectionTokenHelpTemplate, "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
             </HelpContent>
             <Content>
                 <FormFieldSet FieldId="bot-token" Label="@ViewModel.FormSectionTokenFieldTokenLabel">
@@ -30,7 +30,7 @@
         </FormSection>
     </div>
     <div class="constructor__actions">
-        <button type="submit" class="button button_white">@ViewModel.MoveNextTitle</button>
+        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
     </div>
 </EditForm>
 
