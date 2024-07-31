@@ -17,7 +17,7 @@ public sealed class OpenGraphController : ControllerBase
     }
 
     [HttpGet("create-card/{img}")]
-    [OutputCache(PolicyName = CachePolicies.OpenGraphCachePolicy)]
+    [OutputCache(PolicyName = CachePolicies.OpenGraphCachePolicyName)]
     [ResponseCache(Duration = CachePolicies.OpenGraphCacheDurationInSeconds)]
     public async Task<IActionResult> Create(string img, string text, CancellationToken token)
     {

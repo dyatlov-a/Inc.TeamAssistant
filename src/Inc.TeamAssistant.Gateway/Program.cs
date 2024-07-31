@@ -128,12 +128,12 @@ builder.Services
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<ICollection<CommandScope>>()
 	.Build()
-	
+
 	.AddSingleton(openGraphOptions)
 	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
 	.AddServices(authOptions, builder.Environment.WebRootPath, cacheAbsoluteExpiration)
 	.AddIsomorphic()
-		
+
 	.AddAppraiserApplication(appraiserOptions)
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(checkInOptions)
@@ -142,21 +142,15 @@ builder.Services
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication(randomCoffeeOptions)
 	.AddRandomCoffeeDataAccess()
-	.AddConnectorApplication()
+	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(cacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
-	
+
 	.AddHttpContextAccessor()
 	.AddMemoryCache()
-	.AddOutputCache(c =>
-	{
-		c.AddPolicy(
-			CachePolicies.UserAvatarCachePolicy,
-			b => b.Expire(TimeSpan.FromSeconds(CachePolicies.UserAvatarCacheDurationInSeconds)));
-		c.AddPolicy(
-			CachePolicies.OpenGraphCachePolicy,
-			b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds)));
-	})
+	.AddOutputCache(c => c.AddPolicy(
+		CachePolicies.OpenGraphCachePolicyName,
+		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 
