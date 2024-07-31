@@ -10,7 +10,7 @@
                 @{ var person = context.User.ToPerson(); }
 
                 <a href="@ViewModel.MainUrl" class="link navbar__item">
-                    <HomeIcon Size="40px" />
+                    <HomeIcon Size="40px" Color="#fff" />
                 </a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
@@ -23,7 +23,7 @@
                 <a href="@ViewModel.LogoutUrl" class="link link_light navbar__item">@ViewModel.LogoutText</a>
             </Authorized>
             <NotAuthorized>
-                <a href="@ViewModel.MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
+                <a href="@ViewModel.MainUrl" class="link navbar__item"><HomeIcon Size="40px" Color="#fff" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 @if (ViewModel.HasLoginControls)

@@ -1,0 +1,40 @@
+@using Inc.TeamAssistant.Primitives
+
+@inject ResourcesManager ResourcesManager
+
+<PageTitle>@_title</PageTitle>
+
+<HeadContent>
+    <MetaData WebsiteSection="WebsiteSection" />
+    <OpenGraph WebsiteSection="WebsiteSection" />
+</HeadContent>
+
+@code {
+    [Parameter, EditorRequired]
+    public WebsiteSection WebsiteSection { get; set; }
+    
+    [Parameter]
+    public string? MetaOverrideTitle { get; set; }
+
+    private string? _title = GlobalSettings.CanonicalName;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _title = await CreateTitle();
+    }
+
+    private async Task<string> CreateTitle()
+    {
+        if (!string.IsNullOrWhiteSpace(MetaOverrideTitle))
+            return MetaOverrideTitle;
+        
+        var resources = await ResourcesManager.GetResource();
+
+        return WebsiteSection switch
+        {
+            WebsiteSection.Assessment => resources[Messages.MetaAppraiserTitle],
+            WebsiteSection.Map => resources[Messages.MetaCheckInTitle],
+            _ => resources[Messages.MetaMainTitle]
+        };
+    }
+}
