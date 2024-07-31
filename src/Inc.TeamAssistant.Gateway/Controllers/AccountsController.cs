@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -13,18 +14,15 @@ public sealed class AccountsController : ControllerBase
 {
     private readonly TelegramAuthService _telegramAuthService;
     private readonly IUserService _userService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly AuthOptions _authOptions;
 
     public AccountsController(
         TelegramAuthService telegramAuthService,
         IUserService userService,
-        IWebHostEnvironment webHostEnvironment,
         AuthOptions authOptions)
     {
         _telegramAuthService = telegramAuthService ?? throw new ArgumentNullException(nameof(telegramAuthService));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         _authOptions = authOptions ?? throw new ArgumentNullException(nameof(authOptions));
     }
     
@@ -58,8 +56,8 @@ public sealed class AccountsController : ControllerBase
     [HttpGet("login-as-super-user")]
     public async Task<IActionResult> LoginAsSuperUser(string? returnUrl)
     {
-        if (_webHostEnvironment.IsProduction())
-            return BadRequest();
+        if (_authOptions.SuperUser is null)
+            return NotFound();
 
         var principal = _authOptions.SuperUser.ToClaimsPrincipal();
         

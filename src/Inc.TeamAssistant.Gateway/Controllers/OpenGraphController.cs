@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -16,8 +17,8 @@ public sealed class OpenGraphController : ControllerBase
     }
 
     [HttpGet("create-card/{img}")]
-    [OutputCache(PolicyName = OutputCachePolicies.Images)]
-    [ResponseCache(Duration = 60 * 60)]
+    [OutputCache(PolicyName = CachePolicies.OpenGraphCachePolicy)]
+    [ResponseCache(Duration = CachePolicies.OpenGraphCacheDurationInSeconds)]
     public async Task<IActionResult> Create(string img, string text, CancellationToken token)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(img);

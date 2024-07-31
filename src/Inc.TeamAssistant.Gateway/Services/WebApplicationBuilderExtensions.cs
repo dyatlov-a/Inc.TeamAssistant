@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.ExceptionHandlers;
 using Serilog;
 using Serilog.Events;

@@ -1,6 +1,6 @@
 using SixLabors.Fonts;
 
-namespace Inc.TeamAssistant.Gateway;
+namespace Inc.TeamAssistant.Gateway.Configs;
 
 public sealed class OpenGraphOptions
 {
