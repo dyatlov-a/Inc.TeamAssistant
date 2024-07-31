@@ -9,29 +9,20 @@
 <MetaModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.StoryList" />
 
 <main class="main">
-    <div class="assessment-history-header white">
+    <div class="assessment-history-header">
         <div class="assessment-history-header__container">
-            <Breadcrumbs Items="ViewModel.Items" />
+            <Breadcrumbs Items="ViewModel.Breadcrumbs" />
             <h1 class="title">@ViewModel.StoryList</h1>
         </div>
     </div>
-    @if (ViewModel.Data is not null)
-    {
-        var index = 0;
-    
-        foreach (var story in ViewModel.Data.Items)
+        @foreach(var item in ViewModel.Items)
         {
-            index++;
-            var isDark = index % 2 == 0;
-            var cssClass = isDark ? "assessment-history-content_dark" : string.Empty;
-        
-            <div class="assessment-history-content @cssClass">
+            <div class="assessment-history-content">
                 <div class="assessment-history-content__container">
-                    <AssessmentIndividual Item="story" IsDarkTheme="isDark" MeanRating="@ViewModel.MeanRating"/>
+                    <AssessmentIndividual Item="item" MeanRating="@ViewModel.MeanRating"/>
                 </div>
             </div>
         }
-    }
 </main>
 <MainFooter />
         
@@ -55,6 +46,6 @@
                 new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{TeamId:N}")),
                 new (Date, LinkBuilder($"assessment-history/{TeamId:N}/{Date}"))
             },
-            getStoriesResult.Result);
+            getStoriesResult.Result.Items);
     }
 }

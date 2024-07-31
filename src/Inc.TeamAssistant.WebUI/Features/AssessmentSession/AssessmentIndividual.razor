@@ -1,6 +1,6 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
-<div class="story @CssClass">
+<div class="story">
     <h2 class="story__title">@Item.Title</h2>
     @if (Item.Links.Any())
     {
@@ -8,7 +8,7 @@
             @foreach (var link in Item.Links)
             {
                 <li class="story__item">
-                    <a class="link" href="@link" target="_blank">@link</a>
+                    <a class="link story__link" href="@link" target="_blank">@link</a>
                 </li>
             }
         </ul>
@@ -18,7 +18,6 @@
             @foreach (var storyForEstimate in Item.StoryForEstimates)
             {
                 <EstimateCard
-                    IsDarkTheme="IsDarkTheme"
                     PersonId="storyForEstimate.ParticipantId"
                     Name="@storyForEstimate.ParticipantName">
                     <Content>
@@ -40,9 +39,4 @@
     
     [Parameter]
     public string? MedianRating { get; set; }
-    
-    [Parameter, EditorRequired]
-    public bool IsDarkTheme { get; set; }
-    
-    private string CssClass => IsDarkTheme ? "story_dark" : string.Empty;
 }

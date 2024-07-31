@@ -25,6 +25,9 @@
     line-height: 2.2rem;
     padding-right: 20px;
 }
+.story__link {
+    color: #dfdfdf;
+}
 ::deep .user-card {
     margin: 20px;
     background-color: #9d9d9d;
@@ -36,12 +39,6 @@
     margin: 40px 0;
     font-size: 2rem;
     font-weight: bold;
-}
-.story, .story .link {
-    color: #dfdfdf;
-}
-.story_dark, .story_dark .link {
-    color: #000;
 }
 .estimate-group-container {
     min-height: 220px;
