@@ -4,7 +4,7 @@ using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class PersonPhotosService
+internal sealed class PersonPhotosService : IPersonPhotosService
 {
     private readonly IPersonRepository _personRepository;
     private readonly TelegramBotClientProvider _telegramBotClientProvider;

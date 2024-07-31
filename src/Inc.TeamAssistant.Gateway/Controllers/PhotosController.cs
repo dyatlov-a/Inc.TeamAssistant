@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Connector.Model.Queries.GetPersonPhoto;
 using Inc.TeamAssistant.Gateway.Configs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace Inc.TeamAssistant.Gateway.Controllers;
 
@@ -18,8 +17,7 @@ public sealed class PhotosController : ControllerBase
     }
 
     [HttpGet("{personId}")]
-    [OutputCache(PolicyName = CachePolicies.UserAvatarCachePolicy)]
-    [ResponseCache(Duration = CachePolicies.UserAvatarCacheDurationInSeconds)]
+    [ResponseCache(Duration = CachePolicies.UserAvatarClientCacheDurationInSeconds)]
     public async Task<IActionResult> Get(long personId, CancellationToken token)
     {
         const string contentType = "image/jpeg";
