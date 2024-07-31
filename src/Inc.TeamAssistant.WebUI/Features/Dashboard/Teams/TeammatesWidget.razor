@@ -46,18 +46,18 @@
                 <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
                 @if (ViewModel.HasManagerAccess)
                 {
-                    <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_white" @onclick:preventDefault="true">[X]</a>
+                    <a href="#" @onclick="() => ExcludeFromTeam(context, false)" class="link link_light" @onclick:preventDefault="true">[X]</a>
                 }
             }
         </TemplateColumn>
         <TemplateColumn Title="@ViewModel.ExcludeFromTeamTitle" Sortable="false">
             @if (ViewModel.HasManagerAccess)
             {
-                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_white" @onclick:preventDefault="true">1</a>
-                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_white" @onclick:preventDefault="true">7</a>
-                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_white" @onclick:preventDefault="true">14</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 1)" class="link link_light" @onclick:preventDefault="true">1</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 7)" class="link link_light" @onclick:preventDefault="true">7</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, false, 14)" class="link link_light" @onclick:preventDefault="true">14</a>
                 <br/>
-                <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_white" @onclick:preventDefault="true">@ViewModel.Forever</a>
+                <a href="#" @onclick="() => ExcludeFromTeam(context, true)" class="link link_light" @onclick:preventDefault="true">@ViewModel.Forever</a>
             }
             else
             {

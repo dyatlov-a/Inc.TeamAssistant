@@ -15,7 +15,7 @@
         <ValidationSummary />
         <FormSection Title="@ViewModel.FormSectionTokenTitle" HelpText="@ViewModel.FormSectionTokenHelp">
             <Content>
-                <a href="@LinkFactory(Stage.CheckBot)" class="link link_black constructor__edit-link">
+                <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
                     @ViewModel.EditText
                 </a>
                 <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
@@ -31,7 +31,7 @@
         </FormSection>
         <FormSection Title="@ViewModel.FormSectionFeaturesTitle" HelpText="@ViewModel.FormSectionFeaturesHelp">
             <Content>
-                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_black constructor__edit-link">
+                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
                     @ViewModel.EditText
                 </a>
                 @foreach (var feature in StagesState.Features)
@@ -67,7 +67,7 @@
                     Title="@ResourceProvider(settingSection.HeaderMessageId)"
                     HelpText="@ResourceProvider(settingSection.HelpMessageId)">
                     <Content>
-                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
+                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
                             @ViewModel.EditText
                         </a>
                         @foreach (var settingItem in settingSection.SettingItems)
@@ -97,7 +97,7 @@
             Title="@ViewModel.BotInformation"
             HelpText="@ViewModel.BotInformationHelp">
             <Content>
-                <a href="@LinkFactory(Stage.SetSettings)" class="link link_black constructor__edit-link">
+                <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
                     @ViewModel.EditText
                 </a>
                 @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
@@ -113,7 +113,7 @@
         </FormSection>
     </div>
     <div class="constructor__actions">
-        <button type="submit" class="button button_white">
+        <button type="submit" class="button button_light">
             @(StagesState.Id.HasValue ? ViewModel.ButtonUpdateText : ViewModel.ButtonCreateText)
         </button>
     </div>

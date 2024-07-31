@@ -14,7 +14,7 @@
             Title="@ViewModel.AssessmentDate"
             Sortable="true"
             SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-            <a href="@MoveToItem(context.AssessmentDate)" class="link link_white">
+            <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
                 @context.AssessmentDate.ToString("dd-MM-yyyy")
             </a>
         </TemplateColumn>
@@ -25,7 +25,7 @@
         <Paginator State="_pagination"/>
     </div>
     <div class="appraiser-actions">
-        <a href="@GetAssessmentSessionUrl()" class="button button_black">@ViewModel.GoToCurrentSessionButtonText</a>
+        <a href="@GetAssessmentSessionUrl()" class="button button_dark">@ViewModel.GoToCurrentSessionButtonText</a>
     </div>
 }
 else

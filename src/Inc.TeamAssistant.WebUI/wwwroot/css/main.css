@@ -96,19 +96,19 @@ html {
     background-color: transparent;
     cursor: pointer;
 }
-.button_white {
+.button_light {
     border: .1875rem solid #dfdfdf;
     color: #dfdfdf;
 }
-.button_white:hover {
+.button_light:hover {
     background-color: #dfdfdf;
     color: #000;
 }
-.button_black {
+.button_dark {
     border: .1875rem solid #000;
     color: #000;
 }
-.button_black:hover {
+.button_dark:hover {
     background-color: #000;
     color: #dfdfdf;
 }
@@ -118,10 +118,10 @@ html {
 .link:hover {
     text-decoration: underline;
 }
-.link_white {
+.link_light {
     color: #dfdfdf;
 }
-.link_black {
+.link_dark {
     color: #000;
 }
 /* MAP */
