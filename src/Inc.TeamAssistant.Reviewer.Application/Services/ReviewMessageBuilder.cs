@@ -73,10 +73,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
-        var workTimeTotal = await _holidayService.CalculateWorkTime(
-            taskForReview.Created,
-            DateTimeOffset.UtcNow,
-            token);
+        var totalTime = taskForReview.GetTotalTime(DateTimeOffset.UtcNow);
 
         return taskForReview switch
         {
@@ -85,14 +82,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     taskForReview.BotId,
                     taskForReview.ReviewerId,
                     taskForReview.ReviewerMessageId.Value,
-                    workTimeTotal,
+                    totalTime,
                     token),
             { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null } =>
                 await CreatePushMessage(
                     taskForReview.BotId,
                     taskForReview.OwnerId,
                     taskForReview.OwnerMessageId.Value,
-                    workTimeTotal,
+                    totalTime,
                     token),
             _ => null
         };
@@ -311,10 +308,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(taskForReview);
 
         var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, taskForReview.OwnerId, token);
-        var workTimeTotal = await _holidayService.CalculateWorkTime(
-            taskForReview.Created,
-            DateTimeOffset.UtcNow,
-            token);
+        var totalTime = taskForReview.GetTotalTime(DateTimeOffset.UtcNow);
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Accepted, languageId));
@@ -324,7 +318,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         messageBuilder.AppendLine(await _messageBuilder.Build(
             Messages.Reviewer_TotalTime,
             languageId,
-            workTimeTotal.ToString(TimeFormat)));
+            totalTime.ToString(TimeFormat)));
 
         return NotificationMessage.Create(taskForReview.OwnerId, messageBuilder.ToString());
     }

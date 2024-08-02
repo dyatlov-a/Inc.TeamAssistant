@@ -183,6 +183,8 @@ public sealed class TaskForReview
         var corrections = ReviewIntervals.Count(i => i.State == TaskForReviewState.OnCorrection);
         return corrections == 0 ? null : corrections + 1;
     }
+
+    public TimeSpan GetTotalTime(DateTimeOffset now) => now - Created;
     
     private void SetReviewer(long reviewerId)
     {
