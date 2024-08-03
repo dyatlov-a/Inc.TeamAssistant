@@ -4,25 +4,25 @@
 
 @inject IAppraiserService AppraiserService
 
-<div class="history">
-    <div class="history__title">@ViewModel.Title</div>
-    <div class="history__body">
-        @if (ViewModel.Data is not null)
-        {
-            foreach (var item in ViewModel.Data.Items.Take(3))
+@if (ViewModel.Items.Any())
+{
+    <div class="history">
+        <div class="history__title">@ViewModel.Title</div>
+        <div class="history__body">
+
+            @foreach (var item in ViewModel.Items.Take(3))
             {
                 <a href="@MoveToItem(item)" class="link link_dark history__item">
                     @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName
                 </a>
             }
-        }
+        </div>
     </div>
-</div>
+}
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-   
 
     private string MoveToItem(AssessmentHistoryDto historyItem)
     {
@@ -31,15 +31,15 @@
 
         return LinkBuilder($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
-    
+
     protected override async Task<AssessmentSessionHistoryViewModel> Initialize(Dictionary<string, string> resources)
     {
         var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, null);
-        
+
         return new AssessmentSessionHistoryViewModel(
             resources[Messages.GUI_History],
             resources[Messages.GUI_Tasks],
             resources[Messages.GUI_AssessmentSum],
-            getAssessmentHistoryResult.Result);
+            getAssessmentHistoryResult.Result.Items);
     }
 }

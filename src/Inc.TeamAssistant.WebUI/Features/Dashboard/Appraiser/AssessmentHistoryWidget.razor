@@ -24,14 +24,15 @@
     <div class="paginator-container">
         <Paginator State="_pagination"/>
     </div>
-    <div class="appraiser-actions">
-        <a href="@GetAssessmentSessionUrl()" class="button button_dark">@ViewModel.GoToCurrentSessionButtonText</a>
-    </div>
 }
 else
 {
     <NoData />
 }
+
+<div class="appraiser-actions">
+    <a href="@GetAssessmentSessionUrl()" class="button button_dark">@ViewModel.GoToCurrentSessionButtonText</a>
+</div>
 
 @code {
     [Parameter, EditorRequired]

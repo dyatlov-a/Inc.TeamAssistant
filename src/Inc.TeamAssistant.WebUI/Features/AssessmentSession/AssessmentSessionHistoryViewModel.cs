@@ -7,12 +7,12 @@ public sealed record AssessmentSessionHistoryViewModel(
     string Title,
     string TasksName,
     string AssessmentSum,
-    GetAssessmentHistoryResult? Data)
+    IReadOnlyCollection<AssessmentHistoryDto> Items)
     : IViewModel<AssessmentSessionHistoryViewModel>
 {
     public static AssessmentSessionHistoryViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,
-        null);
+        Array.Empty<AssessmentHistoryDto>());
 }

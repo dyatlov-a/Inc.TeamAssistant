@@ -70,7 +70,7 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
+        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(_formModel.Token));
         
         await ServiceProvider.GetRequiredService<DataEditor>().Attach(
             BotStorageKey,
