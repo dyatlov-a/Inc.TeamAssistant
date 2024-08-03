@@ -30,6 +30,7 @@ public sealed class TaskForReview
     }
 
     public TaskForReview(
+        Guid id,
         Guid botId,
         Guid teamId,
         DateTimeOffset now,
@@ -40,10 +41,9 @@ public sealed class TaskForReview
         string description)
         : this()
     {
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
 
-        Id = Guid.NewGuid();
+        Id = id;
         BotId = botId;
         Strategy = strategy;
         Created = now;
@@ -52,6 +52,7 @@ public sealed class TaskForReview
         ChatId = chatId;
         Description = description;
         State = TaskForReviewState.New;
+        
         SetNextNotificationTime(now, notificationInterval);
     }
 
@@ -69,7 +70,10 @@ public sealed class TaskForReview
                 OwnerMessageId = messageId;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(messageType));
+                throw new ArgumentOutOfRangeException(
+                    nameof(messageType),
+                    messageType,
+                    "MessageType was not supported.");
         }
     }
 

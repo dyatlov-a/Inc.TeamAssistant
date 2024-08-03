@@ -155,6 +155,7 @@ public sealed class ReviewMetricsProviderTests
     {
         var taskForReview = new TaskForReview(
             _fixture.Create<Guid>(),
+            _fixture.Create<Guid>(),
             teamId,
             start,
             _fixture.Create<TimeSpan>(),
