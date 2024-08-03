@@ -9,16 +9,15 @@ public sealed class DialogState
     public IReadOnlyCollection<ChatMessage> ChatMessages => _chatMessages;
     
     public string Command { get; private set; }
-    public CommandStage CommandState { get; private set; }
+    public StageType State { get; private set; }
     public CurrentTeamContext TeamContext { get; private set; }
 
-    public DialogState(string command, CommandStage commandState)
+    public DialogState(string command, StageType state)
     {
-        if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(command));
         
         Command = command;
-        CommandState = commandState;
+        State = state;
         TeamContext = CurrentTeamContext.Empty;
     }
 
@@ -32,9 +31,9 @@ public sealed class DialogState
         return this;
     }
 
-    public DialogState MoveTo(CommandStage continuationState)
+    public DialogState MoveTo(StageType continuationState)
     {
-        CommandState = continuationState;
+        State = continuationState;
 
         return this;
     }

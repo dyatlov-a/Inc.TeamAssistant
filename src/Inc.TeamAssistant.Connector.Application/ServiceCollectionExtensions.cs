@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
             .AddSingleton<IBotAccessor, BotAccessor>()
+            .AddSingleton<ContextCommandConverter>()
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
             

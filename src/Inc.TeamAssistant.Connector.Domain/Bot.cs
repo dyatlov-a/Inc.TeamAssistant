@@ -6,18 +6,18 @@ public sealed class Bot
     public string Name { get; private set; } = default!;
     public string Token { get; private set; } = default!;
     
-    private readonly List<BotCommand> _commands = new();
-    public IReadOnlyCollection<BotCommand> Commands => _commands;
+    private readonly List<ContextCommand> _commands = new();
+    public IReadOnlyCollection<ContextCommand> Commands => _commands;
     
     private readonly List<Team> _teams = new();
     public IReadOnlyCollection<Team> Teams => _teams;
     public IReadOnlyDictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
 
-    public Bot AddCommand(BotCommand botCommand)
+    public Bot AddCommand(ContextCommand contextCommand)
     {
-        ArgumentNullException.ThrowIfNull(botCommand);
+        ArgumentNullException.ThrowIfNull(contextCommand);
 
-        _commands.Add(botCommand);
+        _commands.Add(contextCommand);
 
         return this;
     }
@@ -31,7 +31,7 @@ public sealed class Bot
         return this;
     }
     
-    public BotCommand? FindCommand(string cmd)
+    public ContextCommand? FindCommand(string cmd)
     {
         foreach (var botCommand in Commands)
             if (cmd.StartsWith(botCommand.Value, StringComparison.InvariantCultureIgnoreCase))
