@@ -47,34 +47,27 @@ internal sealed class CommandFactory
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        if (botCommand.Stages.Any())
+        var currentNode = botCommand.Stages.First;
+        while (currentNode is not null)
         {
-            var stages = botCommand.Stages.ToArray();
-            var firstStage = stages.First();
-
-            for (var index = 0; index < stages.Length; index++)
+            if ((dialogState is null && botCommand.Stages.First!.Value.Id == currentNode.Value.Id) ||
+                dialogState?.State == currentNode.Value.Value)
             {
-                var currentStage = stages[index];
-                var nextIndex = index + 1;
-                var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
-                
-                if ((dialogState is null && firstStage.Id == currentStage.Id) ||
-                    dialogState?.State == currentStage.Value)
-                {
-                    var dialogCommand = await _dialogCommandFactory.TryCreate(
-                        bot,
-                        botCommand.Value,
-                        dialogState?.State,
-                        currentStage,
-                        nextStage,
-                        messageContext);
+                var dialogCommand = await _dialogCommandFactory.TryCreate(
+                    bot,
+                    botCommand.Value,
+                    dialogState?.State,
+                    currentNode.Value,
+                    currentNode.Next?.Value,
+                    messageContext);
 
-                    if (dialogCommand is not null)
-                        return dialogCommand;
-                }
+                if (dialogCommand is not null)
+                    return dialogCommand;
             }
+
+            currentNode = currentNode.Next;
         }
-            
+
         var commandCreator = _commandCreatorResolver.TryResolve(input);
         if (commandCreator is null)
             return null;
