@@ -19,7 +19,7 @@ internal sealed class DialogContinuation
         Guid botId,
         TargetChat targetChat,
         string command,
-        CommandStage commandStage,
+        StageType stageType,
         ChatMessage chatMessage)
     {
         ArgumentNullException.ThrowIfNull(targetChat);
@@ -32,8 +32,8 @@ internal sealed class DialogContinuation
         
         _store.AddOrUpdate(
             key,
-            k => new DialogState(command, commandStage).Attach(chatMessage),
-            (k, v) => v.MoveTo(commandStage).Attach(chatMessage));
+            k => new DialogState(command, stageType).Attach(chatMessage),
+            (k, v) => v.MoveTo(stageType).Attach(chatMessage));
 
         return _store[key];
     }

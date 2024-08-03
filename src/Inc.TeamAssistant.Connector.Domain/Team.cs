@@ -12,19 +12,24 @@ public sealed class Team
     
     private readonly List<Person> _teammates = new();
     public IReadOnlyCollection<Person> Teammates => _teammates;
-    public IReadOnlyDictionary<string, string> Properties { get; private set; } = default!;
+    public IReadOnlyDictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
 
     private Team()
     {
     }
     
-    public Team(Guid botId, long chatId, long ownerId, string name, IReadOnlyDictionary<string, string> properties)
+    public Team(
+        Guid id,
+        Guid botId,
+        long chatId,
+        long ownerId,
+        string name,
+        IReadOnlyDictionary<string, string> properties)
         : this()
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(name));
         
-        Id = Guid.NewGuid();
+        Id = id;
         BotId = botId;
         ChatId = chatId;
         OwnerId = ownerId;
@@ -34,8 +39,7 @@ public sealed class Team
 
     public Team AddTeammate(Person person)
     {
-        if (person is null)
-            throw new ArgumentNullException(nameof(person));
+        ArgumentNullException.ThrowIfNull(person);
 
         _teammates.Add(person);
 
@@ -53,10 +57,8 @@ public sealed class Team
 
     public Team ChangeProperty(string name, string value)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(name));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(value));
         
         Properties = new Dictionary<string, string>(Properties)
         {

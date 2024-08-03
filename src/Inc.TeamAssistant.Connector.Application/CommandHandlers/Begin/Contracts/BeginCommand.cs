@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -7,7 +6,7 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contract
 
 internal sealed record BeginCommand(
     MessageContext MessageContext,
-    CommandStage NextStage,
+    StageType NextStage,
     CurrentTeamContext TeamContext,
     string Command,
     NotificationMessage Notification)

@@ -9,7 +9,7 @@ internal sealed class BeginCommandValidator : AbstractValidator<BeginCommand>
     public BeginCommandValidator()
     {
         RuleFor(e => e.NextStage)
-            .NotEqual(CommandStage.None);
+            .NotEqual(StageType.None);
 
         RuleFor(e => e.Command)
             .NotEmpty();

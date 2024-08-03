@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Connector.Domain;
 
-public enum CommandStage
+public enum StageType
 {
     None = 0,
     EnterText = 1,

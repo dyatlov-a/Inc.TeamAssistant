@@ -59,12 +59,12 @@ internal sealed class CommandFactory
                 var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
                 
                 if ((dialogState is null && firstStage.Id == currentStage.Id) ||
-                    dialogState?.CommandState == currentStage.Value)
+                    dialogState?.State == currentStage.Value)
                 {
                     var dialogCommand = await _dialogCommandFactory.TryCreate(
                         bot,
                         botCommand.Value,
-                        dialogState?.CommandState,
+                        dialogState?.State,
                         currentStage,
                         nextStage,
                         messageContext);

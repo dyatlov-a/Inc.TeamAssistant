@@ -126,7 +126,7 @@ builder.Services
 	.AddJsonType<ICollection<PersonPair>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
-	.AddJsonType<ICollection<CommandScope>>()
+	.AddJsonType<IReadOnlyCollection<ContextScope>>()
 	.Build()
 
 	.AddSingleton(openGraphOptions)
