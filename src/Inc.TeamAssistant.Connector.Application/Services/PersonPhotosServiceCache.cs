@@ -16,7 +16,7 @@ internal sealed class PersonPhotosServiceCache : IPersonPhotosService
         _cacheDurationInSeconds = cacheDurationInSeconds;
     }
 
-    public async Task<MemoryStream?> GetPersonPhoto(long personId, CancellationToken token)
+    public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
     {
         const int maxCacheDurationRandomComponentInSeconds = 60 * 5;
         
