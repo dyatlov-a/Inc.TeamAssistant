@@ -9,6 +9,6 @@ internal static class CommandList
     public const string Decline = "/decline?storyId=";
     public const string MoveToNextRound = "/next_round?storyId=";
     public const string ReassignReview = "/reassign?storyId=";
-    public const string CancelDraft = "/cancel_draft?draftId=";
+    public const string RemoveDraft = "/remove_draft?draftId=";
     public const string EditDraft = "/edit_draft?description=";
 }

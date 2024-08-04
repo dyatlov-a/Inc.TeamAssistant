@@ -26,6 +26,7 @@ internal sealed class CancelDraftCommandHandler : IRequestHandler<CancelDraftCom
         ArgumentNullException.ThrowIfNull(nameof(command));
 
         var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
+        draft.CheckRights(command.MessageContext.Person.Id);
 
         var notifications = await _draftTaskForReviewService.Delete(draft, token);
 

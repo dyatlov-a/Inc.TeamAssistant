@@ -22,7 +22,7 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
         RuleFor(e => e.DraftId)
             .NotEmpty()
             .MustAsync(HasDescriptionAndLinks)
-            .WithMessage("'{PropertyName}' must contains a link to the source code and some description");
+            .WithMessage("'Description' must contains a link to the source code and some description");
     }
 
     private async Task<bool> HasDescriptionAndLinks(Guid draftId, CancellationToken token)

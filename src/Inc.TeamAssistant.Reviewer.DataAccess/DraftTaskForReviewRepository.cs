@@ -20,6 +20,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             SELECT 
                 d.id AS id,
                 d.team_id AS teamid,
+                d.owner_id AS ownerid,
                 d.strategy AS strategy,
                 d.chat_id AS chatid,
                 d.message_id AS messageid,
@@ -39,7 +40,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
         
         await using var connection = _connectionFactory.Create();
 
-        return await connection.QuerySingleAsync<DraftTaskForReview>(command);
+        return await connection.QuerySingleOrDefaultAsync<DraftTaskForReview>(command);
     }
 
     public async Task<DraftTaskForReview> GetById(Guid id, CancellationToken token)
@@ -48,6 +49,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             SELECT 
                 d.id AS id,
                 d.team_id AS teamid,
+                d.owner_id AS ownerid,
                 d.strategy AS strategy,
                 d.chat_id AS chatid,
                 d.message_id AS messageid,
@@ -74,6 +76,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             INSERT INTO review.draft_task_for_reviews (
                 id,
                 team_id,
+                owner_id,
                 strategy,
                 chat_id,
                 message_id,
@@ -84,6 +87,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             VALUES (
                 @id,
                 @team_id,
+                @owner_id,
                 @strategy,
                 @chat_id,
                 @message_id,
@@ -104,6 +108,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             {
                 id = draft.Id,
                 team_id = draft.TeamId,
+                owner_id = draft.OwnerId,
                 strategy = draft.Strategy,
                 chat_id = draft.ChatId,
                 message_id = draft.MessageId,

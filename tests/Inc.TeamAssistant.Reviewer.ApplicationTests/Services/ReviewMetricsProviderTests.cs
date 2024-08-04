@@ -156,6 +156,7 @@ public sealed class ReviewMetricsProviderTests
         var draft = new DraftTaskForReview(
             _fixture.Create<Guid>(),
             teamId,
+            _fixture.Create<long>(),
             _fixture.Create<NextReviewerType>(),
             _fixture.Create<long>(),
             _fixture.Create<int>(),
@@ -167,7 +168,6 @@ public sealed class ReviewMetricsProviderTests
             _fixture.Create<Guid>(),
             start,
             _fixture.Create<TimeSpan>(),
-            _fixture.Create<long>(),
             _fixture.Create<long>());
         var operationStart = start;
 

@@ -32,9 +32,11 @@ internal sealed class EditDraftCommandHandler : IRequestHandler<EditDraftCommand
             if (command.MessageContext.TargetPersonId.HasValue)
                 draft.WithTargetPerson(command.MessageContext.TargetPersonId.Value);
             
+            var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
+            
             await _repository.Upsert(draft, token);
-
-            await _reviewMessageBuilder.Build(draft, token);
+            
+            return CommandResult.Build(notification);
         }
 
         return CommandResult.Empty;

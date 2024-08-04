@@ -26,6 +26,7 @@ internal sealed class NeedReviewCommandHandler : IRequestHandler<NeedReviewComma
         var draft = new DraftTaskForReview(
             Guid.NewGuid(),
             command.TeamId,
+            command.MessageContext.Person.Id,
             Enum.Parse<NextReviewerType>(command.Strategy),
             command.MessageContext.ChatMessage.ChatId,
             command.MessageContext.ChatMessage.MessageId,
@@ -37,7 +38,7 @@ internal sealed class NeedReviewCommandHandler : IRequestHandler<NeedReviewComma
 
         await _repository.Upsert(draft, token);
 
-        var notification = await _reviewMessageBuilder.Build(draft, token);
+        var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
         
         return CommandResult.Build(notification);
     }
