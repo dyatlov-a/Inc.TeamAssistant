@@ -34,10 +34,12 @@ internal sealed class DraftTaskForReviewService
     {
         var notifications = new List<NotificationMessage>();
         
-        await _draftTaskForReviewRepository.Delete(draft.Id, token);
-        notifications.Add(NotificationMessage.Delete(new ChatMessage(draft.ChatId, draft.MessageId)));
         if (draft.PreviewMessageId.HasValue)
             notifications.Add(NotificationMessage.Delete(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value)));
+        
+        notifications.Add(NotificationMessage.Delete(new ChatMessage(draft.ChatId, draft.MessageId)));
+        
+        await _draftTaskForReviewRepository.Delete(draft.Id, token);
 
         return notifications;
     }

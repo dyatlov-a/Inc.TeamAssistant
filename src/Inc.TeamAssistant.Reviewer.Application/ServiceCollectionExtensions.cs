@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.Services;
@@ -45,6 +46,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, NeedReviewCommandCreator>()
             .AddSingleton<ICommandCreator, ReassignReviewCommandCreator>()
             .AddSingleton<ICommandCreator, EditDraftCommandCreator>()
+            .AddSingleton<ICommandCreator, CancelDraftCommandCreator>()
 
             .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>()
             .AddScoped<IRemoveTeamHandler, RemoveTeamHandler>();

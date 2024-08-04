@@ -1,9 +1,12 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
+
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class DraftTaskForReview
 {
     public Guid Id { get; private set; }
     public Guid TeamId { get; private set; }
+    public long OwnerId { get; private set; }
     public NextReviewerType Strategy { get; private set; }
     public long ChatId { get; private set; }
     public int MessageId { get; private set; }
@@ -19,6 +22,7 @@ public sealed class DraftTaskForReview
     public DraftTaskForReview(
         Guid id,
         Guid teamId,
+        long ownerId,
         NextReviewerType strategy,
         long chatId,
         int messageId,
@@ -30,6 +34,7 @@ public sealed class DraftTaskForReview
         
         Id = id;
         TeamId = teamId;
+        OwnerId = ownerId;
         Strategy = strategy;
         ChatId = chatId;
         MessageId = messageId;
@@ -57,6 +62,14 @@ public sealed class DraftTaskForReview
     {
         PreviewMessageId = messageId;
         
+        return this;
+    }
+
+    public DraftTaskForReview CheckRights(long personId)
+    {
+        if (OwnerId != personId)
+            throw new TeamAssistantException("User has not rights for action.");
+
         return this;
     }
 }

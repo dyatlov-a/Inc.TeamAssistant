@@ -35,7 +35,6 @@ public sealed class TaskForReview
         Guid botId,
         DateTimeOffset now,
         TimeSpan notificationInterval,
-        long ownerId,
         long chatId)
         : this()
     {
@@ -46,7 +45,7 @@ public sealed class TaskForReview
         Strategy = draft.Strategy;
         Created = now;
         TeamId = draft.TeamId;
-        OwnerId = ownerId;
+        OwnerId = draft.OwnerId;
         ChatId = chatId;
         Description = draft.Description;
         State = TaskForReviewState.New;

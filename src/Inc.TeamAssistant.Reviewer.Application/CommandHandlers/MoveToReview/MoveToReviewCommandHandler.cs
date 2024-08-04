@@ -48,6 +48,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         ArgumentNullException.ThrowIfNull(command);
 
         var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
+        draft.CheckRights(command.MessageContext.Person.Id);
+        
         var targetTeam = command.MessageContext.FindTeam(draft.TeamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, draft.TeamId);
@@ -55,22 +57,23 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var teammates = await _teamAccessor.GetTeammates(draft.TeamId, DateTimeOffset.UtcNow, token);
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, draft.TeamId);
-
-        var ownerId = command.MessageContext.Person.Id;
+        
         var taskForReview = new TaskForReview(
             Guid.NewGuid(),
             draft,
             command.MessageContext.Bot.Id,
             DateTimeOffset.UtcNow,
             _options.NotificationInterval,
-            ownerId,
             targetTeam.ChatId);
 
         if (command.MessageContext.TargetPersonId.HasValue)
             taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
         else
         {
-            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(draft.TeamId, ownerId, token);
+            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(
+                taskForReview.TeamId,
+                taskForReview.OwnerId,
+                token);
             var history = await _taskForReviewReader.GetHistory(
                 taskForReview.TeamId,
                 DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),

@@ -5,8 +5,9 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft.Ser
 
 internal sealed class CancelDraftCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.CancelDraft;
+    public string Command => CommandList.RemoveDraft;
     public bool SupportSingleLineMode => false;
+    
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,

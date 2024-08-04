@@ -12,11 +12,13 @@ internal sealed class BotConnector : IBotConnector
 {
     private readonly IBotReader _botReader;
     private readonly ContextCommandConverter _converter;
+    private readonly IMessageBuilder _messageBuilder;
 
-    public BotConnector(IBotReader botReader, ContextCommandConverter converter)
+    public BotConnector(IBotReader botReader, ContextCommandConverter converter, IMessageBuilder messageBuilder)
     {
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
     
     public async Task<string?> GetUsername(string botToken, CancellationToken token)
@@ -47,15 +49,23 @@ internal sealed class BotConnector : IBotConnector
         foreach (var languageId in LanguageSettings.LanguageIds)
         {
             var languageCode = languageId.Value;
+            
             var botName = await client.GetMyNameAsync(languageCode, token);
             var botShortDescription = await client.GetMyShortDescriptionAsync(languageCode, token);
             var botDescription = await client.GetMyDescriptionAsync(languageCode, token);
             
+            var shortDescription = string.IsNullOrWhiteSpace(botShortDescription.ShortDescription)
+                ? await _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId)
+                : botShortDescription.ShortDescription;
+            var description = string.IsNullOrWhiteSpace(botDescription.Description)
+                ? await _messageBuilder.Build(Messages.Connector_BotDescription, languageId)
+                : botDescription.Description;
+            
             results.Add(new BotDetails(
                 languageCode,
                 botName.Name,
-                botShortDescription.ShortDescription,
-                botDescription.Description));
+                shortDescription,
+                description));
         }
 
         return results;

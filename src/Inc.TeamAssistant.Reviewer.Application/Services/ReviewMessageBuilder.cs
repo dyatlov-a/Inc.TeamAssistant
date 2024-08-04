@@ -96,48 +96,62 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         };
     }
 
-    public async Task<NotificationMessage> Build(DraftTaskForReview draft, CancellationToken token)
+    public async Task<NotificationMessage> Build(
+        DraftTaskForReview draft,
+        LanguageId languageId,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(nameof(draft));
+        ArgumentNullException.ThrowIfNull(nameof(languageId));
+        
         var message = new StringBuilder();
-        message.AppendLine("Предварительный просмотр черновика задачи на ревью.");
+        message.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
         message.AppendLine();
         message.AppendLine(draft.Description);
 
         if (draft.TargetPersonId.HasValue)
         {
+            var targetPersonMessageTemplate = await _messageBuilder.Build(
+                Messages.Reviewer_PreviewReviewerTemplate,
+                languageId);
             var targetPerson = await _teamAccessor.FindPerson(draft.TargetPersonId.Value, token);
             if (targetPerson is null)
                 throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, draft.TargetPersonId.Value);
             
             message.AppendLine();
-            message.AppendLine($"Задача будет назначена на ревьювера {targetPerson.DisplayName}");
+            message.AppendLine(string.Format(targetPersonMessageTemplate, targetPerson.DisplayName));
         }
 
-        if (_service.HasDescriptionAndLinks(draft.Description))
+        if (!_service.HasDescriptionAndLinks(draft.Description))
         {
             message.AppendLine();
             message.Append('❗');
-            message.Append("Необходимо указать ссылку на исходный код и описание");
+            message.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
+            message.AppendLine();
         }
         
         message.AppendLine();
-        message.AppendLine("Для редактирования черновика необходимо отредактировать исходное сообщение");
+        message.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId));
 
         NotificationMessage notificationMessage;
         
         if (draft.PreviewMessageId.HasValue)
             notificationMessage = NotificationMessage.Edit(
-                new ChatMessage(draft.ChatId, draft.MessageId),
+                new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value),
                 message.ToString());
         else
             notificationMessage = NotificationMessage
                 .Create(draft.ChatId, message.ToString())
+                .ReplyTo(draft.MessageId)
                 .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p)));
 
         return notificationMessage
-            .WithButton(new Button("Отправить на ревью", $"{CommandList.MoveToReview}{draft.Id:N}"))
-            .WithButton(new Button("Отменить", $"{CommandList.CancelDraft}{draft.Id:N}"))
-            .ReplyTo(draft.MessageId);
+            .WithButton(new Button(
+                await _messageBuilder.Build(Messages.Reviewer_PreviewMoveToReview, languageId),
+                $"{CommandList.MoveToReview}{draft.Id:N}"))
+            .WithButton(new Button(
+                await _messageBuilder.Build(Messages.Reviewer_PreviewRemoveDraft, languageId),
+                $"{CommandList.RemoveDraft}{draft.Id:N}"));
     }
 
     private async Task<NotificationMessage?> CreatePushMessage(
