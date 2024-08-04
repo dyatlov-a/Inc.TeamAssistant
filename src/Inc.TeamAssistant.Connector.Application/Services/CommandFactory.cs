@@ -47,25 +47,22 @@ internal sealed class CommandFactory
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        var currentNode = botCommand.Stages.First;
-        while (currentNode is not null)
+        while (botCommand.Stages.MoveNext())
         {
-            if ((dialogState is null && botCommand.Stages.First!.Value.Id == currentNode.Value.Id) ||
-                dialogState?.State == currentNode.Value.Value)
+            if ((dialogState is null && botCommand.Stages.First!.Id == botCommand.Stages.Current.Id) ||
+                dialogState?.State == botCommand.Stages.Current.Value)
             {
                 var dialogCommand = await _dialogCommandFactory.TryCreate(
                     bot,
                     botCommand.Value,
                     dialogState?.State,
-                    currentNode.Value,
-                    currentNode.Next?.Value,
+                    botCommand.Stages.Current,
+                    botCommand.Stages.Next,
                     messageContext);
 
                 if (dialogCommand is not null)
                     return dialogCommand;
             }
-
-            currentNode = currentNode.Next;
         }
 
         var commandCreator = _commandCreatorResolver.TryResolve(input);

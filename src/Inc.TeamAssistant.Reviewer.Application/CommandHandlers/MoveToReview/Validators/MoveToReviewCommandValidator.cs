@@ -23,9 +23,12 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
 
     private static bool HasDescriptionAndLinks(string description, ReviewerOptions reviewerOptions)
     {
-        string[] splittedDescription = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var links = splittedDescription.Where(t => reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
+        ArgumentNullException.ThrowIfNull(nameof(reviewerOptions));
+        
+        var descriptionParts = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var links = descriptionParts.Where(t => reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();
 
-        return links.Any() && splittedDescription.Length > links.Length;
+        return links.Any() && descriptionParts.Length > links.Length;
     }
 }
