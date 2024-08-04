@@ -30,28 +30,26 @@ internal sealed class DialogContinuation
 
         var key = (botId, targetChat);
         
-        _store.AddOrUpdate(
+        return _store.AddOrUpdate(
             key,
             k => new DialogState(command, stageType).Attach(chatMessage),
             (k, v) => v.MoveTo(stageType).Attach(chatMessage));
-
-        return _store[key];
     }
 
     public async Task End(
         Guid botId,
         TargetChat targetChat,
-        ChatMessage chatMessage,
+        ChatMessage? chatMessage,
         Func<IReadOnlyCollection<ChatMessage>, CancellationToken, Task> cleanHistory,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(targetChat);
-        ArgumentNullException.ThrowIfNull(chatMessage);
         ArgumentNullException.ThrowIfNull(cleanHistory);
 
         if (_store.Remove((botId, targetChat), out var dialogState))
         {
-            dialogState.Attach(chatMessage);
+            if (chatMessage is not null)
+                dialogState.Attach(chatMessage);
 
             if (dialogState.ChatMessages.Any())
                 await cleanHistory(dialogState.ChatMessages, token);

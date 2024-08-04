@@ -153,16 +153,22 @@ public sealed class ReviewMetricsProviderTests
         TimeSpan? acceptDuration = null,
         IReadOnlyCollection<(TimeSpan DeclineDuration, TimeSpan NextRoundDuration)>? reviewDurations = null)
     {
-        var taskForReview = new TaskForReview(
-            _fixture.Create<Guid>(),
+        var draft = new DraftTaskForReview(
             _fixture.Create<Guid>(),
             teamId,
-            start,
-            _fixture.Create<TimeSpan>(),
             _fixture.Create<NextReviewerType>(),
             _fixture.Create<long>(),
+            _fixture.Create<int>(),
+            _fixture.Create<string>(),
+            start);
+        var taskForReview = new TaskForReview(
+            _fixture.Create<Guid>(),
+            draft,
+            _fixture.Create<Guid>(),
+            start,
+            _fixture.Create<TimeSpan>(),
             _fixture.Create<long>(),
-            _fixture.Create<string>());
+            _fixture.Create<long>());
         var operationStart = start;
 
         if (moveToInProgressDuration.HasValue)

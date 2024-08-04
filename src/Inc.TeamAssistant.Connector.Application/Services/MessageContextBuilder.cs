@@ -38,8 +38,29 @@ internal sealed class MessageContextBuilder
             UpdateType.Message => await CreateFromMessage(bot, update.Message!, token),
             UpdateType.CallbackQuery => await CreateFromCallbackQuery(bot, update.CallbackQuery!, token),
             UpdateType.PollAnswer => await CreateFromPollAnswer(bot, update.PollAnswer!, token),
+            UpdateType.EditedMessage => await CreateFromEdited(bot, update.EditedMessage!, token),
             _ => null
         };
+    }
+
+    private async Task<MessageContext?> CreateFromEdited(Bot bot, Message editedMessage, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(editedMessage);
+        
+        var parsedText = await ParseText(bot.Name, editedMessage, token);
+        var text = string.Format(CommandList.EditDraft, parsedText.Text);
+        
+        return await Create(
+            bot,
+            editedMessage.MessageId,
+            editedMessage.Chat.Id,
+            editedMessage.Chat.Title,
+            editedMessage.From!,
+            text,
+            targetPersonId: parsedText.TargetPersonId,
+            location: null,
+            token);
     }
 
     private async Task<MessageContext?> CreateFromPollAnswer(Bot bot, PollAnswer pollAnswer, CancellationToken token)

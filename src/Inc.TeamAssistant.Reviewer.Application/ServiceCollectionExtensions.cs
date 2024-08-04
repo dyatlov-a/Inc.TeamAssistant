@@ -1,11 +1,13 @@
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgress.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
+using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.NeedReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Handlers;
@@ -23,6 +25,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(options)
+            .AddSingleton<DraftTaskForReviewService>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
             .AddHostedService<PushService>()
@@ -39,7 +42,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToReviewCommandCreator>()
+            .AddSingleton<ICommandCreator, NeedReviewCommandCreator>()
             .AddSingleton<ICommandCreator, ReassignReviewCommandCreator>()
+            .AddSingleton<ICommandCreator, EditDraftCommandCreator>()
 
             .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>()
             .AddScoped<IRemoveTeamHandler, RemoveTeamHandler>();

@@ -14,4 +14,6 @@ public interface IReviewMessageBuilder
         CancellationToken token);
 
     Task<NotificationMessage?> Push(TaskForReview taskForReview, CancellationToken token);
+
+    Task<NotificationMessage> Build(DraftTaskForReview draft, CancellationToken token);
 }
