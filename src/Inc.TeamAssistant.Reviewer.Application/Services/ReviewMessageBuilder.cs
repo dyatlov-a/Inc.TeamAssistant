@@ -1,12 +1,13 @@
 using System.Text;
-using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
+using Inc.TeamAssistant.Reviewer.Model.Commands.AttachPreview;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
@@ -17,24 +18,24 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
     private readonly ITaskForReviewReader _taskForReviewReader;
-    private readonly IHolidayService _holidayService;
     private readonly IReviewMetricsProvider _reviewMetricsProvider;
     private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly DraftTaskForReviewService _service;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
         ITaskForReviewReader taskForReviewReader,
-        IHolidayService holidayService,
         IReviewMetricsProvider reviewMetricsProvider,
-        ReviewTeamMetricsFactory metricsFactory)
+        ReviewTeamMetricsFactory metricsFactory,
+        DraftTaskForReviewService service)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
-        _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _reviewMetricsProvider = reviewMetricsProvider ?? throw new ArgumentNullException(nameof(reviewMetricsProvider));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public async Task<IReadOnlyCollection<NotificationMessage>> Build(
@@ -93,6 +94,50 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     token),
             _ => null
         };
+    }
+
+    public async Task<NotificationMessage> Build(DraftTaskForReview draft, CancellationToken token)
+    {
+        var message = new StringBuilder();
+        message.AppendLine("Предварительный просмотр черновика задачи на ревью.");
+        message.AppendLine();
+        message.AppendLine(draft.Description);
+
+        if (draft.TargetPersonId.HasValue)
+        {
+            var targetPerson = await _teamAccessor.FindPerson(draft.TargetPersonId.Value, token);
+            if (targetPerson is null)
+                throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, draft.TargetPersonId.Value);
+            
+            message.AppendLine();
+            message.AppendLine($"Задача будет назначена на ревьювера {targetPerson.DisplayName}");
+        }
+
+        if (_service.HasDescriptionAndLinks(draft.Description))
+        {
+            message.AppendLine();
+            message.Append('❗');
+            message.Append("Необходимо указать ссылку на исходный код и описание");
+        }
+        
+        message.AppendLine();
+        message.AppendLine("Для редактирования черновика необходимо отредактировать исходное сообщение");
+
+        NotificationMessage notificationMessage;
+        
+        if (draft.PreviewMessageId.HasValue)
+            notificationMessage = NotificationMessage.Edit(
+                new ChatMessage(draft.ChatId, draft.MessageId),
+                message.ToString());
+        else
+            notificationMessage = NotificationMessage
+                .Create(draft.ChatId, message.ToString())
+                .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p)));
+
+        return notificationMessage
+            .WithButton(new Button("Отправить на ревью", $"{CommandList.MoveToReview}{draft.Id:N}"))
+            .WithButton(new Button("Отменить", $"{CommandList.CancelDraft}{draft.Id:N}"))
+            .ReplyTo(draft.MessageId);
     }
 
     private async Task<NotificationMessage?> CreatePushMessage(

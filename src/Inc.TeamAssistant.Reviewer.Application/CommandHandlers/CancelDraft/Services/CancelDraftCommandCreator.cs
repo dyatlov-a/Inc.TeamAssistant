@@ -1,13 +1,12 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
+using Inc.TeamAssistant.Reviewer.Model.Commands.CancelDraft;
 
-namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Services;
+namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft.Services;
 
-internal sealed class MoveToReviewCommandCreator : ICommandCreator
+internal sealed class CancelDraftCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.MoveToReview;
+    public string Command => CommandList.CancelDraft;
     public bool SupportSingleLineMode => false;
-    
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
@@ -16,7 +15,7 @@ internal sealed class MoveToReviewCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new MoveToReviewCommand(
+        return Task.FromResult<IEndDialogCommand>(new CancelDraftCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

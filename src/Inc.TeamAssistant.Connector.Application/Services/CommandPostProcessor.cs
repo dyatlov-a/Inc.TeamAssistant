@@ -30,7 +30,7 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
         await _dialogContinuation.End(
             command.MessageContext.Bot.Id,
             command.MessageContext.TargetChat,
-            command.MessageContext.ChatMessage,
+            command.SaveEndOfDialog ? null : command.MessageContext.ChatMessage,
             async (ms, t) =>
             {
                 if (command.MessageContext.Shared && ms.Any())

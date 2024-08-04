@@ -1,34 +1,34 @@
 using FluentValidation;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Validators;
 
 internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToReviewCommand>
 {
-    public MoveToReviewCommandValidator(ReviewerOptions reviewerOptions)
+    private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
+    private readonly DraftTaskForReviewService _draftTaskForReviewService;
+    
+    public MoveToReviewCommandValidator(
+        IDraftTaskForReviewRepository draftTaskForReviewRepository,
+        DraftTaskForReviewService draftTaskForReviewService)
     {
-        ArgumentNullException.ThrowIfNull(reviewerOptions);
+        _draftTaskForReviewRepository =
+            draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
+        _draftTaskForReviewService =
+            draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
 
-        RuleFor(e => e.TeamId)
-            .NotEmpty();
-        
-        RuleFor(e => e.Description)
+        RuleFor(e => e.DraftId)
             .NotEmpty()
-            .MaximumLength(2000)
-            .Must(e => !e.StartsWith("/"))
-            .WithMessage("'{PropertyName}' please enter text value")
-            .Must(e => HasDescriptionAndLinks(e, reviewerOptions))
+            .MustAsync(HasDescriptionAndLinks)
             .WithMessage("'{PropertyName}' must contains a link to the source code and some description");
     }
 
-    private static bool HasDescriptionAndLinks(string description, ReviewerOptions reviewerOptions)
+    private async Task<bool> HasDescriptionAndLinks(Guid draftId, CancellationToken token)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
-        ArgumentNullException.ThrowIfNull(nameof(reviewerOptions));
-        
-        var descriptionParts = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var links = descriptionParts.Where(t => reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();
+        var draft = await _draftTaskForReviewRepository.GetById(draftId, token);
 
-        return links.Any() && descriptionParts.Length > links.Length;
+        return _draftTaskForReviewService.HasDescriptionAndLinks(draft.Description);
     }
 }

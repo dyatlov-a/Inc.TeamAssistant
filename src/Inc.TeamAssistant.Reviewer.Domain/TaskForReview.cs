@@ -31,26 +31,24 @@ public sealed class TaskForReview
 
     public TaskForReview(
         Guid id,
+        DraftTaskForReview draft,
         Guid botId,
-        Guid teamId,
         DateTimeOffset now,
         TimeSpan notificationInterval,
-        NextReviewerType strategy,
         long ownerId,
-        long chatId,
-        string description)
+        long chatId)
         : this()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
+        ArgumentNullException.ThrowIfNull(nameof(draft));
 
         Id = id;
         BotId = botId;
-        Strategy = strategy;
+        Strategy = draft.Strategy;
         Created = now;
-        TeamId = teamId;
+        TeamId = draft.TeamId;
         OwnerId = ownerId;
         ChatId = chatId;
-        Description = description;
+        Description = draft.Description;
         State = TaskForReviewState.New;
         
         SetNextNotificationTime(now, notificationInterval);
