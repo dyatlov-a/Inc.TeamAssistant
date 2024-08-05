@@ -158,7 +158,7 @@ internal sealed class BotReader : IBotReader
         if (bot is not null)
         {
             foreach (var botCommand in commandIds.Select(i => botCommands[i]))
-                bot.AddCommand(botCommand.MapStages(botCommandStages[botCommand.Id]));
+                bot.AddCommand(botCommand.MapStages(botCommandStages[botCommand.Id].ToArray()));
 
             foreach (var team in teams)
             {
