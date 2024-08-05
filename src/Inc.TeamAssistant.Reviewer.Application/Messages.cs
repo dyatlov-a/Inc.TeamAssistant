@@ -8,7 +8,8 @@ internal static class Messages
     public static readonly MessageId Reviewer_ReviewDeclined = new(nameof(Reviewer_ReviewDeclined));
     public static readonly MessageId Reviewer_NewTaskForReview = new(nameof(Reviewer_NewTaskForReview));
     public static readonly MessageId Reviewer_Owner = new(nameof(Reviewer_Owner));
-    public static readonly MessageId Reviewer_Target = new(nameof(Reviewer_Target));
+    public static readonly MessageId Reviewer_TargetAutomatically = new(nameof(Reviewer_TargetAutomatically));
+    public static readonly MessageId Reviewer_TargetManually = new(nameof(Reviewer_TargetManually));
     public static readonly MessageId Reviewer_Accepted = new(nameof(Reviewer_Accepted));
     public static readonly MessageId Reviewer_TotalTime = new(nameof(Reviewer_TotalTime));
     public static readonly MessageId Reviewer_MoveToInProgress = new(nameof(Reviewer_MoveToInProgress));

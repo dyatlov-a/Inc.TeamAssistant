@@ -104,10 +104,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(nameof(draft));
         ArgumentNullException.ThrowIfNull(nameof(languageId));
         
-        var message = new StringBuilder();
-        message.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
-        message.AppendLine();
-        message.AppendLine(draft.Description);
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(draft.Description);
 
         if (draft.TargetPersonId.HasValue)
         {
@@ -118,33 +118,28 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             if (targetPerson is null)
                 throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, draft.TargetPersonId.Value);
             
-            message.AppendLine();
-            message.AppendLine(string.Format(targetPersonMessageTemplate, targetPerson.DisplayName));
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine(string.Format(targetPersonMessageTemplate, targetPerson.DisplayName));
         }
 
         if (!_service.HasDescriptionAndLinks(draft.Description))
         {
-            message.AppendLine();
-            message.Append('❗');
-            message.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
-            message.AppendLine();
+            messageBuilder.AppendLine();
+            messageBuilder.Append('❗');
+            messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
+            messageBuilder.AppendLine();
         }
         
-        message.AppendLine();
-        message.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId));
+        var message = messageBuilder.ToString();
 
-        NotificationMessage notificationMessage;
-        
-        if (draft.PreviewMessageId.HasValue)
-            notificationMessage = NotificationMessage.Edit(
-                new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value),
-                message.ToString());
-        else
-            notificationMessage = NotificationMessage
-                .Create(draft.ChatId, message.ToString())
+        var notificationMessage = draft.PreviewMessageId.HasValue
+            ? NotificationMessage.Edit(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value), message)
+            : NotificationMessage.Create(draft.ChatId, message)
                 .ReplyTo(draft.MessageId)
                 .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p)));
-
+        
         return notificationMessage
             .WithButton(new Button(
                 await _messageBuilder.Build(Messages.Reviewer_PreviewMoveToReview, languageId),
@@ -200,12 +195,15 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             TaskForReviewState.Accept => "🤝",
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
+        var reviewerTargetMessageKey = taskForReview.HasConcreteReviewer
+            ? Messages.Reviewer_TargetManually
+            : Messages.Reviewer_TargetAutomatically;
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
         
-        messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_Target, languageId));
+        messageBuilder.Append(await _messageBuilder.Build(reviewerTargetMessageKey, languageId));
         reviewer.Append(messageBuilder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
         messageBuilder.AppendLine();
         
