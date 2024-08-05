@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Ser
 internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.NewTeam;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

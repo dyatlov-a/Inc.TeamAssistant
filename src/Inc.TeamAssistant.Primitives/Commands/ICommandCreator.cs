@@ -3,7 +3,7 @@ namespace Inc.TeamAssistant.Primitives.Commands;
 public interface ICommandCreator
 {
     string Command { get; }
-    bool SupportSingleLineMode { get; }
+    bool SupportSingleLineMode => false;
     
     Task<IEndDialogCommand> Create(
         MessageContext messageContext,

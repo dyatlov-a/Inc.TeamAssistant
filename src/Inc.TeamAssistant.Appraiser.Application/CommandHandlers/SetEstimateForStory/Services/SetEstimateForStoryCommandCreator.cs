@@ -9,7 +9,6 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
     private readonly AssessmentValue.Value _value;
     
     public string Command { get; }
-    public bool SupportSingleLineMode => false;
 
     public SetEstimateForStoryCommandCreator(string command, AssessmentValue.Value value)
     {

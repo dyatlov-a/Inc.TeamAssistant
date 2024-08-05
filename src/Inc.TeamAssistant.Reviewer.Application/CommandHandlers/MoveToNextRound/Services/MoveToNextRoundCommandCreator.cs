@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound
 internal sealed class MoveToNextRoundCommandCreator : ICommandCreator
 {
     public string Command => CommandList.MoveToNextRound;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

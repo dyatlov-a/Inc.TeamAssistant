@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Servi
 internal sealed class EditDraftCommandCreator : ICommandCreator
 {
     public string Command => CommandList.EditDraft;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

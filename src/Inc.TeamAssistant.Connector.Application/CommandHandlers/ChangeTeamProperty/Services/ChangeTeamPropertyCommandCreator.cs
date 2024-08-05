@@ -9,7 +9,6 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
     private readonly string _propertyValue;
     
     public string Command { get; }
-    public bool SupportSingleLineMode => false;
 
     public ChangeTeamPropertyCommandCreator(string command, string propertyName, string propertyValue)
     {

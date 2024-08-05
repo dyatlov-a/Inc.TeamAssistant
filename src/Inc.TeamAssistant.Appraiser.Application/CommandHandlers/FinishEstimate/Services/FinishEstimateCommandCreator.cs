@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate
 internal sealed class FinishEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Finish;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

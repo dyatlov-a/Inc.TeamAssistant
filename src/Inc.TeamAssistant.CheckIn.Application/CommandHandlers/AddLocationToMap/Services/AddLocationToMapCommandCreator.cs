@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap
 internal sealed class AddLocationToMapCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AddLocation;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

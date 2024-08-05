@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 internal sealed class HelpCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Help;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

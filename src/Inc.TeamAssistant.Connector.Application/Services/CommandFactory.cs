@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.End;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -32,9 +31,6 @@ internal sealed class CommandFactory
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
-
-        if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
-            return new EndCommand(messageContext);
 
         var cmd = _aliasService.OverrideCommand(messageContext.Text);
         var priorityCommand = bot.FindCommand(cmd);

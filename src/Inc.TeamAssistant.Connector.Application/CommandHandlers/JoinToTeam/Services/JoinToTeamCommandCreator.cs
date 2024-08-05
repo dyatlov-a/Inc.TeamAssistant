@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Ser
 internal sealed class JoinToTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Start;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
