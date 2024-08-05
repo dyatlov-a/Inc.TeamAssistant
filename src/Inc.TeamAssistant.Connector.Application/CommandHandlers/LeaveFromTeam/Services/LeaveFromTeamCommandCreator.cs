@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.
 internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.LeaveTeam;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,
