@@ -36,8 +36,17 @@ internal sealed class CommandFactory
         if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
             return new EndCommand(messageContext);
 
+        var cmd = _aliasService.OverrideCommand(messageContext.Text);
+        var priorityCommand = bot.FindCommand(cmd);
+        if (priorityCommand?.MultipleStages == false)
+        {
+            var priorityCommandCreator = _commandCreatorResolver.TryResolve(cmd);
+            if (priorityCommandCreator is not null)
+                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
+        }
+        
         var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
-        var input = dialogState is null ? _aliasService.OverrideCommand(messageContext.Text) : dialogState.Command;
+        var input = dialogState is null ? cmd : dialogState.Command;
         
         var botCommand = bot.FindCommand(input);
         if (botCommand is null)
@@ -47,7 +56,7 @@ internal sealed class CommandFactory
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        while (botCommand.Stages.MoveNext())
+        while (botCommand.MultipleStages && botCommand.Stages.MoveNext())
         {
             if ((dialogState is null && botCommand.Stages.First!.Id == botCommand.Stages.Current.Id) ||
                 dialogState?.State == botCommand.Stages.Current.Value)

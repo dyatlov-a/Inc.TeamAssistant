@@ -9,12 +9,14 @@ public sealed class ContextCommand
     public MessageId? HelpMessageId { get; private set; }
     public IReadOnlyCollection<ContextScope> Scopes { get; private set; } = default!;
     public ContextStages Stages { get; private set; } = default!;
+    public bool MultipleStages { get; private set; }
 
-    internal ContextCommand MapStages(IEnumerable<ContextStage> contextStages)
+    internal ContextCommand MapStages(IReadOnlyCollection<ContextStage> contextStages)
     {
         ArgumentNullException.ThrowIfNull(contextStages);
         
         Stages = new(contextStages);
+        MultipleStages = contextStages.Any();
 
         return this;
     }
