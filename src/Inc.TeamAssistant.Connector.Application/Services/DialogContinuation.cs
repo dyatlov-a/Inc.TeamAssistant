@@ -36,23 +36,21 @@ internal sealed class DialogContinuation
             (k, v) => v.MoveTo(stageType).Attach(chatMessage));
     }
 
-    public async Task End(
+    public IReadOnlyCollection<ChatMessage> End(
         Guid botId,
         TargetChat targetChat,
-        ChatMessage? chatMessage,
-        Func<IReadOnlyCollection<ChatMessage>, CancellationToken, Task> cleanHistory,
-        CancellationToken token)
+        ChatMessage? chatMessage)
     {
         ArgumentNullException.ThrowIfNull(targetChat);
-        ArgumentNullException.ThrowIfNull(cleanHistory);
 
         if (_store.Remove((botId, targetChat), out var dialogState))
         {
             if (chatMessage is not null)
                 dialogState.Attach(chatMessage);
 
-            if (dialogState.ChatMessages.Any())
-                await cleanHistory(dialogState.ChatMessages, token);
+            return dialogState.ChatMessages;
         }
+
+        return Array.Empty<ChatMessage>();
     }
 }

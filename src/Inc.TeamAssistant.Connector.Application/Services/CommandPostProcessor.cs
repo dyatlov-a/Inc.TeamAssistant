@@ -27,18 +27,13 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
         if (command is null)
             throw new ArgumentNullException(nameof(command));
         
-        await _dialogContinuation.End(
+        var client = await _provider.Get(command.MessageContext.Bot.Id, token);
+        var messages = _dialogContinuation.End(
             command.MessageContext.Bot.Id,
             command.MessageContext.TargetChat,
-            command.SaveEndOfDialog ? null : command.MessageContext.ChatMessage,
-            async (ms, t) =>
-            {
-                if (command.MessageContext.Shared && ms.Any())
-                {
-                    var client = await _provider.Get(command.MessageContext.Bot.Id, t);
-                    await client.TryDeleteMessages(command.MessageContext.Bot.Id, ms, _logger, token);
-                }
-            },
-            token);
+            command.SaveEndOfDialog ? null : command.MessageContext.ChatMessage);
+
+        if (messages.Any())
+            await client.TryDeleteMessages(command.MessageContext.Bot.Id, messages, _logger, token);
     }
 }
