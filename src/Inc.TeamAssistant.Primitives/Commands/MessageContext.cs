@@ -15,8 +15,6 @@ public sealed record MessageContext(
     long? TargetPersonId,
     string? ChatName)
 {
-    public bool Shared => ChatMessage.ChatId != Person.Id;
-
     public TargetChat TargetChat => new(Person.Id, ChatMessage.ChatId);
 
     public static MessageContext CreateIdle(Guid botId, long chatId)
