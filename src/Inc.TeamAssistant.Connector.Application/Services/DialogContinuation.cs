@@ -19,7 +19,7 @@ internal sealed class DialogContinuation
         Guid botId,
         TargetChat targetChat,
         string command,
-        CommandStage commandStage,
+        StageType stageType,
         ChatMessage chatMessage)
     {
         ArgumentNullException.ThrowIfNull(targetChat);
@@ -30,31 +30,27 @@ internal sealed class DialogContinuation
 
         var key = (botId, targetChat);
         
-        _store.AddOrUpdate(
+        return _store.AddOrUpdate(
             key,
-            k => new DialogState(command, commandStage).Attach(chatMessage),
-            (k, v) => v.MoveTo(commandStage).Attach(chatMessage));
-
-        return _store[key];
+            k => new DialogState(command, stageType).Attach(chatMessage),
+            (k, v) => v.MoveTo(stageType).Attach(chatMessage));
     }
 
-    public async Task End(
+    public IReadOnlyCollection<ChatMessage> End(
         Guid botId,
         TargetChat targetChat,
-        ChatMessage chatMessage,
-        Func<IReadOnlyCollection<ChatMessage>, CancellationToken, Task> cleanHistory,
-        CancellationToken token)
+        ChatMessage? chatMessage)
     {
         ArgumentNullException.ThrowIfNull(targetChat);
-        ArgumentNullException.ThrowIfNull(chatMessage);
-        ArgumentNullException.ThrowIfNull(cleanHistory);
 
         if (_store.Remove((botId, targetChat), out var dialogState))
         {
-            dialogState.Attach(chatMessage);
+            if (chatMessage is not null)
+                dialogState.Attach(chatMessage);
 
-            if (dialogState.ChatMessages.Any())
-                await cleanHistory(dialogState.ChatMessages, token);
+            return dialogState.ChatMessages;
         }
+
+        return Array.Empty<ChatMessage>();
     }
 }

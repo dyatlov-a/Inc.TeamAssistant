@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.ExceptionHandlers;
 using Serilog;
 using Serilog.Events;
@@ -29,16 +30,15 @@ public static class WebApplicationBuilderExtensions
         builder.Host.UseSerilog((_, c) =>
         {
             c.Enrich.FromLogContext();
-            c.MinimumLevel.Information();
+            c.MinimumLevel.Warning();
+            c.WriteTo.Console();
 
-            if (string.IsNullOrWhiteSpace(analyticsOptions.SentryDsn))
-                c.WriteTo.Console();
-            else
+            if (!string.IsNullOrWhiteSpace(analyticsOptions.SentryDsn))
                 c.WriteTo.Sentry(s =>
                 {
                     s.Environment = builder.Environment.EnvironmentName;
                     s.Dsn = analyticsOptions.SentryDsn;
-                    s.MinimumBreadcrumbLevel = LogEventLevel.Information;
+                    s.MinimumBreadcrumbLevel = LogEventLevel.Warning;
                     s.MinimumEventLevel = LogEventLevel.Error;
                 });
         });

@@ -4,7 +4,7 @@ using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class PersonPhotosService
+internal sealed class PersonPhotosService : IPersonPhotosService
 {
     private readonly IPersonRepository _personRepository;
     private readonly TelegramBotClientProvider _telegramBotClientProvider;
@@ -21,7 +21,7 @@ internal sealed class PersonPhotosService
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
     }
 
-    public async Task<MemoryStream?> GetPersonPhoto(long personId, CancellationToken token)
+    public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
     {
         try
         {
@@ -36,12 +36,11 @@ internal sealed class PersonPhotosService
             if (string.IsNullOrWhiteSpace(fileInfo.FilePath))
                 return null;
             
-            var stream = new MemoryStream();
+            using var stream = new MemoryStream();
             
             await telegramBotClient.DownloadFileAsync(fileInfo.FilePath, stream, token);
             
-            stream.Position = 0;
-            return stream;
+            return stream.ToArray();
         }
         catch(Exception e)
         {

@@ -22,9 +22,9 @@ internal sealed class DialogCommandFactory
     public async Task<IDialogCommand?> TryCreate(
         Bot bot,
         string botCommand,
-        CommandStage? currentStage,
-        BotCommandStage stage,
-        BotCommandStage? nextStage,
+        StageType? currentStage,
+        ContextStage stage,
+        ContextStage? nextStage,
         MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(bot);
@@ -75,7 +75,7 @@ internal sealed class DialogCommandFactory
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             (CommandList.NeedReview, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.NeedReview, CommandStage.SelectTeam, _, _, true)
+            (CommandList.NeedReview, StageType.SelectTeam, _, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
             (CommandList.AddStory, null, 0, _, _)
                 => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.Person.Id),
@@ -83,7 +83,7 @@ internal sealed class DialogCommandFactory
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
             (CommandList.AddStory, null, > 1, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.AddStory, CommandStage.SelectTeam, _, _, true)
+            (CommandList.AddStory, StageType.SelectTeam, _, _, true)
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
             _ => null
         };
@@ -100,16 +100,21 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
+
+        notification
+            .SetButtonsInRow(2)
+            .WithButton(new Button(cancelButtonText, CommandList.Cancel));
         
         return new BeginCommand(
             messageContext,
-            CommandStage.SelectTeam,
+            StageType.SelectTeam,
             CurrentTeamContext.Empty,
             botCommand,
             notification);
@@ -129,14 +134,17 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(messageId, messageContext.LanguageId));
+        
+        notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             
         return new BeginCommand(
             messageContext,
-            CommandStage.EnterText,
+            StageType.EnterText,
             team is not null ? new CurrentTeamContext(team.Id, team.Properties) : CurrentTeamContext.Empty,
             botCommand,
             notification);

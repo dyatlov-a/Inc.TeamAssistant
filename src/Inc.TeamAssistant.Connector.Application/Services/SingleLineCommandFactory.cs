@@ -57,7 +57,7 @@ internal sealed class SingleLineCommandFactory
             messageContext.Bot.Id,
             messageContext.TargetChat,
             cmd,
-            CommandStage.None,
+            StageType.None,
             messageContext.ChatMessage);
         
         return command;

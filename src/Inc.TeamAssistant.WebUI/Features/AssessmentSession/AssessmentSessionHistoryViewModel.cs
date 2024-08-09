@@ -6,11 +6,11 @@ namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 public sealed record AssessmentSessionHistoryViewModel(
     string Title,
     string TasksName,
-    GetAssessmentHistoryResult? Data)
+    IReadOnlyCollection<AssessmentHistoryDto> Items)
     : IViewModel<AssessmentSessionHistoryViewModel>
 {
     public static AssessmentSessionHistoryViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
-        null);
+        Array.Empty<AssessmentHistoryDto>());
 }

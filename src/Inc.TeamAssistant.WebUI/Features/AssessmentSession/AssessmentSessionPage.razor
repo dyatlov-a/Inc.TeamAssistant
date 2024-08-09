@@ -10,16 +10,18 @@
 @inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
 
-<MetaModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.TaskAssess" />
+<MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.TaskAssess" />
 
 <main class="main">
-    <div class="assessment-session-header white">
+    <div class="assessment-session-header">
         <div class="assessment-session-header__container">
             <div class="assessment-session__header">
                 <div class="assessment-session__about">
                     <Breadcrumbs Items="ViewModel.Items" />
                     <h1 class="title">@ViewModel.TaskAssess</h1>
-                    <p class="assessment-session__text text">@string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)</p>
+                    <p class="assessment-session__text text">
+                        @string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)
+                    </p>
                     <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
                 </div>
                 <div class="assessment-session__link">
@@ -33,7 +35,9 @@
             <div class="view-controls">
                 @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
                 {
-                    <a href="@MoveToView(assessmentType)" class="view-controls__item @ViewControlsItemCss(assessmentType)">
+                    <a
+                        href="@MoveToView(assessmentType)"
+                        class="view-controls__item @ViewControlsItemCss(assessmentType)">
                         <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
                     </a>
                 }
@@ -49,7 +53,7 @@
         </div>
     </div>
 </main>
-<div class="assessment-session-footer white">
+<div class="assessment-session-footer">
     <div class="assessment-session-footer__container">
         <AssessmentSessionHistory TeamId="Id" />
     </div>
@@ -82,14 +86,12 @@
     {
         ["Item"] = ViewModel.Story!,
         ["MeanRating"] = ViewModel.MeanRating,
-        ["MedianRating"] = ViewModel.MedianRating,
-        ["IsDarkTheme"] = false
+        ["MedianRating"] = ViewModel.MedianRating
     };
     
     private Dictionary<string, object> ViewIconParameters => new()
     {
-        ["Size"] = "40px",
-        ["Color"] = "#fff"
+        ["Size"] = "40px"
     };
     
     private EventsProvider? _eventsProvider;
@@ -106,7 +108,7 @@
     protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
     {
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        var newStoryState = await AppraiserService.GetActiveStory(Id, "000", "fff");
+        var newStoryState = await AppraiserService.GetActiveStory(Id, "000", "dfdfdf");
 
         return new(
             resources[Messages.GUI_TaskAssess],

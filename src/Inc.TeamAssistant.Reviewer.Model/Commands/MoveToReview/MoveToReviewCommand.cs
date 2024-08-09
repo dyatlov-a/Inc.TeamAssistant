@@ -1,11 +1,6 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 
-public sealed record MoveToReviewCommand(
-    MessageContext MessageContext,
-    Guid TeamId,
-    string Strategy,
-    string Description)
+public sealed record MoveToReviewCommand(MessageContext MessageContext, Guid DraftId)
     : IEndDialogCommand;

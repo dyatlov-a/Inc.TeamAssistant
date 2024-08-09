@@ -1,9 +1,15 @@
 .assessment-history-header {
     padding: 140px 0 40px 0;
+    background-color: #dfdfdf;
+    color: #000;
 }
 .assessment-history-content {
     padding: 60px 0 40px 0;
 }
-.assessment-history-content_dark {
-    background-color: #fff;
+.assessment-history-content:nth-child(2n - 1) {
+    background-color: #dfdfdf;
+    color: #000;
+}
+.assessment-history-content:nth-child(2n - 1) ::deep .story__link {
+    color: #000;
 }

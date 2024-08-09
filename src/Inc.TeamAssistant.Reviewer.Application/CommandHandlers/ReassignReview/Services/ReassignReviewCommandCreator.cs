@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.
 internal sealed class ReassignReviewCommandCreator : ICommandCreator
 {
     public string Command => CommandList.ReassignReview;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

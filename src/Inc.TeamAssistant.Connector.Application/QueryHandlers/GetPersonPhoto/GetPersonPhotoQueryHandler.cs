@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Connector.Application.Services;
+using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Queries.GetPersonPhoto;
 using MediatR;
 
@@ -6,9 +6,9 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetPersonPhoto;
 
 internal sealed class GetPersonPhotoQueryHandler : IRequestHandler<GetPersonPhotoQuery, GetPersonPhotoResult>
 {
-    private readonly PersonPhotosService _personPhotosService;
+    private readonly IPersonPhotosService _personPhotosService;
 
-    public GetPersonPhotoQueryHandler(PersonPhotosService personPhotosService)
+    public GetPersonPhotoQueryHandler(IPersonPhotosService personPhotosService)
     {
         _personPhotosService = personPhotosService ?? throw new ArgumentNullException(nameof(personPhotosService));
     }

@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.End;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -33,11 +32,17 @@ internal sealed class CommandFactory
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
 
-        if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
-            return new EndCommand(messageContext);
-
+        var cmd = _aliasService.OverrideCommand(messageContext.Text);
+        var priorityCommand = bot.FindCommand(cmd);
+        if (priorityCommand?.MultipleStages == false)
+        {
+            var priorityCommandCreator = _commandCreatorResolver.TryResolve(cmd);
+            if (priorityCommandCreator is not null)
+                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
+        }
+        
         var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
-        var input = dialogState is null ? _aliasService.OverrideCommand(messageContext.Text) : dialogState.Command;
+        var input = dialogState is null ? cmd : dialogState.Command;
         
         var botCommand = bot.FindCommand(input);
         if (botCommand is null)
@@ -47,34 +52,24 @@ internal sealed class CommandFactory
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        if (botCommand.Stages.Any())
+        while (botCommand.MultipleStages && botCommand.Stages.MoveNext())
         {
-            var stages = botCommand.Stages.ToArray();
-            var firstStage = stages.First();
-
-            for (var index = 0; index < stages.Length; index++)
+            if ((dialogState is null && botCommand.Stages.First!.Id == botCommand.Stages.Current.Id) ||
+                dialogState?.State == botCommand.Stages.Current.Value)
             {
-                var currentStage = stages[index];
-                var nextIndex = index + 1;
-                var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
-                
-                if ((dialogState is null && firstStage.Id == currentStage.Id) ||
-                    dialogState?.CommandState == currentStage.Value)
-                {
-                    var dialogCommand = await _dialogCommandFactory.TryCreate(
-                        bot,
-                        botCommand.Value,
-                        dialogState?.CommandState,
-                        currentStage,
-                        nextStage,
-                        messageContext);
+                var dialogCommand = await _dialogCommandFactory.TryCreate(
+                    bot,
+                    botCommand.Value,
+                    dialogState?.State,
+                    botCommand.Stages.Current,
+                    botCommand.Stages.Next,
+                    messageContext);
 
-                    if (dialogCommand is not null)
-                        return dialogCommand;
-                }
+                if (dialogCommand is not null)
+                    return dialogCommand;
             }
         }
-            
+
         var commandCreator = _commandCreatorResolver.TryResolve(input);
         if (commandCreator is null)
             return null;

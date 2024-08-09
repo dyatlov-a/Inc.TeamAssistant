@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.S
 internal sealed class MoveToDeclineCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Decline;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

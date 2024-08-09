@@ -6,7 +6,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgres
 internal sealed class MoveToInProgressCommandCreator : ICommandCreator
 {
     public string Command => CommandList.MoveToInProgress;
-    public bool SupportSingleLineMode => false;
     
     public Task<IEndDialogCommand> Create(
         MessageContext messageContext,

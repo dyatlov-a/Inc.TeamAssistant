@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Domain;
 
@@ -14,4 +15,6 @@ public interface IReviewMessageBuilder
         CancellationToken token);
 
     Task<NotificationMessage?> Push(TaskForReview taskForReview, CancellationToken token);
+
+    Task<NotificationMessage> Build(DraftTaskForReview draft, LanguageId languageId, CancellationToken token);
 }
