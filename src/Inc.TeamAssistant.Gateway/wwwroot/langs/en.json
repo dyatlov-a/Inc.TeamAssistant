@@ -129,6 +129,7 @@
   "Connector_LeaveFromTeamHelp": "Leave from the team",
   "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\"",
   "Connector_CancelHelp": "Cancel current operation",
+  "Connector_Cancel": "Cancel",
   "Connector_BotNotFound": "Bot {0} was not found",
   "Connector_TeamNotFound": "Team {0} was not found",
   "Connector_TeamForUserNotFound": "Team for user {0} was not found",
