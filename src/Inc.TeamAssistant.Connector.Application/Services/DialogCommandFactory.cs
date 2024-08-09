@@ -100,12 +100,17 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
+
+        notification
+            .SetButtonsInRow(2)
+            .WithButton(new Button(cancelButtonText, CommandList.Cancel));
         
         return new BeginCommand(
             messageContext,
@@ -129,10 +134,13 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(messageId, messageContext.LanguageId));
+        
+        notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             
         return new BeginCommand(
             messageContext,
