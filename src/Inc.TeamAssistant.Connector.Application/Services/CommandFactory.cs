@@ -32,30 +32,70 @@ internal sealed class CommandFactory
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
 
-        var cmd = _aliasService.OverrideCommand(messageContext.Text);
-        var priorityCommand = bot.FindCommand(cmd);
-        if (priorityCommand?.MultipleStages == false)
-        {
-            var priorityCommandCreator = _commandCreatorResolver.TryResolve(cmd);
-            if (priorityCommandCreator is not null)
-                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
-        }
+        var inputCommand = _aliasService.OverrideCommand(messageContext.Text);
+        var simpleCommand = await TryCreateSimple(inputCommand, bot, messageContext, token);
+        if (simpleCommand is not null)
+            return simpleCommand;
         
-        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
-        var input = dialogState is null ? cmd : dialogState.Command;
-        
-        var botCommand = bot.FindCommand(input);
-        if (botCommand is null)
-            return null;
-
-        var singleLineCommand = await _singleLineCommandFactory.TryCreate(bot, messageContext, input, token);
+        var singleLineCommand = await _singleLineCommandFactory.TryCreate(bot, messageContext, inputCommand, token);
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        while (botCommand.MultipleStages && botCommand.Stages.MoveNext())
+        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
+        var contextCommand = dialogState is null ? inputCommand : dialogState.Command;
+        var botCommand = bot.FindCommand(contextCommand);
+        if (botCommand is null)
+            return null;
+        
+        var dialogCommand = await TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
+        if (dialogCommand is not null)
+            return dialogCommand;
+
+        var commandCreator = _commandCreatorResolver.TryResolve(contextCommand);
+        if (commandCreator is null)
+            return null;
+        
+        var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
+        var command = await commandCreator.Create(messageContext, currentTeamContext, token);
+        return command;
+    }
+
+    private async Task<IDialogCommand?> TryCreateSimple(
+        string inputCommand,
+        Bot bot,
+        MessageContext messageContext,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(inputCommand);
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        var simpleCommand = bot.FindCommand(inputCommand);
+        
+        if (simpleCommand?.MultipleStages == false)
         {
-            if ((dialogState is null && botCommand.Stages.First!.Id == botCommand.Stages.Current.Id) ||
-                dialogState?.State == botCommand.Stages.Current.Value)
+            var priorityCommandCreator = _commandCreatorResolver.TryResolve(inputCommand);
+            
+            if (priorityCommandCreator is not null)
+                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
+        }
+
+        return null;
+    }
+
+    private async Task<IDialogCommand?> TryCreateDialogCommand(
+        ContextCommand botCommand,
+        Bot bot,
+        MessageContext messageContext,
+        DialogState? dialogState)
+    {
+        ArgumentNullException.ThrowIfNull(botCommand);
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        while (botCommand.Stages.MoveNext())
+        {
+            if ((dialogState is null && botCommand.Stages.IsFirst) || dialogState?.State == botCommand.Stages.Current.Value)
             {
                 var dialogCommand = await _dialogCommandFactory.TryCreate(
                     bot,
@@ -70,12 +110,6 @@ internal sealed class CommandFactory
             }
         }
 
-        var commandCreator = _commandCreatorResolver.TryResolve(input);
-        if (commandCreator is null)
-            return null;
-        
-        var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
-        var command = await commandCreator.Create(messageContext, currentTeamContext, token);
-        return command;
+        return null;
     }
 }

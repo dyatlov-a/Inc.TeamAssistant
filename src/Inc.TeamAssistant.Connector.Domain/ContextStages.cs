@@ -12,9 +12,9 @@ public sealed class ContextStages
         _stages = new(stages.OrderBy(s => s.Position));
     }
     
-    public ContextStage? First => _stages.First?.Value;
     public ContextStage Current => GetCurrent().Value;
     public ContextStage? Next => GetCurrent().Next?.Value;
+    public bool IsFirst => Current.Id == _stages.First!.Value.Id;
     
     public bool MoveNext()
     {

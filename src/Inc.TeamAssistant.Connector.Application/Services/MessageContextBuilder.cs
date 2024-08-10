@@ -201,6 +201,7 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
 
         bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
+        bool OwnerOfTeam(Team t) => t.OwnerId == personId;
         
         var memberOfChats = bot.Teams
             .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.OwnerId == personId)
@@ -209,7 +210,7 @@ internal sealed class MessageContextBuilder
             .ToArray();
         var results = bot.Teams
             .Where(t => memberOfChats.Contains(t.ChatId))
-            .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, MemberOfTeam(t)))
+            .Select(t => new TeamContext(t.Id, t.ChatId, t.Name, MemberOfTeam(t), OwnerOfTeam(t)))
             .ToArray();
 
         return results;
