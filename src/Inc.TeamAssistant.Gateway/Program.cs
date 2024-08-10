@@ -45,9 +45,6 @@ var builder = WebApplication
 	.UseTelemetry();
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var cacheAbsoluteExpiration = builder.Configuration
-	.GetRequiredSection("CacheAbsoluteExpiration")
-	.Get<TimeSpan>();
 var appraiserOptions = builder.Configuration
 	.GetRequiredSection(nameof(AppraiserOptions))
 	.Get<AppraiserOptions>()!;
@@ -130,8 +127,8 @@ builder.Services
 	.Build()
 
 	.AddSingleton(openGraphOptions)
-	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
-	.AddServices(authOptions, builder.Environment.WebRootPath, cacheAbsoluteExpiration)
+	.AddHolidays(workdayOptions, CachePolicies.CacheAbsoluteExpiration)
+	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
 
 	.AddAppraiserApplication(appraiserOptions)
@@ -143,7 +140,7 @@ builder.Services
 	.AddRandomCoffeeApplication(randomCoffeeOptions)
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
-	.AddConnectorDataAccess(cacheAbsoluteExpiration)
+	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
 
 	.AddHttpContextAccessor()
