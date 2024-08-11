@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Appraiser.Application.Converters;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AcceptEstimate;
 using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
+using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 
@@ -31,11 +32,11 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
         var story = await _storyRepository.Find(command.StoryId, token);
 		if (story is null)
 			throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
-		
-		story.Accept(command.MessageContext.Person.Id);
+
+		story.Accept(command.MessageContext.Person.Id, command.Value.ToAssessmentValue());
 
 		await _storyRepository.Upsert(story, token);
-		
+
 		await _messagesSender.StoryChanged(story.TeamId);
 
 		return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));

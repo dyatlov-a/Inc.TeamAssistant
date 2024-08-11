@@ -25,12 +25,17 @@ internal sealed class StoryReader : IStoryReader
         var command = new CommandDefinition(@"
             SELECT
                 DATE(s.created) AS assessmentdate,
-                COUNT(*) AS storiescount
+                COUNT(*) AS storiescount,
+                CASE 
+                WHEN s.story_type = 1
+                    THEN SUM(s.total_value)
+                    ELSE COUNT(*)
+                END as assessmentsum
             FROM appraiser.stories AS s
             WHERE s.team_id = @team_id AND s.created <= @before
             AND (@from is null OR s.created >= @from)
-            GROUP BY DATE(s.created)
-            ORDER BY DATE(s.created) DESC;",
+            GROUP BY DATE(s.created), s.story_type
+            ORDER BY DATE(s.created) DESC, s.story_type;",
             new
             {
                 team_id = teamId,
@@ -42,10 +47,10 @@ internal sealed class StoryReader : IStoryReader
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<(DateTime AssessmentDate, int StoriesCount)>(command);
+        var results = await connection.QueryAsync<(DateTime AssessmentDate, int StoriesCount, int AssessmentSum)>(command);
         
         return results
-            .Select(r => new AssessmentHistoryDto(DateOnly.FromDateTime(r.AssessmentDate), r.StoriesCount))
+            .Select(r => new AssessmentHistoryDto(DateOnly.FromDateTime(r.AssessmentDate), r.StoriesCount, r.AssessmentSum))
             .ToArray();
     }
 
@@ -81,7 +86,7 @@ internal sealed class StoryReader : IStoryReader
             SELECT
                 s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND accepted = false
+            WHERE s.team_id = @team_id AND total_value is null
             ORDER BY s.created
             OFFSET 0
             LIMIT 1;",

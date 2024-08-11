@@ -22,6 +22,7 @@ internal static class Messages
     public static readonly string GUI_Tasks = nameof(GUI_Tasks);
     public static readonly string GUI_StoryList = nameof(GUI_StoryList);
     public static readonly string GUI_AssessmentSession = nameof(GUI_AssessmentSession);
+    public static readonly string GUI_AssessmentSum = nameof(GUI_AssessmentSum);
     
     public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
     public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
@@ -141,6 +142,7 @@ internal static class Messages
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
     public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);
     public static readonly string Dashboard_TotalStories = nameof(Dashboard_TotalStories);
+    public static readonly string Dashboard_AssessmentSum = nameof(Dashboard_AssessmentSum);
     public static readonly string Dashboard_ConnectToTeamHelp = nameof(Dashboard_ConnectToTeamHelp);
     public static readonly string Dashboard_ConnectToTeamButton = nameof(Dashboard_ConnectToTeamButton);
     public static readonly string Dashboard_HasConcreteReviewer = nameof(Dashboard_HasConcreteReviewer);

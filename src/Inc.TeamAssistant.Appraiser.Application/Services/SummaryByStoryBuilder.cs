@@ -78,12 +78,23 @@ internal sealed class SummaryByStoryBuilder
         }
         else
         {
-            var acceptText = await _messageBuilder.Build(Messages.Appraiser_Accept, summary.LanguageId);
-            var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
+            foreach (var assessment in summary.AssessmentsToAccept)
+            {
+                var acceptText = await _messageBuilder.Build(
+                    Messages.Appraiser_Accept,
+                    summary.LanguageId);
+
+                var buttonAssessmentText = await _messageBuilder.Build(
+                    new MessageId($"Appraiser_{assessment}"),
+                    summary.LanguageId);
+
+                notification.WithButton(new Button(
+                    $"{acceptText} {buttonAssessmentText}",
+                    $"{string.Format(CommandList.AcceptEstimate, assessment)}{summary.StoryId:N}"));
+            }
             
-            notification
-                .WithButton(new Button(acceptText, $"{CommandList.AcceptEstimate}{summary.StoryId:N}"))
-                .WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
+            var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
+            notification.WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
         }
 
         return notification;

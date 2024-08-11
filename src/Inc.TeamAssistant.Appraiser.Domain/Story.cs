@@ -17,7 +17,8 @@ public sealed class Story
 	public LanguageId LanguageId { get; private set; } = default!;
 	public string Title { get; private set; } = default!;
 	public int? ExternalId { get; private set; }
-	public bool Accepted { get; private set; }
+	public bool Accepted => TotalValue.HasValue;
+	public AssessmentValue.Value? TotalValue { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -130,12 +131,12 @@ public sealed class Story
 		};
 	}
 
-	public void Accept(long participantId)
+	public void Accept(long participantId, AssessmentValue.Value value)
 	{
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
-		
-		Accepted = true;
+
+		TotalValue = value;
 	}
 	
 	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
@@ -192,5 +193,15 @@ public sealed class Story
 			: values[middle];
 
 		return value.ToString(".## SP");
+	}
+
+	public IReadOnlyCollection<AssessmentValue.Value> GetTopValues()
+	{
+		return _storyForEstimates
+			.Select(t => t.Value)
+			.ToHashSet()
+			.OrderByDescending(t => (int)t)
+			.Take(2)
+			.ToArray();
 	}
 }
