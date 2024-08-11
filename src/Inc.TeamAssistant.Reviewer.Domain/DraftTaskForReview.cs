@@ -30,7 +30,7 @@ public sealed class DraftTaskForReview
         DateTimeOffset now)
         : this()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
         Id = id;
         TeamId = teamId;
@@ -44,7 +44,7 @@ public sealed class DraftTaskForReview
     
     public DraftTaskForReview WithDescription(string description)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
         Description = description;
         

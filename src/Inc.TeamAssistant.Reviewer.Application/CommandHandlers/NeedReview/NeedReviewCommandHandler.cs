@@ -21,7 +21,7 @@ internal sealed class NeedReviewCommandHandler : IRequestHandler<NeedReviewComma
 
     public async Task<CommandResult> Handle(NeedReviewCommand command, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
         
         var draft = new DraftTaskForReview(
             Guid.NewGuid(),

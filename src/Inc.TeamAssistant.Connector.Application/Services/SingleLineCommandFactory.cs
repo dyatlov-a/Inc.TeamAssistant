@@ -21,7 +21,7 @@ internal sealed class SingleLineCommandFactory
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(inputCommand));
+        ArgumentException.ThrowIfNullOrWhiteSpace(inputCommand);
         
         const char cmdSeparator = ' ';
         const int minParametersCount = 3;

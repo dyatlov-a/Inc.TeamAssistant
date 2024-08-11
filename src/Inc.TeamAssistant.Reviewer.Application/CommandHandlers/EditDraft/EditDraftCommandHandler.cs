@@ -18,7 +18,7 @@ internal sealed class EditDraftCommandHandler : IRequestHandler<EditDraftCommand
 
     public async Task<CommandResult> Handle(EditDraftCommand command, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
 
         var draft = await _repository.Find(
             command.MessageContext.ChatMessage.ChatId,

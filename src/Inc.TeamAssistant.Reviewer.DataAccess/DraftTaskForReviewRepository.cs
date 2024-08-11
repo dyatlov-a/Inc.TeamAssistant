@@ -70,7 +70,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
 
     public async Task Upsert(DraftTaskForReview draft, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(nameof(draft));
+        ArgumentNullException.ThrowIfNull(draft);
         
         var command = new CommandDefinition(@"
             INSERT INTO review.draft_task_for_reviews (

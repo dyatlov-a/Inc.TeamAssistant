@@ -38,7 +38,7 @@ public sealed class TaskForReview
         long chatId)
         : this()
     {
-        ArgumentNullException.ThrowIfNull(nameof(draft));
+        ArgumentNullException.ThrowIfNull(draft);
 
         Id = id;
         BotId = botId;

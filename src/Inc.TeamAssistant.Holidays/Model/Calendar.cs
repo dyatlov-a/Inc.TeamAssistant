@@ -5,7 +5,7 @@ public sealed class Calendar
     public Guid Id { get; private set; }
     public long OwnerId { get; private set; }
     public WorkScheduleUtc? Schedule { get; private set; }
-    public ICollection<DayOfWeek> Weekends { get; private set; }
+    public IReadOnlyCollection<DayOfWeek> Weekends { get; private set; }
     public IReadOnlyDictionary<DateOnly, HolidayType> Holidays { get; private set; }
 
     private Calendar()
@@ -28,7 +28,7 @@ public sealed class Calendar
     public Calendar AddWeekend(DayOfWeek dayOfWeek)
     {
         if (!Weekends.Contains(dayOfWeek))
-            Weekends.Add(dayOfWeek);
+            Weekends = Weekends.Append(dayOfWeek).ToArray();
         
         return this;
     }

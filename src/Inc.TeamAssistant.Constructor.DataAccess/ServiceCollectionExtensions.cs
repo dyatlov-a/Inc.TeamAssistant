@@ -11,7 +11,8 @@ public static class ServiceCollectionExtensions
         
         services
             .AddSingleton<IBotRepository, BotRepository>()
-            .AddSingleton<IFeatureReader, FeatureReader>();
+            .AddSingleton<IFeatureReader, FeatureReader>()
+            .AddSingleton<ICalendarRepository, CalendarRepository>();
         
         return services;
     }

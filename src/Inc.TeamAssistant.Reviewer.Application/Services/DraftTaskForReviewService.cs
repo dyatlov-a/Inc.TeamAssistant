@@ -20,7 +20,7 @@ internal sealed class DraftTaskForReviewService
 
     public bool HasDescriptionAndLinks(string description)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(description));
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
         var descriptionParts = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var links = descriptionParts.Where(t => _reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();

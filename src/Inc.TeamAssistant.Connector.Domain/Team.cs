@@ -27,7 +27,7 @@ public sealed class Team
         IReadOnlyDictionary<string, string> properties)
         : this()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(name));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
         
         Id = id;
         BotId = botId;
@@ -57,8 +57,8 @@ public sealed class Team
 
     public Team ChangeProperty(string name, string value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(name));
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(value));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
         
         Properties = new Dictionary<string, string>(Properties)
         {

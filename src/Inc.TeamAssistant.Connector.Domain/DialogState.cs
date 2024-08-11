@@ -14,7 +14,7 @@ public sealed class DialogState
 
     public DialogState(string command, StageType state)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameof(command));
+        ArgumentException.ThrowIfNullOrWhiteSpace(command);
         
         Command = command;
         State = state;

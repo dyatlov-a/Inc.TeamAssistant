@@ -101,8 +101,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         LanguageId languageId,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(nameof(draft));
-        ArgumentNullException.ThrowIfNull(nameof(languageId));
+        ArgumentNullException.ThrowIfNull(draft);
+        ArgumentNullException.ThrowIfNull(languageId);
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
