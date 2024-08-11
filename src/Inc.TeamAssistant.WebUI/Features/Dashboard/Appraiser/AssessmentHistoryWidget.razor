@@ -18,7 +18,8 @@
                 @context.AssessmentDate.ToString("dd-MM-yyyy")
             </a>
         </TemplateColumn>
-        <PropertyColumn Title="@ViewModel.TasksName" Property="@(t => t.StoriesCount)" Sortable="true"/>
+        <PropertyColumn Title="@ViewModel.StoriesCountText" Property="@(t => t.StoriesCount)" Sortable="true"/>
+        <PropertyColumn Title="@ViewModel.AssessmentSumText" Property="@(t => t.AssessmentSum)" Sortable="true"/>
     </QuickGrid>
     <div class="paginator-container">
         <Paginator State="_pagination"/>
@@ -57,6 +58,7 @@ else
        return new AssessmentHistoryWidgetViewModel(
            resources[Messages.Dashboard_TotalStories],
            resources[Messages.Dashboard_GoToCurrentSessionButtonText],
+           resources[Messages.Dashboard_AssessmentSum],
            resources[Messages.Dashboard_AssessmentDate],
            dateItems,
            getSessionHistoryResult.Result.Items);

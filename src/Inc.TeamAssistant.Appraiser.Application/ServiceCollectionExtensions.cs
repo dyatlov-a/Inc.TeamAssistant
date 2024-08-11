@@ -24,18 +24,19 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ISettingSectionProvider, AppraiserSettingSectionProvider>()
             .AddScoped<SummaryByStoryBuilder>()
             .AddSingleton(options)
-            
-            .AddSingleton<ICommandCreator, AcceptEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>();
 
         foreach (var assessment in AssessmentValue.GetAllAssessments())
         {
-            var command = string.Format(CommandList.Set, assessment);
-            
+            var setCommand = string.Format(CommandList.Set, assessment);
             services.AddSingleton<ICommandCreator>(
-                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, command, assessment));
+                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, setCommand, assessment));
+            
+            var acceptCommand = string.Format(CommandList.AcceptEstimate, assessment);
+            services.AddSingleton<ICommandCreator>(
+                sp => ActivatorUtilities.CreateInstance<AcceptEstimateCommandCreator>(sp, acceptCommand, assessment));
         }
         
         return services;

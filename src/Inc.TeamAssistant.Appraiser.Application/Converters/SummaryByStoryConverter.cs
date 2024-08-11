@@ -19,6 +19,9 @@ internal static class SummaryByStoryConverter
         var assessments = story.GetAssessments()
             .Select(a => a.ToString())
             .ToArray();
+        var assessmentsToAccept = story.GetTopValues()
+            .Select(a => a.ToString())
+            .ToArray();
 
         return new SummaryByStory(
             story.TeamId,
@@ -32,6 +35,7 @@ internal static class SummaryByStoryConverter
             story.GetTotalValue(),
             storyForEstimates,
             assessments,
-            story.Accepted);
+            story.Accepted,
+            assessmentsToAccept);
     }
 }

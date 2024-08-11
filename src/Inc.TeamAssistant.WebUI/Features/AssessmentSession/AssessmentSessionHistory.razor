@@ -12,7 +12,7 @@
             foreach (var item in ViewModel.Data.Items.Take(3))
             {
                 <a href="@MoveToItem(item)" class="link link_black history__item">
-                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName
+                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName - @ViewModel.AssessmentSum @item.AssessmentSum 
                 </a>
             }
         }
@@ -39,6 +39,7 @@
         return new AssessmentSessionHistoryViewModel(
             resources[Messages.GUI_History],
             resources[Messages.GUI_Tasks],
+            resources[Messages.GUI_AssessmentSum],
             getAssessmentHistoryResult.Result);
     }
 }
