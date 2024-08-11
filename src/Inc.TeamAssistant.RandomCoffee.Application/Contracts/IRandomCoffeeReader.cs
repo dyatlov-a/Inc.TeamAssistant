@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 
 public interface IRandomCoffeeReader
 {
-    Task<IReadOnlyCollection<RandomCoffeeEntry>> GetByDate(DateOnly date, CancellationToken token);
+    Task<IReadOnlyCollection<RandomCoffeeEntry>> GetByDate(DateTimeOffset now, CancellationToken token);
     
     Task<IReadOnlyCollection<ChatDto>> GetChats(Guid botId, CancellationToken token);
     

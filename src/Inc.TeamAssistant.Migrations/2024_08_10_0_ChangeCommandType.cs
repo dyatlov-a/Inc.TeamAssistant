@@ -26,6 +26,5 @@ public sealed class ChangeCommandType : Migration
 
     public override void Down()
     {
-        
     }
 }

@@ -8,7 +8,7 @@ public sealed class RandomCoffeeEntry
     public long ChatId { get; private set; }
     public string? Name { get; private set; }
     public long OwnerId { get; private set; }
-    public DateOnly NextRound { get; private set; }
+    public DateTimeOffset NextRound { get; private set; }
     public RandomCoffeeState State { get; private set; }
     public string? PollId { get; private set; }
     public ICollection<long> ParticipantIds { get; private set; }
@@ -21,10 +21,10 @@ public sealed class RandomCoffeeEntry
         ParticipantIds = new List<long>();
     }
 
-    public RandomCoffeeEntry(Guid botId, long chatId, string? name, long ownerId)
+    public RandomCoffeeEntry(Guid id, Guid botId, long chatId, string? name, long ownerId)
         : this()
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Created = DateTimeOffset.UtcNow;
         BotId = botId;
         ChatId = chatId;
@@ -34,17 +34,16 @@ public sealed class RandomCoffeeEntry
 
     public RandomCoffeeEntry AddHistory(RandomCoffeeHistory randomCoffeeHistory)
     {
-        if (randomCoffeeHistory is null)
-            throw new ArgumentNullException(nameof(randomCoffeeHistory));
-        
+        ArgumentNullException.ThrowIfNull(randomCoffeeHistory);
+
         _history.Add(randomCoffeeHistory);
 
         return this;
     }
 
-    public RandomCoffeeEntry MoveToWaiting(TimeSpan waitingInterval)
+    public RandomCoffeeEntry MoveToWaiting(DateTimeOffset now, TimeSpan waitingInterval)
     {
-        NextRound = DateOnly.FromDateTime(DateTimeOffset.UtcNow.Add(waitingInterval).Date);
+        NextRound = now.Add(waitingInterval);
         State = RandomCoffeeState.Waiting;
         
         ParticipantIds.Clear();
@@ -53,9 +52,9 @@ public sealed class RandomCoffeeEntry
         return this;
     }
 
-    public RandomCoffeeEntry MoveToNextRound(TimeSpan roundInterval)
+    public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval)
     {
-        NextRound = DateOnly.FromDateTime(DateTimeOffset.UtcNow.Add(roundInterval).Date);
+        NextRound = now.Add(roundInterval);
         State = RandomCoffeeState.Idle;
 
         return this;

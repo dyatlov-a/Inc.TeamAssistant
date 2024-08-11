@@ -17,15 +17,14 @@ public sealed class ReviewMetricsProviderTests
 
     public ReviewMetricsProviderTests()
     {
+        var calendar = new Calendar(
+            _fixture.Create<Guid>(),
+            _fixture.Create<long>(),
+            schedule: null);
+        
         var holidayReader = Substitute.For<IHolidayReader>();
-        holidayReader
-            .GetAll(Arg.Any<CancellationToken>())
-            .Returns(new Dictionary<DateOnly, HolidayType>());
-        
-        var holidayService = new HolidayService(
-            holidayReader,
-            new WorkdayOptions { WorkOnHoliday = true, Weekends = [] });
-        
+        holidayReader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);
+        var holidayService = new HolidayService(holidayReader);
         _target = new ReviewMetricsProvider(new ReviewTeamMetricsFactory(holidayService));
     }
 

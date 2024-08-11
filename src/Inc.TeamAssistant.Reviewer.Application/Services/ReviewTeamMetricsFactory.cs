@@ -30,13 +30,13 @@ internal sealed class ReviewTeamMetricsFactory
             switch (interval.State)
             {
                 case TaskForReviewState.New when interval.UserId == taskForReview.ReviewerId:
-                    firstTouch += await _holidayService.CalculateWorkTime(start, interval.End, token);
+                    firstTouch += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
                     break;
                 case TaskForReviewState.InProgress when interval.UserId == taskForReview.ReviewerId:
-                    review += await _holidayService.CalculateWorkTime(start, interval.End, token);
+                    review += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
                     break;
                 case TaskForReviewState.OnCorrection when interval.UserId == taskForReview.OwnerId:
-                    correction += await _holidayService.CalculateWorkTime(start, interval.End, token);
+                    correction += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
                     iterations++;
                     break;
             }

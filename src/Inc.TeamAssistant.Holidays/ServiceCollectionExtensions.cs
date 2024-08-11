@@ -5,16 +5,11 @@ namespace Inc.TeamAssistant.Holidays;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHolidays(
-        this IServiceCollection services,
-        WorkdayOptions options,
-        TimeSpan cacheAbsoluteExpiration)
+    public static IServiceCollection AddHolidays(this IServiceCollection services, TimeSpan cacheAbsoluteExpiration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
 
         services
-            .AddSingleton(options)
             .AddSingleton<HolidayReader>()
             .AddSingleton<IHolidayReader>(sp => ActivatorUtilities.CreateInstance<HolidayReaderCache>(
                 sp,

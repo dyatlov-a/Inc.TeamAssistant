@@ -55,7 +55,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
                 randomCoffeeEntry.ChatId,
                 await _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
         
-        randomCoffeeEntry.MoveToNextRound(_options.RoundInterval - _options.WaitingInterval);
+        randomCoffeeEntry.MoveToNextRound(DateTimeOffset.UtcNow, _options.RoundInterval - _options.WaitingInterval);
         
         await _repository.Upsert(randomCoffeeEntry, token);
         

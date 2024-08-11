@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Holidays;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
@@ -52,25 +51,23 @@ internal sealed class ScheduleService : BackgroundService
     private async Task Execute(CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow;
+        var randomCoffeeEntries = await _reader.GetByDate(now, token);
 
-        if (await _holidayService.IsWorkTime(now, token) && now.TimeOfDay > _options.NotificationTime)
+        foreach (var randomCoffeeEntry in randomCoffeeEntries)
         {
-            var date = DateOnly.FromDateTime(now.Date);
-            var randomCoffeeEntries = await _reader.GetByDate(date, token);
-
-            foreach (var randomCoffeeEntry in randomCoffeeEntries)
+            if (!await _holidayService.IsWorkTime(randomCoffeeEntry.BotId, now, token))
+                continue;
+            
+            var messageContext = MessageContext.CreateIdle(randomCoffeeEntry.BotId, randomCoffeeEntry.ChatId);
+                
+            IDialogCommand command = randomCoffeeEntry.State switch
             {
-                var messageContext = MessageContext.CreateIdle(randomCoffeeEntry.BotId, randomCoffeeEntry.ChatId);
+                RandomCoffeeState.Waiting => new SelectPairsCommand(messageContext, randomCoffeeEntry.Id),
+                RandomCoffeeState.Idle => new InviteForCoffeeCommand(messageContext, OnDemand: false),
+                _ => throw new ArgumentOutOfRangeException()
+            };
                 
-                IDialogCommand command = randomCoffeeEntry.State switch
-                {
-                    RandomCoffeeState.Waiting => new SelectPairsCommand(messageContext, randomCoffeeEntry.Id),
-                    RandomCoffeeState.Idle => new InviteForCoffeeCommand(messageContext, OnDemand: false),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                
-                await _commandExecutor.Execute(command, token);
-            }
+            await _commandExecutor.Execute(command, token);
         }
     }
 }

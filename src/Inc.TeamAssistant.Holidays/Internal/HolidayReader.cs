@@ -13,19 +13,27 @@ internal sealed class HolidayReader : IHolidayReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken token)
+    public async Task<Calendar?> Find(Guid botId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-SELECT
-    date AS date,
-    type AS type
-FROM generic.holidays;",
+        var command = new CommandDefinition(
+            """
+            SELECT
+                c.id AS id,
+                c.owner_id AS ownerid,
+                c.schedule AS schedule,
+                c.weekends AS weekends,
+                c.holidays AS holidays
+            FROM generic.calendars AS c
+            JOIN connector.bots AS b ON b.calendar_id = c.id
+            WHERE b.id = @bot_id;
+            """,
+            new { bot_id = botId },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<Holiday>(command);
-        return results.ToDictionary(r => r.Date, r => r.Type);
+        var calendar = await connection.QuerySingleOrDefaultAsync<Calendar>(command);
+        return calendar;
     }
 }

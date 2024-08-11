@@ -23,6 +23,7 @@ using Prometheus;
 using Inc.TeamAssistant.Gateway.Components;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
+using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
@@ -54,9 +55,6 @@ var checkInOptions = builder.Configuration
 var reviewerOptions = builder.Configuration
 	.GetRequiredSection(nameof(ReviewerOptions))
 	.Get<ReviewerOptions>()!;
-var workdayOptions = builder.Configuration
-	.GetRequiredSection(nameof(WorkdayOptions))
-	.Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration
 	.GetRequiredSection(nameof(RandomCoffeeOptions))
 	.Get<RandomCoffeeOptions>()!;
@@ -118,16 +116,19 @@ builder.Services
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
 	.AddJsonType<ICollection<string>>()
-	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
-	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	.AddJsonType<ICollection<DayOfWeek>>()
+	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	.AddJsonType<WorkScheduleUtc>()
 	.Build()
 
 	.AddSingleton(openGraphOptions)
-	.AddHolidays(workdayOptions, CachePolicies.CacheAbsoluteExpiration)
+	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
 	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
 

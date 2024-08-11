@@ -17,19 +17,20 @@ internal sealed class AddPollAnswerCommandHandler : IRequestHandler<AddPollAnswe
     public async Task<CommandResult> Handle(AddPollAnswerCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        var randomCoffeeEntry = await _repository.Find(command.PollId, token);
-
-        if (randomCoffeeEntry is null)
-            return CommandResult.Empty;
         
-        if (command.Options.Contains("0"))
-            randomCoffeeEntry.AddPerson(command.MessageContext.Person.Id);
-        else
-            randomCoffeeEntry.RemovePerson(command.MessageContext.Person.Id);
+        var randomCoffeeEntry = await _repository.Find(command.PollId, token);
+        if (randomCoffeeEntry is not null)
+        {
+            const string optionYes = "0";
+            
+            if (command.Options.Contains(optionYes))
+                randomCoffeeEntry.AddPerson(command.MessageContext.Person.Id);
+            else
+                randomCoffeeEntry.RemovePerson(command.MessageContext.Person.Id);
 
-        await _repository.Upsert(randomCoffeeEntry, token);
-
+            await _repository.Upsert(randomCoffeeEntry, token);
+        }
+        
         return CommandResult.Empty;
     }
 }

@@ -30,13 +30,14 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        var defaultCalendarId = Guid.Parse("7aedf09b-bb17-4ddd-bfd9-f63b8cfede65");
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        
         var bot = new Bot(
             Guid.NewGuid(),
             command.Name,
             command.Token,
             currentPerson.Id,
+            defaultCalendarId,
             command.Properties,
             command.FeatureIds,
             command.SupportedLanguages);
