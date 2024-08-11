@@ -14,7 +14,30 @@ internal sealed class CalendarRepository : ICalendarRepository
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<Calendar> GetById(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                c.id AS id,
+                c.owner_id AS ownerid,
+                c.schedule AS schedule,
+                c.weekends AS weekends,
+                c.holidays AS holidays
+            FROM generic.calendars AS c
+            WHERE c.id = @id;
+            """,
+            new { id },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var calendar = await connection.QuerySingleAsync<Calendar>(command);
+        return calendar;
+    }
+
     public async Task<Calendar?> FindByOwner(long ownerId, CancellationToken token)
     {
         var command = new CommandDefinition(

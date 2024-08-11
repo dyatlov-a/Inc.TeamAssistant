@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,15 @@ public sealed class CalendarsController : ControllerBase
     public async Task<IActionResult> Create([FromBody]CreateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        await _calendarService.Create(command, token);
 
-        return Ok();
+        return Ok(await _calendarService.Create(command, token));
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody]UpdateCalendarCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        return Ok(await _calendarService.Update(command, token));
     }
 }

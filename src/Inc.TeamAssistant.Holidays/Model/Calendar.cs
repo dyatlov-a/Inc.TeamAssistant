@@ -24,6 +24,21 @@ public sealed class Calendar
         OwnerId = ownerId;
         Schedule = schedule;
     }
+
+    public Calendar SetSchedule(WorkScheduleUtc? schedule)
+    {
+        Schedule = schedule;
+        
+        return this;
+    }
+
+    public Calendar Clear()
+    {
+        Weekends = Array.Empty<DayOfWeek>();
+        Holidays = new Dictionary<DateOnly, HolidayType>();
+        
+        return this;
+    }
     
     public Calendar AddWeekend(DayOfWeek dayOfWeek)
     {

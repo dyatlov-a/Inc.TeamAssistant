@@ -1,17 +1,17 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
-using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives;
 using MediatR;
 
-namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateCalendar;
+namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateCalendar;
 
-internal sealed class CreateCalendarCommandHandler : IRequestHandler<CreateCalendarCommand, Guid>
+internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, Guid>
 {
     private readonly ICalendarRepository _calendarRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
 
-    public CreateCalendarCommandHandler(
+    public UpdateCalendarCommandHandler(
         ICalendarRepository calendarRepository,
         ICurrentPersonResolver currentPersonResolver)
     {
@@ -20,18 +20,21 @@ internal sealed class CreateCalendarCommandHandler : IRequestHandler<CreateCalen
             currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
     }
 
-    public async Task<Guid> Handle(CreateCalendarCommand command, CancellationToken token)
+    public async Task<Guid> Handle(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var calendar = new Calendar(
-            Guid.NewGuid(),
-            currentPerson.Id,
-            command.Schedule is null
-            ? null
-            : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End));
+        var calendar = await _calendarRepository.GetById(command.Id, token);
+        if (calendar.OwnerId != currentPerson.Id)
+            throw new ApplicationException($"User {currentPerson.Id} has not access to calendar {command.Id}.");
 
+        calendar
+            .Clear()
+            .SetSchedule(command.Schedule is null
+                ? null
+                : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End));
+        
         foreach (var weekend in command.Weekends)
             calendar.AddWeekend(weekend);
         
