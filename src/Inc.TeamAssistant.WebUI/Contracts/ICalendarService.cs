@@ -7,7 +7,7 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface ICalendarService
 {
-    Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(long ownerId, CancellationToken token = default);
+    Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(CancellationToken token = default);
 
     Task<ServiceResult<Guid>> Create(CreateCalendarCommand command, CancellationToken token = default);
 

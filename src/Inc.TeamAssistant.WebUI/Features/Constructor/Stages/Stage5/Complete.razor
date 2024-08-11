@@ -1,5 +1,8 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
+@using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
+@using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar
+@using Inc.TeamAssistant.Constructor.Model.Common
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
@@ -8,6 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
+@inject ICalendarService CalendarService
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -192,6 +196,21 @@
                 i.ShortDescription,
                 i.Description))
             .ToArray();
+        var schedule = StagesState.Calendar.Schedule is null
+            ? null
+            : new WorkScheduleUtcDto(StagesState.Calendar.Schedule.Start, StagesState.Calendar.Schedule.End);
+        
+        if (StagesState.CalendarId.HasValue)
+            await CalendarService.Update(new UpdateCalendarCommand(
+                StagesState.CalendarId.Value,
+                schedule,
+                StagesState.Calendar.Weekends,
+                StagesState.Calendar.Holidays));
+        else
+            await CalendarService.Create(new CreateCalendarCommand(
+                schedule,
+                StagesState.Calendar.Weekends,
+                StagesState.Calendar.Holidays));
 
         if (StagesState.Id.HasValue)
             await BotService.Update(new UpdateBotCommand(

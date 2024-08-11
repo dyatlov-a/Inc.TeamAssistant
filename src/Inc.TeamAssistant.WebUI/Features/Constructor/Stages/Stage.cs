@@ -5,5 +5,6 @@ public enum Stage
     CheckBot = 1,
     SelectFeatures = 2,
     SetSettings = 3,
-    Complete = 4
+    Calendar = 4,
+    Complete = 5
 }

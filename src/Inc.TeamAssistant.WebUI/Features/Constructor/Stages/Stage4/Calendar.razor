@@ -1,0 +1,161 @@
+@inherits PersistentComponent<CalendarViewModel>
+
+@inject NavigationManager NavigationManager
+@inject IServiceProvider ServiceProvider
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <div class="constructor__form">
+        <FormSection
+            Title="Work time"
+            HelpText="Please select work time">
+            <Content>
+                <FormFieldSet
+                    FieldId="work-all-day"
+                    Label="Work all day">
+                    <Content>
+                        <InputCheckbox @bind-Value="_formModel.WorkAllDay" />
+                    </Content>
+                </FormFieldSet>
+                @if (!_formModel.WorkAllDay)
+                {
+                    <div>
+                        <div class="work-schedule__item">
+                            <InputTimeOnly FieldId="work-schedule-start" Label="Start" @bind-Value="_formModel.Start" />
+                        </div>
+                        <div class="work-schedule__item">
+                            <InputTimeOnly FieldId="work-schedule-end" Label="End" @bind-Value="_formModel.End" />
+                        </div>
+                    </div>
+                }
+            </Content>
+        </FormSection>
+        <FormSection
+            Title="Weekends"
+            HelpText="Please select standard weekends">
+            <Content>
+                <FormFieldSet
+                    FieldId="weekends"
+                    Label="Weekends">
+                    <Content>
+                        <div>
+                            @foreach (var day in Enum.GetValues<DayOfWeek>())
+                            {
+                                <span class="weekends-selector__item @CssClass(day)"@onclick="() => ToggleWeekend(day)">
+                                    @day.ToString().Substring(0, 2)
+                                </span>
+                            }
+                        </div>
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </FormSection>
+        <FormSection
+            Title="Holidays"
+            HelpText="Please select calendar holidays">
+            <Content>
+                @{
+                    var index = 0;
+                    
+                    foreach (var holiday in _formModel.Holidays)
+                    {
+                        <div>
+                            <div class="work-schedule__item">
+                                <InputDateOnly FieldId="@($"date-{index}")" Label="Date" @bind-Value="holiday.Date" />
+                            </div>
+                            <div class="work-schedule__item">
+                                <FormFieldSet
+                                    FieldId="@($"workday-{index}")"
+                                    Label="Workday">
+                                    <Content>
+                                        <InputCheckbox @bind-Value="holiday.IsWorkday" />
+                                    </Content>
+                                </FormFieldSet>
+                            </div>
+                            <div class="work-schedule__item">
+                                <a
+                                    href="#"
+                                    @onclick="() => RemoveHoliday(holiday)"
+                                    class="link link_dark"
+                                    @onclick:preventDefault="true">
+                                    Remove
+                                </a>
+                            </div>
+                        </div>
+                        
+                        index++;
+                    }
+                }
+                
+                <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">Add</a>
+            </Content>
+        </FormSection>
+    </div>
+    <div class="constructor__actions">
+        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
+    </div>
+</EditForm>
+
+@code {
+    private readonly CalendarFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+
+    private EditContext? _editContext;
+
+    private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
+        ? "weekends-selector__item_selected"
+        : string.Empty;
+
+    private void ToggleWeekend(DayOfWeek item)
+    {
+        if (_formModel.SelectedWeekends.Contains(item))
+            _formModel.SelectedWeekends.Remove(item);
+        else
+            _formModel.SelectedWeekends.Add(item);
+    }
+
+    private void AddHoliday()
+    {
+        var now = DateTimeOffset.UtcNow;
+        
+        _formModel.Holidays.Add(new HolidayFromModel
+        {
+            Date = new DateOnly(now.Year, now.Month, now.Day),
+            IsWorkday = false
+        });
+    }
+
+    private void RemoveHoliday(HolidayFromModel item) => _formModel.Holidays.Remove(item);
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        
+        base.OnParametersSet();
+    }
+
+    protected override Task<CalendarViewModel> Initialize(Dictionary<string, string> resources)
+    {
+        return Task.FromResult(new CalendarViewModel(
+            resources[Messages.Constructor_MoveNextTitle]));
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
+            return;
+        
+        await ServiceProvider.GetRequiredService<DataEditor>().Attach(BotStorageKey, StagesState.Apply(_formModel));
+        
+        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+    }
+}

@@ -1,0 +1,4 @@
+.time-selector__years, .time-selector__months, .time-selector__days {
+    display: inline-block;
+    margin: 0 10px 10px 0;
+}

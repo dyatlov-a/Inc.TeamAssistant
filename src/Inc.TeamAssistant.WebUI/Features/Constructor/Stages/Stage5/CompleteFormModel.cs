@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage5;
 
 public sealed class CompleteFormModel
 {

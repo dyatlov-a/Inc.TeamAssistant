@@ -18,10 +18,10 @@ public sealed class CalendarsController : ControllerBase
         _calendarService = calendarService ?? throw new ArgumentNullException(nameof(calendarService));
     }
 
-    [HttpGet("{ownerId:long}/owner")]
-    public async Task<IActionResult> Get(long ownerId, CancellationToken token)
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken token)
     {
-        return Ok(await _calendarService.GetCalendarByOwner(ownerId, token));
+        return Ok(await _calendarService.GetCalendarByOwner(token));
     }
 
     [HttpPost]

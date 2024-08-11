@@ -1,0 +1,100 @@
+@inherits InputBase<DateOnly>
+
+<FormFieldSet
+    FieldId="@FieldId"
+    Label="@Label">
+    <Content>
+        <div class="time-selector__years">
+            <InputSelect
+                id="@($"{FieldId}-year")"
+                Value="_selectedYear"
+                ValueExpression="@(() => _selectedYear)"
+                ValueChanged="@((int i) => SelectYear(i))"
+                class="form-control">
+                @foreach (var year in _years)
+                {
+                    <option value="@year">@year</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="time-selector__months">
+            <InputSelect
+                id="@($"{FieldId}-month")"
+                Value="_selectedMonth"
+                ValueExpression="@(() => _selectedMonth)"
+                ValueChanged="@((int i) => SelectMonth(i))"
+                class="form-control">
+                @foreach (var month in _months)
+                {
+                    <option value="@month">@month</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="time-selector__days">
+            <InputSelect
+                id="@($"{FieldId}-day")"
+                Value="_selectedDay"
+                ValueExpression="@(() => _selectedDay)"
+                ValueChanged="@((int i) => SelectDay(i))"
+                class="form-control">
+                @foreach (var day in Days)
+                {
+                    <option value="@day">@day</option>
+                }
+            </InputSelect>
+        </div>
+    </Content>
+</FormFieldSet>
+
+@code {
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = default!;
+    
+    private int _selectedYear;
+    private int _selectedMonth;
+    private int _selectedDay;
+    
+    private readonly IReadOnlyCollection<int> _years = Enumerable.Range(2024, 10).ToArray();
+    private readonly IReadOnlyCollection<int> _months = Enumerable.Range(1, 12).ToArray();
+    private IReadOnlyCollection<int> Days => Enumerable
+        .Range(1, DateTime.DaysInMonth(_selectedYear, _selectedMonth))
+        .ToArray();
+    
+    protected override void OnParametersSet()
+    {
+        _selectedYear = CurrentValue.Year;
+        _selectedMonth = CurrentValue.Month;
+        _selectedDay = CurrentValue.Day;
+    }
+    
+    private void SelectYear(int year)
+    {
+        _selectedYear = year;
+        SetCurrentValue();
+    }
+    
+    private void SelectMonth(int month)
+    {
+        _selectedMonth = month;
+        SetCurrentValue();
+    }
+    
+    private void SelectDay(int day)
+    {
+        _selectedDay = day;
+        SetCurrentValue();
+    }
+    
+    private void SetCurrentValue() => CurrentValue = new DateOnly(_selectedYear, _selectedMonth, _selectedDay);
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out DateOnly result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

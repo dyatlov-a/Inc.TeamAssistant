@@ -17,16 +17,11 @@ internal sealed class CalendarClient : ICalendarService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(
-        long ownerId,
-        CancellationToken token)
+    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(CancellationToken token)
     {
         try
         {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetCalendarByOwnerResult?>>(
-                $"calendars/{ownerId}/owner",
-                token);
-
+            var result = await _client.GetFromJsonAsync<ServiceResult<GetCalendarByOwnerResult?>>("calendars", token);
             if (result is null)
                 throw new TeamAssistantException("Parse response with error.");
 

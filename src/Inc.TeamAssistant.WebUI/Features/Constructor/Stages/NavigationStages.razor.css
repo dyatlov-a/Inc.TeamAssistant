@@ -5,7 +5,7 @@
     background-color: #555;
 }
 .nav-stages__item {
-    flex: 0 1 25%;
+    flex: 0 1 20%;
     padding: 10px;
     display: flex;
     justify-content: center;

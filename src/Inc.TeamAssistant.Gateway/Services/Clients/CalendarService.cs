@@ -16,13 +16,11 @@ internal sealed class CalendarService : ICalendarService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
     
-    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(
-        long ownerId,
-        CancellationToken token)
+    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(CancellationToken token)
     {
         try
         {
-            var result = await _mediator.Send(new GetCalendarByOwnerQuery(ownerId), token);
+            var result = await _mediator.Send(new GetCalendarByOwnerQuery(), token);
 
             return ServiceResult.Success(result);
         }

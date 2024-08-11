@@ -129,7 +129,7 @@
         
         await ServiceProvider.GetRequiredService<DataEditor>().Attach(BotStorageKey, StagesState.Apply(_formModel));
         
-        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+        NavigationManager.NavigateTo(LinkFactory(Stage.Calendar));
     }
     
     private string CssClass(LanguageId languageId)

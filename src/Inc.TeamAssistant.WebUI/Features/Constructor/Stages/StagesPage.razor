@@ -10,6 +10,8 @@
 
 @attribute [Authorize]
 
+@using Inc.TeamAssistant.Constructor.Model.Common
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.Languages
 
@@ -17,6 +19,7 @@
 
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
+@inject ICalendarService CalendarService
 
 <MetaDataModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
 
@@ -51,6 +54,7 @@
     {
         Stage.SelectFeatures => typeof(SelectFeatures),
         Stage.SetSettings => typeof(SetSettings),
+        Stage.Calendar => typeof(Calendar),
         Stage.Complete => typeof(Complete),
         _ => typeof(CheckBot)
     };
@@ -80,6 +84,7 @@
     {
         var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
         var getFeaturesResult = await BotService.GetFeatures();
+        var getCalendarByOwnerResult = await CalendarService.GetCalendarByOwner();
 
         return new StagesState(
             bot?.Result?.Id,
@@ -89,7 +94,22 @@
             bot?.Result?.Properties ?? new Dictionary<string, string>(),
             getFeaturesResult.Result.Features,
             bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
-            Array.Empty<BotDetails>());
+            Array.Empty<BotDetails>(),
+            getCalendarByOwnerResult.Result?.Id,
+            CreateCalendarState(getCalendarByOwnerResult.Result));
+    }
+
+    private CalendarState CreateCalendarState(GetCalendarByOwnerResult? getCalendarByOwnerResult)
+    {
+        return getCalendarByOwnerResult is null
+            ? new CalendarState(
+                StagesState.DefaultWorkSchedule,
+                new [] { DayOfWeek.Saturday, DayOfWeek.Sunday },
+                new Dictionary<DateOnly, string>())
+            : new CalendarState(
+                getCalendarByOwnerResult.Schedule,
+                getCalendarByOwnerResult.Weekends,
+                getCalendarByOwnerResult.Holidays);
     }
 
     private string LinkFactory(Stage? stage)
