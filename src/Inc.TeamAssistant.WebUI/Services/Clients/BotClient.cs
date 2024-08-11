@@ -146,14 +146,7 @@ internal sealed class BotClient : IBotService
 
     public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
     {
-        try
-        {
-            await _client.PutAsJsonAsync("bots/teammate", command, token);
-        }
-        catch
-        {
-            // ignored
-        }
+        await _client.PutAsJsonAsync("bots/teammate", command, token);
     }
 
     public async Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token)
@@ -218,37 +211,16 @@ internal sealed class BotClient : IBotService
 
     public async Task Create(CreateBotCommand command, CancellationToken token)
     {
-        try
-        {
-            await _client.PostAsJsonAsync("bots", command, token);
-        }
-        catch
-        {
-            // ignored
-        }
+        await _client.PostAsJsonAsync("bots", command, token);
     }
 
     public async Task Update(UpdateBotCommand command, CancellationToken token)
     {
-        try
-        {
-            await _client.PutAsJsonAsync("bots", command, token);
-        }
-        catch
-        {
-            // ignored
-        }
+        await _client.PutAsJsonAsync("bots", command, token);
     }
 
     public async Task Remove(Guid botId, CancellationToken token)
     {
-        try
-        {
-            await _client.DeleteAsync($"bots/{botId}", token);
-        }
-        catch
-        {
-            // ignored
-        }
+        await _client.DeleteAsync($"bots/{botId}", token);
     }
 }

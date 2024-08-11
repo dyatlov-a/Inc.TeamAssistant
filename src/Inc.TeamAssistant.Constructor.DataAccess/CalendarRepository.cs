@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Holidays.Model;
@@ -35,5 +36,38 @@ internal sealed class CalendarRepository : ICalendarRepository
 
         var calendar = await connection.QuerySingleOrDefaultAsync<Calendar>(command);
         return calendar;
+    }
+
+    public async Task Upsert(Calendar calendar, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(calendar);
+
+        var schedule = calendar.Schedule is null
+            ? null
+            : JsonSerializer.Serialize(calendar.Schedule);
+        var command = new CommandDefinition(
+            """
+            INSERT INTO generic.calendars (id, owner_id, schedule, weekends, holidays)
+            VALUES (@id, @owner_id, @schedule, @weekends, @holidays)
+            ON CONFLICT (id) DO UPDATE SET
+                owner_id = EXCLUDED.owner_id,
+                schedule = EXCLUDED.schedule,
+                weekends = EXCLUDED.weekends,
+                holidays = EXCLUDED.holidays;
+            """,
+            new
+            {
+                id = calendar.Id,
+                owner_id = calendar.OwnerId,
+                schedule,
+                weekends = JsonSerializer.Serialize(calendar.Weekends),
+                holidays = JsonSerializer.Serialize(calendar.Holidays),
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
     }
 }
