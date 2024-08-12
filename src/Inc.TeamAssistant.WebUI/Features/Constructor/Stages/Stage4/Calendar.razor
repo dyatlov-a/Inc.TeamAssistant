@@ -7,12 +7,12 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="constructor__form">
         <FormSection
-            Title="Work time"
-            HelpText="Please select work time">
+            Title="@ViewModel.WorkTimeTitle"
+            HelpText="@ViewModel.WorkTimeHelp">
             <Content>
                 <FormFieldSet
                     FieldId="work-all-day"
-                    Label="Work all day">
+                    Label="@ViewModel.WorkAllDayLabel">
                     <Content>
                         <InputCheckbox @bind-Value="_formModel.WorkAllDay" />
                     </Content>
@@ -21,28 +21,34 @@
                 {
                     <div>
                         <div class="work-schedule__item">
-                            <InputTimeOnly FieldId="work-schedule-start" Label="Start" @bind-Value="_formModel.Start" />
+                            <InputTimeOnly
+                                FieldId="work-schedule-start"
+                                Label="@ViewModel.WorkTimeStartLabel"
+                                @bind-Value="_formModel.Start" />
                         </div>
                         <div class="work-schedule__item">
-                            <InputTimeOnly FieldId="work-schedule-end" Label="End" @bind-Value="_formModel.End" />
+                            <InputTimeOnly
+                                FieldId="work-schedule-end"
+                                Label="@ViewModel.WorkTimeEndLabel"
+                                @bind-Value="_formModel.End" />
                         </div>
                     </div>
                 }
             </Content>
         </FormSection>
         <FormSection
-            Title="Weekends"
-            HelpText="Please select standard weekends">
+            Title="@ViewModel.WeekendsTitle"
+            HelpText="@ViewModel.WeekendsHelp">
             <Content>
                 <FormFieldSet
                     FieldId="weekends"
-                    Label="Weekends">
+                    Label="@ViewModel.WeekendsLabel">
                     <Content>
                         <div>
                             @foreach (var day in Enum.GetValues<DayOfWeek>())
                             {
-                                <span class="weekends-selector__item @CssClass(day)"@onclick="() => ToggleWeekend(day)">
-                                    @day.ToString().Substring(0, 2)
+                                <span class="weekends-selector__item @CssClass(day)" @onclick="() => ToggleWeekend(day)">
+                                    @ResourceProvider(Messages.GetDayOfWeekTitle(day))
                                 </span>
                             }
                         </div>
@@ -51,8 +57,8 @@
             </Content>
         </FormSection>
         <FormSection
-            Title="Holidays"
-            HelpText="Please select calendar holidays">
+            Title="@ViewModel.HolidaysTitle"
+            HelpText="@ViewModel.HolidaysHelp">
             <Content>
                 @{
                     var index = 0;
@@ -61,12 +67,15 @@
                     {
                         <div>
                             <div class="work-schedule__item">
-                                <InputDateOnly FieldId="@($"date-{index}")" Label="Date" @bind-Value="holiday.Date" />
+                                <InputDateOnly
+                                    FieldId="@($"date-{index}")"
+                                    Label="@ViewModel.DateLabel"
+                                    @bind-Value="holiday.Date" />
                             </div>
                             <div class="work-schedule__item">
                                 <FormFieldSet
                                     FieldId="@($"workday-{index}")"
-                                    Label="Workday">
+                                    Label="@ViewModel.WorkdayLabel">
                                     <Content>
                                         <InputCheckbox @bind-Value="holiday.IsWorkday" />
                                     </Content>
@@ -78,7 +87,7 @@
                                     @onclick="() => RemoveHoliday(holiday)"
                                     class="link link_dark"
                                     @onclick:preventDefault="true">
-                                    Remove
+                                    @ViewModel.RemoveHolidayLabel
                                 </a>
                             </div>
                         </div>
@@ -87,7 +96,9 @@
                     }
                 }
                 
-                <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">Add</a>
+                <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">
+                    @ViewModel.AddHolidayLabel
+                </a>
             </Content>
         </FormSection>
     </div>
@@ -146,6 +157,20 @@
     protected override Task<CalendarViewModel> Initialize(Dictionary<string, string> resources)
     {
         return Task.FromResult(new CalendarViewModel(
+            resources[Messages.Constructor_WorkTimeTitle],
+            resources[Messages.Constructor_WorkTimeHelp],
+            resources[Messages.Constructor_WorkAllDayLabel],
+            resources[Messages.Constructor_WorkTimeStartLabel],
+            resources[Messages.Constructor_WorkTimeEndLabel],
+            resources[Messages.Constructor_WeekendsTitle],
+            resources[Messages.Constructor_WeekendsHelp],
+            resources[Messages.Constructor_WeekendsLabel],
+            resources[Messages.Constructor_HolidaysTitle],
+            resources[Messages.Constructor_HolidaysHelp],
+            resources[Messages.Constructor_DateLabel],
+            resources[Messages.Constructor_WorkdayLabel],
+            resources[Messages.Constructor_AddHolidayLabel],
+            resources[Messages.Constructor_RemoveHolidayLabel],
             resources[Messages.Constructor_MoveNextTitle]));
     }
     

@@ -88,6 +88,20 @@ internal static class Messages
     public static readonly string Constructor_BotDescription = nameof(Constructor_BotDescription);
     public static readonly string Constructor_BotInformation = nameof(Constructor_BotInformation);
     public static readonly string Constructor_BotInformationHelp = nameof(Constructor_BotInformationHelp);
+    public static readonly string Constructor_WorkTimeTitle = nameof(Constructor_WorkTimeTitle);
+    public static readonly string Constructor_WorkTimeHelp = nameof(Constructor_WorkTimeHelp);
+    public static readonly string Constructor_WorkAllDayLabel = nameof(Constructor_WorkAllDayLabel);
+    public static readonly string Constructor_WorkTimeStartLabel = nameof(Constructor_WorkTimeStartLabel);
+    public static readonly string Constructor_WorkTimeEndLabel = nameof(Constructor_WorkTimeEndLabel);
+    public static readonly string Constructor_WeekendsTitle = nameof(Constructor_WeekendsTitle);
+    public static readonly string Constructor_WeekendsHelp = nameof(Constructor_WeekendsHelp);
+    public static readonly string Constructor_WeekendsLabel = nameof(Constructor_WeekendsLabel);
+    public static readonly string Constructor_HolidaysTitle = nameof(Constructor_HolidaysTitle);
+    public static readonly string Constructor_HolidaysHelp = nameof(Constructor_HolidaysHelp);
+    public static readonly string Constructor_DateLabel = nameof(Constructor_DateLabel);
+    public static readonly string Constructor_WorkdayLabel = nameof(Constructor_WorkdayLabel);
+    public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
+    public static readonly string Constructor_RemoveHolidayLabel = nameof(Constructor_RemoveHolidayLabel);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);
@@ -195,4 +209,5 @@ internal static class Messages
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
     public static string GetFeatureProperty(string featureName, string propertyName)
         => $"Constructor_Feature{featureName}{propertyName}";
+    public static string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
 }
