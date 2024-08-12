@@ -18,7 +18,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConnectorApplication(
         this IServiceCollection services,
-        int userAvatarCacheDurationInSeconds)
+        int userAvatarCacheDurationInSeconds,
+        Guid authBotId)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -39,7 +40,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
             
-            .AddSingleton<PersonPhotosService>()
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<PersonPhotosService>(sp, authBotId))
             .AddSingleton<IPersonPhotosService>(sp => ActivatorUtilities.CreateInstance<PersonPhotosServiceCache>(
                 sp,
                 sp.GetRequiredService<PersonPhotosService>(),

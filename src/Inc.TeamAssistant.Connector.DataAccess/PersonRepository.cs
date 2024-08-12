@@ -139,7 +139,7 @@ internal sealed class PersonRepository : IPersonRepository
         await connection.ExecuteAsync(command);
     }
     
-    public async Task<Guid> GetBotId(
+    public async Task<Guid?> FindBotId(
         long personId,
         CancellationToken token)
     {
@@ -156,6 +156,6 @@ internal sealed class PersonRepository : IPersonRepository
 
         await using var connection = _connectionFactory.Create();
         
-        return await connection.QuerySingleOrDefaultAsync<Guid>(command);
+        return await connection.QuerySingleOrDefaultAsync<Guid?>(command);
     }
 }
