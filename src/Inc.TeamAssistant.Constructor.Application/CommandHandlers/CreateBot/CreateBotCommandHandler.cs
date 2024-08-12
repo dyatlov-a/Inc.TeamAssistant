@@ -29,15 +29,14 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
     public async Task Handle(CreateBotCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        var defaultCalendarId = Guid.Parse("7aedf09b-bb17-4ddd-bfd9-f63b8cfede65");
+        
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
         var bot = new Bot(
             Guid.NewGuid(),
             command.Name,
             command.Token,
             currentPerson.Id,
-            defaultCalendarId,
+            command.CalendarId,
             command.Properties,
             command.FeatureIds,
             command.SupportedLanguages);

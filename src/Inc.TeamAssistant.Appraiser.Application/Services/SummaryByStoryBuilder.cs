@@ -23,11 +23,12 @@ internal sealed class SummaryByStoryBuilder
 
         var builder = new StringBuilder();
 
-        builder.AppendLine(await _messageBuilder.Build(
+        var storyHeader = await _messageBuilder.Build(
             summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
-            summary.LanguageId,
-            summary.StoryTitle));
-
+            summary.LanguageId);
+        builder.AppendLine(storyHeader);
+        
+        builder.AppendLine(summary.StoryTitle);
         if (summary.StoryLinks.Any())
             foreach (var link in summary.StoryLinks)
                 builder.AppendLine(link);

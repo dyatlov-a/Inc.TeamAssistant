@@ -19,7 +19,7 @@
                 </FormFieldSet>
                 @if (!_formModel.WorkAllDay)
                 {
-                    <div>
+                    <div class="work-schedule__items">
                         <div class="work-schedule__item">
                             <InputTimeOnly
                                 FieldId="work-schedule-start"
@@ -58,47 +58,52 @@
         </FormSection>
         <FormSection
             Title="@ViewModel.HolidaysTitle"
-            HelpText="@ViewModel.HolidaysHelp">
+            HelpText="@ViewModel.HolidaysHelp"
+            AsRows="true">
             <Content>
-                @{
-                    var index = 0;
-                    
-                    foreach (var holiday in _formModel.Holidays)
-                    {
-                        <div>
-                            <div class="work-schedule__item">
-                                <InputDateOnly
-                                    FieldId="@($"date-{index}")"
-                                    Label="@ViewModel.DateLabel"
-                                    @bind-Value="holiday.Date" />
+                <div class="holiday-items">
+                    @{
+                        var index = 0;
+
+                        foreach (var holiday in _formModel.Holidays)
+                        {
+                            <div class="holiday-items__item">
+                                <div class="holiday-items__item-control">
+                                    <InputDateOnly
+                                        FieldId="@($"date-{index}")"
+                                        Label="@ViewModel.DateLabel"
+                                        @bind-Value="holiday.Date"/>
+                                </div>
+                                <div class="holiday-items__item-control">
+                                    <FormFieldSet
+                                        FieldId="@($"workday-{index}")"
+                                        Label="@ViewModel.WorkdayLabel">
+                                        <Content>
+                                            <InputCheckbox @bind-Value="holiday.IsWorkday"/>
+                                        </Content>
+                                    </FormFieldSet>
+                                </div>
+                                <div class="holiday-items__item-control">
+                                    <button
+                                        type="button"
+                                        class="button button_dark work-schedule__button work-schedule__button_icon"
+                                        @onclick="() => RemoveHoliday(holiday)">
+                                        <TrashIcon Size="20px" Color="#000" />
+                                    </button>
+                                </div>
                             </div>
-                            <div class="work-schedule__item">
-                                <FormFieldSet
-                                    FieldId="@($"workday-{index}")"
-                                    Label="@ViewModel.WorkdayLabel">
-                                    <Content>
-                                        <InputCheckbox @bind-Value="holiday.IsWorkday" />
-                                    </Content>
-                                </FormFieldSet>
-                            </div>
-                            <div class="work-schedule__item">
-                                <a
-                                    href="#"
-                                    @onclick="() => RemoveHoliday(holiday)"
-                                    class="link link_dark"
-                                    @onclick:preventDefault="true">
-                                    @ViewModel.RemoveHolidayLabel
-                                </a>
-                            </div>
-                        </div>
-                        
-                        index++;
+
+                            index++;
+                        }
                     }
-                }
-                
-                <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">
-                    @ViewModel.AddHolidayLabel
-                </a>
+                    <div class="holiday-items__item">
+                        <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">
+                            <button type="button" class="button button_dark work-schedule__button" @onclick="AddHoliday">
+                                @ViewModel.AddHolidayLabel
+                            </button>
+                        </a>
+                    </div>
+                </div>
             </Content>
         </FormSection>
     </div>
@@ -170,7 +175,6 @@
             resources[Messages.Constructor_DateLabel],
             resources[Messages.Constructor_WorkdayLabel],
             resources[Messages.Constructor_AddHolidayLabel],
-            resources[Messages.Constructor_RemoveHolidayLabel],
             resources[Messages.Constructor_MoveNextTitle]));
     }
     

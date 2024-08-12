@@ -66,6 +66,13 @@ public sealed class Bot
         return this;
     }
     
+    public Bot ChangeCalendarId(Guid calendarId)
+    {
+        CalendarId = calendarId;
+        
+        return this;
+    }
+    
     public Bot ChangeFeatures(IReadOnlyCollection<Guid> featureIds)
     {
         ArgumentNullException.ThrowIfNull(featureIds);

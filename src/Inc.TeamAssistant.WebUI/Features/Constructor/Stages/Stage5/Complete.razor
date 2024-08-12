@@ -199,15 +199,14 @@
         var schedule = StagesState.Calendar.Schedule is null
             ? null
             : new WorkScheduleUtcDto(StagesState.Calendar.Schedule.Start, StagesState.Calendar.Schedule.End);
-        
-        if (StagesState.CalendarId.HasValue)
-            await CalendarService.Update(new UpdateCalendarCommand(
+
+        var calendarId = StagesState.CalendarId.HasValue
+            ? await CalendarService.Update(new UpdateCalendarCommand(
                 StagesState.CalendarId.Value,
                 schedule,
                 StagesState.Calendar.Weekends,
-                StagesState.Calendar.Holidays));
-        else
-            await CalendarService.Create(new CreateCalendarCommand(
+                StagesState.Calendar.Holidays))
+            : await CalendarService.Create(new CreateCalendarCommand(
                 schedule,
                 StagesState.Calendar.Weekends,
                 StagesState.Calendar.Holidays));
@@ -217,6 +216,7 @@
                 StagesState.Id.Value,
                 _formModel.UserName,
                 _formModel.Token,
+                calendarId.Result,
                 _formModel.FeatureIds,
                 _formModel.Properties,
                 _formModel.SupportedLanguages,
@@ -225,6 +225,7 @@
             await BotService.Create(new CreateBotCommand(
                 _formModel.UserName,
                 _formModel.Token,
+                calendarId.Result,
                 _formModel.FeatureIds,
                 _formModel.Properties,
                 _formModel.SupportedLanguages,

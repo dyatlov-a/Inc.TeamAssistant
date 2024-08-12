@@ -36,4 +36,8 @@ internal sealed class HolidayReader : IHolidayReader
         var calendar = await connection.QuerySingleOrDefaultAsync<Calendar>(command);
         return calendar;
     }
+
+    public void Reload(Guid botId)
+    {
+    }
 }

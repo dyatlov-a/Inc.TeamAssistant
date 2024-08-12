@@ -1,6 +1,29 @@
-.work-schedule__item {
-    display: inline-block;
+.work-schedule__button {
+    padding: 5px;
+    border-radius: 10px;
+    margin: 25px 0 15px 0;
+}
+.work-schedule__button_icon {
+    padding: 5px 5px 0 5px;
+}
+.holiday-items {
+    display: flex;
+    flex-wrap: wrap;
+}
+.holiday-items__item {
+    flex: 0 1 calc(50% - 20px);
+    margin: 0 10px;
+    display: flex;
+}
+.holiday-items__item-control {
     margin: 0 10px 10px 0;
+}
+.work-schedule__items {
+    display: flex;
+    flex-wrap: wrap;
+}
+.work-schedule__item {
+    flex: 0 1 50%;
 }
 .weekends-selector__item {
     display: inline-block;
@@ -15,4 +38,10 @@
 }
 .weekends-selector__item_selected {
     background-color: #000;
+}
+@media (max-width: 1080px) {
+    .holiday-items__item {
+        flex: 0 1 100%;
+        margin: 0;
+    }
 }

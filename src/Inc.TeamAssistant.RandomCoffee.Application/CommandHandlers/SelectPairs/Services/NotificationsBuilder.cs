@@ -52,6 +52,7 @@ internal sealed class NotificationsBuilder
             {
                 builder.AppendLine();
                 builder.Append(await _messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId));
+                builder.Append(' ');
                 excludedPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
                 builder.AppendLine();
             }

@@ -101,7 +101,6 @@ internal static class Messages
     public static readonly string Constructor_DateLabel = nameof(Constructor_DateLabel);
     public static readonly string Constructor_WorkdayLabel = nameof(Constructor_WorkdayLabel);
     public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
-    public static readonly string Constructor_RemoveHolidayLabel = nameof(Constructor_RemoveHolidayLabel);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);

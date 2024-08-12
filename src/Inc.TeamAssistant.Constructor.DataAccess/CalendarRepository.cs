@@ -15,6 +15,25 @@ internal sealed class CalendarRepository : ICalendarRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
+    public async Task<IReadOnlyCollection<Guid>> GetBotIds(Guid calendarId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                b.id AS id
+            FROM connector.bots AS b
+            WHERE c.calendar_id = @calendar_id;
+            """,
+            new { calendar_id = calendarId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var botIds = await connection.QueryAsync<Guid>(command);
+        return botIds.ToArray();
+    }
+
     public async Task<Calendar> GetById(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(

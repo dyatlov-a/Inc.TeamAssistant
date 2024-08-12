@@ -16,12 +16,10 @@ public sealed record CalendarViewModel(
     string DateLabel,
     string WorkdayLabel,
     string AddHolidayLabel,
-    string RemoveHolidayLabel,
     string MoveNextTitle)
     : IViewModel<CalendarViewModel>
 {
     public static CalendarViewModel Empty { get; } = new(
-        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

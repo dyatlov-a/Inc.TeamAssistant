@@ -18,6 +18,9 @@ internal sealed class CreateBotCommandValidator : AbstractValidator<CreateBotCom
         RuleFor(e => e.Token)
             .NotEmpty()
             .MaximumLength(255);
+
+        RuleFor(e => e.CalendarId)
+            .NotEmpty();
         
         RuleFor(e => e.FeatureIds)
             .NotEmpty();
