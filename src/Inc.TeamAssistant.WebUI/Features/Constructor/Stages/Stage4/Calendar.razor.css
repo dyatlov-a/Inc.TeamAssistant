@@ -39,7 +39,7 @@
 .weekends-selector__item_selected {
     background-color: #000;
 }
-@media (max-width: 1080px) {
+@media (max-width: 991.98px) {
     .holiday-items__item {
         flex: 0 1 100%;
         margin: 0;

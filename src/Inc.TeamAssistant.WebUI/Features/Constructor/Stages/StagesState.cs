@@ -59,16 +59,17 @@ public sealed class StagesState
         Array.Empty<string>(),
         Array.Empty<BotDetails>(),
         null,
-        new CalendarState(null, Array.Empty<DayOfWeek>(), new Dictionary<DateOnly, string>()));
-
-    public static WorkScheduleUtcDto DefaultWorkSchedule { get; } = new(
-        TimeOnly.FromTimeSpan(TimeSpan.FromHours(7)),
-        TimeOnly.FromTimeSpan(TimeSpan.FromHours(16)));
+        new CalendarState(
+            WorkAllDay: false,
+            new WorkScheduleUtcDto(TimeOnly.MinValue, TimeOnly.MinValue),
+            Array.Empty<DayOfWeek>(),
+            new Dictionary<DateOnly, string>()));
 
     public StagesState Apply(CalendarFormModel calendar)
     {
         Calendar = new CalendarState(
-            calendar.WorkAllDay ? null : new WorkScheduleUtcDto(calendar.Start, calendar.End),
+            calendar.WorkAllDay,
+            new WorkScheduleUtcDto(calendar.Start, calendar.End),
             calendar.SelectedWeekends,
             calendar.Holidays.ToDictionary(i => i.Date, i => i.IsWorkday ? "Workday" : "Holiday"));
 

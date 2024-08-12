@@ -91,10 +91,10 @@ The community looks forward to your contributions.
 - [X] Update blazor app
 - [X] Add a constructor for the Telegram bot
 - [X] Add dashboard for the team (review stats, estimate stats...)
-- [ ] Redesign UI/UX
-- [ ] Integrate with GitLab (code review)
 - [ ] Integrate with Jira (estimate tasks)
 - [ ] Add a feature for use world map
+- [ ] Redesign UI/UX
+- [ ] Integrate with GitLab (code review)
 - [ ] Split the monolith into separate services
 
 ## Team members

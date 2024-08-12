@@ -13,7 +13,7 @@
                 class="form-control">
                 @foreach (var hour in _hours)
                 {
-                    <option value="@hour">@hour</option>
+                    <option value="@hour.Value">@hour.Text</option>
                 }
             </InputSelect>
         </div>
@@ -26,7 +26,7 @@
                 class="form-control">
                 @foreach (var minute in _minutes)
                 {
-                    <option value="@minute">@minute</option>
+                    <option value="@minute.Value">@minute.Text</option>
                 }
             </InputSelect>
         </div>
@@ -42,9 +42,17 @@
     
     private int _selectedHours;
     private int _selectedMinutes;
-    
-    private readonly IReadOnlyCollection<int> _hours = Enumerable.Range(0, 24).ToArray();
-    private readonly IReadOnlyCollection<int> _minutes = new [] { 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55 };
+
+    private readonly IReadOnlyCollection<(string Text, int Value)> _hours = Enumerable
+        .Range(0, 24)
+        .Select(i => (i.ToString("D2"), i))
+        .ToArray();
+
+    private readonly IReadOnlyCollection<(string Text, int Value)> _minutes = Enumerable
+        .Range(0, 12)
+        .Select(i => i * 5)
+        .Select(i => (i.ToString("D2"), i))
+        .ToArray();
     
     protected override void OnParametersSet()
     {

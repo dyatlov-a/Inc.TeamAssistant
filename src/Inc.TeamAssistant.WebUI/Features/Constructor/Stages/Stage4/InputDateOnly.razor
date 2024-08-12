@@ -13,7 +13,7 @@
                 class="form-control">
                 @foreach (var year in _years)
                 {
-                    <option value="@year">@year</option>
+                    <option value="@year.Value">@year.Text</option>
                 }
             </InputSelect>
         </div>
@@ -26,7 +26,7 @@
                 class="form-control">
                 @foreach (var month in _months)
                 {
-                    <option value="@month">@month</option>
+                    <option value="@month.Value">@month.Text</option>
                 }
             </InputSelect>
         </div>
@@ -39,7 +39,7 @@
                 class="form-control">
                 @foreach (var day in Days)
                 {
-                    <option value="@day">@day</option>
+                    <option value="@day.Value">@day.Text</option>
                 }
             </InputSelect>
         </div>
@@ -57,10 +57,19 @@
     private int _selectedMonth;
     private int _selectedDay;
     
-    private readonly IReadOnlyCollection<int> _years = Enumerable.Range(2024, 10).ToArray();
-    private readonly IReadOnlyCollection<int> _months = Enumerable.Range(1, 12).ToArray();
-    private IReadOnlyCollection<int> Days => Enumerable
+    private readonly IReadOnlyCollection<(string Text, int Value)> _years = Enumerable
+        .Range(24, 10)
+        .Select(i => (i.ToString("D2"), i + 2000))
+        .ToArray();
+    
+    private readonly IReadOnlyCollection<(string Text, int Value)> _months = Enumerable
+        .Range(1, 12)
+        .Select(i => (i.ToString("D2"), i))
+        .ToArray();
+    
+    private IReadOnlyCollection<(string Text, int Value)> Days => Enumerable
         .Range(1, DateTime.DaysInMonth(_selectedYear, _selectedMonth))
+        .Select(i => (i.ToString("D2"), i))
         .ToArray();
     
     protected override void OnParametersSet()

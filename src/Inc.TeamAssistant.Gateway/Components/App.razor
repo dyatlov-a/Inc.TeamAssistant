@@ -51,6 +51,13 @@
 
     <script src="leaflet/leaflet.js?v=@_appVersion"></script>
     <script src="_framework/blazor.web.js?v=@_appVersion"></script>
+    <script>
+        window.browserJsFunctions = {
+            getTimezone: () => {
+                return new Date().getTimezoneOffset();
+            }
+        };
+    </script>
 </body>
 
 </html>

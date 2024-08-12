@@ -11,11 +11,10 @@ public sealed class CalendarFormModel
     public CalendarFormModel Apply(StagesState stagesState)
     {
         ArgumentNullException.ThrowIfNull(stagesState);
-
-        var schedule = stagesState.Calendar.Schedule ?? StagesState.DefaultWorkSchedule;
-        WorkAllDay = stagesState.Calendar.Schedule is null;
-        Start = schedule.Start;
-        End = schedule.End;
+        
+        WorkAllDay = stagesState.Calendar.WorkAllDay;
+        Start = stagesState.Calendar.Schedule.Start;
+        End = stagesState.Calendar.Schedule.End;
         SelectedWeekends = stagesState.Calendar.Weekends.ToList();
         Holidays = stagesState.Calendar.Holidays.Select(i => new HolidayFromModel
         {

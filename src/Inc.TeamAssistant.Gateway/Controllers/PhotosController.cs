@@ -18,13 +18,15 @@ public sealed class PhotosController : ControllerBase
 
     [HttpGet("{personId}")]
     [ResponseCache(Duration = CachePolicies.UserAvatarClientCacheDurationInSeconds)]
-    public async Task<IActionResult> Get(long personId, CancellationToken token)
+    public async Task<IActionResult> Get(long personId)
     {
         const string contentType = "image/jpeg";
-        var result = await _mediator.Send(new GetPersonPhotoQuery(personId), token);
+        const string userStub = "imgs/user_stub.jpg";
+        
+        var result = await _mediator.Send(new GetPersonPhotoQuery(personId));
         
         return result.Photo is null
-            ? File("imgs/user_stub.jpg", contentType)
+            ? File(userStub, contentType)
             : File(result.Photo, contentType);
     }
 }

@@ -196,7 +196,7 @@
                 i.ShortDescription,
                 i.Description))
             .ToArray();
-        var schedule = StagesState.Calendar.Schedule is null
+        var schedule = StagesState.Calendar.WorkAllDay
             ? null
             : new WorkScheduleUtcDto(StagesState.Calendar.Schedule.Start, StagesState.Calendar.Schedule.End);
 

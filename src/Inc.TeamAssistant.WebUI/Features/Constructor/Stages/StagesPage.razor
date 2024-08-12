@@ -70,9 +70,10 @@
     {
         await base.OnParametersSetAsync();
 
+        var jsRuntime = ServiceProvider.GetService<IJSRuntime>();
         var dataEditor = ServiceProvider.GetService<DataEditor>();
-        if (dataEditor is not null)
-            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, _ => CreateState());
+        if (dataEditor is not null && jsRuntime is not null)
+            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, async _ => await CreateState(jsRuntime));
     }
 
     protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
@@ -80,7 +81,7 @@
         return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
     }
 
-    private async Task<StagesState> CreateState()
+    private async Task<StagesState> CreateState(IJSRuntime jsRuntime)
     {
         var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
         var getFeaturesResult = await BotService.GetFeatures();
@@ -96,18 +97,30 @@
             bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
             Array.Empty<BotDetails>(),
             getCalendarByOwnerResult.Result?.Id,
-            CreateCalendarState(getCalendarByOwnerResult.Result));
+            await CreateCalendarState(jsRuntime, getCalendarByOwnerResult.Result));
     }
 
-    private CalendarState CreateCalendarState(GetCalendarByOwnerResult? getCalendarByOwnerResult)
+    private async Task<CalendarState> CreateCalendarState(
+        IJSRuntime jsRuntime,
+        GetCalendarByOwnerResult? getCalendarByOwnerResult)
     {
+        const int startMinutesUtc = 10 * 60;
+        const int endMinutesUtc = 19 * 60;
+        
+        var clientTimezoneOffset = await jsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
+        var clientSchedule = new WorkScheduleUtcDto(
+            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(startMinutesUtc + clientTimezoneOffset)),
+            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(endMinutesUtc + clientTimezoneOffset)));
+        
         return getCalendarByOwnerResult is null
             ? new CalendarState(
-                StagesState.DefaultWorkSchedule,
+                WorkAllDay: false,
+                clientSchedule,
                 new [] { DayOfWeek.Saturday, DayOfWeek.Sunday },
                 new Dictionary<DateOnly, string>())
             : new CalendarState(
-                getCalendarByOwnerResult.Schedule,
+                WorkAllDay: getCalendarByOwnerResult.Schedule is null,
+                getCalendarByOwnerResult.Schedule ?? clientSchedule,
                 getCalendarByOwnerResult.Weekends,
                 getCalendarByOwnerResult.Holidays);
     }
