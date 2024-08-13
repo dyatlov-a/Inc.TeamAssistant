@@ -7,7 +7,7 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AddPollAnswer;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -19,6 +19,6 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
         var pollId = parameters[0];
         var options = parameters.Skip(1).ToArray();
         
-        return Task.FromResult<IEndDialogCommand>(new AddPollAnswerCommand(messageContext, pollId, options));
+        return Task.FromResult<IDialogCommand>(new AddPollAnswerCommand(messageContext, pollId, options));
     }
 }

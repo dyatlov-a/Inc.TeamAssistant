@@ -24,7 +24,7 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
         _propertyValue = propertyValue;
     }
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -32,7 +32,7 @@ internal sealed class ChangeTeamPropertyCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new ChangeTeamPropertyCommand(
+        return Task.FromResult<IDialogCommand>(new ChangeTeamPropertyCommand(
             messageContext,
             messageContext.TryParseId("/"),
             _propertyName,

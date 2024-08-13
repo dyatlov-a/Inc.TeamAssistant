@@ -34,20 +34,25 @@ internal sealed class SummaryByStoryBuilder
                 builder.AppendLine(link);
 
         builder.AppendLine();
-
         builder.AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
 
         builder.AppendLine();
         foreach (var item in summary.Items)
             builder.AppendLine($"{item.AppraiserName} {AddEstimate(summary.EstimateEnded, item)}");
 
-        if (summary.EstimateEnded)
+        if (summary.Accepted)
         {
             builder.AppendLine();
-            builder.AppendLine(await _messageBuilder.Build(
-                Messages.Appraiser_TotalEstimate,
-                summary.LanguageId,
-                summary.Total));
+            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId));
+            builder.Append(' ');
+            builder.Append(summary.AcceptedValue);
+        }
+        else if (summary.EstimateEnded)
+        {
+            builder.AppendLine();
+            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AverageEstimate, summary.LanguageId));
+            builder.Append(' ');
+            builder.Append(summary.Total);
         }
         
         var notification = summary.StoryExternalId.HasValue

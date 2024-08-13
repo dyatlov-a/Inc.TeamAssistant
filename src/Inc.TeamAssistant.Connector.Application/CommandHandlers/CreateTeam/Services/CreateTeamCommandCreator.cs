@@ -7,7 +7,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.NewTeam;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,7 +15,7 @@ internal sealed class CreateTeamCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new CreateTeamCommand(
+        return Task.FromResult<IDialogCommand>(new CreateTeamCommand(
             messageContext,
             messageContext.Bot.UserName,
             messageContext.Text));

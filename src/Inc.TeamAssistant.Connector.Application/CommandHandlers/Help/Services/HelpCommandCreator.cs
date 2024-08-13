@@ -7,7 +7,7 @@ internal sealed class HelpCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Help;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,6 +15,6 @@ internal sealed class HelpCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new HelpCommand(messageContext));
+        return Task.FromResult<IDialogCommand>(new HelpCommand(messageContext));
     }
 }

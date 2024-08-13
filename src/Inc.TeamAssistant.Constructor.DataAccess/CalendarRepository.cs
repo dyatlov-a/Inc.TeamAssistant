@@ -22,7 +22,7 @@ internal sealed class CalendarRepository : ICalendarRepository
             SELECT
                 b.id AS id
             FROM connector.bots AS b
-            WHERE c.calendar_id = @calendar_id;
+            WHERE b.calendar_id = @calendar_id;
             """,
             new { calendar_id = calendarId },
             flags: CommandFlags.None,
@@ -90,7 +90,7 @@ internal sealed class CalendarRepository : ICalendarRepository
         var command = new CommandDefinition(
             """
             INSERT INTO generic.calendars (id, owner_id, schedule, weekends, holidays)
-            VALUES (@id, @owner_id, @schedule, @weekends, @holidays)
+            VALUES (@id, @owner_id, @schedule::jsonb, @weekends::jsonb, @holidays::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 owner_id = EXCLUDED.owner_id,
                 schedule = EXCLUDED.schedule,

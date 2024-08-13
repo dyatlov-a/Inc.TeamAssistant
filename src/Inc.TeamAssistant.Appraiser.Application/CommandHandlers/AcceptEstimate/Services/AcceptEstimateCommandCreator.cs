@@ -18,7 +18,7 @@ internal sealed class AcceptEstimateCommandCreator : ICommandCreator
         _value = value;
     }
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -26,7 +26,7 @@ internal sealed class AcceptEstimateCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new AcceptEstimateCommand(
+        return Task.FromResult<IDialogCommand>(new AcceptEstimateCommand(
             messageContext,
             messageContext.TryParseId(Command),
             _value.ToString()));

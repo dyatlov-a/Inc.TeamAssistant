@@ -70,7 +70,7 @@ public sealed class StagesState
         Calendar = new CalendarState(
             calendar.WorkAllDay,
             new WorkScheduleUtcDto(calendar.Start, calendar.End),
-            calendar.SelectedWeekends,
+            calendar.SelectedWeekends.ToArray(),
             calendar.Holidays.ToDictionary(i => i.Date, i => i.IsWorkday ? "Workday" : "Holiday"));
 
         return this;

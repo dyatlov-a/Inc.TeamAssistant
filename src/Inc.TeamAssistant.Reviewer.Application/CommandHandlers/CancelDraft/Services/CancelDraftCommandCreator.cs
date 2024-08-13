@@ -7,7 +7,7 @@ internal sealed class CancelDraftCommandCreator : ICommandCreator
 {
     public string Command => CommandList.RemoveDraft;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,7 +15,7 @@ internal sealed class CancelDraftCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new CancelDraftCommand(
+        return Task.FromResult<IDialogCommand>(new CancelDraftCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

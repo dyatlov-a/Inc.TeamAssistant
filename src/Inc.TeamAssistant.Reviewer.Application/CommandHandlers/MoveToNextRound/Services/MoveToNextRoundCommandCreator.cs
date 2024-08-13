@@ -7,7 +7,7 @@ internal sealed class MoveToNextRoundCommandCreator : ICommandCreator
 {
     public string Command => CommandList.MoveToNextRound;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,7 +15,7 @@ internal sealed class MoveToNextRoundCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new MoveToNextRoundCommand(
+        return Task.FromResult<IDialogCommand>(new MoveToNextRoundCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

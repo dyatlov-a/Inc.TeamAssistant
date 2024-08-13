@@ -19,7 +19,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }
     
-    public async Task<IEndDialogCommand> Create(
+    public async Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)

@@ -7,7 +7,7 @@ internal sealed class JoinToTeamCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Start;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,7 +15,7 @@ internal sealed class JoinToTeamCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new JoinToTeamCommand(
+        return Task.FromResult<IDialogCommand>(new JoinToTeamCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

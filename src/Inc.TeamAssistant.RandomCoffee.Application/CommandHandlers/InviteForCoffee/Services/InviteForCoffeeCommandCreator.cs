@@ -7,7 +7,7 @@ internal sealed class InviteForCoffeeCommandCreator : ICommandCreator
 {
     public string Command => CommandList.InviteForCoffee;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,6 +15,6 @@ internal sealed class InviteForCoffeeCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new InviteForCoffeeCommand(messageContext, OnDemand: true));
+        return Task.FromResult<IDialogCommand>(new InviteForCoffeeCommand(messageContext, OnDemand: true));
     }
 }

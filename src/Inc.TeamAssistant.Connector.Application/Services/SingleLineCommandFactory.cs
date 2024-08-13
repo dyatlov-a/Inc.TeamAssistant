@@ -13,7 +13,7 @@ internal sealed class SingleLineCommandFactory
             commandCreatorResolver ?? throw new ArgumentNullException(nameof(commandCreatorResolver));
     }
     
-    public async Task<IEndDialogCommand?> TryCreate(
+    public async Task<IDialogCommand?> TryCreate(
         Bot bot,
         MessageContext messageContext,
         string inputCommand,

@@ -7,7 +7,7 @@ internal sealed class EditDraftCommandCreator : ICommandCreator
 {
     public string Command => CommandList.EditDraft;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -17,6 +17,6 @@ internal sealed class EditDraftCommandCreator : ICommandCreator
 
         var description = messageContext.Text.TrimStart(Command.ToArray());
 
-        return Task.FromResult<IEndDialogCommand>(new EditDraftCommand(messageContext, description));
+        return Task.FromResult<IDialogCommand>(new EditDraftCommand(messageContext, description));
     }
 }

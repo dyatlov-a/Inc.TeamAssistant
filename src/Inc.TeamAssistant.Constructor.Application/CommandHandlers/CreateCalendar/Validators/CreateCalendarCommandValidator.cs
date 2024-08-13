@@ -8,10 +8,10 @@ internal sealed class CreateCalendarCommandValidator : AbstractValidator<CreateC
     public CreateCalendarCommandValidator()
     {
         RuleFor(e => e.Weekends)
-            .NotEmpty();
+            .NotNull();
         
         RuleFor(e => e.Holidays)
-            .NotEmpty();
+            .NotNull();
 
         RuleForEach(e => e.Holidays)
             .ChildRules(p => p.RuleFor(i => i.Value)

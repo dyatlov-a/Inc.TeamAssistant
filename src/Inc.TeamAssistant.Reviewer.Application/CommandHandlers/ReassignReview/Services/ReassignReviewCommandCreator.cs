@@ -7,7 +7,7 @@ internal sealed class ReassignReviewCommandCreator : ICommandCreator
 {
     public string Command => CommandList.ReassignReview;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,7 +15,7 @@ internal sealed class ReassignReviewCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
-        return Task.FromResult<IEndDialogCommand>(new ReassignReviewCommand(
+        return Task.FromResult<IDialogCommand>(new ReassignReviewCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

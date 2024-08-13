@@ -7,7 +7,7 @@ internal sealed class AddLocationToMapCommandCreator : ICommandCreator
 {
     public string Command => CommandList.AddLocation;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -15,6 +15,6 @@ internal sealed class AddLocationToMapCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new AddLocationToMapCommand(messageContext));
+        return Task.FromResult<IDialogCommand>(new AddLocationToMapCommand(messageContext));
     }
 }
