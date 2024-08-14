@@ -14,7 +14,7 @@
                     FieldId="work-all-day"
                     Label="@ViewModel.WorkAllDayLabel">
                     <Content>
-                        <InputCheckbox @bind-Value="_formModel.WorkAllDay" />
+                        <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay" />
                     </Content>
                 </FormFieldSet>
                 @if (!_formModel.WorkAllDay)
@@ -44,7 +44,7 @@
                     FieldId="weekends"
                     Label="@ViewModel.WeekendsLabel">
                     <Content>
-                        <div>
+                        <div id="weekends">
                             @foreach (var day in Enum.GetValues<DayOfWeek>())
                             {
                                 <span
@@ -78,7 +78,7 @@
                                     FieldId="@holiday.WorkdayFieldId"
                                     Label="@ViewModel.WorkdayLabel">
                                     <Content>
-                                        <InputCheckbox @bind-Value="holiday.IsWorkday"/>
+                                        <InputCheckbox id="@holiday.WorkdayFieldId" @bind-Value="holiday.IsWorkday"/>
                                     </Content>
                                 </FormFieldSet>
                             </div>

@@ -6,7 +6,7 @@
     <Content>
         <div class="time-selector__hours">
             <InputSelect
-                id="@($"{FieldId}-hours")"
+                id="@FieldId"
                 Value="_selectedHours"
                 ValueExpression="@(() => _selectedHours)"
                 ValueChanged="@((int i) => SelectHour(i))"

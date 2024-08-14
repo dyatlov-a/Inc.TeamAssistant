@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Gateway.Api.Contracts;
+using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inc.TeamAssistant.Gateway.Api;
@@ -7,19 +7,19 @@ namespace Inc.TeamAssistant.Gateway.Api;
 [Route("api/v1/estimates")]
 public sealed class EstimatesController : ControllerBase
 {
-    private readonly ILogger<EstimatesController> _logger;
+    private readonly EstimatesService _estimatesService;
 
-    public EstimatesController(ILogger<EstimatesController> logger)
+    public EstimatesController(EstimatesService estimatesService)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _estimatesService = estimatesService ?? throw new ArgumentNullException(nameof(estimatesService));
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody]StartEstimateRequest startEstimate)
+    public async Task<IActionResult> Create([FromBody]StartEstimateRequest startEstimate)
     {
         ArgumentNullException.ThrowIfNull(startEstimate);
 
-        _logger.LogWarning("Created estimate from jira CreateEstimateRequest: {@StartEstimate}", startEstimate);
+        await _estimatesService.StartEstimate(startEstimate);
         
         return Ok();
     }

@@ -17,7 +17,7 @@ public sealed class CalendarFormModel
         End = stagesState.Calendar.Schedule.End;
         
         SelectedWeekends.Clear();
-        SelectedWeekends.AddRange(SelectedWeekends);
+        SelectedWeekends.AddRange(stagesState.Calendar.Weekends);
         
         Holidays.Clear();
         foreach (var holiday in stagesState.Calendar.Holidays)
