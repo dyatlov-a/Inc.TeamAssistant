@@ -47,7 +47,9 @@
                         <div>
                             @foreach (var day in Enum.GetValues<DayOfWeek>())
                             {
-                                <span class="weekends-selector__item @CssClass(day)" @onclick="() => ToggleWeekend(day)">
+                                <span
+                                    class="weekends-selector__item @CssClass(day)"
+                                    @onclick="() => ToggleWeekend(day)">
                                     @ResourceProvider(Messages.GetDayOfWeekTitle(day))
                                 </span>
                             }
@@ -62,46 +64,38 @@
             AsRows="true">
             <Content>
                 <div class="holiday-items">
-                    @{
-                        var index = 0;
-
-                        foreach (var holiday in _formModel.Holidays)
-                        {
-                            <div class="holiday-items__item">
-                                <div class="holiday-items__item-control">
-                                    <InputDateOnly
-                                        FieldId="@($"date-{index}")"
-                                        Label="@ViewModel.DateLabel"
-                                        @bind-Value="holiday.Date"/>
-                                </div>
-                                <div class="holiday-items__item-control">
-                                    <FormFieldSet
-                                        FieldId="@($"workday-{index}")"
-                                        Label="@ViewModel.WorkdayLabel">
-                                        <Content>
-                                            <InputCheckbox @bind-Value="holiday.IsWorkday"/>
-                                        </Content>
-                                    </FormFieldSet>
-                                </div>
-                                <div class="holiday-items__item-control">
-                                    <button
-                                        type="button"
-                                        class="button button_dark work-schedule__button work-schedule__button_icon"
-                                        @onclick="() => RemoveHoliday(holiday)">
-                                        <TrashIcon Size="20px" Color="#000" />
-                                    </button>
-                                </div>
+                    @foreach (var holiday in _formModel.Holidays)
+                    {
+                        <div class="holiday-items__item">
+                            <div class="holiday-items__item-control">
+                                <InputDateOnly
+                                    FieldId="@holiday.DateFieldId"
+                                    Label="@ViewModel.DateLabel"
+                                    @bind-Value="holiday.Date"/>
                             </div>
-
-                            index++;
-                        }
+                            <div class="holiday-items__item-control">
+                                <FormFieldSet
+                                    FieldId="@holiday.WorkdayFieldId"
+                                    Label="@ViewModel.WorkdayLabel">
+                                    <Content>
+                                        <InputCheckbox @bind-Value="holiday.IsWorkday"/>
+                                    </Content>
+                                </FormFieldSet>
+                            </div>
+                            <div class="holiday-items__item-control">
+                                <button
+                                    type="button"
+                                    class="button button_dark button_small"
+                                    @onclick="() => RemoveHoliday(holiday)">
+                                    <TrashIcon Size="20px" Color="#000" />
+                                </button>
+                            </div>
+                        </div>
                     }
                     <div class="holiday-items__item">
-                        <a href="#" @onclick="AddHoliday" class="link link_dark" @onclick:preventDefault="true">
-                            <button type="button" class="button button_dark work-schedule__button" @onclick="AddHoliday">
-                                @ViewModel.AddHolidayLabel
-                            </button>
-                        </a>
+                        <button type="button" class="button button_dark button_small" @onclick="AddHoliday">
+                            @ViewModel.AddHolidayLabel
+                        </button>
                     </div>
                 </div>
             </Content>
@@ -142,12 +136,11 @@
     private void AddHoliday()
     {
         var now = DateTimeOffset.UtcNow;
+        var date = _formModel.Holidays.Any()
+            ? _formModel.Holidays.OrderByDescending(h => h.Date).First().Date
+            : new DateOnly(now.Year, now.Month, now.Day);
         
-        _formModel.Holidays.Add(new HolidayFromModel
-        {
-            Date = new DateOnly(now.Year, now.Month, now.Day),
-            IsWorkday = false
-        });
+        _formModel.AddHoliday(date.AddDays(1), isWorkday: false);
     }
 
     private void RemoveHoliday(HolidayFromModel item) => _formModel.Holidays.Remove(item);

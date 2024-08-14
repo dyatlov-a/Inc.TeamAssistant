@@ -112,6 +112,12 @@ html {
     background-color: #000;
     color: #dfdfdf;
 }
+.button_small {
+    padding: 5px;
+    border-radius: 10px;
+    margin: 25px 0 15px 0;
+    height: 38px;
+}
 .link {
     font-size: 1rem;
 }
