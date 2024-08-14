@@ -9,7 +9,6 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
     private readonly AssessmentValue.Value _value;
     
     public string Command { get; }
-    public bool SupportSingleLineMode => false;
 
     public SetEstimateForStoryCommandCreator(string command, AssessmentValue.Value value)
     {
@@ -20,7 +19,7 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         _value = value;
     }
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -28,7 +27,7 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new SetEstimateForStoryCommand(
+        return Task.FromResult<IDialogCommand>(new SetEstimateForStoryCommand(
             messageContext,
             messageContext.TryParseId(Command),
             _value.ToString()));

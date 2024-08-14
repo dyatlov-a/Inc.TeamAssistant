@@ -30,28 +30,26 @@ public sealed class TaskForReview
     }
 
     public TaskForReview(
+        Guid id,
+        DraftTaskForReview draft,
         Guid botId,
-        Guid teamId,
         DateTimeOffset now,
         TimeSpan notificationInterval,
-        NextReviewerType strategy,
-        long ownerId,
-        long chatId,
-        string description)
+        long chatId)
         : this()
     {
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(description));
+        ArgumentNullException.ThrowIfNull(draft);
 
-        Id = Guid.NewGuid();
+        Id = id;
         BotId = botId;
-        Strategy = strategy;
+        Strategy = draft.Strategy;
         Created = now;
-        TeamId = teamId;
-        OwnerId = ownerId;
+        TeamId = draft.TeamId;
+        OwnerId = draft.OwnerId;
         ChatId = chatId;
-        Description = description;
+        Description = draft.Description;
         State = TaskForReviewState.New;
+        
         SetNextNotificationTime(now, notificationInterval);
     }
 
@@ -69,7 +67,10 @@ public sealed class TaskForReview
                 OwnerMessageId = messageId;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(messageType));
+                throw new ArgumentOutOfRangeException(
+                    nameof(messageType),
+                    messageType,
+                    "MessageType was not supported.");
         }
     }
 
@@ -183,6 +184,8 @@ public sealed class TaskForReview
         var corrections = ReviewIntervals.Count(i => i.State == TaskForReviewState.OnCorrection);
         return corrections == 0 ? null : corrections + 1;
     }
+
+    public TimeSpan GetTotalTime(DateTimeOffset now) => now - Created;
     
     private void SetReviewer(long reviewerId)
     {

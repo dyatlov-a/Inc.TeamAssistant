@@ -6,9 +6,8 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.ReVoteEstimate
 internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Revote;
-    public bool SupportSingleLineMode => false;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -16,7 +15,7 @@ internal sealed class ReVoteEstimateCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new ReVoteEstimateCommand(
+        return Task.FromResult<IDialogCommand>(new ReVoteEstimateCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

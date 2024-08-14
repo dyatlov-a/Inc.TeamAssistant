@@ -2,6 +2,6 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    height: calc(100% - 30px);
+    min-height: 100px;
     color: #000;
 }

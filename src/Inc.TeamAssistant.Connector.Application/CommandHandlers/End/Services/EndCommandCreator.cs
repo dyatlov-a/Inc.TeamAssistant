@@ -6,9 +6,8 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 internal sealed class EndCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Cancel;
-    public bool SupportSingleLineMode => false;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -16,6 +15,6 @@ internal sealed class EndCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new EndCommand(messageContext));
+        return Task.FromResult<IDialogCommand>(new EndCommand(messageContext));
     }
 }

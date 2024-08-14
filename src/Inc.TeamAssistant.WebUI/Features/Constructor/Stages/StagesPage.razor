@@ -10,6 +10,8 @@
 
 @attribute [Authorize]
 
+@using Inc.TeamAssistant.Constructor.Model.Common
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.Languages
 
@@ -17,8 +19,9 @@
 
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
+@inject ICalendarService CalendarService
 
-<MetaModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
+<MetaDataModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
 
 <div class="constructor">
     <div class="constructor__container">
@@ -51,6 +54,7 @@
     {
         Stage.SelectFeatures => typeof(SelectFeatures),
         Stage.SetSettings => typeof(SetSettings),
+        Stage.Calendar => typeof(Calendar),
         Stage.Complete => typeof(Complete),
         _ => typeof(CheckBot)
     };
@@ -66,9 +70,10 @@
     {
         await base.OnParametersSetAsync();
 
+        var jsRuntime = ServiceProvider.GetService<IJSRuntime>();
         var dataEditor = ServiceProvider.GetService<DataEditor>();
-        if (dataEditor is not null)
-            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, _ => CreateState());
+        if (dataEditor is not null && jsRuntime is not null)
+            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, async _ => await CreateState(jsRuntime));
     }
 
     protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
@@ -76,10 +81,11 @@
         return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
     }
 
-    private async Task<StagesState> CreateState()
+    private async Task<StagesState> CreateState(IJSRuntime jsRuntime)
     {
         var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
         var getFeaturesResult = await BotService.GetFeatures();
+        var getCalendarByOwnerResult = await CalendarService.GetCalendarByOwner();
 
         return new StagesState(
             bot?.Result?.Id,
@@ -89,7 +95,34 @@
             bot?.Result?.Properties ?? new Dictionary<string, string>(),
             getFeaturesResult.Result.Features,
             bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
-            Array.Empty<BotDetails>());
+            Array.Empty<BotDetails>(),
+            getCalendarByOwnerResult.Result?.Id,
+            await CreateCalendarState(jsRuntime, getCalendarByOwnerResult.Result));
+    }
+
+    private async Task<CalendarState> CreateCalendarState(
+        IJSRuntime jsRuntime,
+        GetCalendarByOwnerResult? getCalendarByOwnerResult)
+    {
+        const int startMinutesUtc = 10 * 60;
+        const int endMinutesUtc = 19 * 60;
+        
+        var clientTimezoneOffset = await jsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
+        var clientSchedule = new WorkScheduleUtcDto(
+            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(startMinutesUtc + clientTimezoneOffset)),
+            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(endMinutesUtc + clientTimezoneOffset)));
+        
+        return getCalendarByOwnerResult is null
+            ? new CalendarState(
+                WorkAllDay: false,
+                clientSchedule,
+                new [] { DayOfWeek.Saturday, DayOfWeek.Sunday },
+                new Dictionary<DateOnly, string>())
+            : new CalendarState(
+                WorkAllDay: getCalendarByOwnerResult.Schedule is null,
+                getCalendarByOwnerResult.Schedule ?? clientSchedule,
+                getCalendarByOwnerResult.Weekends,
+                getCalendarByOwnerResult.Holidays);
     }
 
     private string LinkFactory(Stage? stage)

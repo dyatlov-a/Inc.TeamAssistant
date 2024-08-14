@@ -10,7 +10,6 @@
     border-top: 5px #555 solid;
     padding: 10px 0;
     height: 100%;
-    min-height: 180px;
 }
 .dashboard-widgets__chart {
     width: 98%;

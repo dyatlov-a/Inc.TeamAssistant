@@ -68,6 +68,19 @@ public sealed class Story
 		};
 	}
 
+	public string GetAcceptedValue()
+	{
+		if (!TotalValue.HasValue)
+			return UnknownValue;
+		
+		return StoryType switch
+		{
+			StoryType.Scrum => $"{(int)TotalValue.Value}SP",
+			StoryType.Kanban => TotalValue.Value.ToString().ToUpperInvariant(),
+			_ => UnknownValue
+		};
+	}
+
 	public bool Estimate(long participantId, AssessmentValue.Value value)
     {
 	    if (Accepted)
@@ -198,6 +211,7 @@ public sealed class Story
 	public IReadOnlyCollection<AssessmentValue.Value> GetTopValues()
 	{
 		return _storyForEstimates
+			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
 			.Select(t => t.Value)
 			.ToHashSet()
 			.OrderByDescending(t => (int)t)

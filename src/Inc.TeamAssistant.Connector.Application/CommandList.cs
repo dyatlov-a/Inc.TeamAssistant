@@ -20,4 +20,6 @@ internal static class CommandList
     public const string AddLocation = "/location";
 
     public const string AddPollAnswer = "/poll_answer?pollId={0}&option={1}";
+    
+    public const string EditDraft = "/edit_draft?description={0}";
 }

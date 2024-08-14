@@ -6,6 +6,7 @@ public sealed class Bot
     public string Name { get; private set; } = default!;
     public string Token { get; private set; } = default!;
     public long OwnerId { get; private set; }
+    public Guid CalendarId { get; private set; }
     
     private readonly List<Guid> _featureIds = new();
     public IReadOnlyCollection<Guid> FeatureIds => _featureIds;
@@ -21,6 +22,7 @@ public sealed class Bot
         string name,
         string token,
         long ownerId,
+        Guid calendarId,
         IReadOnlyDictionary<string, string> properties,
         IReadOnlyCollection<Guid> featureIds,
         IReadOnlyCollection<string> supportedLanguages)
@@ -38,6 +40,7 @@ public sealed class Bot
         Name = name;
         Token = token;
         OwnerId = ownerId;
+        CalendarId = calendarId;
         Properties = properties ?? throw new ArgumentNullException(nameof(properties));
         ChangeFeatures(featureIds);
         ChangeSupportedLanguages(supportedLanguages);
@@ -60,6 +63,13 @@ public sealed class Bot
         
         Token = token;
 
+        return this;
+    }
+    
+    public Bot ChangeCalendarId(Guid calendarId)
+    {
+        CalendarId = calendarId;
+        
         return this;
     }
     

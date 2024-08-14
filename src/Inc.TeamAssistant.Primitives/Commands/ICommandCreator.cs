@@ -3,9 +3,9 @@ namespace Inc.TeamAssistant.Primitives.Commands;
 public interface ICommandCreator
 {
     string Command { get; }
-    bool SupportSingleLineMode { get; }
+    bool SupportSingleLineMode => false;
     
-    Task<IEndDialogCommand> Create(
+    Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token);

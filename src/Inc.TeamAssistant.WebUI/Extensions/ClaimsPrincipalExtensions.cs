@@ -27,9 +27,9 @@ public static class ClaimsPrincipalExtensions
         return new Person(long.Parse(personId!.Value), principal.Identity!.Name!, username?.Value);
     }
     
-    public static ClaimsPrincipal ToClaimsPrincipal(this Person? person)
+    public static ClaimsPrincipal ToClaimsPrincipal(this Person person)
     {
-        if (person is null)
+        if (person == Person.Empty)
             return new ClaimsPrincipal(new ClaimsIdentity());
         
         var claims = new List<Claim>

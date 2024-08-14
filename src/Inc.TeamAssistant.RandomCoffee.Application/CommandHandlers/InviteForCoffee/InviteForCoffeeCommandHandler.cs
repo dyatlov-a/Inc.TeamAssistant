@@ -41,6 +41,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
             return CommandResult.Empty;
         
         var randomCoffeeEntry = existsRandomCoffeeEntry ?? new RandomCoffeeEntry(
+            Guid.NewGuid(),
             command.MessageContext.Bot.Id,
             chatId,
             command.MessageContext.ChatName,
@@ -49,7 +50,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
         if (owner is null)
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
         
-        randomCoffeeEntry.MoveToWaiting(_options.WaitingInterval);
+        randomCoffeeEntry.MoveToWaiting(DateTimeOffset.UtcNow, _options.WaitingInterval);
 
         await _repository.Upsert(randomCoffeeEntry, token);
 

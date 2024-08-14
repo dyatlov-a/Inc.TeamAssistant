@@ -1,8 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
-using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeam;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -22,13 +19,13 @@ internal sealed class DialogCommandFactory
     public async Task<IDialogCommand?> TryCreate(
         Bot bot,
         string botCommand,
-        CommandStage? currentStage,
-        BotCommandStage stage,
-        BotCommandStage? nextStage,
+        StageType? dialogStage,
+        ContextStage currentStage,
+        ContextStage? nextStage,
         MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(bot);
-        ArgumentNullException.ThrowIfNull(stage);
+        ArgumentNullException.ThrowIfNull(currentStage);
         ArgumentNullException.ThrowIfNull(messageContext);
         
         if (string.IsNullOrWhiteSpace(botCommand))
@@ -38,53 +35,50 @@ internal sealed class DialogCommandFactory
         var memberOfTeams = messageContext.Teams
             .Where(t => t.UserInTeam)
             .ToArray();
+        var ownerOfTeams = messageContext.Teams
+            .Where(t => t.OwnerOfTeam)
+            .ToArray();
 
-        return (botCommand, currentStage, messageContext.Teams.Count, memberOfTeams.Length, teamSelected) switch
+        return (botCommand,
+                dialogStage,
+                messageContext.Teams.Count,
+                memberOfTeams.Length,
+                ownerOfTeams.Length,
+                teamSelected)
+            switch
         {
-            (CommandList.AddLocation, null, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
-            (CommandList.NewTeam, null, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, stage.DialogMessageId),
-            (CommandList.LeaveTeam, null, _, 1, _)
-                => new LeaveFromTeamCommand(messageContext, memberOfTeams[0].Id),
-            (CommandList.LeaveTeam, null, _, > 1, _)
+            (CommandList.AddLocation, null, _, _, _, _)
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+            (CommandList.NewTeam, null, _, _, _, _)
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+            (CommandList.LeaveTeam, null, _, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
-            (CommandList.RemoveTeam, null, _, 1, _)
-                => new RemoveTeamCommand(messageContext, memberOfTeams[0].Id),
-            (CommandList.RemoveTeam, null, _, > 1, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
-            (CommandList.MoveToSp, null, 1, _, _)
-                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Scrum"),
-            (CommandList.MoveToSp, null, > 1, _, _)
+            (CommandList.RemoveTeam, null, _, _, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.MoveToSp, null, _, _, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.MoveToTShirts, null, _, _, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.ChangeToRoundRobin, null, _, _, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.ChangeToRandom, null, _, _, _, _)
+                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.NeedReview, null, 0, _, _, _)
+                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+            (CommandList.NeedReview, null, 1, _, _, _) when nextStage is not null
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+            (CommandList.NeedReview, null, > 1, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.MoveToTShirts, null, 1, _, _)
-                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "storyType", "Kanban"),
-            (CommandList.MoveToTShirts, null, > 1, _, _)
+            (CommandList.NeedReview, StageType.SelectTeam, _, _, _, true) when nextStage is not null
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
+            (CommandList.AddStory, null, 0, _, _, _)
+                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+            (CommandList.AddStory, null, 1, _, _, _) when nextStage is not null
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+            (CommandList.AddStory, null, > 1, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.ChangeToRoundRobin, null, 1, _, _)
-                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "nextReviewerStrategy", "RoundRobin"),
-            (CommandList.ChangeToRoundRobin, null, > 1, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.ChangeToRandom, null, 1, _, _)
-                => new ChangeTeamPropertyCommand(messageContext, messageContext.Teams[0].Id, "nextReviewerStrategy", "Random"),
-            (CommandList.ChangeToRandom, null, > 1, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.NeedReview, null, 0, _, _)
-                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.Person.Id),
-            (CommandList.NeedReview, null, 1, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
-            (CommandList.NeedReview, null, > 1, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.NeedReview, CommandStage.SelectTeam, _, _, true)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
-            (CommandList.AddStory, null, 0, _, _)
-                => throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, messageContext.Person.Id),
-            (CommandList.AddStory, null, 1, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage?.DialogMessageId ?? stage.DialogMessageId),
-            (CommandList.AddStory, null, > 1, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
-            (CommandList.AddStory, CommandStage.SelectTeam, _, _, true)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, stage.DialogMessageId),
+            (CommandList.AddStory, StageType.SelectTeam, _, _, _, true) when nextStage is not null
+                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             _ => null
         };
     }
@@ -100,16 +94,21 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
+
+        notification
+            .SetButtonsInRow(2)
+            .WithButton(new Button(cancelButtonText, CommandList.Cancel));
         
         return new BeginCommand(
             messageContext,
-            CommandStage.SelectTeam,
+            StageType.SelectTeam,
             CurrentTeamContext.Empty,
             botCommand,
             notification);
@@ -129,16 +128,24 @@ internal sealed class DialogCommandFactory
         if (string.IsNullOrWhiteSpace(botCommand))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
+        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
             await _messageBuilder.Build(messageId, messageContext.LanguageId));
+        
+        notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             
         return new BeginCommand(
             messageContext,
-            CommandStage.EnterText,
+            StageType.EnterText,
             team is not null ? new CurrentTeamContext(team.Id, team.Properties) : CurrentTeamContext.Empty,
             botCommand,
             notification);
+    }
+
+    private IDialogCommand ThrowTeamForUserNotFound(long personId)
+    {
+        throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, personId);
     }
 }

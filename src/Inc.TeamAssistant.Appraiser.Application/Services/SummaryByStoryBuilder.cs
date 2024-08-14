@@ -23,30 +23,36 @@ internal sealed class SummaryByStoryBuilder
 
         var builder = new StringBuilder();
 
-        builder.AppendLine(await _messageBuilder.Build(
+        var storyHeader = await _messageBuilder.Build(
             summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
-            summary.LanguageId,
-            summary.StoryTitle));
-
+            summary.LanguageId);
+        builder.AppendLine(storyHeader);
+        
+        builder.AppendLine(summary.StoryTitle);
         if (summary.StoryLinks.Any())
             foreach (var link in summary.StoryLinks)
                 builder.AppendLine(link);
 
         builder.AppendLine();
-
         builder.AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
 
         builder.AppendLine();
         foreach (var item in summary.Items)
             builder.AppendLine($"{item.AppraiserName} {AddEstimate(summary.EstimateEnded, item)}");
 
-        if (summary.EstimateEnded)
+        if (summary.Accepted)
         {
             builder.AppendLine();
-            builder.AppendLine(await _messageBuilder.Build(
-                Messages.Appraiser_TotalEstimate,
-                summary.LanguageId,
-                summary.Total));
+            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId));
+            builder.Append(' ');
+            builder.Append(summary.AcceptedValue);
+        }
+        else if (summary.EstimateEnded)
+        {
+            builder.AppendLine();
+            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AverageEstimate, summary.LanguageId));
+            builder.Append(' ');
+            builder.Append(summary.Total);
         }
         
         var notification = summary.StoryExternalId.HasValue

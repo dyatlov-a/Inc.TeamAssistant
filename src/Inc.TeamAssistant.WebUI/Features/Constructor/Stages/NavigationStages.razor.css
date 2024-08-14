@@ -5,7 +5,7 @@
     background-color: #555;
 }
 .nav-stages__item {
-    flex: 0 1 25%;
+    flex: 0 1 20%;
     padding: 10px;
     display: flex;
     justify-content: center;
@@ -15,7 +15,7 @@
     cursor: pointer;
 }
 .nav-stages__item_active, .nav-stages__item_can-move:hover {
-    background-color: #fff;
+    background-color: #dfdfdf;
     color: #000;
 }
 @media (max-width: 767.98px) {

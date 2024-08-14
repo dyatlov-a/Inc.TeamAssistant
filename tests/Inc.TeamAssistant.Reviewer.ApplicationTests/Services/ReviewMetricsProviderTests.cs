@@ -17,15 +17,14 @@ public sealed class ReviewMetricsProviderTests
 
     public ReviewMetricsProviderTests()
     {
+        var calendar = new Calendar(
+            _fixture.Create<Guid>(),
+            _fixture.Create<long>(),
+            schedule: null);
+        
         var holidayReader = Substitute.For<IHolidayReader>();
-        holidayReader
-            .GetAll(Arg.Any<CancellationToken>())
-            .Returns(new Dictionary<DateOnly, HolidayType>());
-        
-        var holidayService = new HolidayService(
-            holidayReader,
-            new WorkdayOptions { WorkOnHoliday = true, Weekends = [] });
-        
+        holidayReader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);
+        var holidayService = new HolidayService(holidayReader);
         _target = new ReviewMetricsProvider(new ReviewTeamMetricsFactory(holidayService));
     }
 
@@ -153,15 +152,22 @@ public sealed class ReviewMetricsProviderTests
         TimeSpan? acceptDuration = null,
         IReadOnlyCollection<(TimeSpan DeclineDuration, TimeSpan NextRoundDuration)>? reviewDurations = null)
     {
-        var taskForReview = new TaskForReview(
+        var draft = new DraftTaskForReview(
             _fixture.Create<Guid>(),
             teamId,
-            start,
-            _fixture.Create<TimeSpan>(),
+            _fixture.Create<long>(),
             _fixture.Create<NextReviewerType>(),
             _fixture.Create<long>(),
-            _fixture.Create<long>(),
-            _fixture.Create<string>());
+            _fixture.Create<int>(),
+            _fixture.Create<string>(),
+            start);
+        var taskForReview = new TaskForReview(
+            _fixture.Create<Guid>(),
+            draft,
+            _fixture.Create<Guid>(),
+            start,
+            _fixture.Create<TimeSpan>(),
+            _fixture.Create<long>());
         var operationStart = start;
 
         if (moveToInProgressDuration.HasValue)

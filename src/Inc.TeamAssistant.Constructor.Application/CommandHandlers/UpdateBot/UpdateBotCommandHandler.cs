@@ -38,6 +38,7 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
         bot
             .ChangeName(command.Name)
             .ChangeToken(command.Token)
+            .ChangeCalendarId(command.CalendarId)
             .ChangeFeatures(command.FeatureIds)
             .ChangeSupportedLanguages(command.SupportedLanguages);
 

@@ -22,6 +22,9 @@ internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCom
             .NotEmpty()
             .MaximumLength(255);
         
+        RuleFor(e => e.CalendarId)
+            .NotEmpty();
+        
         RuleFor(e => e.FeatureIds)
             .NotEmpty();
 

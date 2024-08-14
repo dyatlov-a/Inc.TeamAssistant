@@ -1,5 +1,4 @@
 using Dapper;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -19,7 +18,6 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
     public async Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
         DateTimeOffset now,
         IReadOnlyCollection<TaskForReviewState> states,
-        int limit,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(states);
@@ -44,13 +42,11 @@ SELECT
     t.review_intervals AS reviewintervals
 FROM review.task_for_reviews AS t
 WHERE t.state = ANY(@states) AND t.next_notification < @now
-ORDER BY t.next_notification
-LIMIT @limit;",
+ORDER BY t.next_notification;",
             new
             {
                 now,
-                states = targetStates,
-                limit
+                states = targetStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);

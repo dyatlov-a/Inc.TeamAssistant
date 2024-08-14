@@ -1,12 +1,13 @@
 using System.Text;
-using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
+using Inc.TeamAssistant.Reviewer.Model.Commands.AttachPreview;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
@@ -17,24 +18,24 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
     private readonly ITaskForReviewReader _taskForReviewReader;
-    private readonly IHolidayService _holidayService;
     private readonly IReviewMetricsProvider _reviewMetricsProvider;
     private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly DraftTaskForReviewService _service;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
         ITaskForReviewReader taskForReviewReader,
-        IHolidayService holidayService,
         IReviewMetricsProvider reviewMetricsProvider,
-        ReviewTeamMetricsFactory metricsFactory)
+        ReviewTeamMetricsFactory metricsFactory,
+        DraftTaskForReviewService service)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
-        _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
         _reviewMetricsProvider = reviewMetricsProvider ?? throw new ArgumentNullException(nameof(reviewMetricsProvider));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public async Task<IReadOnlyCollection<NotificationMessage>> Build(
@@ -73,10 +74,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 
-        var workTimeTotal = await _holidayService.CalculateWorkTime(
-            taskForReview.Created,
-            DateTimeOffset.UtcNow,
-            token);
+        var totalTime = taskForReview.GetTotalTime(DateTimeOffset.UtcNow);
 
         return taskForReview switch
         {
@@ -85,17 +83,70 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     taskForReview.BotId,
                     taskForReview.ReviewerId,
                     taskForReview.ReviewerMessageId.Value,
-                    workTimeTotal,
+                    totalTime,
                     token),
             { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null } =>
                 await CreatePushMessage(
                     taskForReview.BotId,
                     taskForReview.OwnerId,
                     taskForReview.OwnerMessageId.Value,
-                    workTimeTotal,
+                    totalTime,
                     token),
             _ => null
         };
+    }
+
+    public async Task<NotificationMessage> Build(
+        DraftTaskForReview draft,
+        LanguageId languageId,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(draft);
+        ArgumentNullException.ThrowIfNull(languageId);
+        
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(draft.Description);
+
+        if (draft.TargetPersonId.HasValue)
+        {
+            var targetPersonMessageTemplate = await _messageBuilder.Build(
+                Messages.Reviewer_PreviewReviewerTemplate,
+                languageId);
+            var targetPerson = await _teamAccessor.FindPerson(draft.TargetPersonId.Value, token);
+            if (targetPerson is null)
+                throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, draft.TargetPersonId.Value);
+            
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine(string.Format(targetPersonMessageTemplate, targetPerson.DisplayName));
+        }
+
+        if (!_service.HasDescriptionAndLinks(draft.Description))
+        {
+            messageBuilder.AppendLine();
+            messageBuilder.Append('❗');
+            messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
+            messageBuilder.AppendLine();
+        }
+        
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId));
+        var message = messageBuilder.ToString();
+
+        var notificationMessage = draft.PreviewMessageId.HasValue
+            ? NotificationMessage.Edit(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value), message)
+            : NotificationMessage.Create(draft.ChatId, message)
+                .ReplyTo(draft.MessageId)
+                .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p)));
+        
+        return notificationMessage
+            .WithButton(new Button(
+                await _messageBuilder.Build(Messages.Reviewer_PreviewMoveToReview, languageId),
+                $"{CommandList.MoveToReview}{draft.Id:N}"))
+            .WithButton(new Button(
+                await _messageBuilder.Build(Messages.Reviewer_PreviewRemoveDraft, languageId),
+                $"{CommandList.RemoveDraft}{draft.Id:N}"));
     }
 
     private async Task<NotificationMessage?> CreatePushMessage(
@@ -144,12 +195,15 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             TaskForReviewState.Accept => "🤝",
             _ => throw new ArgumentOutOfRangeException($"State {taskForReview.State} out of range for {nameof(TaskForReviewState)}.")
         };
+        var reviewerTargetMessageKey = taskForReview.HasConcreteReviewer
+            ? Messages.Reviewer_TargetManually
+            : Messages.Reviewer_TargetAutomatically;
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
         
-        messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_Target, languageId));
+        messageBuilder.Append(await _messageBuilder.Build(reviewerTargetMessageKey, languageId));
         reviewer.Append(messageBuilder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
         messageBuilder.AppendLine();
         
@@ -311,10 +365,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(taskForReview);
 
         var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, taskForReview.OwnerId, token);
-        var workTimeTotal = await _holidayService.CalculateWorkTime(
-            taskForReview.Created,
-            DateTimeOffset.UtcNow,
-            token);
+        var totalTime = taskForReview.GetTotalTime(DateTimeOffset.UtcNow);
         
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Accepted, languageId));
@@ -324,7 +375,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         messageBuilder.AppendLine(await _messageBuilder.Build(
             Messages.Reviewer_TotalTime,
             languageId,
-            workTimeTotal.ToString(TimeFormat)));
+            totalTime.ToString(TimeFormat)));
 
         return NotificationMessage.Create(taskForReview.OwnerId, messageBuilder.ToString());
     }

@@ -152,18 +152,13 @@ internal sealed class BotReader : IBotReader
         var personsLookup = (await query.ReadAsync<(long Id, string Name, string? Username, Guid TeamId)>())
             .ToLookup(p => p.TeamId);
         var commandIds = await query.ReadAsync<Guid>();
-        var botCommands = (await query.ReadAsync<BotCommand>()).ToDictionary(s => s.Id);
-        var botCommandStages = (await query.ReadAsync<BotCommandStage>()).ToLookup(s => s.BotCommandId);
+        var botCommands = (await query.ReadAsync<ContextCommand>()).ToDictionary(s => s.Id);
+        var botCommandStages = (await query.ReadAsync<ContextStage>()).ToLookup(s => s.BotCommandId);
 
         if (bot is not null)
         {
             foreach (var botCommand in commandIds.Select(i => botCommands[i]))
-            {
-                foreach (var botCommandStage in botCommandStages[botCommand.Id])
-                    botCommand.AddStage(botCommandStage);
-                
-                bot.AddCommand(botCommand);
-            }
+                bot.AddCommand(botCommand.MapStages(botCommandStages[botCommand.Id].ToArray()));
 
             foreach (var team in teams)
             {

@@ -6,9 +6,8 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Se
 internal sealed class MoveToAcceptCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Accept;
-    public bool SupportSingleLineMode => false;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -16,7 +15,7 @@ internal sealed class MoveToAcceptCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new MoveToAcceptCommand(
+        return Task.FromResult<IDialogCommand>(new MoveToAcceptCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

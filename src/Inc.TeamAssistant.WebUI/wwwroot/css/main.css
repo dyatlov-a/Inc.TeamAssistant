@@ -38,7 +38,7 @@ body {
 body {
 	font-family: 'Roboto', sans-serif;
 	font-size: 16px;
-	color: #fff;
+	color: #dfdfdf;
 	background-color: #616161;
 	min-width: 315px;
     line-height: 1.25rem;
@@ -96,21 +96,27 @@ html {
     background-color: transparent;
     cursor: pointer;
 }
-.button_white {
-    border: .1875rem solid #fff;
-    color: #fff;
+.button_light {
+    border: .1875rem solid #dfdfdf;
+    color: #dfdfdf;
 }
-.button_white:hover {
-    background-color: #fff;
+.button_light:hover {
+    background-color: #dfdfdf;
     color: #000;
 }
-.button_black {
+.button_dark {
     border: .1875rem solid #000;
     color: #000;
 }
-.button_black:hover {
+.button_dark:hover {
     background-color: #000;
-    color: #fff;
+    color: #dfdfdf;
+}
+.button_small {
+    padding: 5px;
+    border-radius: 10px;
+    margin: 25px 0 15px 0;
+    height: 38px;
 }
 .link {
     font-size: 1rem;
@@ -118,15 +124,15 @@ html {
 .link:hover {
     text-decoration: underline;
 }
-.link_white {
-    color: #fff;
+.link_light {
+    color: #dfdfdf;
 }
-.link_black {
+.link_dark {
     color: #000;
 }
 /* MAP */
 .marker-btn {
-    background-color: #fff;
+    background-color: #dfdfdf;
     color: #000;
     font-weight: bold;
     cursor: pointer;
@@ -148,9 +154,7 @@ html {
     border: 3px solid #555;
     border-radius: 0;
     color: #000;
-}
-.form-control_white {
-    background-color: #fff;
+    background-color: #dfdfdf;
 }
 .form-control_textarea {
     resize: none;
@@ -174,10 +178,6 @@ html {
 .text {
     font-size: 1.2rem;
     line-height: 1.6rem;
-}
-.white {
-    background-color: #fff;
-    color: #000;
 }
 .draggable {
     cursor: grab;

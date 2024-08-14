@@ -6,9 +6,8 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate
 internal sealed class FinishEstimateCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Finish;
-    public bool SupportSingleLineMode => false;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -16,7 +15,7 @@ internal sealed class FinishEstimateCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new FinishEstimateCommand(
+        return Task.FromResult<IDialogCommand>(new FinishEstimateCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

@@ -14,15 +14,17 @@ internal sealed class UserClient : IUserService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<Person?> GetCurrentUser(CancellationToken token)
+    public async Task<Person> GetCurrentUser(CancellationToken token)
     {
         try
         {
-            return await _client.GetFromJsonAsync<Person?>("accounts/current-user", token);
+            var result = await _client.GetFromJsonAsync<Person>("accounts/current-user", token);
+            
+            return result ?? Person.Empty;
         }
         catch
         {
-            return null;
+            return Person.Empty;
         }
     }
 

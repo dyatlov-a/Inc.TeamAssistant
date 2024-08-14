@@ -8,7 +8,6 @@ public interface ITaskForReviewReader
     Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
         DateTimeOffset now,
         IReadOnlyCollection<TaskForReviewState> states,
-        int limit,
         CancellationToken token);
     
     Task<IReadOnlyCollection<TaskForReview>> GetTasksByPerson(

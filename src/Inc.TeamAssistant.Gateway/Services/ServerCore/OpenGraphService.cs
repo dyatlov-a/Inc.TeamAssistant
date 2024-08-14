@@ -1,4 +1,5 @@
 using System.Numerics;
+using Inc.TeamAssistant.Gateway.Configs;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;

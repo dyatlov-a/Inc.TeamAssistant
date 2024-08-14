@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Gateway.Services.Render;
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICurrentPersonResolver, CurrentPersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
+            .AddScoped<ICalendarService, CalendarService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
 
             .AddSingleton<QuickResponseCodeGenerator>()

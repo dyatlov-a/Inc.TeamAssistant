@@ -32,11 +32,8 @@
     font-size: 2rem;
     font-weight: bold;
 }
-.story, .story .link {
-    color: #fff;
-}
-.story_dark, .story_dark .link {
-    color: #000;
+.story__link {
+    color: #dfdfdf;
 }
 @media (max-width: 991.98px) {
     ::deep .user-card {

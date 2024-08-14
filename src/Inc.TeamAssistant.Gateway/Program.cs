@@ -14,7 +14,6 @@ using Inc.TeamAssistant.Connector.DataAccess;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.DataAccess;
-using Inc.TeamAssistant.Gateway;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Gateway.Hubs;
 using Inc.TeamAssistant.Gateway.Services;
@@ -22,7 +21,9 @@ using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Inc.TeamAssistant.Gateway.Components;
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
+using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
@@ -45,9 +46,6 @@ var builder = WebApplication
 	.UseTelemetry();
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var cacheAbsoluteExpiration = builder.Configuration
-	.GetRequiredSection("CacheAbsoluteExpiration")
-	.Get<TimeSpan>();
 var appraiserOptions = builder.Configuration
 	.GetRequiredSection(nameof(AppraiserOptions))
 	.Get<AppraiserOptions>()!;
@@ -57,9 +55,6 @@ var checkInOptions = builder.Configuration
 var reviewerOptions = builder.Configuration
 	.GetRequiredSection(nameof(ReviewerOptions))
 	.Get<ReviewerOptions>()!;
-var workdayOptions = builder.Configuration
-	.GetRequiredSection(nameof(WorkdayOptions))
-	.Get<WorkdayOptions>()!;
 var randomCoffeeOptions = builder.Configuration
 	.GetRequiredSection(nameof(RandomCoffeeOptions))
 	.Get<RandomCoffeeOptions>()!;
@@ -121,19 +116,22 @@ builder.Services
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
 	.AddJsonType<ICollection<string>>()
-	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
-	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
-	.AddJsonType<ICollection<CommandScope>>()
+	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	.AddJsonType<IReadOnlyCollection<DayOfWeek>>()
+	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	.AddJsonType<WorkScheduleUtc>()
 	.Build()
-	
+
 	.AddSingleton(openGraphOptions)
-	.AddHolidays(workdayOptions, cacheAbsoluteExpiration)
-	.AddServices(authOptions, builder.Environment.WebRootPath, cacheAbsoluteExpiration)
+	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
+	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
-		
+
 	.AddAppraiserApplication(appraiserOptions)
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(checkInOptions)
@@ -142,13 +140,15 @@ builder.Services
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication(randomCoffeeOptions)
 	.AddRandomCoffeeDataAccess()
-	.AddConnectorApplication()
-	.AddConnectorDataAccess(cacheAbsoluteExpiration)
+	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds, authOptions.BotId)
+	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
-	
+
 	.AddHttpContextAccessor()
 	.AddMemoryCache()
-	.AddOutputCache(c => c.AddPolicy(OutputCachePolicies.Images, b => b.Expire(TimeSpan.FromHours(1))))
+	.AddOutputCache(c => c.AddPolicy(
+		CachePolicies.OpenGraphCachePolicyName,
+		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddMvc();
 

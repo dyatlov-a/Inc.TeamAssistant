@@ -4,5 +4,7 @@ namespace Inc.TeamAssistant.Holidays;
 
 public interface IHolidayReader
 {
-    Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken token);
+    Task<Calendar?> Find(Guid botId, CancellationToken token);
+
+    void Reload(Guid botId);
 }

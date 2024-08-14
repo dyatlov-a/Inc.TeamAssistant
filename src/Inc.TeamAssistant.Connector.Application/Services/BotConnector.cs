@@ -10,13 +10,15 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class BotConnector : IBotConnector
 {
-    private readonly IMessageBuilder _messageBuilder;
     private readonly IBotReader _botReader;
+    private readonly ContextCommandConverter _converter;
+    private readonly IMessageBuilder _messageBuilder;
 
-    public BotConnector(IMessageBuilder messageBuilder, IBotReader botReader)
+    public BotConnector(IBotReader botReader, ContextCommandConverter converter, IMessageBuilder messageBuilder)
     {
-        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
+        _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
     
     public async Task<string?> GetUsername(string botToken, CancellationToken token)
@@ -126,17 +128,14 @@ internal sealed class BotConnector : IBotConnector
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(languageId);
 
-        foreach (var commandScope in Enum.GetValues<CommandScope>())
-            if (TryConvert(commandScope, out var scope))
-            {
-                var commandsByScopes = await Build(bot.Commands, commandScope, languageId);
-
-                await client.SetMyCommandsAsync(
-                    commandsByScopes.OrderBy(c => c.Command).ToArray(),
-                    scope,
-                    languageCode: targetLanguageId,
-                    cancellationToken: token);
-            }
+        await foreach (var commandsByScope in _converter.Convert(bot.Commands, languageId).WithCancellation(token))
+        {
+            await client.SetMyCommandsAsync(
+                commandsByScope.Commands.OrderBy(c => c.Command),
+                commandsByScope.Scope,
+                languageCode: targetLanguageId,
+                cancellationToken: token);
+        }
     }
 
     private async Task SetDetails(
@@ -155,38 +154,5 @@ internal sealed class BotConnector : IBotConnector
         await client.SetMyNameAsync(name, targetLanguageId, token);
         await client.SetMyShortDescriptionAsync(shortDescription, targetLanguageId, token);
         await client.SetMyDescriptionAsync(description, targetLanguageId, token);
-    }
-    
-    private async Task<IReadOnlyCollection<Telegram.Bot.Types.BotCommand>> Build(
-        IEnumerable<Domain.BotCommand> botCommands,
-        CommandScope commandScope,
-        LanguageId languageId)
-    {
-        ArgumentNullException.ThrowIfNull(botCommands);
-        ArgumentNullException.ThrowIfNull(languageId);
-
-        var commands = new List<Telegram.Bot.Types.BotCommand>();
-
-        foreach (var botCommand in botCommands)
-            if (botCommand.HelpMessageId is not null && botCommand.Scopes.Any(s => s == commandScope))
-                commands.Add(new Telegram.Bot.Types.BotCommand
-                {
-                    Command = botCommand.Value,
-                    Description = await _messageBuilder.Build(botCommand.HelpMessageId, languageId)
-                });
-        
-        return commands;
-    }
-    
-    private static bool TryConvert(CommandScope commandScope, out BotCommandScope? botCommandScope)
-    {
-        botCommandScope = commandScope switch
-        {
-            CommandScope.AllGroupChats => BotCommandScope.AllGroupChats(),
-            CommandScope.Default => BotCommandScope.Default(),
-            _ => null
-        };
-        
-        return botCommandScope is not null;
     }
 }

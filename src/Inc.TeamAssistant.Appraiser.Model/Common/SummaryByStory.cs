@@ -12,6 +12,7 @@ public sealed record SummaryByStory(
 	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
     string Total,
+	string AcceptedValue,
     IReadOnlyCollection<EstimateItemDetails> Items,
 	IReadOnlyCollection<string> Assessments,
 	bool Accepted,

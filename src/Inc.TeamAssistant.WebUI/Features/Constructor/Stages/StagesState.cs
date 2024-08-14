@@ -1,8 +1,10 @@
+using Inc.TeamAssistant.Constructor.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
@@ -16,6 +18,8 @@ public sealed class StagesState
     public IReadOnlyCollection<FeatureDto> Features { get; private set; }
     public IReadOnlyCollection<string> SupportedLanguages { get; private set; }
     public IReadOnlyCollection<BotDetails> BotDetails { get; private set; }
+    public Guid? CalendarId { get; private set; }
+    public CalendarState Calendar { get; private set; }
 
     public StagesState(
         Guid? id,
@@ -25,7 +29,9 @@ public sealed class StagesState
         IReadOnlyDictionary<string, string> properties,
         IReadOnlyCollection<FeatureDto> features,
         IReadOnlyCollection<string> supportedLanguages,
-        IReadOnlyCollection<BotDetails> botDetails)
+        IReadOnlyCollection<BotDetails> botDetails,
+        Guid? calendarId,
+        CalendarState calendar)
     {
         Id = id;
         UserName = userName;
@@ -35,6 +41,8 @@ public sealed class StagesState
         Features = features;
         SupportedLanguages = supportedLanguages;
         BotDetails = botDetails;
+        CalendarId = calendarId;
+        Calendar = calendar;
     }
 
     public IReadOnlyCollection<FeatureDto> SelectedFeatures => Features
@@ -49,8 +57,25 @@ public sealed class StagesState
         new Dictionary<string, string>(),
         Array.Empty<FeatureDto>(),
         Array.Empty<string>(),
-        Array.Empty<BotDetails>());
+        Array.Empty<BotDetails>(),
+        null,
+        new CalendarState(
+            WorkAllDay: false,
+            new WorkScheduleUtcDto(TimeOnly.MinValue, TimeOnly.MinValue),
+            Array.Empty<DayOfWeek>(),
+            new Dictionary<DateOnly, string>()));
 
+    public StagesState Apply(CalendarFormModel calendar)
+    {
+        Calendar = new CalendarState(
+            calendar.WorkAllDay,
+            new WorkScheduleUtcDto(calendar.Start, calendar.End),
+            calendar.SelectedWeekends.ToArray(),
+            calendar.Holidays.ToDictionary(i => i.Date, i => i.IsWorkday ? "Workday" : "Holiday"));
+
+        return this;
+    }
+    
     public StagesState Apply(IReadOnlyCollection<BotDetails> botDetails)
     {
         BotDetails = botDetails;

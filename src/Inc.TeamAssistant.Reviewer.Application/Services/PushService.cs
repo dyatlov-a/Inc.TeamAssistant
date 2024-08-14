@@ -50,19 +50,19 @@ internal sealed class PushService : BackgroundService
     private async Task Push(CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow;
+        var tasksForNotifications = await _reader.GetTasksForNotifications(
+            now,
+            TaskForReviewStateRules.ActiveStates,
+            token);
 
-        if (await _holidayService.IsWorkTime(now, token))
+        foreach (var task in tasksForNotifications)
         {
-            var tasksForNotifications = await _reader.GetTasksForNotifications(
-                now,
-                TaskForReviewStateRules.ActiveStates,
-                _options.NotificationsBatch,
-                token);
-
-            foreach (var task in tasksForNotifications)
-                await _commandExecutor.Execute(
-                    new SendPushCommand(MessageContext.CreateIdle(task.BotId, task.ChatId), task.Id),
-                    token);
+            if (!await _holidayService.IsWorkTime(task.BotId, now, token))
+                continue;
+            
+            var messageContext = MessageContext.CreateIdle(task.BotId, task.ChatId);
+                
+            await _commandExecutor.Execute(new SendPushCommand(messageContext, task.Id), token);
         }
     }
 }

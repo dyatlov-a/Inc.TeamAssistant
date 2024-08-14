@@ -11,4 +11,7 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Services\WithDescriptionValidator.cs" />
+    </ItemGroup>
 </Project>

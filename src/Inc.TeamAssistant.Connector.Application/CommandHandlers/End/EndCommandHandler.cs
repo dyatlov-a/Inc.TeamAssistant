@@ -24,7 +24,7 @@ internal sealed class EndCommandHandler : IRequestHandler<EndCommand, CommandRes
                 command.MessageContext.Bot.Id,
                 command.MessageContext.TargetChat,
                 CommandList.Cancel,
-                CommandStage.None,
+                StageType.None,
                 command.MessageContext.ChatMessage);
             
         return Task.FromResult(CommandResult.Empty);

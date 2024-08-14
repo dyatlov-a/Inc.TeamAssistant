@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -18,19 +19,19 @@ internal sealed class UserService : IUserService
         _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
-    public Task<Person?> GetCurrentUser(CancellationToken token)
+    public Task<Person> GetCurrentUser(CancellationToken token)
     {
         try
         {
             var result = _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true
                 ? _httpContextAccessor.HttpContext.User.ToPerson()
-                : null;
+                : Person.Empty;
 
             return Task.FromResult(result);
         }
         catch
         {
-            return Task.FromResult<Person?>(null);
+            return Task.FromResult(Person.Empty);
         }
     }
 

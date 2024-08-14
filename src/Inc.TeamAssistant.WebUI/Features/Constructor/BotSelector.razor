@@ -16,13 +16,13 @@
     {
         <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Content>
-                <a href="@MoveToDashboardLink(bot)" class="link link_black">@ViewModel.MoveToStats</a>
+                <a href="@MoveToDashboardLink(bot)" class="link link_dark">@ViewModel.MoveToStats</a>
             </Content>
             <Buttons>
-                <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
+                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
                     @ViewModel.Edit
                 </button>
-                <button type="button" class="button button_white bot-selector__button" @onclick="() => MoveToRemove(bot)">
+                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToRemove(bot)">
                     @ViewModel.Remove
                 </button>
             </Buttons>
@@ -30,7 +30,7 @@
     }
     <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
         <Buttons>
-            <button type="button" class="button button_white bot-selector__button" @onclick="MoveToAdd">
+            <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
                 @ViewModel.AddBot
             </button>
         </Buttons>

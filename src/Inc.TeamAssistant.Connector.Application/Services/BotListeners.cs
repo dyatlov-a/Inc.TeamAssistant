@@ -16,7 +16,7 @@ internal sealed class BotListeners : IBotListeners
     
     private static readonly ReceiverOptions ReceiverOptions = new()
     {
-        AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.PollAnswer]
+        AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.PollAnswer, UpdateType.EditedMessage]
     };
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _listeners = new();
     private int _isWorking = 1;

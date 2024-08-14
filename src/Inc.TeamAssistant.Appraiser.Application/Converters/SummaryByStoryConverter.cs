@@ -17,10 +17,11 @@ internal static class SummaryByStoryConverter
                 s.Value.ToDisplayValue(story.StoryType)))
             .ToArray();
         var assessments = story.GetAssessments()
-            .Select(a => a.ToString())
+            .Select(s => s.ToString())
             .ToArray();
         var assessmentsToAccept = story.GetTopValues()
-            .Select(a => a.ToString())
+            .OrderBy(s => s)
+            .Select(s => s.ToString())
             .ToArray();
 
         return new SummaryByStory(
@@ -33,6 +34,7 @@ internal static class SummaryByStoryConverter
             story.Links.ToArray(),
             story.EstimateEnded,
             story.GetTotalValue(),
+            story.GetAcceptedValue(),
             storyForEstimates,
             assessments,
             story.Accepted,

@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Commands.End;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
@@ -33,54 +32,84 @@ internal sealed class CommandFactory
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
 
-        if (messageContext.Text.StartsWith(CommandList.Cancel, StringComparison.InvariantCultureIgnoreCase))
-            return new EndCommand(messageContext);
-
-        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
-        var input = dialogState is null ? _aliasService.OverrideCommand(messageContext.Text) : dialogState.Command;
+        var inputCommand = _aliasService.OverrideCommand(messageContext.Text);
+        var simpleCommand = await TryCreateSimple(inputCommand, bot, messageContext, token);
+        if (simpleCommand is not null)
+            return simpleCommand;
         
-        var botCommand = bot.FindCommand(input);
-        if (botCommand is null)
-            return null;
-
-        var singleLineCommand = await _singleLineCommandFactory.TryCreate(bot, messageContext, input, token);
+        var singleLineCommand = await _singleLineCommandFactory.TryCreate(bot, messageContext, inputCommand, token);
         if (singleLineCommand is not null)
             return singleLineCommand;
         
-        if (botCommand.Stages.Any())
-        {
-            var stages = botCommand.Stages.ToArray();
-            var firstStage = stages.First();
+        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
+        var contextCommand = dialogState is null ? inputCommand : dialogState.Command;
+        var botCommand = bot.FindCommand(contextCommand);
+        if (botCommand is null)
+            return null;
+        
+        var dialogCommand = await TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
+        if (dialogCommand is not null)
+            return dialogCommand;
 
-            for (var index = 0; index < stages.Length; index++)
-            {
-                var currentStage = stages[index];
-                var nextIndex = index + 1;
-                var nextStage = nextIndex < stages.Length ? stages[nextIndex] : null;
-                
-                if ((dialogState is null && firstStage.Id == currentStage.Id) ||
-                    dialogState?.CommandState == currentStage.Value)
-                {
-                    var dialogCommand = await _dialogCommandFactory.TryCreate(
-                        bot,
-                        botCommand.Value,
-                        dialogState?.CommandState,
-                        currentStage,
-                        nextStage,
-                        messageContext);
-
-                    if (dialogCommand is not null)
-                        return dialogCommand;
-                }
-            }
-        }
-            
-        var commandCreator = _commandCreatorResolver.TryResolve(input);
+        var commandCreator = _commandCreatorResolver.TryResolve(contextCommand);
         if (commandCreator is null)
             return null;
         
         var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
         var command = await commandCreator.Create(messageContext, currentTeamContext, token);
         return command;
+    }
+
+    private async Task<IDialogCommand?> TryCreateSimple(
+        string inputCommand,
+        Bot bot,
+        MessageContext messageContext,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(inputCommand);
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        var simpleCommand = bot.FindCommand(inputCommand);
+        
+        if (simpleCommand?.MultipleStages == false)
+        {
+            var priorityCommandCreator = _commandCreatorResolver.TryResolve(inputCommand);
+            
+            if (priorityCommandCreator is not null)
+                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
+        }
+
+        return null;
+    }
+
+    private async Task<IDialogCommand?> TryCreateDialogCommand(
+        ContextCommand botCommand,
+        Bot bot,
+        MessageContext messageContext,
+        DialogState? dialogState)
+    {
+        ArgumentNullException.ThrowIfNull(botCommand);
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        while (botCommand.Stages.MoveNext())
+        {
+            if ((dialogState is null && botCommand.Stages.IsFirst) || dialogState?.State == botCommand.Stages.Current.Value)
+            {
+                var dialogCommand = await _dialogCommandFactory.TryCreate(
+                    bot,
+                    botCommand.Value,
+                    dialogState?.State,
+                    botCommand.Stages.Current,
+                    botCommand.Stages.Next,
+                    messageContext);
+
+                if (dialogCommand is not null)
+                    return dialogCommand;
+            }
+        }
+
+        return null;
     }
 }

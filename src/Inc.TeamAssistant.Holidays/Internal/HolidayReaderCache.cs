@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Holidays.Model;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Holidays.Internal;
 
@@ -8,39 +7,31 @@ internal sealed class HolidayReaderCache : IHolidayReader
 {
     private readonly IHolidayReader _reader;
     private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<HolidayReaderCache> _logger;
     private readonly TimeSpan _cacheTimeout;
 
     public HolidayReaderCache(
         IHolidayReader reader,
         IMemoryCache memoryCache,
-        ILogger<HolidayReaderCache> logger,
         TimeSpan cacheTimeout)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _cacheTimeout = cacheTimeout;
     }
 
-    public async Task<Dictionary<DateOnly, HolidayType>> GetAll(CancellationToken token)
+    public async Task<Calendar?> Find(Guid botId, CancellationToken token)
     {
-        var cacheKey = $"{nameof(HolidayReaderCache)}__{nameof(GetAll)}";
-        var cacheItem = await _memoryCache.GetOrCreateAsync(
-            cacheKey,
+        return await _memoryCache.GetOrCreateAsync(
+            GetKey(botId),
             e =>
             {
                 e.SetAbsoluteExpiration(_cacheTimeout);
 
-                return _reader.GetAll(token);
+                return _reader.Find(botId, token);
             });
-
-        if (cacheItem is null)
-        {
-            _logger.LogWarning("Can not get object with key {CacheKey} from cache", cacheKey);
-            return await _reader.GetAll(token);
-        }
-
-        return cacheItem;
     }
+
+    public void Reload(Guid botId) => _memoryCache.Remove(GetKey(botId));
+
+    private string GetKey(Guid botId) => $"{nameof(HolidayReaderCache)}__{nameof(Find)}__{botId}";
 }

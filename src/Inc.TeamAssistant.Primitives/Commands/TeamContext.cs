@@ -4,4 +4,5 @@ public sealed record TeamContext(
     Guid Id,
     long ChatId,
     string Name,
-    bool UserInTeam);
+    bool UserInTeam,
+    bool OwnerOfTeam);

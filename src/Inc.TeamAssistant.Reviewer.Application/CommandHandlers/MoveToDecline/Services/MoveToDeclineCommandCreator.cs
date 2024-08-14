@@ -6,9 +6,8 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.S
 internal sealed class MoveToDeclineCommandCreator : ICommandCreator
 {
     public string Command => CommandList.Decline;
-    public bool SupportSingleLineMode => false;
     
-    public Task<IEndDialogCommand> Create(
+    public Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
@@ -16,7 +15,7 @@ internal sealed class MoveToDeclineCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IEndDialogCommand>(new MoveToDeclineCommand(
+        return Task.FromResult<IDialogCommand>(new MoveToDeclineCommand(
             messageContext,
             messageContext.TryParseId(Command)));
     }

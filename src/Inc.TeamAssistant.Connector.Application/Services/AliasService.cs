@@ -11,6 +11,8 @@ internal sealed class AliasService
     
     public string OverrideCommand(string text)
     {
+        ArgumentNullException.ThrowIfNull(text);
+        
         if (text.StartsWith('/'))
         {
             var alias = text.Split(' ').First();

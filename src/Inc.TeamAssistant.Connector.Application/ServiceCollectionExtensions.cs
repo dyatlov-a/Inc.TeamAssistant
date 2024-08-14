@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
+using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
@@ -15,7 +16,10 @@ namespace Inc.TeamAssistant.Connector.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddConnectorApplication(this IServiceCollection services)
+    public static IServiceCollection AddConnectorApplication(
+        this IServiceCollection services,
+        int userAvatarCacheDurationInSeconds,
+        Guid authBotId)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -32,9 +36,15 @@ public static class ServiceCollectionExtensions
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
             .AddSingleton<IBotAccessor, BotAccessor>()
+            .AddSingleton<ContextCommandConverter>()
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
-            .AddSingleton<PersonPhotosService>()
+            
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<PersonPhotosService>(sp, authBotId))
+            .AddSingleton<IPersonPhotosService>(sp => ActivatorUtilities.CreateInstance<PersonPhotosServiceCache>(
+                sp,
+                sp.GetRequiredService<PersonPhotosService>(),
+                userAvatarCacheDurationInSeconds))
             
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
             
