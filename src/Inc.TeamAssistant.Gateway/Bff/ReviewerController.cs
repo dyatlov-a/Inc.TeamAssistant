@@ -2,7 +2,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inc.TeamAssistant.Gateway.Controllers;
+namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
 [Route("reviewer")]

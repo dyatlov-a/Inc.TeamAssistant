@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
-namespace Inc.TeamAssistant.Gateway.Controllers;
+namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
 [Route("open-graph")]

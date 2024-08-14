@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Gateway.Configs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inc.TeamAssistant.Gateway.Controllers;
+namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
 [Route("photos")]

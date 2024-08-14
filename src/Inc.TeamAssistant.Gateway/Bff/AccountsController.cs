@@ -6,7 +6,7 @@ using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inc.TeamAssistant.Gateway.Controllers;
+namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
 [Route("accounts")]
