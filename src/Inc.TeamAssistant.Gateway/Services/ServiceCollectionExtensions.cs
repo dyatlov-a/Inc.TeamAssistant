@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
+using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Gateway.Services.Render;
 using Inc.TeamAssistant.Primitives;
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton(options)
             .AddScoped<TelegramAuthService>()
+            .AddScoped<EstimatesService>()
             
             .AddScoped<IAppraiserService, AppraiserService>()
             .AddScoped<IMessagesSender, MessagesSender>()

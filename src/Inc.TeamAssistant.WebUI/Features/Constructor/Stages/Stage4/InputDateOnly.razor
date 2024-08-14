@@ -6,7 +6,7 @@
     <Content>
         <div class="time-selector__years">
             <InputSelect
-                id="@($"{FieldId}-year")"
+                id="@FieldId"
                 Value="_selectedYear"
                 ValueExpression="@(() => _selectedYear)"
                 ValueChanged="@((int i) => SelectYear(i))"

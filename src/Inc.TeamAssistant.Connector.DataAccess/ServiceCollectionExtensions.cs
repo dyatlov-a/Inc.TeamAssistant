@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Integrations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
@@ -11,6 +12,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         
         services
+            .AddSingleton<IIntegrationsAccessor, IntegrationsAccessor>()
+                
             .AddSingleton<ITeamRepository, TeamRepository>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
             

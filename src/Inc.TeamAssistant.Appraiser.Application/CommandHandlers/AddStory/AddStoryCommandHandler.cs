@@ -27,9 +27,8 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
 
     public async Task<CommandResult> Handle(AddStoryCommand command, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
-        
+        ArgumentNullException.ThrowIfNull(command);
+
         var targetTeam = command.MessageContext.FindTeam(command.TeamId);
         if (targetTeam is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
