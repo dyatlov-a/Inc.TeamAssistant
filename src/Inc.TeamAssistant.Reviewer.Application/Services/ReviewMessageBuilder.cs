@@ -83,6 +83,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     taskForReview.BotId,
                     taskForReview.ReviewerId,
                     taskForReview.ReviewerMessageId.Value,
+                    Messages.Reviewer_NeedEndReview,
                     totalTime,
                     token),
             { State: TaskForReviewState.OnCorrection, OwnerMessageId: not null } =>
@@ -90,6 +91,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     taskForReview.BotId,
                     taskForReview.OwnerId,
                     taskForReview.OwnerMessageId.Value,
+                    Messages.Reviewer_NeedCorrection,
                     totalTime,
                     token),
             _ => null
@@ -153,13 +155,16 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         Guid botId,
         long personId,
         int messageId,
+        MessageId messageTextId,
         TimeSpan workTimeTotal,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(messageTextId);
+        
         var languageId = await _teamAccessor.GetClientLanguage(botId, personId, token);
         
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NeedEndReview, languageId));
+        messageBuilder.AppendLine(await _messageBuilder.Build(messageTextId, languageId));
         messageBuilder.AppendLine();
         messageBuilder.AppendLine(await _messageBuilder.Build(
             Messages.Reviewer_TotalTime,

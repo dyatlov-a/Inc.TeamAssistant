@@ -108,6 +108,7 @@
   "Reviewer_ChangeToRandomHelp": "Change to random",
   "Reviewer_Reassign": "Reassign",
   "Reviewer_NeedEndReview": "There is a review that needs to be done.",
+  "Reviewer_NeedCorrection": "Revisions need to be made.",
   "Reviewer_StatsAttempts": "Attempts: {0}",
   "Reviewer_StatsFirstTouch": "First touch time: {0} | {1} (average)",
   "Reviewer_StatsFirstTouchAverage": "First touch time (average): {0}",

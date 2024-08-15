@@ -108,6 +108,7 @@
   "Reviewer_ChangeToRandomHelp": "Перейти на случайный выбор",
   "Reviewer_Reassign": "Переназначить",
   "Reviewer_NeedEndReview": "Необходимо провести ревью.",
+  "Reviewer_NeedCorrection": "Необходимо внести изменения.",
   "Reviewer_StatsAttempts": "Кол-во попыток: {0}",
   "Reviewer_StatsFirstTouch": "Время первого касания: {0} | {1} (среднее)",
   "Reviewer_StatsFirstTouchAverage": "Время первого касания (среднее): {0}",
