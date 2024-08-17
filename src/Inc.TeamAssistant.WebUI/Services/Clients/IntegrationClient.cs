@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -42,5 +43,12 @@ internal sealed class IntegrationClient : IIntegrationService
         ArgumentNullException.ThrowIfNull(command);
         
         await _client.PutAsJsonAsync("integrations", command, token);
+    }
+
+    public async Task DisableIntegration(DisableIntegrationCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _client.PutAsJsonAsync("integrations/disable", command, token);
     }
 }

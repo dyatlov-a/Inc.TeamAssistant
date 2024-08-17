@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,18 @@ public sealed class IntegrationsController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
         
         await _integrationService.SetTeamProperties(command, token);
+
+        return Ok();
+    }
+    
+    [HttpPut("disable")]
+    public async Task<IActionResult> DisableIntegration(
+        DisableIntegrationCommand command,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _integrationService.DisableIntegration(command, token);
 
         return Ok();
     }

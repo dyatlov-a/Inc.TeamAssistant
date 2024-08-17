@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 
@@ -13,4 +14,6 @@ public interface IIntegrationService
     Task SetTeamProperties(
         SetIntegrationPropertiesCommand command,
         CancellationToken token = default);
+
+    Task DisableIntegration(DisableIntegrationCommand command, CancellationToken token = default);
 }
