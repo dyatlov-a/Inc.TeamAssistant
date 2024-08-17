@@ -20,20 +20,6 @@
 .work-schedule__item {
     flex: 0 1 50%;
 }
-.weekends-selector__item {
-    display: inline-block;
-    background-color: #555;
-    color: #dfdfdf;
-    width: 43px;
-    padding: 10px;
-    text-align: center;
-    margin: 0 10px 10px 0;
-    cursor: pointer;
-    transition: background-color 0.3s ease 0s;
-}
-.weekends-selector__item_selected {
-    background-color: #000;
-}
 @media (max-width: 991.98px) {
     .holiday-items__item {
         flex: 0 1 100%;
