@@ -1,6 +1,6 @@
 let markers = [], points = [], routes = {}, layers = {}, mapControlName;
 
-export function addMarker(
+function addMarker(
     displayName,
     longitude,
     latitude,
@@ -26,13 +26,13 @@ export function addMarker(
     points[points.length] = new L.LatLng(latitude, longitude);
 }
 
-export function addLayer(title) {
+function addLayer(title) {
     layers[title] = L.layerGroup(markers);
     markers = [];
     points = [];
 }
 
-export function addRoute(title) {
+function addRoute(title) {
     let layerGroup = L.layerGroup(markers);
     let polyline = new L.Polyline(points, {
         color: 'blue',
@@ -46,7 +46,7 @@ export function addRoute(title) {
     points = [];
 }
 
-export function build(hostElement) {
+function build(hostElement) {
     let osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
         minZoom: 2,
         maxZoom: 19,
@@ -74,3 +74,46 @@ export function build(hostElement) {
     }
 }
 
+export function initialize(hostElement, data, showRouteText, hideRouteText, defaultLayerTitle) {
+    console.log(data);
+    let index = 0;
+    for (let [key, value] of Object.entries(data)) {
+        index++;
+        addMarker(
+            value[0].displayName,
+            value[0].longitude,
+            value[0].latitude,
+            value[0].displayOffset,
+            index,
+            true,
+            value.length > 1,
+            showRouteText,
+            hideRouteText);
+    }
+    
+    addLayer(defaultLayerTitle);
+
+    for (let [key, values] of Object.entries(data)) {
+        let hasHistory = values.length > 1;
+        let first = true;
+        
+        values.forEach(v => {
+            addMarker(
+                v.displayName,
+                v.longitude,
+                v.latitude,
+                v.displayOffset,
+                0,
+                first,
+                hasHistory,
+                showRouteText,
+                hideRouteText);
+
+            first = false;
+        });
+        
+        addRoute(key);
+    }
+    
+    build(hostElement);
+}
