@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -28,5 +29,12 @@ internal sealed class IntegrationService : IIntegrationService
         {
             return ServiceResult.Failed<GetIntegrationPropertiesResult>(ex.Message);
         }
+    }
+
+    public async Task SetTeamProperties(SetIntegrationPropertiesCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
     }
 }

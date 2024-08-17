@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -34,5 +35,12 @@ internal sealed class IntegrationClient : IIntegrationService
         {
             return ServiceResult.Failed<GetIntegrationPropertiesResult>(ex.Message);
         }
+    }
+
+    public async Task SetTeamProperties(SetIntegrationPropertiesCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _client.PutAsJsonAsync("integrations", command, token);
     }
 }

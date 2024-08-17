@@ -67,4 +67,14 @@ public sealed class Team
         
         return this;
     }
+    
+    public Team RemoveProperty(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        var newProperties = Properties.Where(p => p.Key.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        Properties = new Dictionary<string, string>(newProperties);
+        
+        return this;
+    }
 }
