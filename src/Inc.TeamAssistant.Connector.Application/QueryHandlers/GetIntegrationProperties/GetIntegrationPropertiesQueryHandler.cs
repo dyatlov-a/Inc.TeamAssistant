@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using MediatR;
 
@@ -9,10 +10,18 @@ internal sealed class GetIntegrationPropertiesQueryHandler
     : IRequestHandler<GetIntegrationPropertiesQuery, GetIntegrationPropertiesResult>
 {
     private readonly ITeamRepository _teamRepository;
+    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly ITeamReader _teamReader;
 
-    public GetIntegrationPropertiesQueryHandler(ITeamRepository teamRepository)
+    public GetIntegrationPropertiesQueryHandler(
+        ITeamRepository teamRepository,
+        ICurrentPersonResolver currentPersonResolver,
+        ITeamReader teamReader)
     {
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _currentPersonResolver =
+            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
     }
 
     public async Task<GetIntegrationPropertiesResult> Handle(
@@ -25,6 +34,8 @@ internal sealed class GetIntegrationPropertiesQueryHandler
         if (team is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, query.TeamId);
         
+        var currentPerson = _currentPersonResolver.GetCurrentPerson();
+        var hasManagerAccess = await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token);
         var scrumMasterId = team.Properties.TryGetValue("scrumMaster", out var scrumMaster) && long.TryParse(scrumMaster, out var value)
             ? value
             : (long?)null;
@@ -42,6 +53,7 @@ internal sealed class GetIntegrationPropertiesQueryHandler
         
         return new GetIntegrationPropertiesResult(
             integrationProperties,
+            hasManagerAccess,
             teammates);
     }
 }

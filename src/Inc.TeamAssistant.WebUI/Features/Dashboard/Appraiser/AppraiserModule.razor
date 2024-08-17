@@ -5,15 +5,20 @@
         <AssessmentHistoryWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
+<DashboardWidget Title="@ViewModel.IntegrationTitle">
+    <Content>
+        <AppraiserIntegrationWidget TeamId="TeamId" />
+    </Content>
+</DashboardWidget>
 
 @code {
-    
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
 
     protected override Task<AppraiserModuleViewModel> Initialize(Dictionary<string, string> resources)
     {
         return Task.FromResult(new AppraiserModuleViewModel(
-            resources[Messages.Dashboard_AppraiserHistoryTitle]));
+            resources[Messages.Dashboard_AppraiserHistoryTitle],
+            resources[Messages.Dashboard_AppraiserIntegrationTitle]));
     }
 }

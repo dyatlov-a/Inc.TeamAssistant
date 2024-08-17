@@ -85,7 +85,7 @@
                             <div class="holiday-items__item-control">
                                 <button
                                     type="button"
-                                    class="button button_dark button_small"
+                                    class="button button_dark button_small work-schedule__button"
                                     @onclick="() => RemoveHoliday(holiday)">
                                     <TrashIcon Size="20px" Color="#000" />
                                 </button>
@@ -93,7 +93,10 @@
                         </div>
                     }
                     <div class="holiday-items__item">
-                        <button type="button" class="button button_dark button_small" @onclick="AddHoliday">
+                        <button
+                            type="button"
+                            class="button button_dark button_small work-schedule__button"
+                            @onclick="AddHoliday">
                             @ViewModel.AddHolidayLabel
                         </button>
                     </div>
