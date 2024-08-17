@@ -52,8 +52,8 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
             leaveTeamSuccessMessage);
         notifications.Add(notification);
         
-        if (command.MessageContext.Person.Id != team.OwnerId)
-            notifications.Add(NotificationMessage.Create(team.OwnerId, leaveTeamSuccessMessage));
+        if (command.MessageContext.Person.Id != team.Owner.Id)
+            notifications.Add(NotificationMessage.Create(team.Owner.Id, leaveTeamSuccessMessage));
         
         return CommandResult.Build(notifications.ToArray());
     }

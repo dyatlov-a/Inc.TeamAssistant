@@ -7,7 +7,7 @@ public sealed class Team
     public Guid Id { get; private set; }
     public Guid BotId { get; private set; }
     public long ChatId { get; private set; }
-    public long OwnerId { get; private set; }
+    public Person Owner { get; private set; } = default!;
     public string Name { get; private set; } = default!;
     
     private readonly List<Person> _teammates = new();
@@ -22,7 +22,7 @@ public sealed class Team
         Guid id,
         Guid botId,
         long chatId,
-        long ownerId,
+        Person owner,
         string name,
         IReadOnlyDictionary<string, string> properties)
         : this()
@@ -32,7 +32,7 @@ public sealed class Team
         Id = id;
         BotId = botId;
         ChatId = chatId;
-        OwnerId = ownerId;
+        Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         Name = name;
         Properties = properties ?? throw new ArgumentNullException(nameof(properties));
     }

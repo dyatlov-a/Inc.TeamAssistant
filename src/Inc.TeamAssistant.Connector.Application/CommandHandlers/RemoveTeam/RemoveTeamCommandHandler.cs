@@ -33,7 +33,7 @@ internal sealed class RemoveTeamCommandHandler : IRequestHandler<RemoveTeamComma
         if (team is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
-        if (team.OwnerId != command.MessageContext.Person.Id)
+        if (team.Owner.Id != command.MessageContext.Person.Id)
             throw new TeamAssistantUserException(Messages.Connector_HasNotRightsForRemoveTeam, team.Name);
 
         foreach (var removeTeamHandler in _removeTeamHandlers)

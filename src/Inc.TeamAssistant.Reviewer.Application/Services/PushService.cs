@@ -60,7 +60,7 @@ internal sealed class PushService : BackgroundService
             if (!await _holidayService.IsWorkTime(task.BotId, now, token))
                 continue;
             
-            var messageContext = MessageContext.CreateIdle(task.BotId, task.ChatId);
+            var messageContext = MessageContext.CreateFromBackground(task.BotId, task.ChatId);
                 
             await _commandExecutor.Execute(new SendPushCommand(messageContext, task.Id), token);
         }

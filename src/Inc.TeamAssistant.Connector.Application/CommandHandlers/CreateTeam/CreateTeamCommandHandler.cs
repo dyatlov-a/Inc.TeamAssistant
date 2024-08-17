@@ -33,7 +33,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
             command.MessageContext.ChatMessage.ChatId,
-            command.MessageContext.Person.Id,
+            command.MessageContext.Person,
             command.Name,
             command.MessageContext.Bot.Properties);
 

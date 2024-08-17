@@ -49,10 +49,10 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
             command.MessageContext.ChatMessage.ChatId,
             joinToTeamSuccessMessage);
 
-        var notifications = command.MessageContext.Person.Id != team.OwnerId
+        var notifications = command.MessageContext.Person.Id != team.Owner.Id
             ? new[]
             {
-                NotificationMessage.Create(team.OwnerId, joinToTeamSuccessMessage),
+                NotificationMessage.Create(team.Owner.Id, joinToTeamSuccessMessage),
                 notification
             }
             : [notification];
