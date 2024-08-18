@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
+using Inc.TeamAssistant.CheckIn.Application.QueryHandlers.GetLocations.Services;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(options)
+            .AddSingleton<LocationConverter>()
             .AddSingleton<ICommandCreator, AddLocationToMapCommandCreator>();
 
         return services;

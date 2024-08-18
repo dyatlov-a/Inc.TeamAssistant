@@ -160,6 +160,14 @@ internal static class Messages
     public static readonly string Dashboard_ConnectToTeamButton = nameof(Dashboard_ConnectToTeamButton);
     public static readonly string Dashboard_HasConcreteReviewer = nameof(Dashboard_HasConcreteReviewer);
     public static readonly string Dashboard_IsOriginalReviewer = nameof(Dashboard_IsOriginalReviewer);
+    public static readonly string Dashboard_AppraiserIntegrationTitle = nameof(Dashboard_AppraiserIntegrationTitle);
+    public static readonly string Dashboard_AppraiserIntegrationAccessTokenLabel = nameof(Dashboard_AppraiserIntegrationAccessTokenLabel);
+    public static readonly string Dashboard_AppraiserIntegrationProjectKeyLabel = nameof(Dashboard_AppraiserIntegrationProjectKeyLabel);
+    public static readonly string Dashboard_AppraiserIntegrationScrumMasterLabel = nameof(Dashboard_AppraiserIntegrationScrumMasterLabel);
+    public static readonly string Dashboard_AppraiserIntegrationSaveButton = nameof(Dashboard_AppraiserIntegrationSaveButton);
+    public static readonly string Dashboard_AppraiserIntegrationDisableButton = nameof(Dashboard_AppraiserIntegrationDisableButton);
+    public static readonly string Dashboard_AppraiserIntegrationEnableButton = nameof(Dashboard_AppraiserIntegrationEnableButton);
+    public static readonly string Dashboard_AppraiserIntegrationConfirmText = nameof(Dashboard_AppraiserIntegrationConfirmText);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);

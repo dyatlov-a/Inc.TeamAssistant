@@ -57,11 +57,11 @@
                     FieldId="supported-languages"
                     Label="@ViewModel.Languages">
                     <Content>
-                        <div class="form-control">
+                        <div id="supported-languages" class="form-control">
                             @foreach (var languageId in LanguageSettings.LanguageIds)
                             {
                                 <span
-                                    class="supported-language @CssClass(languageId)"
+                                    class="multiselect__item @CssClass(languageId)"
                                     @onclick="() => ToggleLanguage(languageId)">
                                     @languageId.Value
                                 </span>
@@ -135,7 +135,7 @@
     private string CssClass(LanguageId languageId)
     {
         return _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
-            ? "supported-language_selected"
+            ? "multiselect__item_selected"
             : string.Empty;
     }
 

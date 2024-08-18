@@ -1,6 +1,6 @@
 .login {
     height: 100vh;
-    background-color: #000;
+    margin-bottom: -120px;
 }
 .login-container {
     display: flex;
@@ -14,7 +14,7 @@
     padding: 0 60px;
 }
 .login-motivation {
-    background-image: url('imgs/login-bg.png');
+    background-image: url('imgs/login-bg.jpg');
     background-size: cover;
     flex-grow: 1;
     display: flex;

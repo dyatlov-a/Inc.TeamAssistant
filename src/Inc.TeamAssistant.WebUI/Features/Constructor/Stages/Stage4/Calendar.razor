@@ -44,11 +44,11 @@
                     FieldId="weekends"
                     Label="@ViewModel.WeekendsLabel">
                     <Content>
-                        <div id="weekends">
+                        <div id="weekends" class="form-control">
                             @foreach (var day in Enum.GetValues<DayOfWeek>())
                             {
                                 <span
-                                    class="weekends-selector__item @CssClass(day)"
+                                    class="multiselect__item @CssClass(day)"
                                     @onclick="() => ToggleWeekend(day)">
                                     @ResourceProvider(Messages.GetDayOfWeekTitle(day))
                                 </span>
@@ -85,7 +85,7 @@
                             <div class="holiday-items__item-control">
                                 <button
                                     type="button"
-                                    class="button button_dark button_small"
+                                    class="button button_dark button_small work-schedule__button"
                                     @onclick="() => RemoveHoliday(holiday)">
                                     <TrashIcon Size="20px" Color="#000" />
                                 </button>
@@ -93,7 +93,10 @@
                         </div>
                     }
                     <div class="holiday-items__item">
-                        <button type="button" class="button button_dark button_small" @onclick="AddHoliday">
+                        <button
+                            type="button"
+                            class="button button_dark button_small work-schedule__button"
+                            @onclick="AddHoliday">
                             @ViewModel.AddHolidayLabel
                         </button>
                     </div>
@@ -122,7 +125,7 @@
     private EditContext? _editContext;
 
     private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
-        ? "weekends-selector__item_selected"
+        ? "multiselect__item_selected"
         : string.Empty;
 
     private void ToggleWeekend(DayOfWeek item)

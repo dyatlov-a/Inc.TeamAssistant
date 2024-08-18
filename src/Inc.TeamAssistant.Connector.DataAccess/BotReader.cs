@@ -51,10 +51,7 @@ internal sealed class BotReader : IBotReader
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
-                t.chat_id AS chatid,
-                t.owner_id AS ownerid,
-                t.name AS name,
-                t.properties AS properties
+                t.name AS name
             FROM connector.teams AS t
             WHERE t.bot_id = ANY(@bot_ids);
 
@@ -70,7 +67,7 @@ internal sealed class BotReader : IBotReader
         
         await using var query = await connection.QueryMultipleAsync(dataCommand);
         
-        var teams = (await query.ReadAsync<Team>()).ToLookup(t => t.BotId);
+        var teams = (await query.ReadAsync<(Guid Id, Guid BotId, string Name)>()).ToLookup(t => t.BotId);
         var features = (await query.ReadAsync<(Guid BotId, string FeatureName)>())
             .ToLookup(f => f.BotId, f => f.FeatureName);
         var results = bots
@@ -99,10 +96,13 @@ internal sealed class BotReader : IBotReader
                 t.id AS id,
                 t.bot_id AS botid,
                 t.chat_id AS chatid,
-                t.owner_id AS ownerid,
                 t.name AS name,
-                t.properties AS properties
+                t.properties AS properties,
+                p.id AS ownerid,
+                p.name AS ownername,
+                p.username AS ownerusername
             FROM connector.teams AS t
+            JOIN connector.persons AS p ON p.id = t.owner_id
             WHERE t.bot_id = @id;
 
             SELECT
@@ -148,7 +148,7 @@ internal sealed class BotReader : IBotReader
         await using var query = await connection.QueryMultipleAsync(command);
         
         var bot = await query.ReadSingleOrDefaultAsync<Bot>();
-        var teams = await query.ReadAsync<Team>();
+        var teamsDb = await query.ReadAsync<TeamDb>();
         var personsLookup = (await query.ReadAsync<(long Id, string Name, string? Username, Guid TeamId)>())
             .ToLookup(p => p.TeamId);
         var commandIds = await query.ReadAsync<Guid>();
@@ -160,8 +160,16 @@ internal sealed class BotReader : IBotReader
             foreach (var botCommand in commandIds.Select(i => botCommands[i]))
                 bot.AddCommand(botCommand.MapStages(botCommandStages[botCommand.Id].ToArray()));
 
-            foreach (var team in teams)
+            foreach (var teamDb in teamsDb)
             {
+                var team = new Team(
+                    teamDb.Id,
+                    teamDb.BotId,
+                    teamDb.ChatId,
+                    new Person(teamDb.OwnerId, teamDb.OwnerName, teamDb.OwnerUsername),
+                    teamDb.Name,
+                    teamDb.Properties);
+                
                 foreach (var person in personsLookup[team.Id])
                     team.AddTeammate(new Person(person.Id, person.Name, person.Username));
                 

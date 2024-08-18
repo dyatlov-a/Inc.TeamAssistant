@@ -73,8 +73,19 @@ public sealed class AccountsController : ControllerBase
 
         return Redirect(DetectTargetUrl(returnUrl));
     }
-    
-    private string DetectTargetUrl(string? returnUrl) => string.IsNullOrWhiteSpace(returnUrl)
-        ? "/constructor"
-        : returnUrl;
+
+    private string DetectTargetUrl(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return "/constructor";
+
+        var returnUri = new Uri(returnUrl);
+        var returnUrlHost = returnUri.IsDefaultPort
+            ? returnUri.Host
+            : $"{returnUri.Host}:{returnUri.Port}";
+
+        return string.IsNullOrWhiteSpace(returnUrlHost) || returnUrlHost == Request.Host.ToUriComponent()
+            ? returnUrl
+            : "/constructor";
+    }
 }

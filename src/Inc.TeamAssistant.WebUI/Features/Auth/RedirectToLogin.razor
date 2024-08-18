@@ -1,8 +1,10 @@
-@inject NavigationManager _navigationManager
+@inject NavigationManager NavigationManager
 
 @code {
+    private string CurrentUrl => NavigationManager.Uri;
+    
     protected override void OnInitialized()
     {
-        _navigationManager.NavigateTo($"/login?returnUrl={_navigationManager.Uri}");
+        NavigationManager.NavigateTo($"/login?returnUrl={CurrentUrl}");
     }
 }

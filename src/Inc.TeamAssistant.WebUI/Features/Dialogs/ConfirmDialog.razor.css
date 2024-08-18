@@ -1,6 +1,6 @@
 .confirm-dialog, .confirm-dialog-bg {
     min-width: 315px;
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
@@ -15,7 +15,7 @@
     z-index: 1001;
 }
 .confirm-dialog__body {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

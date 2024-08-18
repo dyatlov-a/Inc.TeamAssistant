@@ -23,10 +23,13 @@ internal sealed class TeamRepository : ITeamRepository
                 t.id AS id,
                 t.bot_id AS botid,
                 t.chat_id AS chatid,
-                t.owner_id AS ownerid,
                 t.name AS name,
-                t.properties AS properties
+                t.properties AS properties,
+                p.id AS ownerid,
+                p.name AS ownername,
+                p.username AS ownerusername
             FROM connector.teams AS t
+            JOIN connector.persons AS p ON p.id = t.owner_id
             WHERE t.id = @team_id;
 
             SELECT
@@ -44,14 +47,26 @@ internal sealed class TeamRepository : ITeamRepository
         
         await using var query = await connection.QueryMultipleAsync(command);
 
-        var team = await query.ReadSingleOrDefaultAsync<Team>();
+        var teamDb = await query.ReadSingleOrDefaultAsync<TeamDb>();
         var persons = await query.ReadAsync<Person>();
 
-        if (team is not null)
+        if (teamDb is not null)
+        {
+            var team = new Team(
+                teamDb.Id,
+                teamDb.BotId,
+                teamDb.ChatId,
+                new Person(teamDb.OwnerId, teamDb.OwnerName, teamDb.OwnerUsername),
+                teamDb.Name,
+                teamDb.Properties);
+            
             foreach (var person in persons)
                 team.AddTeammate(person);
 
-        return team;
+            return team;
+        }
+
+        return null;
     }
 
     public async Task Upsert(Team team, CancellationToken token)
@@ -72,7 +87,7 @@ internal sealed class TeamRepository : ITeamRepository
                 id = team.Id,
                 bot_id = team.BotId,
                 chat_id = team.ChatId,
-                owner_id = team.OwnerId,
+                owner_id = team.Owner.Id,
                 name = team.Name,
                 properties = JsonSerializer.Serialize(team.Properties)
             },

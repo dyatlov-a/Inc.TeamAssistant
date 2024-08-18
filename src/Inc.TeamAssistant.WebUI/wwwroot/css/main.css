@@ -115,7 +115,6 @@ html {
 .button_small {
     padding: 5px;
     border-radius: 10px;
-    margin: 25px 0 15px 0;
     height: 38px;
 }
 .link {
@@ -130,9 +129,19 @@ html {
 .link_dark {
     color: #000;
 }
+.multiselect__item {
+    display: inline-block;
+    padding: 3px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.multiselect__item_selected {
+    background-color: #555;
+    color: #dfdfdf;
+}
 /* MAP */
 .marker-btn {
-    background-color: #dfdfdf;
+    background-color: #fff;
     color: #000;
     font-weight: bold;
     cursor: pointer;

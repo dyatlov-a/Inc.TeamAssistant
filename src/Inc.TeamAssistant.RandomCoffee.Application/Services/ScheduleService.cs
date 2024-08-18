@@ -58,7 +58,7 @@ internal sealed class ScheduleService : BackgroundService
             if (!await _holidayService.IsWorkTime(randomCoffeeEntry.BotId, now, token))
                 continue;
             
-            var messageContext = MessageContext.CreateIdle(randomCoffeeEntry.BotId, randomCoffeeEntry.ChatId);
+            var messageContext = MessageContext.CreateFromBackground(randomCoffeeEntry.BotId, randomCoffeeEntry.ChatId);
                 
             IDialogCommand command = randomCoffeeEntry.State switch
             {

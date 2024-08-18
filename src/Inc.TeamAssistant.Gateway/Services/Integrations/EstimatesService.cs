@@ -1,11 +1,8 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Integrations;
-using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.Primitives.Notifications;
 
 namespace Inc.TeamAssistant.Gateway.Services.Integrations;
 
@@ -35,27 +32,14 @@ public sealed class EstimatesService
             return;
         
         var teammates = await _teamAccessor.GetTeammates(integrationContext.TeamId, DateTimeOffset.UtcNow, token);
-        var ownerId = integrationContext.TeamProperties.TryGetValue("scrumMaster", out var scrumMaster)
-            ? long.Parse(scrumMaster)
+        var ownerId = integrationContext.TeamProperties.TryGetValue("scrumMaster", out var scrumMaster) && long.TryParse(scrumMaster, out var value)
+            ? value
             : integrationContext.OwnerId;
-        var messageContext = new MessageContext(
-            ChatMessage: ChatMessage.Empty,
-            Bot: new BotContext(integrationContext.BotId, UserName: string.Empty, new Dictionary<string, string>()),
-            Teams: new []
-            {
-                new TeamContext(
-                    integrationContext.TeamId,
-                    integrationContext.ChatId,
-                    Name: string.Empty,
-                    UserInTeam: false,
-                    OwnerOfTeam: false)
-            },
-            Text: string.Empty,
-            new Person(ownerId, string.Empty, Username: null),
-            LanguageId: LanguageSettings.DefaultLanguageId,
-            Location: null,
-            TargetPersonId: null,
-            ChatName: null);
+        var messageContext = MessageContext.CreateFromIntegration(
+            integrationContext.BotId,
+            integrationContext.TeamId,
+            integrationContext.ChatId,
+            ownerId);
         var command = new AddStoryCommand(
             messageContext,
             integrationContext.TeamId,

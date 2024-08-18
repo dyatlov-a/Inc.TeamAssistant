@@ -7,9 +7,6 @@
 
 @layout CleanLayout
 
-@using Inc.TeamAssistant.Appraiser.Model.Common
-@using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations
-
 @inherits PersistentComponent<MapPageViewModel>
 
 @inject ICheckInService CheckInService
@@ -49,71 +46,16 @@
                 "import",
                 "./Features/Map/MapPage.razor.js");
             
-            var locations = await CheckInService.GetLocations(Id);
-            if (locations.State == ServiceResultState.Success)
-                await Build(_mapModule, locations.Result!);
+            var getLocations = await CheckInService.GetLocations(Id);
+            if (getLocations.Result is not null)
+                await _mapModule.InvokeVoidAsync(
+                    "initialize",
+                    _map,
+                    getLocations.Result.Locations,
+                    ViewModel.ShowRouteText,
+                    ViewModel.HideRouteText,
+                    ViewModel.DefaultLayerTitle);
         }
-    }
-
-    private async Task Build(IJSObjectReference module, GetLocationsResult data)
-    {
-        if (module is null)
-            throw new ArgumentNullException(nameof(module));
-        if (data is null)
-            throw new ArgumentNullException(nameof(data));
-
-        var index = 0;
-        foreach (var locations in data.OrderedLocations())
-        {
-            index++;
-            await AddMarker(module, locations.Value.First(), data.HasHistory(locations.Value), index);
-        }
-
-        await module.InvokeVoidAsync("addLayer", ViewModel.DefaultLayerTitle);
-
-        foreach (var locations in data.OrderedLocations())
-        {
-            using var source = locations.Value.GetEnumerator();
-
-            source.MoveNext();
-            await AddMarker(module, source.Current, data.HasHistory(locations.Value));
-
-            while (source.MoveNext())
-                await AddMarker(module, source.Current, data.HasHistory(locations.Value), isActual: false);
-            
-            await module.InvokeVoidAsync("addRoute", locations.Key);
-        }
-
-        await module.InvokeVoidAsync("build", _map);
-    }
-    
-    private async Task AddMarker(
-        IJSObjectReference module,
-        LocationDto location,
-        bool hasHistory,
-        int index = 0,
-        bool isActual = true)
-    {
-        if (module is null)
-            throw new ArgumentNullException(nameof(module));
-        if (location is null)
-            throw new ArgumentNullException(nameof(location));
-        
-        var timeOffset = location.UtcOffset.HasValue
-            ? $"{(location.UtcOffset.Value < TimeSpan.Zero ? "-" : "+")}{location.UtcOffset.Value:hh\\:mm}"
-            : "?";
-
-        await module.InvokeVoidAsync(
-            "addMarker",
-            location.DisplayName,
-            location.Longitude,
-            location.Latitude,
-            timeOffset,
-            index,
-            isActual,
-            hasHistory,
-            ViewModel.ShowRouteText,
-            ViewModel.HideRouteText);
     }
 
     protected override Task<MapPageViewModel> Initialize(Dictionary<string, string> resources)

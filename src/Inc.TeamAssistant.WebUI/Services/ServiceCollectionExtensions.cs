@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped<ICalendarService, CalendarClient>()
+            .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
             .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
             

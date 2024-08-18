@@ -21,6 +21,7 @@ internal static class Messages
     public static readonly MessageId Reviewer_TeamWithoutUsers = new(nameof(Reviewer_TeamWithoutUsers));
     public static readonly MessageId Reviewer_Reassign = new(nameof(Reviewer_Reassign));
     public static readonly MessageId Reviewer_NeedEndReview = new(nameof(Reviewer_NeedEndReview));
+    public static readonly MessageId Reviewer_NeedCorrection = new(nameof(Reviewer_NeedCorrection));
     public static readonly MessageId Reviewer_StatsAttempts = new(nameof(Reviewer_StatsAttempts));
     public static readonly MessageId Reviewer_StatsFirstTouch = new(nameof(Reviewer_StatsFirstTouch));
     public static readonly MessageId Reviewer_StatsFirstTouchAverage = new(nameof(Reviewer_StatsFirstTouchAverage));

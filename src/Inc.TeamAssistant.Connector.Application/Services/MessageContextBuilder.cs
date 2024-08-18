@@ -201,10 +201,10 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
 
         bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
-        bool OwnerOfTeam(Team t) => t.OwnerId == personId;
+        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
         
         var memberOfChats = bot.Teams
-            .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.OwnerId == personId)
+            .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.Owner.Id == personId)
             .Select(t => t.ChatId)
             .Distinct()
             .ToArray();
