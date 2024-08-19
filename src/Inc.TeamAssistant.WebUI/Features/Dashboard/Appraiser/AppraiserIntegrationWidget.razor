@@ -47,7 +47,7 @@
                             <option value=""></option>
                             @foreach (var teammate in _formModel.Teammates)
                             {
-                                <option value="@teammate.Id">@teammate.Name</option>
+                                <option value="@teammate.Id">@teammate.DisplayName</option>
                             }
                         </InputSelect>
                         <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
@@ -128,16 +128,8 @@
     protected override async Task OnParametersSetAsync()
     {
         var teamProperties = await IntegrationService.GetTeamProperties(TeamId);
-        
-        if (teamProperties.Result.Properties is not null)
-        {
-            _formModel.IsEnabled = true;
-            _formModel.AccessToken = teamProperties.Result.Properties.AccessToken;
-            _formModel.ProjectKey = teamProperties.Result.Properties.ProjectKey;
-            _formModel.ScrumMasterId = teamProperties.Result.Properties.ScrumMasterId;
-        }
-        _formModel.IsDisableControls = !teamProperties.Result.HasManagerAccess;
-        _formModel.Teammates = teamProperties.Result.Teammates;
+
+        _formModel.Apply(teamProperties.Result);
         
         await base.OnParametersSetAsync();
     }

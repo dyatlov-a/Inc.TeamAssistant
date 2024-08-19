@@ -68,11 +68,14 @@ public sealed class Team
         return this;
     }
     
-    public Team RemoveProperty(string name)
+    public Team RemoveProperty(params string[] names)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(names);
 
-        var newProperties = Properties.Where(p => p.Key.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+        var newProperties = Properties.Where(p => !names.Any(n => n.Equals(
+            p.Key,
+            StringComparison.InvariantCultureIgnoreCase)));
+        
         Properties = new Dictionary<string, string>(newProperties);
         
         return this;
