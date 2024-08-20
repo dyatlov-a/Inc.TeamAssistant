@@ -155,6 +155,18 @@ html {
 .map__navbar .leaflet-top {
     top: 80px;
 }
+.map-popup {
+    overflow: hidden;
+}
+.map-popup__user-avatar {
+    width: 50px;
+    border-radius: 50%;
+    float: left;
+}
+.map-popup__content {
+    margin-left: 60px;
+    width: 140px;
+}
 /* FORMS */
 .form-control {
     width: 100%;
