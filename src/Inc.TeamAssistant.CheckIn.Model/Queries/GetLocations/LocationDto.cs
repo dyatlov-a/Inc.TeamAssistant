@@ -6,4 +6,5 @@ public sealed record LocationDto(
     double Longitude,
     double Latitude,
     TimeSpan? UtcOffset,
-    string DisplayOffset);
+    string DisplayOffset,
+    string CountryName);

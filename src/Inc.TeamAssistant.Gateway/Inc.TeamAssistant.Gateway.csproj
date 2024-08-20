@@ -6,6 +6,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.GeoCountry\Inc.TeamAssistant.CheckIn.GeoCountry.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Constructor.DataAccess\Inc.TeamAssistant.Constructor.DataAccess.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.DataAccess\Inc.TeamAssistant.RandomCoffee.DataAccess.csproj" />

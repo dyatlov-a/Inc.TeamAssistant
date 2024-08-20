@@ -6,6 +6,7 @@ function createMarker(
     longitude,
     latitude,
     timeOffset,
+    countryName,
     index,
     isActual,
     hasHistory,
@@ -14,7 +15,7 @@ function createMarker(
     let popupContent = "<p><div class=\"map-popup\">";
     popupContent += "<img src=\"/photos/" + personId + "\" alt=\"" + displayName + "\" class=\"map-popup__user-avatar\" />";
     popupContent += "<div class=\"map-popup__content\">";
-    popupContent += "<b>" + displayName + "</b><br>UTC " + timeOffset;
+    popupContent += "<b>" + displayName + "</b><br>" + countryName + "<br>UTC " + timeOffset;
 
     if (hasHistory) {
         popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
@@ -40,6 +41,7 @@ function createLayers(data, layerTitle, showRouteText, hideRouteText){
             value[0].longitude,
             value[0].latitude,
             value[0].displayOffset,
+            value[0].countryName,
             index,
             true,
             value.length > 1,
@@ -66,6 +68,7 @@ function createRoutes(data, showRouteText, hideRouteText) {
                 v.longitude,
                 v.latitude,
                 v.displayOffset,
+                v.countryName,
                 0,
                 isActual,
                 hasHistory,
