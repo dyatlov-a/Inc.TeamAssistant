@@ -9,5 +9,8 @@ internal sealed class AddLocationToMapCommandValidator : AbstractValidator<AddLo
     {
         RuleFor(c => c.MessageContext.Location)
             .NotEmpty();
+        
+        RuleFor(c => c.MessageContext.ChatName)
+            .NotEmpty();
     }
 }

@@ -44,7 +44,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
             chatId,
-            command.MessageContext.ChatName,
+            command.MessageContext.ChatName!,
             command.MessageContext.Person.Id);
         var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
         if (owner is null)

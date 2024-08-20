@@ -45,7 +45,7 @@ internal sealed class LocationsRepository : ILocationsRepository
                 name AS name
             FROM maps.maps
             WHERE chat_id = @chat_id;",
-            new {chat_id = chatId},
+            new { chat_id = chatId },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -67,7 +67,7 @@ internal sealed class LocationsRepository : ILocationsRepository
                 created AS created
             FROM maps.locations
             WHERE map_id = @map_id;",
-            new {map_id = mapId},
+            new { map_id = mapId },
             flags: CommandFlags.None,
             cancellationToken: token);
 
