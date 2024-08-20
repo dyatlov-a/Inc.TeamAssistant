@@ -66,8 +66,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             _options.NotificationInterval,
             targetTeam.ChatId);
 
-        if (command.MessageContext.TargetPersonId.HasValue)
-            taskForReview.SetConcreteReviewer(command.MessageContext.TargetPersonId.Value);
+        if (draft.TargetPersonId.HasValue)
+            taskForReview.SetConcreteReviewer(draft.TargetPersonId.Value);
         else
         {
             var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(
