@@ -25,6 +25,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
     public async Task<RandomCoffeeEntry?> Find(string pollId, CancellationToken token)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
+        
         var command = new CommandDefinition(@"
             SELECT e.id AS id
             FROM random_coffee.entries AS e
@@ -63,8 +65,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
     public async Task Upsert(RandomCoffeeEntry randomCoffeeEntry, CancellationToken token)
     {
-        if (randomCoffeeEntry is null)
-            throw new ArgumentNullException(nameof(randomCoffeeEntry));
+        ArgumentNullException.ThrowIfNull(randomCoffeeEntry);
 
         var historyId = new List<Guid>(randomCoffeeEntry.History.Count);
         var historyCreated = new List<DateTimeOffset>(randomCoffeeEntry.History.Count);
@@ -170,6 +171,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
     
     private async Task<RandomCoffeeEntry?> Find(NpgsqlConnection connection, Guid id, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(connection);
+        
         const int historyDepth = 5;
         var command = new CommandDefinition(@"
             SELECT

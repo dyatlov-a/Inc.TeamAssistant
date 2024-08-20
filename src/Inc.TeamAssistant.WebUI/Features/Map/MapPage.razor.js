@@ -1,6 +1,7 @@
-let mapControlName;
+let mapControlName = 'leaflet-base-layers_';
 
 function createMarker(
+    personId,
     displayName,
     longitude,
     latitude,
@@ -10,7 +11,10 @@ function createMarker(
     hasHistory,
     showRouteText,
     hideRouteText){
-    let popupContent = "<p><b>" + displayName + "</b><br>UTC " + timeOffset;
+    let popupContent = "<p><div class=\"map-popup\">";
+    popupContent += "<img src=\"/photos/" + personId + "\" alt=\"" + displayName + "\" class=\"map-popup__user-avatar\" />";
+    popupContent += "<div class=\"map-popup__content\">";
+    popupContent += "<b>" + displayName + "</b><br>UTC " + timeOffset;
 
     if (hasHistory) {
         popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
@@ -18,7 +22,7 @@ function createMarker(
             + "</button>";
     }
 
-    popupContent += "</p>";
+    popupContent += "</div></div></p>";
 
     return L.marker([latitude, longitude], {opacity: isActual ? 1 : 0.5}).bindPopup(popupContent);
 }
@@ -31,6 +35,7 @@ function createLayers(data, layerTitle, showRouteText, hideRouteText){
     for (let [key, value] of Object.entries(data)) {
         index++;
         markers[markers.length] = createMarker(
+            value[0].personId,
             value[0].displayName,
             value[0].longitude,
             value[0].latitude,
@@ -56,6 +61,7 @@ function createRoutes(data, showRouteText, hideRouteText) {
 
         values.forEach(v => {
             markers[markers.length] = createMarker(
+                v.personId,
                 v.displayName,
                 v.longitude,
                 v.latitude,
@@ -104,7 +110,7 @@ export function initialize(hostElement, data, showRouteText, hideRouteText, laye
     });
 
     let control = L.control.layers({...layers, ...routes}).addTo(map);
-    mapControlName = 'leaflet-base-layers_' + control._leaflet_id;
+    mapControlName += control._leaflet_id;
 
     window.locations = {
         markerClickHandler: function markerClickHandler(index) {

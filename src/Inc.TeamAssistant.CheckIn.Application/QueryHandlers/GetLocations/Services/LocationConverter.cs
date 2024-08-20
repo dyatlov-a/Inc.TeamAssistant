@@ -24,6 +24,7 @@ internal sealed class LocationConverter
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
             
             return new(
+                location.UserId,
                 location.DisplayName,
                 location.Longitude,
                 location.Latitude,
@@ -39,6 +40,7 @@ internal sealed class LocationConverter
                 location.Longitude);
             
             return new(
+                location.UserId,
                 location.DisplayName,
                 location.Longitude,
                 location.Latitude,

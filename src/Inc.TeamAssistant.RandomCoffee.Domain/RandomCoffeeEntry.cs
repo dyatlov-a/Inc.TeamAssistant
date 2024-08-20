@@ -6,7 +6,7 @@ public sealed class RandomCoffeeEntry
     public Guid BotId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public long ChatId { get; private set; }
-    public string? Name { get; private set; }
+    public string Name { get; private set; } = default!;
     public long OwnerId { get; private set; }
     public DateTimeOffset NextRound { get; private set; }
     public RandomCoffeeState State { get; private set; }
@@ -21,9 +21,11 @@ public sealed class RandomCoffeeEntry
         ParticipantIds = new List<long>();
     }
 
-    public RandomCoffeeEntry(Guid id, Guid botId, long chatId, string? name, long ownerId)
+    public RandomCoffeeEntry(Guid id, Guid botId, long chatId, string name, long ownerId)
         : this()
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        
         Id = id;
         Created = DateTimeOffset.UtcNow;
         BotId = botId;
