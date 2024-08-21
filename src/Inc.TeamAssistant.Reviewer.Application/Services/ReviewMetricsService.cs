@@ -32,7 +32,7 @@ internal sealed class ReviewMetricsService : IHostedService
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Can not load review stats");
+            _logger.LogError(ex, "Can not load review stats");
         }
     }
 
