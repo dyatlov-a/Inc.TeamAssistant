@@ -1,7 +1,7 @@
 @using System.Text
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks
 
-@inherits PersistentComponent<LastTasksWidgetViewModel>
+@inherits PersistentComponent<ReviewHistoryWidgetViewModel>
 
 @inject IReviewService ReviewService
 
@@ -79,13 +79,13 @@ else
         _date ??= ViewModel.DateItems.First().Date;
     }
     
-    protected override async Task<LastTasksWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<ReviewHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
         var dateItems = DateSelectorDataFactory.Create(resources);
         _date ??= dateItems.First().Date;
         var tasks = await ReviewService.GetLast(TeamId, _date.Value);
 
-        return new LastTasksWidgetViewModel(
+        return new ReviewHistoryWidgetViewModel(
             resources[Messages.Dashboard_ReviewDescriptionTitle],
             resources[Messages.Dashboard_ReviewReviewerNameTitle],
             resources[Messages.Dashboard_ReviewOwnerNameTitle],

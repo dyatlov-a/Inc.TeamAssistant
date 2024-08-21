@@ -1,9 +1,8 @@
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
 
-@inherits PersistentComponent<AssessmentHistoryWidgetViewModel>
+@inherits PersistentComponent<AppraiserHistoryWidgetViewModel>
 
 @inject IAppraiserService AppraiserService
-@inject IRenderContext RenderContext
 
 <DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
 
@@ -50,13 +49,13 @@ else
         _date ??= ViewModel.DateItems.First().Date;
     }
     
-    protected override async Task<AssessmentHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<AppraiserHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
     {
         var dateItems = DateSelectorDataFactory.CreateLongPeriod(resources); 
         _date ??= dateItems.First().Date; 
         var getSessionHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, _date.Value);
 
-       return new AssessmentHistoryWidgetViewModel(
+       return new AppraiserHistoryWidgetViewModel(
            resources[Messages.Dashboard_TotalStories],
            resources[Messages.Dashboard_GoToCurrentSessionButtonText],
            resources[Messages.Dashboard_AssessmentSum],

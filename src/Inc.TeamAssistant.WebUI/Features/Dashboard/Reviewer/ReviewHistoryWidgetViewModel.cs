@@ -4,7 +4,7 @@ using Inc.TeamAssistant.WebUI.Features.Dashboard.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 
-public sealed record LastTasksWidgetViewModel(
+public sealed record ReviewHistoryWidgetViewModel(
     string DescriptionTitle,
     string ReviewerNameTitle,
     string OwnerNameTitle,
@@ -16,9 +16,9 @@ public sealed record LastTasksWidgetViewModel(
     IReadOnlyDictionary<string, string> StateLookup,
     IReadOnlyCollection<DateSelectorItem> DateItems,
     IReadOnlyCollection<TaskForReviewDto> Tasks)
-    : IViewModel<LastTasksWidgetViewModel>
+    : IViewModel<ReviewHistoryWidgetViewModel>
 {
-    public static LastTasksWidgetViewModel Empty { get; } = new(
+    public static ReviewHistoryWidgetViewModel Empty { get; } = new(
         string.Empty,
         string.Empty,
         string.Empty,
