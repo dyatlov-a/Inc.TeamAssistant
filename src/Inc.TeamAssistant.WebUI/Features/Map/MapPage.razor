@@ -52,6 +52,7 @@
                     "initialize",
                     _map,
                     getLocations.Result.Locations,
+                    ViewModel.FeatureNamesLookup,
                     ViewModel.ShowRouteText,
                     ViewModel.HideRouteText,
                     ViewModel.DefaultLayerTitle);
@@ -63,7 +64,13 @@
         return Task.FromResult(new MapPageViewModel(
             resources[Messages.CheckIn_DefaultLayerTitle],
             resources[Messages.CheckIn_RouteShow],
-            resources[Messages.CheckIn_RouteHide]));
+            resources[Messages.CheckIn_RouteHide],
+            new Dictionary<string, string>
+            {
+                ["Review"] = resources[Messages.Constructor_FeatureReviewerName],
+                ["RandomCoffee"] = resources[Messages.Constructor_FeatureRandomCoffeeName],
+                ["Estimates"] = resources[Messages.Constructor_FeatureAppraiserName]
+            }));
     }
 
     public override async ValueTask DisposeAsync()

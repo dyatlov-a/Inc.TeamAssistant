@@ -2,6 +2,7 @@ let mapControlName = 'leaflet-base-layers_';
 
 function createMarker(
     location,
+    featureNamesLookup,
     index,
     isActual,
     hasHistory,
@@ -14,7 +15,7 @@ function createMarker(
     popupContent += location.countryName + "<br>";
     popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br>";
     location.stats.forEach(s => {
-        popupContent += s.featureName + " ";
+        popupContent += featureNamesLookup[s.featureName] + " ";
         for (let i = 0; i < s.starCount; i++){
             popupContent += "⭐";
         }
@@ -32,7 +33,7 @@ function createMarker(
     return L.marker([location.latitude, location.longitude], {opacity: isActual ? 1 : 0.5}).bindPopup(popupContent);
 }
 
-function createLayers(data, layerTitle, showRouteText, hideRouteText){
+function createLayers(data, featureNamesLookup, layerTitle, showRouteText, hideRouteText){
     let layers = {};
     let markers = [];
     let index = 0;
@@ -41,6 +42,7 @@ function createLayers(data, layerTitle, showRouteText, hideRouteText){
         index++;
         markers[markers.length] = createMarker(
             value[0],
+            featureNamesLookup,
             index,
             true,
             value.length > 1,
@@ -51,7 +53,7 @@ function createLayers(data, layerTitle, showRouteText, hideRouteText){
     return layers;
 }
 
-function createRoutes(data, showRouteText, hideRouteText) {
+function createRoutes(data, featureNamesLookup, showRouteText, hideRouteText) {
     let routes = {};
     
     for (let [key, values] of Object.entries(data)) {
@@ -63,6 +65,7 @@ function createRoutes(data, showRouteText, hideRouteText) {
         values.forEach(v => {
             markers[markers.length] = createMarker(
                 v,
+                featureNamesLookup,
                 0,
                 isActual,
                 hasHistory,
@@ -87,14 +90,14 @@ function createRoutes(data, showRouteText, hideRouteText) {
     return routes;
 }
 
-export function initialize(hostElement, data, showRouteText, hideRouteText, layerTitle) {
+export function initialize(hostElement, data, featureNamesLookup, showRouteText, hideRouteText, layerTitle) {
     let osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
         minZoom: 2,
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
-    let layers = createLayers(data, layerTitle, showRouteText, hideRouteText);
-    let routes = createRoutes(data, showRouteText, hideRouteText);
+    let layers = createLayers(data, featureNamesLookup, layerTitle, showRouteText, hideRouteText);
+    let routes = createRoutes(data, featureNamesLookup, showRouteText, hideRouteText);
     let defaultLayers = [osm];
     
     Object.keys(layers).forEach(function (key) {
