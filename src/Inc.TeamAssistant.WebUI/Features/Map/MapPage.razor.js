@@ -13,7 +13,7 @@ function createMarker(
     popupContent += "<div class=\"map-popup__content\">";
     popupContent += "<b>" + location.personDisplayName + "</b><br>";
     popupContent += location.countryName + "<br>";
-    popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br>";
+    popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br><br>";
     location.stats.forEach(s => {
         popupContent += featureNamesLookup[s.featureName] + " ";
         for (let i = 0; i < s.starCount; i++){
@@ -23,7 +23,7 @@ function createMarker(
     });
     
     if (hasHistory) {
-        popupContent += "<button type='button' onclick='locations.markerClickHandler("
+        popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
             + index + ")' class='marker-btn'>" + (index === 0 ? hideRouteText : showRouteText)
             + "</button>";
     }

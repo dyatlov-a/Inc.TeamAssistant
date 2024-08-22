@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
+using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.CheckIn.DataAccess;
@@ -10,7 +11,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ILocationsRepository, LocationsRepository>();
+            .AddSingleton<ILocationsRepository, LocationsRepository>()
+            .AddSingleton<IPersonStatsProvider, CheckInStatsProvider>();
 
         return services;
     }
