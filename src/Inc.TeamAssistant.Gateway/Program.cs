@@ -8,7 +8,7 @@ using Inc.TeamAssistant.WebUI.Services;
 using Inc.TeamAssistant.CheckIn.Application;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.DataAccess;
-using Inc.TeamAssistant.CheckIn.GeoCountry;
+using Inc.TeamAssistant.CheckIn.Geo;
 using Inc.TeamAssistant.Connector.Application;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.DataAccess;
@@ -137,7 +137,7 @@ builder.Services
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(checkInOptions)
 	.AddCheckInDataAccess()
-	.AddCheckInGeoCountry()
+	.AddCheckInGeoCountry(builder.Environment.WebRootPath)
 	.AddReviewerApplication(reviewerOptions)
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication(randomCoffeeOptions)

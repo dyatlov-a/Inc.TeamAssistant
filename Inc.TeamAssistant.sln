@@ -98,7 +98,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Construct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.ApplicationTests", "tests\Inc.TeamAssistant.Reviewer.ApplicationTests\Inc.TeamAssistant.Reviewer.ApplicationTests.csproj", "{504EF63F-2C47-44FC-BB22-F199C7DF7251}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.GeoCountry", "src\Inc.TeamAssistant.CheckIn.GeoCountry\Inc.TeamAssistant.CheckIn.GeoCountry.csproj", "{41B5195D-3C81-4501-9278-57FA95F973FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.Geo", "src\Inc.TeamAssistant.CheckIn.Geo\Inc.TeamAssistant.CheckIn.Geo.csproj", "{41B5195D-3C81-4501-9278-57FA95F973FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

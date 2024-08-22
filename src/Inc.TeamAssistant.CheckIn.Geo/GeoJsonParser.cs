@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Inc.TeamAssistant.CheckIn.GeoCountry;
+namespace Inc.TeamAssistant.CheckIn.Geo;
 
 internal sealed class GeoJsonParser
 {

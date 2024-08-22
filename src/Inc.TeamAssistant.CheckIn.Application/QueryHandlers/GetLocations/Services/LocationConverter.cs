@@ -1,4 +1,3 @@
-using GeoTimeZone;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
@@ -9,15 +8,25 @@ namespace Inc.TeamAssistant.CheckIn.Application.QueryHandlers.GetLocations.Servi
 internal sealed class LocationConverter
 {
     private readonly ILogger<GetLocationsQueryHandler> _logger;
-    private readonly IReverseLookup _reverseLookup;
+    private readonly IGeoService _geoService;
 
-    public LocationConverter(ILogger<GetLocationsQueryHandler> logger, IReverseLookup reverseLookup)
+    public LocationConverter(ILogger<GetLocationsQueryHandler> logger, IGeoService geoService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _reverseLookup = reverseLookup ?? throw new ArgumentNullException(nameof(reverseLookup));
+        _geoService = geoService ?? throw new ArgumentNullException(nameof(geoService));
+    }
+
+    public IReadOnlyCollection<LocationDto> Convert(IEnumerable<LocationOnMap> locations)
+    {
+        ArgumentNullException.ThrowIfNull(locations);
+
+        return locations
+            .OrderByDescending(i => i.Created)
+            .Select(Convert)
+            .ToArray();
     }
     
-    public LocationDto Convert(LocationOnMap location)
+    private LocationDto Convert(LocationOnMap location)
     {
         ArgumentNullException.ThrowIfNull(location);
         
@@ -25,17 +34,15 @@ internal sealed class LocationConverter
 
         try
         {
-            var timeZoneId = TimeZoneLookup.GetTimeZone(location.Latitude, location.Longitude);
-            var country = _reverseLookup.Lookup((float)location.Latitude, (float)location.Longitude);
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId.Result);
+            var country = _geoService.FindCountry(location.Latitude, location.Longitude);
+            var timeZone = _geoService.GetTimeZone(location.Latitude, location.Longitude);
             
             return new(
                 location.UserId,
                 location.DisplayName,
                 location.Longitude,
                 location.Latitude,
-                timeZone.BaseUtcOffset,
-                $"{(timeZone.BaseUtcOffset < TimeSpan.Zero ? "-" : "+")}{timeZone.BaseUtcOffset:hh\\:mm}",
+                $"UTC {(timeZone.BaseUtcOffset < TimeSpan.Zero ? "-" : "+")}{timeZone.BaseUtcOffset:hh\\:mm}",
                 country?.Name ?? unknown);
         }
         catch (Exception ex)
@@ -51,8 +58,7 @@ internal sealed class LocationConverter
                 location.DisplayName,
                 location.Longitude,
                 location.Latitude,
-                UtcOffset: null,
-                DisplayOffset: unknown,
+                DisplayTimeOffset: unknown,
                 CountryName: unknown);
         }
     }

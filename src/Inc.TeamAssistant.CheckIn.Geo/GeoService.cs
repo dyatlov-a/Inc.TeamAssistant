@@ -1,40 +1,22 @@
+using GeoTimeZone;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 
-namespace Inc.TeamAssistant.CheckIn.GeoCountry;
+namespace Inc.TeamAssistant.CheckIn.Geo;
 
-internal sealed class ReverseLookup : IReverseLookup
+internal sealed class GeoService : IGeoService
 {
     private readonly GeoJsonParser _geoJsonParser;
     private readonly Region[] _regions;
 
-    public ReverseLookup(FileLoader fileLoader, GeoJsonParser geoJsonParser)
+    public GeoService(RegionLoader regionLoader, GeoJsonParser geoJsonParser)
     {
         _geoJsonParser = geoJsonParser;
-        _regions = ParseInput(fileLoader.LoadFile()).ToArray();
-    }
-
-    private bool InPolygon(float[] point, float[][] polygon)
-    {
-        var nvert = polygon.Length;
-        var c = false;
-        var i = 0;
-        var j = 0;
-        for (i = 0, j = nvert - 1; i < nvert; j = i++)
-        {
-            if (polygon[i][1] > point[1] != (polygon[j][1] > point[1]) &&
-                point[0] < (polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1]) /
-                (polygon[j][1] - polygon[i][1]) + polygon[i][0])
-            {
-                c = !c;
-            }
-        }
-
-        return c;
+        _regions = ParseInput(regionLoader.LoadFile()).ToArray();
     }
     
-    public Region? Lookup(float lat, float lng, params RegionType[] types)
+    public Region? FindCountry(double lat, double lng, params RegionType[] types)
     {
-        var coords = new[] { lng, lat };
+        var coords = new[] { (float)lng, (float)lat };
         var subset = types.Any()
             ? _regions.Where(x => types.Any(y => y == x.Type))
             : _regions;
@@ -48,6 +30,31 @@ internal sealed class ReverseLookup : IReverseLookup
         }
 
         return null;
+    }
+
+    public TimeZoneInfo GetTimeZone(double lat, double lng)
+    {
+        var timeZoneId = TimeZoneLookup.GetTimeZone(lat, lng);
+        return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId.Result);
+    }
+    
+    private bool InPolygon(float[] point, float[][] polygon)
+    {
+        var polygonLength = polygon.Length;
+        var c = false;
+        var i = 0;
+        var j = 0;
+        for (i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
+        {
+            if (polygon[i][1] > point[1] != (polygon[j][1] > point[1]) &&
+                point[0] < (polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1]) /
+                (polygon[j][1] - polygon[i][1]) + polygon[i][0])
+            {
+                c = !c;
+            }
+        }
+
+        return c;
     }
 
     private IEnumerable<Region> ParseInput(IEnumerable<string> geojson)

@@ -21,13 +21,10 @@ internal sealed class GetLocationsQueryHandler : IRequestHandler<GetLocationsQue
         ArgumentNullException.ThrowIfNull(query);
 
         var locations = await _locationsRepository.GetLocations(query.MapId, token);
-        var results = locations
+        var locationsByUser = locations
             .GroupBy(l => l.DisplayName)
-            .ToDictionary(l => l.Key, l => (IReadOnlyCollection<LocationDto>)l
-                .OrderByDescending(i => i.Created)
-                .Select(_locationConverter.Convert)
-                .ToArray());
+            .ToDictionary(l => l.Key, l => _locationConverter.Convert(l));
 
-        return new(results);
+        return new(locationsByUser);
     }
 }
