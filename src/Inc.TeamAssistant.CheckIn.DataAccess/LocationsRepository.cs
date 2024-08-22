@@ -58,22 +58,30 @@ internal sealed class LocationsRepository : ILocationsRepository
     {
         var command = new CommandDefinition(@"
             SELECT
-                id AS id,
-                map_id AS mapid,
-                user_id AS userid,
-                display_name AS displayname,
-                longitude AS longitude,
-                latitude AS latitude,
-                created AS created
-            FROM maps.locations
-            WHERE map_id = @map_id;",
+                l.id AS id,
+                l.map_id AS mapid,
+                l.user_id AS userid,
+                l.display_name AS displayname,
+                l.longitude AS longitude,
+                l.latitude AS latitude,
+                l.created AS created,
+                m.id AS id,
+                m.chat_id AS chatid,
+                m.bot_id AS botid,
+                m.name AS name
+            FROM maps.locations AS l
+            JOIN maps.maps AS m ON m.id = l.map_id
+            WHERE l.map_id = @map_id;",
             new { map_id = mapId },
-            flags: CommandFlags.None,
+            flags: CommandFlags.Buffered,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<LocationOnMap>(command);
+        var results = await connection.QueryAsync<LocationOnMap, Map, LocationOnMap>(
+            command,
+            (l, m) => l.SetMap(m),
+            splitOn: "id");
 
         return results.ToArray();
     }

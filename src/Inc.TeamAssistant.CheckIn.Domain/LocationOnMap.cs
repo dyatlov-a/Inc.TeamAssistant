@@ -8,8 +8,6 @@ public sealed class LocationOnMap
     public double Longitude { get; private set; }
     public double Latitude { get; private set; }
     public DateTimeOffset Created { get; private set; }
-
-    public Guid MapId { get; private set; }
     public Map Map { get; private set; } = default!;
 
     private LocationOnMap()
@@ -29,6 +27,12 @@ public sealed class LocationOnMap
         Latitude = latitude;
         Created = DateTimeOffset.UtcNow;
         Map = map ?? throw new ArgumentNullException(nameof(map));
-        MapId = map.Id;
+    }
+    
+    internal LocationOnMap SetMap(Map map)
+    {
+        Map = map ?? throw new ArgumentNullException(nameof(map));
+
+        return this;
     }
 }

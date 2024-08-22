@@ -1,21 +1,16 @@
 let mapControlName = 'leaflet-base-layers_';
 
 function createMarker(
-    personId,
-    displayName,
-    longitude,
-    latitude,
-    displayTimeOffset,
-    countryName,
+    location,
     index,
     isActual,
     hasHistory,
     showRouteText,
     hideRouteText){
     let popupContent = "<p><div class=\"map-popup\">";
-    popupContent += "<img src=\"/photos/" + personId + "\" alt=\"" + displayName + "\" class=\"map-popup__user-avatar\" />";
+    popupContent += "<img src=\"/photos/" + location.personId + "\" alt=\"" + location.personDisplayName + "\" class=\"map-popup__user-avatar\" />";
     popupContent += "<div class=\"map-popup__content\">";
-    popupContent += "<b>" + displayName + "</b><br>" + countryName + "<br>" + displayTimeOffset;
+    popupContent += "<b>" + location.personDisplayName + "</b><br>" + location.countryName + "<br>" + location.workSchedule + " " + location.displayTimeOffset;
 
     if (hasHistory) {
         popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
@@ -25,7 +20,7 @@ function createMarker(
 
     popupContent += "</div></div></p>";
 
-    return L.marker([latitude, longitude], {opacity: isActual ? 1 : 0.5}).bindPopup(popupContent);
+    return L.marker([location.latitude, location.longitude], {opacity: isActual ? 1 : 0.5}).bindPopup(popupContent);
 }
 
 function createLayers(data, layerTitle, showRouteText, hideRouteText){
@@ -36,12 +31,7 @@ function createLayers(data, layerTitle, showRouteText, hideRouteText){
     for (let [key, value] of Object.entries(data)) {
         index++;
         markers[markers.length] = createMarker(
-            value[0].personId,
-            value[0].displayName,
-            value[0].longitude,
-            value[0].latitude,
-            value[0].displayTimeOffset,
-            value[0].countryName,
+            value[0],
             index,
             true,
             value.length > 1,
@@ -63,12 +53,7 @@ function createRoutes(data, showRouteText, hideRouteText) {
 
         values.forEach(v => {
             markers[markers.length] = createMarker(
-                v.personId,
-                v.displayName,
-                v.longitude,
-                v.latitude,
-                v.displayTimeOffset,
-                v.countryName,
+                v,
                 0,
                 isActual,
                 hasHistory,

@@ -7,5 +7,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Domain\Inc.TeamAssistant.CheckIn.Domain.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
     </ItemGroup>
 </Project>
