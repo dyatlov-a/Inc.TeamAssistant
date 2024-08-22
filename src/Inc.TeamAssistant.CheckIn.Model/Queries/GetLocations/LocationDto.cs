@@ -7,4 +7,5 @@ public sealed record LocationDto(
     double Latitude,
     string DisplayTimeOffset,
     string CountryName,
-    string WorkSchedule);
+    string WorkSchedule,
+    IReadOnlyCollection<PersonStats> Stats);

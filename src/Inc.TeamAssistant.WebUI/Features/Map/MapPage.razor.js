@@ -10,10 +10,19 @@ function createMarker(
     let popupContent = "<p><div class=\"map-popup\">";
     popupContent += "<img src=\"/photos/" + location.personId + "\" alt=\"" + location.personDisplayName + "\" class=\"map-popup__user-avatar\" />";
     popupContent += "<div class=\"map-popup__content\">";
-    popupContent += "<b>" + location.personDisplayName + "</b><br>" + location.countryName + "<br>" + location.workSchedule + " " + location.displayTimeOffset;
-
+    popupContent += "<b>" + location.personDisplayName + "</b><br>";
+    popupContent += location.countryName + "<br>";
+    popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br>";
+    location.stats.forEach(s => {
+        popupContent += s.featureName + " ";
+        for (let i = 0; i < s.starCount; i++){
+            popupContent += "⭐";
+        }
+        popupContent += "<br>";
+    });
+    
     if (hasHistory) {
-        popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
+        popupContent += "<button type='button' onclick='locations.markerClickHandler("
             + index + ")' class='marker-btn'>" + (index === 0 ? hideRouteText : showRouteText)
             + "</button>";
     }

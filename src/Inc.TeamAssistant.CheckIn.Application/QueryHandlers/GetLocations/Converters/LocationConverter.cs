@@ -17,22 +17,38 @@ internal sealed class LocationConverter
         _geoService = geoService ?? throw new ArgumentNullException(nameof(geoService));
     }
 
-    public IReadOnlyCollection<LocationDto> Convert(IEnumerable<LocationOnMap> locations, Calendar? calendar)
+    public IReadOnlyCollection<LocationDto> Convert(
+        IEnumerable<LocationOnMap> locations,
+        IReadOnlyDictionary<string, IReadOnlyDictionary<long, int>> personStatsLookup,
+        Calendar? calendar)
     {
         ArgumentNullException.ThrowIfNull(locations);
+        ArgumentNullException.ThrowIfNull(personStatsLookup);
+        
+        var maxStatsLookup = personStatsLookup.ToDictionary(i => i.Key, i => i.Value.Values.Max());
 
         return locations
             .OrderByDescending(i => i.Created)
-            .Select(i => Convert(i, calendar))
+            .Select(i => Convert(i, personStatsLookup, maxStatsLookup, calendar))
             .ToArray();
     }
     
-    private LocationDto Convert(LocationOnMap location, Calendar? calendar)
+    private LocationDto Convert(
+        LocationOnMap location,
+        IReadOnlyDictionary<string, IReadOnlyDictionary<long, int>> personStatsLookup,
+        IReadOnlyDictionary<string, int> maxStatsLookup,
+        Calendar? calendar)
     {
         ArgumentNullException.ThrowIfNull(location);
+        ArgumentNullException.ThrowIfNull(personStatsLookup);
+        ArgumentNullException.ThrowIfNull(maxStatsLookup);
         
         const string unknown = "?";
         const string defaultTimeZone = "UTC";
+        
+        var stats = personStatsLookup.Keys
+            .Select(k => new PersonStats(k, Calculate(location.UserId, maxStatsLookup[k], personStatsLookup[k])))
+            .ToArray();
 
         try
         {
@@ -49,7 +65,8 @@ internal sealed class LocationConverter
                 location.Latitude,
                 $"{(timeZone.BaseUtcOffset < TimeSpan.Zero ? "-" : "+")}{timeZone.BaseUtcOffset:hh\\:mm}",
                 country?.Name ?? unknown,
-                workSchedule);
+                workSchedule,
+                stats);
 
             string ToLocalTime(TimeOnly value) => value.Add(timeZone.BaseUtcOffset).ToString("HH:mm");
         }
@@ -68,7 +85,20 @@ internal sealed class LocationConverter
                 location.Latitude,
                 DisplayTimeOffset: unknown,
                 CountryName: unknown,
-                WorkSchedule: unknown);
+                WorkSchedule: unknown,
+                stats);
         }
+    }
+
+    private static int Calculate(long personId, int maxValue, IReadOnlyDictionary<long, int> personStats)
+    {
+        ArgumentNullException.ThrowIfNull(personStats);
+
+        const decimal weight = .2m;
+
+        var value = (decimal)personStats.GetValueOrDefault(personId, 0);
+        var result = value / maxValue / weight;
+
+        return (int)result;
     }
 }
