@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITaskForReviewRepository, TaskForReviewRepository>()
             .AddSingleton<ITaskForReviewReader, TaskForReviewReader>()
             .AddSingleton<IReviewAnalyticsReader, ReviewAnalyticsReader>()
-            .AddSingleton<IDraftTaskForReviewRepository, DraftTaskForReviewRepository>();
+            .AddSingleton<IDraftTaskForReviewRepository, DraftTaskForReviewRepository>()
+            
+            .AddSingleton<IPersonStatsProvider, ReviewStatsProvider>();
 
         return services;
     }
