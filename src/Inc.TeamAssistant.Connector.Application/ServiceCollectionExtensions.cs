@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProperty.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
@@ -9,6 +8,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Handlers;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,43 +39,22 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ContextCommandConverter>()
             .AddSingleton<IBotConnector, BotConnector>()
             .AddSingleton<IBotListeners, BotListeners>()
-            
+
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<PersonPhotosService>(sp, authBotId))
             .AddSingleton<IPersonPhotosService>(sp => ActivatorUtilities.CreateInstance<PersonPhotosServiceCache>(
                 sp,
                 sp.GetRequiredService<PersonPhotosService>(),
                 userAvatarCacheDurationInSeconds))
-            
+
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
-            
+
+            .AddSingleton<IChangeTeamPropertyCommandFactory, ChangeTeamPropertyCommandFactory>()
             .AddSingleton<ICommandCreator, CreateTeamCommandCreator>()
             .AddSingleton<ICommandCreator, EndCommandCreator>()
             .AddSingleton<ICommandCreator, HelpCommandCreator>()
             .AddSingleton<ICommandCreator, JoinToTeamCommandCreator>()
             .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>()
-            .AddSingleton<ICommandCreator, RemoveTeamCommandCreator>()
-            
-            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
-                sp,
-                CommandList.MoveToSp,
-                "storyType",
-                "Scrum"))
-            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
-                sp,
-                CommandList.MoveToTShirts,
-                "storyType",
-                "Kanban"))
-            
-            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
-                sp,
-                CommandList.ChangeToRoundRobin,
-                "nextReviewerStrategy",
-                "RoundRobin"))
-            .AddSingleton<ICommandCreator>(sp => ActivatorUtilities.CreateInstance<ChangeTeamPropertyCommandCreator>(
-                sp,
-                CommandList.ChangeToRandom,
-                "nextReviewerStrategy",
-                "Random"));
+            .AddSingleton<ICommandCreator, RemoveTeamCommandCreator>();
         
         return services;
     }

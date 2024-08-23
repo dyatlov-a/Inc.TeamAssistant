@@ -6,10 +6,6 @@ public sealed class AppraiserIntegrationFromModelValidator : AbstractValidator<A
 {
     public AppraiserIntegrationFromModelValidator()
     {
-        RuleFor(e => e.AccessToken)
-            .NotEmpty()
-            .MaximumLength(50);
-
         RuleFor(e => e.ProjectKey)
             .NotEmpty()
             .MaximumLength(50);

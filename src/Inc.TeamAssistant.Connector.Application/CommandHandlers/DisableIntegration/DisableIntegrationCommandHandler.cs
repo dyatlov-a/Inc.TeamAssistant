@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -36,7 +37,7 @@ internal sealed class DisableIntegrationCommandHandler : IRequestHandler<Disable
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
         
-        team.RemoveProperty("accessToken", "projectKey", "scrumMaster");
+        team.RemoveProperty(Team.PropertyKey.AccessToken, Team.PropertyKey.ProjectKey, Team.PropertyKey.ScrumMaster);
 
         await _teamRepository.Upsert(team, token);
     }

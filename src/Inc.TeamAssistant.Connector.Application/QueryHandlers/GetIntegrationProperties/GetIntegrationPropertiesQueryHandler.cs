@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -36,7 +37,8 @@ internal sealed class GetIntegrationPropertiesQueryHandler
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
         var hasManagerAccess = await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token);
-        var scrumMasterId = team.Properties.TryGetValue("scrumMaster", out var scrumMaster) && long.TryParse(scrumMaster, out var value)
+        var scrumMaster = team.GetPropertyValueOrDefault(Team.PropertyKey.ScrumMaster, string.Empty);
+        var scrumMasterId = long.TryParse(scrumMaster, out var value)
             ? value
             : (long?)null;
         var teammates = team.Teammates
@@ -46,8 +48,8 @@ internal sealed class GetIntegrationPropertiesQueryHandler
             .ToArray();
         var integrationProperties = scrumMasterId is not null
             ? new IntegrationProperties(
-                team.Properties.GetValueOrDefault("accessToken", string.Empty),
-                team.Properties.GetValueOrDefault("projectKey", string.Empty),
+                team.GetPropertyValueOrDefault(Team.PropertyKey.AccessToken, string.Empty),
+                team.GetPropertyValueOrDefault(Team.PropertyKey.ProjectKey, string.Empty),
                 scrumMasterId.Value)
             : null;
         

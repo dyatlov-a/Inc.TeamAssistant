@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -25,7 +26,7 @@ internal sealed class ChangeTeamPropertyCommandHandler : IRequestHandler<ChangeT
         if (team is null)
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
-        team.ChangeProperty(command.Name, command.Value);
+        team.ChangeProperty(new Team.PropertyKey(command.Name), command.Value);
         await _teamRepository.Upsert(team, token);
         
         var message = await _messageBuilder.Build(

@@ -44,7 +44,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         return new AddStoryCommand(
             messageContext,
             teamContext.TeamId,
-            teamContext.Properties.GetValueOrDefault("storyType", StoryType.Scrum.ToString()),
+            teamContext.Properties.GetValueOrDefault(TeamProperties.StoryTypeKey, TeamProperties.StoryTypeDefault),
             string.Join(separator, text),
             links,
             teammates);

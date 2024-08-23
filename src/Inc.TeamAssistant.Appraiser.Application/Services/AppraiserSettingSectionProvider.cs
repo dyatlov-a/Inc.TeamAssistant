@@ -23,7 +23,7 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
                 new SettingItem[]
                 {
                     new(
-                        "storyType",
+                        TeamProperties.StoryTypeKey,
                         "Constructor_FormSectionSetSettingsStoryTypeFieldLabel",
                         GetValuesForStoryType().ToArray())
                 })

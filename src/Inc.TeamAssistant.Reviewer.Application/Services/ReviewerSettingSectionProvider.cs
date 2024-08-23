@@ -23,7 +23,7 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
                 new SettingItem[]
                 {
                     new(
-                        "nextReviewerStrategy",
+                        TeamProperties.NextReviewerTypeKey,
                         "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel",
                         GetValuesForNextReviewerType().ToArray())
                 })
