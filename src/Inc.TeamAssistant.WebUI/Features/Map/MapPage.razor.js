@@ -10,14 +10,16 @@ function createMarker(
     hideRouteText){
     let popupContent = "<p><div class=\"map-popup\">";
     popupContent += "<img src=\"/photos/" + location.personId + "\" alt=\"" + location.personDisplayName + "\" class=\"map-popup__user-avatar\" />";
-    popupContent += "<div class=\"map-popup__content\">";
     popupContent += "<b>" + location.personDisplayName + "</b><br>";
     popupContent += location.countryName + "<br>";
     popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br><br>";
     location.stats.forEach(s => {
         popupContent += featureNamesLookup[s.featureName] + " ";
-        for (let i = 0; i < s.starCount; i++){
-            popupContent += "⭐";
+        for (let i = 0; i < 5; i++){
+            if (i < s.starCount)
+                popupContent += "<i class=\"icon-star icon-star_checked\"></i>";
+            else
+                popupContent += "<i class=\"icon-star\"></i>";
         }
         popupContent += "<br>";
     });
@@ -28,7 +30,7 @@ function createMarker(
             + "</button>";
     }
 
-    popupContent += "</div></div></p>";
+    popupContent += "</div></p>";
 
     return L.marker([location.latitude, location.longitude], {opacity: isActual ? 1 : 0.5}).bindPopup(popupContent);
 }

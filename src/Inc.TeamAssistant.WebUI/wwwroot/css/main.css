@@ -157,15 +157,13 @@ html {
 }
 .map-popup {
     overflow: hidden;
+    width: 240px;
 }
 .map-popup__user-avatar {
     width: 50px;
     border-radius: 50%;
     float: left;
-}
-.map-popup__content {
-    margin-left: 60px;
-    width: 170px;
+    margin: 0 10px 10px 0;
 }
 /* FORMS */
 .form-control {
@@ -223,7 +221,7 @@ html {
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: #555;
 }
-/* animations */
+/* ANIMATIONS */
 .hidden {
     visibility: hidden;
 }
@@ -242,4 +240,16 @@ html {
 @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+/* ICONS */
+.icon-star {
+    width: 14px;
+    aspect-ratio: 1;
+    background: #000;
+    display: inline-block;
+    vertical-align: middle;
+    clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
+}
+.icon-star_checked {
+    background: #F8CA00;
 }
