@@ -175,6 +175,9 @@ html {
     color: #000;
     background-color: #dfdfdf;
 }
+.form-control:disabled {
+    background-color: #9d9d9d;
+}
 .form-control_textarea {
     resize: none;
     height: 102px;
