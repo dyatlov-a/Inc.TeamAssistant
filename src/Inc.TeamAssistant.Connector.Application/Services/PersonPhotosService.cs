@@ -9,29 +9,32 @@ internal sealed class PersonPhotosService : IPersonPhotosService
     private readonly IPersonRepository _personRepository;
     private readonly TelegramBotClientProvider _telegramBotClientProvider;
     private readonly ILogger<PersonPhotosService> _logger;
-    private readonly Guid _authBotId;
 
     public PersonPhotosService(
         TelegramBotClientProvider telegramBotClientProvider,
         ILogger<PersonPhotosService> logger,
-        IPersonRepository personRepository,
-        Guid authBotId)
+        IPersonRepository personRepository)
     {
         _telegramBotClientProvider =
             telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
-        _authBotId = authBotId;
     }
 
     public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
     {
         try
         {
-            var botIdByPerson = await _personRepository.FindBotId(personId, token);
-            var botId = botIdByPerson ?? _authBotId;
-            var telegramBotClient = await _telegramBotClientProvider.Get(botId, token);
-            var userProfilePhotos = await telegramBotClient.GetUserProfilePhotosAsync(personId, 0, 1, token);
+            var botId = await _personRepository.FindBotId(personId, token);
+            if (!botId.HasValue)
+                return null;
+            
+            var telegramBotClient = await _telegramBotClientProvider.Get(botId.Value, token);
+            var userProfilePhotos = await telegramBotClient.GetUserProfilePhotosAsync(
+                personId,
+                offset: 0,
+                limit: 1,
+                token);
             var userProfilePhoto = userProfilePhotos.Photos.FirstOrDefault()?.MinBy(p => p.Width * p.Height);
             if (userProfilePhoto is null)
                 return null;
