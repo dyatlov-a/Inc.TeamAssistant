@@ -186,11 +186,11 @@ html {
     display: inline-block;
     padding: 3px 10px;
     margin-right: 5px;
-    cursor: pointer;
 }
-.multiselect__item_selected {
+.multiselect__item_selected, .multiselect__item:hover {
     background-color: #555;
     color: #dfdfdf;
+    cursor: pointer;
 }
 /* ROOT COMPONENTS */
 .title {
