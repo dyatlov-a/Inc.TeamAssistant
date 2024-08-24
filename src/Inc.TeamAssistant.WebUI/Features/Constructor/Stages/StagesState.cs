@@ -61,7 +61,7 @@ public sealed class StagesState
         null,
         new CalendarState(
             WorkAllDay: false,
-            new WorkScheduleUtcDto(TimeOnly.MinValue, TimeOnly.MinValue),
+            new WorkScheduleUtcDto(TimeOnly.MinValue, TimeOnly.MaxValue),
             Array.Empty<DayOfWeek>(),
             new Dictionary<DateOnly, string>()));
 

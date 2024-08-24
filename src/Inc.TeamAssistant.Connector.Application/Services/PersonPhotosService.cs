@@ -46,9 +46,9 @@ internal sealed class PersonPhotosService : IPersonPhotosService
             
             return stream.ToArray();
         }
-        catch(Exception e)
+        catch(Exception ex)
         {
-            _logger.LogError(e, "Error on sync photo for person {personId}", personId);
+            _logger.LogWarning(ex, "Error on sync photo for person {personId}", personId);
         }
 
         return null;

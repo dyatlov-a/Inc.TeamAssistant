@@ -11,4 +11,6 @@ internal static class CommandList
     public const string ReassignReview = "/reassign?storyId=";
     public const string RemoveDraft = "/remove_draft?draftId=";
     public const string EditDraft = "/edit_draft?description=";
+    public const string ChangeToRoundRobin = "/change_to_round_robin";
+    public const string ChangeToRandom = "/change_to_random";
 }

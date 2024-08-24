@@ -129,16 +129,6 @@ html {
 .link_dark {
     color: #000;
 }
-.multiselect__item {
-    display: inline-block;
-    padding: 3px 10px;
-    margin-right: 5px;
-    cursor: pointer;
-}
-.multiselect__item_selected {
-    background-color: #555;
-    color: #dfdfdf;
-}
 /* MAP */
 .marker-btn {
     background-color: #fff;
@@ -157,15 +147,13 @@ html {
 }
 .map-popup {
     overflow: hidden;
+    width: 240px;
 }
 .map-popup__user-avatar {
     width: 50px;
     border-radius: 50%;
     float: left;
-}
-.map-popup__content {
-    margin-left: 60px;
-    width: 140px;
+    margin: 0 10px 10px 0;
 }
 /* FORMS */
 .form-control {
@@ -176,6 +164,9 @@ html {
     border-radius: 0;
     color: #000;
     background-color: #dfdfdf;
+}
+.form-control:disabled, .form-control.disabled {
+    background-color: #AAA;
 }
 .form-control_textarea {
     resize: none;
@@ -190,6 +181,16 @@ html {
 .validation-message {
     font-size: 1rem;
     color: #dc3545;
+}
+.multiselect__item {
+    display: inline-block;
+    padding: 3px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.multiselect__item_selected {
+    background-color: #555;
+    color: #dfdfdf;
 }
 /* ROOT COMPONENTS */
 .title {
@@ -223,7 +224,7 @@ html {
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: #555;
 }
-/* animations */
+/* ANIMATIONS */
 .hidden {
     visibility: hidden;
 }
@@ -242,4 +243,16 @@ html {
 @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+/* ICONS */
+.icon-star {
+    width: 14px;
+    aspect-ratio: 1;
+    background: #000;
+    display: inline-block;
+    vertical-align: middle;
+    clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
+}
+.icon-star_checked {
+    background: #F8CA00;
 }

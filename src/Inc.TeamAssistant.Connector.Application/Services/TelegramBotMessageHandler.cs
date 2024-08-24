@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -38,6 +39,8 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         ArgumentNullException.ThrowIfNull(botClient);
         ArgumentNullException.ThrowIfNull(update);
 
+        using var logScope = _logger.BeginScope("Bot {BotId} User {User}", _botId, update.GetUserName());
+        
         try
         {
             var bot = await _botReader.Find(_botId, DateTimeOffset.UtcNow, token);
@@ -54,7 +57,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Bot {BotId} unhandled exception on handle message", _botId);
+            _logger.LogCritical(ex, "Unhandled exception on handle message");
         }
     }
 
@@ -62,7 +65,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
     {
         ArgumentNullException.ThrowIfNull(botClient);
         
-        _logger.LogError(exception, "Bot {BotId} listened message with error", _botId);
+        _logger.LogWarning(exception, "Bot {BotId} listened message with error", _botId);
 
         return Task.CompletedTask;
     }

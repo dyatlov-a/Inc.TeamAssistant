@@ -9,7 +9,6 @@ internal static class TelegramBotClientExtensions
 {
     public static async Task TryPinChatMessage(
         this ITelegramBotClient client,
-        Guid botId,
         ChatMessage message,
         ILogger logger,
         CancellationToken token)
@@ -23,13 +22,12 @@ internal static class TelegramBotClientExtensions
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Bot {BotId} has not rights for pin message {Message}", botId, message);
+            logger.LogWarning(ex, "Bot has not rights for pin message {Message}", message);
         }
     }
 
     public static async Task TryDeleteMessage(
         this ITelegramBotClient client,
-        Guid botId,
         ChatMessage message,
         ILogger logger,
         CancellationToken token)
@@ -43,13 +41,12 @@ internal static class TelegramBotClientExtensions
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Bot {BotId} has not rights for delete message {Message}", botId, message);
+            logger.LogWarning(ex, "Bot has not rights for delete message {Message}", message);
         }
     }
     
     public static async Task TryDeleteMessages(
         this ITelegramBotClient client,
-        Guid botId,
         IReadOnlyCollection<ChatMessage> messages,
         ILogger logger,
         CancellationToken token)
@@ -65,13 +62,12 @@ internal static class TelegramBotClientExtensions
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Bot {BotId} has not rights for delete messages", botId);
+            logger.LogError(ex, "Bot has not rights for delete messages");
         }
     }
     
     public static async Task TrySend(
         this ITelegramBotClient client,
-        Guid botId,
         DialogState? dialog,
         ChatMessage chatMessage,
         string text,
@@ -97,7 +93,7 @@ internal static class TelegramBotClientExtensions
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Bot {BotId} can not send message to chat {TargetChatId}", botId, chatMessage.ChatId);
+            logger.LogError(ex, "Bot can not send message to chat {TargetChatId}", chatMessage.ChatId);
         }
     }
 }

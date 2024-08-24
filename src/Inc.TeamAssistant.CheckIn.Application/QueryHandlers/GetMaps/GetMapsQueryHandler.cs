@@ -20,7 +20,7 @@ internal sealed class GetMapsQueryHandler : IRequestHandler<GetMapsQuery, GetMap
         var maps = await _locationsRepository.GetByBot(query.BotId, token);
 
         var results = maps
-            .Select(m => new MapDto(m.Id, m.Name ?? m.Id.ToString()))
+            .Select(m => new MapDto(m.Id, m.Name))
             .ToArray();
 
         return new GetMapsResult(results);

@@ -10,10 +10,6 @@ internal sealed class SetIntegrationPropertiesCommandValidator : AbstractValidat
         RuleFor(e => e.TeamId)
             .NotEmpty();
 
-        RuleFor(e => e.AccessToken)
-            .NotEmpty()
-            .MaximumLength(50);
-
         RuleFor(e => e.ProjectKey)
             .NotEmpty()
             .MaximumLength(50);

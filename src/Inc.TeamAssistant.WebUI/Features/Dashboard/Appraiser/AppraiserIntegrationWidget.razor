@@ -24,7 +24,6 @@
                             class="form-control"
                             id="access-token"
                             disabled="disabled"/>
-                        <ValidationMessage For="@(() => _formModel.AccessToken)"/>
                     </Content>
                 </FormFieldSet>
                 <FormFieldSet FieldId="project-key" Label="@ViewModel.ProjectKeyLabel">
@@ -34,7 +33,6 @@
                             class="form-control"
                             id="project-key"
                             disabled="disabled"/>
-                        <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                     </Content>
                 </FormFieldSet>
                 <FormFieldSet FieldId="scrum-master" Label="@ViewModel.ScrumMasterLabel">
@@ -50,7 +48,6 @@
                                 <option value="@teammate.Id">@teammate.DisplayName</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
                     </Content>
                 </FormFieldSet>
             }
@@ -58,8 +55,11 @@
             {
                 <FormFieldSet FieldId="access-token" Label="@ViewModel.AccessTokenLabel">
                     <Content>
-                        <InputText @bind-Value="_formModel.AccessToken" class="form-control" id="access-token"/>
-                        <ValidationMessage For="@(() => _formModel.AccessToken)"/>
+                        <InputText
+                            @bind-Value="_formModel.AccessToken"
+                            class="form-control"
+                            id="access-token"
+                            disabled="disabled"/>
                     </Content>
                 </FormFieldSet>
                 <FormFieldSet FieldId="project-key" Label="@ViewModel.ProjectKeyLabel">
@@ -127,9 +127,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var teamProperties = await IntegrationService.GetTeamProperties(TeamId);
-
-        _formModel.Apply(teamProperties.Result);
+        await Load();
         
         await base.OnParametersSetAsync();
     }
@@ -167,10 +165,18 @@
 
         await IntegrationService.SetTeamProperties(new SetIntegrationPropertiesCommand(
             TeamId,
-            _formModel.AccessToken,
             _formModel.ProjectKey,
             _formModel.ScrumMasterId));
         
+        await Load();
+        
         _editContext = EditContextFactory.Create(_formModel);
+    }
+
+    private async Task Load()
+    {
+        var teamProperties = await IntegrationService.GetTeamProperties(TeamId);
+
+        _formModel.Apply(teamProperties.Result);
     }
 }

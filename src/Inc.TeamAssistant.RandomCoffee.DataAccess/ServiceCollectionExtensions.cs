@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +12,9 @@ public static class ServiceCollectionExtensions
         
         services
             .AddSingleton<IRandomCoffeeReader, RandomCoffeeReader>()
-            .AddSingleton<IRandomCoffeeRepository, RandomCoffeeRepository>();
+            .AddSingleton<IRandomCoffeeRepository, RandomCoffeeRepository>()
+            
+            .AddSingleton<IPersonStatsProvider, RandomCoffeeStatsProvider>();
 
         return services;
     }

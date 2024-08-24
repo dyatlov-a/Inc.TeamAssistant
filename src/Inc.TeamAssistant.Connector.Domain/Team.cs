@@ -55,29 +55,53 @@ public sealed class Team
         return this;
     }
 
-    public Team ChangeProperty(string name, string value)
+    public string GetPropertyValueOrDefault(PropertyKey propertyKey, string defaultValue)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(propertyKey);
+        ArgumentNullException.ThrowIfNull(defaultValue);
+        
+        return Properties.GetValueOrDefault(propertyKey.Key, defaultValue);
+    }
+
+    public Team ChangeProperty(PropertyKey propertyKey, string value)
+    {
+        ArgumentNullException.ThrowIfNull(propertyKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         
         Properties = new Dictionary<string, string>(Properties)
         {
-            [name] = value
+            [propertyKey.Key] = value
         };
         
         return this;
     }
     
-    public Team RemoveProperty(params string[] names)
+    public Team RemoveProperty(params PropertyKey[] propertyKeys)
     {
-        ArgumentNullException.ThrowIfNull(names);
+        ArgumentNullException.ThrowIfNull(propertyKeys);
 
-        var newProperties = Properties.Where(p => !names.Any(n => n.Equals(
+        var newProperties = Properties.Where(p => !propertyKeys.Any(n => n.Key.Equals(
             p.Key,
             StringComparison.InvariantCultureIgnoreCase)));
         
         Properties = new Dictionary<string, string>(newProperties);
         
         return this;
+    }
+    
+    public sealed record PropertyKey
+    {
+        internal string Key { get; }
+
+        public PropertyKey(string key)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(key);
+            
+            Key = key;
+        }
+        
+        public static readonly PropertyKey AccessToken = new("accessToken");
+        public static readonly PropertyKey ProjectKey = new("projectKey");
+        public static readonly PropertyKey ScrumMaster = new("scrumMaster");
     }
 }

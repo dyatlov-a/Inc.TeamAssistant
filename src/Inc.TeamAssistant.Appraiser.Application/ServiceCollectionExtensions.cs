@@ -26,7 +26,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton(options)
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
-            .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>();
+            .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToSpCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>();
 
         foreach (var assessment in AssessmentValue.GetAllAssessments())
         {

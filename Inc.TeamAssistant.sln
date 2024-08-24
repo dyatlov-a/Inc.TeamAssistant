@@ -98,6 +98,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Construct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Reviewer.ApplicationTests", "tests\Inc.TeamAssistant.Reviewer.ApplicationTests\Inc.TeamAssistant.Reviewer.ApplicationTests.csproj", "{504EF63F-2C47-44FC-BB22-F199C7DF7251}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.Geo", "src\Inc.TeamAssistant.CheckIn.Geo\Inc.TeamAssistant.CheckIn.Geo.csproj", "{41B5195D-3C81-4501-9278-57FA95F973FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -250,6 +252,10 @@ Global
 		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{504EF63F-2C47-44FC-BB22-F199C7DF7251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41B5195D-3C81-4501-9278-57FA95F973FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41B5195D-3C81-4501-9278-57FA95F973FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41B5195D-3C81-4501-9278-57FA95F973FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41B5195D-3C81-4501-9278-57FA95F973FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B9C88CA2-123E-4D55-A931-91B0CFA08447} = {BF819FCA-A383-4283-B680-4B80B7B5CA32}
@@ -297,5 +303,6 @@ Global
 		{98154587-A8B7-4A69-A301-1EADC4549067} = {406F731E-8D99-4D37-88F1-EE5D38C54662}
 		{E9547AEE-D2E2-4550-B95B-DFB1C0D7FFE8} = {406F731E-8D99-4D37-88F1-EE5D38C54662}
 		{504EF63F-2C47-44FC-BB22-F199C7DF7251} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
+		{41B5195D-3C81-4501-9278-57FA95F973FD} = {15DCF7E1-1D36-4C21-A623-35A1D037A4DA}
 	EndGlobalSection
 EndGlobal

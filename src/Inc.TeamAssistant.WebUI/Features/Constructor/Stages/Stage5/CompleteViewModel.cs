@@ -20,7 +20,13 @@ public sealed record CompleteViewModel(
     string BotInformationHelp,
     string BotName,
     string BotShortDescription,
-    string BotDescription)
+    string BotDescription,
+    string FormSectionCalendarTitle,
+    string FormSectionCalendarHelp,
+    string FormSectionCalendarFieldWorkTimeLabel,
+    string FormSectionCalendarFieldWorkTimeWorkAllDay,
+    string FormSectionCalendarFieldWeekendsLabel,
+    string FormSectionCalendarFieldHolidaysLabel)
     : IViewModel<CompleteViewModel>
 {
     public static CompleteViewModel Empty { get; } = new(
@@ -36,6 +42,12 @@ public sealed record CompleteViewModel(
         string.Empty,
         string.Empty,
         new Dictionary<string, string>(),
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

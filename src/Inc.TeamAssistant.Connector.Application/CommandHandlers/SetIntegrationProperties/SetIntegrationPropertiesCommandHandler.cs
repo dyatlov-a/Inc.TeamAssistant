@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -35,11 +36,13 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
         if (!await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token))
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
-
+        
+        var accessToken = team.GetPropertyValueOrDefault(Team.PropertyKey.AccessToken, Guid.NewGuid().ToString("N"));
+        
         team
-            .ChangeProperty("accessToken", command.AccessToken)
-            .ChangeProperty("projectKey", command.ProjectKey)
-            .ChangeProperty("scrumMaster", command.ScrumMasterId.ToString());
+            .ChangeProperty(Team.PropertyKey.AccessToken, accessToken)
+            .ChangeProperty(Team.PropertyKey.ProjectKey, command.ProjectKey)
+            .ChangeProperty(Team.PropertyKey.ScrumMaster, command.ScrumMasterId.ToString());
 
         await _teamRepository.Upsert(team, token);
     }

@@ -34,6 +34,6 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             command.SaveEndOfDialog ? null : command.MessageContext.ChatMessage);
 
         if (messages.Any())
-            await client.TryDeleteMessages(command.MessageContext.Bot.Id, messages, _logger, token);
+            await client.TryDeleteMessages(messages, _logger, token);
     }
 }

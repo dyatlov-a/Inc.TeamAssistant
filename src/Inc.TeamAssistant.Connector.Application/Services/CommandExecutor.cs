@@ -46,8 +46,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         ArgumentNullException.ThrowIfNull(command);
 
         const string duplicateKeyError = "23505";
-
-        var botId = command.MessageContext.Bot.Id;
+        
         var client = await _provider.Get(command.MessageContext.Bot.Id, token);
         var dialog = _dialogContinuation.Find(command.MessageContext.Bot.Id, command.MessageContext.TargetChat);
         
@@ -58,7 +57,6 @@ internal sealed class CommandExecutor : ICommandExecutor
         catch (ValidationException validationException)
         {
             await client.TrySend(
-                botId,
                 dialog,
                 command.MessageContext.ChatMessage,
                 validationException.ToMessage(),
@@ -73,7 +71,6 @@ internal sealed class CommandExecutor : ICommandExecutor
                 userException.Values);
             
             await client.TrySend(
-                botId,
                 dialog,
                 command.MessageContext.ChatMessage,
                 errorMessage,
@@ -83,7 +80,6 @@ internal sealed class CommandExecutor : ICommandExecutor
         catch (TeamAssistantException teamAssistantException)
         {
             await client.TrySend(
-                botId,
                 dialog,
                 command.MessageContext.ChatMessage,
                 teamAssistantException.Message,
@@ -92,12 +88,11 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (ApiRequestException apiRequestException)
         {
-            _logger.LogError(apiRequestException, "Bot {BotId} unhandled telegram api exception", botId);
+            _logger.LogWarning(apiRequestException, "Unhandled telegram api exception");
         }
         catch (PostgresException ex) when (ex.SqlState == duplicateKeyError)
         {
             await client.TrySend(
-                botId,
                 dialog,
                 command.MessageContext.ChatMessage,
                 "Duplicate key value violates unique constraint.",
@@ -106,10 +101,9 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Bot {BotId} unhandled exception on execute command", botId);
+            _logger.LogError(ex, "Unhandled exception on execute command");
             
             await client.TrySend(
-                botId,
                 dialog,
                 command.MessageContext.ChatMessage,
                 "An unhandled exception has occurred. Try running the command again.",
@@ -200,7 +194,6 @@ internal sealed class CommandExecutor : ICommandExecutor
 
             if (notificationMessage.Pinned)
                 await client.TryPinChatMessage(
-                    messageContext.Bot.Id,
                     new(notificationMessage.TargetChatId.Value, message.MessageId),
                     _logger,
                     token);
@@ -224,6 +217,6 @@ internal sealed class CommandExecutor : ICommandExecutor
                 cancellationToken: token);
         
         if (notificationMessage.DeleteMessage is not null)
-            await client.TryDeleteMessage(messageContext.Bot.Id, notificationMessage.DeleteMessage, _logger, token);
+            await client.TryDeleteMessage(notificationMessage.DeleteMessage, _logger, token);
     }
 }

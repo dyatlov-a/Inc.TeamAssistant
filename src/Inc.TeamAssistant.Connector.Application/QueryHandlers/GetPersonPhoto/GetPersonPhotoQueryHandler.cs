@@ -17,8 +17,8 @@ internal sealed class GetPersonPhotoQueryHandler : IRequestHandler<GetPersonPhot
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var stream = await _personPhotosService.GetPersonPhoto(query.PersonId, token);
+        var photo = await _personPhotosService.GetPersonPhoto(query.PersonId, token);
 
-        return new GetPersonPhotoResult(stream);
+        return new GetPersonPhotoResult(photo);
     }
 }

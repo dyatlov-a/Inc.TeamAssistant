@@ -2,8 +2,10 @@ namespace Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 
 public sealed record LocationDto(
     long PersonId,
-    string DisplayName,
+    string PersonDisplayName,
     double Longitude,
     double Latitude,
-    TimeSpan? UtcOffset,
-    string DisplayOffset);
+    string DisplayTimeOffset,
+    string CountryName,
+    string WorkSchedule,
+    IReadOnlyCollection<PersonStats> Stats);

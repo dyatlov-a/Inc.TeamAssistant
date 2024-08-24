@@ -47,6 +47,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, ReassignReviewCommandCreator>()
             .AddSingleton<ICommandCreator, EditDraftCommandCreator>()
             .AddSingleton<ICommandCreator, CancelDraftCommandCreator>()
+            .AddSingleton<ICommandCreator, ChangeToRandomCommandCreator>()
+            .AddSingleton<ICommandCreator, ChangeToRoundRobinCommandCreator>()
 
             .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>()
             .AddScoped<IRemoveTeamHandler, RemoveTeamHandler>();
