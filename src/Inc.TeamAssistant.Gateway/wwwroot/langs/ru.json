@@ -311,6 +311,7 @@
   "Constructor_DateLabel": "Дата",
   "Constructor_WorkdayLabel": "Рабочий день",
   "Constructor_AddHolidayLabel": "Добавить праздник",
+  "Constructor_CheckWorkTimeHelp": "Пожалуйста, проверьте график работы",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

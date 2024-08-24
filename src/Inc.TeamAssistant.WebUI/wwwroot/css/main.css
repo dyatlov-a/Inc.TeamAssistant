@@ -129,16 +129,6 @@ html {
 .link_dark {
     color: #000;
 }
-.multiselect__item {
-    display: inline-block;
-    padding: 3px 10px;
-    margin-right: 5px;
-    cursor: pointer;
-}
-.multiselect__item_selected {
-    background-color: #555;
-    color: #dfdfdf;
-}
 /* MAP */
 .marker-btn {
     background-color: #fff;
@@ -175,8 +165,8 @@ html {
     color: #000;
     background-color: #dfdfdf;
 }
-.form-control:disabled {
-    background-color: #9d9d9d;
+.form-control:disabled, .form-control.disabled {
+    background-color: #AAA;
 }
 .form-control_textarea {
     resize: none;
@@ -191,6 +181,16 @@ html {
 .validation-message {
     font-size: 1rem;
     color: #dc3545;
+}
+.multiselect__item {
+    display: inline-block;
+    padding: 3px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.multiselect__item_selected {
+    background-color: #555;
+    color: #dfdfdf;
 }
 /* ROOT COMPONENTS */
 .title {

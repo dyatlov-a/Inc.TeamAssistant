@@ -2,7 +2,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar
-@using Inc.TeamAssistant.Constructor.Model.Common
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
@@ -115,6 +114,57 @@
                 }
             </Content>
         </FormSection>
+        <FormSection
+            Title="@ViewModel.FormSectionCalendarTitle"
+            HelpText="@ViewModel.FormSectionCalendarHelp">
+            <Content>
+                <a href="@LinkFactory(Stage.Calendar)" class="link link_dark constructor__edit-link">
+                    @ViewModel.EditText
+                </a>
+                <FormFieldSet
+                    FieldId="work-time"
+                    Label="@ViewModel.FormSectionCalendarFieldWorkTimeLabel">
+                    <Content>
+                        <input
+                            type="text"
+                            id="work-time"
+                            value="@_formModel.GetWorkScheduleAsText(ViewModel.FormSectionCalendarFieldWorkTimeWorkAllDay)"
+                            class="form-control"
+                            disabled="disabled"/>
+                    </Content>
+                </FormFieldSet>
+                @if (_formModel.Weekends.Any())
+                {
+                    <FormFieldSet
+                        FieldId="weekends"
+                        Label="@ViewModel.FormSectionCalendarFieldWeekendsLabel">
+                        <Content>
+                            <div id="weekends" class="form-control disabled">
+                                @foreach (var day in _formModel.Weekends)
+                                {
+                                    <span
+                                        class="multiselect__item">
+                                        @ResourceProvider(Messages.GetDayOfWeekTitle(day))
+                                    </span>
+                                }
+                            </div>
+                        </Content>
+                    </FormFieldSet>
+                }
+                <FormFieldSet
+                    FieldId="holidays"
+                    Label="@ViewModel.FormSectionCalendarFieldHolidaysLabel">
+                    <Content>
+                        <input
+                            type="text"
+                            id="holidays"
+                            value="@_formModel.Holidays.Count"
+                            class="form-control"
+                            disabled="disabled"/>
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </FormSection>
     </div>
     <div class="constructor__actions">
         <button type="submit" class="button button_light">
@@ -172,7 +222,13 @@
             resources[Messages.Constructor_BotInformationHelp],
             resources[Messages.Constructor_BotName],
             resources[Messages.Constructor_BotShortDescription],
-            resources[Messages.Constructor_BotDescription]);
+            resources[Messages.Constructor_BotDescription],
+            resources[Messages.GetStageTitle(Stage.Calendar)],
+            resources[Messages.Constructor_CheckWorkTimeHelp],
+            resources[Messages.Constructor_WorkTimeTitle],
+            resources[Messages.Constructor_WorkAllDayLabel],
+            resources[Messages.Constructor_WeekendsTitle],
+            resources[Messages.Constructor_HolidaysTitle]);
         
         return viewModel;
     }
@@ -196,20 +252,17 @@
                 i.ShortDescription,
                 i.Description))
             .ToArray();
-        var schedule = StagesState.Calendar.WorkAllDay
-            ? null
-            : new WorkScheduleUtcDto(StagesState.Calendar.Schedule.Start, StagesState.Calendar.Schedule.End);
 
         var calendarId = StagesState.CalendarId.HasValue
             ? await CalendarService.Update(new UpdateCalendarCommand(
                 StagesState.CalendarId.Value,
-                schedule,
-                StagesState.Calendar.Weekends,
-                StagesState.Calendar.Holidays))
+                _formModel.WorkSchedule,
+                _formModel.Weekends,
+                _formModel.Holidays))
             : await CalendarService.Create(new CreateCalendarCommand(
-                schedule,
-                StagesState.Calendar.Weekends,
-                StagesState.Calendar.Holidays));
+                _formModel.WorkSchedule,
+                _formModel.Weekends,
+                _formModel.Holidays));
 
         if (StagesState.Id.HasValue)
             await BotService.Update(new UpdateBotCommand(

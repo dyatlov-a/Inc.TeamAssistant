@@ -311,6 +311,7 @@
   "Constructor_DateLabel": "Date",
   "Constructor_WorkdayLabel": "Workday",
   "Constructor_AddHolidayLabel": "Add holiday",
+  "Constructor_CheckWorkTimeHelp": "Please check work schedule",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"
