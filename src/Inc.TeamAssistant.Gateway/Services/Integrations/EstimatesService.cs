@@ -40,15 +40,18 @@ public sealed class EstimatesService
             integrationContext.TeamId,
             integrationContext.ChatId,
             ownerId);
+        var title = string.IsNullOrWhiteSpace(request.IssueKey)
+            ? request.Subject
+            : $"[{request.IssueKey}] {request.Subject}";
+        var links = string.IsNullOrWhiteSpace(request.IssueUrl)
+            ? Array.Empty<string>()
+            : [request.IssueUrl];
         var command = new AddStoryCommand(
             messageContext,
             integrationContext.TeamId,
             integrationContext.TeamProperties.GetValueOrDefault("storyType", StoryType.Scrum.ToString()),
-            $"[{request.IssueKey}] {request.Subject}",
-            new[]
-            {
-                request.IssueUrl
-            },
+            title,
+            links,
             teammates);
 
         await _commandExecutor.Execute(command, token);
