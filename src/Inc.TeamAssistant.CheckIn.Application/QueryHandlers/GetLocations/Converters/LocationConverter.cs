@@ -25,7 +25,8 @@ internal sealed class LocationConverter
         ArgumentNullException.ThrowIfNull(locations);
         ArgumentNullException.ThrowIfNull(personStatsLookup);
         
-        var maxStatsLookup = personStatsLookup.ToDictionary(i => i.Key, i => i.Value.Values.Max());
+        var maxStatsLookup = personStatsLookup
+            .ToDictionary(i => i.Key, i => i.Value.Values.Any() ? i.Value.Values.Max() : 0);
 
         return locations
             .OrderByDescending(i => i.Created)
@@ -45,9 +46,11 @@ internal sealed class LocationConverter
         
         const string unknown = "?";
         const string defaultTimeZone = "UTC";
-        
+
         var stats = personStatsLookup.Keys
-            .Select(k => new PersonStats(k, Calculate(location.UserId, maxStatsLookup[k], personStatsLookup[k])))
+            .Select(k => new PersonStats(k, maxStatsLookup[k] == 0
+                ? 0
+                : Calculate(location.UserId, maxStatsLookup[k], personStatsLookup[k])))
             .ToArray();
 
         try
@@ -93,7 +96,7 @@ internal sealed class LocationConverter
     private static int Calculate(long personId, int maxValue, IReadOnlyDictionary<long, int> personStats)
     {
         ArgumentNullException.ThrowIfNull(personStats);
-
+        
         const decimal weight = .2m;
 
         var value = (decimal)personStats.GetValueOrDefault(personId, 0);
