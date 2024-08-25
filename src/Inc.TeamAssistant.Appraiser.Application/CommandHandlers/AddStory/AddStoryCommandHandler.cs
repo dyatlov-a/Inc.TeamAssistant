@@ -34,6 +34,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         var story = new Story(
+            Guid.NewGuid(),
             command.MessageContext.Bot.Id,
             command.TeamId,
             Enum.Parse<StoryType>(command.StoryType),
@@ -46,7 +47,11 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
             story.AddLink(link);
 
         foreach (var teammate in command.Teammates)
-            story.AddStoryForEstimate(new StoryForEstimate(story.Id, teammate.Id, teammate.DisplayName));
+            story.AddStoryForEstimate(new StoryForEstimate(
+                Guid.NewGuid(),
+                story.Id,
+                teammate.Id,
+                teammate.DisplayName));
 
         await _storyRepository.Upsert(story, token);
         
