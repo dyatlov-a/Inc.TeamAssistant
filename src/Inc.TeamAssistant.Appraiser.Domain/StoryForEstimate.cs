@@ -12,13 +12,12 @@ public sealed class StoryForEstimate
     {
     }
 
-    public StoryForEstimate(Guid storyId, long participantId, string participantDisplayName)
+    public StoryForEstimate(Guid id, Guid storyId, long participantId, string participantDisplayName)
 		: this()
     {
-	    if (string.IsNullOrWhiteSpace(participantDisplayName))
-		    throw new ArgumentException("Value cannot be null or whitespace.", nameof(participantDisplayName));
+	    ArgumentException.ThrowIfNullOrWhiteSpace(participantDisplayName);
 	    
-	    Id = Guid.NewGuid();
+	    Id = id;
 	    StoryId = storyId;
 	    ParticipantId = participantId;
 	    ParticipantDisplayName = participantDisplayName;

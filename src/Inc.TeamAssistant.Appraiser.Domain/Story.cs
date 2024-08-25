@@ -30,6 +30,7 @@ public sealed class Story
     }
     
     public Story(
+	    Guid id,
 	    Guid botId,
 	    Guid teamId,
 	    StoryType storyType,
@@ -39,10 +40,9 @@ public sealed class Story
 	    string title)
 		: this()
     {
-	    if (string.IsNullOrWhiteSpace(title))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(title));
+	    ArgumentException.ThrowIfNullOrWhiteSpace(title);
         
-		Id = Guid.NewGuid();
+		Id = id;
 		BotId = botId;
 		StoryType = storyType;
 		Created = DateTimeOffset.UtcNow;
@@ -103,8 +103,7 @@ public sealed class Story
 
 	public void AddLink(string link)
 	{
-		if (string.IsNullOrWhiteSpace(link))
-			throw new ArgumentException("Value cannot be null or whitespace.", nameof(link));
+		ArgumentException.ThrowIfNullOrWhiteSpace(link);
 		
 		Links.Add(link);
 	}
@@ -213,7 +212,7 @@ public sealed class Story
 		return _storyForEstimates
 			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
 			.Select(t => t.Value)
-			.ToHashSet()
+			.Distinct()
 			.OrderByDescending(t => (int)t)
 			.Take(2)
 			.ToArray();
