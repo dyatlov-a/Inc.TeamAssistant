@@ -8,6 +8,6 @@ internal sealed class InviteForCoffeeCommandValidator : AbstractValidator<Invite
     public InviteForCoffeeCommandValidator()
     {
         RuleFor(c => c.MessageContext.ChatName)
-            .NotEmpty();
+            .NotNull();
     }
 }
