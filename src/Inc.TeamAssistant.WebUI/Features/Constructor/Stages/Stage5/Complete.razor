@@ -155,12 +155,11 @@
                     FieldId="holidays"
                     Label="@ViewModel.FormSectionCalendarFieldHolidaysLabel">
                     <Content>
-                        <input
-                            type="text"
+                        <InputTextArea
+                            @bind-Value="@_formModel.HolidaysAsText"
+                            class="form-control form-control_textarea"
                             id="holidays"
-                            value="@_formModel.Holidays.Count"
-                            class="form-control"
-                            disabled="disabled"/>
+                            disabled="disabled" />
                     </Content>
                 </FormFieldSet>
             </Content>

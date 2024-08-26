@@ -15,6 +15,7 @@ public sealed class CompleteFormModel
     public WorkScheduleUtcDto? WorkSchedule { get; set; }
     public IReadOnlyCollection<DayOfWeek> Weekends { get; set; } = Array.Empty<DayOfWeek>();
     public IReadOnlyDictionary<DateOnly, string> Holidays { get; set; } = new Dictionary<DateOnly, string>();
+    public string HolidaysAsText { get; set; } = string.Empty;
     
     public string GetWorkScheduleAsText(string workAllDay)
     {
@@ -53,7 +54,17 @@ public sealed class CompleteFormModel
             : new(stagesState.Calendar.Schedule.Start, stagesState.Calendar.Schedule.End);
         Weekends = stagesState.Calendar.Weekends.ToArray();
         Holidays = stagesState.Calendar.Holidays.ToDictionary();
+        HolidaysAsText = Convert(stagesState.Calendar.Holidays);
 
         return this;
+    }
+    
+    private string Convert(IReadOnlyDictionary<DateOnly, string> holidays)
+    {
+        ArgumentNullException.ThrowIfNull(holidays);
+        
+        return holidays.Any()
+            ? $"{string.Join(", ", holidays.Select(h => h.Key.ToString("dd.MM.yyyy")))} ({holidays.Count})"
+            : string.Empty;
     }
 }
