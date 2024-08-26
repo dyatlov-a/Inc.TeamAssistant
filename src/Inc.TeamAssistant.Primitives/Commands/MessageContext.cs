@@ -28,7 +28,7 @@ public sealed record MessageContext(
             LanguageId: LanguageSettings.DefaultLanguageId,
             Location: null,
             TargetPersonId: null,
-            ChatName: null);
+            ChatName: string.Empty);
     }
 
     public static MessageContext CreateFromIntegration(Guid botId, Guid teamId, long chatId, long personId)
