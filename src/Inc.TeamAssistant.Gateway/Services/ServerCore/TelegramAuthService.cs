@@ -27,12 +27,9 @@ public sealed class TelegramAuthService
         string authDate,
         string hash)
     {
-        if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(firstName));
-        if (string.IsNullOrWhiteSpace(authDate))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(authDate));
-        if (string.IsNullOrWhiteSpace(hash))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(hash));
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(authDate);
+        ArgumentException.ThrowIfNullOrWhiteSpace(hash);
 
         var fields = CreateFieldSet(id, firstName, lastName, username, photoUrl, authDate, hash);
         var token = await _botAccessor.GetToken(_options.BotId);
@@ -63,12 +60,9 @@ public sealed class TelegramAuthService
         string authDate,
         string hash)
     {
-        if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(firstName));
-        if (string.IsNullOrWhiteSpace(authDate))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(authDate));
-        if (string.IsNullOrWhiteSpace(hash))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(hash));
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(authDate);
+        ArgumentException.ThrowIfNullOrWhiteSpace(hash);
         
         var fields = new Dictionary<string, string>
         {

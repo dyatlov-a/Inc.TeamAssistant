@@ -25,6 +25,8 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
 
     public string BuildLinkForConnect(string botName, Guid teamId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botName);
+        
         return string.Format(_options.LinkForConnectTemplate, botName, teamId.ToString("N"));
     }
 
@@ -34,10 +36,8 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
         string background,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
         
         var teamContext = await _teamAccessor.GetTeamContext(teamId, token);
         var botContext = await _botAccessor.GetBotContext(teamContext.BotId, token);
