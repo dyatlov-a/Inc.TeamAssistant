@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Extensions;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 
@@ -13,11 +12,16 @@ internal static class StoryConverter
         var items = story.StoryForEstimates
             .OrderByDescending(e => e.Value)
             .ThenBy(e => e.ParticipantDisplayName)
-            .Select(e => new StoryForEstimateDto(
-                e.ParticipantId,
-                e.ParticipantDisplayName,
-                story.EstimateEnded ? e.Value.ToDisplayValue(story.StoryType) : e.Value.ToDisplayHasValue(),
-                e.Value == AssessmentValue.Value.None ? null : (int)e.Value))
+            .Select(e =>
+            {
+                var value = e.GetValue(story.StoryType);
+
+                return new StoryForEstimateDto(
+                    e.ParticipantId,
+                    e.ParticipantDisplayName,
+                    story.EstimateEnded ? value.DisplayValue : value.HasValue,
+                    e.Value == Estimation.None ? null : e.Value);
+            })
             .ToArray();
 
         return new(
@@ -26,8 +30,8 @@ internal static class StoryConverter
             story.Links.ToArray(),
             items,
             story.EstimateEnded,
-            story.GetTotalValue(),
+            EstimationProvider.GetTotalValue(story),
             HasMedian: story.StoryType == StoryType.Scrum,
-            story.CalculateMedian());
+            EstimationProvider.CalculateMedian(story));
     }
 }

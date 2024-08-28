@@ -6,7 +6,7 @@ public sealed class StoryForEstimate
 	public Guid StoryId { get; private set; }
     public long ParticipantId { get; private set; }
     public string ParticipantDisplayName { get; private set; } = default!;
-    public AssessmentValue.Value Value { get; private set; }
+    public int Value { get; private set; }
 
     private StoryForEstimate()
     {
@@ -21,17 +21,21 @@ public sealed class StoryForEstimate
 	    StoryId = storyId;
 	    ParticipantId = participantId;
 	    ParticipantDisplayName = participantDisplayName;
-		Value = AssessmentValue.Value.None;
+		Value = Estimation.None;
 	}
 
-    internal bool SetValue(AssessmentValue.Value value)
+    public Estimation GetValue(StoryType storyType) => EstimationProvider.Create(storyType, Value);
+
+    internal bool SetValue(Estimation estimation)
     {
-	    var alreadyHasValue = Value != AssessmentValue.Value.None;
+	    ArgumentNullException.ThrowIfNull(estimation);
 	    
-	    Value = value;
+	    var alreadyHasValue = Value != Estimation.None;
+	    
+	    Value = estimation.Value;
 
 	    return alreadyHasValue;
     }
 
-	internal void Reset() => Value = AssessmentValue.Value.None;
+	internal void Reset() => Value = Estimation.None;
 }

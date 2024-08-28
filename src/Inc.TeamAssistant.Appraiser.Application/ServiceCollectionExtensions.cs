@@ -30,17 +30,24 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToSpCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>();
 
-        foreach (var assessment in AssessmentValue.GetAllAssessments())
+        foreach (var storyType in Enum.GetValues<StoryType>())
+        foreach (var assessment in EstimationProvider.GetAssessments(storyType))
         {
             var setCommand = string.Format(CommandList.Set, assessment);
             services.AddSingleton<ICommandCreator>(
-                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, setCommand, assessment));
-            
+                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(
+                    sp,
+                    setCommand,
+                    assessment));
+
             var acceptCommand = string.Format(CommandList.AcceptEstimate, assessment);
             services.AddSingleton<ICommandCreator>(
-                sp => ActivatorUtilities.CreateInstance<AcceptEstimateCommandCreator>(sp, acceptCommand, assessment));
+                sp => ActivatorUtilities.CreateInstance<AcceptEstimateCommandCreator>(
+                    sp,
+                    acceptCommand,
+                    assessment));
         }
-        
+
         return services;
     }
 }

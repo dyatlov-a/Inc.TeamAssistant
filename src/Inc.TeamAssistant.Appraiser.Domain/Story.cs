@@ -5,8 +5,6 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed class Story
 {
-	const string UnknownValue = "?";
-	
 	public Guid Id { get; private set; }
 	public Guid BotId { get; private set; }
 	public StoryType StoryType { get; private set; }
@@ -18,7 +16,7 @@ public sealed class Story
 	public string Title { get; private set; } = default!;
 	public int? ExternalId { get; private set; }
 	public bool Accepted => TotalValue.HasValue;
-	public AssessmentValue.Value? TotalValue { get; private set; }
+	public int? TotalValue { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -55,43 +53,16 @@ public sealed class Story
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
 
-	public string GetTotalValue()
-	{
-		if (!EstimateEnded)
-			return UnknownValue;
-		
-		return StoryType switch
-		{
-			StoryType.Scrum => CalculateMean()?.ToString(".## SP") ?? UnknownValue,
-			StoryType.Kanban => CalculateMedianValue()?.ToString().ToUpperInvariant() ?? UnknownValue,
-			_ => UnknownValue
-		};
-	}
-
-	public string GetAcceptedValue()
-	{
-		if (!TotalValue.HasValue)
-			return UnknownValue;
-		
-		return StoryType switch
-		{
-			StoryType.Scrum => $"{(int)TotalValue.Value}SP",
-			StoryType.Kanban => TotalValue.Value.ToString().ToUpperInvariant(),
-			_ => UnknownValue
-		};
-	}
-
-	public bool Estimate(long participantId, AssessmentValue.Value value)
+	public bool Estimate(long participantId, int value)
     {
 	    if (Accepted)
 		    return false;
 	    
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
-
         if (storyForEstimate is null)
             throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
         
-        return storyForEstimate.SetValue(value);
+        return storyForEstimate.SetValue(EstimationProvider.Create(StoryType, value));
 	}
 
 	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)
@@ -129,91 +100,30 @@ public sealed class Story
 			throw new TeamAssistantException("User has not rights for action.");
 		
 		foreach (var storyForEstimate in _storyForEstimates)
-			if (storyForEstimate.Value == AssessmentValue.Value.None)
-				storyForEstimate.SetValue(AssessmentValue.Value.NoIdea);
+			if (storyForEstimate.Value == Estimation.None)
+				storyForEstimate.SetValue(EstimationProvider.Create(StoryType, Estimation.NoIdea));
 	}
 	
-	public IReadOnlyCollection<AssessmentValue.Value> GetAssessments()
-	{
-		return StoryType switch
-		{
-			StoryType.Scrum => AssessmentValue.ScrumAssessments,
-			StoryType.Kanban => AssessmentValue.KanbanAssessments,
-			_ => throw new TeamAssistantException("StoryType is not valid.")
-		};
-	}
+	public IReadOnlyCollection<Estimation> GetAssessments() => EstimationProvider.GetAssessments(StoryType);
 
-	public void Accept(long participantId, AssessmentValue.Value value)
+	public void Accept(long participantId, int value)
 	{
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 
-		TotalValue = value;
+		TotalValue = EstimationProvider.Create(StoryType, value).Value;
 	}
 	
-	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != AssessmentValue.Value.None);
-	
-	private decimal? CalculateMean()
-	{
-		var values = _storyForEstimates
-			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
-			.Select(i => (int)i.Value)
-			.ToArray();
+	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != Estimation.None);
 
-		var result = values.Any()
-			? (decimal?)values.Sum() / values.Length
-			: null;
-
-		return result;
-	}
-
-	private AssessmentValue.Value? CalculateMedianValue()
-	{
-		var values = _storyForEstimates
-			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
-			.OrderBy(i => i.Value)
-			.Select(i => i.Value)
-			.ToArray();
-		
-		if (!values.Any())
-			return null;
-
-		var middle = values.Length / 2;
-		return values[middle];
-	}
-
-	public string? CalculateMedian()
-	{
-		if (StoryType == StoryType.Kanban)
-			return null;
-		if (!EstimateEnded)
-			return UnknownValue;
-		
-		var values = _storyForEstimates
-			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
-			.OrderBy(i => i.Value)
-			.Select(i => (int)i.Value)
-			.ToArray();
-		
-		if (!values.Any())
-			return null;
-
-		var middle = values.Length / 2;
-		
-		var value = values.Length % 2 == 0
-			? (values[middle] + values[middle - 1]) / 2m
-			: values[middle];
-
-		return value.ToString(".## SP");
-	}
-
-	public IReadOnlyCollection<AssessmentValue.Value> GetTopValues()
+	public IReadOnlyCollection<Estimation> GetTopValues()
 	{
 		return _storyForEstimates
-			.Where(i => i.Value > AssessmentValue.Value.NoIdea)
+			.Where(i => i.Value > Estimation.NoIdea)
 			.Select(t => t.Value)
 			.Distinct()
-			.OrderByDescending(t => (int)t)
+			.OrderByDescending(t => t)
+			.Select(t => EstimationProvider.Create(StoryType, t))
 			.Take(2)
 			.ToArray();
 	}
