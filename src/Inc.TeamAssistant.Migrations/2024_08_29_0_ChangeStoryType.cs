@@ -48,6 +48,14 @@ public sealed class ChangeStoryType : Migration
             WHERE value = '/move_to_sp';
             """,
             "Change bot command /move_to_sp -> /move_to_fibonacci");
+        
+        Execute.Sql(
+            """
+            INSERT INTO connector.bot_commands
+            (id, value, help_message_id, scopes)
+            VALUES ('91169669-bf86-4d66-b721-7e4d9878e5be', '/move_to_power_of_two', 'Appraiser_MoveToPowerOfTwoHelp', '[1,2]'::jsonb);
+            """,
+            "Add command for moving to PowerOfTwo");
     }
 
     public override void Down()

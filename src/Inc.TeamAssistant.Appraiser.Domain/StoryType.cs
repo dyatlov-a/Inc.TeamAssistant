@@ -3,5 +3,6 @@ namespace Inc.TeamAssistant.Appraiser.Domain;
 public enum StoryType
 {
     Fibonacci = 1,
-    TShirt = 2
+    TShirt = 2,
+    PowerOfTwo = 3
 }

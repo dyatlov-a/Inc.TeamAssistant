@@ -9,4 +9,5 @@ internal static class CommandList
     public const string Set = "/set?value={0}&storyId=";
     public const string MoveToFibonacci = "/move_to_fibonacci";
     public const string MoveToTShirts = "/move_to_tshirts";
+    public const string MoveToPowerOfTwo = "/move_to_power_of_two";
 }

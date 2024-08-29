@@ -8,7 +8,8 @@ public static class EstimationStrategyFactory
         = new Dictionary<StoryType, IEstimationStrategy>
         {
             [StoryType.Fibonacci] = new FibonacciEstimationStrategy(),
-            [StoryType.TShirt] = new TShirtEstimationStrategy()
+            [StoryType.TShirt] = new TShirtEstimationStrategy(),
+            [StoryType.PowerOfTwo] = new PowerOfTwoEstimationStrategy()
         };
 
     public static IEnumerable<Estimation> GetAllValues()
