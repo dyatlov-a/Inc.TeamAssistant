@@ -12,8 +12,11 @@ internal static class SummaryByStoryConverter
         var storyForEstimates = story.StoryForEstimates
             .Select(s =>
             {
-                var value = s.GetValue(story.StoryType);
-                return new EstimateItemDetails(s.ParticipantDisplayName, value.HasValue, value.DisplayValue);
+                var estimation = story.ToEstimation(s.Value);
+                return new EstimateItemDetails(
+                    s.ParticipantDisplayName,
+                    estimation.HasValue,
+                    estimation.DisplayValue);
             })
             .ToArray();
         var assessments = story.GetAssessments()
@@ -33,8 +36,8 @@ internal static class SummaryByStoryConverter
             story.Title,
             story.Links.ToArray(),
             story.EstimateEnded,
-            EstimationProvider.GetTotalValue(story),
-            EstimationProvider.GetAcceptedValue(story),
+            story.CalculateMean().DisplayValue,
+            story.AcceptedValue.DisplayValue,
             storyForEstimates,
             assessments,
             story.Accepted,

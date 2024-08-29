@@ -26,7 +26,7 @@ internal sealed class MoveToTShirtsCommandCreator : ICommandCreator
         var command = _commandFactory.Create(
             messageContext,
             TeamProperties.StoryTypeKey,
-            StoryType.Kanban.ToString());
+            StoryType.TShirt.ToString());
 
         return Task.FromResult(command);
     }

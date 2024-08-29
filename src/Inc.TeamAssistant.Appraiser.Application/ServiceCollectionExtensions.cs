@@ -29,9 +29,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToSpCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>();
-
-        foreach (var storyType in Enum.GetValues<StoryType>())
-        foreach (var assessment in EstimationProvider.GetAssessments(storyType))
+        
+        foreach (var assessment in EstimationStrategyFactory.GetAllValues())
         {
             var setCommand = string.Format(CommandList.Set, assessment);
             services.AddSingleton<ICommandCreator>(

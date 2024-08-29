@@ -18,13 +18,17 @@ public sealed class Story
 	public bool Accepted => TotalValue.HasValue;
 	public int? TotalValue { get; private set; }
 
-	private readonly List<StoryForEstimate> _storyForEstimates = new();
+	private readonly List<StoryForEstimate> _storyForEstimates;
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
 
-    public ICollection<string> Links { get; private set; } = new List<string>();
+    public ICollection<string> Links { get; private set; }
+
+    private IEstimationStrategy EstimationStrategy => EstimationStrategyFactory.Create(StoryType);
 
     private Story()
     {
+	    _storyForEstimates = new();
+	    Links = new List<string>();
     }
     
     public Story(
@@ -62,7 +66,7 @@ public sealed class Story
         if (storyForEstimate is null)
             throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
         
-        return storyForEstimate.SetValue(EstimationProvider.Create(StoryType, value));
+        return storyForEstimate.SetValue(ToEstimation(value));
 	}
 
 	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)
@@ -100,31 +104,40 @@ public sealed class Story
 			throw new TeamAssistantException("User has not rights for action.");
 		
 		foreach (var storyForEstimate in _storyForEstimates)
-			if (storyForEstimate.Value == Estimation.None)
-				storyForEstimate.SetValue(EstimationProvider.Create(StoryType, Estimation.NoIdea));
+			if (storyForEstimate.Value == Estimation.None.Value)
+				storyForEstimate.SetValue(Estimation.NoIdea);
 	}
 	
-	public IReadOnlyCollection<Estimation> GetAssessments() => EstimationProvider.GetAssessments(StoryType);
+	public IEnumerable<Estimation> GetAssessments() => EstimationStrategy.GetValues();
+	public Estimation ToEstimation(int value) => EstimationStrategy.GetValue(value);
 
 	public void Accept(long participantId, int value)
 	{
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 
-		TotalValue = EstimationProvider.Create(StoryType, value).Value;
+		TotalValue = ToEstimation(value).Value;
 	}
 	
-	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != Estimation.None);
+	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != Estimation.None.Value);
 
 	public IReadOnlyCollection<Estimation> GetTopValues()
 	{
 		return _storyForEstimates
-			.Where(i => i.Value > Estimation.NoIdea)
+			.Where(i => i.Value > Estimation.NoIdea.Value)
 			.Select(t => t.Value)
 			.Distinct()
 			.OrderByDescending(t => t)
-			.Select(t => EstimationProvider.Create(StoryType, t))
+			.Select(ToEstimation)
 			.Take(2)
 			.ToArray();
 	}
+	
+	public Estimation AcceptedValue => TotalValue.HasValue
+		? ToEstimation(TotalValue.Value)
+		: Estimation.None;
+
+	public Estimation CalculateMean() => EstimationStrategy.CalculateMean(this);
+    
+	public Estimation CalculateMedian() => EstimationStrategy.CalculateMedian(this);
 }

@@ -49,7 +49,7 @@ public sealed class EstimatesService
         var command = new AddStoryCommand(
             messageContext,
             integrationContext.TeamId,
-            integrationContext.TeamProperties.GetValueOrDefault("storyType", StoryType.Scrum.ToString()),
+            integrationContext.TeamProperties.GetValueOrDefault("storyType", StoryType.Fibonacci.ToString()),
             title,
             links,
             teammates);

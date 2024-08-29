@@ -14,13 +14,13 @@ internal static class StoryConverter
             .ThenBy(e => e.ParticipantDisplayName)
             .Select(e =>
             {
-                var value = e.GetValue(story.StoryType);
+                var estimation = story.ToEstimation(e.Value);
 
                 return new StoryForEstimateDto(
                     e.ParticipantId,
                     e.ParticipantDisplayName,
-                    story.EstimateEnded ? value.DisplayValue : value.HasValue,
-                    e.Value == Estimation.None ? null : e.Value);
+                    story.EstimateEnded ? estimation.DisplayValue : estimation.HasValue,
+                    e.Value == Estimation.None.Value ? null : e.Value);
             })
             .ToArray();
 
@@ -30,8 +30,7 @@ internal static class StoryConverter
             story.Links.ToArray(),
             items,
             story.EstimateEnded,
-            EstimationProvider.GetTotalValue(story),
-            HasMedian: story.StoryType == StoryType.Scrum,
-            EstimationProvider.CalculateMedian(story));
+            story.CalculateMean().DisplayValue,
+            story.CalculateMedian().DisplayValue);
     }
 }

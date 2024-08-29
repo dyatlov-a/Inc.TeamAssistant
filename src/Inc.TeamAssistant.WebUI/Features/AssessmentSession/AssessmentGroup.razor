@@ -69,13 +69,10 @@
                     <td><span class="story__total-item"><b>@Item.Total</b></span></td>
                     <td><span class="story__total-item">@MeanRating</span></td>
                 </tr>
-                @if (Item.HasMedian)
-                {
-                    <tr>
-                        <td><span class="story__total-item"><b>@Item.Median</b></span></td>
-                        <td><span class="story__total-item">@MedianRating</span></td>
-                    </tr>
-                }
+                <tr>
+                    <td><span class="story__total-item"><b>@Item.Median</b></span></td>
+                    <td><span class="story__total-item">@MedianRating</span></td>
+                </tr>
                 </tbody>
             </table>
         </div>

@@ -7,5 +7,4 @@ public sealed record StoryDto(
     IReadOnlyCollection<StoryForEstimateDto> StoryForEstimates,
     bool EstimateEnded,
     string Total,
-    bool HasMedian,
     string? Median);

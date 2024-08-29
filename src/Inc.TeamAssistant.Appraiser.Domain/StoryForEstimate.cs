@@ -21,21 +21,19 @@ public sealed class StoryForEstimate
 	    StoryId = storyId;
 	    ParticipantId = participantId;
 	    ParticipantDisplayName = participantDisplayName;
-		Value = Estimation.None;
+		Value = Estimation.None.Value;
 	}
-
-    public Estimation GetValue(StoryType storyType) => EstimationProvider.Create(storyType, Value);
 
     internal bool SetValue(Estimation estimation)
     {
 	    ArgumentNullException.ThrowIfNull(estimation);
 	    
-	    var alreadyHasValue = Value != Estimation.None;
+	    var alreadyHasValue = Value != Estimation.None.Value;
 	    
 	    Value = estimation.Value;
 
 	    return alreadyHasValue;
     }
 
-	internal void Reset() => Value = Estimation.None;
+	internal void Reset() => Value = Estimation.None.Value;
 }

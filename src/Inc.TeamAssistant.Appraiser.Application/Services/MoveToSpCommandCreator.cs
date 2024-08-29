@@ -26,7 +26,7 @@ internal sealed class MoveToSpCommandCreator : ICommandCreator
         var command = _commandFactory.Create(
             messageContext,
             TeamProperties.StoryTypeKey,
-            StoryType.Scrum.ToString());
+            StoryType.Fibonacci.ToString());
 
         return Task.FromResult(command);
     }
