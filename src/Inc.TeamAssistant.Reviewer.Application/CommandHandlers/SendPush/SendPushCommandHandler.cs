@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -10,25 +11,26 @@ internal sealed class SendPushCommandHandler : IRequestHandler<SendPushCommand, 
 {
     private readonly ITaskForReviewRepository _repository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
-    private readonly ReviewerOptions _options;
+    private readonly IBotAccessor _botAccessor;
 
     public SendPushCommandHandler(
         ITaskForReviewRepository repository,
         IReviewMessageBuilder reviewMessageBuilder,
-        ReviewerOptions options)
+        IBotAccessor botAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _reviewMessageBuilder = reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(SendPushCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
+        
         var taskForReview = await _repository.GetById(command.TaskId, token);
+        var botContext = await _botAccessor.GetBotContext(taskForReview.BotId, token);
 
-        taskForReview.SetNextNotificationTime(DateTimeOffset.UtcNow, _options.NotificationInterval);
+        taskForReview.SetNextNotificationTime(DateTimeOffset.UtcNow, botContext.GetNotificationIntervals());
 
         var notification = TaskForReviewStateRules.ActiveStates.Contains(taskForReview.State)
             ? await _reviewMessageBuilder.Push(taskForReview, token)

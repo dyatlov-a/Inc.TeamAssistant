@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -6,14 +7,10 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class DraftTaskForReviewService
 {
-    private readonly ReviewerOptions _reviewerOptions;
     private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
 
-    public DraftTaskForReviewService(
-        ReviewerOptions reviewerOptions,
-        IDraftTaskForReviewRepository draftTaskForReviewRepository)
+    public DraftTaskForReviewService(IDraftTaskForReviewRepository draftTaskForReviewRepository)
     {
-        _reviewerOptions = reviewerOptions ?? throw new ArgumentNullException(nameof(reviewerOptions));
         _draftTaskForReviewRepository =
             draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
     }
@@ -23,7 +20,7 @@ internal sealed class DraftTaskForReviewService
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
         var descriptionParts = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var links = descriptionParts.Where(t => _reviewerOptions.LinksPrefix.Any(t.Contains)).ToArray();
+        var links = descriptionParts.Where(t => GlobalSettings.LinksPrefix.Any(t.Contains)).ToArray();
 
         return links.Any() && descriptionParts.Length > links.Length;
     }

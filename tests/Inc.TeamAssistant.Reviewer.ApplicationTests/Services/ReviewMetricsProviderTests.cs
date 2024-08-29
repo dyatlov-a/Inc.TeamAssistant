@@ -166,14 +166,14 @@ public sealed class ReviewMetricsProviderTests
             draft,
             _fixture.Create<Guid>(),
             start,
-            _fixture.Create<TimeSpan>(),
+            _fixture.Create<NotificationIntervals>(),
             _fixture.Create<long>());
         var operationStart = start;
 
         if (moveToInProgressDuration.HasValue)
         {
             operationStart = operationStart.Add(moveToInProgressDuration.Value);
-            taskForReview.MoveToInProgress(_fixture.Create<TimeSpan>(), operationStart);
+            taskForReview.MoveToInProgress(operationStart, _fixture.Create<NotificationIntervals>());
         }
 
         if (reviewDurations is not null)

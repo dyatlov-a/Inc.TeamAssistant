@@ -8,15 +8,13 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Servi
 internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly ITeamAccessor _teamAccessor;
-    private readonly AppraiserOptions _options;
     
     public string Command => CommandList.AddStory;
     public bool SupportSingleLineMode => true;
 
-    public AddStoryCommandCreator(ITeamAccessor teamAccessor, AppraiserOptions options)
+    public AddStoryCommandCreator(ITeamAccessor teamAccessor)
     {
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
     
     public async Task<IDialogCommand> Create(
@@ -35,7 +33,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
 
         foreach (var storyItem in storyItems)
         {
-            if (_options.LinksPrefix.Any(l => storyItem.StartsWith(l, StringComparison.InvariantCultureIgnoreCase)))
+            if (GlobalSettings.LinksPrefix.Any(l => storyItem.StartsWith(l, StringComparison.InvariantCultureIgnoreCase)))
                 links.Add(storyItem.ToLower());
             else
                 text.Add(storyItem);
@@ -44,7 +42,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         return new AddStoryCommand(
             messageContext,
             teamContext.TeamId,
-            teamContext.Properties.GetValueOrDefault(TeamProperties.StoryTypeKey, TeamProperties.StoryTypeDefault),
+            teamContext.GetStoryType(),
             string.Join(separator, text),
             links,
             teammates);
