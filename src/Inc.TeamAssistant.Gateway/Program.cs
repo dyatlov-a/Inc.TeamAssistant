@@ -53,9 +53,6 @@ var appraiserOptions = builder.Configuration
 var checkInOptions = builder.Configuration
 	.GetRequiredSection(nameof(CheckInOptions))
 	.Get<CheckInOptions>()!;
-var randomCoffeeOptions = builder.Configuration
-	.GetRequiredSection(nameof(RandomCoffeeOptions))
-	.Get<RandomCoffeeOptions>()!;
 var authOptions = builder.Configuration
 	.GetRequiredSection(nameof(AuthOptions))
 	.Get<AuthOptions>()!;
@@ -137,7 +134,7 @@ builder.Services
 	.AddCheckInGeoCountry(builder.Environment.WebRootPath)
 	.AddReviewerApplication()
 	.AddReviewerDataAccess()
-	.AddRandomCoffeeApplication(randomCoffeeOptions)
+	.AddRandomCoffeeApplication()
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)

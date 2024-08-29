@@ -37,7 +37,7 @@ public sealed class StagesState
         UserName = userName;
         Token = token;
         FeatureIds = featureIds;
-        Properties = properties;
+        Properties = properties.AddDefaults();
         Features = features;
         SupportedLanguages = supportedLanguages;
         BotDetails = botDetails;

@@ -1,10 +1,12 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
+using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.SelectPairs;
 using MediatR;
 
@@ -14,22 +16,22 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
 {
     private readonly IRandomCoffeeRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly RandomCoffeeOptions _options;
     private readonly NotificationsBuilder _notificationsBuilder;
     private readonly IMessageBuilder _messageBuilder;
+    private readonly IBotAccessor _botAccessor;
 
     public SelectPairsCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
-        RandomCoffeeOptions options,
         NotificationsBuilder notificationsBuilder,
-        IMessageBuilder messageBuilder)
+        IMessageBuilder messageBuilder,
+        IBotAccessor botAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
         _notificationsBuilder = notificationsBuilder ?? throw new ArgumentNullException(nameof(notificationsBuilder));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(SelectPairsCommand command, CancellationToken token)
@@ -40,6 +42,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (randomCoffeeEntry is null)
             throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
         
+        var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
         var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
         if (owner is null)
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
@@ -55,7 +58,10 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
                 randomCoffeeEntry.ChatId,
                 await _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
         
-        randomCoffeeEntry.MoveToNextRound(DateTimeOffset.UtcNow, _options.RoundInterval - _options.WaitingInterval);
+        randomCoffeeEntry.MoveToNextRound(
+            DateTimeOffset.UtcNow,
+            botContext.GetRoundInterval(),
+            botContext.GetVotingInterval());
         
         await _repository.Upsert(randomCoffeeEntry, token);
         

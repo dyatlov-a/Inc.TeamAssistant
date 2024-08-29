@@ -14,6 +14,14 @@ public sealed class AddBotSettings : Migration
             WHERE name = 'Reviewer';
             """,
             "Add settings for Reviewer");
+        
+        Execute.Sql(
+            """
+            UPDATE connector.features
+            SET properties = '["roundInterval", "votingInterval"]'::jsonb
+            WHERE name = 'RandomCoffee';
+            """,
+            "Add settings for RandomCoffee");
     }
 
     public override void Down()

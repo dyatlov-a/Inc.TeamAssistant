@@ -33,19 +33,4 @@ public static class TeamProperties
 
         return new(waiting, inProgress);
     }
-
-    private static TimeSpan GetIntervalOrDefault(this BotContext botContext, string propertyKey, TimeSpan defaultValue)
-    {
-        ArgumentNullException.ThrowIfNull(botContext);
-        ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);
-        
-        var waitingNotificationInterval = botContext.Properties.GetValueOrDefault(propertyKey);
-
-        if (string.IsNullOrWhiteSpace(waitingNotificationInterval))
-            return defaultValue;
-        
-        return TimeSpan.TryParse(waitingNotificationInterval, out var waitingIntervalValue)
-            ? waitingIntervalValue
-            : defaultValue;
-    }
 }
