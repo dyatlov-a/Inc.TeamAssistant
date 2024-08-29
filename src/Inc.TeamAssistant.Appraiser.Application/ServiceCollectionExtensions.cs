@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>()
-            .AddSingleton<ICommandCreator, MoveToSpCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToFibonacciCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>();
         
         foreach (var assessment in EstimationStrategyFactory.GetAllValues())

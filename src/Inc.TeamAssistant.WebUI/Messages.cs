@@ -64,8 +64,6 @@ internal static class Messages
     public static readonly string Constructor_FeatureRemove = nameof(Constructor_FeatureRemove);
     public static readonly string Constructor_FormSectionFeaturesAvailableEmptyText = nameof(Constructor_FormSectionFeaturesAvailableEmptyText);
     public static readonly string Constructor_FormSectionFeaturesSelectedEmptyText = nameof(Constructor_FormSectionFeaturesSelectedEmptyText);
-    public static readonly string Constructor_FormSectionSetSettingsScrumDescription = nameof(Constructor_FormSectionSetSettingsScrumDescription);
-    public static readonly string Constructor_FormSectionSetSettingsKanbanDescription = nameof(Constructor_FormSectionSetSettingsKanbanDescription);
     public static readonly string Constructor_FormSectionSetSettingsRoundRobinDescription = nameof(Constructor_FormSectionSetSettingsRoundRobinDescription);
     public static readonly string Constructor_FormSectionSetSettingsRandomDescription = nameof(Constructor_FormSectionSetSettingsRandomDescription);
     public static readonly string Constructor_FormSectionSetSettingsAppraiserHeader = nameof(Constructor_FormSectionSetSettingsAppraiserHeader);

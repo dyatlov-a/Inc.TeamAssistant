@@ -9,7 +9,7 @@ internal static class CommandList
     public const string RemoveTeam = "/remove_team";
     public const string Help = "/help";
     
-    public const string MoveToSp = "/move_to_sp";
+    public const string MoveToFibonacci = "/move_to_fibonacci";
     public const string MoveToTShirts = "/move_to_tshirts";
     public const string AddStory = "/add";
 

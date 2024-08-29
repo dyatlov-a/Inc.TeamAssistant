@@ -7,8 +7,8 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
 {
     private readonly IReadOnlyDictionary<StoryType, string> _storyType = new Dictionary<StoryType, string>
     {
-        [StoryType.Fibonacci] = "Constructor_FormSectionSetSettingsScrumDescription",
-        [StoryType.TShirt] = "Constructor_FormSectionSetSettingsKanbanDescription"
+        [StoryType.Fibonacci] = "Constructor_FormSectionSetSettingsFibonacciDescription",
+        [StoryType.TShirt] = "Constructor_FormSectionSetSettingsTShirtDescription"
     };
 
     public string FeatureName => "Appraiser";

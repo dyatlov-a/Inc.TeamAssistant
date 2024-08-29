@@ -55,7 +55,7 @@ internal sealed class DialogCommandFactory
                 => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
             (CommandList.RemoveTeam, null, _, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
-            (CommandList.MoveToSp, null, _, _, _, _)
+            (CommandList.MoveToFibonacci, null, _, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToTShirts, null, _, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),

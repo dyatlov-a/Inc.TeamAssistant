@@ -4,16 +4,16 @@ using Inc.TeamAssistant.Primitives.Handlers;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
-internal sealed class MoveToSpCommandCreator : ICommandCreator
+internal sealed class MoveToFibonacciCommandCreator : ICommandCreator
 {
     private readonly IChangeTeamPropertyCommandFactory _commandFactory;
 
-    public MoveToSpCommandCreator(IChangeTeamPropertyCommandFactory commandFactory)
+    public MoveToFibonacciCommandCreator(IChangeTeamPropertyCommandFactory commandFactory)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
 
-    public string Command => CommandList.MoveToSp;
+    public string Command => CommandList.MoveToFibonacci;
     
     public Task<IDialogCommand> Create(
         MessageContext messageContext,
