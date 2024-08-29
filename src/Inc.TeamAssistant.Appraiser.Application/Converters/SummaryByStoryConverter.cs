@@ -20,11 +20,11 @@ internal static class SummaryByStoryConverter
             })
             .ToArray();
         var assessments = story.GetAssessments()
-            .Select(s => s.Value)
+            .Select(s => new EstimateDto(s.Code, s.Value))
             .ToArray();
         var assessmentsToAccept = story.GetTopValues()
-            .OrderBy(s => s)
-            .Select(s => s.ToString())
+            .OrderBy(s => s.Value)
+            .Select(s => new EstimateDto(s.Code, s.Value))
             .ToArray();
 
         return new SummaryByStory(
@@ -34,6 +34,7 @@ internal static class SummaryByStoryConverter
             story.Id,
             story.ExternalId,
             story.Title,
+            story.StoryType.ToString(),
             story.Links.ToArray(),
             story.EstimateEnded,
             story.CalculateMean().DisplayValue,

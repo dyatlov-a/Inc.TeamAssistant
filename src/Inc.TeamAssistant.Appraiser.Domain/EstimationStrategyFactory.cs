@@ -14,9 +14,6 @@ public static class EstimationStrategyFactory
 
     public static IEnumerable<Estimation> GetAllValues()
     {
-        foreach (var value in Estimation.GetValues())
-            yield return value;
-
         foreach (var strategy in Strategies.Values)
         foreach (var value in strategy.GetValues())
             yield return value;

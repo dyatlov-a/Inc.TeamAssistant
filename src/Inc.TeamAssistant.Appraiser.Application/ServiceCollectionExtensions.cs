@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToPowerOfTwoCommandCreator>();
         
-        foreach (var assessment in EstimationStrategyFactory.GetAllValues())
+        foreach (var assessment in EstimationStrategyFactory.GetAllValues().Select(e => e.Value).Distinct())
         {
             var setCommand = string.Format(CommandList.Set, assessment);
             services.AddSingleton<ICommandCreator>(

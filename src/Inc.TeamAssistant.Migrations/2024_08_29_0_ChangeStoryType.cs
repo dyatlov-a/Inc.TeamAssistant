@@ -56,6 +56,22 @@ public sealed class ChangeStoryType : Migration
             VALUES ('91169669-bf86-4d66-b721-7e4d9878e5be', '/move_to_power_of_two', 'Appraiser_MoveToPowerOfTwoHelp', '[1,2]'::jsonb);
             """,
             "Add command for moving to PowerOfTwo");
+        
+        Execute.Sql(
+            """
+            INSERT INTO connector.bot_command_stages
+            (id, bot_command_id, value, dialog_message_id, "position")
+            VALUES ('003caff2-1b28-48b6-966b-de1441b7ecdc', '91169669-bf86-4d66-b721-7e4d9878e5be', 2, 'Connector_SelectTeam', 1);
+            """,
+            "Add stage for command moving to PowerOfTwo");
+
+        Execute.Sql(
+            """
+            INSERT INTO connector.command_packs
+            (feature_id, bot_command_id)
+            VALUES ('5a7334e6-8076-4fc1-89e9-5139b8135947', '91169669-bf86-4d66-b721-7e4d9878e5be');
+            """,
+            "Add command to command packs");
     }
 
     public override void Down()

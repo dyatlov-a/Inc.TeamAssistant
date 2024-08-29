@@ -1,20 +1,30 @@
 namespace Inc.TeamAssistant.Appraiser.Domain;
 
 public sealed record Estimation(
+    string Code,
     int Value,
     string DisplayValue,
     string HasValue)
 {
-    private static readonly IReadOnlyDictionary<int, Estimation> Estimations = new Dictionary<int, Estimation>
+    public static readonly Estimation None = new("None", -2, "?", "-");
+    public static readonly Estimation More = new("More", -1, "+∞", "-");
+    public static readonly Estimation NoIdea = new("NoIdea", 0, "?", "+");
+
+    public static IEnumerable<Estimation> GetValues()
     {
-        { -1, new Estimation(-1, "+∞", "+") },
-        { 0, new(0, "?", "+") }
-    };
-    
-    public static readonly Estimation None = new(-2, "?", "-");
-    public static readonly Estimation NoIdea = new(0, "?", "+");
+        yield return More;
+        yield return NoIdea;
+    }
 
-    public static IEnumerable<Estimation> GetValues() => Estimations.Values;
+    public static Estimation? GetValue(int value)
+    {
+        if (None.Value == value)
+            return None;
+        if (More.Value == value)
+            return More;
+        if (NoIdea.Value == value)
+            return NoIdea;
 
-    public static Estimation? GetValue(int value) => Estimations.GetValueOrDefault(value);
+        return null;
+    }
 }

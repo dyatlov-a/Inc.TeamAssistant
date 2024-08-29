@@ -4,15 +4,22 @@ internal sealed class TShirtEstimationStrategy : IEstimationStrategy
 {
     private static readonly IReadOnlyDictionary<int, Estimation> Estimations = new Dictionary<int, Estimation>
     {
-        [100] = new(100, "XS", "+"),
-        [200] = new(200, "S", "+"),
-        [300] = new(300, "M", "+"),
-        [400] = new(400, "L", "+"),
-        [500] = new(500, "XL", "+"),
-        [600] = new(600, "XXL", "+")
+        [100] = new("XS", 100, "XS", "+"),
+        [200] = new("S", 200, "S", "+"),
+        [300] = new("M", 300, "M", "+"),
+        [400] = new("L", 400, "L", "+"),
+        [500] = new("XL", 500, "XL", "+"),
+        [600] = new("XXL", 600, "XXL", "+")
     };
 
-    public IEnumerable<Estimation> GetValues() => Estimations.Values;
+    public IEnumerable<Estimation> GetValues()
+    {
+        foreach (var estimation in Estimations.Values)
+            yield return estimation;
+        
+        foreach (var estimation in Estimation.GetValues())
+            yield return estimation;
+    }
     
     public Estimation GetValue(int value)
     {
@@ -34,6 +41,9 @@ internal sealed class TShirtEstimationStrategy : IEstimationStrategy
     public Estimation CalculateMedian(Story story)
     {
         ArgumentNullException.ThrowIfNull(story);
+        
+        if (!story.EstimateEnded)
+            return Estimation.None;
 		
         var values = story.StoryForEstimates
             .Where(i => i.Value > Estimation.NoIdea.Value)

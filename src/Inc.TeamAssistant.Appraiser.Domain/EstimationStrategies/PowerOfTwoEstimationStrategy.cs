@@ -4,16 +4,23 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
 {
     private static readonly IReadOnlyDictionary<int, Estimation> Estimations = new Dictionary<int, Estimation>
     {
-        { 1, new(1, "1SP", "+") },
-        { 2, new(2, "2SP", "+") },
-        { 4, new(4, "4SP", "+") },
-        { 8, new(8, "8SP", "+") },
-        { 16, new(16, "16SP", "+") },
-        { 32, new(32, "32SP", "+") },
-        { 64, new(64, "64SP", "+") }
+        { 1, new("1SP", 1, "1SP", "+") },
+        { 2, new("2SP", 2, "2SP", "+") },
+        { 4, new("4SP", 4, "4SP", "+") },
+        { 8, new("8SP", 8, "8SP", "+") },
+        { 16, new("16SP", 16, "16SP", "+") },
+        { 32, new("32SP", 32, "32SP", "+") },
+        { 64, new("64SP", 64, "64SP", "+") }
     };
     
-    public IEnumerable<Estimation> GetValues() => Estimations.Values;
+    public IEnumerable<Estimation> GetValues()
+    {
+        foreach (var estimation in Estimations.Values)
+            yield return estimation;
+        
+        foreach (var estimation in Estimation.GetValues())
+            yield return estimation;
+    }
 
     public Estimation GetValue(int value)
     {
@@ -33,6 +40,9 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
     public Estimation CalculateMean(Story story)
     {
         ArgumentNullException.ThrowIfNull(story);
+        
+        if (!story.EstimateEnded)
+            return Estimation.None;
 		
         var values = story.StoryForEstimates
             .Where(i => i.Value > Estimation.NoIdea.Value)
@@ -44,7 +54,7 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
             : null;
 
         return mean.HasValue
-            ? new Estimation((int)mean.Value, ValueToString(mean.Value), "+")
+            ? new Estimation(string.Empty, (int)mean.Value, ValueToString(mean.Value), "+")
             : Estimation.None;
     }
 
@@ -70,7 +80,7 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
             ? (values[middle] + values[middle - 1]) / 2m
             : values[middle];
 
-        return new Estimation((int)median, ValueToString(median), "+");
+        return new Estimation(string.Empty, (int)median, ValueToString(median), "+");
     }
     
     private string ValueToString(decimal value) => value.ToString(".## SP");
