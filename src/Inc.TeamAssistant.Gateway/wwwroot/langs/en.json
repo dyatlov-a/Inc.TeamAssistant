@@ -232,7 +232,7 @@
   "Footer_LinkConstructor": "Constructor",
   "Footer_LinkDashboard": "Dashboard",
 
-  "Login_AsSuperuserText": "Login as superuser",
+  "Login_AsSuperuserText": "Log in as superuser",
   "Login_Title": "Login",
   "Login_CreateBot": "Create your bot",
   "Login_TelegramText": "To start working, please log in to Telegram.",
@@ -329,7 +329,7 @@
   "Constructor_DayOfWeekThursday": "TH",
   "Constructor_DayOfWeekFriday": "FR",
   "Constructor_DayOfWeekSaturday": "SA",
-  "Constructor_WorkTimeTitle": "Work time",
+  "Constructor_WorkTimeTitle": "Work time (UTC)",
   "Constructor_WorkTimeHelp": "Please select work time",
   "Constructor_WorkAllDayLabel": "Work all day (24h)",
   "Constructor_WorkTimeStartLabel": "Start time (UTC)",

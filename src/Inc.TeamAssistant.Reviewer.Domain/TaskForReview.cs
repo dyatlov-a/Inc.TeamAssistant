@@ -1,6 +1,3 @@
-using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
-
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class TaskForReview
@@ -165,16 +162,11 @@ public sealed class TaskForReview
         ArgumentNullException.ThrowIfNull(teammates);
         ArgumentNullException.ThrowIfNull(history);
 
-        INextReviewerStrategy reviewerStrategy = Strategy switch
-        {
-            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
-            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history),
-            _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
-        };
-
         var excludedPersonIds = excludedPersonId.HasValue
             ? new[] { OwnerId, excludedPersonId.Value }
             : [OwnerId];
+        var reviewerStrategy = NextReviewerStrategyFactory.Create(Strategy, teammates, history);
+        
         SetReviewer(reviewerStrategy.Next(excludedPersonIds, lastReviewerId));
 
         return this;

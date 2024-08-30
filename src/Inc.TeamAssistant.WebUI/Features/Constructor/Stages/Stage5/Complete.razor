@@ -140,10 +140,10 @@
                         Label="@ViewModel.FormSectionCalendarFieldWeekendsLabel">
                         <Content>
                             <div id="weekends" class="form-control disabled">
-                                @foreach (var day in _formModel.Weekends)
+                                @foreach (var day in Enum.GetValues<DayOfWeek>())
                                 {
                                     <span
-                                        class="multiselect__item multiselect__item_selected">
+                                        class="multiselect__item @CssClass(day)">
                                         @ResourceProvider(Messages.GetDayOfWeekTitle(day))
                                     </span>
                                 }
@@ -231,6 +231,10 @@
         
         return viewModel;
     }
+    
+    private string CssClass(DayOfWeek item) => _formModel.Weekends.Contains(item)
+        ? "multiselect__item_selected"
+        : string.Empty;
 
     private string GetValueAsText(SettingItem settingItem, string value)
     {

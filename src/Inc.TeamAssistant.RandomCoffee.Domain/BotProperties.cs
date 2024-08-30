@@ -6,15 +6,12 @@ public static class BotProperties
 {
     public const string RoundIntervalKey = "roundInterval";
     public const string VotingIntervalKey = "votingInterval";
-    
-    private static readonly TimeSpan RoundIntervalDefault = TimeSpan.FromDays(14);
-    private static readonly TimeSpan VotingIntervalDefault = TimeSpan.FromDays(1);
 
     public static TimeSpan GetRoundInterval(this BotContext context) => context.GetIntervalOrDefault(
         RoundIntervalKey,
-        RoundIntervalDefault);
+        TimeSpan.FromDays(14));
     
     public static TimeSpan GetVotingInterval(this BotContext context) => context.GetIntervalOrDefault(
         VotingIntervalKey,
-        VotingIntervalDefault);
+        TimeSpan.FromDays(1));
 }

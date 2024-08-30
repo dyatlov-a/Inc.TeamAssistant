@@ -329,7 +329,7 @@
   "Constructor_DayOfWeekThursday": "ЧТ",
   "Constructor_DayOfWeekFriday": "ПТ",
   "Constructor_DayOfWeekSaturday": "СБ",
-  "Constructor_WorkTimeTitle": "Рабочее время",
+  "Constructor_WorkTimeTitle": "Рабочее время (UTC)",
   "Constructor_WorkTimeHelp": "Пожалуйста, укажите рабочее время",
   "Constructor_WorkAllDayLabel": "Весь день (24ч)",
   "Constructor_WorkTimeStartLabel": "Время начала (UTC)",
