@@ -12,11 +12,12 @@ public static class EstimationStrategyFactory
             [StoryType.PowerOfTwo] = new PowerOfTwoEstimationStrategy()
         };
 
-    public static IEnumerable<Estimation> GetAllValues()
+    public static IReadOnlyCollection<int> GetAllValues()
     {
-        foreach (var strategy in Strategies.Values)
-        foreach (var value in strategy.GetValues())
-            yield return value;
+        return Strategies.Values
+            .SelectMany(s => s.GetValues().Select(v => v.Value))
+            .Distinct()
+            .ToArray();
     }
 
     public static IEstimationStrategy Create(StoryType storyType)
