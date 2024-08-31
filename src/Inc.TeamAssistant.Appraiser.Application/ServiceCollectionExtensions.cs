@@ -15,15 +15,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAppraiserApplication(
         this IServiceCollection services,
-        AppraiserOptions options)
+        string connectToDashboardLinkTemplate)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectToDashboardLinkTemplate);
 
         services
             .AddSingleton<ISettingSectionProvider, AppraiserSettingSectionProvider>()
-            .AddScoped<SummaryByStoryBuilder>()
-            .AddSingleton(options)
+            .AddScoped(sp => ActivatorUtilities.CreateInstance<SummaryByStoryBuilder>(sp, connectToDashboardLinkTemplate))
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>()

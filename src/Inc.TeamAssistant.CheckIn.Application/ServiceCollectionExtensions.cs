@@ -7,13 +7,15 @@ namespace Inc.TeamAssistant.CheckIn.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCheckInApplication(this IServiceCollection services, CheckInOptions options)
+    public static IServiceCollection AddCheckInApplication(
+        this IServiceCollection services,
+        string connectToMapLinkTemplate)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectToMapLinkTemplate);
 
         services
-            .AddSingleton(options)
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<MapLinksBuilder>(sp, connectToMapLinkTemplate))
             .AddSingleton<LocationConverter>()
             .AddSingleton<ICommandCreator, AddLocationToMapCommandCreator>();
 

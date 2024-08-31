@@ -47,43 +47,23 @@ var builder = WebApplication
 	.UseTelemetry();
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var appraiserOptions = builder.Configuration
-	.GetRequiredSection(nameof(AppraiserOptions))
-	.Get<AppraiserOptions>()!;
-var checkInOptions = builder.Configuration
-	.GetRequiredSection(nameof(CheckInOptions))
-	.Get<CheckInOptions>()!;
-var authOptions = builder.Configuration
-	.GetRequiredSection(nameof(AuthOptions))
-	.Get<AuthOptions>()!;
-var openGraphOptions = builder.Configuration
-	.GetRequiredSection(nameof(OpenGraphOptions))
-	.Get<OpenGraphOptions>()!;
+var linksOptions = builder.Configuration.GetRequiredSection(nameof(LinksOptions)).Get<LinksOptions>()!;
+var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
+var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
+var defaultLifetime = ServiceLifetime.Scoped;
 
 builder.Services
-	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ILocationsRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ITeamRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IBotRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true);
+	.AddValidatorsFromAssemblyContaining<IStoryRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ILocationsRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITeamRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true);
 
 builder.Services
 	.AddMediatR(c =>
 	{
-		c.Lifetime = ServiceLifetime.Scoped;
+		c.Lifetime = defaultLifetime;
 		c.RegisterServicesFromAssemblyContaining<IStoryRepository>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
@@ -127,9 +107,9 @@ builder.Services
 	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
 
-	.AddAppraiserApplication(appraiserOptions)
+	.AddAppraiserApplication(linksOptions.ConnectToDashboardLinkTemplate)
 	.AddAppraiserDataAccess()
-	.AddCheckInApplication(checkInOptions)
+	.AddCheckInApplication(linksOptions.ConnectToMapLinkTemplate)
 	.AddCheckInDataAccess()
 	.AddCheckInGeoCountry(builder.Environment.WebRootPath)
 	.AddReviewerApplication()

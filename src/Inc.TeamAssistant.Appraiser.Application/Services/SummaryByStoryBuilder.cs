@@ -9,12 +9,14 @@ namespace Inc.TeamAssistant.Appraiser.Application.Services;
 internal sealed class SummaryByStoryBuilder
 {
 	private readonly IMessageBuilder _messageBuilder;
-    private readonly AppraiserOptions _options;
+    private readonly string _connectToDashboardLinkTemplate;
 
-    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, AppraiserOptions options)
+    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, string connectToDashboardLinkTemplate)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectToDashboardLinkTemplate);
+        
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _connectToDashboardLinkTemplate = connectToDashboardLinkTemplate;
     }
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
@@ -116,7 +118,7 @@ internal sealed class SummaryByStoryBuilder
     private string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
     {
         return string.Format(
-            _options.ConnectToDashboardLinkTemplate,
+            _connectToDashboardLinkTemplate,
             languageId.Value,
             teamId.ToString("N"));
     }
