@@ -2,10 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-amd64
 
 # VARS
 ENV APP_DIR="/migrations" \
-    APP_USER=migrations_user
-    
-# Add timezones
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+    APP_USER=teamassist_migrations
 
 # create app user and ko
 RUN mkdir -p ${APP_DIR} \
@@ -25,4 +22,3 @@ RUN rm -f *.sh \
 USER ${APP_USER}
 
 ENTRYPOINT ["dotnet", "Inc.TeamAssistant.MigrationsRunner.dll"]
-CMD []
