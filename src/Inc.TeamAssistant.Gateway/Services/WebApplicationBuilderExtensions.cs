@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.ExceptionHandlers;
+using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 using Serilog.Events;
 using Prometheus.DotNetRuntime;
@@ -11,7 +12,7 @@ public static class WebApplicationBuilderExtensions
     private const string DefaultOutputTemplate =
         "[{Timestamp:yyyy.MM.ddTHH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
     
-    public static WebApplicationBuilder UseTelemetry(
+    public static WebApplicationBuilder ConfigureTelemetry(
         this WebApplicationBuilder builder,
         LogEventLevel minLogLevel = LogEventLevel.Warning,
         string outputTemplate = DefaultOutputTemplate)
@@ -50,6 +51,21 @@ public static class WebApplicationBuilderExtensions
                 });
         });
         
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigureDataProtection(this WebApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        
+        var keysDirectory = builder.Environment.IsDevelopment()
+            ? Path.Combine(builder.Environment.WebRootPath, "teamassist/keys")
+            : "/teamassist/keys";
+        
+        builder.Services
+            .AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory));
+
         return builder;
     }
 }

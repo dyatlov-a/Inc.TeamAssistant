@@ -44,13 +44,14 @@ ValidatorOptions.Global.Configure(LanguageSettings.DefaultLanguageId);
 
 var builder = WebApplication
 	.CreateBuilder(args)
-	.UseTelemetry();
+	.ConfigureTelemetry()
+	.ConfigureDataProtection();
 
+var defaultLifetime = ServiceLifetime.Scoped;
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
 var linksOptions = builder.Configuration.GetRequiredSection(nameof(LinksOptions)).Get<LinksOptions>()!;
 var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
 var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
-var defaultLifetime = ServiceLifetime.Scoped;
 
 builder.Services
 	.AddValidatorsFromAssemblyContaining<IStoryRepository>(defaultLifetime, includeInternalTypes: true)
@@ -58,9 +59,7 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<ITeamRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true);
-
-builder.Services
+	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
 		c.Lifetime = defaultLifetime;
@@ -73,16 +72,6 @@ builder.Services
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
-
-builder.Services
-	.AddAuthentication(ApplicationContext.AuthenticationScheme)
-	.AddCookie(o =>
-	{
-		o.ExpireTimeSpan = TimeSpan.FromDays(2);
-		o.SlidingExpiration = true;
-		o.AccessDeniedPath = "/";
-		o.LoginPath = "/login";
-	});
 
 builder.Services
 	.AddDataAccess(connectionString)
@@ -100,13 +89,12 @@ builder.Services
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.AddJsonType<WorkScheduleUtc>()
-	.Build()
+	.Build();
 
-	.AddSingleton(openGraphOptions)
+builder.Services
 	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
-	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
+	.AddServices(authOptions, openGraphOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
-
 	.AddAppraiserApplication(linksOptions.ConnectToDashboardLinkTemplate)
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(linksOptions.ConnectToMapLinkTemplate)
@@ -118,8 +106,19 @@ builder.Services
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
-	.AddConstructorDataAccess()
+	.AddConstructorDataAccess();
 
+builder.Services
+	.AddAuthentication(ApplicationContext.AuthenticationScheme)
+	.AddCookie(o =>
+	{
+		o.ExpireTimeSpan = TimeSpan.FromDays(2);
+		o.SlidingExpiration = true;
+		o.AccessDeniedPath = "/";
+		o.LoginPath = "/login";
+	});
+
+builder.Services
 	.AddHttpContextAccessor()
 	.AddMemoryCache()
 	.AddOutputCache(c => c.AddPolicy(

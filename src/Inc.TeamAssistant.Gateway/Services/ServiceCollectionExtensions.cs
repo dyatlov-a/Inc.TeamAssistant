@@ -14,15 +14,15 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServices(
         this IServiceCollection services,
-        AuthOptions options,
+        AuthOptions authOptions,
+        OpenGraphOptions openGraphOptions,
         string webRootPath,
         TimeSpan cacheAbsoluteExpiration)
 	{
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
-        
-        if (string.IsNullOrWhiteSpace(webRootPath))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
+        ArgumentNullException.ThrowIfNull(authOptions);
+        ArgumentNullException.ThrowIfNull(openGraphOptions);
+        ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);
 
         services
             .AddSingleton(new MessageProvider(webRootPath))
@@ -33,7 +33,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRenderContext, ServerRenderContext>();
 
         services
-            .AddSingleton(options)
+            .AddSingleton(authOptions)
+            .AddSingleton(openGraphOptions)
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             
