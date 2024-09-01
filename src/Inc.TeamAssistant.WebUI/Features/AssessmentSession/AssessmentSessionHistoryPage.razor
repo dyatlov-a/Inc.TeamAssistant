@@ -46,6 +46,6 @@
                 new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{TeamId:N}")),
                 new (Date, LinkBuilder($"assessment-history/{TeamId:N}/{Date}"))
             },
-            getStoriesResult.Result.Items);
+            getStoriesResult.Items);
     }
 }

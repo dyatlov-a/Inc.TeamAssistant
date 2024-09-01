@@ -74,7 +74,7 @@
         
         await ServiceProvider.GetRequiredService<DataEditor>().Attach(
             BotStorageKey,
-            StagesState.Apply(getBotDetailsResult.Result.Items).Apply(_formModel));
+            StagesState.Apply(getBotDetailsResult.Items).Apply(_formModel));
 
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }

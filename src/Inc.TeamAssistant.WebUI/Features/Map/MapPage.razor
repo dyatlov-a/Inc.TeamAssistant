@@ -47,11 +47,11 @@
                 "./Features/Map/MapPage.razor.js");
             
             var getLocations = await CheckInService.GetLocations(Id);
-            if (getLocations.Result is not null)
+            if (getLocations is not null)
                 await _mapModule.InvokeVoidAsync(
                     "initialize",
                     _map,
-                    getLocations.Result.Locations,
+                    getLocations.Locations,
                     ViewModel.FeatureNamesLookup,
                     ViewModel.ShowRouteText,
                     ViewModel.HideRouteText,

@@ -72,19 +72,19 @@ else
         var getChatsResult = await RandomCoffeeService.GetChatsByBot(BotId);
         IReadOnlyCollection<RandomCoffeeHistoryDto>? historyItems = null;
 
-        if (getChatsResult.Result.Items.Any())
+        if (getChatsResult.Items.Any())
         {
-            var chatId = _chatId ?? getChatsResult.Result.Items.First().Id;
+            var chatId = _chatId ?? getChatsResult.Items.First().Id;
             var getHistoryResult = await RandomCoffeeService.GetHistory(BotId, chatId, Depth);
 
-            historyItems = getHistoryResult.Result.Items;
+            historyItems = getHistoryResult.Items;
         }
 
         return new RandomCoffeeHistoryWidgetViewModel(
             resources[Messages.Dashboard_RandomCoffeeFirstTitle],
             resources[Messages.Dashboard_RandomCoffeeSecondTitle],
             resources[Messages.Dashboard_RandomCoffeeNoPair],
-            getChatsResult.Result.Items,
+            getChatsResult.Items,
             historyItems ?? Array.Empty<RandomCoffeeHistoryDto>());
     }
 

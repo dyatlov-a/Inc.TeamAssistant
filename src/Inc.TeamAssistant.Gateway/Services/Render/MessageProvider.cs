@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 
@@ -17,7 +16,7 @@ internal sealed class MessageProvider : IMessageProvider
         _webRootPath = webRootPath;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
+    public async Task<Dictionary<string, Dictionary<string, string>>> Get(CancellationToken token)
     {
         var result = new Dictionary<string, Dictionary<string, string>>();
 
@@ -30,6 +29,6 @@ internal sealed class MessageProvider : IMessageProvider
             result.Add(languageId.Value, resources!);
         }
 
-        return ServiceResult.Success(result);
+        return result;
     }
 }

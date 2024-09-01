@@ -19,9 +19,9 @@ public sealed class ResourcesManager
         var currentLanguage = _renderContext.GetCurrentLanguageId();
         var resources = await _messageProvider.Get();
 
-        return resources.Result.TryGetValue(currentLanguage.Language.Value, out var result)
+        return resources.TryGetValue(currentLanguage.Language.Value, out var result)
             ? result
-            : resources.Result[LanguageSettings.DefaultLanguageId.Value];
+            : resources[LanguageSettings.DefaultLanguageId.Value];
     }
 
     public Func<string?, string> CreateLinkBuilder()

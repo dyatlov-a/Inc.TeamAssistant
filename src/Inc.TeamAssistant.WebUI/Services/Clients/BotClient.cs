@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
@@ -26,122 +25,74 @@ internal sealed class BotClient : IBotService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<ServiceResult<GetBotsByOwnerResult>> GetBotsByOwner(long ownerId, CancellationToken token)
+    public async Task<GetBotsByOwnerResult> GetBotsByOwner(long ownerId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetBotsByOwnerResult>>(
-                $"bots/{ownerId}",
-                token);
+        var result = await _client.GetFromJsonAsync<GetBotsByOwnerResult>($"bots/{ownerId}", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetBotsByOwnerResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetBotUserNameResult>> Check(GetBotUserNameQuery query, CancellationToken token)
+    public async Task<GetBotUserNameResult> Check(GetBotUserNameQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        try
-        {
-            var response = await _client.PostAsJsonAsync("bots/check", query, token);
+        var response = await _client.PostAsJsonAsync("bots/check", query, token);
 
-            response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
             
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<GetBotUserNameResult>>(token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await response.Content.ReadFromJsonAsync<GetBotUserNameResult>(token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetBotUserNameResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetBotResult?>> GetBotById(Guid botId, CancellationToken token)
+    public async Task<GetBotResult?> GetBotById(Guid botId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetBotResult?>>($"bots/{botId}", token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await _client.GetFromJsonAsync<GetBotResult?>($"bots/{botId}", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetBotResult?>(ex.Message);
-        } 
+        return result;
     }
 
-    public async Task<ServiceResult<GetBotsResult>> GetByUser(long userId, CancellationToken token)
+    public async Task<GetBotsResult> GetByUser(long userId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetBotsResult>>($"bots/{userId}/user", token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await _client.GetFromJsonAsync<GetBotsResult>($"bots/{userId}/user", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetBotsResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetTeammatesResult>> GetTeammates(Guid teamId, CancellationToken token)
+    public async Task<GetTeammatesResult> GetTeammates(Guid teamId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetTeammatesResult>>(
-                $"bots/{teamId}/teammates",
-                token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await _client.GetFromJsonAsync<GetTeammatesResult>($"bots/{teamId}/teammates", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetTeammatesResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetTeamConnectorResult>> GetConnector(
+    public async Task<GetTeamConnectorResult> GetConnector(
         Guid teamId,
         string foreground,
         string background,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
         
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetTeamConnectorResult>>(
-                $"bots/{teamId}/connector?foreground={foreground}&background={background}",
-                token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await _client.GetFromJsonAsync<GetTeamConnectorResult>(
+            $"bots/{teamId}/connector?foreground={foreground}&background={background}",
+            token);
+        
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetTeamConnectorResult>(ex.Message);
-        }
+        return result;
     }
 
     public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
@@ -149,64 +100,37 @@ internal sealed class BotClient : IBotService
         await _client.PutAsJsonAsync("bots/teammate", command, token);
     }
 
-    public async Task<ServiceResult<GetFeaturesResult>> GetFeatures(CancellationToken token)
+    public async Task<GetFeaturesResult> GetFeatures(CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetFeaturesResult>>(
-                "bots/features",
-                token);
+        var result = await _client.GetFromJsonAsync<GetFeaturesResult>("bots/features", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetFeaturesResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetPropertiesResult>> GetProperties(CancellationToken token)
+    public async Task<GetPropertiesResult> GetProperties(CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetPropertiesResult>>(
-                "bots/properties",
-                token);
+        var result = await _client.GetFromJsonAsync<GetPropertiesResult>("bots/properties", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetPropertiesResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetBotDetailsResult>> GetDetails(GetBotDetailsQuery query, CancellationToken token)
+    public async Task<GetBotDetailsResult> GetDetails(GetBotDetailsQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        try
-        {
-            var response = await _client.PostAsJsonAsync("bots/details", query, token);
+        var response = await _client.PostAsJsonAsync("bots/details", query, token);
 
-            response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
             
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<GetBotDetailsResult>>(token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await response.Content.ReadFromJsonAsync<GetBotDetailsResult>(token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetBotDetailsResult>(ex.Message);
-        }
+        return result;
     }
 
     public async Task Create(CreateBotCommand command, CancellationToken token)

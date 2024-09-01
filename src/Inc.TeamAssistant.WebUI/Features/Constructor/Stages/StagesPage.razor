@@ -88,16 +88,16 @@
         var getCalendarByOwnerResult = await CalendarService.GetCalendarByOwner();
 
         return new StagesState(
-            bot?.Result?.Id,
-            bot?.Result?.UserName ?? string.Empty,
-            bot?.Result?.Token ?? string.Empty,
-            bot?.Result?.FeatureIds ?? Array.Empty<Guid>(),
-            bot?.Result?.Properties ?? new Dictionary<string, string>(),
-            getFeaturesResult.Result.Features,
-            bot?.Result?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
+            bot?.Id,
+            bot?.UserName ?? string.Empty,
+            bot?.Token ?? string.Empty,
+            bot?.FeatureIds ?? Array.Empty<Guid>(),
+            bot?.Properties ?? new Dictionary<string, string>(),
+            getFeaturesResult.Features,
+            bot?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
             Array.Empty<BotDetails>(),
-            getCalendarByOwnerResult.Result?.Id,
-            await CreateCalendarState(jsRuntime, getCalendarByOwnerResult.Result));
+            getCalendarByOwnerResult?.Id,
+            await CreateCalendarState(jsRuntime, getCalendarByOwnerResult));
     }
 
     private async Task<CalendarState> CreateCalendarState(

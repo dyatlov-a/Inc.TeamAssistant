@@ -74,8 +74,8 @@ else
             string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], intervalInDays),
             string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], intervalInDays),
             dateItems,
-            history.Result.Review,
-            history.Result.Requests);
+            history.Review,
+            history.Requests);
     }
 
     private async Task Changed(DateOnly date)

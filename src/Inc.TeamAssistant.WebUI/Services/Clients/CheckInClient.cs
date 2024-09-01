@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetLocations;
 using Inc.TeamAssistant.CheckIn.Model.Queries.GetMaps;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -16,41 +15,21 @@ internal sealed class CheckInClient : ICheckInService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<ServiceResult<GetMapsResult>> GetMaps(Guid botId, CancellationToken token)
+    public async Task<GetMapsResult> GetMaps(Guid botId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetMapsResult>>(
-                $"check-in/maps/{botId:N}",
-                token);
+        var result = await _client.GetFromJsonAsync<GetMapsResult>($"check-in/maps/{botId:N}", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetMapsResult>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<GetLocationsResult?>> GetLocations(Guid mapId, CancellationToken token)
+    public async Task<GetLocationsResult?> GetLocations(Guid mapId, CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetLocationsResult?>>(
-                $"check-in/locations/{mapId:N}",
-                token);
+        var result = await _client.GetFromJsonAsync<GetLocationsResult?>($"check-in/locations/{mapId:N}", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetLocationsResult?>(ex.Message);
-        }
+        return result;
     }
 }

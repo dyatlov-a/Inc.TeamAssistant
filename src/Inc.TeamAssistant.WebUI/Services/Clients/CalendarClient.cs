@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
@@ -17,63 +16,34 @@ internal sealed class CalendarClient : ICalendarService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(CancellationToken token)
+    public async Task<GetCalendarByOwnerResult?> GetCalendarByOwner(CancellationToken token)
     {
-        try
-        {
-            var result = await _client.GetFromJsonAsync<ServiceResult<GetCalendarByOwnerResult?>>("calendars", token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
+        var result = await _client.GetFromJsonAsync<GetCalendarByOwnerResult?>("calendars", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetCalendarByOwnerResult?>(ex.Message);
-        }
+        return result;
     }
 
-    public async Task<ServiceResult<Guid>> Create(CreateCalendarCommand command, CancellationToken token)
+    public async Task<Guid> Create(CreateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        try
-        {
-            var response = await _client.PostAsJsonAsync("calendars", command, token);
+        var response = await _client.PostAsJsonAsync("calendars", command, token);
         
-            response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
         
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<Guid>>(token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<Guid>(ex.Message);
-        }
+        return await response.Content.ReadFromJsonAsync<Guid>(token);
     }
 
-    public async Task<ServiceResult<Guid>> Update(UpdateCalendarCommand command, CancellationToken token)
+    public async Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        try
-        {
-            var response = await _client.PutAsJsonAsync("calendars", command, token);
+        var response = await _client.PutAsJsonAsync("calendars", command, token);
         
-            response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
         
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<Guid>>(token);
-            if (result is null)
-                throw new TeamAssistantException("Parse response with error.");
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<Guid>(ex.Message);
-        }
+        return await response.Content.ReadFromJsonAsync<Guid>(token);
     }
 }

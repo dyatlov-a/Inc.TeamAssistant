@@ -65,6 +65,6 @@ public sealed class CompleteFormModel
         
         return holidays.Any()
             ? $"{string.Join(", ", holidays.Select(h => h.Key.ToString("dd.MM.yyyy")))} ({holidays.Count})"
-            : string.Empty;
+            : "-";
     }
 }

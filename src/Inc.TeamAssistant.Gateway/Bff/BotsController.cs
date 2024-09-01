@@ -24,11 +24,7 @@ public sealed class BotsController : ControllerBase
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> Get(Guid id, CancellationToken token)
     {
-        var getBotByIdResult = await _botService.GetBotById(id, token);
-        
-        return getBotByIdResult.Result is null
-            ? NotFound()
-            : Ok(getBotByIdResult);
+        return Ok(await _botService.GetBotById(id, token));
     }
 
     [HttpGet("{ownerId:long}")]

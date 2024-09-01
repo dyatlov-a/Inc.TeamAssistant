@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
@@ -16,49 +15,22 @@ internal sealed class CalendarService : ICalendarService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
     
-    public async Task<ServiceResult<GetCalendarByOwnerResult?>> GetCalendarByOwner(CancellationToken token)
+    public async Task<GetCalendarByOwnerResult?> GetCalendarByOwner(CancellationToken token)
     {
-        try
-        {
-            var result = await _mediator.Send(new GetCalendarByOwnerQuery(), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetCalendarByOwnerResult?>(ex.Message);
-        }
+        return await _mediator.Send(new GetCalendarByOwnerQuery(), token);
     }
 
-    public async Task<ServiceResult<Guid>> Create(CreateCalendarCommand command, CancellationToken token)
+    public async Task<Guid> Create(CreateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        try
-        {
-            var result = await _mediator.Send(command, token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<Guid>(ex.Message);
-        }
+        return await _mediator.Send(command, token);
     }
 
-    public async Task<ServiceResult<Guid>> Update(UpdateCalendarCommand command, CancellationToken token)
+    public async Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        try
-        {
-            var result = await _mediator.Send(command, token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<Guid>(ex.Message);
-        }
+        return await _mediator.Send(command, token);
     }
 }

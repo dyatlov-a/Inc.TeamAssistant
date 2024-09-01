@@ -112,7 +112,7 @@
         var getPropertiesResult = await BotService.GetProperties();
         
         return new SetSettingsViewModel(
-            getPropertiesResult.Result.Properties,
+            getPropertiesResult.Properties,
             resources[Messages.Constructor_MoveNextTitle],
             resources[Messages.Constructor_SupportedLanguages],
             resources[Messages.Constructor_SupportedLanguagesHelp],

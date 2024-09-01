@@ -43,8 +43,8 @@ public sealed class CheckBotFormTracker : ComponentBase, IDisposable
         else
         {
             var getBotUserNameResult = await BotService.Check(new GetBotUserNameQuery(model.Token));
-            model.UserName = getBotUserNameResult.Result.UserName;
-            model.HasAccess = getBotUserNameResult.Result.HasAccess;
+            model.UserName = getBotUserNameResult.UserName;
+            model.HasAccess = getBotUserNameResult.HasAccess;
         }
 
         _oldValues = new CheckBotFormModel

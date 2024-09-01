@@ -50,7 +50,7 @@ else
 
         return new MapWidgetViewModel(
             resources[Messages.Dashboard_CheckInMoveToMapTitle],
-            maps.Result.Items);
+            maps.Items);
     }
 
     private string GetMapUrl(Guid mapId) => LinkBuilder($"map/{mapId:N}");

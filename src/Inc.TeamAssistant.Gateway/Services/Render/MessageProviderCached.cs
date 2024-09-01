@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -23,7 +22,7 @@ internal sealed class MessageProviderCached : IMessageProvider
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
+    public async Task<Dictionary<string, Dictionary<string, string>>> Get(CancellationToken token)
     {
         var cacheKey = $"{nameof(MessageProviderCached)}_{nameof(Get)}";
         var cacheItem = await _memoryCache.GetOrCreateAsync(

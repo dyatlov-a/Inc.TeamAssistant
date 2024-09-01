@@ -1,6 +1,4 @@
 using Blazored.LocalStorage;
-using Inc.TeamAssistant.Appraiser.Model.Common;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.Render;
@@ -24,23 +22,21 @@ internal sealed class MessageProviderClientCached : IMessageProvider
         _appVersion = appVersion;
     }
 
-    public async Task<ServiceResult<Dictionary<string, Dictionary<string, string>>>> Get(CancellationToken token)
+    public async Task<Dictionary<string, Dictionary<string, string>>> Get(CancellationToken token)
     {
         var key = GetKey();
 
         if (!await _localStorage.ContainKeyAsync(key, token))
         {
             await _localStorage.ClearAsync(token);
+            
             var response = await _messageProvider.Get(token);
 
-            if (response.State == ServiceResultState.Success)
-                await _localStorage.SetItemAsync(key, response.Result, token);
-            else
-                throw new TeamAssistantException("Can't load resources.");
+            await _localStorage.SetItemAsync(key, response, token);
         }
 
         var data = await _localStorage.GetItemAsync<Dictionary<string, Dictionary<string, string>>>(key, token);
-        return ServiceResult.Success(data!);
+        return data!;
     }
 
     private string GetKey() => $"{nameof(MessageProviderClientCached)}_{nameof(Get)}_{_appVersion}";

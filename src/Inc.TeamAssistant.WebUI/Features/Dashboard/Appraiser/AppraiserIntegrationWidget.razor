@@ -177,6 +177,6 @@
     {
         var teamProperties = await IntegrationService.GetTeamProperties(TeamId);
 
-        _formModel.Apply(teamProperties.Result);
+        _formModel.Apply(teamProperties);
     }
 }

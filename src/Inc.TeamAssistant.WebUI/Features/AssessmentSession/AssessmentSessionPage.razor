@@ -117,14 +117,14 @@
             resources[Messages.GUI_AssessmentSessionAbout],
             resources[Messages.GUI_AssessmentSessionConnect],
             resources[Messages.GUI_AssessmentSessionHasNotTasks],
-            newStoryState.Result.TeamName,
-            newStoryState.Result.CodeForConnect,
+            newStoryState.TeamName,
+            newStoryState.CodeForConnect,
             new BreadcrumbItem[]
             {
                 new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{Id:N}")),
                 new (date, LinkBuilder($"assessment-history/{Id:N}/{date}"))
             },
-            newStoryState.Result.Story);
+            newStoryState.Story);
     }
 
     private string MoveToView(AssessmentType assessmentType)

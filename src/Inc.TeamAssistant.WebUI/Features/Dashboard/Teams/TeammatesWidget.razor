@@ -86,7 +86,7 @@ else
         var getTeammatesResult = await BotService.GetTeammates(TeamId);
 
         return new TeammatesWidgetViewModel(
-            getTeammatesResult.Result.HasManagerAccess,
+            getTeammatesResult.HasManagerAccess,
             resources[Messages.Dashboard_PersonName],
             resources[Messages.Dashboard_LeaveUntil],
             resources[Messages.Dashboard_ExcludeFromTeam],
@@ -94,7 +94,7 @@ else
             resources[Messages.Dashboard_Days],
             resources[Messages.Dashboard_Forever],
             resources[Messages.Dashboard_RecoveryTeammate],
-            getTeammatesResult.Result.Teammates);
+            getTeammatesResult.Teammates);
     }
 
     private IQueryable<TeammateDto> Teammates => ViewModel.Teammates.AsQueryable();
