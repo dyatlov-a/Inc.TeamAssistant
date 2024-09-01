@@ -12,9 +12,11 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
     [Inject]
     public ResourcesManager ResourcesManager { get; set; } = default!;
     
+    [Inject]
+    public LinkBuilder LinkBuilder { get; set; } = default!;
+    
     private PersistingComponentStateSubscription? _persistingSubscription;
     protected TViewModel ViewModel { get; private set; } = TViewModel.Empty;
-    protected Func<string?, string> LinkBuilder { get; private set; } = l => l ?? string.Empty;
     protected Func<string, string> ResourceProvider { get; private set; } = k => k;
 
     protected override async Task OnParametersSetAsync()
@@ -22,7 +24,6 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
         var key = TViewModel.PersistentKey;
         var resources = await ResourcesManager.GetResource();
         
-        LinkBuilder = ResourcesManager.CreateLinkBuilder();
         ResourceProvider = k => resources.GetValueOrDefault(k, k);
         
         _persistingSubscription ??= ApplicationState.RegisterOnPersisting(() =>

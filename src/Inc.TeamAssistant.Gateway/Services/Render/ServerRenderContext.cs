@@ -20,18 +20,19 @@ internal sealed class ServerRenderContext : IRenderContext
 
     public (LanguageId Language, bool Selected) GetCurrentLanguageId()
     {
-        var relativeUrl = _httpContextAccessor.HttpContext!.Request.Path.Value;
-
-        if (!string.IsNullOrWhiteSpace(relativeUrl))
-        {
-            var languageId = LanguageSettings.LanguageIds.SingleOrDefault(l => relativeUrl.StartsWith(
-                $"/{l.Value}",
-                StringComparison.InvariantCultureIgnoreCase));
-            
-            if (languageId is not null)
-                return (languageId, true);
-        }
-
-        return (LanguageSettings.DefaultLanguageId, false);
+        if (_httpContextAccessor.HttpContext is null)
+            return (LanguageSettings.DefaultLanguageId, false);
+        
+        var relativeUrl = _httpContextAccessor.HttpContext.Request.Path.Value;
+        if (string.IsNullOrWhiteSpace(relativeUrl))
+            return (LanguageSettings.DefaultLanguageId, false);
+        
+        var languageId = LanguageSettings.LanguageIds.SingleOrDefault(l => relativeUrl.StartsWith(
+            $"/{l.Value}",
+            StringComparison.InvariantCultureIgnoreCase));
+        
+        return languageId is not null
+            ? (languageId, true)
+            : (LanguageSettings.DefaultLanguageId, false);
     }
 }

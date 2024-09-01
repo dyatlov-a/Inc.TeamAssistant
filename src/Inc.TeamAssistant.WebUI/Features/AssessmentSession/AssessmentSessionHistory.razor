@@ -29,7 +29,7 @@
         if (historyItem is null)
             throw new ArgumentNullException(nameof(historyItem));
 
-        return LinkBuilder($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+        return LinkBuilder.Build($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 
     protected override async Task<AssessmentSessionHistoryViewModel> Initialize(Dictionary<string, string> resources)

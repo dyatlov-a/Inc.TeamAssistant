@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
             .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
             
-            .AddScoped<IRenderContext, ClientRenderContext>()
+            .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<MessageProviderClient>()
             .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
                 sp.GetRequiredService<ILocalStorageService>(),
@@ -51,7 +51,8 @@ public static class ServiceCollectionExtensions
             .AddOptions()
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<ResourcesManager>()
+            .AddSingleton<ResourcesManager>()
+            .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));
 
         return services;

@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
                 sp,
                 sp.GetRequiredService<MessageProvider>(),
                 cacheAbsoluteExpiration))
-            .AddScoped<IRenderContext, ServerRenderContext>();
+            .AddSingleton<IRenderContext, ServerRenderContext>();
 
         services
             .AddSingleton(authOptions)

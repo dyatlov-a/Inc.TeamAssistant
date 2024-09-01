@@ -34,7 +34,7 @@
 </section>
 
 @code {
-    private string MoveToConstructor() => LinkBuilder("constructor");
+    private string MoveToConstructor() => LinkBuilder.Build("constructor");
 
     private string CssClass => RenderContext.IsBrowser ? "animation__slide-left" : "hidden";
     

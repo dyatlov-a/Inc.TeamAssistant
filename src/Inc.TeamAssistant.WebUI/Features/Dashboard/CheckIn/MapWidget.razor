@@ -53,5 +53,5 @@ else
             maps.Items);
     }
 
-    private string GetMapUrl(Guid mapId) => LinkBuilder($"map/{mapId:N}");
+    private string GetMapUrl(Guid mapId) => LinkBuilder.Build($"map/{mapId:N}");
 }

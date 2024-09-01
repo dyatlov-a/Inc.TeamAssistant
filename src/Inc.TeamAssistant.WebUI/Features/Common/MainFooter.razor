@@ -35,15 +35,15 @@
             {
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkMain],
-                    LinkBuilder(null),
+                    LinkBuilder.Build(null),
                     !external),
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkConstructor],
-                    LinkBuilder("constructor"),
+                    LinkBuilder.Build("constructor"),
                     !external),
                 new MainFooterViewModel.FooterLink(
                     resources[Messages.Footer_LinkDashboard],
-                    LinkBuilder("dashboard"),
+                    LinkBuilder.Build("dashboard"),
                     !external)
             },
             [resources[Messages.Footer_GroupTech]] = new[]

@@ -64,9 +64,9 @@ else
            getSessionHistoryResult.Items);
     }
 
-    private string GetAssessmentSessionUrl() => LinkBuilder($"assessment-session/{TeamId:N}");
+    private string GetAssessmentSessionUrl() => LinkBuilder.Build($"assessment-session/{TeamId:N}");
     
-    private string MoveToItem(DateOnly date) => LinkBuilder($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
+    private string MoveToItem(DateOnly date) => LinkBuilder.Build($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 
     private async Task Changed(DateOnly date)
     {

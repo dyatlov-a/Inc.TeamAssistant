@@ -51,8 +51,8 @@
         
         return await Task.FromResult(new MainNavbarViewModel(
             hasLoginControls,
-            LinkBuilder(null),
-            LinkBuilder($"login?returnUrl={CurrentUrl}"),
+            LinkBuilder.Build(null),
+            LinkBuilder.Build($"login?returnUrl={CurrentUrl}"),
             resources[Messages.Navigation_Login],
             $"accounts/logout?returnUrl={CurrentUrl}",
             resources[Messages.Navigation_Logout]));

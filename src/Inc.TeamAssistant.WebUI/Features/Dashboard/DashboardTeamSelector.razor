@@ -88,7 +88,7 @@
     private void ChangeTeamContext((Guid BotId, Guid? TeamId) teamContext)
     {
         if ((BotId, TeamId) != teamContext)
-            NavigationManager.NavigateTo(LinkBuilder($"dashboard/{teamContext.BotId:N}/{teamContext.TeamId:N}"));
+            NavigationManager.NavigateTo(LinkBuilder.Build($"dashboard/{teamContext.BotId:N}/{teamContext.TeamId:N}"));
     }
 
     private IEnumerable<TeamDto> GetTeams()

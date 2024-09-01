@@ -23,22 +23,4 @@ public sealed class ResourcesManager
             ? result
             : resources[LanguageSettings.DefaultLanguageId.Value];
     }
-
-    public Func<string?, string> CreateLinkBuilder()
-    {
-        var currentLanguageId = _renderContext.GetCurrentLanguageId();
-
-        return relativeUrl => CreateLinkBuilder(
-            currentLanguageId.Selected ? currentLanguageId.Language : null,
-            relativeUrl);
-    }
-
-    private string CreateLinkBuilder(LanguageId? currentLanguageId, string? relativeUrl)
-    {
-        var link = string.IsNullOrWhiteSpace(relativeUrl) ? "/" : $"/{relativeUrl}";
-
-        return currentLanguageId is not null
-            ? $"/{currentLanguageId.Value}{link}"
-            : link;
-    }
 }

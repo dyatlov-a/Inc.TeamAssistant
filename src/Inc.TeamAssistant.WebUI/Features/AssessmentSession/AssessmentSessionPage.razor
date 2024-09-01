@@ -121,8 +121,8 @@
             newStoryState.CodeForConnect,
             new BreadcrumbItem[]
             {
-                new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{Id:N}")),
-                new (date, LinkBuilder($"assessment-history/{Id:N}/{date}"))
+                new (resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{Id:N}")),
+                new (date, LinkBuilder.Build($"assessment-history/{Id:N}/{date}"))
             },
             newStoryState.Story);
     }
@@ -131,7 +131,7 @@
     {
         var view = assessmentType.ToString().ToLower();
         
-        return LinkBuilder($"assessment-session/{Id}/{view}");
+        return LinkBuilder.Build($"assessment-session/{Id}/{view}");
     }
 
     private string ViewControlsItemCss(AssessmentType assessmentType)

@@ -128,13 +128,13 @@
     private string LinkFactory(Stage? stage)
     {
         if (!stage.HasValue)
-            return LinkBuilder("constructor");
+            return LinkBuilder.Build("constructor");
         
         var target = stage.Value.ToString().ToLower();
         var link = _stagesState.Id.HasValue
             ? $"constructor/{_stagesState.Id.Value:N}/{target}"
             : $"constructor/{target}";
 
-        return LinkBuilder(link);
+        return LinkBuilder.Build(link);
     }
 }

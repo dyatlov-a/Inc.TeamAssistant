@@ -43,8 +43,8 @@
             resources[Messages.GUI_MeanRating],
             new BreadcrumbItem[]
             {
-                new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{TeamId:N}")),
-                new (Date, LinkBuilder($"assessment-history/{TeamId:N}/{Date}"))
+                new (resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
+                new (Date, LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}"))
             },
             getStoriesResult.Items);
     }
