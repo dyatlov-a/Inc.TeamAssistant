@@ -59,7 +59,7 @@
         }
     }
 
-    protected override Task<MapPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<MapPageViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new MapPageViewModel(
             resources[Messages.CheckIn_DefaultLayerTitle],

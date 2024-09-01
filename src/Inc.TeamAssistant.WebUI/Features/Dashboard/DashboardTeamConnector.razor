@@ -19,7 +19,7 @@
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
     
-    protected override async Task<DashboardTeamConnectorViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<DashboardTeamConnectorViewModel> Initialize(ResourcesManager resources)
     {
         var teamConnector = await BotService.GetConnector(TeamId, "000", "9d9d9d");
 

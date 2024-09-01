@@ -53,7 +53,7 @@
         _isShow = false;
     }
     
-    protected override Task<AcceptCookieDialogViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<AcceptCookieDialogViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new AcceptCookieDialogViewModel(
             resources[Messages.GUI_AcceptCookieText],

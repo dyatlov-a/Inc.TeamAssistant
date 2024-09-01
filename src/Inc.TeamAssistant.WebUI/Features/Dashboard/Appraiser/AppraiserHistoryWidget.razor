@@ -49,7 +49,7 @@ else
         _date ??= ViewModel.DateItems.First().Date;
     }
     
-    protected override async Task<AppraiserHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<AppraiserHistoryWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var dateItems = DateSelectorDataFactory.CreateLongPeriod(resources); 
         _date ??= dateItems.First().Date; 

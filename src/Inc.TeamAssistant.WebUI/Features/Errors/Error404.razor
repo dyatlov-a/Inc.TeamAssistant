@@ -11,7 +11,7 @@
 </div>
 
 @code {
-    protected override Task<Error404ViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<Error404ViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new Error404ViewModel(
             resources[Messages.GUI_Error404],

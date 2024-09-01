@@ -55,7 +55,7 @@
             SelectBot(_currentBotId);
     }
 
-    protected override Task<DashboardTeamSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<DashboardTeamSelectorViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new DashboardTeamSelectorViewModel(
             resources[Messages.Dashboard_SelectTeamTitle],

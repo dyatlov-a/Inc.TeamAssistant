@@ -45,7 +45,7 @@
         NavigationManager.LocationChanged += async (s, e) => await Update();
     }
 
-    protected override async Task<MainNavbarViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<MainNavbarViewModel> Initialize(ResourcesManager resources)
     {
         var hasLoginControls = !CurrentUrl.Contains("/login");
         

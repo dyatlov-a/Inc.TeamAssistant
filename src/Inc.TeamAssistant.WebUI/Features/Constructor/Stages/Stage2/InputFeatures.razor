@@ -86,19 +86,11 @@
     
     [Parameter]
     public RenderFragment? Validation { get; set; }
-
-    private Dictionary<string, string> _resources = new();
+    
     private string _availableFeaturesCssClass = string.Empty;
     private string _selectedFeaturesCssClass = string.Empty;
     private IEnumerable<FeatureDto> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
     private IEnumerable<FeatureDto> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
-
-    protected override async Task OnInitializedAsync()
-    {
-        _resources = await ResourcesManager.GetResource();
-        
-        await base.OnInitializedAsync();
-    }
 
     protected override bool TryParseValueFromString(
         string? value,
@@ -114,7 +106,7 @@
     {
         var messageId = Messages.GetFeatureProperty(featureName, propertyName);
         
-        return _resources.GetValueOrDefault(messageId, messageId);
+        return ResourcesManager[messageId];
     }
 
     private Type FeatureType(string featureName) => featureName switch

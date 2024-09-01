@@ -44,7 +44,7 @@ else
         _mapId = ViewModel.Maps.FirstOrDefault()?.Id;
     }
 
-    protected override async Task<MapWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<MapWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var maps = await CheckInService.GetMaps(BotId);
 

@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.Gateway.Services.Render;
+namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
 internal sealed class ServerRenderContext : IRenderContext
 {

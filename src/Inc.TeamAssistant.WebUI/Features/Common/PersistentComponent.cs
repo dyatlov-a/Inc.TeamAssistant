@@ -17,14 +17,10 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
     
     private PersistingComponentStateSubscription? _persistingSubscription;
     protected TViewModel ViewModel { get; private set; } = TViewModel.Empty;
-    protected Func<string, string> ResourceProvider { get; private set; } = k => k;
 
     protected override async Task OnParametersSetAsync()
     {
         var key = TViewModel.PersistentKey;
-        var resources = await ResourcesManager.GetResource();
-        
-        ResourceProvider = k => resources.GetValueOrDefault(k, k);
         
         _persistingSubscription ??= ApplicationState.RegisterOnPersisting(() =>
         {
@@ -36,20 +32,18 @@ public abstract class PersistentComponent<TViewModel> : ComponentBase, IAsyncDis
             ViewModel = restored;
         else
         {
-            ViewModel = await Initialize(resources);
+            ViewModel = await Initialize(ResourcesManager);
         }
     }
 
     public async Task Update()
     {
-        var resources = await ResourcesManager.GetResource();
-        
-        ViewModel = await Initialize(resources);
+        ViewModel = await Initialize(ResourcesManager);
         
         StateHasChanged();
     }
     
-    protected abstract Task<TViewModel> Initialize(Dictionary<string, string> resources);
+    protected abstract Task<TViewModel> Initialize(ResourcesManager resources);
     
     public virtual ValueTask DisposeAsync()
     {

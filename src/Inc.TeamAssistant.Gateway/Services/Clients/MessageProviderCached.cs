@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Inc.TeamAssistant.Gateway.Services.Render;
+namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
 internal sealed class MessageProviderCached : IMessageProvider
 {

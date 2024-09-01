@@ -78,7 +78,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
-    protected override async Task<DashboardPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<DashboardPageViewModel> Initialize(ResourcesManager resources)
     {
         var authenticationState = await AuthenticationStateTask;
         var currentPerson = authenticationState.User.ToPerson();

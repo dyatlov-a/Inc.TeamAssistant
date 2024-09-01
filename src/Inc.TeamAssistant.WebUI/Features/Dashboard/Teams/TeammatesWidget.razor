@@ -81,7 +81,7 @@ else
     private bool _exclude;
     private int? _leaveUntil;
 
-    protected override async Task<TeammatesWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<TeammatesWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var getTeammatesResult = await BotService.GetTeammates(TeamId);
 

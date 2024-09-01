@@ -26,7 +26,7 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
 
-    protected override Task<OpenGraphViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<OpenGraphViewModel> Initialize(ResourcesManager resources)
     {
         var languageId = RenderContext.GetCurrentLanguageId().Language.Value;
         var data = WebsiteSection switch

@@ -76,7 +76,7 @@
             _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, async _ => await CreateState(jsRuntime));
     }
 
-    protected override Task<StagesPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<StagesPageViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
     }

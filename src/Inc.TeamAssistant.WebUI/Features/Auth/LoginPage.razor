@@ -52,7 +52,7 @@
     [Parameter, SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
     
-    protected override async Task<LoginPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<LoginPageViewModel> Initialize(ResourcesManager resources)
     {
         var botContext = await UserService.GetAuthBotContext();
 

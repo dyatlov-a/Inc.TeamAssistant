@@ -105,7 +105,7 @@
             _eventsProvider ??= await eventsProvider.OnStoryChanged(Id, Update);
     }
 
-    protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<AssessmentSessionPageViewModel> Initialize(ResourcesManager resources)
     {
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         var newStoryState = await AppraiserService.GetActiveStory(Id, "000", "dfdfdf");

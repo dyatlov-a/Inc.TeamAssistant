@@ -5,7 +5,7 @@
 </p>
 
 @code {
-    protected override Task<BotNotSelectedViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<BotNotSelectedViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new BotNotSelectedViewModel(
             resources[Messages.Dashboard_SelectTeam],

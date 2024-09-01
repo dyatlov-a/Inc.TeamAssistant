@@ -60,7 +60,7 @@ else
     
     private IQueryable<TaskForReviewDto> Tasks => ViewModel.Tasks.AsQueryable();
 
-    private Dictionary<string, string> BuildStateLookup(Dictionary<string, string> resources)
+    private Dictionary<string, string> BuildStateLookup(ResourcesManager resources)
     {
         return new Dictionary<string, string>
         {
@@ -79,7 +79,7 @@ else
         _date ??= ViewModel.DateItems.First().Date;
     }
     
-    protected override async Task<ReviewHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<ReviewHistoryWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var dateItems = DateSelectorDataFactory.Create(resources);
         _date ??= dateItems.First().Date;

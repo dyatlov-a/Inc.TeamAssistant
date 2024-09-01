@@ -44,7 +44,7 @@
     private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
     
-    protected override async Task<BotSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<BotSelectorViewModel> Initialize(ResourcesManager resources)
     {
         var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
         

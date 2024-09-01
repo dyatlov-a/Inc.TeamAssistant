@@ -52,7 +52,7 @@
         base.OnParametersSet();
     }
     
-    protected override Task<SelectFeaturesViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<SelectFeaturesViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new SelectFeaturesViewModel(
             resources[Messages.Constructor_FormSectionFeaturesTitle],

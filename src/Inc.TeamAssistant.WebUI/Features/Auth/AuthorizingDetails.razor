@@ -7,7 +7,7 @@
 </div>
 
 @code {
-    protected override Task<AuthorizingDetailsViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<AuthorizingDetailsViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new AuthorizingDetailsViewModel(resources[Messages.GUI_Authorizing]));
     }

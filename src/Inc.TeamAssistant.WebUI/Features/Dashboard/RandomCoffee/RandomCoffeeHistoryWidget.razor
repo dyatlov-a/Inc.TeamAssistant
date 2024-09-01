@@ -67,7 +67,7 @@ else
         _date = ViewModel.HistoryItems.FirstOrDefault()?.Created;
     }
 
-    protected override async Task<RandomCoffeeHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<RandomCoffeeHistoryWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var getChatsResult = await RandomCoffeeService.GetChatsByBot(BotId);
         IReadOnlyCollection<RandomCoffeeHistoryDto>? historyItems = null;

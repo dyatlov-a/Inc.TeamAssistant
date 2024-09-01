@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 internal static class DateSelectorDataFactory
 {
-    public static IReadOnlyCollection<DateSelectorItem> Create(Dictionary<string, string> resources)
+    public static IReadOnlyCollection<DateSelectorItem> Create(ResourcesManager resources)
     {
         ArgumentNullException.ThrowIfNull(resources);
         
@@ -24,7 +24,7 @@ internal static class DateSelectorDataFactory
                 DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-84).Date))
         };
     }
-    public static IReadOnlyCollection<DateSelectorItem> CreateLongPeriod(Dictionary<string, string> resources)
+    public static IReadOnlyCollection<DateSelectorItem> CreateLongPeriod(ResourcesManager resources)
     {
         ArgumentNullException.ThrowIfNull(resources);
         

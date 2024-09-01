@@ -17,8 +17,8 @@
             foreach (var settingSection in settingSections)
             {
                 <FormSection
-                    Title="@ResourceProvider(settingSection.HeaderMessageId)"
-                    HelpText="@ResourceProvider(settingSection.HelpMessageId)">
+                    Title="@ResourcesManager[settingSection.HeaderMessageId]"
+                    HelpText="@ResourcesManager[settingSection.HelpMessageId]">
                     <Content>
                         @foreach (var settingItem in settingSection.SettingItems)
                         {
@@ -30,7 +30,7 @@
                             
                             <FormFieldSet
                                 FieldId="@settingItem.PropertyName"
-                                Label="@ResourceProvider(settingItem.LabelMessageId)">
+                                Label="@ResourcesManager[settingItem.LabelMessageId]">
                                 <Content>
                                     <InputSelect
                                         id="@settingItem.PropertyName"
@@ -38,7 +38,7 @@
                                         class="form-control">
                                         @foreach (var value in settingItem.Values)
                                         {
-                                            <option value="@value.Value">@ResourceProvider(value.MessageId)</option>
+                                            <option value="@value.Value">@ResourcesManager[value.MessageId]</option>
                                         }
                                     </InputSelect>
                                     <ValidationMessage For="@(() => property.Value)"/>
@@ -107,7 +107,7 @@
         base.OnParametersSet();
     }
     
-    protected override async Task<SetSettingsViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<SetSettingsViewModel> Initialize(ResourcesManager resources)
     {
         var getPropertiesResult = await BotService.GetProperties();
         

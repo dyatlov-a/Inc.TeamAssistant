@@ -21,7 +21,7 @@
 </div>
 
 @code {
-    protected override Task<ConstructorPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<ConstructorPageViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new ConstructorPageViewModel(
             resources[Messages.Constructor_Title],

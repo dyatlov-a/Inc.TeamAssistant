@@ -54,7 +54,7 @@ else
         _chart?.RenderAsync();
     }
 
-    protected override async Task<ReviewAverageStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<ReviewAverageStatsWidgetViewModel> Initialize(ResourcesManager resources)
     {
         var dateItems = DateSelectorDataFactory.Create(resources);
         _date ??= dateItems.First().Date;

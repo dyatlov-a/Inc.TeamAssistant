@@ -67,8 +67,8 @@
             foreach (var settingSection in settingSections)
             {
                 <FormSection
-                    Title="@ResourceProvider(settingSection.HeaderMessageId)"
-                    HelpText="@ResourceProvider(settingSection.HelpMessageId)">
+                    Title="@ResourcesManager[settingSection.HeaderMessageId]"
+                    HelpText="@ResourcesManager[settingSection.HelpMessageId]">
                     <Content>
                         <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
                             @ViewModel.EditText
@@ -81,7 +81,7 @@
 
                             <FormFieldSet
                                 FieldId="@settingItem.PropertyName"
-                                Label="@ResourceProvider(settingItem.LabelMessageId)">
+                                Label="@ResourcesManager[settingItem.LabelMessageId]">
                                 <Content>
                                     <input
                                         type="text"
@@ -144,7 +144,7 @@
                                 {
                                     <span
                                         class="multiselect__item @CssClass(day)">
-                                        @ResourceProvider(Messages.GetDayOfWeekTitle(day))
+                                        @ResourcesManager[Messages.GetDayOfWeekTitle(day)]
                                     </span>
                                 }
                             </div>
@@ -193,7 +193,7 @@
         base.OnParametersSet();
     }
     
-    protected override async Task<CompleteViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<CompleteViewModel> Initialize(ResourcesManager resources)
     {
         var result = await BotService.GetProperties();
         var featuresLookup = new[]
@@ -240,7 +240,7 @@
     {
         var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(value, StringComparison.InvariantCultureIgnoreCase));
         
-        return item is null ? string.Empty : ResourceProvider(item.MessageId);
+        return item is null ? string.Empty : ResourcesManager[item.MessageId];
     }
     
     private async Task SubmitForm()

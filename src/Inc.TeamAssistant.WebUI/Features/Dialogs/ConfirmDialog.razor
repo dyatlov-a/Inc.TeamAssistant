@@ -30,13 +30,11 @@
     private bool _isOpen;
     private ConfirmDialogViewModel _viewModel = ConfirmDialogViewModel.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var resources = await ResourcesManager.GetResource();
-        
         _viewModel = new ConfirmDialogViewModel(
-            resources[Messages.ConfirmDialog_Yes],
-            resources[Messages.ConfirmDialog_No]);
+            ResourcesManager[Messages.ConfirmDialog_Yes],
+            ResourcesManager[Messages.ConfirmDialog_No]);
     }
 
     public void Open()

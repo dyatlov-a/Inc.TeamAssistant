@@ -5,7 +5,7 @@
 </div>
 
 @code {
-    protected override Task<NoDataViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<NoDataViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new NoDataViewModel(resources[Messages.Dashboard_NoData]));
     }

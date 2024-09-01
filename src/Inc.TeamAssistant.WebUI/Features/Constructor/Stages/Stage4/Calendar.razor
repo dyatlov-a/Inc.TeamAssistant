@@ -50,7 +50,7 @@
                                 <span
                                     class="multiselect__item @CssClass(day)"
                                     @onclick="() => ToggleWeekend(day)">
-                                    @ResourceProvider(Messages.GetDayOfWeekTitle(day))
+                                    @ResourcesManager[Messages.GetDayOfWeekTitle(day)]
                                 </span>
                             }
                         </div>
@@ -155,7 +155,7 @@
         base.OnParametersSet();
     }
 
-    protected override Task<CalendarViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<CalendarViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new CalendarViewModel(
             resources[Messages.Constructor_WorkTimeTitle],

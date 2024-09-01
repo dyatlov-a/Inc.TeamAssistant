@@ -32,7 +32,7 @@
         return LinkBuilder.Build($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 
-    protected override async Task<AssessmentSessionHistoryViewModel> Initialize(Dictionary<string, string> resources)
+    protected override async Task<AssessmentSessionHistoryViewModel> Initialize(ResourcesManager resources)
     {
         var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, null);
 

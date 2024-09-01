@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Primitives
-
 @inject ResourcesManager ResourcesManager
 
 <PageTitle>@_title</PageTitle>
@@ -16,25 +14,25 @@
     [Parameter]
     public string? MetaOverrideTitle { get; set; }
 
-    private string? _title = GlobalSettings.CanonicalName;
+    private string _title = string.Empty;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        _title = await CreateTitle();
+        _title = CreateTitle();
     }
 
-    private async Task<string> CreateTitle()
+    private string CreateTitle()
     {
         if (!string.IsNullOrWhiteSpace(MetaOverrideTitle))
             return MetaOverrideTitle;
         
-        var resources = await ResourcesManager.GetResource();
-
-        return WebsiteSection switch
+        var messageId = WebsiteSection switch
         {
-            WebsiteSection.Assessment => resources[Messages.MetaAppraiserTitle],
-            WebsiteSection.Map => resources[Messages.MetaCheckInTitle],
-            _ => resources[Messages.MetaMainTitle]
+            WebsiteSection.Assessment => Messages.MetaAppraiserTitle,
+            WebsiteSection.Map => Messages.MetaCheckInTitle,
+            _ => Messages.MetaMainTitle
         };
+
+        return ResourcesManager[messageId];
     }
 }

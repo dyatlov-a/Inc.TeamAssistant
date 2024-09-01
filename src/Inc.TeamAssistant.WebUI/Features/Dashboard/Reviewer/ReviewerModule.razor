@@ -20,7 +20,7 @@
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
 
-    protected override Task<ReviewerModuleViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<ReviewerModuleViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new ReviewerModuleViewModel(
             resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],

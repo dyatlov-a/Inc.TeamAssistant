@@ -33,8 +33,7 @@
     [Parameter, EditorRequired]
     public string Date { get; set; } = default!;
     
-    protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(
-        Dictionary<string, string> resources)
+    protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(ResourcesManager resources)
     {
         var getStoriesResult = await AppraiserService.GetStories(TeamId, DateOnly.Parse(Date));
         

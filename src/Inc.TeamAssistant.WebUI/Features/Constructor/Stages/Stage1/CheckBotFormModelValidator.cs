@@ -33,10 +33,9 @@ public sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormM
         if (string.IsNullOrWhiteSpace(botToken))
             return;
         
-        var resources = await _resourcesManager.GetResource();
         var result = await _botService.Check(new GetBotUserNameQuery(botToken), token);
 
         if (!result.HasAccess)
-            context.AddFailure(nameof(CheckBotFormModel.Token), resources[Messages.Validation_TokenInvalid]);
+            context.AddFailure(nameof(CheckBotFormModel.Token), _resourcesManager[Messages.Validation_TokenInvalid]);
     }
 }

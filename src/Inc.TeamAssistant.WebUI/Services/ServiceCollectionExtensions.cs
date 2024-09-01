@@ -4,7 +4,6 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
-using Inc.TeamAssistant.WebUI.Services.Render;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;
@@ -32,11 +31,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
             
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddSingleton<MessageProviderClient>()
-            .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
-                sp.GetRequiredService<ILocalStorageService>(),
-                sp.GetRequiredService<MessageProviderClient>(),
-                appVersion))
+            .AddSingleton<IMessageProvider, MessageProviderClient>()
             
             .AddTransient<EventsProvider>();
 
@@ -51,7 +46,7 @@ public static class ServiceCollectionExtensions
             .AddOptions()
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddSingleton<ResourcesManager>()
+            .AddScoped<ResourcesManager>()
             .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));
 

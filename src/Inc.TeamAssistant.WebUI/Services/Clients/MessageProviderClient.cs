@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Render;
+namespace Inc.TeamAssistant.WebUI.Services.Clients;
 
 internal sealed class MessageProviderClient : IMessageProvider
 {

@@ -10,7 +10,7 @@
     [Parameter, EditorRequired]
     public Guid BotId { get; set; }
     
-    protected override Task<RandomCoffeeModuleViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<RandomCoffeeModuleViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new RandomCoffeeModuleViewModel(
             resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]));

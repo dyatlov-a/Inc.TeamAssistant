@@ -38,7 +38,7 @@
 
     private string CssClass => RenderContext.IsBrowser ? "animation__slide-left" : "hidden";
     
-    protected override Task<MainPageViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<MainPageViewModel> Initialize(ResourcesManager resources)
     {
         var requestDemo = resources[Messages.GUI_RequestDemo];
 

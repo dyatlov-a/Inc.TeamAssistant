@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
-namespace Inc.TeamAssistant.WebUI.Services.Render;
+namespace Inc.TeamAssistant.WebUI.Services.Clients;
 
 internal sealed class ClientRenderContext : IRenderContext
 {

@@ -55,7 +55,7 @@
         base.OnParametersSet();
     }
     
-    protected override Task<CheckBotViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<CheckBotViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult(new CheckBotViewModel(
             resources[Messages.Constructor_FormSectionTokenTitle],

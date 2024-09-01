@@ -132,7 +132,7 @@
         await base.OnParametersSetAsync();
     }
     
-    protected override Task<AppraiserIntegrationWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    protected override Task<AppraiserIntegrationWidgetViewModel> Initialize(ResourcesManager resources)
     {
         return Task.FromResult<AppraiserIntegrationWidgetViewModel>(new(
             resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel],
