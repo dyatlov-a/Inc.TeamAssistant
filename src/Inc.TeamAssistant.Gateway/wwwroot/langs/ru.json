@@ -215,7 +215,7 @@
   "Dashboard_ConnectToTeamButton": "Подключиться к команде",
   "Dashboard_HasConcreteReviewer": "Назначена на конкретного ревьювера",
   "Dashboard_IsOriginalReviewer": "Была переназначена",
-  "Dashboard_AppraiserIntegrationTitle": "Интеграция с внешним источником (JIRA)",
+  "Dashboard_AppraiserIntegrationTitle": "Интеграция с внешним источником (Jira/Trello)",
   "Dashboard_AppraiserIntegrationAccessTokenLabel": "Токен доступа",
   "Dashboard_AppraiserIntegrationProjectKeyLabel": "Ключ проекта",
   "Dashboard_AppraiserIntegrationScrumMasterLabel": "Скрам мастре",

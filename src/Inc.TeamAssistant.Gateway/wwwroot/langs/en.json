@@ -215,7 +215,7 @@
   "Dashboard_ConnectToTeamButton": "Connect to the team",
   "Dashboard_HasConcreteReviewer": "Assigned to a concrete reviewer",
   "Dashboard_IsOriginalReviewer": "Has been reassigned",
-  "Dashboard_AppraiserIntegrationTitle": "Integration with external sources (JIRA)",
+  "Dashboard_AppraiserIntegrationTitle": "Integration with external sources (Jira/Trello)",
   "Dashboard_AppraiserIntegrationAccessTokenLabel": "Access token",
   "Dashboard_AppraiserIntegrationProjectKeyLabel": "Project key",
   "Dashboard_AppraiserIntegrationScrumMasterLabel": "Scrum master",

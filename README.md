@@ -84,15 +84,15 @@ The community looks forward to your contributions.
 
 - [X] Create a bot for estimate tasks in SP
 - [X] Create a bot to notify about code review
-- [X] Create a bot to show teammates on the world [map](https://teamassist.bot/en/map/ced5ed88bb8b48e3956cce9a7c7f1fdb)
+- [X] Create a bot to show teammates on the world [map](https://teamassist.bot/en/map/00e24fa287f14e25889995b27eea319f)
 - [X] Add a feature to estimate tasks in t-shirts
 - [X] Create a bot to help with organizing random coffee
 - [X] Create a page to request a [demo](https://teamassist.bot/)
 - [X] Update blazor app
 - [X] Add a constructor for the Telegram bot
 - [X] Add dashboard for the team (review stats, estimate stats...)
-- [X] Integrate with Jira (estimate tasks)
-- [ ] Add a feature for use world map
+- [X] Integrate with Jira/Trello (estimate tasks)
+- [X] Add a feature for use world map
 - [ ] Redesign UI/UX
 - [ ] Integrate with GitLab (code review)
 - [ ] Split the monolith into separate services
