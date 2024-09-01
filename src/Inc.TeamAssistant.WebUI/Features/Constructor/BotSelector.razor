@@ -1,37 +1,40 @@
 @using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner
 
-@inherits PersistentComponent<BotSelectorViewModel>
-
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject LinkBuilder LinkBuilder
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
-        <p>@string.Format(ViewModel.RemoveConfirmationTemplate, _selectedBot?.Name)</p>
+        <p>@string.Format(Resources[Messages.Constructor_RemoveConfirmationText], _selectedBot?.Name)</p>
     </Content>
 </ConfirmDialog>
 
 <div class="bot-selector">
-    @foreach(var bot in ViewModel.Bots)
+    @foreach(var bot in _bots)
     {
         <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Content>
-                <a href="@MoveToDashboardLink(bot)" class="link link_dark">@ViewModel.MoveToStats</a>
+                <a href="@MoveToDashboardLink(bot)" class="link link_dark">
+                    @Resources[Messages.Dashboard_MoveToStats]
+                </a>
             </Content>
             <Buttons>
                 <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
-                    @ViewModel.Edit
+                    @Resources[Messages.Constructor_Edit]
                 </button>
                 <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToRemove(bot)">
-                    @ViewModel.Remove
+                    @Resources[Messages.Constructor_Remove]
                 </button>
             </Buttons>
         </BotCard>
     }
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
         <Buttons>
             <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
-                @ViewModel.AddBot
+                @Resources[Messages.Constructor_AddBot]
             </button>
         </Buttons>
     </BotCard>
@@ -41,21 +44,18 @@
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
 
+    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+
     private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
+
+    protected override Task OnParametersSetAsync() => Update();
     
-    protected override async Task<BotSelectorViewModel> Initialize(ResourcesManager resources)
+    private async Task Update()
     {
-        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
-        
-        return new BotSelectorViewModel(
-            resources[Messages.Constructor_NewBot],
-            resources[Messages.Constructor_AddBot],
-            resources[Messages.Constructor_Edit],
-            resources[Messages.Constructor_Remove],
-            resources[Messages.Constructor_RemoveConfirmationText],
-            resources[Messages.Dashboard_MoveToStats],
-            getBotsByOwnerResult.Bots);
+        var response = await RequestProcessor.Process(() => BotService.GetBotsByOwner(OwnerId), nameof(BotSelector));
+
+        _bots = response.Bots;
     }
 
     private void MoveToAdd() => MoveToEdit(botId: null);

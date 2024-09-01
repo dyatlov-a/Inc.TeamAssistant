@@ -4,27 +4,20 @@
 
 @attribute [Authorize]
 
-@inherits PersistentComponent<ConstructorPageViewModel>
+@inject ResourcesManager Resources
 
-<MetaDataModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Constructor"
+    MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title">@ViewModel.Title</h1>
+        <h1 class="title">@Resources[Messages.Constructor_Title]</h1>
         <AuthorizeView>
             <Authorized>
-                <p class="text constructor__text">@ViewModel.SelectBotText</p>
+                <p class="text constructor__text">@Resources[Messages.Constructor_SelectBotText]</p>
                 <BotSelector OwnerId="@context.User.ToPerson().Id" />
             </Authorized>
         </AuthorizeView>
     </div>
 </div>
-
-@code {
-    protected override Task<ConstructorPageViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new ConstructorPageViewModel(
-            resources[Messages.Constructor_Title],
-            resources[Messages.Constructor_SelectBotText]));
-    }
-}

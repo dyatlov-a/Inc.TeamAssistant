@@ -6,52 +6,37 @@
 @using Inc.TeamAssistant.WebUI.Features.Videos
 
 @inject IRenderContext RenderContext
-
-@inherits PersistentComponent<MainPageViewModel>
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
 
 <MetaDataModule WebsiteSection="WebsiteSection.Main" />
 
-<MainVideo FileName="source-tree-02" NotSupportedMessage="@ViewModel.NotSupportedMessage" />
+<MainVideo FileName="source-tree-02" NotSupportedMessage="@Resources[Messages.GUI_VideoNotSupported]" />
 
 <section id="about-bots" class="about-bots">
-    <div class="about-bots__container @CssClass">
+    <div class="about-bots__container @(RenderContext.IsBrowser ? "animation__slide-left" : "hidden")">
         <h1 class="about-bots__header">
-            <span class="about-bots__item">@ViewModel.Header</span>
+            <span class="about-bots__item">@Resources[Messages.GUI_MainHeader]</span>
             <br/>
-            <span class="about-bots__item">@ViewModel.SubHeader</span>
+            <span class="about-bots__item">@Resources[Messages.GUI_MainSubHeader]</span>
         </h1>
         <br/>
         <p class="about-bots__description">
-            <span class="about-bots__item">👌 @ViewModel.ToolAppraiser<br/></span>
-            <span class="about-bots__item">🤝 @ViewModel.ToolReviewer<br/></span>
-            <span class="about-bots__item">💬 @ViewModel.ToolRandomCoffee</span>
+            <span class="about-bots__item">👌 @Resources[Messages.GUI_ToolAppraiser]<br/></span>
+            <span class="about-bots__item">🤝 @Resources[Messages.GUI_ToolReviewer]<br/></span>
+            <span class="about-bots__item">💬 @Resources[Messages.GUI_ToolRandomCoffee]</span>
         </p>
         <div class="about-bots__actions">
-            <a href="@MoveToConstructor()" class="button button_dark">@ViewModel.CreateBotLink</a>
-            <a href="mailto:@(GlobalSettings.RequestDemoEmail)?body=@(ViewModel.RequestDemoBody)&subject=@(ViewModel.RequestDemoSubject)" class="link link_dark about-bots__link">@ViewModel.RequestDemo</a>
+            <a
+                href="@LinkBuilder.Build("constructor")"
+                class="button button_dark">
+                @Resources[Messages.GUI_CreateBotLink]
+            </a>
+            <a
+                href="mailto:@(GlobalSettings.RequestDemoEmail)?body=@(Resources[Messages.GUI_RequestDemoBody])&subject=@($"{Resources[Messages.GUI_RequestDemo]} [TeamAssistant]")"
+                class="link link_dark about-bots__link">
+                @Resources[Messages.GUI_RequestDemo]
+            </a>
         </div>
     </div>
 </section>
-
-@code {
-    private string MoveToConstructor() => LinkBuilder.Build("constructor");
-
-    private string CssClass => RenderContext.IsBrowser ? "animation__slide-left" : "hidden";
-    
-    protected override Task<MainPageViewModel> Initialize(ResourcesManager resources)
-    {
-        var requestDemo = resources[Messages.GUI_RequestDemo];
-
-        return Task.FromResult(new MainPageViewModel(
-            requestDemo,
-            $"{requestDemo} [TeamAssistant]",
-            resources[Messages.GUI_RequestDemoBody],
-            resources[Messages.GUI_MainHeader],
-            resources[Messages.GUI_MainSubHeader],
-            resources[Messages.GUI_ToolAppraiser],
-            resources[Messages.GUI_ToolReviewer],
-            resources[Messages.GUI_ToolRandomCoffee],
-            resources[Messages.GUI_CreateBotLink],
-            resources[Messages.GUI_VideoNotSupported]));
-    }
-}

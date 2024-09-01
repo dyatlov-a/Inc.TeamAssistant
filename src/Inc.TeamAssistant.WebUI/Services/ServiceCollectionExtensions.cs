@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<ResourcesManager>()
+            .AddScoped<RequestProcessor>()
             .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));
 
