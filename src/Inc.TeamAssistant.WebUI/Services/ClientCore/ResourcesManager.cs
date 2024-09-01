@@ -22,10 +22,10 @@ public sealed class ResourcesManager : IDisposable
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
 
-        Initialize();
+        InitializeCore();
     }
 
-    private void Initialize()
+    private void InitializeCore()
     {
         _persistingSubscription ??= _applicationState.RegisterOnPersisting(Persist);
         
@@ -34,8 +34,10 @@ public sealed class ResourcesManager : IDisposable
         if (_applicationState.TryTakeFromJson<Dictionary<string, Dictionary<string, string>>>(Key, out var restored) && restored is not null)
             _resources = restored;
         else
-            Task.Run(async () => _resources = await _messageProvider.Get());
+            Task.Run(() => Initialize());
     }
+
+    public async Task Initialize(CancellationToken token = default) => _resources = await _messageProvider.Get(token);
 
     public string this[string name]
     {

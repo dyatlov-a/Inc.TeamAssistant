@@ -24,19 +24,16 @@ public static class ServiceCollectionExtensions
         ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);
 
         services
+            .AddSingleton(authOptions)
+            .AddSingleton(openGraphOptions)
             .AddSingleton(new MessageProvider(webRootPath))
             .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
                 sp,
                 sp.GetRequiredService<MessageProvider>(),
                 cacheAbsoluteExpiration))
-            .AddSingleton<IRenderContext, ServerRenderContext>();
-
-        services
-            .AddSingleton(authOptions)
-            .AddSingleton(openGraphOptions)
+            .AddSingleton<IRenderContext, ServerRenderContext>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
-            
             .AddScoped<IAppraiserService, AppraiserService>()
             .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ICheckInService, CheckInService>()
@@ -48,7 +45,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
-
+            .AddHostedService<ResourcesLoader>()
+            
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
                 sp,
