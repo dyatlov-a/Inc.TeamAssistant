@@ -9,5 +9,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<BreadcrumbItem> Items { get; set; } = default!;
+    public IReadOnlyCollection<BreadcrumbItem> Items { get; set; } = Array.Empty<BreadcrumbItem>();
 }

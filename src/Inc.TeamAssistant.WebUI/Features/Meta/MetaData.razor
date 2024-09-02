@@ -1,45 +1,31 @@
 @using Inc.TeamAssistant.Primitives
 
-@inherits PersistentComponent<MetaDataViewModel>
+@inject ResourcesManager Resources
 
-<meta name="description" content="@ViewModel.Description">
-<meta name="keywords" content="@ViewModel.Keywords">
-<meta name="author" content="@ViewModel.Author">
+<meta name="description" content="@Resources[_data.Description]">
+<meta name="keywords" content="@Resources[_data.Keywords]">
+<meta name="author" content="@Resources[Messages.MetaAuthor]">
 
-<meta name="robots" content="@ViewModel.RobotsValue" />
+<meta name="robots" content="@(_data.Indexed ? "index" : "noindex")" />
 
 <link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
 
 @code {
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
-    
-    protected override Task<MetaDataViewModel> Initialize(ResourcesManager resources)
-    {
-        var data = WebsiteSection switch
-        {
-            WebsiteSection.Error404 => new MetaDataViewModel(
-                resources[Messages.MetaMainDescription],
-                resources[Messages.MetaMainKeywords],
-                resources[Messages.MetaAuthor],
-                "noindex"),
-            WebsiteSection.Assessment => new MetaDataViewModel(
-                resources[Messages.MetaAppraiserDescription],
-                resources[Messages.MetaAppraiserKeywords],
-                resources[Messages.MetaAuthor],
-                "noindex"),
-            WebsiteSection.Map => new MetaDataViewModel(
-                resources[Messages.MetaCheckInDescription],
-                resources[Messages.MetaCheckInKeywords],
-                resources[Messages.MetaAuthor],
-                "noindex"),
-            _ => new MetaDataViewModel(
-                resources[Messages.MetaMainDescription],
-                resources[Messages.MetaMainKeywords],
-                resources[Messages.MetaAuthor],
-                "index")
-        };
 
-        return Task.FromResult(data);
+    private (string Description, string Keywords, bool Indexed) _data = default!;
+
+    protected override void OnParametersSet() => Load();
+
+    private void Load()
+    {
+        _data = WebsiteSection switch
+        {
+            WebsiteSection.Error404 => (Messages.MetaMainDescription, Messages.MetaMainKeywords, false),
+            WebsiteSection.Assessment => (Messages.MetaAppraiserDescription, Messages.MetaAppraiserKeywords, false),
+            WebsiteSection.Map => (Messages.MetaCheckInDescription, Messages.MetaCheckInKeywords, false),
+            _ => (Messages.MetaMainDescription, Messages.MetaMainKeywords, true)
+        };
     }
 }

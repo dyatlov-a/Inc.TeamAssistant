@@ -12,18 +12,16 @@
 }
 
 @code {
-    private string _cleanUrl = default!;
+    private string _cleanUrl = string.Empty;
     
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        await base.OnParametersSetAsync();
+        Load();
 
-        Update();
-
-        NavigationManager.LocationChanged += (s, e) => Update();
+        NavigationManager.LocationChanged += (s, e) => Load();
     }
     
-    private void Update()
+    private void Load()
     {
         var cleanUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         

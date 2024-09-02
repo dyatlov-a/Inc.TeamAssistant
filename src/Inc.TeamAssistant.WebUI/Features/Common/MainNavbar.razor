@@ -1,15 +1,14 @@
-@inherits PersistentComponent<MainNavbarViewModel>
-
 @inject IRenderContext RenderContext
 @inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
 
 <div class="navbar">
     <div class="navbar-container">
         <AuthorizeView>
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
-
-                <a href="@ViewModel.MainUrl" class="link navbar__item">
+                <a href="@MainUrl" class="link navbar__item">
                     <HomeIcon Size="40px" Color="#fff" />
                 </a>
                 <CultureSelector/>
@@ -20,15 +19,19 @@
                     <br/>
                     @person.Username
                 </span>
-                <a href="@ViewModel.LogoutUrl" class="link link_light navbar__item">@ViewModel.LogoutText</a>
+                <a href="@LogoutUrl" class="link link_light navbar__item">
+                    @Resources[Messages.Navigation_Logout]
+                </a>
             </Authorized>
             <NotAuthorized>
-                <a href="@ViewModel.MainUrl" class="link navbar__item"><HomeIcon Size="40px" Color="#fff" /></a>
+                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" Color="#fff" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
-                @if (ViewModel.HasLoginControls)
+                @if (!CurrentUrl.Contains("/login"))
                 {
-                    <a href="@ViewModel.LoginUrl" class="link link_light navbar__item">@ViewModel.LoginText</a>
+                    <a href="@LinkBuilder.Build($"login?returnUrl={CurrentUrl}")" class="link link_light navbar__item">
+                        @Resources[Messages.Navigation_Login]
+                    </a>
                 }
             </NotAuthorized>
         </AuthorizeView>
@@ -37,24 +40,6 @@
 
 @code {
     private string CurrentUrl => NavigationManager.Uri;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        NavigationManager.LocationChanged += async (s, e) => await Update();
-    }
-
-    protected override async Task<MainNavbarViewModel> Initialize(ResourcesManager resources)
-    {
-        var hasLoginControls = !CurrentUrl.Contains("/login");
-        
-        return await Task.FromResult(new MainNavbarViewModel(
-            hasLoginControls,
-            LinkBuilder.Build(null),
-            LinkBuilder.Build($"login?returnUrl={CurrentUrl}"),
-            resources[Messages.Navigation_Login],
-            $"accounts/logout?returnUrl={CurrentUrl}",
-            resources[Messages.Navigation_Logout]));
-    }
+    private string MainUrl => LinkBuilder.Build(null);
+    private string LogoutUrl => $"accounts/logout?returnUrl={CurrentUrl}";
 }
