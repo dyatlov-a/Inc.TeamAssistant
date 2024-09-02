@@ -1,28 +1,36 @@
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
 
-@inherits PersistentComponent<AssessmentSessionHistoryViewModel>
-
 @inject IAppraiserService AppraiserService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
 
-@if (ViewModel.Items.Any())
-{
-    <div class="history">
-        <div class="history__title">@ViewModel.Title</div>
-        <div class="history__body">
+<Loading State="_state">
+    <Content>
+        @if (_items.Any())
+        {
+            <div class="history">
+                <div class="history__title">@Resources[Messages.GUI_History]</div>
+                <div class="history__body">
 
-            @foreach (var item in ViewModel.Items.Take(3))
-            {
-                <a href="@MoveToItem(item)" class="link link_dark history__item">
-                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName
-                </a>
-            }
-        </div>
-    </div>
-}
+                    @foreach (var item in _items.Take(3))
+                    {
+                        <a href="@MoveToItem(item)" class="link link_dark history__item">
+                            @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
+
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
 
     private string MoveToItem(AssessmentHistoryDto historyItem)
     {
@@ -32,14 +40,18 @@
         return LinkBuilder.Build($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 
-    protected override async Task<AssessmentSessionHistoryViewModel> Initialize(ResourcesManager resources)
-    {
-        var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, null);
+    protected override Task OnParametersSetAsync() => Load();
 
-        return new AssessmentSessionHistoryViewModel(
-            resources[Messages.GUI_History],
-            resources[Messages.GUI_Tasks],
-            resources[Messages.GUI_AssessmentSum],
-            getAssessmentHistoryResult.Items);
+    private async Task Load()
+    {
+        _state = await RequestProcessor.Process(
+            () => AppraiserService.GetAssessmentHistory(TeamId, null),
+            nameof(AssessmentSessionHistory),
+            r =>
+            {
+                _items = r.Items;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
 }

@@ -2,27 +2,34 @@
 @page "/en/assessment-history/{teamId:guid}/{date}"
 @page "/ru/assessment-history/{teamId:guid}/{date}"
 
-@inherits PersistentComponent<AssessmentSessionHistoryPageViewModel>
+@using Inc.TeamAssistant.Appraiser.Model.Common
 
 @inject IAppraiserService AppraiserService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
 
-<MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.StoryList" />
+<MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@Resources[Messages.GUI_StoryList]" />
 
 <main class="main">
     <div class="assessment-history-header">
         <div class="assessment-history-header__container">
-            <Breadcrumbs Items="ViewModel.Breadcrumbs" />
-            <h1 class="title">@ViewModel.StoryList</h1>
+            <Breadcrumbs Items="_breadcrumbs" />
+            <h1 class="title">@Resources[Messages.GUI_StoryList]</h1>
         </div>
     </div>
-        @foreach(var item in ViewModel.Items)
-        {
-            <div class="assessment-history-content">
-                <div class="assessment-history-content__container">
-                    <AssessmentIndividual Item="item" MeanRating="@ViewModel.MeanRating"/>
+    <Loading State="_state">
+        <Content>
+            @foreach(var item in _items)
+            {
+                <div class="assessment-history-content">
+                    <div class="assessment-history-content__container">
+                        <AssessmentIndividual Item="item" MeanRating="@Resources[Messages.GUI_MeanRating]"/>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </Content>
+    </Loading>
 </main>
 <MainFooter />
         
@@ -32,19 +39,32 @@
 
     [Parameter, EditorRequired]
     public string Date { get; set; } = default!;
-    
-    protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(ResourcesManager resources)
+
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
+    private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
+
+    protected override async Task OnParametersSetAsync()
     {
-        var getStoriesResult = await AppraiserService.GetStories(TeamId, DateOnly.Parse(Date));
-        
-        return new AssessmentSessionHistoryPageViewModel(
-            resources[Messages.GUI_StoryList],
-            resources[Messages.GUI_MeanRating],
-            new BreadcrumbItem[]
+        _breadcrumbs = new BreadcrumbItem[]
+        {
+            new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
+            new(Date, LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}"))
+        };
+
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        _state = await RequestProcessor.Process(
+            () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
+            nameof(AssessmentSessionHistory),
+            r =>
             {
-                new (resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
-                new (Date, LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}"))
-            },
-            getStoriesResult.Items);
+                _items = r.Items;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
 }
