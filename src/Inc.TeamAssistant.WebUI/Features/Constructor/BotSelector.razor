@@ -13,7 +13,15 @@
 </ConfirmDialog>
 
 <div class="bot-selector">
-    @foreach(var bot in _bots)
+    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
+        <Buttons>
+            <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
+                @Resources[Messages.Constructor_AddBot]
+            </button>
+        </Buttons>
+    </BotCard>
+    <Loading State="_state" />
+    @foreach (var bot in _bots)
     {
         <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
             <Content>
@@ -22,40 +30,46 @@
                 </a>
             </Content>
             <Buttons>
-                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
+                <button
+                    type="button"
+                    class="button button_light bot-selector__button"
+                    @onclick="() => MoveToEdit(bot.Id)">
                     @Resources[Messages.Constructor_Edit]
                 </button>
-                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToRemove(bot)">
+                <button
+                    type="button"
+                    class="button button_light bot-selector__button"
+                    @onclick="() => MoveToRemove(bot)">
                     @Resources[Messages.Constructor_Remove]
                 </button>
             </Buttons>
         </BotCard>
     }
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
-        <Buttons>
-            <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
-                @Resources[Messages.Constructor_AddBot]
-            </button>
-        </Buttons>
-    </BotCard>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
 
+    private RequestState _state = RequestState.Done();
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
 
-    protected override Task OnParametersSetAsync() => Update();
+    protected override async Task OnParametersSetAsync() => await Load();
     
-    private async Task Update()
+    private async Task Load()
     {
-        var response = await RequestProcessor.Process(() => BotService.GetBotsByOwner(OwnerId), nameof(BotSelector));
-
-        _bots = response.Bots;
+        _state = await RequestProcessor.Process(
+            () => BotService.GetBotsByOwner(OwnerId),
+            nameof(BotSelector),
+            r =>
+            {
+                _bots = r.Bots;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
 
     private void MoveToAdd() => MoveToEdit(botId: null);
@@ -86,6 +100,6 @@
         
         await BotService.Remove(_selectedBot.Id);
 
-        await Update();
+        await Load();
     }
 }

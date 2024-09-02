@@ -17,7 +17,7 @@ internal sealed class ResourcesLoader : IHostedService
 
         using var resourcesManager = scope.ServiceProvider.GetRequiredService<ResourcesManager>();
 
-        await resourcesManager.Initialize(token);
+        await resourcesManager.Load(token);
     }
 
     public Task StopAsync(CancellationToken token) => Task.CompletedTask;

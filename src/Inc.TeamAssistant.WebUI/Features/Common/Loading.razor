@@ -1,0 +1,11 @@
+@if (State.IsLoading)
+{
+    <div class="loading">
+        <div class="loader"></div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public RequestState State { get; set; } = RequestState.Done();
+}
