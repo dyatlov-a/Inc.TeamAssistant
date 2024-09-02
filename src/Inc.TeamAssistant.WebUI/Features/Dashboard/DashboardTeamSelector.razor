@@ -1,14 +1,22 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBots
 
-@inherits PersistentComponent<DashboardTeamSelectorViewModel>
-
 @inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
 
-<FormSection Title="@ViewModel.SelectTeamTitle" HelpText="@ViewModel.SelectTeam" AsRows="true">
+<FormSection
+    Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
+    HelpText="@Resources[Messages.Dashboard_SelectTeam]"
+    AsRows="true">
     <Content>
-        <FormFieldSet Label="@ViewModel.BotField" FieldId="bot-selector">
+        <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
             <Content>
-                <InputSelect id="bot-selector" Value="_currentBotId" ValueExpression="@(() => _currentBotId)" ValueChanged="@((Guid? v) => SelectBot(v))" class="form-control">
+                <InputSelect
+                    id="bot-selector"
+                    Value="_currentBotId"
+                    ValueExpression="@(() => _currentBotId)"
+                    ValueChanged="@((Guid? v) => SelectBot(v))"
+                    class="form-control">
                     <option value=""></option>
                     @foreach (var bot in Bots)
                     {
@@ -17,9 +25,14 @@
                 </InputSelect>
             </Content>
         </FormFieldSet>
-        <FormFieldSet Label="@ViewModel.TeamField" FieldId="team-selector">
+        <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
             <Content>
-                <InputSelect id="team-selector" Value="_currentTeamId" ValueExpression="@(() => _currentTeamId)" ValueChanged="@((Guid? v) => SelectTeam(v))" class="form-control">
+                <InputSelect
+                    id="team-selector"
+                    Value="_currentTeamId"
+                    ValueExpression="@(() => _currentTeamId)"
+                    ValueChanged="@((Guid? v) => SelectTeam(v))"
+                    class="form-control">
                     <option value=""></option>
                     @foreach (var team in GetTeams())
                     {
@@ -53,15 +66,6 @@
 
         if (_currentBotId.HasValue && !_currentTeamId.HasValue)
             SelectBot(_currentBotId);
-    }
-
-    protected override Task<DashboardTeamSelectorViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new DashboardTeamSelectorViewModel(
-            resources[Messages.Dashboard_SelectTeamTitle],
-            resources[Messages.Dashboard_SelectTeam],
-            resources[Messages.Dashboard_TeamField],
-            resources[Messages.Dashboard_BotField]));
     }
 
     private void SelectTeam(Guid? value)

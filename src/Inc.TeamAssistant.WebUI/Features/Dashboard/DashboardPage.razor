@@ -10,21 +10,27 @@
 
 @attribute [Authorize]
 
-@inherits PersistentComponent<DashboardPageViewModel>
+@using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 
 @inject IBotService BotService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
 
-<MetaDataModule WebsiteSection="WebsiteSection.Dashboard" MetaOverrideTitle="@ViewModel.Title" />
+<MetaDataModule WebsiteSection="WebsiteSection.Dashboard" MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
 <div class="dashboard">
     <div class="dashboard-toolbar">
         <div class="dashboard-toolbar__content">
-            <DashboardTeamSelector BotId="BotId" TeamId="TeamId" Bots="ViewModel.Bots" />
+            <Loading State="_state">
+                <Content>
+                    <DashboardTeamSelector BotId="BotId" TeamId="TeamId" Bots="_bots"/>
 
-            @if (TeamId.HasValue)
-            {
-                <DashboardTeamConnector TeamId="TeamId.Value" />
-            }
+                    @if (TeamId.HasValue)
+                    {
+                        <DashboardTeamConnector TeamId="TeamId.Value"/>
+                    }
+                </Content>
+            </Loading>
         </div>
     </div>
     <div class="dashboard-content">
@@ -58,7 +64,7 @@
             }
             else
             {
-                <DashboardWidget Title="@ViewModel.BotWidgetTitle">
+                <DashboardWidget Title="@Resources[Messages.Dashboard_BotWidgetTitle]">
                     <Content>
                         <BotNotSelected />
                     </Content>
@@ -77,22 +83,31 @@
     
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
-    protected override async Task<DashboardPageViewModel> Initialize(ResourcesManager resources)
+    protected override Task OnParametersSetAsync() => Load();
+    
+    private async Task Load()
     {
         var authenticationState = await AuthenticationStateTask;
         var currentPerson = authenticationState.User.ToPerson();
-        var getByUser = await BotService.GetByUser(currentPerson.Id);
         
-        return new DashboardPageViewModel(
-            resources[Messages.Dashboard_Title],
-            resources[Messages.Dashboard_BotWidgetTitle],
-            getByUser.Bots);
+        _state = await RequestProcessor.Process(
+            () => BotService.GetByUser(currentPerson.Id),
+            nameof(DashboardPage),
+            r =>
+            {
+                _bots = r.Bots;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
 
     private bool HasFeature(string feature)
     {
-        var bot = ViewModel.Bots.SingleOrDefault(b => b.Id == BotId);
+        var bot = _bots.SingleOrDefault(b => b.Id == BotId);
 
         return bot?.Features.Contains(feature, StringComparer.InvariantCultureIgnoreCase) == true;
     }

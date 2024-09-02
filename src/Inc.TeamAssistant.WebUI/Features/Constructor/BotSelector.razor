@@ -11,7 +11,6 @@
         <p>@string.Format(Resources[Messages.Constructor_RemoveConfirmationText], _selectedBot?.Name)</p>
     </Content>
 </ConfirmDialog>
-
 <div class="bot-selector">
     <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
         <Buttons>
@@ -20,31 +19,34 @@
             </button>
         </Buttons>
     </BotCard>
-    <Loading State="_state" />
-    @foreach (var bot in _bots)
-    {
-        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
-            <Content>
-                <a href="@MoveToDashboardLink(bot)" class="link link_dark">
-                    @Resources[Messages.Dashboard_MoveToStats]
-                </a>
-            </Content>
-            <Buttons>
-                <button
-                    type="button"
-                    class="button button_light bot-selector__button"
-                    @onclick="() => MoveToEdit(bot.Id)">
-                    @Resources[Messages.Constructor_Edit]
-                </button>
-                <button
-                    type="button"
-                    class="button button_light bot-selector__button"
-                    @onclick="() => MoveToRemove(bot)">
-                    @Resources[Messages.Constructor_Remove]
-                </button>
-            </Buttons>
-        </BotCard>
-    }
+    <Loading State="_state">
+        <Content>
+            @foreach (var bot in _bots)
+            {
+                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                    <Content>
+                        <a href="@MoveToDashboardLink(bot)" class="link link_dark">
+                            @Resources[Messages.Dashboard_MoveToStats]
+                        </a>
+                    </Content>
+                    <Buttons>
+                        <button
+                            type="button"
+                            class="button button_light bot-selector__button"
+                            @onclick="() => MoveToEdit(bot.Id)">
+                            @Resources[Messages.Constructor_Edit]
+                        </button>
+                        <button
+                            type="button"
+                            class="button button_light bot-selector__button"
+                            @onclick="() => MoveToRemove(bot)">
+                            @Resources[Messages.Constructor_Remove]
+                        </button>
+                    </Buttons>
+                </BotCard>
+            }
+        </Content>
+    </Loading>
 </div>
 
 @code {
@@ -57,7 +59,7 @@
     private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
 
-    protected override async Task OnParametersSetAsync() => await Load();
+    protected override Task OnParametersSetAsync() => Load();
     
     private async Task Load()
     {

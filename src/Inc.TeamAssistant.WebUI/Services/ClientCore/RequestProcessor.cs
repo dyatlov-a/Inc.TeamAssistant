@@ -67,11 +67,11 @@ public sealed class RequestProcessor : IDisposable
             {
                 var handler = request();
 
-                await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.LoadingDelay)));
+                await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
 
                 onLoaded(handler.Result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: show error message for the user
             }

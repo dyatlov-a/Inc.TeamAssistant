@@ -4,8 +4,15 @@
         <div class="loader"></div>
     </div>
 }
+else
+{
+    @Content
+}
 
 @code {
     [Parameter, EditorRequired]
     public RequestState State { get; set; } = RequestState.Done();
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
 }

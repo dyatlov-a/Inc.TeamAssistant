@@ -1,16 +1,16 @@
-@inherits PersistentComponent<ReviewerModuleViewModel>
+@inject ResourcesManager Resources
 
-<DashboardWidget Title="@ViewModel.ReviewTotalStatsWidgetTitle" HasChart="true">
+<DashboardWidget Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]" HasChart="true">
     <Content>
         <ReviewTotalStatsWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
-<DashboardWidget Title="@ViewModel.LastTasksWidgetTitle">
+<DashboardWidget Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
     <Content>
         <ReviewHistoryWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
-<DashboardWidget Title="@ViewModel.ReviewAverageStatsWidgetTitle" HasChart="true">
+<DashboardWidget Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]" HasChart="true">
     <Content>
         <ReviewAverageStatsWidget TeamId="TeamId" />
     </Content>
@@ -19,12 +19,4 @@
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
-    protected override Task<ReviewerModuleViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new ReviewerModuleViewModel(
-            resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],
-            resources[Messages.Dashboard_LastTasksWidgetTitle],
-            resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]));
-    }
 }

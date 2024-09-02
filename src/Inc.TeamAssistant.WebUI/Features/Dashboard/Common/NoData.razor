@@ -1,12 +1,5 @@
-@inherits PersistentComponent<NoDataViewModel>
+@inject ResourcesManager Resources
 
 <div class="dashboard-widgets__no-data">
-    <p>@ViewModel.Text</p>
+    <p>@Resources[Messages.Dashboard_NoData]</p>
 </div>
-
-@code {
-    protected override Task<NoDataViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new NoDataViewModel(resources[Messages.Dashboard_NoData]));
-    }
-}

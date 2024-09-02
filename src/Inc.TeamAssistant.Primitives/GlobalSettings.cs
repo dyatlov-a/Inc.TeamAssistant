@@ -12,5 +12,5 @@ public static class GlobalSettings
 
     public static readonly string LinkForConnectTemplate = "https://t.me/{0}?start={1}";
     
-    public static readonly TimeSpan LoadingDelay = TimeSpan.FromSeconds(3);
+    public static readonly TimeSpan MinLoadingDelay = TimeSpan.FromSeconds(1);
 }

@@ -9,7 +9,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<DateSelectorItem> Items { get; set; } = default!;
+    public IReadOnlyCollection<DateSelectorItem> Items { get; set; } = Array.Empty<DateSelectorItem>();
     
     [Parameter, EditorRequired]
     public DateOnly? Date { get; set; }

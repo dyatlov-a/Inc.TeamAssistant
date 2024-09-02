@@ -1,6 +1,6 @@
-@inherits PersistentComponent<RandomCoffeeModuleViewModel>
+@inject ResourcesManager Resources
 
-<DashboardWidget Title="@ViewModel.RandomCoffeeHistoryWidgetTitle">
+<DashboardWidget Title="@Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]">
     <Content>
         <RandomCoffeeHistoryWidget BotId="BotId" Depth="5" />
     </Content>
@@ -9,10 +9,4 @@
 @code {
     [Parameter, EditorRequired]
     public Guid BotId { get; set; }
-    
-    protected override Task<RandomCoffeeModuleViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new RandomCoffeeModuleViewModel(
-            resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]));
-    }
 }

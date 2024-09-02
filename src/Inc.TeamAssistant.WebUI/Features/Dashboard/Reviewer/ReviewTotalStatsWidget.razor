@@ -1,90 +1,103 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
 
-@inherits PersistentComponent<ReviewTotalStatsWidgetViewModel>
-
 @inject IReviewService ReviewService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject IRenderContext RenderContext
 
-<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
-
-@if (ViewModel.Review.Any())
-{
-    <div class="review-total-stats">
-        <div class="review-total-stats__item">
-            <ApexChart
-                TItem="HistoryByTeamItemDto"
-                Title="@ViewModel.ReviewByReviewer"
-                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
-                @ref="_reviewChart">
-                <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                 Items="ViewModel.Review"
-                                 SeriesType="SeriesType.Donut"
-                                 XValue="@(e => e.PersonName)"
-                                 YValue="@(e => e.Count)"
-                                 OrderByDescending="e => e.Y!" />
-            </ApexChart>
-        </div>
-        <div class="review-total-stats__item">
-            <ApexChart
-                TItem="HistoryByTeamItemDto"
-                Title="@ViewModel.ReviewByOwner"
-                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
-                @ref="_requestsChart">
-                <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                 Items="ViewModel.Requests"
-                                 SeriesType="SeriesType.Donut"
-                                 XValue="@(e => e.PersonName)"
-                                 YValue="@(e => e.Count)"
-                                 OrderByDescending="e => e.Y!" />
-            </ApexChart>
-        </div>
-    </div>
-}
-else
-{
-    <NoData />
-}
+<Loading State="_state">
+    <Content>
+        <DateSelector Date="_date" Items="_dateItems" OnSelected="Changed" />
+        @if (_formModel.Review.Any())
+        {
+            <div class="review-total-stats">
+                <div class="review-total-stats__item">
+                    <ApexChart
+                        TItem="HistoryByTeamItemDto"
+                        Title="@string.Format(Resources[Messages.Dashboard_ReviewByReviewerTemplate], _formModel.IntervalInDays)"
+                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
+                        @ref="_reviewChart">
+                        <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                         Items="_formModel.Review"
+                                         SeriesType="SeriesType.Donut"
+                                         XValue="@(e => e.PersonName)"
+                                         YValue="@(e => e.Count)"
+                                         OrderByDescending="e => e.Y!"/>
+                    </ApexChart>
+                </div>
+                <div class="review-total-stats__item">
+                    <ApexChart
+                        TItem="HistoryByTeamItemDto"
+                        Title="@string.Format(Resources[Messages.Dashboard_ReviewByOwnerTemplate], _formModel.IntervalInDays)"
+                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
+                        @ref="_requestsChart">
+                        <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                         Items="_formModel.Requests"
+                                         SeriesType="SeriesType.Donut"
+                                         XValue="@(e => e.PersonName)"
+                                         YValue="@(e => e.Count)"
+                                         OrderByDescending="e => e.Y!"/>
+                    </ApexChart>
+                </div>
+            </div>
+        }
+        else
+        {
+            <NoData/>
+        }
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
+    
     private DateOnly? _date;
     private ApexChart<HistoryByTeamItemDto>? _reviewChart;
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyCollection<DateSelectorItem> _dateItems = Array.Empty<DateSelectorItem>();
+    private ReviewTotalStatsWidgetFormModel _formModel = new();
+
     protected override async Task OnParametersSetAsync()
     {
-        await base.OnParametersSetAsync();
-        
-        _date ??= ViewModel.DateItems.First().Date;
-        
-        _reviewChart?.RenderAsync();
-        _requestsChart?.RenderAsync();
+        _dateItems = DateSelectorDataFactory.Create(Resources);
+        _date ??= _dateItems.First().Date;
+
+        await Load(_date.Value);
     }
-
-    protected override async Task<ReviewTotalStatsWidgetViewModel> Initialize(ResourcesManager resources)
+    
+    private async Task Load(DateOnly date)
     {
-        var dateItems = DateSelectorDataFactory.Create(resources);
-        _date ??= dateItems.First().Date;
-        var interval = DateTimeOffset.UtcNow - new DateTimeOffset(_date.Value, TimeOnly.MinValue, TimeSpan.Zero);
-        var intervalInDays = (int)interval.TotalDays;
-        var history = await ReviewService.GetHistory(TeamId, _date.Value);
-
-        return new ReviewTotalStatsWidgetViewModel(
-            string.Format(resources[Messages.Dashboard_ReviewByReviewerTemplate], intervalInDays),
-            string.Format(resources[Messages.Dashboard_ReviewByOwnerTemplate], intervalInDays),
-            dateItems,
-            history.Review,
-            history.Requests);
+        _state = await RequestProcessor.Process(
+            async () =>
+            {
+                var interval = DateTimeOffset.UtcNow - new DateTimeOffset(date, TimeOnly.MinValue, TimeSpan.Zero);
+                var getHistory = await ReviewService.GetHistory(TeamId, date);
+                
+                return new ReviewTotalStatsWidgetFormModel
+                {
+                    IntervalInDays = (int)interval.TotalDays,
+                    Review = getHistory.Review,
+                    Requests = getHistory.Requests
+                };
+            },
+            nameof(ReviewTotalStatsWidget),
+            r =>
+            {
+                _formModel = r;
+                _state = RequestState.Done();
+                StateHasChanged();
+                RenderContext.RenderChart(_reviewChart);
+                RenderContext.RenderChart(_requestsChart);
+            });
     }
 
     private async Task Changed(DateOnly date)
     {
         _date = date;
         
-        await Update();
-
-        _reviewChart?.RenderAsync();
-        _requestsChart?.RenderAsync();
+        await Load(_date.Value);
     }
 }

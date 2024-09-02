@@ -17,6 +17,9 @@
     height: 100%;
     min-height: 150px;
 }
+::deep .loading {
+    height: calc(100% - 30px);
+}
 @media (max-width: 1080px) {
     .dashboard-widgets__widget {
         flex: 0 1 100%;

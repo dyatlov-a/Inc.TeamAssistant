@@ -1,16 +1,8 @@
-@inherits PersistentComponent<BotNotSelectedViewModel>
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
 
 <p class="bot-not-selected">
-    @ViewModel.SelectTeam <a href="@MoveToCreateBot()" class="link link_light">@ViewModel.CreateBot</a>
+    @Resources[Messages.Dashboard_SelectTeam] <a href="@LinkBuilder.Build("constructor")" class="link link_light">
+        @Resources[Messages.Dashboard_CreateBot]
+    </a>
 </p>
-
-@code {
-    protected override Task<BotNotSelectedViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new BotNotSelectedViewModel(
-            resources[Messages.Dashboard_SelectTeam],
-            resources[Messages.Dashboard_CreateBot]));
-    }
-
-    private string MoveToCreateBot() => LinkBuilder.Build("constructor");
-}

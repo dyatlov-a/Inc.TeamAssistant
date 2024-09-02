@@ -1,6 +1,6 @@
-@inherits PersistentComponent<CheckInModuleViewModel>
+@inject ResourcesManager Resources
 
-<DashboardWidget Title="@ViewModel.MapWidgetTitle">
+<DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
     <Content>
         <MapWidget BotId="BotId" />
     </Content>
@@ -9,10 +9,4 @@
 @code {
     [Parameter, EditorRequired]
     public Guid BotId { get; set; }
-
-    protected override Task<CheckInModuleViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new CheckInModuleViewModel(
-            resources[Messages.Dashboard_CheckInMapWidgetTitle]));
-    }
 }
