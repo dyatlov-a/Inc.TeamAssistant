@@ -5,6 +5,7 @@
 
 @inject IRenderContext RenderContext
 @inject NavigationManager NavigationManager
+@inject ResourcesManager ResourcesManager
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
@@ -28,11 +29,13 @@
 </CascadingAuthenticationState>
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         SetCurrentLanguage();
         
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        await ResourcesManager.Load();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

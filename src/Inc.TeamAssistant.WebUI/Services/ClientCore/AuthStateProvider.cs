@@ -10,8 +10,8 @@ internal sealed class AuthStateProvider : AuthenticationStateProvider, IDisposab
 {
     private readonly IUserService _userService;
     private readonly PersistentComponentState _applicationState;
+    
     private PersistingComponentStateSubscription? _persistingSubscription;
-    private static readonly string Key = nameof(AuthStateProvider);
 
     public AuthStateProvider(IUserService userService, PersistentComponentState applicationState)
     {
@@ -21,19 +21,18 @@ internal sealed class AuthStateProvider : AuthenticationStateProvider, IDisposab
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        _persistingSubscription ??= _applicationState.RegisterOnPersisting(Persist);
-        
-        var person = _applicationState.TryTakeFromJson<Person>(Key, out var restored) && restored is not null
+        const string key = nameof(AuthStateProvider);
+        var person = _applicationState.TryTakeFromJson<Person>(key, out var restored) && restored is not null
             ? restored
             : await _userService.GetCurrentUser();
         
+        _persistingSubscription ??= _applicationState.RegisterOnPersisting(() =>
+        {
+            _applicationState.PersistAsJson(key, person);
+            return Task.CompletedTask;
+        });
+        
         return new AuthenticationState(person.ToClaimsPrincipal());
-    }
-
-    private async Task Persist()
-    {
-        var person = await _userService.GetCurrentUser();
-        _applicationState.PersistAsJson(Key, person);
     }
 
     public void Dispose() => _persistingSubscription?.Dispose();

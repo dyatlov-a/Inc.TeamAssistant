@@ -45,7 +45,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
-            .AddHostedService<ResourcesLoader>()
             
             .AddSingleton<QuickResponseCodeGenerator>()
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(

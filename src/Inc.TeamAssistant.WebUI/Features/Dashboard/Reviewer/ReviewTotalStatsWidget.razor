@@ -62,7 +62,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _dateItems = DateSelectorDataFactory.Create(Resources);
+        _dateItems = DateSelectorDataFactory.CreateShortPeriod(Resources);
         _date ??= _dateItems.First().Date;
 
         await Load(_date.Value);

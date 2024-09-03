@@ -8,10 +8,9 @@ public sealed class ResourcesManager : IDisposable
     private readonly IRenderContext _renderContext;
     private readonly IMessageProvider _messageProvider;
     private readonly PersistentComponentState _applicationState;
-    private static readonly string Key = nameof(ResourcesManager);
     
     private PersistingComponentStateSubscription? _persistingSubscription;
-    private static Dictionary<string, Dictionary<string, string>> _resources = new();
+    private Dictionary<string, Dictionary<string, string>> _resources = new();
 
     public ResourcesManager(
         IMessageProvider messageProvider,
@@ -21,23 +20,23 @@ public sealed class ResourcesManager : IDisposable
         _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
-
-        Initialize();
     }
 
-    private void Initialize()
+    public async Task Load(CancellationToken token = default)
     {
-        _persistingSubscription ??= _applicationState.RegisterOnPersisting(Persist);
+        const string key = nameof(ResourcesManager);
+        var resources = _applicationState.TryTakeFromJson<Dictionary<string, Dictionary<string, string>>>(key, out var restored) && restored is not null
+            ? restored
+            : await _messageProvider.Get(token);
         
-        if (_resources.Any())
-            return;
-        if (_applicationState.TryTakeFromJson<Dictionary<string, Dictionary<string, string>>>(Key, out var restored) && restored is not null)
-            _resources = restored;
-        else
-            Task.Run(() => Load());
+        _persistingSubscription ??= _applicationState.RegisterOnPersisting(() =>
+        {
+            _applicationState.PersistAsJson(key, resources);
+            return Task.CompletedTask;
+        });
+        
+        _resources = resources;
     }
-
-    public async Task Load(CancellationToken token = default) => _resources = await _messageProvider.Get(token);
 
     public string this[string name]
     {
@@ -52,12 +51,6 @@ public sealed class ResourcesManager : IDisposable
             
             return resources.GetValueOrDefault(name, name);
         }
-    }
-    
-    private async Task Persist()
-    {
-        var person = await _messageProvider.Get();
-        _applicationState.PersistAsJson(Key, person);
     }
 
     public void Dispose() => _persistingSubscription?.Dispose();
