@@ -75,10 +75,9 @@
                 _items = r.Items;
                 _state = RequestState.Done();
                 StateHasChanged();
-                RenderContext.RenderChart(_chart);
             });
     }
-    
+
     private async Task Changed(DateOnly date)
     {
         _date = date;
