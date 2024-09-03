@@ -5,34 +5,36 @@
 
 <Loading State="_state">
     <Content>
-        <div class="map-selector">
-            <InputSelect id="map-selector" @bind-Value="_formModel.MapId" class="form-control">
-                @foreach (var map in _formModel.Maps)
-                {
-                    <option value="@map.Id">@map.Name</option>
-                }
-            </InputSelect>
-        </div>
-        @if (_formModel.MapId.HasValue)
-        {
-            var mapUrl = LinkBuilder.Build($"map/{_formModel.MapId.Value:N}");
+        <div class="component-container">
+            <div class="map-selector">
+                <InputSelect id="map-selector" @bind-Value="_formModel.MapId" class="form-control">
+                    @foreach (var map in _formModel.Maps)
+                    {
+                        <option value="@map.Id">@map.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            @if (_formModel.MapId.HasValue)
+            {
+                var mapUrl = LinkBuilder.Build($"map/{_formModel.MapId.Value:N}");
 
-            <div class="checkin-map">
-                <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
-                <div class="checkin-map__bg"></div>
-                <div class="checkin-map__controls">
-                    <div class="checkin-map__controls-body">
-                        <a href="@mapUrl" target="_blank" class="button button_dark">
-                            @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
-                        </a>
+                <div class="checkin-map">
+                    <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
+                    <div class="checkin-map__bg"></div>
+                    <div class="checkin-map__controls">
+                        <div class="checkin-map__controls-body">
+                            <a href="@mapUrl" target="_blank" class="button button_dark">
+                                @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-        else
-        {
-            <NoData/>
-        }
+            }
+            else
+            {
+                <NoData/>
+            }
+        </div>
     </Content>
 </Loading>
 

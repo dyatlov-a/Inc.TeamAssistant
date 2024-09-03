@@ -21,16 +21,11 @@
 <div class="dashboard">
     <div class="dashboard-toolbar">
         <div class="dashboard-toolbar__content">
-            <Loading State="_state">
-                <Content>
-                    <DashboardTeamSelector BotId="BotId" TeamId="TeamId" Bots="_bots"/>
-
-                    @if (TeamId.HasValue)
-                    {
-                        <DashboardTeamConnector TeamId="TeamId.Value"/>
-                    }
-                </Content>
-            </Loading>
+            <DashboardTeamSelector BotId="BotId" TeamId="TeamId" State="_state" Bots="_bots"/>
+            @if (TeamId.HasValue)
+            {
+                <DashboardTeamConnector TeamId="TeamId.Value"/>
+            }
         </div>
     </div>
     <div class="dashboard-content">
@@ -38,12 +33,10 @@
             @if (TeamId.HasValue)
             {
                 <TeamModule TeamId="TeamId.Value" />
-
                 if (HasFeature("Reviewer"))
                 {
                     <ReviewerModule TeamId="TeamId.Value"/>
                 }
-                
                 if (HasFeature("Appraiser"))
                 {
                     <AppraiserModule TeamId="TeamId.Value"/>
@@ -56,7 +49,6 @@
                 {
                     <RandomCoffeeModule BotId="BotId.Value"/>
                 }
-                
                 if (HasFeature("CheckIn"))
                 {
                     <CheckInModule BotId="BotId.Value" />
@@ -64,11 +56,7 @@
             }
             else
             {
-                <DashboardWidget Title="@Resources[Messages.Dashboard_BotWidgetTitle]">
-                    <Content>
-                        <BotNotSelected />
-                    </Content>
-                </DashboardWidget>
+                <BotNotSelected />
             }
         </div>
     </div>

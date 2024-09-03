@@ -7,42 +7,44 @@
 
 <Loading State="_state">
     <Content>
-        <DateSelector Date="_date" Items="_dateItems" OnSelected="Changed" />
-        @if (_items.Any())
-        {
-            <ApexChart
-                TItem="ReviewAverageStatsDto"
-                Title="@Resources[Messages.Dashboard_ReviewAverageStatsTitle]"
-                Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
-                FormatYAxisLabel="@(y => y.ToString("N1"))"
-                @ref="_chart">
-                <ApexPointSeries
+        <div class="component-container">
+            <DateSelector Date="_date" Items="_dateItems" OnSelected="Changed"/>
+            @if (_items.Any())
+            {
+                <ApexChart
                     TItem="ReviewAverageStatsDto"
-                    Items="_items"
-                    SeriesType="@SeriesType.Area"
-                    Name="@Resources[Messages.Dashboard_ReviewAverageFirstTouch]"
-                    XValue="@(e => e.Created)"
-                    YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
-                <ApexPointSeries
-                    TItem="ReviewAverageStatsDto"
-                    Items="_items"
-                    SeriesType="@SeriesType.Area"
-                    Name="@Resources[Messages.Dashboard_ReviewAverageReview]"
-                    XValue="@(e => e.Created)"
-                    YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
-                <ApexPointSeries
-                    TItem="ReviewAverageStatsDto"
-                    Items="_items"
-                    SeriesType="@SeriesType.Area"
-                    Name="@Resources[Messages.Dashboard_ReviewAverageCorrection]"
-                    XValue="@(e => e.Created)"
-                    YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
-            </ApexChart>
-        }
-        else
-        {
-            <NoData/>
-        }
+                    Title="@Resources[Messages.Dashboard_ReviewAverageStatsTitle]"
+                    Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
+                    FormatYAxisLabel="@(y => y.ToString("N1"))"
+                    @ref="_chart">
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageFirstTouch]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageReview]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageCorrection]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
+                </ApexChart>
+            }
+            else
+            {
+                <NoData/>
+            }
+        </div>
     </Content>
 </Loading>
 

@@ -31,3 +31,9 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.component-container {
+    height: calc(100% - 30px);
+}
+::deep .dashboard-widgets__no-data {
+    height: calc(100% - 56px);
+}

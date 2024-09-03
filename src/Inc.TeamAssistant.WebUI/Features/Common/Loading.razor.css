@@ -1,6 +1,6 @@
 .loading {
     position: relative;
-    min-height: 100px;
+    min-height: 80px;
 }
 .loader {
     position: absolute;

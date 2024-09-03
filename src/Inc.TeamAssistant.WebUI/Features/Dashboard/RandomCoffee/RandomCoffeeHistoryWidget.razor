@@ -19,32 +19,25 @@
                 }
             </InputSelect>
         </div>
-        @if (_formModel.HistoryItems.Any())
-        {
-            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
-            <QuickGrid Items="@Pairs" class="quick-data-grid">
-                <TemplateColumn
-                    Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
-                    Sortable="true"
-                    SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-                    @context.FirstName
-                    <br/>
-                    @context.FirstUserName
-                </TemplateColumn>
-                <TemplateColumn
-                    Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
-                    Sortable="true"
-                    SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-                    @context.SecondName
-                    <br/>
-                    @context.SecondUserName
-                </TemplateColumn>
-            </QuickGrid>
-        }
-        else
-        {
-            <NoData/>
-        }
+        <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+        <QuickGrid Items="@Pairs" class="quick-data-grid">
+            <TemplateColumn
+                Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
+                Sortable="true"
+                SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                @context.FirstName
+                <br/>
+                @context.FirstUserName
+            </TemplateColumn>
+            <TemplateColumn
+                Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
+                Sortable="true"
+                SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                @context.SecondName
+                <br/>
+                @context.SecondUserName
+            </TemplateColumn>
+        </QuickGrid>
     </Content>
 </Loading>
 

@@ -27,69 +27,62 @@
 </ConfirmDialog>
 <Loading State="_state">
     <Content>
-        @if (Teammates.Any())
-        {
-            <QuickGrid Items="Teammates" class="quick-data-grid">
-                <TemplateColumn
-                    Title="@Resources[Messages.Dashboard_PersonName]"
-                    Sortable="true"
-                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
-                    @context.Name
+        <QuickGrid Items="Teammates" class="quick-data-grid">
+            <TemplateColumn
+                Title="@Resources[Messages.Dashboard_PersonName]"
+                Sortable="true"
+                SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
+                @context.Name
+                <br/>
+                @context.UserName
+            </TemplateColumn>
+            <TemplateColumn
+                Title="@Resources[Messages.Dashboard_LeaveUntil]"
+                Sortable="true"
+                SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
+                @if (context.LeaveUntil.HasValue)
+                {
+                    <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
+                    if (_item.HasManagerAccess)
+                    {
+                        <a
+                            href="#"
+                            @onclick="() => ExcludeFromTeam(context, false)"
+                            class="link link_light" @onclick:preventDefault="true">[X]</a>
+                    }
+                }
+            </TemplateColumn>
+            <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
+                @if (_item.HasManagerAccess)
+                {
+                    <a
+                        href="#"
+                        @onclick="() => ExcludeFromTeam(context, false, 1)"
+                        class="link link_light"
+                        @onclick:preventDefault="true">1</a>
+                    <a
+                        href="#"
+                        @onclick="() => ExcludeFromTeam(context, false, 7)"
+                        class="link link_light"
+                        @onclick:preventDefault="true">7</a>
+                    <a
+                        href="#"
+                        @onclick="() => ExcludeFromTeam(context, false, 14)"
+                        class="link link_light"
+                        @onclick:preventDefault="true">14</a>
                     <br/>
-                    @context.UserName
-                </TemplateColumn>
-                <TemplateColumn
-                    Title="@Resources[Messages.Dashboard_LeaveUntil]"
-                    Sortable="true"
-                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
-                    @if (context.LeaveUntil.HasValue)
-                    {
-                        <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-                        if (_item.HasManagerAccess)
-                        {
-                            <a
-                                href="#"
-                                @onclick="() => ExcludeFromTeam(context, false)"
-                                class="link link_light" @onclick:preventDefault="true">[X]</a>
-                        }
-                    }
-                </TemplateColumn>
-                <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
-                    @if (_item.HasManagerAccess)
-                    {
-                        <a
-                            href="#"
-                            @onclick="() => ExcludeFromTeam(context, false, 1)"
-                            class="link link_light"
-                            @onclick:preventDefault="true">1</a>
-                        <a
-                            href="#"
-                            @onclick="() => ExcludeFromTeam(context, false, 7)"
-                            class="link link_light"
-                            @onclick:preventDefault="true">7</a>
-                        <a
-                            href="#"
-                            @onclick="() => ExcludeFromTeam(context, false, 14)"
-                            class="link link_light"
-                            @onclick:preventDefault="true">14</a>
-                        <br/>
-                        <a
-                            href="#"
-                            @onclick="() => ExcludeFromTeam(context, true)"
-                            class="link link_light"
-                            @onclick:preventDefault="true">@Resources[Messages.Dashboard_Forever]</a>
-                    }
-                    else
-                    {
-                        <p>-</p>
-                    }
-                </TemplateColumn>
-            </QuickGrid>
-        }
-        else
-        {
-            <NoData />
-        }
+                    <a
+                        href="#"
+                        @onclick="() => ExcludeFromTeam(context, true)"
+                        class="link link_light"
+                        @onclick:preventDefault="true">@Resources[Messages.Dashboard_Forever]</a>
+                }
+                else
+                {
+                    <p>-</p>
+                }
+            </TemplateColumn>
+        </QuickGrid>
     </Content>
 </Loading>
 

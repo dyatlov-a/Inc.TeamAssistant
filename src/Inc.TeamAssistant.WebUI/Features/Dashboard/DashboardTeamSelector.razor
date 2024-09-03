@@ -4,45 +4,51 @@
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
 
-<FormSection
-    Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
-    HelpText="@Resources[Messages.Dashboard_SelectTeam]"
-    AsRows="true">
-    <Content>
-        <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
-            <Content>
-                <InputSelect
-                    id="bot-selector"
-                    Value="_currentBotId"
-                    ValueExpression="@(() => _currentBotId)"
-                    ValueChanged="@((Guid? v) => SelectBot(v))"
-                    class="form-control">
-                    <option value=""></option>
-                    @foreach (var bot in Bots)
-                    {
-                        <option value="@bot.Id">@bot.Name</option>
-                    }
-                </InputSelect>
-            </Content>
-        </FormFieldSet>
-        <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
-            <Content>
-                <InputSelect
-                    id="team-selector"
-                    Value="_currentTeamId"
-                    ValueExpression="@(() => _currentTeamId)"
-                    ValueChanged="@((Guid? v) => SelectTeam(v))"
-                    class="form-control">
-                    <option value=""></option>
-                    @foreach (var team in GetTeams())
-                    {
-                        <option value="@team.Id">@team.Name</option>
-                    }
-                </InputSelect>
-            </Content>
-        </FormFieldSet>
-    </Content>
-</FormSection>
+<div class="component-container">
+    <FormSection
+        Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
+        HelpText="@Resources[Messages.Dashboard_SelectTeam]"
+        AsRows="true">
+        <Content>
+            <Loading State="State">
+                <Content>
+                    <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
+                        <Content>
+                            <InputSelect
+                                id="bot-selector"
+                                Value="_currentBotId"
+                                ValueExpression="@(() => _currentBotId)"
+                                ValueChanged="@((Guid? v) => ChangeBot(v))"
+                                class="form-control">
+                                <option value=""></option>
+                                @foreach (var bot in Bots)
+                                {
+                                    <option value="@bot.Id">@bot.Name</option>
+                                }
+                            </InputSelect>
+                        </Content>
+                    </FormFieldSet>
+                    <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
+                        <Content>
+                            <InputSelect
+                                id="team-selector"
+                                Value="_currentTeamId"
+                                ValueExpression="@(() => _currentTeamId)"
+                                ValueChanged="@((Guid? v) => ChangeTeam(v))"
+                                class="form-control">
+                                <option value=""></option>
+                                @foreach (var team in TeamsByBot)
+                                {
+                                    <option value="@team.Id">@team.Name</option>
+                                }
+                            </InputSelect>
+                        </Content>
+                    </FormFieldSet>
+                </Content>
+            </Loading>
+        </Content>
+    </FormSection>
+</div>
 
 @code {
     [Parameter, EditorRequired]
@@ -52,23 +58,33 @@
     public Guid? TeamId { get; set; }
     
     [Parameter, EditorRequired]
+    public RequestState State { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
     public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
     
     private Guid? _currentBotId;
     private Guid? _currentTeamId;
 
-    protected override async Task OnParametersSetAsync()
+    private IEnumerable<TeamDto> TeamsByBot
     {
-        await base.OnParametersSetAsync();
-        
-        _currentBotId = BotId;
-        _currentTeamId = TeamId;
+        get
+        {
+            var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
 
-        if (_currentBotId.HasValue && !_currentTeamId.HasValue)
-            SelectBot(_currentBotId);
+            return bot is not null
+                ? bot.Teams
+                : Array.Empty<TeamDto>();
+        }
     }
 
-    private void SelectTeam(Guid? value)
+    protected override void OnParametersSet()
+    {
+        _currentBotId = BotId;
+        _currentTeamId = TeamId;
+    }
+
+    private void ChangeTeam(Guid? value)
     {
         _currentTeamId = value;
         
@@ -76,7 +92,7 @@
             ChangeTeamContext((_currentBotId.Value, _currentTeamId.Value));
     }
     
-    private void SelectBot(Guid? value)
+    private void ChangeBot(Guid? value)
     {
         _currentBotId = value;
         
@@ -93,14 +109,5 @@
     {
         if ((BotId, TeamId) != teamContext)
             NavigationManager.NavigateTo(LinkBuilder.Build($"dashboard/{teamContext.BotId:N}/{teamContext.TeamId:N}"));
-    }
-
-    private IEnumerable<TeamDto> GetTeams()
-    {
-        var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
-
-        return bot is not null
-            ? bot.Teams
-            : Array.Empty<TeamDto>();
     }
 }

@@ -4,6 +4,12 @@
 .review-total-stats__item {
     flex: 0 1 50%;
 }
+.component-container {
+    height: calc(100% - 30px);
+}
+::deep .dashboard-widgets__no-data {
+    height: calc(100% - 36px);
+}
 @media (max-width: 767.98px) {
     .review-total-stats {
         display: block;

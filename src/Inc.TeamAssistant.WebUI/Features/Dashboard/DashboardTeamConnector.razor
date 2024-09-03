@@ -4,13 +4,13 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state">
-    <Content>
-        <div class="team-connector">
-            <FormSection
-                Title="@_team.TeamName"
-                HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
-                AsRows="true">
+<div class="team-connector">
+    <FormSection
+        Title="@_team.TeamName"
+        HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
+        AsRows="true">
+        <Content>
+            <Loading State="_state">
                 <Content>
                     <div class="team-connector__code">
                         @((MarkupString)_team.Code)
@@ -19,10 +19,10 @@
                         @Resources[Messages.Dashboard_ConnectToTeamButton]
                     </a>
                 </Content>
-            </FormSection>
-        </div>
-    </Content>
-</Loading>
+            </Loading>
+        </Content>
+    </FormSection>
+</div>
 
 @code {
     [Parameter, EditorRequired]
