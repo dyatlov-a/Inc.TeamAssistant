@@ -155,7 +155,7 @@
     {
         var view = assessmentType.ToString().ToLowerInvariant();
         
-        return LinkBuilder.Build($"assessment-session/{Id}/{view}");
+        return LinkBuilder.Build($"assessment-session/{Id:N}/{view}");
     }
 
     private string ViewControlCss(AssessmentType assessmentType)

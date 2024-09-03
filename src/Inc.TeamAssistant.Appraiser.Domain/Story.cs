@@ -140,4 +140,6 @@ public sealed class Story
 	public Estimation CalculateMean() => EstimationStrategy.CalculateMean(this);
     
 	public Estimation CalculateMedian() => EstimationStrategy.CalculateMedian(this);
+
+	public int GetWeight() => EstimationStrategy.GetWeight(this);
 }

@@ -35,6 +35,13 @@ internal sealed class TShirtEstimationStrategy : IEstimationStrategy
             value,
             $"Value is not valid for {nameof(TShirtEstimationStrategy)}.");
     }
+    
+    public int GetWeight(Story story)
+    {
+        ArgumentNullException.ThrowIfNull(story);
+
+        return story.TotalValue.HasValue ? 1 : 0;
+    }
 
     public Estimation CalculateMean(Story story) => CalculateMedian(story);
 

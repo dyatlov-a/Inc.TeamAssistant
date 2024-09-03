@@ -1,11 +1,10 @@
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
 public interface IStoryReader
 {
-    Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
+    Task<IReadOnlyCollection<Story>> GetStories(
         Guid teamId,
         DateTimeOffset before,
         DateTimeOffset? from,

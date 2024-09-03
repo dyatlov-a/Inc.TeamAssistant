@@ -37,6 +37,13 @@ internal sealed class FibonacciEstimationStrategy : IEstimationStrategy
             $"Value is not valid for {nameof(FibonacciEstimationStrategy)}.");
     }
 
+    public int GetWeight(Story story)
+    {
+        ArgumentNullException.ThrowIfNull(story);
+
+        return story.TotalValue ?? 0;
+    }
+
     public Estimation CalculateMean(Story story)
     {
         ArgumentNullException.ThrowIfNull(story);

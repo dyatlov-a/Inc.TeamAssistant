@@ -36,6 +36,13 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
             value,
             $"Value is not valid for {nameof(FibonacciEstimationStrategy)}.");
     }
+    
+    public int GetWeight(Story story)
+    {
+        ArgumentNullException.ThrowIfNull(story);
+
+        return story.TotalValue ?? 0;
+    }
 
     public Estimation CalculateMean(Story story)
     {
