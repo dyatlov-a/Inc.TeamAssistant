@@ -1,13 +1,12 @@
-@inherits PersistentComponent<NavigationStagesViewModel>
-
 @inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
 
 <div class="nav-stages">
     @foreach (var stage in Stages)
     {
-        ViewModel.StagesLookup.TryGetValue(stage, out var stageName);
-
-        <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">@stageName</div>
+        <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
+            @Resources[Messages.GetStageTitle(stage)]
+        </div>
     }
 </div>
 
@@ -34,12 +33,5 @@
             return;
         
         NavigationManager.NavigateTo(LinkFactory(stage));
-    }
-
-    protected override Task<NavigationStagesViewModel> Initialize(ResourcesManager resources)
-    {
-        var stagesLookup = Enum.GetValues<Stage>().ToDictionary(s => s, s => resources[Messages.GetStageTitle(s)]);
-        
-        return Task.FromResult(new NavigationStagesViewModel(stagesLookup));
     }
 }

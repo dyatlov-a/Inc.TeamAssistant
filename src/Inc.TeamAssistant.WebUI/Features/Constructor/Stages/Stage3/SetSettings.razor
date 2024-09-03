@@ -1,90 +1,93 @@
+@using Inc.TeamAssistant.Primitives.FeatureProperties
 @using Inc.TeamAssistant.Primitives.Languages
-
-@inherits PersistentComponent<SetSettingsViewModel>
 
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <div class="constructor__form">
-        @foreach (var feature in StagesState.SelectedFeatures)
-        {
-            if (!ViewModel.SettingSections.TryGetValue(feature.Name, out var settingSections))
-                continue;
+<Loading State="_state" IsFullscreen="true">
+    <Content>
+        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+            <FluentValidationValidator @ref="_fluentValidationValidator" />
+            <div class="constructor__form">
+                @foreach (var feature in StagesState.SelectedFeatures)
+                {
+                    if (!_properties.TryGetValue(feature.Name, out var settingSections))
+                        continue;
 
-            foreach (var settingSection in settingSections)
-            {
-                <FormSection
-                    Title="@ResourcesManager[settingSection.HeaderMessageId]"
-                    HelpText="@ResourcesManager[settingSection.HelpMessageId]">
-                    <Content>
-                        @foreach (var settingItem in settingSection.SettingItems)
-                        {
-                            var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
-                                settingItem.PropertyName,
-                                StringComparison.InvariantCultureIgnoreCase));
-                            if (property is null)
-                                continue;
+                    foreach (var settingSection in settingSections)
+                    {
+                        <FormSection
+                            Title="@Resources[settingSection.HeaderMessageId]"
+                            HelpText="@Resources[settingSection.HelpMessageId]">
+                            <Content>
+                                @foreach (var settingItem in settingSection.SettingItems)
+                                {
+                                    var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
+                                        settingItem.PropertyName,
+                                        StringComparison.InvariantCultureIgnoreCase));
+                                    if (property is null)
+                                        continue;
                             
-                            <FormFieldSet
-                                FieldId="@settingItem.PropertyName"
-                                Label="@ResourcesManager[settingItem.LabelMessageId]">
-                                <Content>
-                                    <InputSelect
-                                        id="@settingItem.PropertyName"
-                                        @bind-Value="property.Value"
-                                        class="form-control">
-                                        @foreach (var value in settingItem.Values)
-                                        {
-                                            <option value="@value.Value">@ResourcesManager[value.MessageId]</option>
-                                        }
-                                    </InputSelect>
-                                    <ValidationMessage For="@(() => property.Value)"/>
-                                </Content>
-                            </FormFieldSet>
+                                    <FormFieldSet
+                                        FieldId="@settingItem.PropertyName"
+                                        Label="@Resources[settingItem.LabelMessageId]">
+                                        <Content>
+                                            <InputSelect
+                                                id="@settingItem.PropertyName"
+                                                @bind-Value="property.Value"
+                                                class="form-control">
+                                                @foreach (var value in settingItem.Values)
+                                                {
+                                                    <option value="@value.Value">@Resources[value.MessageId]</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="@(() => property.Value)"/>
+                                        </Content>
+                                    </FormFieldSet>
+                                }
+                            </Content>
+                        </FormSection>
+                    }
+                }
+                <FormSection
+                    Title="@Resources[Messages.Constructor_SupportedLanguages]"
+                    HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
+                    <Content>
+                        <FormFieldSet
+                            FieldId="supported-languages"
+                            Label="@Resources[Messages.Constructor_Languages]">
+                            <Content>
+                                <div id="supported-languages" class="form-control enabled">
+                                    @foreach (var languageId in LanguageSettings.LanguageIds)
+                                    {
+                                        <span
+                                            class="multiselect__item @CssClass(languageId)"
+                                            @onclick="() => ToggleLanguage(languageId)">
+                                            @languageId.Value
+                                        </span>
+                                    }
+                                </div>
+                                <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                            </Content>
+                        </FormFieldSet>
+                        @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                        {
+                            <BotDetailsEditor BotDetails="item" />
                         }
                     </Content>
                 </FormSection>
-            }
-        }
-        <FormSection
-            Title="@ViewModel.SupportedLanguages"
-            HelpText="@ViewModel.SupportedLanguagesHelp">
-            <Content>
-                <FormFieldSet
-                    FieldId="supported-languages"
-                    Label="@ViewModel.Languages">
-                    <Content>
-                        <div id="supported-languages" class="form-control enabled">
-                            @foreach (var languageId in LanguageSettings.LanguageIds)
-                            {
-                                <span
-                                    class="multiselect__item @CssClass(languageId)"
-                                    @onclick="() => ToggleLanguage(languageId)">
-                                    @languageId.Value
-                                </span>
-                            }
-                        </div>
-                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
-                    </Content>
-                </FormFieldSet>
-                @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
-                {
-                    <BotDetailsEditor
-                        BotDetails="item"
-                        BotName="@ViewModel.BotName"
-                        BotShortDescription="@ViewModel.BotShortDescription"
-                        BotDescription="@ViewModel.BotDescription" />
-                }
-            </Content>
-        </FormSection>
-    </div>
-    <div class="constructor__actions">
-        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
-    </div>
-</EditForm>
+            </div>
+            <div class="constructor__actions">
+                <button type="submit" class="button button_light">
+                    @Resources[Messages.Constructor_MoveNextTitle]
+                </button>
+            </div>
+        </EditForm>
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
@@ -99,27 +102,27 @@
     private readonly SetSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> _properties = new Dictionary<string, IReadOnlyCollection<SettingSection>>();
     
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
     }
-    
-    protected override async Task<SetSettingsViewModel> Initialize(ResourcesManager resources)
+
+    protected override Task OnParametersSetAsync() => Load();
+
+    private async Task Load()
     {
-        var getPropertiesResult = await BotService.GetProperties();
-        
-        return new SetSettingsViewModel(
-            getPropertiesResult.Properties,
-            resources[Messages.Constructor_MoveNextTitle],
-            resources[Messages.Constructor_SupportedLanguages],
-            resources[Messages.Constructor_SupportedLanguagesHelp],
-            resources[Messages.Constructor_Languages],
-            resources[Messages.Constructor_BotName],
-            resources[Messages.Constructor_BotShortDescription],
-            resources[Messages.Constructor_BotDescription]);
+        _state = await RequestProcessor.Process(
+            () => BotService.GetProperties(),
+            nameof(SetSettings),
+            r =>
+            {
+                _properties = r.Properties;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
     
     private async Task SubmitForm()

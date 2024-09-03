@@ -1,23 +1,22 @@
-@inherits PersistentComponent<SelectFeaturesViewModel>
-
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="constructor__form">
         <FormSection
-            Title="@ViewModel.FormSectionFeaturesTitle"
-            HelpText="@ViewModel.FormSectionFeaturesHelp"
+            Title="@Resources[Messages.Constructor_FormSectionFeaturesTitle]"
+            HelpText="@Resources[Messages.Constructor_FormSectionFeaturesHelp]"
             AsRows="true">
             <Content>
                 <InputFeatures
                     @bind-Value="_formModel.FeatureIds"
                     Features="StagesState.Features"
-                    AddText="@ViewModel.FormSectionFeaturesAddText"
-                    RemoveText="@ViewModel.FormSectionFeaturesRemoveText"
-                    FeaturesAvailableEmptyText="@ViewModel.FormSectionFeaturesAvailableEmptyText"
-                    FeaturesSelectedEmptyText="@ViewModel.FormSectionFeaturesSelectedEmptyText">
+                    AddText="@Resources[Messages.Constructor_FeatureAdd]"
+                    RemoveText="@Resources[Messages.Constructor_FeatureRemove]"
+                    FeaturesAvailableEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]"
+                    FeaturesSelectedEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]">
                     <Validation>
                         <ValidationMessage For="@(() => _formModel.FeatureIds)" />
                     </Validation>
@@ -26,7 +25,7 @@
         </FormSection>
     </div>
     <div class="constructor__actions">
-        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
+        <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
     </div>
 </EditForm>
 
@@ -48,20 +47,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
-    }
-    
-    protected override Task<SelectFeaturesViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new SelectFeaturesViewModel(
-            resources[Messages.Constructor_FormSectionFeaturesTitle],
-            resources[Messages.Constructor_FormSectionFeaturesHelp],
-            resources[Messages.Constructor_FeatureAdd],
-            resources[Messages.Constructor_FeatureRemove],
-            resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText],
-            resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText],
-            resources[Messages.Constructor_MoveNextTitle]));
     }
 
     private async Task SubmitForm()

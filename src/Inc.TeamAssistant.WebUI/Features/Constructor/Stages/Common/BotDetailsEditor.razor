@@ -1,6 +1,8 @@
+@inject ResourcesManager Resources
+
 <FormFieldSet
     FieldId="@BotNameId"
-    Label="@MessageWithLanguage(BotName, BotDetails.LanguageId)">
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], BotDetails.LanguageId)">
     <Content>
         @if (IsDisabled)
         {
@@ -22,7 +24,7 @@
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotShortDescriptionId"
-    Label="@MessageWithLanguage(BotShortDescription, BotDetails.LanguageId)">
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], BotDetails.LanguageId)">
     <Content>
         @if (IsDisabled)
         {
@@ -44,7 +46,7 @@
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotDescriptionId"
-    Label="@MessageWithLanguage(BotDescription, BotDetails.LanguageId)">
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], BotDetails.LanguageId)">
     <Content>
         @if (IsDisabled)
         {
@@ -68,15 +70,6 @@
 @code {
     [Parameter, EditorRequired]
     public BotDetailsFormModel BotDetails { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotName { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotShortDescription { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotDescription { get; set; } = default!;
     
     [Parameter]
     public bool IsDisabled { get; set; }

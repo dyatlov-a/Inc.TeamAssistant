@@ -1,27 +1,26 @@
 @using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
 
-@inherits PersistentComponent<CheckBotViewModel>
-
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
     <div class="constructor__form">
-        <FormSection Title="@ViewModel.FormSectionTokenTitle">
+        <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
             <HelpContent>
-                @((MarkupString)string.Format(ViewModel.FormSectionTokenHelpTemplate, "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                @((MarkupString)string.Format(Resources[Messages.Constructor_FormSectionTokenHelpTemplate], "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
             </HelpContent>
             <Content>
-                <FormFieldSet FieldId="bot-token" Label="@ViewModel.FormSectionTokenFieldTokenLabel">
+                <FormFieldSet FieldId="bot-token" Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
                     <Content>
                         <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
                         <ValidationMessage For="@(() => _formModel.Token)"/>
                     </Content>
                 </FormFieldSet>
-                <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
+                <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                     <Content>
                         <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="disabled"/>
                     </Content>
@@ -30,7 +29,7 @@
         </FormSection>
     </div>
     <div class="constructor__actions">
-        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
+        <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
     </div>
 </EditForm>
 
@@ -51,18 +50,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
-    }
-    
-    protected override Task<CheckBotViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new CheckBotViewModel(
-            resources[Messages.Constructor_FormSectionTokenTitle],
-            resources[Messages.Constructor_FormSectionTokenHelpTemplate],
-            resources[Messages.Constructor_FormSectionTokenFieldTokenLabel],
-            resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
-            resources[Messages.Constructor_MoveNextTitle]));
     }
 
     private async Task SubmitForm()

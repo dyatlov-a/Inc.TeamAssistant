@@ -15,17 +15,19 @@
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.Languages
 
-@inherits PersistentComponent<StagesPageViewModel>
-
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
 @inject ICalendarService CalendarService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
 
-<MetaDataModule WebsiteSection="WebsiteSection.Constructor" MetaOverrideTitle="@ViewModel.Title" />
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Constructor"
+    MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="title">@ViewModel.Title @BotName</h1>
+        <h1 class="title">@Resources[Messages.Constructor_Title] @BotName</h1>
         <div class="constructor__nav">
             <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
         </div>
@@ -68,17 +70,10 @@
     
     protected override async Task OnParametersSetAsync()
     {
-        await base.OnParametersSetAsync();
-
         var jsRuntime = ServiceProvider.GetService<IJSRuntime>();
         var dataEditor = ServiceProvider.GetService<DataEditor>();
         if (dataEditor is not null && jsRuntime is not null)
             _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, async _ => await CreateState(jsRuntime));
-    }
-
-    protected override Task<StagesPageViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new StagesPageViewModel(resources[Messages.Constructor_Title]));
     }
 
     private async Task<StagesState> CreateState(IJSRuntime jsRuntime)

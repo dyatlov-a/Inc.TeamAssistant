@@ -1,18 +1,17 @@
-@inherits PersistentComponent<CalendarViewModel>
-
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <div class="constructor__form">
         <FormSection
-            Title="@ViewModel.WorkTimeTitle"
-            HelpText="@ViewModel.WorkTimeHelp">
+            Title="@Resources[Messages.Constructor_WorkTimeTitle]"
+            HelpText="@Resources[Messages.Constructor_WorkTimeHelp]">
             <Content>
                 <FormFieldSet
                     FieldId="work-all-day"
-                    Label="@ViewModel.WorkAllDayLabel">
+                    Label="@Resources[Messages.Constructor_WorkAllDayLabel]">
                     <Content>
                         <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay" />
                     </Content>
@@ -23,13 +22,13 @@
                         <div class="work-schedule__item">
                             <InputTimeOnly
                                 FieldId="work-schedule-start"
-                                Label="@ViewModel.WorkTimeStartLabel"
+                                Label="@Resources[Messages.Constructor_WorkTimeStartLabel]"
                                 @bind-Value="_formModel.Start" />
                         </div>
                         <div class="work-schedule__item">
                             <InputTimeOnly
                                 FieldId="work-schedule-end"
-                                Label="@ViewModel.WorkTimeEndLabel"
+                                Label="@Resources[Messages.Constructor_WorkTimeEndLabel]"
                                 @bind-Value="_formModel.End" />
                         </div>
                     </div>
@@ -37,12 +36,12 @@
             </Content>
         </FormSection>
         <FormSection
-            Title="@ViewModel.WeekendsTitle"
-            HelpText="@ViewModel.WeekendsHelp">
+            Title="@Resources[Messages.Constructor_WeekendsTitle]"
+            HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
             <Content>
                 <FormFieldSet
                     FieldId="weekends"
-                    Label="@ViewModel.WeekendsLabel">
+                    Label="@Resources[Messages.Constructor_WeekendsLabel]">
                     <Content>
                         <div id="weekends" class="form-control enabled">
                             @foreach (var day in Enum.GetValues<DayOfWeek>())
@@ -50,7 +49,7 @@
                                 <span
                                     class="multiselect__item @CssClass(day)"
                                     @onclick="() => ToggleWeekend(day)">
-                                    @ResourcesManager[Messages.GetDayOfWeekTitle(day)]
+                                    @Resources[Messages.GetDayOfWeekTitle(day)]
                                 </span>
                             }
                         </div>
@@ -59,8 +58,8 @@
             </Content>
         </FormSection>
         <FormSection
-            Title="@ViewModel.HolidaysTitle"
-            HelpText="@ViewModel.HolidaysHelp"
+            Title="@Resources[Messages.Constructor_HolidaysTitle]"
+            HelpText="@Resources[Messages.Constructor_HolidaysHelp]"
             AsRows="true">
             <Content>
                 <div class="holiday-items">
@@ -70,13 +69,13 @@
                             <div class="holiday-items__item-control">
                                 <InputDateOnly
                                     FieldId="@holiday.DateFieldId"
-                                    Label="@ViewModel.DateLabel"
+                                    Label="@Resources[Messages.Constructor_DateLabel]"
                                     @bind-Value="holiday.Date"/>
                             </div>
                             <div class="holiday-items__item-control">
                                 <FormFieldSet
                                     FieldId="@holiday.WorkdayFieldId"
-                                    Label="@ViewModel.WorkdayLabel">
+                                    Label="@Resources[Messages.Constructor_WorkdayLabel]">
                                     <Content>
                                         <InputCheckbox id="@holiday.WorkdayFieldId" @bind-Value="holiday.IsWorkday"/>
                                     </Content>
@@ -97,7 +96,7 @@
                             type="button"
                             class="button button_dark button_small work-schedule__button"
                             @onclick="AddHoliday">
-                            @ViewModel.AddHolidayLabel
+                            @Resources[Messages.Constructor_AddHolidayLabel]
                         </button>
                     </div>
                 </div>
@@ -105,7 +104,7 @@
         </FormSection>
     </div>
     <div class="constructor__actions">
-        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
+        <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
     </div>
 </EditForm>
 
@@ -151,27 +150,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
-    }
-
-    protected override Task<CalendarViewModel> Initialize(ResourcesManager resources)
-    {
-        return Task.FromResult(new CalendarViewModel(
-            resources[Messages.Constructor_WorkTimeTitle],
-            resources[Messages.Constructor_WorkTimeHelp],
-            resources[Messages.Constructor_WorkAllDayLabel],
-            resources[Messages.Constructor_WorkTimeStartLabel],
-            resources[Messages.Constructor_WorkTimeEndLabel],
-            resources[Messages.Constructor_WeekendsTitle],
-            resources[Messages.Constructor_WeekendsHelp],
-            resources[Messages.Constructor_WeekendsLabel],
-            resources[Messages.Constructor_HolidaysTitle],
-            resources[Messages.Constructor_HolidaysHelp],
-            resources[Messages.Constructor_DateLabel],
-            resources[Messages.Constructor_WorkdayLabel],
-            resources[Messages.Constructor_AddHolidayLabel],
-            resources[Messages.Constructor_MoveNextTitle]));
     }
     
     private async Task SubmitForm()

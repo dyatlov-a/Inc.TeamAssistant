@@ -5,172 +5,171 @@
 @using Inc.TeamAssistant.Primitives.Bots
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
-@inherits PersistentComponent<CompleteViewModel>
-
 @inject NavigationManager NavigationManager
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
 @inject ICalendarService CalendarService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <div class="constructor__form">
-        <ValidationSummary />
-        <FormSection Title="@ViewModel.FormSectionTokenTitle" HelpText="@ViewModel.FormSectionTokenHelp">
-            <Content>
-                <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
-                    @ViewModel.EditText
-                </a>
-                <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
+<Loading State="_state" IsFullscreen="true">
+    <Content>
+        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+            <FluentValidationValidator @ref="_fluentValidationValidator" />
+            <div class="constructor__form">
+                <ValidationSummary />
+                <FormSection Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]" HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
                     <Content>
-                        <InputText
-                            @bind-Value="_formModel.UserName"
-                            class="form-control"
-                            id="bot-username"
-                            disabled="disabled"/>
-                    </Content>
-                </FormFieldSet>
-            </Content>
-        </FormSection>
-        <FormSection Title="@ViewModel.FormSectionFeaturesTitle" HelpText="@ViewModel.FormSectionFeaturesHelp">
-            <Content>
-                <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
-                    @ViewModel.EditText
-                </a>
-                @foreach (var feature in StagesState.Features)
-                {
-                    var fieldId = feature.Id.ToString();
-                    var selected = StagesState.FeatureIds.Contains(feature.Id)
-                        ? ViewModel.BooleanTrueText
-                        : ViewModel.BooleanFalseText;
-
-                    <FormFieldSet
-                        FieldId="@fieldId"
-                        Label="@ViewModel.FeaturesLookup.GetValueOrDefault(feature.Name, feature.Name)">
-                        <Content>
-                            <input
-                                type="text"
-                                id="@fieldId"
-                                value="@selected"
-                                class="form-control"
-                                disabled="disabled" />
-                        </Content>
-                    </FormFieldSet>
-                }
-            </Content>
-        </FormSection>
-        @foreach (var feature in StagesState.SelectedFeatures)
-        {
-            if (!ViewModel.SettingSections.TryGetValue(feature.Name, out var settingSections))
-                continue;
-
-            foreach (var settingSection in settingSections)
-            {
-                <FormSection
-                    Title="@ResourcesManager[settingSection.HeaderMessageId]"
-                    HelpText="@ResourcesManager[settingSection.HelpMessageId]">
-                    <Content>
-                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
-                            @ViewModel.EditText
+                        <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
+                            @Resources[Messages.Constructor_Edit]
                         </a>
-                        @foreach (var settingItem in settingSection.SettingItems)
+                        <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                            <Content>
+                                <InputText
+                                    @bind-Value="_formModel.UserName"
+                                    class="form-control"
+                                    id="bot-username"
+                                    disabled="disabled"/>
+                            </Content>
+                        </FormFieldSet>
+                    </Content>
+                </FormSection>
+                <FormSection Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]" HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                    <Content>
+                        <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
+                            @Resources[Messages.Constructor_Edit]
+                        </a>
+                        @foreach (var feature in StagesState.Features)
                         {
-                            var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
-                                settingItem.PropertyName,
-                                StringComparison.InvariantCultureIgnoreCase));
+                            var fieldId = feature.Id.ToString();
+                            var selected = StagesState.FeatureIds.Contains(feature.Id)
+                                ? Resources[Messages.Constructor_BooleanTrueText]
+                                : Resources[Messages.Constructor_BooleanFalseText];
 
                             <FormFieldSet
-                                FieldId="@settingItem.PropertyName"
-                                Label="@ResourcesManager[settingItem.LabelMessageId]">
+                                FieldId="@fieldId"
+                                Label="@Features.GetValueOrDefault(feature.Name, feature.Name)">
                                 <Content>
                                     <input
                                         type="text"
-                                        id="@settingItem.PropertyName"
-                                        value="@GetValueAsText(settingItem, property.Value)"
+                                        id="@fieldId"
+                                        value="@selected"
                                         class="form-control"
-                                        disabled="disabled"/>
+                                        disabled="disabled" />
                                 </Content>
                             </FormFieldSet>
                         }
                     </Content>
                 </FormSection>
-            }
-        }
-        <FormSection
-            Title="@ViewModel.BotInformation"
-            HelpText="@ViewModel.BotInformationHelp">
-            <Content>
-                <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
-                    @ViewModel.EditText
-                </a>
-                @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                @foreach (var feature in StagesState.SelectedFeatures)
                 {
-                    <BotDetailsEditor
-                        BotDetails="item"
-                        BotName="@ViewModel.BotName"
-                        BotShortDescription="@ViewModel.BotShortDescription"
-                        BotDescription="@ViewModel.BotDescription"
-                        IsDisabled="true"/>
-                }
-            </Content>
-        </FormSection>
-        <FormSection
-            Title="@ViewModel.FormSectionCalendarTitle"
-            HelpText="@ViewModel.FormSectionCalendarHelp">
-            <Content>
-                <a href="@LinkFactory(Stage.Calendar)" class="link link_dark constructor__edit-link">
-                    @ViewModel.EditText
-                </a>
-                <FormFieldSet
-                    FieldId="work-time"
-                    Label="@ViewModel.FormSectionCalendarFieldWorkTimeLabel">
-                    <Content>
-                        <input
-                            type="text"
-                            id="work-time"
-                            value="@_formModel.GetWorkScheduleAsText(ViewModel.FormSectionCalendarFieldWorkTimeWorkAllDay)"
-                            class="form-control"
-                            disabled="disabled"/>
-                    </Content>
-                </FormFieldSet>
-                @if (_formModel.Weekends.Any())
-                {
-                    <FormFieldSet
-                        FieldId="weekends"
-                        Label="@ViewModel.FormSectionCalendarFieldWeekendsLabel">
-                        <Content>
-                            <div id="weekends" class="form-control disabled">
-                                @foreach (var day in Enum.GetValues<DayOfWeek>())
+                    if (!_properties.TryGetValue(feature.Name, out var settingSections))
+                        continue;
+
+                    foreach (var settingSection in settingSections)
+                    {
+                        <FormSection
+                            Title="@Resources[settingSection.HeaderMessageId]"
+                            HelpText="@Resources[settingSection.HelpMessageId]">
+                            <Content>
+                                <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
+                                    @Resources[Messages.Constructor_Edit]
+                                </a>
+                                @foreach (var settingItem in settingSection.SettingItems)
                                 {
-                                    <span
-                                        class="multiselect__item @CssClass(day)">
-                                        @ResourcesManager[Messages.GetDayOfWeekTitle(day)]
-                                    </span>
+                                    var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                        settingItem.PropertyName,
+                                        StringComparison.InvariantCultureIgnoreCase));
+
+                                    <FormFieldSet
+                                        FieldId="@settingItem.PropertyName"
+                                        Label="@Resources[settingItem.LabelMessageId]">
+                                        <Content>
+                                            <input
+                                                type="text"
+                                                id="@settingItem.PropertyName"
+                                                value="@GetValueAsText(settingItem, property.Value)"
+                                                class="form-control"
+                                                disabled="disabled"/>
+                                        </Content>
+                                    </FormFieldSet>
                                 }
-                            </div>
-                        </Content>
-                    </FormFieldSet>
+                            </Content>
+                        </FormSection>
+                    }
                 }
-                <FormFieldSet
-                    FieldId="holidays"
-                    Label="@ViewModel.FormSectionCalendarFieldHolidaysLabel">
+                <FormSection
+                    Title="@Resources[Messages.Constructor_BotInformation]"
+                    HelpText="@Resources[Messages.Constructor_BotInformationHelp]">
                     <Content>
-                        <InputTextArea
-                            @bind-Value="@_formModel.HolidaysAsText"
-                            class="form-control form-control_textarea"
-                            id="holidays"
-                            disabled="disabled" />
+                        <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
+                            @Resources[Messages.Constructor_Edit]
+                        </a>
+                        @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
+                        {
+                            <BotDetailsEditor BotDetails="item" IsDisabled="true"/>
+                        }
                     </Content>
-                </FormFieldSet>
-            </Content>
-        </FormSection>
-    </div>
-    <div class="constructor__actions">
-        <button type="submit" class="button button_light">
-            @(StagesState.Id.HasValue ? ViewModel.ButtonUpdateText : ViewModel.ButtonCreateText)
-        </button>
-    </div>
-</EditForm>
+                </FormSection>
+                <FormSection
+                    Title="@Resources[Messages.GetStageTitle(Stage.Calendar)]"
+                    HelpText="@Resources[Messages.Constructor_CheckWorkTimeHelp]">
+                    <Content>
+                        <a href="@LinkFactory(Stage.Calendar)" class="link link_dark constructor__edit-link">
+                            @Resources[Messages.Constructor_Edit]
+                        </a>
+                        <FormFieldSet
+                            FieldId="work-time"
+                            Label="@Resources[Messages.Constructor_WorkTimeTitle]">
+                            <Content>
+                                <input
+                                    type="text"
+                                    id="work-time"
+                                    value="@_formModel.GetWorkScheduleAsText(Resources[Messages.Constructor_WorkAllDayLabel])"
+                                    class="form-control"
+                                    disabled="disabled"/>
+                            </Content>
+                        </FormFieldSet>
+                        @if (_formModel.Weekends.Any())
+                        {
+                            <FormFieldSet
+                                FieldId="weekends"
+                                Label="@Resources[Messages.Constructor_WeekendsTitle]">
+                                <Content>
+                                    <div id="weekends" class="form-control disabled">
+                                        @foreach (var day in Enum.GetValues<DayOfWeek>())
+                                        {
+                                            <span
+                                                class="multiselect__item @CssClass(day)">
+                                                @Resources[Messages.GetDayOfWeekTitle(day)]
+                                            </span>
+                                        }
+                                    </div>
+                                </Content>
+                            </FormFieldSet>
+                        }
+                        <FormFieldSet
+                            FieldId="holidays"
+                            Label="@Resources[Messages.Constructor_HolidaysTitle]">
+                            <Content>
+                                <InputTextArea
+                                    @bind-Value="@_formModel.HolidaysAsText"
+                                    class="form-control form-control_textarea"
+                                    id="holidays"
+                                    disabled="disabled" />
+                            </Content>
+                        </FormFieldSet>
+                    </Content>
+                </FormSection>
+            </div>
+            <div class="constructor__actions">
+                <button type="submit" class="button button_light">
+                    @Resources[StagesState.Id.HasValue ? Messages.Constructor_ButtonUpdateText : Messages.Constructor_ButtonCreateText]
+                </button>
+            </div>
+        </EditForm>
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
@@ -185,51 +184,34 @@
     private readonly CompleteFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> _properties = new Dictionary<string, IReadOnlyCollection<SettingSection>>();
+    private IReadOnlyDictionary<string, string> Features => new[]
+    {
+        "Appraiser",
+        "CheckIn",
+        "RandomCoffee",
+        "Reviewer"
+    }.ToDictionary(i => i, i => Resources[Messages.GetFeatureProperty(i, "Name")]);
     
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
     }
     
-    protected override async Task<CompleteViewModel> Initialize(ResourcesManager resources)
+    protected override Task OnParametersSetAsync() => Load();
+    
+    private async Task Load()
     {
-        var result = await BotService.GetProperties();
-        var featuresLookup = new[]
-        {
-            "Appraiser",
-            "CheckIn",
-            "RandomCoffee",
-            "Reviewer"
-        };
-
-        var viewModel = new CompleteViewModel(
-            resources[Messages.GetStageTitle(Stage.CheckBot)],
-            resources[Messages.Constructor_FormSectionTokenCheckHelp],
-            resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
-            resources[Messages.GetStageTitle(Stage.SelectFeatures)],
-            resources[Messages.Constructor_FormSectionFeaturesCheckHelp],
-            result.Properties,
-            resources[Messages.Constructor_ButtonCreateText],
-            resources[Messages.Constructor_ButtonUpdateText],
-            resources[Messages.Constructor_BooleanTrueText],
-            resources[Messages.Constructor_BooleanFalseText],
-            resources[Messages.Constructor_Edit],
-            featuresLookup.ToDictionary(i => i, i => resources[Messages.GetFeatureProperty(i, "Name")]),
-            resources[Messages.Constructor_BotInformation],
-            resources[Messages.Constructor_BotInformationHelp],
-            resources[Messages.Constructor_BotName],
-            resources[Messages.Constructor_BotShortDescription],
-            resources[Messages.Constructor_BotDescription],
-            resources[Messages.GetStageTitle(Stage.Calendar)],
-            resources[Messages.Constructor_CheckWorkTimeHelp],
-            resources[Messages.Constructor_WorkTimeTitle],
-            resources[Messages.Constructor_WorkAllDayLabel],
-            resources[Messages.Constructor_WeekendsTitle],
-            resources[Messages.Constructor_HolidaysTitle]);
-        
-        return viewModel;
+        _state = await RequestProcessor.Process(
+            () => BotService.GetProperties(),
+            nameof(Complete),
+            r =>
+            {
+                _properties = r.Properties;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
     
     private string CssClass(DayOfWeek item) => _formModel.Weekends.Contains(item)
@@ -240,7 +222,7 @@
     {
         var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(value, StringComparison.InvariantCultureIgnoreCase));
         
-        return item is null ? string.Empty : ResourcesManager[item.MessageId];
+        return item is null ? string.Empty : Resources[item.MessageId];
     }
     
     private async Task SubmitForm()
