@@ -57,6 +57,7 @@
         </noscript>
         <!-- End Google Tag Manager (noscript) -->
     }
+    
     <Routes @rendermode="_renderMode"/>
     
     <script src="_framework/blazor.web.js?v=@_appVersion"></script>
@@ -80,6 +81,8 @@
 
     protected override void OnInitialized()
     {
-        _lang = RenderContext.GetCurrentLanguageId().Language.Value;
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        _lang = languageContext.CurrentLanguage.Value;
     }
 }

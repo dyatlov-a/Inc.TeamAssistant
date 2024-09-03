@@ -32,8 +32,9 @@
 
     private void Load()
     {
-        var languageId = RenderContext.GetCurrentLanguageId().Language.Value;
-        _languageId = $"{languageId.ToLower()}_{languageId.ToUpper()}";
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        _languageId = $"{languageContext.CurrentLanguage.Value.ToLowerInvariant()}_{languageContext.CurrentLanguage.Value.ToUpperInvariant()}";
         _data = WebsiteSection switch
         {
             WebsiteSection.Assessment => (Messages.OgAppraiserTitle, Messages.OgAppraiserDescription, "main.jpg", Messages.OgAppraiserImageText),

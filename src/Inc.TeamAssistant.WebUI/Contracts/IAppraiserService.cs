@@ -14,7 +14,8 @@ public interface IAppraiserService
 	
 	Task<GetAssessmentHistoryResult> GetAssessmentHistory(
 		Guid teamId,
-		DateOnly? from,
+		int? limit = null,
+		DateOnly? from = null,
 		CancellationToken token = default);
 	
 	Task<GetStoriesResult> GetStories(

@@ -19,7 +19,7 @@ internal sealed class ClientRenderContext : IRenderContext
         "http://localhost",
         StringComparison.InvariantCultureIgnoreCase);
 
-    public (LanguageId Language, bool Selected) GetCurrentLanguageId()
+    public (LanguageId CurrentLanguage, bool Selected) GetLanguageContext()
     {
         var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
 

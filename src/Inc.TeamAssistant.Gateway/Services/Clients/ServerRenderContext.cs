@@ -18,7 +18,7 @@ internal sealed class ServerRenderContext : IRenderContext
 
     public bool IsDevelopment() => _hostingEnvironment.IsDevelopment();
 
-    public (LanguageId Language, bool Selected) GetCurrentLanguageId()
+    public (LanguageId CurrentLanguage, bool Selected) GetLanguageContext()
     {
         if (_httpContextAccessor.HttpContext is null)
             return (LanguageSettings.DefaultLanguageId, false);

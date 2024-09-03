@@ -130,7 +130,7 @@
         if (!stage.HasValue)
             return LinkBuilder.Build("constructor");
         
-        var target = stage.Value.ToString().ToLower();
+        var target = stage.Value.ToString().ToLowerInvariant();
         var link = _stagesState.Id.HasValue
             ? $"constructor/{_stagesState.Id.Value:N}/{target}"
             : $"constructor/{target}";

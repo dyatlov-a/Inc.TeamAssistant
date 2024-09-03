@@ -34,7 +34,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         foreach (var storyItem in storyItems)
         {
             if (GlobalSettings.LinksPrefix.Any(l => storyItem.StartsWith(l, StringComparison.InvariantCultureIgnoreCase)))
-                links.Add(storyItem.ToLower());
+                links.Add(storyItem.ToLowerInvariant());
             else
                 text.Add(storyItem);
         }

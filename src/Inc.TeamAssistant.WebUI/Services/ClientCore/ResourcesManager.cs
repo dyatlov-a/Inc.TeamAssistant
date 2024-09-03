@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
@@ -44,8 +45,8 @@ public sealed class ResourcesManager : IDisposable
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             
-            var currentLanguage = _renderContext.GetCurrentLanguageId();
-            var resources = _resources.TryGetValue(currentLanguage.Language.Value, out var result)
+            var languageContext = _renderContext.GetLanguageContext();
+            var resources = _resources.TryGetValue(languageContext.CurrentLanguage.Value, out var result)
                 ? result
                 : new Dictionary<string, string>();
             

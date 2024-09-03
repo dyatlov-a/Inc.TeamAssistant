@@ -1,4 +1,5 @@
 ﻿@using FluentValidation
+@using Inc.TeamAssistant.Primitives.Languages
 @using Inc.TeamAssistant.WebUI.Services
 
 @implements IDisposable
@@ -45,8 +46,9 @@
     
     private void SetCurrentLanguage()
     {
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
-        ValidatorOptions.Global.Configure(currentLanguage.Language);
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
     }
 
     public void Dispose()

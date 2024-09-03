@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
@@ -14,10 +15,10 @@ public sealed class LinkBuilder
     public string Build(string? relativeUrl)
     {
         var link = string.IsNullOrWhiteSpace(relativeUrl) ? "/" : $"/{relativeUrl}";
-        var currentLanguageId = _renderContext.GetCurrentLanguageId();
+        var languageContext = _renderContext.GetLanguageContext();
 
-        return currentLanguageId.Selected
-            ? $"/{currentLanguageId.Language.Value}{link}"
+        return languageContext.Selected
+            ? $"/{languageContext.CurrentLanguage.Value}{link}"
             : link;
     }
 }

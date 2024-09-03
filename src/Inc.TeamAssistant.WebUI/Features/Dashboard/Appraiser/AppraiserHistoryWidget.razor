@@ -60,7 +60,7 @@
     private async Task Load(DateOnly date)
     {
         _state = await RequestProcessor.Process(
-            () => AppraiserService.GetAssessmentHistory(TeamId, date),
+            () => AppraiserService.GetAssessmentHistory(TeamId, from: date),
             nameof(AppraiserHistoryWidget),
             r =>
             {

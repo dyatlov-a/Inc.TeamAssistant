@@ -21,18 +21,16 @@ public sealed class AssessmentSessionsController : ControllerBase
         [FromQuery]string background,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
         
         return Ok(await _service.GetActiveStory(teamId, foreground, background, token));
     }
     
     [HttpGet("history")]
-    public async Task<IActionResult> GetHistory(Guid teamId, DateOnly? from, CancellationToken token)
+    public async Task<IActionResult> GetHistory(Guid teamId, int? limit, DateOnly? from, CancellationToken token)
     {
-        return Ok(await _service.GetAssessmentHistory(teamId, from, token));
+        return Ok(await _service.GetAssessmentHistory(teamId, limit, from, token));
     }
     
     [HttpGet("stories/{teamId}/{assessmentDate}")]
