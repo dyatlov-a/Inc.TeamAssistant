@@ -33,7 +33,10 @@ internal sealed class BotReader : IBotReader
     public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token)
     {
         var botsCommand = new CommandDefinition(@"
-            SELECT DISTINCT b.id AS id, b.name AS name
+            SELECT DISTINCT
+                b.id AS id,
+                b.name AS name,
+                b.owner_id AS ownerid
             FROM connector.bots AS b
             LEFT JOIN connector.teams AS t ON t.bot_id = b.id
             LEFT JOIN connector.teammates AS tm ON t.id = tm.team_id
@@ -44,7 +47,7 @@ internal sealed class BotReader : IBotReader
         
         await using var connection = _connectionFactory.Create();
 
-        var bots = (await connection.QueryAsync<(Guid BotId, string Name)>(botsCommand)).ToArray();
+        var bots = (await connection.QueryAsync<(Guid BotId, string Name, long OwnerId)>(botsCommand)).ToArray();
         var botIds = bots.Select(b => b.BotId).ToArray();
         
         var dataCommand = new CommandDefinition(@"
@@ -74,6 +77,7 @@ internal sealed class BotReader : IBotReader
             .Select(b => new BotDto(
                 b.BotId,
                 b.Name,
+                b.OwnerId,
                 features[b.BotId].ToArray(),
                 teams[b.BotId].Select(t => new TeamDto(t.Id, t.Name)).ToArray()))
             .ToArray();

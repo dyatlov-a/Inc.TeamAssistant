@@ -15,32 +15,6 @@ internal sealed class BotRepository : IBotRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<IReadOnlyCollection<Bot>> GetBotsByOwner(long ownerId, CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT
-                b.id AS id,
-                b.name AS name,
-                b.token AS token,
-                b.owner_id AS ownerid,
-                b.calendar_id AS calendarid,
-                b.properties AS properties,
-                b.supported_languages AS supportedlanguages
-            FROM connector.bots AS b
-            WHERE b.owner_id = @owner_id;",
-            new
-            {
-                owner_id = ownerId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-
-        var results = await connection.QueryAsync<Bot>(command);
-        return results.ToArray();
-    }
-
     public async Task<Bot?> FindById(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(@"

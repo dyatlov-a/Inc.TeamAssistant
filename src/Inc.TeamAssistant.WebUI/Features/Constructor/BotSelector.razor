@@ -1,4 +1,4 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner
+@using Inc.TeamAssistant.Connector.Model.Queries.GetBots
 
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
@@ -64,11 +64,11 @@
     private async Task Load()
     {
         _state = await RequestProcessor.Process(
-            () => BotService.GetBotsByOwner(OwnerId),
+            () => BotService.GetByUser(OwnerId),
             nameof(BotSelector),
             r =>
             {
-                _bots = r.Bots;
+                _bots = r.Bots.Where(b => b.OwnerId == OwnerId).ToArray();
                 _state = RequestState.Done();
                 StateHasChanged();
             });
@@ -93,7 +93,14 @@
         _confirmDialog?.Open();
     }
 
-    private string MoveToDashboardLink(BotDto bot) => LinkBuilder.Build($"dashboard/{bot.Id:N}");
+    private string MoveToDashboardLink(BotDto bot)
+    {
+        var teamId = bot.Teams.FirstOrDefault()?.Id;
+        
+        return teamId.HasValue
+            ? LinkBuilder.Build($"dashboard/{bot.Id:N}/{teamId.Value:N}")
+            : LinkBuilder.Build($"dashboard/{bot.Id:N}");
+    }
 
     private async Task Remove()
     {

@@ -7,7 +7,6 @@ using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
-using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
@@ -23,15 +22,6 @@ internal sealed class BotClient : IBotService
     public BotClient(HttpClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-    
-    public async Task<GetBotsByOwnerResult> GetBotsByOwner(long ownerId, CancellationToken token)
-    {
-        var result = await _client.GetFromJsonAsync<GetBotsByOwnerResult>($"bots/{ownerId}", token);
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
     }
 
     public async Task<GetBotUserNameResult> Check(GetBotUserNameQuery query, CancellationToken token)

@@ -5,23 +5,25 @@
 @inject RequestProcessor RequestProcessor
 
 <div class="team-connector">
-    <FormSection
-        Title="@_team.TeamName"
-        HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
-        AsRows="true">
+    <Loading State="_state">
         <Content>
-            <Loading State="_state">
+            <FormSection
+                Title="@_team.TeamName"
+                HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
+                AsRows="true">
                 <Content>
+            
                     <div class="team-connector__code">
                         @((MarkupString)_team.Code)
                     </div>
                     <a href="@_team.LinkForConnect" class="button button_dark team-connector__link" target="_blank">
                         @Resources[Messages.Dashboard_ConnectToTeamButton]
                     </a>
+                
                 </Content>
-            </Loading>
+            </FormSection>
         </Content>
-    </FormSection>
+    </Loading>
 </div>
 
 @code {

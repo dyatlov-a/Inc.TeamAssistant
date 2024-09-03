@@ -6,7 +6,6 @@ using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
-using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
@@ -15,8 +14,6 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IBotService
 {
-    Task<GetBotsByOwnerResult> GetBotsByOwner(long ownerId, CancellationToken token = default);
-    
     Task<GetBotUserNameResult> Check(GetBotUserNameQuery query, CancellationToken token = default);
 
     Task<GetBotResult?> GetBotById(Guid botId, CancellationToken token = default);

@@ -7,7 +7,6 @@ using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
-using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
@@ -23,11 +22,6 @@ internal sealed class BotService : IBotService
     public BotService(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
-
-    public async Task<GetBotsByOwnerResult> GetBotsByOwner(long ownerId, CancellationToken token)
-    {
-        return await _mediator.Send(new GetBotsByOwnerQuery(ownerId), token);
     }
 
     public async Task<GetBotUserNameResult> Check(GetBotUserNameQuery query, CancellationToken token)
