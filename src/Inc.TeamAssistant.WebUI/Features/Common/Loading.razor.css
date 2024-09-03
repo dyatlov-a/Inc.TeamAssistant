@@ -2,6 +2,15 @@
     position: relative;
     min-height: 80px;
 }
+.loading_fullscreen {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    opacity: .6;
+}
 .loader {
     position: absolute;
     left: 50%;
@@ -10,9 +19,19 @@
     margin-top: -23px;
     width: 46px;
 }
-.loader {
+.loader_light {
     aspect-ratio: 1;
     --c: no-repeat linear-gradient(#dfdfdf 0 0);
+    background:
+            var(--c) 0%   50%,
+            var(--c) 50%  50%,
+            var(--c) 100% 50%;
+    background-size: 20% 100%;
+    animation: l1 1s infinite linear;
+}
+.loader_dark {
+    aspect-ratio: 1;
+    --c: no-repeat linear-gradient(#000 0 0);
     background:
             var(--c) 0%   50%,
             var(--c) 50%  50%,

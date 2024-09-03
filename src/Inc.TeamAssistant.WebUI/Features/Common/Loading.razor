@@ -1,7 +1,7 @@
 @if (State.IsLoading)
 {
-    <div class="loading">
-        <div class="loader"></div>
+    <div class="loading @LoadingCssClass">
+        <div class="loader @LoaderCssClass"></div>
     </div>
 }
 else
@@ -15,4 +15,14 @@ else
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter]
+    public bool IsFullscreen { get; set; }
+    
+    [Parameter]
+    public bool IsDark { get; set; }
+    
+    private string LoadingCssClass => IsFullscreen ? "loading_fullscreen" : string.Empty;
+    
+    private string LoaderCssClass => IsDark ? "loader_dark" : "loader_light";
 }

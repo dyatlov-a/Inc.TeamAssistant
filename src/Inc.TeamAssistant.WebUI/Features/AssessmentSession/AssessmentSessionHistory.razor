@@ -5,31 +5,25 @@
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state">
-    <Content>
-        @if (_items.Any())
-        {
-            <div class="history">
-                <div class="history__title">@Resources[Messages.GUI_History]</div>
-                <div class="history__body">
-
-                    @foreach (var item in _items.Take(3))
-                    {
-                        <a href="@MoveToItem(item)" class="link link_dark history__item">
-                            @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
-                        </a>
-                    }
-                </div>
-            </div>
-        }
-    </Content>
-</Loading>
+@if (_items.Any())
+{
+    <div class="history">
+        <div class="history__title">@Resources[Messages.GUI_History]</div>
+        <div class="history__body">
+            @foreach (var item in _items)
+            {
+                <a href="@MoveToItem(item)" class="link link_dark history__item">
+                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
+                </a>
+            }
+        </div>
+    </div>
+}
 
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
-    private RequestState _state = RequestState.Done();
+    
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
 
     private string MoveToItem(AssessmentHistoryDto historyItem)
@@ -44,13 +38,16 @@
 
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => AppraiserService.GetAssessmentHistory(TeamId, null),
             nameof(AssessmentSessionHistory),
             r =>
             {
-                _items = r.Items;
-                _state = RequestState.Done();
+                _items = r.Items
+                    .OrderByDescending(i => i.AssessmentDate)
+                    .Take(3)
+                    .ToArray();
+                
                 StateHasChanged();
             });
     }

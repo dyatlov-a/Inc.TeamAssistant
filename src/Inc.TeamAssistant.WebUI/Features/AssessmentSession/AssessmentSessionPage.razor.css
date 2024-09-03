@@ -14,13 +14,12 @@
     display: flex;
     align-items: center;
 }
-.assessment-session__about, .assessment-session__link {
-    flex: 0 1 200px;
-}
 .assessment-session__about {
-    flex-grow: 1;
+    flex: 1;
 }
 .assessment-session__link {
+    flex: 0 200px;
+    width: 200px;
     margin: 0 0 0 40px;
 }
 .assessment-session__text {

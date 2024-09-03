@@ -14,6 +14,7 @@
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
+@inject IJSRuntime JsRuntime
 
 <MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@Resources[Messages.GUI_TaskAssess]" />
 
@@ -30,7 +31,11 @@
                     <p class="assessment-session__text text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
                 </div>
                 <div class="assessment-session__link">
-                    @((MarkupString)_item.CodeForConnect)
+                    <Loading State="_state" IsDark="true">
+                        <Content>
+                            @((MarkupString)_item.CodeForConnect)
+                        </Content>
+                    </Loading>
                 </div>
             </div>
         </div>
@@ -40,9 +45,13 @@
             <div class="view-controls">
                 @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
                 {
+                    var moveToViewLink = CreateViewLink(assessmentType);
+                    
                     <a
-                        href="@MoveToView(assessmentType)"
-                        class="view-controls__item @ViewControlsItemCss(assessmentType)">
+                        href="@moveToViewLink"
+                        class="view-controls__item @ViewControlCss(assessmentType)"
+                        @onclick="() => ChangeView(assessmentType, moveToViewLink)"
+                        @onclick:preventDefault="true">
                         <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
                     </a>
                 }
@@ -51,7 +60,7 @@
                 <Content>
                     @if (_item.Story is not null)
                     {
-                        <DynamicComponent Type="ViewType" Parameters="ViewParameters"/>
+                        <DynamicComponent Type="CurrentViewType" Parameters="ViewParameters"/>
                     }
                     else
                     {
@@ -59,7 +68,6 @@
                     }
                 </Content>
             </Loading>
-            
         </div>
     </div>
 </main>
@@ -75,43 +83,34 @@
     
     [Parameter]
     public string View { get; set; } = default!;
-
-    private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
-    private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     
-    private AssessmentType SelectedView => Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value)
-        ? value
-        : Enum.GetValues<AssessmentType>().First();
-
-    private Type ViewType => SelectedView switch
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
+    private Type CurrentViewType => _currentView switch
     {
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
     };
-
-    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
-    {
-        AssessmentType.Individual => typeof(GridHorizontalIcon),
-        _ => typeof(GridDividersIcon)
-    };
-    
     private Dictionary<string, object> ViewParameters => new()
     {
         ["Item"] = _item.Story!,
         ["MeanRating"] = Resources[Messages.GUI_MeanRating],
         ["MedianRating"] = Resources[Messages.GUI_MedianRating]
     };
-    
     private Dictionary<string, object> ViewIconParameters => new()
     {
         ["Size"] = "40px"
     };
     
+    private RequestState _state = RequestState.Done();
+    private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
+    private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private EventsProvider? _eventsProvider;
     
     protected override async Task OnParametersSetAsync()
     {
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
+        
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         _breadcrumbs = new BreadcrumbItem[]
         {
@@ -138,17 +137,30 @@
                 StateHasChanged();
             });
     }
-
-    private string MoveToView(AssessmentType assessmentType)
+    
+    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
     {
-        var view = assessmentType.ToString().ToLower();
+        AssessmentType.Individual => typeof(GridHorizontalIcon),
+        _ => typeof(GridDividersIcon)
+    };
+
+    private async Task ChangeView(AssessmentType assessmentType, string url)
+    {
+        _currentView = assessmentType;
+        
+        await JsRuntime.InvokeVoidAsync("window.browserJsFunctions.changeUrl", url);
+    }
+
+    private string CreateViewLink(AssessmentType assessmentType)
+    {
+        var view = assessmentType.ToString().ToLowerInvariant();
         
         return LinkBuilder.Build($"assessment-session/{Id}/{view}");
     }
 
-    private string ViewControlsItemCss(AssessmentType assessmentType)
+    private string ViewControlCss(AssessmentType assessmentType)
     {
-        return assessmentType == SelectedView ? "view-controls__item_active" : string.Empty;
+        return assessmentType == _currentView ? "view-controls__item_active" : string.Empty;
     }
     
     public async ValueTask DisposeAsync()

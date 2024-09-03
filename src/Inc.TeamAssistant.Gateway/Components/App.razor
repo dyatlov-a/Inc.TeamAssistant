@@ -64,6 +64,9 @@
         window.browserJsFunctions = {
             getTimezone: () => {
                 return new Date().getTimezoneOffset();
+            },
+            changeUrl: url => {
+                history.pushState(null, '', url);
             }
         };
     </script>
