@@ -96,6 +96,10 @@ internal static class Messages
     public static readonly string Constructor_DateLabel = nameof(Constructor_DateLabel);
     public static readonly string Constructor_WorkdayLabel = nameof(Constructor_WorkdayLabel);
     public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
+    public static readonly string Constructor_ConnectingTelegram = nameof(Constructor_ConnectingTelegram);
+    public static readonly string Constructor_WorkCalendar = nameof(Constructor_WorkCalendar);
+    public static readonly string Constructor_BotDetails = nameof(Constructor_BotDetails);
+    public static readonly string Constructor_BotDetailsHelp = nameof(Constructor_BotDetails);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);
@@ -207,6 +211,9 @@ internal static class Messages
     public static readonly string MetaCheckInTitle = nameof(MetaCheckInTitle);
     public static readonly string MetaCheckInDescription = nameof(MetaCheckInDescription);
     public static readonly string MetaCheckInKeywords = nameof(MetaCheckInKeywords);
+    
+    public static readonly string PanelOpen = nameof(PanelOpen);
+    public static readonly string PanelSave = nameof(PanelSave);
     
     public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
     public static string GetFeatureProperty(string featureName, string propertyName)

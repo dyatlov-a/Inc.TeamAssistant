@@ -1,196 +1,90 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
 @using Inc.TeamAssistant.Primitives.Languages
-@using Inc.TeamAssistant.WebUI.Services.Requests
 
-@inject IRenderContext RenderContext
-@inject IJSRuntime JsRuntime
-@inject IBotService BotService
-@inject ICalendarService CalendarService
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
 
-<Loading State="_state" IsFullscreen="true">
-    <Content>
-        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-            <FluentValidationValidator @ref="_fluentValidationValidator" />
-            <div class="constructor__form">
-                @foreach (var feature in StagesState.SelectedFeatures)
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@Resources[Messages.GetStageTitle(Stage.SetSettings)]" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">
+                @Resources[Messages.Constructor_MoveNextTitle]
+            </button>
+        </Actions>
+        <Content>
+            @foreach (var feature in StagesState.SelectedFeatures)
+            {
+                if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                    continue;
+
+                foreach (var settingSection in settingSections)
                 {
-                    if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
-                        continue;
-
-                    foreach (var settingSection in settingSections)
-                    {
-                        <FormSection
-                            Title="@Resources[settingSection.HeaderMessageId]"
-                            HelpText="@Resources[settingSection.HelpMessageId]">
-                            <Content>
-                                @foreach (var settingItem in settingSection.SettingItems)
-                                {
-                                    var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
-                                        settingItem.PropertyName,
-                                        StringComparison.InvariantCultureIgnoreCase));
-                                    if (property is null)
-                                        continue;
-                            
-                                    <FormFieldSet
-                                        FieldId="@settingItem.PropertyName"
-                                        Label="@Resources[settingItem.LabelMessageId]">
-                                        <Content>
-                                            <InputSelect
-                                                id="@settingItem.PropertyName"
-                                                @bind-Value="property.Value"
-                                                class="form-control">
-                                                @foreach (var value in settingItem.Values)
-                                                {
-                                                    <option value="@value.Value">@Resources[value.MessageId]</option>
-                                                }
-                                            </InputSelect>
-                                            <ValidationMessage For="@(() => property.Value)"/>
-                                        </Content>
-                                    </FormFieldSet>
-                                }
-                            </Content>
-                        </FormSection>
-                    }
-                }
-                <FormSection
-                    Title="@Resources[Messages.Constructor_SupportedLanguages]"
-                    HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
-                    <Content>
-                        <FormFieldSet
-                            FieldId="supported-languages"
-                            Label="@Resources[Messages.Constructor_Languages]">
-                            <Content>
-                                <div id="supported-languages" class="form-control enabled">
-                                    @foreach (var languageId in LanguageSettings.LanguageIds)
-                                    {
-                                        <span
-                                            class="multiselect__item @CssClass(languageId)"
-                                            @onclick="() => _formModel.ToggleLanguage(languageId)">
-                                            @languageId.Value
-                                        </span>
-                                    }
-                                </div>
-                                <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
-                            </Content>
-                        </FormFieldSet>
-                        @foreach (var item in _formModel.BotDetails.Where(b => _formModel.SupportedLanguages.Contains(b.LanguageId)))
-                        {
-                            <BotDetailsEditor BotDetails="item" />
-                        }
-                    </Content>
-                </FormSection>
-            </div>
-            <div class="constructor__form">
-                <FormSection
-                    Title="@Resources[Messages.Constructor_WorkTimeTitle]"
-                    HelpText="@Resources[Messages.Constructor_WorkTimeHelp]">
-                    <Content>
-                        <FormFieldSet
-                            FieldId="work-all-day"
-                            Label="@Resources[Messages.Constructor_WorkAllDayLabel]">
-                            <Content>
-                                <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay" />
-                            </Content>
-                        </FormFieldSet>
-                        @if (!_formModel.WorkAllDay)
-                        {
-                        <div class="work-schedule__items">
-                            <div class="work-schedule__item">
-                                <InputTimeOnly
-                                    FieldId="work-schedule-start"
-                                    Label="@Resources[Messages.Constructor_WorkTimeStartLabel]"
-                                    @bind-Value="_formModel.Start" />
-                            </div>
-                            <div class="work-schedule__item">
-                                <InputTimeOnly
-                                    FieldId="work-schedule-end"
-                                    Label="@Resources[Messages.Constructor_WorkTimeEndLabel]"
-                                    @bind-Value="_formModel.End" />
-                            </div>
-                        </div>
-                        }
-                    </Content>
-                </FormSection>
-                <FormSection
-                    Title="@Resources[Messages.Constructor_WeekendsTitle]"
-                    HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
-                    <Content>
-                        <FormFieldSet
-                            FieldId="weekends"
-                            Label="@Resources[Messages.Constructor_WeekendsLabel]">
-                            <Content>
-                                <div id="weekends" class="form-control enabled">
-                                    @foreach (var day in Enum.GetValues<DayOfWeek>())
-                                    {
-                                    <span
-                                        class="multiselect__item @CssClass(day)"
-                                        @onclick="() => _formModel.ToggleWeekend(day)">
-                                    @Resources[Messages.GetDayOfWeekTitle(day)]
-                                </span>
-                                    }
-                                </div>
-                            </Content>
-                        </FormFieldSet>
-                    </Content>
-                </FormSection>
-                <FormSection
-                    Title="@Resources[Messages.Constructor_HolidaysTitle]"
-                    HelpText="@Resources[Messages.Constructor_HolidaysHelp]"
-                    AsRows="true">
-                    <Content>
-                        <div class="holiday-items">
-                            @foreach (var holiday in _formModel.Holidays)
+                    <FormSection
+                        Title="@Resources[settingSection.HeaderMessageId]"
+                        HelpText="@Resources[settingSection.HelpMessageId]">
+                        <Content>
+                            @foreach (var settingItem in settingSection.SettingItems)
                             {
-                            <div class="holiday-items__item">
-                                <div class="holiday-items__item-control">
-                                    <InputDateOnly
-                                        FieldId="@holiday.DateFieldId"
-                                        Label="@Resources[Messages.Constructor_DateLabel]"
-                                        @bind-Value="holiday.Date"/>
-                                </div>
-                                <div class="holiday-items__item-control">
-                                    <FormFieldSet
-                                        FieldId="@holiday.WorkdayFieldId"
-                                        Label="@Resources[Messages.Constructor_WorkdayLabel]">
-                                        <Content>
-                                            <InputCheckbox id="@holiday.WorkdayFieldId" @bind-Value="holiday.IsWorkday"/>
-                                        </Content>
-                                    </FormFieldSet>
-                                </div>
-                                <div class="holiday-items__item-control">
-                                    <button
-                                        type="button"
-                                        class="button button_dark button_small work-schedule__button"
-                                        @onclick="() => _formModel.Holidays.Remove(holiday)">
-                                        <TrashIcon Size="20px" Color="#000" />
-                                    </button>
-                                </div>
-                            </div>
+                                var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
+                                    settingItem.PropertyName,
+                                    StringComparison.InvariantCultureIgnoreCase));
+                                if (property is null)
+                                    continue;
+
+                                <FormFieldSet
+                                    FieldId="@settingItem.PropertyName"
+                                    Label="@Resources[settingItem.LabelMessageId]">
+                                    <Content>
+                                        <InputSelect
+                                            id="@settingItem.PropertyName"
+                                            @bind-Value="property.Value"
+                                            class="form-control">
+                                            @foreach (var value in settingItem.Values)
+                                            {
+                                                <option value="@value.Value">@Resources[value.MessageId]</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => property.Value)"/>
+                                    </Content>
+                                </FormFieldSet>
                             }
-                            <div class="holiday-items__item">
-                                <button
-                                    type="button"
-                                    class="button button_dark button_small work-schedule__button"
-                                    @onclick="_formModel.AddHoliday">
-                                    @Resources[Messages.Constructor_AddHolidayLabel]
-                                </button>
+                        </Content>
+                    </FormSection>
+                }
+            }
+            <FormSection
+                Title="@Resources[Messages.Constructor_SupportedLanguages]"
+                HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
+                <Content>
+                    <FormFieldSet
+                        FieldId="supported-languages"
+                        Label="@Resources[Messages.Constructor_Languages]">
+                        <Content>
+                            <div id="supported-languages" class="form-control enabled">
+                                @foreach (var languageId in LanguageSettings.LanguageIds)
+                                {
+                                    <span
+                                        class="multiselect__item @CssClass(languageId)"
+                                        @onclick="() => _formModel.ToggleLanguage(languageId)">
+                                        @languageId.Value
+                                    </span>
+                                }
                             </div>
-                        </div>
-                    </Content>
-                </FormSection>
-            </div>
-            <div class="constructor__actions">
-                <button type="submit" class="button button_light">
-                    @Resources[Messages.Constructor_MoveNextTitle]
-                </button>
-            </div>
-        </EditForm>
-    </Content>
-</Loading>
+                            <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                        </Content>
+                    </FormFieldSet>
+                </Content>
+            </FormSection>
+        </Content>
+    </Panel>
+</EditForm>
+<CalendarEditor Selected="SelectedCalendar">
+    <Validation>
+        <ValidationMessage For="@(() => _formModel.CalendarId)"/>
+    </Validation>
+</CalendarEditor>
+<BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
 
 @code {
     [Parameter, EditorRequired]
@@ -205,53 +99,21 @@
     private readonly SetSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    private RequestState _state = RequestState.Done();
     
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
     }
     
-    protected override async Task OnParametersSetAsync()
-    {
-        if (RenderContext.IsBrowser)
-        {
-            var clientTimezoneOffset = await JsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
-            await Load(clientTimezoneOffset);   
-        }
-    }
-
-    private async Task Load(int clientTimezoneOffset)
-    {
-        _state = await RequestProcessor.Process(
-            async () =>
-            {
-                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
-                var calendar = await CalendarService.GetCalendarByOwner();
-                return (BotDetails: botDetails, Calendar: calendar);
-            },
-            $"{nameof(SetSettings)}_{nameof(Load)}",
-            r =>
-            {
-                _formModel.SetBotDetails(r.BotDetails);
-
-                if (r.Calendar is null)
-                    _formModel.SetDefaultCalendar(clientTimezoneOffset);
-                else
-                    _formModel.SetCalendar(r.Calendar);
-                
-                _state = RequestState.Done();
-                StateHasChanged();
-            });
-    }
-    
     private string CssClass(LanguageId languageId) => _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
         ? "multiselect__item_selected"
         : string.Empty;
-    
-    private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
-        ? "multiselect__item_selected"
-        : string.Empty;
+
+    private async Task SelectedCalendar(Guid calendarId)
+    {
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        await dataEditor.Attach(BotStorageKey, StagesState.Apply(calendarId));
+    }
     
     private async Task SubmitForm()
     {
@@ -259,20 +121,8 @@
             return;
 
         var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
-
-        _state = await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.SetDetails(_formModel.ToSetBotDetailsCommand());
-                var calendarId = await CalendarService.Update(_formModel.ToUpdateCalendarCommand());
-                await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel, calendarId));
-                return RequestIdle.Idle;
-            },
-            $"{nameof(SetSettings)}_{nameof(SubmitForm)}",
-            _ =>
-            {
-                _state = RequestState.Done();
-                NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
-            });
+        await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
+        
+        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
     }
 }

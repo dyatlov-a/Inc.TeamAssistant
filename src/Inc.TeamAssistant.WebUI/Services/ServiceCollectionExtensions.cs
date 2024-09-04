@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
-            .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
+            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()

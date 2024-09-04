@@ -1,0 +1,179 @@
+@inject ICalendarService CalendarService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+        </Actions>
+        <Content>
+            @Validation
+            <Loading State="_state">
+                <Content>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_WorkTimeTitle]"
+                        HelpText="@Resources[Messages.Constructor_WorkTimeHelp]">
+                        <Content>
+                            <FormFieldSet
+                                FieldId="work-all-day"
+                                Label="@Resources[Messages.Constructor_WorkAllDayLabel]">
+                                <Content>
+                                    <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
+                                </Content>
+                            </FormFieldSet>
+                            @if (!_formModel.WorkAllDay)
+                            {
+                                <div class="work-schedule__items">
+                                    <div class="work-schedule__item">
+                                        <InputTimeOnly
+                                            FieldId="work-schedule-start"
+                                            Label="@Resources[Messages.Constructor_WorkTimeStartLabel]"
+                                            @bind-Value="_formModel.Start"/>
+                                    </div>
+                                    <div class="work-schedule__item">
+                                        <InputTimeOnly
+                                            FieldId="work-schedule-end"
+                                            Label="@Resources[Messages.Constructor_WorkTimeEndLabel]"
+                                            @bind-Value="_formModel.End"/>
+                                    </div>
+                                </div>
+                            }
+                        </Content>
+                    </FormSection>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_WeekendsTitle]"
+                        HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
+                        <Content>
+                            <FormFieldSet
+                                FieldId="weekends"
+                                Label="@Resources[Messages.Constructor_WeekendsLabel]">
+                                <Content>
+                                    <div id="weekends" class="form-control enabled">
+                                        @foreach (var day in Enum.GetValues<DayOfWeek>())
+                                        {
+                                            <span
+                                                class="multiselect__item @CssClass(day)"
+                                                @onclick="() => _formModel.ToggleWeekend(day)">
+                                                @Resources[Messages.GetDayOfWeekTitle(day)]
+                                            </span>
+                                        }
+                                    </div>
+                                </Content>
+                            </FormFieldSet>
+                        </Content>
+                    </FormSection>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_HolidaysTitle]"
+                        HelpText="@Resources[Messages.Constructor_HolidaysHelp]"
+                        AsRows="true">
+                        <Content>
+                            <div class="holiday-items">
+                                @foreach (var holiday in _formModel.Holidays)
+                                {
+                                    <div class="holiday-items__item">
+                                        <div class="holiday-items__item-control">
+                                            <InputDateOnly
+                                                FieldId="@holiday.DateFieldId"
+                                                Label="@Resources[Messages.Constructor_DateLabel]"
+                                                @bind-Value="holiday.Date"/>
+                                        </div>
+                                        <div class="holiday-items__item-control">
+                                            <FormFieldSet
+                                                FieldId="@holiday.WorkdayFieldId"
+                                                Label="@Resources[Messages.Constructor_WorkdayLabel]">
+                                                <Content>
+                                                    <InputCheckbox id="@holiday.WorkdayFieldId" @bind-Value="holiday.IsWorkday"/>
+                                                </Content>
+                                            </FormFieldSet>
+                                        </div>
+                                        <div class="holiday-items__item-control">
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small work-schedule__button"
+                                                @onclick="() => _formModel.Holidays.Remove(holiday)">
+                                                <TrashIcon Size="20px" Color="#000"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="holiday-items__item">
+                                    <button
+                                        type="button"
+                                        class="button button_dark button_small work-schedule__button"
+                                        @onclick="_formModel.AddHoliday">
+                                        @Resources[Messages.Constructor_AddHolidayLabel]
+                                    </button>
+                                </div>
+                            </div>
+                        </Content>
+                    </FormSection>
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> Selected { get; set; }
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Validation { get; set; } = default!;
+    
+    private readonly CalendarFromModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    private RequestState _state = RequestState.Done();
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel);
+    }
+    
+    private async Task Load()
+    {
+        var clientTimezoneOffset = await JsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
+        
+        _state = await RequestProcessor.Process(
+            () => CalendarService.GetCalendarByOwner(),
+            $"{nameof(CalendarEditor)}_{nameof(Load)}",
+            r =>
+            {
+                if (r is null)
+                    _formModel.Apply(clientTimezoneOffset);
+                else
+                    _formModel.Apply(r);
+                
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
+    }
+    
+    private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
+        ? "multiselect__item_selected"
+        : string.Empty;
+    
+    public async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+        
+        _state = await RequestProcessor.Process(
+            async () =>
+            {
+                await CalendarService.Update(_formModel.ToCommand());
+                await Selected.InvokeAsync();
+                return RequestIdle.Idle;
+            },
+            $"{nameof(CalendarEditor)}_{nameof(SubmitForm)}",
+            _ =>
+            {
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
+    }
+}

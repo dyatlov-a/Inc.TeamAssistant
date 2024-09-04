@@ -127,13 +127,19 @@ public sealed class StagesState
         return this;
     }
 
-    public StagesState Apply(SetSettingsFormModel formModel, Guid calendarId)
+    public StagesState Apply(Guid calendarId)
+    {
+        CalendarId = calendarId;
+        
+        return this;
+    }
+
+    public StagesState Apply(SetSettingsFormModel formModel)
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
         Properties = formModel.Properties.ToDictionary(v => v.Name, v => v.Value);
         SupportedLanguages = formModel.SupportedLanguages.ToArray();
-        CalendarId = calendarId;
         
         return this;
     }

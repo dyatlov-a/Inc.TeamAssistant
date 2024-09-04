@@ -1,0 +1,19 @@
+.panel {
+    margin-top: 30px;
+    background-color: #555;
+}
+.panel__header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+.panel__header-text {
+    flex: 1;
+    font-size: 1.2rem;
+}
+.panel__actions {
+    margin-left: 20px;
+}
+.panel__body {
+    padding: 10px;
+}

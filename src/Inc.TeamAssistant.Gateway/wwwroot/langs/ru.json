@@ -338,6 +338,13 @@
   "Constructor_DateLabel": "Дата",
   "Constructor_WorkdayLabel": "Рабочий день",
   "Constructor_AddHolidayLabel": "Добавить праздник",
+  "Constructor_ConnectingTelegram": "Подключение к telegram",
+  "Constructor_WorkCalendar": "Рабочий график",
+  "Constructor_BotDetails": "Описание бота (telegram)",
+  "Constructor_BotDetailsHelp": "Пожалуйста, укажите описание бота для telegram",
+
+  "PanelOpen": "Заполнить",
+  "PanelSave": "Сохранить",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

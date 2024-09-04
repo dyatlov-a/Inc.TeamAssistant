@@ -35,7 +35,7 @@ else
         {
             _videoModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
-                "./Features/Videos/MainVideo.razor.js");
+                "./Features/Main/MainVideo.razor.js");
             
             await _videoModule.InvokeVoidAsync("play", _video);
         }

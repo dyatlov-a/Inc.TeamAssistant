@@ -4,29 +4,31 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <div class="constructor__form">
-        <FormSection
-            Title="@Resources[Messages.Constructor_FormSectionFeaturesTitle]"
-            HelpText="@Resources[Messages.Constructor_FormSectionFeaturesHelp]"
-            AsRows="true">
-            <Content>
-                <InputFeatures
-                    @bind-Value="_formModel.FeatureIds"
-                    Features="StagesState.AvailableFeatures"
-                    AddText="@Resources[Messages.Constructor_FeatureAdd]"
-                    RemoveText="@Resources[Messages.Constructor_FeatureRemove]"
-                    FeaturesAvailableEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]"
-                    FeaturesSelectedEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]">
-                    <Validation>
-                        <ValidationMessage For="@(() => _formModel.FeatureIds)" />
-                    </Validation>
-                </InputFeatures>
-            </Content>
-        </FormSection>
-    </div>
-    <div class="constructor__actions">
-        <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
-    </div>
+    <Panel Header="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
+        </Actions>
+        <Content>
+            <FormSection
+                Title="@Resources[Messages.Constructor_FormSectionFeaturesTitle]"
+                HelpText="@Resources[Messages.Constructor_FormSectionFeaturesHelp]"
+                AsRows="true">
+                <Content>
+                    <InputFeatures
+                        @bind-Value="_formModel.FeatureIds"
+                        Features="StagesState.AvailableFeatures"
+                        AddText="@Resources[Messages.Constructor_FeatureAdd]"
+                        RemoveText="@Resources[Messages.Constructor_FeatureRemove]"
+                        FeaturesAvailableEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]"
+                        FeaturesSelectedEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]">
+                        <Validation>
+                            <ValidationMessage For="@(() => _formModel.FeatureIds)" />
+                        </Validation>
+                    </InputFeatures>
+                </Content>
+            </FormSection>
+        </Content>
+    </Panel>
 </EditForm>
 
 @code {
@@ -54,7 +56,8 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
         
-        await ServiceProvider.GetRequiredService<DataEditor>().Attach(BotStorageKey, StagesState.Apply(_formModel));
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
         
         NavigationManager.NavigateTo(LinkFactory(Stage.SetSettings));
     }

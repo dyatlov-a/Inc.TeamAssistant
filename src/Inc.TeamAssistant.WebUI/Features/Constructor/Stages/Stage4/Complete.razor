@@ -8,101 +8,103 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state" IsFullscreen="true">
-    <Content>
-        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-            <FluentValidationValidator @ref="_fluentValidationValidator" />
-            <div class="constructor__form">
-                <ValidationSummary />
-                <FormSection Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]" HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
-                    <Content>
-                        <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
-                            @Resources[Messages.Constructor_Edit]
-                        </a>
-                        <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
-                            <Content>
-                                <InputText
-                                    @bind-Value="_formModel.UserName"
-                                    class="form-control"
-                                    id="bot-username"
-                                    disabled="disabled"/>
-                            </Content>
-                        </FormFieldSet>
-                    </Content>
-                </FormSection>
-                <FormSection Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]" HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
-                    <Content>
-                        <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
-                            @Resources[Messages.Constructor_Edit]
-                        </a>
-                        @foreach (var feature in StagesState.AvailableFeatures)
-                        {
-                            var fieldId = feature.Id.ToString();
-                            var selected = StagesState.FeatureIds.Contains(feature.Id)
-                                ? Resources[Messages.Constructor_BooleanTrueText]
-                                : Resources[Messages.Constructor_BooleanFalseText];
-
-                            <FormFieldSet
-                                FieldId="@fieldId"
-                                Label="@Resources[Messages.GetFeatureProperty(feature.Name, "Name")]">
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@Resources[Messages.GetStageTitle(Stage.Complete)]" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">
+                @Resources[StagesState.Id.HasValue ? Messages.Constructor_ButtonUpdateText : Messages.Constructor_ButtonCreateText]
+            </button>
+        </Actions>
+        <Content>
+            <Loading State="_state">
+                <Content>
+                    <ValidationSummary />
+                    <FormSection Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]" HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
+                        <Content>
+                            <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
+                                @Resources[Messages.Constructor_Edit]
+                            </a>
+                            <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                                 <Content>
-                                    <input
-                                        type="text"
-                                        id="@fieldId"
-                                        value="@selected"
+                                    <InputText
+                                        @bind-Value="_formModel.UserName"
                                         class="form-control"
-                                        disabled="disabled" />
+                                        id="bot-username"
+                                        disabled="disabled"/>
                                 </Content>
                             </FormFieldSet>
-                        }
-                    </Content>
-                </FormSection>
-                @foreach (var feature in StagesState.SelectedFeatures)
-                {
-                    if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
-                        continue;
+                        </Content>
+                    </FormSection>
+                    <FormSection Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]" HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                        <Content>
+                            <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
+                                @Resources[Messages.Constructor_Edit]
+                            </a>
+                            @foreach (var feature in StagesState.AvailableFeatures)
+                            {
+                                var fieldId = feature.Id.ToString();
+                                var selected = StagesState.FeatureIds.Contains(feature.Id)
+                                    ? Resources[Messages.Constructor_BooleanTrueText]
+                                    : Resources[Messages.Constructor_BooleanFalseText];
 
-                    foreach (var settingSection in settingSections)
+                                <FormFieldSet
+                                    FieldId="@fieldId"
+                                    Label="@Resources[Messages.GetFeatureProperty(feature.Name, "Name")]">
+                                    <Content>
+                                        <input
+                                            type="text"
+                                            id="@fieldId"
+                                            value="@selected"
+                                            class="form-control"
+                                            disabled="disabled" />
+                                    </Content>
+                                </FormFieldSet>
+                            }
+                        </Content>
+                    </FormSection>
+                    @foreach (var feature in StagesState.SelectedFeatures)
                     {
-                        <FormSection
-                            Title="@Resources[settingSection.HeaderMessageId]"
-                            HelpText="@Resources[settingSection.HelpMessageId]">
-                            <Content>
-                                <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
-                                    @Resources[Messages.Constructor_Edit]
-                                </a>
-                                @foreach (var settingItem in settingSection.SettingItems)
-                                {
-                                    var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
-                                        settingItem.PropertyName,
-                                        StringComparison.InvariantCultureIgnoreCase));
+                        if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                            continue;
 
-                                    <FormFieldSet
-                                        FieldId="@settingItem.PropertyName"
-                                        Label="@Resources[settingItem.LabelMessageId]">
-                                        <Content>
-                                            <input
-                                                type="text"
-                                                id="@settingItem.PropertyName"
-                                                value="@GetValueAsText(settingItem, property.Value)"
-                                                class="form-control"
-                                                disabled="disabled"/>
-                                        </Content>
-                                    </FormFieldSet>
-                                }
-                            </Content>
-                        </FormSection>
+                        foreach (var settingSection in settingSections)
+                        {
+                            <FormSection
+                                Title="@Resources[settingSection.HeaderMessageId]"
+                                HelpText="@Resources[settingSection.HelpMessageId]">
+                                <Content>
+                                    <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
+                                        @Resources[Messages.Constructor_Edit]
+                                    </a>
+                                    @foreach (var settingItem in settingSection.SettingItems)
+                                    {
+                                        var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                            settingItem.PropertyName,
+                                            StringComparison.InvariantCultureIgnoreCase));
+
+                                        <FormFieldSet
+                                            FieldId="@settingItem.PropertyName"
+                                            Label="@Resources[settingItem.LabelMessageId]">
+                                            <Content>
+                                                <input
+                                                    type="text"
+                                                    id="@settingItem.PropertyName"
+                                                    value="@GetValueAsText(settingItem, property.Value)"
+                                                    class="form-control"
+                                                    disabled="disabled"/>
+                                            </Content>
+                                        </FormFieldSet>
+                                    }
+                                </Content>
+                            </FormSection>
+                        }
                     }
-                }
-            </div>
-            <div class="constructor__actions">
-                <button type="submit" class="button button_light">
-                    @Resources[StagesState.Id.HasValue ? Messages.Constructor_ButtonUpdateText : Messages.Constructor_ButtonCreateText]
-                </button>
-            </div>
-        </EditForm>
-    </Content>
-</Loading>
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
 
 @code {
     [Parameter, EditorRequired]
@@ -136,6 +138,8 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+
         _state = await RequestProcessor.Process(
             async () =>
             {
@@ -157,8 +161,8 @@
                         _formModel.Properties,
                         _formModel.SupportedLanguages));
 
-                await ServiceProvider.GetRequiredService<DataEditor>().Detach(BotStorageKey);
-                return true;
+                await dataEditor.Detach(BotStorageKey);
+                return RequestIdle.Idle;
             },
             nameof(Complete),
             _ =>

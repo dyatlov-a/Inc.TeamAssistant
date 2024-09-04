@@ -1,46 +1,85 @@
-@inject ResourcesManager Resources
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
 
-<FormFieldSet
-    FieldId="@BotNameId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], BotDetails.LanguageId)">
-    <Content>
-            <InputText
-                @bind-Value="BotDetails.Name"
-                class="form-control"
-                id="@BotNameId" />
-        <ValidationMessage For="@(() => BotDetails.Name)"/>
-    </Content>
-</FormFieldSet>
-<FormFieldSet
-    FieldId="@BotShortDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], BotDetails.LanguageId)">
-    <Content>
-            <InputText
-                @bind-Value="BotDetails.ShortDescription"
-                class="form-control"
-                id="@BotShortDescriptionId" />
-        <ValidationMessage For="@(() => BotDetails.ShortDescription)"/>
-    </Content>
-</FormFieldSet>
-<FormFieldSet
-    FieldId="@BotDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], BotDetails.LanguageId)">
-    <Content>
-        <InputTextArea
-            @bind-Value="BotDetails.Description"
-            class="form-control form-control_textarea"
-            id="@BotDescriptionId" />
-        <ValidationMessage For="@(() => BotDetails.Description)"/>
-    </Content>
-</FormFieldSet>
+@inject IBotService BotService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject IRenderContext RenderContext
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@Resources[Messages.Constructor_BotDetails]" Opened="Load">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+        </Actions>
+        <Content>
+            <Loading State="_state">
+                <Content>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_BotDetails]"
+                        HelpText="@Resources[Messages.Constructor_BotDetailsHelp]">
+                        <Content>
+                            @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
+                            {
+                                <BotDetailsItemEditor Item="item"/>
+                            }
+                        </Content>
+                    </FormSection>
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
 
 @code {
     [Parameter, EditorRequired]
-    public BotDetailsFormModel BotDetails { get; set; } = default!;
+    public string Token { get; set; } = string.Empty;
     
-    private string BotNameId => $"bot-name-{BotDetails.LanguageId}";
-    private string BotShortDescriptionId => $"bot-short-description-{BotDetails.LanguageId}";
-    private string BotDescriptionId => $"bot-description-{BotDetails.LanguageId}";
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<string> SupportedLanguages { get; set; } = Array.Empty<string>();
     
-    private string MessageWithLanguage(string message, string languageCode) => $"{message} {languageCode}";
+    private readonly BotDetailsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    private RequestState _state = RequestState.Done();
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel);
+    }
+
+    private async Task Load()
+    {
+        _state = await RequestProcessor.Process(
+            async () =>
+            {
+                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
+                return botDetails;
+            },
+            $"{nameof(BotDetailsEditor)}_{nameof(Load)}",
+            r =>
+            {
+                _formModel.Apply(r);
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
+    }
+    
+    public async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+        
+        _state = await RequestProcessor.Process(
+            async () =>
+            {
+                await BotService.SetDetails(_formModel.ToCommand(Token));
+                return RequestIdle.Idle;
+            },
+            $"{nameof(BotDetailsEditor)}_{nameof(SubmitForm)}",
+            _ =>
+            {
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
+    }
 }

@@ -5,29 +5,31 @@
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
-    <div class="constructor__form">
-        <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
-            <HelpContent>
-                @((MarkupString)string.Format(Resources[Messages.Constructor_FormSectionTokenHelpTemplate], "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
-            </HelpContent>
-            <Content>
-                <FormFieldSet FieldId="bot-token" Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
-                    <Content>
-                        <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
-                        <ValidationMessage For="@(() => _formModel.Token)"/>
-                    </Content>
-                </FormFieldSet>
-                <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
-                    <Content>
-                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="disabled"/>
-                    </Content>
-                </FormFieldSet>
-            </Content>
-        </FormSection>
-    </div>
-    <div class="constructor__actions">
-        <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
-    </div>
+    <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
+        </Actions>
+        <Content>
+            <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
+                <HelpContent>
+                    @((MarkupString)string.Format(Resources[Messages.Constructor_FormSectionTokenHelpTemplate], "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                </HelpContent>
+                <Content>
+                    <FormFieldSet FieldId="bot-token" Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
+                        <Content>
+                            <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
+                            <ValidationMessage For="@(() => _formModel.Token)"/>
+                        </Content>
+                    </FormFieldSet>
+                    <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                        <Content>
+                            <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="disabled"/>
+                        </Content>
+                    </FormFieldSet>
+                </Content>
+            </FormSection>
+        </Content>
+    </Panel>
 </EditForm>
 
 @code {
@@ -53,10 +55,9 @@
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-        
-        await ServiceProvider.GetRequiredService<DataEditor>().Attach(
-            BotStorageKey,
-            StagesState.Apply(_formModel));
+
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
 
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }
