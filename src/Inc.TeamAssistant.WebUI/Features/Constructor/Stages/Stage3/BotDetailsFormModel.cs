@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class BotDetailsFormModel
 {

@@ -4,11 +4,12 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 @inject IRenderContext RenderContext
+@inject DateSelectorFactory DateSelectorFactory
 
 <Loading State="_state">
     <Content>
         <div class="component-container">
-            <DateSelector Date="_date" Items="_dateItems" OnSelected="Changed" />
+            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
             @if (_formModel.Review.Any())
             {
                 <div class="review-total-stats">
@@ -59,13 +60,12 @@
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
     private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<DateSelectorItem> _dateItems = Array.Empty<DateSelectorItem>();
+    private IReadOnlyCollection<DateSelectorItem> DateItems => DateSelectorFactory.CreateShortPeriods();
     private ReviewTotalStatsWidgetFormModel _formModel = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        _dateItems = DateSelectorDataFactory.CreateShortPeriod(Resources);
-        _date ??= _dateItems.First().Date;
+        _date ??= DateItems.First().Date;
 
         await Load(_date.Value);
     }

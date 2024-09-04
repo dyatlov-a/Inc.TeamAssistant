@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 

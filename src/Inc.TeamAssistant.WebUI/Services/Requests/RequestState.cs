@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Services.Requests;
 
 public sealed class RequestState
 {

@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Services.Requests;
 
 public sealed class RequestProcessor : IDisposable
 {

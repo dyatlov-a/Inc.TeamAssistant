@@ -6,8 +6,6 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.WebUI.Features.Common;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
@@ -15,7 +13,7 @@ public sealed class SetSettingsFormModel
 {
     public string Token { get; set; } = string.Empty;
     public List<string> SupportedLanguages { get; set; } = new();
-    public IReadOnlyCollection<SelectListItem> Properties { get; set; } = Array.Empty<SelectListItem>();
+    public IReadOnlyCollection<BotProperty> Properties { get; set; } = Array.Empty<BotProperty>();
     public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties { get; set; } = new Dictionary<string, IReadOnlyCollection<SettingSection>>();
     public IReadOnlyCollection<BotDetailsFormModel> BotDetails { get; set; } = Array.Empty<BotDetailsFormModel>();
     public bool WorkAllDay { get; set; }
@@ -31,7 +29,7 @@ public sealed class SetSettingsFormModel
         Token = stagesState.Token;
         SupportedLanguages = stagesState.SupportedLanguages.ToList();
         Properties = stagesState.SelectedFeatures
-            .SelectMany(f => f.Properties.Select(v => new SelectListItem
+            .SelectMany(f => f.Properties.Select(v => new BotProperty
             {
                 Name = v,
                 Value = stagesState.Properties.GetValueOrDefault(v, string.Empty)

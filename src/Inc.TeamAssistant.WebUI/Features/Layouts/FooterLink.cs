@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Common;
+namespace Inc.TeamAssistant.WebUI.Features.Layouts;
 
 public sealed record FooterLink(
     string Title,

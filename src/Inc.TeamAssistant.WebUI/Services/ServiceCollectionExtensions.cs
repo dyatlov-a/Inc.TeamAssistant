@@ -1,9 +1,10 @@
 using Blazored.LocalStorage;
 using FluentValidation;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
+using Inc.TeamAssistant.WebUI.Services.Requests;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;
@@ -47,6 +48,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<ResourcesManager>()
+            .AddScoped<DateSelectorFactory>()
             .AddScoped<RequestProcessor>()
             .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));

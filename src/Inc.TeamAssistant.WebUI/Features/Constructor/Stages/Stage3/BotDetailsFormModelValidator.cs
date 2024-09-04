@@ -1,7 +1,7 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives.Languages;
 
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class BotDetailsFormModelValidator : AbstractValidator<BotDetailsFormModel>
 {
