@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
-public static class BotProperties
+public static class BotPropertiesBuilder
 {
     private static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>
     {
@@ -12,7 +12,7 @@ public static class BotProperties
         ["storyType"] = "Fibonacci"
     };
 
-    public static IReadOnlyDictionary<string, string> AddDefaults(this IReadOnlyDictionary<string, string> properties)
+    public static IReadOnlyDictionary<string, string> Build(IReadOnlyDictionary<string, string> properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
 

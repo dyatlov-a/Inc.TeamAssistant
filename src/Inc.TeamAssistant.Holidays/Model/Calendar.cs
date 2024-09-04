@@ -14,15 +14,11 @@ public sealed class Calendar
         Holidays = new Dictionary<DateOnly, HolidayType>();
     }
 
-    public Calendar(
-        Guid id,
-        long ownerId,
-        WorkScheduleUtc? schedule)
+    public Calendar(Guid id, long ownerId)
         : this()
     {
         Id = id;
         OwnerId = ownerId;
-        Schedule = schedule;
     }
 
     public Calendar SetSchedule(WorkScheduleUtc? schedule)

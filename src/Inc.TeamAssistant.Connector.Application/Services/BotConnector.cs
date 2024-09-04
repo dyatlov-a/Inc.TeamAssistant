@@ -71,9 +71,9 @@ internal sealed class BotConnector : IBotConnector
         return results;
     }
 
-    public async Task Update(Guid botId, IReadOnlyCollection<BotDetails> botDetails, CancellationToken token)
+    public async Task SetCommands(Guid botId, IReadOnlyCollection<string> supportedLanguages, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(botDetails);
+        ArgumentNullException.ThrowIfNull(supportedLanguages);
         
         var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, token);
         if (bot is null)
@@ -82,23 +82,35 @@ internal sealed class BotConnector : IBotConnector
         var client = new TelegramBotClient(bot.Token);
         
         await SetDefaultAdministratorRights(client, token);
+        
+        foreach (var supportedLanguage in supportedLanguages)
+            await SetCommands(client, bot, new LanguageId(supportedLanguage), supportedLanguage, token);
+        
+        var defaultLanguageId = supportedLanguages.Count == 1
+            ? supportedLanguages.Single()
+            : supportedLanguages.Single(b => b == LanguageSettings.DefaultLanguageId.Value);
+        
+        await SetCommands(client, bot, new LanguageId(defaultLanguageId), targetLanguageId: null, token);
+    }
+
+    public async Task SetDetails(string botToken, IReadOnlyCollection<BotDetails> botDetails, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(botDetails);
+        
+        var client = new TelegramBotClient(botToken);
 
         foreach (var item in botDetails)
-        {
-            await SetCommands(client, bot, new LanguageId(item.LanguageId), item.LanguageId, token);
             await SetDetails(client, item.Name, item.ShortDescription, item.Description, item.LanguageId, token);
-        }
 
-        var botDetailsItem = botDetails.Count == 1
+        var botDefaults = botDetails.Count == 1
             ? botDetails.Single()
             : botDetails.Single(b => b.LanguageId == LanguageSettings.DefaultLanguageId.Value);
         
-        await SetCommands(client, bot, new LanguageId(botDetailsItem.LanguageId), targetLanguageId: null, token);
         await SetDetails(
             client,
-            botDetailsItem.Name,
-            botDetailsItem.ShortDescription,
-            botDetailsItem.Description,
+            botDefaults.Name,
+            botDefaults.ShortDescription,
+            botDefaults.Description,
             targetLanguageId: null,
             token);
     }

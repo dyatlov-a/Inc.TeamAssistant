@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AutoFixture;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Holidays.Internal;
@@ -16,12 +15,10 @@ public sealed class HolidayServiceTests
     
     public HolidayServiceTests()
     {
-        _calendar = new Calendar(
-                _fixture.Create<Guid>(),
-                _fixture.Create<long>(),
-                new WorkScheduleUtc(
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(7)),
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(16))))
+        _calendar = new Calendar(_fixture.Create<Guid>(), _fixture.Create<long>())
+            .SetSchedule(new WorkScheduleUtc(
+                TimeOnly.FromTimeSpan(TimeSpan.FromHours(7)),
+                TimeOnly.FromTimeSpan(TimeSpan.FromHours(16))))
             .AddWeekend(DayOfWeek.Saturday)
             .AddWeekend(DayOfWeek.Sunday);
         

@@ -257,7 +257,6 @@
   "Constructor_StageCheckBot": "Connecting",
   "Constructor_StageSelectFeatures": "Features",
   "Constructor_StageSetSettings": "Settings",
-  "Constructor_StageCalendar": "Calendar",
   "Constructor_StageComplete": "Confirmation",
   "Constructor_FormSectionTokenTitle": "Set bot token",
   "Constructor_FormSectionTokenHelpTemplate": "Please move to {0} and create bot",
@@ -319,8 +318,6 @@
   "Constructor_BotName": "Bot name (will be available on Telegram)",
   "Constructor_BotShortDescription": "Bot short description (will be available on Telegram)",
   "Constructor_BotDescription": "Bot description (will be available on Telegram)",
-  "Constructor_BotInformation": "Bot's properties",
-  "Constructor_BotInformationHelp": "Please check and confirm the bot's properties",
   "Constructor_DayOfWeekSunday": "SU",
   "Constructor_DayOfWeekMonday": "MO",
   "Constructor_DayOfWeekTuesday": "TU",
@@ -341,7 +338,6 @@
   "Constructor_DateLabel": "Date",
   "Constructor_WorkdayLabel": "Workday",
   "Constructor_AddHolidayLabel": "Add holiday",
-  "Constructor_CheckWorkTimeHelp": "Please check work schedule",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

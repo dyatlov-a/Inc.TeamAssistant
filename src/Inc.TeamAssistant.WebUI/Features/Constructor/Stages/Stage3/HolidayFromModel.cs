@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
+namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class HolidayFromModel
 {

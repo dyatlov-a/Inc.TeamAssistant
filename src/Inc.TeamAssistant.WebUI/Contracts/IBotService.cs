@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
@@ -16,7 +17,7 @@ public interface IBotService
 {
     Task<GetBotUserNameResult> Check(GetBotUserNameQuery query, CancellationToken token = default);
 
-    Task<GetBotResult?> GetBotById(Guid botId, CancellationToken token = default);
+    Task<GetBotResult> GetBotById(Guid botId, CancellationToken token = default);
     
     Task<GetBotsResult> GetByUser(long userId, CancellationToken token = default);
     
@@ -41,4 +42,6 @@ public interface IBotService
     Task Update(UpdateBotCommand command, CancellationToken token = default);
     
     Task Remove(Guid botId, CancellationToken token = default);
+    
+    Task SetDetails(SetBotDetailsCommand command, CancellationToken token = default);
 }

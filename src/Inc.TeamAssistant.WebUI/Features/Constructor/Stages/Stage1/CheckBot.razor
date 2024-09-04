@@ -1,6 +1,3 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
-
-@inject IBotService BotService
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
@@ -56,12 +53,10 @@
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-
-        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(_formModel.Token));
         
         await ServiceProvider.GetRequiredService<DataEditor>().Attach(
             BotStorageKey,
-            StagesState.Apply(getBotDetailsResult.Items).Apply(_formModel));
+            StagesState.Apply(_formModel));
 
         NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
     }

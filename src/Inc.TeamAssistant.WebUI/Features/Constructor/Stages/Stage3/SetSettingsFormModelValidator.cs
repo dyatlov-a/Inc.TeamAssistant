@@ -39,5 +39,16 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
         
         RuleForEach(e => e.BotDetails)
             .SetValidator(botDetailsFormModelValidator);
+        
+        RuleFor(e => e.SelectedWeekends)
+            .NotNull()
+            .Must(e => e.Distinct().Count() == e.Count);
+        
+        RuleFor(e => e.Holidays)
+            .NotNull()
+            .Must(e => e.Select(i => i.Date).Distinct().Count() == e.Count);
+        
+        RuleFor(e => e.Start)
+            .LessThan(e => e.End);
     }
 }

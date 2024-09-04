@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
@@ -31,7 +32,7 @@ internal sealed class BotService : IBotService
         return await _mediator.Send(query, token);
     }
 
-    public async Task<GetBotResult?> GetBotById(Guid botId, CancellationToken token)
+    public async Task<GetBotResult> GetBotById(Guid botId, CancellationToken token)
     {
         return await _mediator.Send(new GetBotQuery(botId), token);
     }
@@ -93,5 +94,10 @@ internal sealed class BotService : IBotService
     public async Task Remove(Guid botId, CancellationToken token)
     {
         await _mediator.Send(new RemoveBotCommand(botId), token);
+    }
+
+    public async Task SetDetails(SetBotDetailsCommand command, CancellationToken token)
+    {
+        await _mediator.Send(command, token);
     }
 }

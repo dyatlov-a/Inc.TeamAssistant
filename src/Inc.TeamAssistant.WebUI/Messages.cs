@@ -83,8 +83,6 @@ internal static class Messages
     public static readonly string Constructor_BotName = nameof(Constructor_BotName);
     public static readonly string Constructor_BotShortDescription = nameof(Constructor_BotShortDescription);
     public static readonly string Constructor_BotDescription = nameof(Constructor_BotDescription);
-    public static readonly string Constructor_BotInformation = nameof(Constructor_BotInformation);
-    public static readonly string Constructor_BotInformationHelp = nameof(Constructor_BotInformationHelp);
     public static readonly string Constructor_WorkTimeTitle = nameof(Constructor_WorkTimeTitle);
     public static readonly string Constructor_WorkTimeHelp = nameof(Constructor_WorkTimeHelp);
     public static readonly string Constructor_WorkAllDayLabel = nameof(Constructor_WorkAllDayLabel);
@@ -98,7 +96,6 @@ internal static class Messages
     public static readonly string Constructor_DateLabel = nameof(Constructor_DateLabel);
     public static readonly string Constructor_WorkdayLabel = nameof(Constructor_WorkdayLabel);
     public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
-    public static readonly string Constructor_CheckWorkTimeHelp = nameof(Constructor_CheckWorkTimeHelp);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);

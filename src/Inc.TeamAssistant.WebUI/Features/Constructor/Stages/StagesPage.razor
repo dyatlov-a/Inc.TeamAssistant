@@ -10,30 +10,30 @@
 
 @attribute [Authorize]
 
-@using Inc.TeamAssistant.Constructor.Model.Common
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner
-@using Inc.TeamAssistant.Primitives.Bots
-@using Inc.TeamAssistant.Primitives.Languages
-
+@inject IRenderContext RenderContext
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
-@inject ICalendarService CalendarService
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
     MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
 
-<div class="constructor">
-    <div class="constructor__container">
-        <h1 class="title">@Resources[Messages.Constructor_Title] @BotName</h1>
-        <div class="constructor__nav">
-            <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
+<Loading State="_state" IsFullscreen="true">
+    <Content>
+        <div class="constructor">
+            <div class="constructor__container">
+                <h1 class="title">@Resources[Messages.Constructor_Title] @BotName</h1>
+                <div class="constructor__nav">
+                    <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
+                </div>
+                <DynamicComponent Type="StageType" Parameters="StageParameters" />
+            </div>
         </div>
-        <DynamicComponent Type="StageType" Parameters="StageParameters" />
-    </div>
-</div>
+    </Content>
+</Loading>
 
 @code {
     [Parameter]
@@ -41,26 +41,24 @@
 
     [Parameter]
     public string Selected { get; set; } = default!;
+    
+    private RequestState _state = RequestState.Done();
+    private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
-    private StagesState _stagesState = StagesState.Empty;
     private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
         ? string.Empty
         : $"@{_stagesState.UserName}";
-    
     private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
         ? value
         : Enum.GetValues<Stage>().First();
-
     private Type StageType => CurrentState switch
     {
         Stage.SelectFeatures => typeof(SelectFeatures),
         Stage.SetSettings => typeof(SetSettings),
-        Stage.Calendar => typeof(Calendar),
         Stage.Complete => typeof(Complete),
         _ => typeof(CheckBot)
     };
-
     private Dictionary<string, object> StageParameters => new()
     {
         ["StagesState"] = _stagesState,
@@ -70,54 +68,37 @@
     
     protected override async Task OnParametersSetAsync()
     {
-        var jsRuntime = ServiceProvider.GetService<IJSRuntime>();
-        var dataEditor = ServiceProvider.GetService<DataEditor>();
-        if (dataEditor is not null && jsRuntime is not null)
-            _stagesState = await dataEditor.GetValueOrDefault(BotStorageKey, async _ => await CreateState(jsRuntime));
+        if (RenderContext.IsBrowser)
+        {
+            var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+            
+            await Load(dataEditor);
+        }
     }
-
-    private async Task<StagesState> CreateState(IJSRuntime jsRuntime)
+    
+    private async Task Load(DataEditor dataEditor)
     {
-        var bot = BotId.HasValue ? await BotService.GetBotById(BotId.Value) : null;
-        var getFeaturesResult = await BotService.GetFeatures();
-        var getCalendarByOwnerResult = await CalendarService.GetCalendarByOwner();
+        _state = await RequestProcessor.Process(
+            () =>
+            {
+                return dataEditor.GetValueOrDefault(BotStorageKey, async t =>
+                {
+                    var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
+                    var getFeaturesResult = await BotService.GetFeatures(t);
+                    var getPropertiesResult = await BotService.GetProperties(t);
 
-        return new StagesState(
-            bot?.Id,
-            bot?.UserName ?? string.Empty,
-            bot?.Token ?? string.Empty,
-            bot?.FeatureIds ?? Array.Empty<Guid>(),
-            bot?.Properties ?? new Dictionary<string, string>(),
-            getFeaturesResult.Features,
-            bot?.SupportedLanguages ?? new [] { LanguageSettings.DefaultLanguageId.Value },
-            Array.Empty<BotDetails>(),
-            getCalendarByOwnerResult?.Id,
-            await CreateCalendarState(jsRuntime, getCalendarByOwnerResult));
-    }
-
-    private async Task<CalendarState> CreateCalendarState(
-        IJSRuntime jsRuntime,
-        GetCalendarByOwnerResult? getCalendarByOwnerResult)
-    {
-        const int startMinutesUtc = 10 * 60;
-        const int endMinutesUtc = 19 * 60;
-        
-        var clientTimezoneOffset = await jsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
-        var clientSchedule = new WorkScheduleUtcDto(
-            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(startMinutesUtc + clientTimezoneOffset)),
-            TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(endMinutesUtc + clientTimezoneOffset)));
-        
-        return getCalendarByOwnerResult is null
-            ? new CalendarState(
-                WorkAllDay: false,
-                clientSchedule,
-                new [] { DayOfWeek.Saturday, DayOfWeek.Sunday },
-                new Dictionary<DateOnly, string>())
-            : new CalendarState(
-                WorkAllDay: getCalendarByOwnerResult.Schedule is null,
-                getCalendarByOwnerResult.Schedule ?? clientSchedule,
-                getCalendarByOwnerResult.Weekends,
-                getCalendarByOwnerResult.Holidays);
+                    return getBotResult is null
+                        ? StagesState.Create(getFeaturesResult, getPropertiesResult)
+                        : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
+                });
+            },
+            nameof(StagesPage),
+            r =>
+            {
+                _stagesState = r;
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
 
     private string LinkFactory(Stage? stage)

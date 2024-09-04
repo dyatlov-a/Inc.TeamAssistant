@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
@@ -90,6 +91,16 @@ public sealed class BotsController : ControllerBase
         ArgumentNullException.ThrowIfNull(query);
         
         return Ok(await _botService.GetDetails(query, token));
+    }
+
+    [HttpPut("set-details")]
+    public async Task<IActionResult> SetDetails(SetBotDetailsCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _botService.SetDetails(command, token);
+        
+        return Ok();
     }
 
     [HttpPost]

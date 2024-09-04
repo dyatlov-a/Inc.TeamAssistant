@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
@@ -39,9 +40,9 @@ internal sealed class BotClient : IBotService
         return result;
     }
 
-    public async Task<GetBotResult?> GetBotById(Guid botId, CancellationToken token)
+    public async Task<GetBotResult> GetBotById(Guid botId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetBotResult?>($"bots/{botId}", token);
+        var result = await _client.GetFromJsonAsync<GetBotResult>($"bots/{botId}", token);
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 
@@ -87,6 +88,8 @@ internal sealed class BotClient : IBotService
 
     public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _client.PutAsJsonAsync("bots/teammate", command, token);
     }
 
@@ -125,16 +128,27 @@ internal sealed class BotClient : IBotService
 
     public async Task Create(CreateBotCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _client.PostAsJsonAsync("bots", command, token);
     }
 
     public async Task Update(UpdateBotCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _client.PutAsJsonAsync("bots", command, token);
     }
 
     public async Task Remove(Guid botId, CancellationToken token)
     {
         await _client.DeleteAsync($"bots/{botId}", token);
+    }
+
+    public async Task SetDetails(SetBotDetailsCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _client.PutAsJsonAsync("bots/set-details", command, token);
     }
 }

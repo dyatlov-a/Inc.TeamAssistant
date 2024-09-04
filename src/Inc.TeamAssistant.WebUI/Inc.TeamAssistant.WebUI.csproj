@@ -19,4 +19,7 @@
       <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Features\Constructor\Stages\Stage4\Calendar.razor" />
+    </ItemGroup>
 </Project>

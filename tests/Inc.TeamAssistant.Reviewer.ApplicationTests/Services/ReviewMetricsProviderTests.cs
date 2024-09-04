@@ -17,10 +17,7 @@ public sealed class ReviewMetricsProviderTests
 
     public ReviewMetricsProviderTests()
     {
-        var calendar = new Calendar(
-            _fixture.Create<Guid>(),
-            _fixture.Create<long>(),
-            schedule: null);
+        var calendar = new Calendar(_fixture.Create<Guid>(), _fixture.Create<long>());
         
         var holidayReader = Substitute.For<IHolidayReader>();
         holidayReader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);

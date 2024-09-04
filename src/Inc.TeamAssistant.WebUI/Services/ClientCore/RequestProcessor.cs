@@ -27,30 +27,23 @@ public sealed class RequestProcessor : IDisposable
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(onLoaded);
-
-        if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
-        {
-            onLoaded(restored);
-            return RequestState.Done();
-        }
         
-        return await StartLoading(request, key, onLoaded);
-    }
+        if (_renderContext.IsBrowser)
+        {
+            if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
+            {
+                onLoaded(restored);
+                return RequestState.Done();
+            }
 
-    private async Task<RequestState> StartLoading<TResponse>(
-        Func<Task<TResponse>> request,
-        string key,
-        Action<TResponse> onLoaded)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNull(onLoaded);
+            await BackgroundEnding(request, onLoaded);
+            
+            return RequestState.Loading();
+        }
 
-        var hasLoading = _renderContext.IsBrowser;
-
-        await (hasLoading ? BackgroundEnding(request, onLoaded) : ForegroundEnding(request, key, onLoaded));
-
-        return hasLoading ? RequestState.Loading() : RequestState.Done();
+        await ForegroundEnding(request, key, onLoaded);
+        
+        return RequestState.Done();
     }
 
     private Task BackgroundEnding<TResponse>(Func<Task<TResponse>> request, Action<TResponse> onLoaded)
@@ -71,9 +64,10 @@ public sealed class RequestProcessor : IDisposable
 
                 onLoaded(handler.Result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // TODO: show error message for the user
+                Console.WriteLine(ex);
             }
             finally
             {
@@ -95,7 +89,7 @@ public sealed class RequestProcessor : IDisposable
         ArgumentNullException.ThrowIfNull(onLoaded);
         
         var response = await request();
-        
+
         _persistingSubscriptions.Add(_applicationState.RegisterOnPersisting(() =>
         {
             _applicationState.PersistAsJson(key, response);

@@ -257,7 +257,6 @@
   "Constructor_StageCheckBot": "Подключение",
   "Constructor_StageSelectFeatures": "Выбор функционала",
   "Constructor_StageSetSettings": "Настройка",
-  "Constructor_StageCalendar": "Календарь",
   "Constructor_StageComplete": "Подтверждение",
   "Constructor_FormSectionTokenTitle": "Укажите токен бота",
   "Constructor_FormSectionTokenHelpTemplate": "Перейдите к {0} и создайте бота",
@@ -319,8 +318,6 @@
   "Constructor_BotName": "Имя бота (будет отображаться в telegram)",
   "Constructor_BotShortDescription": "Короткое описание бота (будет отображаться в telegram)",
   "Constructor_BotDescription": "Описание бота (будет отображаться в telegram)",
-  "Constructor_BotInformation": "Свойства бота",
-  "Constructor_BotInformationHelp": "Пожалуйста, проверьте и подтвердите свойства бота",
   "Constructor_DayOfWeekSunday": "ВС",
   "Constructor_DayOfWeekMonday": "ПН",
   "Constructor_DayOfWeekTuesday": "ВТ",
@@ -341,7 +338,6 @@
   "Constructor_DateLabel": "Дата",
   "Constructor_WorkdayLabel": "Рабочий день",
   "Constructor_AddHolidayLabel": "Добавить праздник",
-  "Constructor_CheckWorkTimeHelp": "Пожалуйста, проверьте график работы",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

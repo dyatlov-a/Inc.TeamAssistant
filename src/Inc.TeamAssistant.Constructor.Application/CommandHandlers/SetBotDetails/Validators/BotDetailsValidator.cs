@@ -2,7 +2,7 @@ using FluentValidation;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 
-namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.Common.Validators;
+namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.SetBotDetails.Validators;
 
 internal sealed class BotDetailsValidator : AbstractValidator<BotDetails>
 {

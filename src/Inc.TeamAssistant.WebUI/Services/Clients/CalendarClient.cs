@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Primitives.Exceptions;
@@ -23,17 +22,6 @@ internal sealed class CalendarClient : ICalendarService
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
-    }
-
-    public async Task<Guid> Create(CreateCalendarCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        var response = await _client.PostAsJsonAsync("calendars", command, token);
-        
-        response.EnsureSuccessStatusCode();
-        
-        return await response.Content.ReadFromJsonAsync<Guid>(token);
     }
 
     public async Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token)
