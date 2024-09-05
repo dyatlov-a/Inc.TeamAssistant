@@ -6,19 +6,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class BotDetailsFormModel
 {
-    public IReadOnlyCollection<BotDetailsItemFormModel> BotDetails { get; set; } = Array.Empty<BotDetailsItemFormModel>();
+    private readonly List<BotDetailsItemFormModel> _botDetails = new();
+    public IReadOnlyCollection<BotDetailsItemFormModel> BotDetails => _botDetails;
     
     public BotDetailsFormModel Apply(GetBotDetailsResult botDetails)
     {
         ArgumentNullException.ThrowIfNull(botDetails);
         
-        BotDetails = botDetails.Items.Select(b => new BotDetailsItemFormModel
+        _botDetails.Clear();
+        _botDetails.AddRange(botDetails.Items.Select(b => new BotDetailsItemFormModel
         {
             LanguageId = b.LanguageId,
             Name = b.Name,
             ShortDescription = b.ShortDescription,
             Description = b.Description
-        }).ToArray();
+        }));
 
         return this;
     }

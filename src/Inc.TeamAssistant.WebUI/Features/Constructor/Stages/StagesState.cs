@@ -15,12 +15,21 @@ public sealed class StagesState
     public Guid? CalendarId { get; private set; }
     public string UserName { get; private set; }
     public string Token { get; private set; }
-    public IReadOnlyCollection<string> SupportedLanguages { get; private set; }
-    public IReadOnlyCollection<Guid> FeatureIds { get; private set; }
-    public IReadOnlyDictionary<string, string> Properties { get; private set; }
+
+    private readonly List<string> _supportedLanguages = new();
+    public IReadOnlyCollection<string> SupportedLanguages => _supportedLanguages;
+
+    private readonly List<Guid> _featureIds = new();
+    public IReadOnlyCollection<Guid> FeatureIds => _featureIds;
     
-    public IReadOnlyCollection<FeatureDto> AvailableFeatures { get; private set; }
-    public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties { get; private set; }
+    private Dictionary<string, string> _properties = new(StringComparer.InvariantCultureIgnoreCase);
+    public IReadOnlyDictionary<string, string> Properties => _properties;
+
+    private readonly List<FeatureDto> _availableFeatures = new();
+    public IReadOnlyCollection<FeatureDto> AvailableFeatures => _availableFeatures;
+    
+    private readonly Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
+    public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties => _availableProperties;
 
     public IReadOnlyCollection<FeatureDto> SelectedFeatures => AvailableFeatures
         .Where(f => FeatureIds.Contains(f.Id))
@@ -49,16 +58,32 @@ public sealed class StagesState
         IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> availableProperties)
     {
         ArgumentNullException.ThrowIfNull(properties);
+        ArgumentNullException.ThrowIfNull(supportedLanguages);
+        ArgumentNullException.ThrowIfNull(featureIds);
+        ArgumentNullException.ThrowIfNull(availableFeatures);
+        ArgumentNullException.ThrowIfNull(availableProperties);
         
         Id = id;
         CalendarId = calendarId;
         UserName = userName;
         Token = token;
-        SupportedLanguages = supportedLanguages ?? throw new ArgumentNullException(nameof(supportedLanguages));
-        FeatureIds = featureIds ?? throw new ArgumentNullException(nameof(featureIds));
-        Properties = BotPropertiesBuilder.Build(properties);
-        AvailableFeatures = availableFeatures ?? throw new ArgumentNullException(nameof(availableFeatures));
-        AvailableProperties = availableProperties ?? throw new ArgumentNullException(nameof(availableProperties));
+        
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(supportedLanguages);
+        
+        _featureIds.Clear();
+        _featureIds.AddRange(featureIds);
+        
+        _properties.Clear();
+        foreach (var property in properties)
+            _properties.Add(property.Key, property.Value);
+        
+        _availableFeatures.Clear();
+        _availableFeatures.AddRange(availableFeatures);
+        
+        _availableProperties.Clear();
+        foreach (var availableProperty in availableProperties)
+            _availableProperties.Add(availableProperty.Key, availableProperty.Value);
     }
     
     public static StagesState Create(
@@ -115,14 +140,8 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        var selectedProperties = SelectedFeatures
-            .SelectMany(f => f.Properties)
-            .ToArray();
-        
-        FeatureIds = formModel.FeatureIds.ToArray();
-        Properties = Properties
-            .Where(p => selectedProperties.Contains(p.Key, StringComparer.InvariantCultureIgnoreCase))
-            .ToDictionary();
+        _featureIds.Clear();
+        _featureIds.AddRange(formModel.FeatureIds);
         
         return this;
     }
@@ -138,8 +157,12 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        Properties = formModel.Properties.ToDictionary(v => v.Title, v => v.Value);
-        SupportedLanguages = formModel.SupportedLanguages.ToArray();
+        _properties.Clear();
+        foreach (var property in formModel.Properties)
+            _properties.Add(property.Title, property.Value);
+
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(formModel.SupportedLanguages);
         
         return this;
     }

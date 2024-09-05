@@ -1,10 +1,18 @@
 <div class="form-section__field-set">
-    <label for="@FieldId" class="form-section__label">@Label</label>
+    @if (string.IsNullOrWhiteSpace(FieldId))
+    {
+        <span class="form-section__label">@Label</span>
+    }
+    else
+    {
+        <label for="@FieldId" class="form-section__label">@Label</label>
+    }
+    
     @Content
 </div>
 
 @code {
-    [Parameter, EditorRequired]
+    [Parameter]
     public string FieldId { get; set; } = default!;
     
     [Parameter, EditorRequired]

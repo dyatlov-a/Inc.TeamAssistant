@@ -6,7 +6,7 @@
     <Content>
         <div class="time-selector__hours">
             <SelectList
-                FieldId="@($"{FieldId}-hour")"
+                FieldId="@FieldId"
                 Value="_selectedHours"
                 ValueChanged="@((int i) => SelectHour(i))"
                 Items="_hours"

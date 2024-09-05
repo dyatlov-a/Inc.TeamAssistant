@@ -7,9 +7,15 @@ public sealed class SetSettingsFormModel
 {
     public Guid? CalendarId { get; set; }
     public string Token { get; set; } = string.Empty;
-    public List<string> SupportedLanguages { get; set; } = new();
-    public IReadOnlyCollection<SelectItem<string>> Properties { get; set; } = Array.Empty<SelectItem<string>>();
-    public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties { get; set; } = new Dictionary<string, IReadOnlyCollection<SettingSection>>();
+
+    private readonly List<string> _supportedLanguages = new();
+    public IReadOnlyCollection<string> SupportedLanguages => _supportedLanguages;
+
+    private readonly List<SelectItem<string>> _properties = new();
+    public IReadOnlyCollection<SelectItem<string>> Properties => _properties;
+    
+    private readonly Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
+    public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties => _availableProperties;
 
     public SetSettingsFormModel Apply(StagesState stagesState)
     {
@@ -17,20 +23,26 @@ public sealed class SetSettingsFormModel
 
         CalendarId = stagesState.CalendarId;
         Token = stagesState.Token;
-        SupportedLanguages = stagesState.SupportedLanguages.ToList();
-        Properties = stagesState.SelectedFeatures
+        
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(stagesState.SupportedLanguages);
+        
+        _properties.Clear();
+        _properties.AddRange(stagesState.SelectedFeatures
             .SelectMany(f => f.Properties.Select(v => new SelectItem<string>(
                 v,
-                stagesState.Properties.GetValueOrDefault(v, string.Empty))))
-            .ToArray();
-        AvailableProperties = stagesState.AvailableProperties.ToDictionary();
+                stagesState.Properties.GetValueOrDefault(v, string.Empty)))));
+        
+        _availableProperties.Clear();
+        foreach (var availableProperty in stagesState.AvailableProperties)
+            _availableProperties.Add(availableProperty.Key, availableProperty.Value);
 
         return this;
     }
     
     public void SetLanguages(IEnumerable<string> languageIds)
     {
-        SupportedLanguages.Clear();
-        SupportedLanguages.AddRange(languageIds);
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(languageIds);
     }
 }

@@ -14,7 +14,9 @@
                 AsRows="true">
                 <Content>
                     <InputFeatures
-                        @bind-Value="_formModel.FeatureIds"
+                        Value="_formModel.FeatureIds"
+                        ValueExpression="@(() => _formModel.FeatureIds)"
+                        ValuesChanged="(IEnumerable<Guid> v) => _formModel.SetFeatures(v)"
                         Features="StagesState.AvailableFeatures"
                         AddText="@Resources[Messages.Constructor_FeatureAdd]"
                         RemoveText="@Resources[Messages.Constructor_FeatureRemove]"

@@ -9,8 +9,12 @@ public sealed class CalendarFromModel
     public bool WorkAllDay { get; set; }
     public TimeOnly Start { get; set; }
     public TimeOnly End { get; set; }
-    public List<DayOfWeek> SelectedWeekends { get; } = new();
-    public List<HolidayFromModel> Holidays { get; } = new();
+    
+    private readonly List<DayOfWeek> _selectedWeekends = new();
+    public IReadOnlyCollection<DayOfWeek> SelectedWeekends => _selectedWeekends;
+    
+    private readonly List<HolidayFromModel> _holidays = new();
+    public IReadOnlyCollection<HolidayFromModel> Holidays => _holidays;
     
     public CalendarFromModel Apply(GetCalendarByOwnerResult calendar, int clientTimezoneOffset)
     {
@@ -21,10 +25,10 @@ public sealed class CalendarFromModel
             ? CreateDefaultTime(clientTimezoneOffset)
             : (calendar.Schedule.Start, calendar.Schedule.End);
         
-        SelectedWeekends.Clear();
-        SelectedWeekends.AddRange(calendar.Weekends);
+        _selectedWeekends.Clear();
+        _selectedWeekends.AddRange(calendar.Weekends);
         
-        Holidays.Clear();
+        _holidays.Clear();
         foreach (var holiday in calendar.Holidays)
             AddHoliday(holiday.Key, holiday.Value.Equals("Workday", StringComparison.InvariantCultureIgnoreCase));
 
@@ -36,10 +40,10 @@ public sealed class CalendarFromModel
         WorkAllDay = false;
         (Start, End) = CreateDefaultTime(clientTimezoneOffset);
         
-        SelectedWeekends.Clear();
-        SelectedWeekends.AddRange(new [] { DayOfWeek.Sunday, DayOfWeek.Saturday });
+        _selectedWeekends.Clear();
+        _selectedWeekends.AddRange(new [] { DayOfWeek.Sunday, DayOfWeek.Saturday });
         
-        Holidays.Clear();
+        _holidays.Clear();
         
         return this;
     }
@@ -53,18 +57,25 @@ public sealed class CalendarFromModel
         
         AddHoliday(date.AddDays(1), isWorkday: false);
     }
+
+    public void RemoveHoliday(HolidayFromModel holiday)
+    {
+        ArgumentNullException.ThrowIfNull(holiday);
+
+        _holidays.Remove(holiday);
+    }
     
     public void SetWeekends(IEnumerable<DayOfWeek> items)
     {
-        SelectedWeekends.Clear();
-        SelectedWeekends.AddRange(items);
+        _selectedWeekends.Clear();
+        _selectedWeekends.AddRange(items);
     }
 
     public UpdateCalendarCommand ToCommand()
     {
         return new UpdateCalendarCommand(
             ToWorkScheduleUtcDto(),
-            SelectedWeekends,
+            _selectedWeekends,
             ToHolidays());
     }
 
@@ -76,8 +87,8 @@ public sealed class CalendarFromModel
 
     private void AddHoliday(DateOnly date, bool isWorkday)
     {
-        var holidaysCount = Holidays.Count;
-        Holidays.Add(new HolidayFromModel
+        var holidaysCount = _holidays.Count;
+        _holidays.Add(new HolidayFromModel
         {
             DateFieldId = $"date-{holidaysCount}",
             WorkdayFieldId = $"workday-{holidaysCount}",

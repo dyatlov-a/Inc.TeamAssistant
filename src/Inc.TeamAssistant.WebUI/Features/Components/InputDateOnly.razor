@@ -6,12 +6,12 @@
     <Content>
         <div class="time-selector__years">
             <SelectList
-                FieldId="@($"{FieldId}-year")"
+                FieldId="@FieldId"
                 Value="_selectedYear"
                 ValueChanged="@((int i) => SelectYear(i))"
                 Items="_years"
                 TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value" />
+                ValueSelector="i => i.Value"/>
         </div>
         <div class="time-selector__months">
             <SelectList
@@ -20,7 +20,7 @@
                 ValueChanged="@((int i) => SelectMonth(i))"
                 Items="_months"
                 TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value" />
+                ValueSelector="i => i.Value"/>
         </div>
         <div class="time-selector__days">
             <SelectList
@@ -29,7 +29,7 @@
                 ValueChanged="@((int i) => SelectDay(i))"
                 Items="Days"
                 TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value" />
+                ValueSelector="i => i.Value"/>
         </div>
     </Content>
 </FormFieldSet>

@@ -48,19 +48,13 @@
                         Title="@Resources[Messages.Constructor_WeekendsTitle]"
                         HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
                         <Content>
-                            <FormFieldSet
-                                FieldId="weekends"
-                                Label="@Resources[Messages.Constructor_WeekendsLabel]">
-                                <Content>
-                                    <MultiSelectList
-                                        FieldId="weekends"
-                                        Values="_formModel.SelectedWeekends"
-                                        ValuesChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
-                                        Items="Enum.GetValues<DayOfWeek>()"
-                                        TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
-                                        ValueSelector="i => i"/>
-                                </Content>
-                            </FormFieldSet>
+                            <MultiSelectList
+                                Label="@Resources[Messages.Constructor_WeekendsLabel]"
+                                Values="_formModel.SelectedWeekends"
+                                ValuesChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
+                                Items="Enum.GetValues<DayOfWeek>()"
+                                TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
+                                ValueSelector="i => i"/>
                         </Content>
                     </FormSection>
                     <FormSection
@@ -93,7 +87,7 @@
                                             <button
                                                 type="button"
                                                 class="button button_dark button_small work-schedule__button"
-                                                @onclick="() => _formModel.Holidays.Remove(holiday)">
+                                                @onclick="() => _formModel.RemoveHoliday(holiday)">
                                                 <TrashIcon Size="20px" Color="#000"/>
                                             </button>
                                         </div>

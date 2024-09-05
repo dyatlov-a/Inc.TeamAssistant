@@ -1,6 +1,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
 
-@inherits InputBase<List<Guid>>
+@inherits InputBase<IEnumerable<Guid>>
 
 @inject DragAndDropService<Guid> DragAndDropService
 @inject ResourcesManager ResourcesManager
@@ -79,6 +79,9 @@
     [Parameter, EditorRequired]
     public string RemoveText { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public EventCallback<IEnumerable<Guid>> ValuesChanged { get; set; }
+    
     [Parameter]
     public string? FeaturesAvailableEmptyText { get; set; }
     
@@ -88,14 +91,22 @@
     [Parameter]
     public RenderFragment? Validation { get; set; }
     
+    private readonly List<Guid> _values = new();
     private string _availableFeaturesCssClass = string.Empty;
     private string _selectedFeaturesCssClass = string.Empty;
     private IEnumerable<FeatureDto> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
     private IEnumerable<FeatureDto> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
 
+    protected override void OnParametersSet()
+    {
+        _values.Clear();
+        if (CurrentValue is not null)
+            _values.AddRange(CurrentValue);
+    }
+
     protected override bool TryParseValueFromString(
         string? value,
-        out List<Guid> result,
+        out IEnumerable<Guid> result,
         out string validationErrorMessage)
     {
         throw new NotImplementedException();
@@ -112,23 +123,22 @@
         _ => typeof(UnknownIcon)
     };
 
-    private void ToggleFeature(Guid id)
+    private async Task ToggleFeature(Guid id)
     {
-        if (CurrentValue is null)
-            return;
-
-        if (CurrentValue.Contains(id))
-            CurrentValue.Remove(id);
+        if (_values.Contains(id))
+            _values.Remove(id);
         else
-            CurrentValue.Add(id);
+            _values.Add(id);
+
+        await ValuesChanged.InvokeAsync(_values);
     }
     
-    private void HandleDrop(IEnumerable<FeatureDto> features)
+    private async Task HandleDrop(IEnumerable<FeatureDto> features)
     {
         var featureId = DragAndDropService.End();
         
         if (features.All(f => f.Id != featureId))
-            ToggleFeature(featureId);
+            await ToggleFeature(featureId);
         
         _availableFeaturesCssClass = string.Empty;
         _selectedFeaturesCssClass = string.Empty;
