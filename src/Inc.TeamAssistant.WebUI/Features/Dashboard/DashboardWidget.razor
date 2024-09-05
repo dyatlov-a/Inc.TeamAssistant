@@ -1,17 +1,7 @@
 <div class="dashboard-widgets__widget">
     <div class="dashboard-widgets__content">
-        @if (HasChart)
-        {
-            <div class="dashboard-widgets__chart">
-                <h2 class="dashboard-widgets__title">@Title</h2>
-                @Content
-            </div>
-        }
-        else
-        {
-            <h2 class="dashboard-widgets__title">@Title</h2>
-            @Content
-        }
+        <h2 class="dashboard-widgets__title">@Title</h2>
+        @Content
     </div>
 </div>
 
@@ -21,7 +11,4 @@
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
-    
-    [Parameter]
-    public bool HasChart { get; set; }
 }

@@ -11,12 +11,6 @@
     padding: 10px 0;
     height: 100%;
 }
-.dashboard-widgets__chart {
-    width: 98%;
-    margin-left: 1%;
-    height: 100%;
-    min-height: 150px;
-}
 ::deep .loading {
     height: calc(100% - 30px);
 }
