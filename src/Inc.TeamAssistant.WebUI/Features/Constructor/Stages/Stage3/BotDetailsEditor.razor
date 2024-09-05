@@ -7,7 +7,7 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_BotDetails]" Opened="Load">
+    <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
         <Actions>
             <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
         </Actions>
@@ -37,6 +37,7 @@
     [Parameter, EditorRequired]
     public IReadOnlyCollection<string> SupportedLanguages { get; set; } = Array.Empty<string>();
     
+    private bool _isOpen;
     private readonly BotDetailsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
@@ -49,6 +50,7 @@
 
     private async Task Load()
     {
+        _isOpen = true;
         _state = await RequestProcessor.Process(
             async () =>
             {
@@ -62,6 +64,8 @@
                 _state = RequestState.Done();
                 StateHasChanged();
             });
+        
+        StateHasChanged();
     }
     
     public async Task SubmitForm()

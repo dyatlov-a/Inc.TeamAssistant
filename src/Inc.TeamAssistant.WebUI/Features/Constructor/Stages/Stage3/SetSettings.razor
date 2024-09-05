@@ -5,7 +5,7 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.GetStageTitle(Stage.SetSettings)]" IsOpen="true">
+    <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
         <Actions>
             <button type="submit" class="button button_light">
                 @Resources[Messages.Constructor_MoveNextTitle]
@@ -78,7 +78,7 @@
         </Content>
     </Panel>
 </EditForm>
-<CalendarEditor Selected="SelectedCalendar">
+<CalendarEditor Selected="SelectedCalendar" IsOpen="!_formModel.CalendarId.HasValue">
     <Validation>
         <ValidationMessage For="@(() => _formModel.CalendarId)"/>
     </Validation>
@@ -97,7 +97,7 @@
 
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
-
+    
     private readonly SetSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;

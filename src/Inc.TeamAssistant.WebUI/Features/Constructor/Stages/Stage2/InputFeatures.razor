@@ -4,6 +4,7 @@
 
 @inject DragAndDropService<Guid> DragAndDropService
 @inject ResourcesManager ResourcesManager
+@inject FeaturesFactory FeaturesFactory
 
 <div class="input-features">
     <div
@@ -19,8 +20,8 @@
                 <FeatureCard
                     FeatureId="feature.Id"
                     Icon="@FeatureType(feature.Name)"
-                    Title="@GetFeatureMessage(feature.Name, "Name")"
-                    Description="@GetFeatureMessage(feature.Name, "Description")">
+                    Title="@FeaturesFactory.CreateName(feature.Name)"
+                    Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
                         <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
                             @AddText
@@ -47,8 +48,8 @@
                 <FeatureCard
                     FeatureId="feature.Id"
                     Icon="@FeatureType(feature.Name)"
-                    Title="@GetFeatureMessage(feature.Name, "Name")"
-                    Description="@GetFeatureMessage(feature.Name, "Description")">
+                    Title="@FeaturesFactory.CreateName(feature.Name)"
+                    Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
                         <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
                             @RemoveText
@@ -101,13 +102,6 @@
     }
 
     private bool IsSelected(Guid id) => CurrentValue?.Contains(id) == true;
-
-    private string GetFeatureMessage(string featureName, string propertyName)
-    {
-        var messageId = Messages.GetFeatureProperty(featureName, propertyName);
-        
-        return ResourcesManager[messageId];
-    }
 
     private Type FeatureType(string featureName) => featureName switch
     {

@@ -6,21 +6,20 @@
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
+@inject FeaturesFactory FeaturesFactory
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.GetStageTitle(Stage.Complete)]" IsOpen="true">
+    <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">
-                @Resources[StagesState.Id.HasValue ? Messages.Constructor_ButtonUpdateText : Messages.Constructor_ButtonCreateText]
-            </button>
+            <button type="submit" class="button button_light">@ButtonText</button>
         </Actions>
         <Content>
             <Loading State="_state">
                 <Content>
                     <ValidationSummary />
                     <FormSection
-                        Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]"
+                        Title="@Resources[Messages.Constructor_ConnectingTelegram]"
                         HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
                         <Content>
                             <a
@@ -44,7 +43,7 @@
                         </Content>
                     </FormSection>
                     <FormSection
-                        Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]"
+                        Title="@Resources[Messages.Constructor_FeaturesStore]"
                         HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
                         <Content>
                             <a
@@ -63,7 +62,7 @@
 
                                 <FormFieldSet
                                     FieldId="@fieldId"
-                                    Label="@Resources[Messages.GetFeatureProperty(feature.Name, "Name")]">
+                                    Label="@FeaturesFactory.CreateName(feature.Name)">
                                     <Content>
                                         <input
                                             type="text"
@@ -136,6 +135,14 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
 
+    private string ButtonText => Resources[StagesState.Id.HasValue
+        ? Messages.Constructor_ButtonUpdateText
+        : Messages.Constructor_ButtonCreateText];
+    
+    private string PanelHeader => string.Format(
+        Resources[Messages.Constructor_CheckConfigurationTemplate],
+        ButtonText.ToLowerInvariant());
+    
     private readonly CompleteFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;

@@ -6,7 +6,7 @@
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load">
+    <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load" IsOpen="_isOpen">
         <Actions>
             <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
         </Actions>
@@ -58,7 +58,7 @@
                                             <span
                                                 class="multiselect__item @CssClass(day)"
                                                 @onclick="() => _formModel.ToggleWeekend(day)">
-                                                @Resources[Messages.GetDayOfWeekTitle(day)]
+                                                @Resources[GetDayOfWeekTitle(day)]
                                             </span>
                                         }
                                     </div>
@@ -126,6 +126,10 @@
     [Parameter, EditorRequired]
     public RenderFragment Validation { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+
+    private bool _isOpen;
     private readonly CalendarFromModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
@@ -135,11 +139,18 @@
     {
         _editContext = EditContextFactory.Create(_formModel);
     }
-    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsOpen)
+            await Load();
+    }
+
     private async Task Load()
     {
         var clientTimezoneOffset = await JsRuntime.Execute<int>(JsFunctions.GetTimezone());
         
+        _isOpen = true;
         _state = await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
             nameof(CalendarEditor),
@@ -149,11 +160,14 @@
                     _formModel.Apply(clientTimezoneOffset);
                 else
                     _formModel.Apply(r, clientTimezoneOffset);
-                
                 _state = RequestState.Done();
                 StateHasChanged();
             });
+        
+        StateHasChanged();
     }
+    
+    private string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
     
     private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
         ? "multiselect__item_selected"

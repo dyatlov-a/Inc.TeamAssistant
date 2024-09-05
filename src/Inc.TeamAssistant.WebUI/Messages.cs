@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
-
 namespace Inc.TeamAssistant.WebUI;
 
 internal static class Messages
@@ -98,8 +96,12 @@ internal static class Messages
     public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
     public static readonly string Constructor_ConnectingTelegram = nameof(Constructor_ConnectingTelegram);
     public static readonly string Constructor_WorkCalendar = nameof(Constructor_WorkCalendar);
+    public static readonly string Constructor_BotDetailsTelegram = nameof(Constructor_BotDetailsTelegram);
     public static readonly string Constructor_BotDetails = nameof(Constructor_BotDetails);
-    public static readonly string Constructor_BotDetailsHelp = nameof(Constructor_BotDetails);
+    public static readonly string Constructor_BotDetailsHelp = nameof(Constructor_BotDetailsHelp);
+    public static readonly string Constructor_FeaturesStore = nameof(Constructor_FeaturesStore);
+    public static readonly string Constructor_Configuration = nameof(Constructor_Configuration);
+    public static readonly string Constructor_CheckConfigurationTemplate = nameof(Constructor_CheckConfigurationTemplate);
 
     public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);
@@ -214,9 +216,4 @@ internal static class Messages
     
     public static readonly string PanelOpen = nameof(PanelOpen);
     public static readonly string PanelSave = nameof(PanelSave);
-    
-    public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
-    public static string GetFeatureProperty(string featureName, string propertyName)
-        => $"Constructor_Feature{featureName}{propertyName}";
-    public static string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
 }

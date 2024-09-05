@@ -26,3 +26,8 @@
         margin: 0;
     }
 }
+@media (max-width: 479.98px) {
+    .work-schedule__item {
+        flex: 0 1 100%;
+    }
+}
