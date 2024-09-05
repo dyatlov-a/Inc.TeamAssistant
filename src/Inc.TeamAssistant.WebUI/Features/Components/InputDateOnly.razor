@@ -5,43 +5,31 @@
     Label="@Label">
     <Content>
         <div class="time-selector__years">
-            <InputSelect
-                id="@FieldId"
+            <SelectList
+                FieldId="@($"{FieldId}-year")"
                 Value="_selectedYear"
-                ValueExpression="@(() => _selectedYear)"
                 ValueChanged="@((int i) => SelectYear(i))"
-                class="form-control">
-                @foreach (var year in _years)
-                {
-                    <option value="@year.Value">@year.Text</option>
-                }
-            </InputSelect>
+                Items="_years"
+                TitleSelector="i => i.Text"
+                ValueSelector="i => i.Value" />
         </div>
         <div class="time-selector__months">
-            <InputSelect
-                id="@($"{FieldId}-month")"
+            <SelectList
+                FieldId="@($"{FieldId}-month")"
                 Value="_selectedMonth"
-                ValueExpression="@(() => _selectedMonth)"
                 ValueChanged="@((int i) => SelectMonth(i))"
-                class="form-control">
-                @foreach (var month in _months)
-                {
-                    <option value="@month.Value">@month.Text</option>
-                }
-            </InputSelect>
+                Items="_months"
+                TitleSelector="i => i.Text"
+                ValueSelector="i => i.Value" />
         </div>
         <div class="time-selector__days">
-            <InputSelect
-                id="@($"{FieldId}-day")"
+            <SelectList
+                FieldId="@($"{FieldId}-day")"
                 Value="_selectedDay"
-                ValueExpression="@(() => _selectedDay)"
                 ValueChanged="@((int i) => SelectDay(i))"
-                class="form-control">
-                @foreach (var day in Days)
-                {
-                    <option value="@day.Value">@day.Text</option>
-                }
-            </InputSelect>
+                Items="Days"
+                TitleSelector="i => i.Text"
+                ValueSelector="i => i.Value" />
         </div>
     </Content>
 </FormFieldSet>

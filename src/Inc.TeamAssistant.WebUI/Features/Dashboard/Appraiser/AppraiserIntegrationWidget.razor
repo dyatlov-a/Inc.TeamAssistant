@@ -50,33 +50,14 @@
                         FieldId="scrum-master"
                         Label="@Resources[Messages.Dashboard_AppraiserIntegrationScrumMasterLabel]">
                         <Content>
-                            @if (_formModel.IsDisableControls)
-                            {
-                                <InputSelect
-                                    id="scrum-master"
-                                    @bind-Value="_formModel.ScrumMasterId"
-                                    class="form-control"
-                                    disabled="disabled">
-                                    <option value=""></option>
-                                    @foreach (var teammate in _formModel.Teammates)
-                                    {
-                                        <option value="@teammate.Id">@teammate.DisplayName</option>
-                                    }
-                                </InputSelect>
-                            }
-                            else
-                            {
-                                <InputSelect
-                                    id="scrum-master"
-                                    @bind-Value="_formModel.ScrumMasterId"
-                                    class="form-control">
-                                    <option value=""></option>
-                                    @foreach (var teammate in _formModel.Teammates)
-                                    {
-                                        <option value="@teammate.Id">@teammate.Name</option>
-                                    }
-                                </InputSelect>
-                            }
+                            <SelectList
+                                FieldId="scrum-master"
+                                Value="_formModel.ScrumMasterId"
+                                ValueChanged="@((long v) => _formModel.ScrumMasterId = v)"
+                                Items="_formModel.Teammates"
+                                TitleSelector="i => i.DisplayName"
+                                ValueSelector="i => i.Id"
+                                IsDisabled="_formModel.IsDisableControls" />
                             <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
                         </Content>
                     </FormFieldSet>

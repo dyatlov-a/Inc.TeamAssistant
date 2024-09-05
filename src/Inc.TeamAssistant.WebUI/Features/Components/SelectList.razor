@@ -1,0 +1,67 @@
+@typeparam TValue
+@typeparam TItem
+
+@if (IsDisabled)
+{
+    <InputSelect
+        id="@FieldId"
+        Value="Value"
+        ValueExpression="@(() => Value)"
+        class="form-control"
+        disabled="disabled">
+        @if (HasEmptyValue)
+        {
+            <option value=""></option>
+        }
+        @foreach (var item in Items)
+        {
+            <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+        }
+    </InputSelect>
+}
+else
+{
+    <InputSelect
+        id="@FieldId"
+        Value="Value"
+        ValueExpression="@(() => Value)"
+        ValueChanged="@((TValue v) => ChangeValue(v))"
+        class="form-control">
+        @if (HasEmptyValue)
+        {
+            <option value=""></option>
+        }
+        @foreach (var item in Items)
+        {
+            <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+        }
+    </InputSelect>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public TValue Value { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public EventCallback<TValue> ValueChanged { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<TItem, string> TitleSelector { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<TItem, TValue> ValueSelector { get; set; } = default!;
+    
+    [Parameter]
+    public bool IsDisabled { get; set; }
+    
+    [Parameter]
+    public bool HasEmptyValue { get; set; }
+
+    private Task ChangeValue(TValue value) => ValueChanged.InvokeAsync(value);
+}

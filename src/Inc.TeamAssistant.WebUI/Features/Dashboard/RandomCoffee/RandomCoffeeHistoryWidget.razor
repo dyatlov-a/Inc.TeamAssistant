@@ -7,17 +7,13 @@
 <Loading State="_state">
     <Content>
         <div class="chat-selector">
-            <InputSelect
-                id="chat-selector"
+            <SelectList
+                FieldId="chat-selector"
                 Value="_formModel.ChatId"
-                ValueExpression="@(() => _formModel.ChatId)"
                 ValueChanged="@((long? v) => SelectChat(v))"
-                class="form-control">
-                @foreach (var chat in _formModel.Chats)
-                {
-                    <option value="@chat.Id">@chat.Name</option>
-                }
-            </InputSelect>
+                Items="_formModel.Chats"
+                TitleSelector="i => i.Name"
+                ValueSelector="i => i.Id" />
         </div>
         <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
         <QuickGrid Items="@Pairs" class="quick-data-grid">
@@ -54,10 +50,7 @@
         .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yyyy-MM-dd"), i.Created))
         .ToArray();
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await Load();
-    }
+    protected override Task OnParametersSetAsync() => Load();
     
     private async Task Load(long? chatId = null)
     {

@@ -7,12 +7,13 @@
     <Content>
         <div class="component-container">
             <div class="map-selector">
-                <InputSelect id="map-selector" @bind-Value="_formModel.MapId" class="form-control">
-                    @foreach (var map in _formModel.Maps)
-                    {
-                        <option value="@map.Id">@map.Name</option>
-                    }
-                </InputSelect>
+                <SelectList
+                    FieldId="map-selector"
+                    Value="_formModel.MapId"
+                    ValueChanged="@((Guid? v) => _formModel.MapId = v)"
+                    Items="_formModel.Maps"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
             </div>
             @if (_formModel.MapId.HasValue)
             {

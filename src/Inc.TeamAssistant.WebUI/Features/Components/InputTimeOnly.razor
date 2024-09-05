@@ -5,30 +5,22 @@
     Label="@Label">
     <Content>
         <div class="time-selector__hours">
-            <InputSelect
-                id="@FieldId"
+            <SelectList
+                FieldId="@($"{FieldId}-hour")"
                 Value="_selectedHours"
-                ValueExpression="@(() => _selectedHours)"
                 ValueChanged="@((int i) => SelectHour(i))"
-                class="form-control">
-                @foreach (var hour in _hours)
-                {
-                    <option value="@hour.Value">@hour.Text</option>
-                }
-            </InputSelect>
+                Items="_hours"
+                TitleSelector="i => i.Text"
+                ValueSelector="i => i.Value" />
         </div>
         <div class="time-selector__minutes">
-            <InputSelect
-                id="@($"{FieldId}-minutes")"
+            <SelectList
+                FieldId="@($"{FieldId}-minute")"
                 Value="_selectedMinutes"
-                ValueExpression="@(() => _selectedMinutes)"
                 ValueChanged="@((int i) => SelectMinutes(i))"
-                class="form-control">
-                @foreach (var minute in _minutes)
-                {
-                    <option value="@minute.Value">@minute.Text</option>
-                }
-            </InputSelect>
+                Items="_minutes"
+                TitleSelector="i => i.Text"
+                ValueSelector="i => i.Value" />
         </div>
     </Content>
 </FormFieldSet>

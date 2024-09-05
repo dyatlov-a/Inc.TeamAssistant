@@ -35,15 +35,13 @@
                                     FieldId="@settingItem.PropertyName"
                                     Label="@Resources[settingItem.LabelMessageId]">
                                     <Content>
-                                        <InputSelect
-                                            id="@settingItem.PropertyName"
-                                            @bind-Value="property.Value"
-                                            class="form-control">
-                                            @foreach (var value in settingItem.Values)
-                                            {
-                                                <option value="@value.Value">@Resources[value.MessageId]</option>
-                                            }
-                                        </InputSelect>
+                                        <SelectList
+                                            FieldId="@settingItem.PropertyName"
+                                            Value="property.Value"
+                                            ValueChanged="@((string v) => property.Value = v)"
+                                            Items="settingItem.Values"
+                                            TitleSelector="i => Resources[i.MessageId]"
+                                            ValueSelector="i => i.Value" />
                                         <ValidationMessage For="@(() => property.Value)"/>
                                     </Content>
                                 </FormFieldSet>
