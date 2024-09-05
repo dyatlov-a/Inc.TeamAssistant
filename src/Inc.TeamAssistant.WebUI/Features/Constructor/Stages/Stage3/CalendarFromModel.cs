@@ -54,12 +54,10 @@ public sealed class CalendarFromModel
         AddHoliday(date.AddDays(1), isWorkday: false);
     }
     
-    public void ToggleWeekend(DayOfWeek item)
+    public void SetWeekends(IEnumerable<DayOfWeek> items)
     {
-        if (SelectedWeekends.Contains(item))
-            SelectedWeekends.Remove(item);
-        else
-            SelectedWeekends.Add(item);
+        SelectedWeekends.Clear();
+        SelectedWeekends.AddRange(items);
     }
 
     public UpdateCalendarCommand ToCommand()

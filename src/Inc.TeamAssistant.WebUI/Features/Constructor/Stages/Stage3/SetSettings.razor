@@ -58,16 +58,13 @@
                         FieldId="supported-languages"
                         Label="@Resources[Messages.Constructor_Languages]">
                         <Content>
-                            <div id="supported-languages" class="form-control enabled">
-                                @foreach (var languageId in LanguageSettings.LanguageIds)
-                                {
-                                    <span
-                                        class="multiselect__item @CssClass(languageId)"
-                                        @onclick="() => _formModel.ToggleLanguage(languageId)">
-                                        @languageId.Value
-                                    </span>
-                                }
-                            </div>
+                            <MultiSelectList
+                                FieldId="supported-languages"
+                                Values="_formModel.SupportedLanguages"
+                                ValuesChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
+                                Items="LanguageSettings.LanguageIds"
+                                TitleSelector="i => i.Value"
+                                ValueSelector="i => i.Value"/>
                             <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
                         </Content>
                     </FormFieldSet>
@@ -104,10 +101,6 @@
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
     }
-
-    private string CssClass(LanguageId languageId) => _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
-        ? "multiselect__item_selected"
-        : string.Empty;
 
     private async Task SelectedCalendar(Guid calendarId)
     {

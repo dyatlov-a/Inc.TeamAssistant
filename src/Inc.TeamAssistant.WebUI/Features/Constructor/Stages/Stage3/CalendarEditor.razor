@@ -52,16 +52,13 @@
                                 FieldId="weekends"
                                 Label="@Resources[Messages.Constructor_WeekendsLabel]">
                                 <Content>
-                                    <div id="weekends" class="form-control enabled">
-                                        @foreach (var day in Enum.GetValues<DayOfWeek>())
-                                        {
-                                            <span
-                                                class="multiselect__item @CssClass(day)"
-                                                @onclick="() => _formModel.ToggleWeekend(day)">
-                                                @Resources[GetDayOfWeekTitle(day)]
-                                            </span>
-                                        }
-                                    </div>
+                                    <MultiSelectList
+                                        FieldId="weekends"
+                                        Values="_formModel.SelectedWeekends"
+                                        ValuesChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
+                                        Items="Enum.GetValues<DayOfWeek>()"
+                                        TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
+                                        ValueSelector="i => i"/>
                                 </Content>
                             </FormFieldSet>
                         </Content>
@@ -168,10 +165,6 @@
     }
     
     private string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
-    
-    private string CssClass(DayOfWeek item) => _formModel.SelectedWeekends.Contains(item)
-        ? "multiselect__item_selected"
-        : string.Empty;
     
     public async Task SubmitForm()
     {

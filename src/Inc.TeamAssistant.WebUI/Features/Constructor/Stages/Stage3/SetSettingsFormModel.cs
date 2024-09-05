@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives.FeatureProperties;
-using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Features.Components;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
@@ -29,13 +28,9 @@ public sealed class SetSettingsFormModel
         return this;
     }
     
-    public void ToggleLanguage(LanguageId languageId)
+    public void SetLanguages(IEnumerable<string> languageIds)
     {
-        var languageCode = languageId.Value;
-        
-        if (SupportedLanguages.Contains(languageCode, StringComparer.InvariantCultureIgnoreCase))
-            SupportedLanguages.Remove(languageCode);
-        else
-            SupportedLanguages.Add(languageCode);
+        SupportedLanguages.Clear();
+        SupportedLanguages.AddRange(languageIds);
     }
 }

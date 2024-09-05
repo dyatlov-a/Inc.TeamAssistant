@@ -183,20 +183,6 @@ html {
     font-size: 1rem;
     color: #dc3545;
 }
-.multiselect__item {
-    display: inline-block;
-    padding: 3px 10px;
-    margin-right: 5px;
-}
-.multiselect__item_selected {
-    background-color: #555;
-    color: #dfdfdf;
-}
-.form-control.enabled .multiselect__item_selected, .form-control.enabled .multiselect__item:hover {
-    background-color: #555;
-    color: #dfdfdf;
-    cursor: pointer;
-}
 /* ROOT COMPONENTS */
 .title {
     font-size: 2.4rem;

@@ -1,0 +1,60 @@
+@typeparam TValue
+@typeparam TItem
+
+<div id="@FieldId" class="form-control @CssClass()">
+    @foreach (var item in Items)
+    {
+        var value = ValueSelector(item);
+        
+        <span
+            class="multiselect__item @CssClass(value)"
+            @onclick="() => ChangeValue(value)">
+            @TitleSelector(item)
+        </span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public IEnumerable<TValue> Values { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public EventCallback<IEnumerable<TValue>> ValuesChanged { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<TItem, string> TitleSelector { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<TItem, TValue> ValueSelector { get; set; } = default!;
+    
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    private readonly List<TValue> _values = new();
+
+    protected override void OnParametersSet()
+    {
+        _values.Clear();
+        _values.AddRange(Values);
+    }
+
+    private string CssClass() => IsDisabled ? "disabled" : "enabled";
+    
+    private string CssClass(TValue value) => _values.Contains(value) ? "multiselect__item_selected" : string.Empty;
+
+    private Task ChangeValue(TValue value)
+    {
+        if (_values.Contains(value))
+            _values.Remove(value);
+        else
+            _values.Add(value);
+        
+        return ValuesChanged.InvokeAsync(_values);
+    }
+}
