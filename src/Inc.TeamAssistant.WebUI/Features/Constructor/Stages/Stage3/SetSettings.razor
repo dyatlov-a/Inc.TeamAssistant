@@ -1,6 +1,5 @@
 @using Inc.TeamAssistant.Primitives.Languages
 
-@inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 
@@ -26,7 +25,7 @@
                         <Content>
                             @foreach (var settingItem in settingSection.SettingItems)
                             {
-                                var property = _formModel.Properties.SingleOrDefault(p => p.Name.Equals(
+                                var property = _formModel.Properties.SingleOrDefault(p => p.Title.Equals(
                                     settingItem.PropertyName,
                                     StringComparison.InvariantCultureIgnoreCase));
                                 if (property is null)
@@ -92,19 +91,22 @@
     
     [Parameter, EditorRequired]
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
-    
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
-    
+
     private readonly SetSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    
+
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
     }
-    
+
     private string CssClass(LanguageId languageId) => _formModel.SupportedLanguages.Contains(languageId.Value, StringComparer.InvariantCultureIgnoreCase)
         ? "multiselect__item_selected"
         : string.Empty;
@@ -114,7 +116,7 @@
         var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
         await dataEditor.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
-    
+
     private async Task SubmitForm()
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
@@ -122,7 +124,7 @@
 
         var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
         await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
-        
-        NavigationManager.NavigateTo(LinkFactory(Stage.Complete));
+
+        await MoveToNext(Stage.Complete);
     }
 }

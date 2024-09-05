@@ -1,8 +1,7 @@
-@inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
 
 <div class="nav-stages">
-    @foreach (var stage in Stages)
+    @foreach (var stage in _stages)
     {
         <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
             @Resources[Messages.GetStageTitle(stage)]
@@ -15,9 +14,9 @@
     public Stage Current { get; set; }
     
     [Parameter, EditorRequired]
-    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
 
-    private IReadOnlyCollection<Stage> Stages => Enum.GetValues<Stage>();
+    private IReadOnlyCollection<Stage> _stages = Enum.GetValues<Stage>();
     
     private bool CanMove(Stage stage) => Current > stage;
 
@@ -31,7 +30,7 @@
     {
         if (!CanMove(stage))
             return;
-        
-        NavigationManager.NavigateTo(LinkFactory(stage));
+
+        MoveToNext(stage);
     }
 }

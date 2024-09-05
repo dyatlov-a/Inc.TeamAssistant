@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
-namespace Inc.TeamAssistant.WebUI.Services.Requests;
+namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 public sealed class RequestProcessor : IDisposable
 {
@@ -44,6 +44,23 @@ public sealed class RequestProcessor : IDisposable
         await ForegroundEnding(request, key, onLoaded);
         
         return RequestState.Done();
+    }
+    
+    public async Task<RequestState> Process(Func<Task> request, Action onLoaded)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(onLoaded);
+
+        await BackgroundEnding(async () =>
+        {
+            await request();
+            return true;
+        }, _ =>
+        {
+            onLoaded();
+        });
+            
+        return RequestState.Loading();
     }
 
     private Task BackgroundEnding<TResponse>(Func<Task<TResponse>> request, Action<TResponse> onLoaded)

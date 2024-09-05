@@ -1,11 +1,11 @@
 .panel {
     margin-top: 30px;
-    background-color: #555;
 }
 .panel__header {
     display: flex;
     align-items: center;
     padding: 10px;
+    background-color: #555;
 }
 .panel__header-text {
     flex: 1;

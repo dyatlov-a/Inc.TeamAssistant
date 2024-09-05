@@ -1,12 +1,12 @@
 @page "/constructor/{BotId:guid}"
 @page "/en/constructor/{BotId:guid}"
 @page "/ru/constructor/{BotId:guid}"
-@page "/constructor/{Selected}"
-@page "/en/constructor/{Selected}"
-@page "/ru/constructor/{Selected}"
-@page "/constructor/{BotId:guid}/{Selected}"
-@page "/en/constructor/{BotId:guid}/{Selected}"
-@page "/ru/constructor/{BotId:guid}/{Selected}"
+@page "/constructor/{SelectedStage}"
+@page "/en/constructor/{SelectedStage}"
+@page "/ru/constructor/{SelectedStage}"
+@page "/constructor/{BotId:guid}/{SelectedStage}"
+@page "/en/constructor/{BotId:guid}/{SelectedStage}"
+@page "/ru/constructor/{BotId:guid}/{SelectedStage}"
 
 @attribute [Authorize]
 
@@ -16,43 +16,46 @@
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
+@inject IJSRuntime JsRuntime
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
     MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
 
-<Loading State="_state" IsFullscreen="true">
-    <Content>
-        <div class="constructor">
-            <div class="constructor__container">
-                <div class="constructor__nav">
-                    <NavigationStages Current="CurrentState" LinkFactory="LinkFactory" />
-                </div>
-                <h1 class="title">@Resources[Messages.Constructor_Title] @BotName</h1>
-                <DynamicComponent Type="StageType" Parameters="StageParameters"/>
-            </div>
+<div class="constructor">
+    <div class="constructor__container">
+        <div class="constructor__nav">
+            <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
         </div>
-    </Content>
-</Loading>
+        <h1 class="constructor__title title">@Resources[Messages.Constructor_Title] @BotName</h1>
+        @if (RenderContext.IsBrowser)
+        {
+            <Loading State="_state">
+                <Content>
+                    <DynamicComponent Type="StageType" Parameters="StageParameters"/>
+                </Content>
+            </Loading>
+        }
+    </div>
+</div>
 
 @code {
     [Parameter]
     public Guid? BotId { get; set; }
 
     [Parameter]
-    public string Selected { get; set; } = default!;
+    public string SelectedStage { get; set; } = default!;
     
-    private RequestState _state = RequestState.Done();
+    private RequestState _state = RequestState.Loading();
     private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
     private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
         ? string.Empty
         : $"@{_stagesState.UserName}";
-    private Stage CurrentState => Enum.TryParse<Stage>(Selected, ignoreCase: true, out var value)
-        ? value
-        : Enum.GetValues<Stage>().First();
-    private Type StageType => CurrentState switch
+
+    private Stage _currentState = Enum.GetValues<Stage>().First();
+    private Type StageType => _currentState switch
     {
         Stage.SelectFeatures => typeof(SelectFeatures),
         Stage.SetSettings => typeof(SetSettings),
@@ -63,11 +66,15 @@
     {
         ["StagesState"] = _stagesState,
         ["LinkFactory"] = (object)LinkFactory,
+        ["MoveToNext"] = (object)MoveToNext,
         ["BotStorageKey"] = BotStorageKey
     };
     
     protected override async Task OnParametersSetAsync()
     {
+        if (Enum.TryParse<Stage>(SelectedStage, ignoreCase: true, out var value))
+            _currentState = value;
+        
         if (RenderContext.IsBrowser)
         {
             var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
@@ -99,6 +106,16 @@
                 _state = RequestState.Done();
                 StateHasChanged();
             });
+    }
+
+    private async Task MoveToNext(Stage? stage)
+    {
+        var url = LinkFactory(stage);
+        
+        _currentState = stage ?? Enum.GetValues<Stage>().First();
+        StateHasChanged();
+        
+        await JsRuntime.InvokeVoidAsync("window.browserJsFunctions.changeUrl", url);
     }
 
     private string LinkFactory(Stage? stage)

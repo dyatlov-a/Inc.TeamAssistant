@@ -36,7 +36,7 @@ public sealed class StagesState
         new Dictionary<string, string>(),
         Array.Empty<FeatureDto>(),
         new Dictionary<string, IReadOnlyCollection<SettingSection>>());
-    
+
     public StagesState(
         Guid? id,
         Guid? calendarId,
@@ -138,7 +138,7 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        Properties = formModel.Properties.ToDictionary(v => v.Name, v => v.Value);
+        Properties = formModel.Properties.ToDictionary(v => v.Title, v => v.Value);
         SupportedLanguages = formModel.SupportedLanguages.ToArray();
         
         return this;

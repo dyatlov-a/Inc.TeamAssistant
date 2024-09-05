@@ -131,6 +131,19 @@
     }
 
     protected override Task OnParametersSetAsync() => Load();
+    
+    private async Task Load()
+    {
+        _state = await RequestProcessor.Process(
+            () => IntegrationService.GetTeamProperties(TeamId),
+            nameof(AppraiserIntegrationWidget),
+            r =>
+            {
+                _formModel.Apply(r);
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
+    }
 
     private void BeginDisable() => _confirmDialog?.Open();
 
@@ -150,27 +163,17 @@
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-
-        await IntegrationService.SetTeamProperties(new SetIntegrationPropertiesCommand(
-            TeamId,
-            _formModel.ProjectKey,
-            _formModel.ScrumMasterId));
         
-        await Load();
-        
-        _editContext = EditContextFactory.Create(_formModel);
-    }
-
-    private async Task Load()
-    {
         _state = await RequestProcessor.Process(
-            () => IntegrationService.GetTeamProperties(TeamId),
-            nameof(AppraiserIntegrationWidget),
-            r =>
+            async () =>
             {
-                _formModel.Apply(r);
-                _state = RequestState.Done();
-                StateHasChanged();
-            });
+                await IntegrationService.SetTeamProperties(new SetIntegrationPropertiesCommand(
+                    TeamId,
+                    _formModel.ProjectKey,
+                    _formModel.ScrumMasterId));
+
+                await Load();
+            },
+            () => { });
     }
 }

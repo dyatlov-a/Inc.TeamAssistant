@@ -50,8 +50,8 @@
 
     private RequestState _state = RequestState.Done();
     private RandomCoffeeHistoryWidgetFormModel _formModel = new();
-    private IReadOnlyCollection<DateSelectorItem> DateItems => _formModel.HistoryItems
-        .Select(i => new DateSelectorItem(i.Created.ToString("yyyy-MM-dd"), i.Created))
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
+        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yyyy-MM-dd"), i.Created))
         .ToArray();
 
     protected override async Task OnParametersSetAsync()

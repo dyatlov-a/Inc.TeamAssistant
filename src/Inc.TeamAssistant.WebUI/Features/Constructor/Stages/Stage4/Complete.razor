@@ -2,7 +2,6 @@
 @using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
-@inject NavigationManager NavigationManager
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
@@ -20,12 +19,20 @@
             <Loading State="_state">
                 <Content>
                     <ValidationSummary />
-                    <FormSection Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]" HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
+                    <FormSection
+                        Title="@Resources[Messages.GetStageTitle(Stage.CheckBot)]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
                         <Content>
-                            <a href="@LinkFactory(Stage.CheckBot)" class="link link_dark constructor__edit-link">
+                            <a
+                                href="@LinkFactory(Stage.CheckBot)"
+                                class="link link_dark constructor__edit-link"
+                                @onclick="() => MoveToNext(Stage.CheckBot)"
+                                @onclick:preventDefault="true">
                                 @Resources[Messages.Constructor_Edit]
                             </a>
-                            <FormFieldSet FieldId="bot-username" Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                            <FormFieldSet
+                                FieldId="bot-username"
+                                Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                                 <Content>
                                     <InputText
                                         @bind-Value="_formModel.UserName"
@@ -36,9 +43,15 @@
                             </FormFieldSet>
                         </Content>
                     </FormSection>
-                    <FormSection Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]" HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                    <FormSection
+                        Title="@Resources[Messages.GetStageTitle(Stage.SelectFeatures)]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
                         <Content>
-                            <a href="@LinkFactory(Stage.SelectFeatures)" class="link link_dark constructor__edit-link">
+                            <a
+                                href="@LinkFactory(Stage.SelectFeatures)"
+                                class="link link_dark constructor__edit-link"
+                                @onclick="() => MoveToNext(Stage.SelectFeatures)"
+                                @onclick:preventDefault="true">
                                 @Resources[Messages.Constructor_Edit]
                             </a>
                             @foreach (var feature in StagesState.AvailableFeatures)
@@ -74,7 +87,11 @@
                                 Title="@Resources[settingSection.HeaderMessageId]"
                                 HelpText="@Resources[settingSection.HelpMessageId]">
                                 <Content>
-                                    <a href="@LinkFactory(Stage.SetSettings)" class="link link_dark constructor__edit-link">
+                                    <a
+                                        href="@LinkFactory(Stage.SetSettings)"
+                                        class="link link_dark constructor__edit-link"
+                                        @onclick="() => MoveToNext(Stage.SetSettings)"
+                                        @onclick:preventDefault="true">
                                         @Resources[Messages.Constructor_Edit]
                                     </a>
                                     @foreach (var settingItem in settingSection.SettingItems)
@@ -114,6 +131,9 @@
     public Func<Stage?, string> LinkFactory { get; set; } = default!;
     
     [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
 
     private readonly CompleteFormModel _formModel = new();
@@ -128,7 +148,9 @@
 
     private string GetValueAsText(SettingItem settingItem, string value)
     {
-        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(value, StringComparison.InvariantCultureIgnoreCase));
+        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(
+            value,
+            StringComparison.InvariantCultureIgnoreCase));
         
         return item is null ? string.Empty : Resources[item.MessageId];
     }
@@ -162,13 +184,11 @@
                         _formModel.SupportedLanguages));
 
                 await dataEditor.Detach(BotStorageKey);
-                return RequestIdle.Idle;
             },
-            nameof(Complete),
-            _ =>
+            () =>
             {
                 _state = RequestState.Done();
-                NavigationManager.NavigateTo(LinkFactory(null));
+                MoveToNext(null);
             });
     }
 }

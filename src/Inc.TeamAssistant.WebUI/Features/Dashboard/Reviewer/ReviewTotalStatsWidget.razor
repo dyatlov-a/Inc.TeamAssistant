@@ -60,12 +60,12 @@
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
     private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<DateSelectorItem> DateItems => DateSelectorFactory.CreateShortPeriods();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateShortPeriods();
     private ReviewTotalStatsWidgetFormModel _formModel = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        _date ??= DateItems.First().Date;
+        _date ??= DateItems.First().Value;
 
         await Load(_date.Value);
     }

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.WebUI.Features.Components;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
@@ -8,7 +9,7 @@ public sealed class SetSettingsFormModel
     public Guid? CalendarId { get; set; }
     public string Token { get; set; } = string.Empty;
     public List<string> SupportedLanguages { get; set; } = new();
-    public IReadOnlyCollection<BotProperty> Properties { get; set; } = Array.Empty<BotProperty>();
+    public IReadOnlyCollection<SelectItem<string>> Properties { get; set; } = Array.Empty<SelectItem<string>>();
     public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties { get; set; } = new Dictionary<string, IReadOnlyCollection<SettingSection>>();
 
     public SetSettingsFormModel Apply(StagesState stagesState)
@@ -19,11 +20,9 @@ public sealed class SetSettingsFormModel
         Token = stagesState.Token;
         SupportedLanguages = stagesState.SupportedLanguages.ToList();
         Properties = stagesState.SelectedFeatures
-            .SelectMany(f => f.Properties.Select(v => new BotProperty
-            {
-                Name = v,
-                Value = stagesState.Properties.GetValueOrDefault(v, string.Empty)
-            }))
+            .SelectMany(f => f.Properties.Select(v => new SelectItem<string>(
+                v,
+                stagesState.Properties.GetValueOrDefault(v, string.Empty))))
             .ToArray();
         AvailableProperties = stagesState.AvailableProperties.ToDictionary();
 

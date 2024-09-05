@@ -55,7 +55,7 @@
                 var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
                 return botDetails;
             },
-            $"{nameof(BotDetailsEditor)}_{nameof(Load)}",
+            nameof(BotDetailsEditor),
             r =>
             {
                 _formModel.Apply(r);
@@ -70,13 +70,8 @@
             return;
         
         _state = await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.SetDetails(_formModel.ToCommand(Token));
-                return RequestIdle.Idle;
-            },
-            $"{nameof(BotDetailsEditor)}_{nameof(SubmitForm)}",
-            _ =>
+            () => BotService.SetDetails(_formModel.ToCommand(Token)),
+            () =>
             {
                 _state = RequestState.Done();
                 StateHasChanged();

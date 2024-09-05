@@ -86,7 +86,9 @@
                                                 FieldId="@holiday.WorkdayFieldId"
                                                 Label="@Resources[Messages.Constructor_WorkdayLabel]">
                                                 <Content>
-                                                    <InputCheckbox id="@holiday.WorkdayFieldId" @bind-Value="holiday.IsWorkday"/>
+                                                    <InputCheckbox
+                                                        id="@holiday.WorkdayFieldId"
+                                                        @bind-Value="holiday.IsWorkday"/>
                                                 </Content>
                                             </FormFieldSet>
                                         </div>
@@ -140,7 +142,7 @@
         
         _state = await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
-            $"{nameof(CalendarEditor)}_{nameof(Load)}",
+            nameof(CalendarEditor),
             r =>
             {
                 if (r is null)
@@ -165,12 +167,10 @@
         _state = await RequestProcessor.Process(
             async () =>
             {
-                await CalendarService.Update(_formModel.ToCommand());
-                await Selected.InvokeAsync();
-                return RequestIdle.Idle;
+                var calendarId = await CalendarService.Update(_formModel.ToCommand());
+                await Selected.InvokeAsync(calendarId);
             },
-            $"{nameof(CalendarEditor)}_{nameof(SubmitForm)}",
-            _ =>
+            () =>
             {
                 _state = RequestState.Done();
                 StateHasChanged();

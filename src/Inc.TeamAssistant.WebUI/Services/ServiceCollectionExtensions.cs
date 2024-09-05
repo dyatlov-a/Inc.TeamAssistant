@@ -1,10 +1,10 @@
 using Blazored.LocalStorage;
 using FluentValidation;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Components;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
-using Inc.TeamAssistant.WebUI.Services.Requests;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;

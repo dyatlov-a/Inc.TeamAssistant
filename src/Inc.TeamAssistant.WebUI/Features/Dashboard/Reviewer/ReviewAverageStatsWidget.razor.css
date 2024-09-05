@@ -1,6 +1,6 @@
 .component-container {
     height: calc(100% - 30px);
 }
-::deep .dashboard-widgets__no-data {
+::deep .no-data {
     height: calc(100% - 36px);
 }

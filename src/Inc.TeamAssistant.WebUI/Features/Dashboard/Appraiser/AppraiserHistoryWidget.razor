@@ -46,13 +46,13 @@
     private readonly PaginationState _pagination = new();
     
     private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<DateSelectorItem> DateItems => DateSelectorFactory.CreateLongPeriods();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateLongPeriods();
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
     private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
     
     protected override async Task OnParametersSetAsync()
     {
-        _date ??= DateItems.First().Date;
+        _date ??= DateItems.First().Value;
 
         await Load(_date.Value);
     }

@@ -9,7 +9,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<DateSelectorItem> Items { get; set; } = Array.Empty<DateSelectorItem>();
+    public IReadOnlyCollection<SelectItem<DateOnly>> Items { get; set; } = Array.Empty<SelectItem<DateOnly>>();
     
     [Parameter, EditorRequired]
     public DateOnly? Date { get; set; }
@@ -17,9 +17,9 @@
     [Parameter, EditorRequired]
     public EventCallback<DateOnly> OnSelected { get; set; }
     
-    private string CssClass(DateSelectorItem item) => Date == item.Date
+    private string CssClass(SelectItem<DateOnly> item) => Date == item.Value
         ? "date-selector__item_selected"
         : string.Empty;
 
-    private void Selected(DateSelectorItem item) => OnSelected.InvokeAsync(item.Date);
+    private void Selected(SelectItem<DateOnly> item) => OnSelected.InvokeAsync(item.Value);
 }

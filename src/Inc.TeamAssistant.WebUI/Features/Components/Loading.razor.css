@@ -2,15 +2,6 @@
     position: relative;
     min-height: 80px;
 }
-.loading_fullscreen {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: #000;
-    opacity: .6;
-}
 .loader {
     position: absolute;
     left: 50%;
