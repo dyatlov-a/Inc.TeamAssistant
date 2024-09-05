@@ -20,8 +20,8 @@ public static class BotPropertiesBuilder
         
         foreach (var key in Defaults.Keys)
         {
-            var value = properties.TryGetValue(key, out var botValue)
-                ? botValue
+            var value = properties.TryGetValue(key, out var propertyValue)
+                ? propertyValue
                 : Defaults[key];
 
             results.Add(key, value);

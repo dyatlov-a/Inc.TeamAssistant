@@ -114,8 +114,8 @@
         
         _currentState = stage ?? Enum.GetValues<Stage>().First();
         StateHasChanged();
-        
-        await JsRuntime.InvokeVoidAsync("window.browserJsFunctions.changeUrl", url);
+
+        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
     }
 
     private string LinkFactory(Stage? stage)

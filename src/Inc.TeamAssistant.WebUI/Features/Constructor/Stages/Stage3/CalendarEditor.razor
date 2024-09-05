@@ -138,7 +138,7 @@
     
     private async Task Load()
     {
-        var clientTimezoneOffset = await JsRuntime.InvokeAsync<int>("window.browserJsFunctions.getTimezone");
+        var clientTimezoneOffset = await JsRuntime.Execute<int>(JsFunctions.GetTimezone());
         
         _state = await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
@@ -148,7 +148,7 @@
                 if (r is null)
                     _formModel.Apply(clientTimezoneOffset);
                 else
-                    _formModel.Apply(r);
+                    _formModel.Apply(r, clientTimezoneOffset);
                 
                 _state = RequestState.Done();
                 StateHasChanged();

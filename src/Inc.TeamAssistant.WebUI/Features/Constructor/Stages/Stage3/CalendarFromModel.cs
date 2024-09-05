@@ -12,13 +12,14 @@ public sealed class CalendarFromModel
     public List<DayOfWeek> SelectedWeekends { get; } = new();
     public List<HolidayFromModel> Holidays { get; } = new();
     
-    public CalendarFromModel Apply(GetCalendarByOwnerResult calendar)
+    public CalendarFromModel Apply(GetCalendarByOwnerResult calendar, int clientTimezoneOffset)
     {
         ArgumentNullException.ThrowIfNull(calendar);
-        
+
         WorkAllDay = calendar.Schedule is null;
-        Start = calendar.Schedule?.Start ?? TimeOnly.MinValue;
-        End = calendar.Schedule?.End ?? TimeOnly.MaxValue;
+        (Start, End) = calendar.Schedule is null
+            ? CreateDefaultTime(clientTimezoneOffset)
+            : (calendar.Schedule.Start, calendar.Schedule.End);
         
         SelectedWeekends.Clear();
         SelectedWeekends.AddRange(calendar.Weekends);
@@ -32,12 +33,8 @@ public sealed class CalendarFromModel
     
     public CalendarFromModel Apply(int clientTimezoneOffset)
     {
-        const int startMinutesUtc = 10 * 60;
-        const int endMinutesUtc = 19 * 60;
-        
         WorkAllDay = false;
-        Start = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(startMinutesUtc + clientTimezoneOffset));
-        End = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(endMinutesUtc + clientTimezoneOffset));
+        (Start, End) = CreateDefaultTime(clientTimezoneOffset);
         
         SelectedWeekends.Clear();
         SelectedWeekends.AddRange(new [] { DayOfWeek.Sunday, DayOfWeek.Saturday });
@@ -75,8 +72,9 @@ public sealed class CalendarFromModel
 
     private WorkScheduleUtcDto? ToWorkScheduleUtcDto() => WorkAllDay ? null : new WorkScheduleUtcDto(Start, End);
 
-    private IReadOnlyDictionary<DateOnly, string> ToHolidays()
-        => Holidays.ToDictionary(h => h.Date, h => h.IsWorkday ? "Workday" : "Holiday");
+    private IReadOnlyDictionary<DateOnly, string> ToHolidays() => Holidays.ToDictionary(
+        h => h.Date,
+        h => h.IsWorkday ? "Workday" : "Holiday");
 
     private void AddHoliday(DateOnly date, bool isWorkday)
     {
@@ -88,5 +86,16 @@ public sealed class CalendarFromModel
             Date = date,
             IsWorkday = isWorkday
         });
+    }
+    
+    private (TimeOnly Start, TimeOnly End) CreateDefaultTime(int clientTimezoneOffset)
+    {
+        const int startMinutesUtc = 10 * 60;
+        const int endMinutesUtc = 19 * 60;
+        
+        var start = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(startMinutesUtc + clientTimezoneOffset));
+        var end = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(endMinutesUtc + clientTimezoneOffset));
+        
+        return (start, end);
     }
 }

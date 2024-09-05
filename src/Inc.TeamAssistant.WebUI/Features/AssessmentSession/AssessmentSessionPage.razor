@@ -148,7 +148,7 @@
     {
         _currentView = assessmentType;
         
-        await JsRuntime.InvokeVoidAsync("window.browserJsFunctions.changeUrl", url);
+        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
     }
 
     private string CreateViewLink(AssessmentType assessmentType)
