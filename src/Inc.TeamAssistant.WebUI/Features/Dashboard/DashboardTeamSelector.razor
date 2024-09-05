@@ -16,7 +16,7 @@
                         <Content>
                             <SelectList 
                                 FieldId="bot-selector"
-                                Value="_currentBotId"
+                                Value="BotId"
                                 ValueChanged="@((Guid? v) => ChangeBot(v))"
                                 Items="Bots"
                                 TitleSelector="i => i.Name"
@@ -28,7 +28,7 @@
                         <Content>
                             <SelectList
                                 FieldId="team-selector"
-                                Value="_currentTeamId"
+                                Value="TeamId"
                                 ValueChanged="@((Guid? v) => ChangeTeam(v))"
                                 Items="TeamsByBot"
                                 TitleSelector="i => i.Name"
@@ -55,14 +55,14 @@
     [Parameter, EditorRequired]
     public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
     
-    private Guid? _currentBotId;
-    private Guid? _currentTeamId;
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid? BotId, Guid? TeamId)> TeamContextChanged { get; set; }
 
     private IEnumerable<TeamDto> TeamsByBot
     {
         get
         {
-            var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
+            var bot = Bots.SingleOrDefault(b => b.Id == BotId);
 
             return bot is not null
                 ? bot.Teams
@@ -70,47 +70,27 @@
         }
     }
 
-    protected override void OnParametersSet()
+    private async Task ChangeTeam(Guid? value)
     {
-        _currentBotId = BotId;
-        _currentTeamId = TeamId;
-    }
-
-    private void ChangeTeam(Guid? value)
-    {
-        _currentTeamId = value;
+        TeamId = value;
         
-        ChangeTeamContext(_currentBotId, _currentTeamId);
+        await ChangeTeamContext(BotId, TeamId);
     }
     
-    private void ChangeBot(Guid? value)
+    private async Task ChangeBot(Guid? value)
     {
-        _currentBotId = value;
+        BotId = value;
 
-        if (_currentBotId.HasValue)
+        if (BotId.HasValue)
         {
-            var bot = Bots.SingleOrDefault(b => b.Id == _currentBotId);
+            var bot = Bots.SingleOrDefault(b => b.Id == BotId);
             var team = bot?.Teams.FirstOrDefault();
 
-            ChangeTeamContext(_currentBotId.Value, team?.Id);
+            await ChangeTeamContext(BotId.Value, team?.Id);
         }
         else
-            ChangeTeamContext(_currentBotId, null);
+            await ChangeTeamContext(BotId, null);
     }
 
-    private void ChangeTeamContext(Guid? botId, Guid? teamId)
-    {
-        if (BotId == botId && TeamId == teamId)
-            return;
-        
-        var url = (botId.HasValue, teamId.HasValue) switch
-        {
-            (true, true) => $"dashboard/{botId:N}/{teamId:N}",
-            (true, false) => $"dashboard/{botId:N}",
-            _ => "dashboard"
-        };
-
-        NavigationManager.NavigateTo(LinkBuilder.Build(url));
-    }
-
+    private Task ChangeTeamContext(Guid? botId, Guid? teamId) => TeamContextChanged.InvokeAsync((botId, teamId));
 }

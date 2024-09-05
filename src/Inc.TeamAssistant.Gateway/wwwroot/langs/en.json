@@ -156,7 +156,7 @@
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
   
-  "Dashboard_MoveToStats": "stats",
+  "Dashboard_MoveToDashboard": "dashboard",
   "Dashboard_Title": "Dashboard",
   "Dashboard_SelectTeam": "Please select the team from the bot",
   "Dashboard_CreateBot": "or create new bot for your team",

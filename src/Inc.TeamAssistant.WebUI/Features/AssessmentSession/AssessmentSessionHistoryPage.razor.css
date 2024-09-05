@@ -1,5 +1,5 @@
 .assessment-history-header {
-    padding: 140px 0 40px 0;
+    padding: 120px 0 40px 0;
     background-color: #dfdfdf;
     color: #000;
 }
@@ -12,4 +12,7 @@
 }
 .assessment-history-content:nth-child(2n - 1) ::deep .story__link {
     color: #000;
+}
+::deep .loading {
+    height: calc(100vh - 400px);
 }

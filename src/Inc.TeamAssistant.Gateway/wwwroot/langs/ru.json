@@ -156,7 +156,7 @@
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
   "Connector_Help": "Отобразить список команд",
   
-  "Dashboard_MoveToStats": "статистика",
+  "Dashboard_MoveToDashboard": "инструменты",
   "Dashboard_Title": "Панель управления",
   "Dashboard_SelectTeam": "Пожалуйста выберите бота и команду",
   "Dashboard_CreateBot": "или создайте бота",

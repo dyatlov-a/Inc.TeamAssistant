@@ -112,11 +112,11 @@
             _currentView = value;
         
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        _breadcrumbs = new BreadcrumbItem[]
-        {
+        _breadcrumbs =
+        [
             new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{Id:N}")),
             new(date, LinkBuilder.Build($"assessment-history/{Id:N}/{date}"))
-        };
+        ];
         
         await Load();
         

@@ -103,7 +103,7 @@ internal static class Messages
     public static readonly string Constructor_Configuration = nameof(Constructor_Configuration);
     public static readonly string Constructor_CheckConfigurationTemplate = nameof(Constructor_CheckConfigurationTemplate);
 
-    public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
+    public static readonly string Dashboard_MoveToDashboard = nameof(Dashboard_MoveToDashboard);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);
     public static readonly string Dashboard_SelectTeam = nameof(Dashboard_SelectTeam);
     public static readonly string Dashboard_CreateBot = nameof(Dashboard_CreateBot);

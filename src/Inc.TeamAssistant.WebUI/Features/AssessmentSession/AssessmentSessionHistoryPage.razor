@@ -46,11 +46,11 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _breadcrumbs = new BreadcrumbItem[]
-        {
+        _breadcrumbs =
+        [
             new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
             new(Date, LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}"))
-        };
+        ];
 
         await Load();
     }
