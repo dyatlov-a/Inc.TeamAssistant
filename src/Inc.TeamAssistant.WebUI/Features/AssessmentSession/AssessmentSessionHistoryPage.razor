@@ -59,7 +59,7 @@
         _ => typeof(AssessmentGroup)
     };
 
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
 
@@ -94,7 +94,7 @@
             r =>
             {
                 _items = r.Items;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

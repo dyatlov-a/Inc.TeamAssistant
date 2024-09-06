@@ -45,7 +45,7 @@
     [Parameter, EditorRequired] 
     public int Depth { get; set; }
 
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private RandomCoffeeHistoryWidgetFormModel _formModel = new();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
         .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yyyy-MM-dd"), i.Created))
@@ -70,7 +70,7 @@
             r =>
             {
                 _formModel.Apply(r);
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

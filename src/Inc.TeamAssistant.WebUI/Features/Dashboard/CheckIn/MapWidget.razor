@@ -44,7 +44,7 @@
     [Parameter, EditorRequired]
     public Guid BotId { get; set; }
     
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private readonly MapWidgetFormModel _formModel = new();
 
     protected override Task OnParametersSetAsync() => Load();
@@ -57,7 +57,7 @@
             r =>
             {
                 _formModel.Apply(r);
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

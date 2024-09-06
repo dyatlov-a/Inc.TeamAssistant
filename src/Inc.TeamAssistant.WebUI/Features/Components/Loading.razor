@@ -11,7 +11,7 @@ else
 
 @code {
     [Parameter, EditorRequired]
-    public RequestState State { get; set; } = RequestState.Done();
+    public LoadingState State { get; set; } = LoadingState.Done();
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;

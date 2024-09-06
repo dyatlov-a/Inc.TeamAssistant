@@ -52,7 +52,7 @@
     public Guid? TeamId { get; set; }
     
     [Parameter, EditorRequired]
-    public RequestState State { get; set; } = default!;
+    public LoadingState State { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;

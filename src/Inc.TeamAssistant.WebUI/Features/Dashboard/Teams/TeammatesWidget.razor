@@ -96,7 +96,7 @@
     private bool _exclude;
     private int? _leaveUntil;
     
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private GetTeammatesResult _item = new(false, Array.Empty<TeammateDto>());
     private IQueryable<TeammateDto> Teammates => _item.Teammates.AsQueryable();
 
@@ -110,7 +110,7 @@
             r =>
             {
                 _item = r;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

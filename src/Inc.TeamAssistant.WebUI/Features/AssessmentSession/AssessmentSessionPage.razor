@@ -84,7 +84,7 @@
         _ => typeof(AssessmentGroup)
     };
     
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private EventsProvider? _eventsProvider;
@@ -116,7 +116,7 @@
             r =>
             {
                 _item = r;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

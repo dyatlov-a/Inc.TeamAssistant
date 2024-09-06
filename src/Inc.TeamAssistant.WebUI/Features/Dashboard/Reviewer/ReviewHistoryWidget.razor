@@ -63,7 +63,7 @@
 
     private DateOnly? _date;
     private readonly PaginationState _pagination = new();
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateShortPeriods();
     private IReadOnlyCollection<TaskForReviewDto> _tasks = Array.Empty<TaskForReviewDto>();
     private IQueryable<TaskForReviewDto> Tasks => _tasks.AsQueryable();
@@ -83,7 +83,7 @@
             r =>
             {
                 _tasks = r.Items;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

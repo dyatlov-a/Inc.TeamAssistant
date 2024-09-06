@@ -30,7 +30,7 @@
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
 
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private GetTeamConnectorResult _team = new(string.Empty, string.Empty, string.Empty);
     
     protected override Task OnParametersSetAsync() => Load();
@@ -43,7 +43,7 @@
             r =>
             {
                 _team = r;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

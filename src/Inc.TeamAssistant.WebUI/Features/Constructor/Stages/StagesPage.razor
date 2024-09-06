@@ -46,7 +46,7 @@
     [Parameter]
     public string SelectedStage { get; set; } = default!;
     
-    private RequestState _state = RequestState.Loading();
+    private LoadingState _state = LoadingState.Loading();
     private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
@@ -103,7 +103,7 @@
             r =>
             {
                 _stagesState = r;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

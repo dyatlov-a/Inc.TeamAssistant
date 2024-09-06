@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
@@ -19,7 +20,7 @@ public sealed class RequestProcessor : IDisposable
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
     }
 
-    public async Task<RequestState> Process<TResponse>(
+    public async Task<LoadingState> Process<TResponse>(
         Func<Task<TResponse>> request,
         string key,
         Action<TResponse> onLoaded)
@@ -33,20 +34,20 @@ public sealed class RequestProcessor : IDisposable
             if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
             {
                 onLoaded(restored);
-                return RequestState.Done();
+                return LoadingState.Done();
             }
 
             await BackgroundEnding(request, onLoaded);
             
-            return RequestState.Loading();
+            return LoadingState.Loading();
         }
 
         await ForegroundEnding(request, key, onLoaded);
         
-        return RequestState.Done();
+        return LoadingState.Done();
     }
     
-    public async Task<RequestState> Process(Func<Task> request, Action onLoaded)
+    public async Task<LoadingState> Process(Func<Task> request, Action onLoaded)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(onLoaded);
@@ -60,7 +61,7 @@ public sealed class RequestProcessor : IDisposable
             onLoaded();
         });
             
-        return RequestState.Loading();
+        return LoadingState.Loading();
     }
 
     private Task BackgroundEnding<TResponse>(Func<Task<TResponse>> request, Action<TResponse> onLoaded)

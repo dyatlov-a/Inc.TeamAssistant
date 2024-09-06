@@ -59,7 +59,7 @@
     private ApexChart<HistoryByTeamItemDto>? _reviewChart;
     private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateShortPeriods();
     private readonly ReviewTotalStatsWidgetFormModel _formModel = new();
 
@@ -78,7 +78,7 @@
             r =>
             {
                 _formModel.Apply(r, date);
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

@@ -81,7 +81,7 @@
     private Guid? _botId;
     private Guid? _teamId;
     
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     protected override async Task OnParametersSetAsync()
@@ -103,7 +103,7 @@
             r =>
             {
                 _bots = r.Bots;
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }

@@ -126,7 +126,7 @@
     private readonly CalendarFromModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    private RequestState _state = RequestState.Done();
+    private LoadingState _state = LoadingState.Done();
     
     protected override void OnParametersSet()
     {
@@ -153,7 +153,7 @@
                     _formModel.Apply(clientTimezoneOffset);
                 else
                     _formModel.Apply(r, clientTimezoneOffset);
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
         
@@ -175,7 +175,7 @@
             },
             () =>
             {
-                _state = RequestState.Done();
+                _state = LoadingState.Done();
                 StateHasChanged();
             });
     }
