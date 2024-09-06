@@ -85,6 +85,7 @@
   "GUI_ToolAppraiser": "легкая оценка задач",
   "GUI_ToolReviewer": "оперативное проведение ревью кода",
   "GUI_ToolRandomCoffee": "нетворкинг",
+  "GUI_ToolCheckIn": "статистика команды",
   "GUI_CreateBotLink": "Создать бота",
   "GUI_VideoNotSupported": "Ваш браузер не поддерживает видео в формате HTML5.",
 

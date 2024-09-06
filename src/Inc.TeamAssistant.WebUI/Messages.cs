@@ -29,6 +29,7 @@ internal static class Messages
     public static readonly string GUI_ToolAppraiser = nameof(GUI_ToolAppraiser);
     public static readonly string GUI_ToolReviewer = nameof(GUI_ToolReviewer);
     public static readonly string GUI_ToolRandomCoffee = nameof(GUI_ToolRandomCoffee);
+    public static readonly string GUI_ToolCheckIn = nameof(GUI_ToolCheckIn);
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
     public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
 
