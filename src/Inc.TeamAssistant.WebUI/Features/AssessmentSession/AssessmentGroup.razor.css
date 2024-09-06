@@ -13,13 +13,13 @@
 .story__item {
     line-height: 2rem;
 }
-.story__total {
-    display: flex;
+.story-total {
+    overflow: hidden;
 }
-.story__total-divider {
-    flex-grow: 1;
+.story-total__items {
+    float: right;
 }
-.story__total-item {
+.story-total__item {
     display: block;
     font-size: 1.8rem;
     line-height: 2.2rem;

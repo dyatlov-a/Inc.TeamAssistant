@@ -40,15 +40,21 @@
             </div>
         </div>
     </div>
+    <div class="assessment-session-switcher">
+        <div class="assessment-session-switcher__container">
+            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
+        </div>
+    </div>
     <div class="assessment-session-content">
         <div class="assessment-session-content__container">
-            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged" />
             <div>
                 <Loading State="_state">
                     <Content>
                         @if (_item.Story is not null)
                         {
-                            <DynamicComponent Type="CurrentViewType" Parameters="ViewParameters"/>
+                            <DynamicComponent
+                                Type="CurrentViewType"
+                                Parameters="@(new Dictionary<string, object>{["Item"] = _item.Story})"/>
                         }
                         else
                         {
@@ -71,19 +77,13 @@
     public Guid Id { get; set; }
     
     [Parameter]
-    public string View { get; set; } = default!;
+    public string View { get; set; } = string.Empty;
     
     private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
     private Type CurrentViewType => _currentView switch
     {
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
-    };
-    private Dictionary<string, object> ViewParameters => new()
-    {
-        ["Item"] = _item.Story!,
-        ["MeanRating"] = Resources[Messages.GUI_MeanRating],
-        ["MedianRating"] = Resources[Messages.GUI_MedianRating]
     };
     
     private RequestState _state = RequestState.Done();

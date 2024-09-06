@@ -1,6 +1,9 @@
 @page "/assessment-history/{teamId:guid}/{date}"
 @page "/en/assessment-history/{teamId:guid}/{date}"
 @page "/ru/assessment-history/{teamId:guid}/{date}"
+@page "/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/en/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/ru/assessment-history/{teamId:guid}/{date}/{View}"
 
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
@@ -8,6 +11,7 @@
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
+@inject IJSRuntime JsRuntime
 
 <MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@Resources[Messages.GUI_StoryList]" />
 
@@ -18,13 +22,20 @@
             <h1 class="title">@Resources[Messages.GUI_StoryList]</h1>
         </div>
     </div>
+    <div class="assessment-history-switcher">
+        <div class="assessment-history-switcher__container">
+            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
+        </div>
+    </div>
     <Loading State="_state">
         <Content>
-            @foreach(var item in _items)
+            @foreach (var item in _items)
             {
                 <div class="assessment-history-content">
                     <div class="assessment-history-content__container">
-                        <AssessmentIndividual Item="item" MeanRating="@Resources[Messages.GUI_MeanRating]"/>
+                        <DynamicComponent
+                            Type="CurrentViewType"
+                            Parameters="@(new Dictionary<string, object> { ["Item"] = item })"/>
                     </div>
                 </div>
             }
@@ -38,7 +49,17 @@
     public Guid TeamId { get; set; }
 
     [Parameter, EditorRequired]
-    public string Date { get; set; } = default!;
+    public string Date { get; set; } = string.Empty;
+    
+    [Parameter]
+    public string View { get; set; } = string.Empty;
+    
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().Last();
+    private Type CurrentViewType => _currentView switch
+    {
+        AssessmentType.Individual => typeof(AssessmentIndividual),
+        _ => typeof(AssessmentGroup)
+    };
 
     private RequestState _state = RequestState.Done();
     private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
@@ -46,6 +67,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
+        
         _breadcrumbs =
         [
             new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
@@ -53,6 +77,16 @@
         ];
 
         await Load();
+    }
+    
+    private async Task OnViewChanged(AssessmentType assessmentType)
+    {
+        var view = assessmentType.ToString().ToLowerInvariant();
+        var url = LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}/{view}");
+        
+        _currentView = assessmentType;
+        
+        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
     }
 
     private async Task Load()

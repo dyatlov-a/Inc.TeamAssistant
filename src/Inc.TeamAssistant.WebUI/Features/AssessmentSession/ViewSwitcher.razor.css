@@ -1,8 +1,8 @@
 .view-switcher {
     text-align: right;
-    margin-bottom: 20px;
 }
 .view-switcher__item {
+    cursor: pointer;
     background-color: transparent;
 }
 .view-switcher__item:hover, .view-switcher__item_selected {

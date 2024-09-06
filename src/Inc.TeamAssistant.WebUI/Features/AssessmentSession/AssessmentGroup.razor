@@ -1,5 +1,7 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
+@inject ResourcesManager Resources
+
 <div class="story">
     <h2 class="story__title">@Item.Title</h2>
     @if (Item.Links.Any())
@@ -18,7 +20,7 @@
         {
             foreach (var group in EstimatesByGroup().OrderByDescending(g => g.Key.ValueGroup))
             {
-                <div class="estimate-group animation__fade-in">
+                <div class="estimate-group">
                     <div>
                         <div class="estimate-group__title">@group.Key.DisplayValue</div>
                     </div>
@@ -60,22 +62,17 @@
             </div>
         }
     </div>
-    <div class="story__total">
-        <div class="story__total-divider"></div>
-        <div>
-            <table>
-                <tbody>
-                <tr>
-                    <td><span class="story__total-item"><b>@Item.Total</b></span></td>
-                    <td><span class="story__total-item">@MeanRating</span></td>
-                </tr>
-                <tr>
-                    <td><span class="story__total-item"><b>@Item.Median</b></span></td>
-                    <td><span class="story__total-item">@MedianRating</span></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="story-total">
+        <table class="story-total__items">
+            <tr>
+                <td><span class="story-total__item"><b>@Item.Total</b></span></td>
+                <td><span class="story-total__item">@Resources[Messages.GUI_MeanRating]</span></td>
+            </tr>
+            <tr>
+                <td><span class="story-total__item"><b>@Item.Median</b></span></td>
+                <td><span class="story-total__item">@Resources[Messages.GUI_MedianRating]</span></td>
+            </tr>
+        </table>
     </div>
 </div>
 

@@ -3,7 +3,7 @@
     {
         <button
             type="button"
-            class="view-switcher__item @ViewControlCss(assessmentType)"
+            class="view-switcher__item @CssClass(assessmentType)"
             @onclick="() => ChangeView(assessmentType)">
             <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
         </button>
@@ -42,7 +42,7 @@
         await ViewChanged.InvokeAsync(assessmentType);
     }
 
-    private string ViewControlCss(AssessmentType assessmentType)
+    private string CssClass(AssessmentType assessmentType)
     {
         return assessmentType == _currentView ? "view-switcher__item_selected" : string.Empty;
     }

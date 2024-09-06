@@ -6,13 +6,13 @@
 .assessment-history-content {
     padding: 60px 0 40px 0;
 }
-.assessment-history-content:nth-child(2n - 1) {
+.assessment-history-content:nth-child(2n) {
     background-color: #dfdfdf;
     color: #000;
 }
-.assessment-history-content:nth-child(2n - 1) ::deep .story__link {
+.assessment-history-content:nth-child(2n) ::deep .story__link {
     color: #000;
 }
 ::deep .loading {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 420px);
 }

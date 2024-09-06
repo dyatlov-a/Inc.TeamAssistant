@@ -1,5 +1,7 @@
 @using Inc.TeamAssistant.Appraiser.Model.Common
 
+@inject ResourcesManager Resources
+
 <div class="story">
     <h2 class="story__title">@Item.Title</h2>
     @if (Item.Links.Any())
@@ -27,16 +29,10 @@
             }
         </div>
     </div>
-    <span class="story__value-total"><b>@Item.Total</b> @MeanRating</span>
+    <span class="story__value-total"><b>@Item.Total</b> @Resources[Messages.GUI_MeanRating]</span>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public StoryDto Item { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string MeanRating { get; set; } = default!;
-    
-    [Parameter]
-    public string? MedianRating { get; set; }
 }
