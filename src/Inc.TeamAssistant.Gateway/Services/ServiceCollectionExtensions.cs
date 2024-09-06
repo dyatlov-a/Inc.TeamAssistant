@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IRenderContext, ServerRenderContext>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
+            .AddScoped<IntegrationContextProvider>()
             .AddScoped<IAppraiserService, AppraiserService>()
             .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ICheckInService, CheckInService>()

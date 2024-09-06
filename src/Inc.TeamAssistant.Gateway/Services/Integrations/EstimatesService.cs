@@ -2,23 +2,22 @@ using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Integrations;
 
 namespace Inc.TeamAssistant.Gateway.Services.Integrations;
 
 public sealed class EstimatesService
 {
     private readonly ICommandExecutor _commandExecutor;
-    private readonly IIntegrationsAccessor _integrationsAccessor;
+    private readonly IntegrationContextProvider _integrationContextProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public EstimatesService(
         ICommandExecutor commandExecutor,
-        IIntegrationsAccessor integrationsAccessor,
+        IntegrationContextProvider integrationContextProvider,
         ITeamAccessor teamAccessor)
     {
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
-        _integrationsAccessor = integrationsAccessor ?? throw new ArgumentNullException(nameof(integrationsAccessor));
+        _integrationContextProvider = integrationContextProvider ?? throw new ArgumentNullException(nameof(integrationContextProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -26,10 +25,7 @@ public sealed class EstimatesService
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var integrationContext = await _integrationsAccessor.Find(request.AccessToken, request.ProjectKey, token);
-        
-        if (integrationContext is null)
-            return;
+        var integrationContext = _integrationContextProvider.Get();
         
         var teammates = await _teamAccessor.GetTeammates(integrationContext.TeamId, DateTimeOffset.UtcNow, token);
         var ownerId = integrationContext.TeamProperties.TryGetValue("scrumMaster", out var scrumMaster) && long.TryParse(scrumMaster, out var value)
