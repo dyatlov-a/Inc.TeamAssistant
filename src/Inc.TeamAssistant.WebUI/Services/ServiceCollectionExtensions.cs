@@ -34,8 +34,7 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()
-            
-            .AddTransient<EventsProvider>();
+            .AddSingleton<EventsProvider>();
 
         return services;
     }

@@ -1,3 +1,5 @@
+@using Inc.TeamAssistant.Primitives
+
 @inject ResourcesManager ResourcesManager
 
 <PageTitle>@_title</PageTitle>
@@ -14,7 +16,7 @@
     [Parameter]
     public string? MetaOverrideTitle { get; set; }
 
-    private string _title = string.Empty;
+    private string _title = GlobalSettings.CanonicalName;
 
     protected override void OnParametersSet()
     {

@@ -5,6 +5,8 @@
 @page "/en/assessment-session/{id:guid}/{View}"
 @page "/ru/assessment-session/{id:guid}/{View}"
 
+@using System.Collections.Concurrent
+
 @implements IAsyncDisposable
 
 @inject IAppraiserService AppraiserService
@@ -84,10 +86,10 @@
         _ => typeof(AssessmentGroup)
     };
     
+    private readonly ConcurrentDictionary<Guid, IAsyncDisposable> _eventScopes = new();
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
-    private EventsProvider? _eventsProvider;
     
     protected override async Task OnParametersSetAsync()
     {
@@ -104,8 +106,12 @@
         await Load();
         
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null)
-            _eventsProvider ??= await eventsProvider.OnStoryChanged(Id, Load);
+        if (eventsProvider is not null && !_eventScopes.ContainsKey(Id))
+        {
+            var scope = await eventsProvider.OnStoryChanged(Id, Load);
+            if (!_eventScopes.TryAdd(Id, scope))
+                await scope.DisposeAsync();
+        }
     }
     
     private async Task Load()
@@ -132,7 +138,7 @@
     
     public async ValueTask DisposeAsync()
     {
-        if (_eventsProvider is not null)
-            await _eventsProvider.DisposeAsync();
+        if (_eventScopes.TryRemove(Id, out var eventScope))
+            await eventScope.DisposeAsync();
     }
 }
