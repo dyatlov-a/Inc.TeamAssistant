@@ -45,7 +45,6 @@
   "GUI_MedianRating": "median",
   "GUI_AssessmentSessionAbout": "This page shows the current evaluation process for the \"{0}\" team's tasks. The evaluation takes place using a bot in a Telegram chat.",
   "GUI_AssessmentSessionConnect": "Scan the QR code to join the team",
-  "GUI_AssessmentSessionHasNotTasks": "The team has not tasks",
   "GUI_Authorizing": "Authorizing...",
   "GUI_Error404": "Error 404",
   "GUI_PageNotFound": "Page not found",

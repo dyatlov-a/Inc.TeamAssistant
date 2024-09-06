@@ -1,5 +1,4 @@
 @using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration
-@using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties
 
 @inject IIntegrationService IntegrationService
 @inject ResourcesManager Resources
@@ -53,6 +52,7 @@
                             <SelectList
                                 FieldId="scrum-master"
                                 Value="_formModel.ScrumMasterId"
+                                ValueExpression="@(() => _formModel.ScrumMasterId)"
                                 ValueChanged="@((long v) => _formModel.ScrumMasterId = v)"
                                 Items="_formModel.Teammates"
                                 TitleSelector="i => i.DisplayName"
@@ -132,12 +132,14 @@
 
     private async Task Disable()
     {
-        await IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId));
-        
-        _formModel.IsEnabled = false;
-        _formModel.AccessToken = string.Empty;
-        _formModel.ProjectKey = string.Empty;
-        _formModel.ScrumMasterId = 0;
+        _state = await RequestProcessor.Process(
+            () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId)),
+            () =>
+            {
+                _formModel.Clear();
+                _state = RequestState.Done();
+                StateHasChanged();
+            });
     }
     
     private async Task SubmitForm()
@@ -148,13 +150,10 @@
         _state = await RequestProcessor.Process(
             async () =>
             {
-                await IntegrationService.SetTeamProperties(new SetIntegrationPropertiesCommand(
-                    TeamId,
-                    _formModel.ProjectKey,
-                    _formModel.ScrumMasterId));
+                await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId));
 
                 await Load();
             },
-            () => { });
+            StateHasChanged);
     }
 }

@@ -56,18 +56,20 @@
                     </a>
                 }
             </div>
-            <Loading State="_state">
-                <Content>
-                    @if (_item.Story is not null)
-                    {
-                        <DynamicComponent Type="CurrentViewType" Parameters="ViewParameters"/>
-                    }
-                    else
-                    {
-                        <h2 class="text">@Resources[Messages.GUI_AssessmentSessionHasNotTasks]</h2>
-                    }
-                </Content>
-            </Loading>
+            <div>
+                <Loading State="_state">
+                    <Content>
+                        @if (_item.Story is not null)
+                        {
+                            <DynamicComponent Type="CurrentViewType" Parameters="ViewParameters"/>
+                        }
+                        else
+                        {
+                            <NoData/>
+                        }
+                    </Content>
+                </Loading>
+            </div>
         </div>
     </div>
 </main>

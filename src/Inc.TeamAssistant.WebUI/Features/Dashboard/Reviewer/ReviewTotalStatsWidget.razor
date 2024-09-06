@@ -45,7 +45,7 @@
             }
             else
             {
-                <NoData/>
+                <NoData IsDark="true"/>
             }
         </div>
     </Content>
@@ -61,7 +61,7 @@
 
     private RequestState _state = RequestState.Done();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateShortPeriods();
-    private ReviewTotalStatsWidgetFormModel _formModel = new();
+    private readonly ReviewTotalStatsWidgetFormModel _formModel = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -73,22 +73,11 @@
     private async Task Load(DateOnly date)
     {
         _state = await RequestProcessor.Process(
-            async () =>
-            {
-                var interval = DateTimeOffset.UtcNow - new DateTimeOffset(date, TimeOnly.MinValue, TimeSpan.Zero);
-                var getHistory = await ReviewService.GetHistory(TeamId, date);
-                
-                return new ReviewTotalStatsWidgetFormModel
-                {
-                    IntervalInDays = (int)interval.TotalDays,
-                    Review = getHistory.Review,
-                    Requests = getHistory.Requests
-                };
-            },
+            () => ReviewService.GetHistory(TeamId, date),
             nameof(ReviewTotalStatsWidget),
             r =>
             {
-                _formModel = r;
+                _formModel.Apply(r, date);
                 _state = RequestState.Done();
                 StateHasChanged();
             });

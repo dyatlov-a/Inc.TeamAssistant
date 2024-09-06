@@ -49,9 +49,11 @@
                         HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
                         <Content>
                             <MultiSelectList
+                                FieldId="weekends"
                                 Label="@Resources[Messages.Constructor_WeekendsLabel]"
-                                Values="_formModel.SelectedWeekends"
-                                ValuesChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
+                                Value="_formModel.SelectedWeekends"
+                                ValueExpression="@(() => _formModel.SelectedWeekends)"
+                                ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
                                 Items="Enum.GetValues<DayOfWeek>()"
                                 TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
                                 ValueSelector="i => i"/>

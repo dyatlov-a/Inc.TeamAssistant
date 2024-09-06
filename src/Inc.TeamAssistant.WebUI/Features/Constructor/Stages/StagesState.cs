@@ -75,7 +75,7 @@ public sealed class StagesState
         _featureIds.AddRange(featureIds);
         
         _properties.Clear();
-        foreach (var property in properties)
+        foreach (var property in BotPropertiesBuilder.Build(properties))
             _properties.Add(property.Key, property.Value);
         
         _availableFeatures.Clear();
@@ -119,7 +119,7 @@ public sealed class StagesState
             null,
             string.Empty,
             string.Empty,
-            new [] { LanguageSettings.DefaultLanguageId.Value },
+            [LanguageSettings.DefaultLanguageId.Value],
             Array.Empty<Guid>(),
             new Dictionary<string, string>(),
             availableFeatures.Features,

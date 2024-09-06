@@ -17,6 +17,7 @@
                             <SelectList 
                                 FieldId="bot-selector"
                                 Value="BotId"
+                                ValueExpression="@(() => BotId)"
                                 ValueChanged="@((Guid? v) => ChangeBot(v))"
                                 Items="Bots"
                                 TitleSelector="i => i.Name"
@@ -29,6 +30,7 @@
                             <SelectList
                                 FieldId="team-selector"
                                 Value="TeamId"
+                                ValueExpression="@(() => TeamId)"
                                 ValueChanged="@((Guid? v) => ChangeTeam(v))"
                                 Items="TeamsByBot"
                                 TitleSelector="i => i.Name"

@@ -45,7 +45,6 @@
   "GUI_MedianRating": "медиана",
   "GUI_AssessmentSessionAbout": "На этой странице показан текущий процесс оценки заданий команды «{0}». Оценка происходит с помощью бота в чате Telegram.",
   "GUI_AssessmentSessionConnect": "Отсканируйте QR-код, чтобы присоединиться к команде",
-  "GUI_AssessmentSessionHasNotTasks": "Нет задач для оценки",
   "GUI_Authorizing": "Авторизация...",
   "GUI_Error404": "Ошибка 404",
   "GUI_PageNotFound": "страница не найдена",

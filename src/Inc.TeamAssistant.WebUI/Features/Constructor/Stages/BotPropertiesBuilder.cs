@@ -12,11 +12,9 @@ public static class BotPropertiesBuilder
         ["storyType"] = "Fibonacci"
     };
 
-    public static IReadOnlyDictionary<string, string> Build(IReadOnlyDictionary<string, string> properties)
+    public static IEnumerable<KeyValuePair<string, string>> Build(IReadOnlyDictionary<string, string> properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
-
-        var results = new Dictionary<string, string>();
         
         foreach (var key in Defaults.Keys)
         {
@@ -24,9 +22,7 @@ public static class BotPropertiesBuilder
                 ? propertyValue
                 : Defaults[key];
 
-            results.Add(key, value);
+            yield return new KeyValuePair<string, string>(key, value);
         }
-
-        return results;
     }
 }

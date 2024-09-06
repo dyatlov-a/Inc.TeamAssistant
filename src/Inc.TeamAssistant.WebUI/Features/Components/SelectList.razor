@@ -1,12 +1,14 @@
 @typeparam TValue
 @typeparam TItem
 
+@inherits InputBase<TValue>
+
 @if (IsDisabled)
 {
     <InputSelect
         id="@FieldId"
-        Value="Value"
-        ValueExpression="@(() => Value)"
+        Value="_value"
+        ValueExpression="@(() => _value)"
         class="form-control"
         disabled="disabled">
         @if (HasEmptyValue)
@@ -23,9 +25,9 @@ else
 {
     <InputSelect
         id="@FieldId"
-        Value="Value"
-        ValueExpression="@(() => Value)"
-        ValueChanged="@((TValue v) => ChangeValue(v))"
+        Value="_value"
+        ValueExpression="@(() => _value)"
+        ValueChanged="@((TValue? v) => SetCurrentValue(v))"
         class="form-control">
         @if (HasEmptyValue)
         {
@@ -43,12 +45,6 @@ else
     public string FieldId { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public TValue Value { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public EventCallback<TValue> ValueChanged { get; set; }
-    
-    [Parameter, EditorRequired]
     public IEnumerable<TItem> Items { get; set; } = default!;
     
     [Parameter, EditorRequired]
@@ -63,5 +59,20 @@ else
     [Parameter]
     public bool HasEmptyValue { get; set; }
 
-    private Task ChangeValue(TValue value) => ValueChanged.InvokeAsync(value);
+    private TValue? _value = default!;
+
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue;
+    }
+
+    private void SetCurrentValue(TValue? value) => CurrentValue = value;
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out TValue result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,32 +1,33 @@
 @typeparam TValue
 @typeparam TItem
 
-<FormFieldSet Label="@Label">
+@inherits InputBase<IEnumerable<TValue>>
+
+<FormFieldSet FieldId="@FieldId" Label="@Label">
     <Content>
-        <div class="form-control @CssClass()">
+        <div class="form-control @DisabledCssClass">
             @foreach (var item in Items)
             {
                 var value = ValueSelector(item);
         
                 <span
-                    class="multiselect__item @CssClass(value)"
+                    class="multiselect__item @SelectedCssClass(value)"
                     @onclick="() => ChangeValue(value)">
                     @TitleSelector(item)
                 </span>
             }
+            
+            <input type="text" value="@ValuesAsString" id="@FieldId" style="display: none;" />
         </div>
     </Content>
 </FormFieldSet>
 
 @code {
     [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public IEnumerable<TValue> Values { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public EventCallback<IEnumerable<TValue>> ValuesChanged { get; set; }
     
     [Parameter, EditorRequired]
     public IEnumerable<TItem> Items { get; set; } = default!;
@@ -45,20 +46,32 @@
     protected override void OnParametersSet()
     {
         _values.Clear();
-        _values.AddRange(Values);
+        if (CurrentValue is not null)
+            _values.AddRange(CurrentValue);
     }
-
-    private string CssClass() => IsDisabled ? "disabled" : "enabled";
     
-    private string CssClass(TValue value) => _values.Contains(value) ? "multiselect__item_selected" : string.Empty;
+    private string DisabledCssClass => IsDisabled ? "disabled" : "enabled";
+    private string ValuesAsString => string.Join(',', _values);
+    
+    private string SelectedCssClass(TValue value) => _values.Contains(value)
+        ? "multiselect__item_selected"
+        : string.Empty;
 
-    private Task ChangeValue(TValue value)
+    private void ChangeValue(TValue value)
     {
         if (_values.Contains(value))
             _values.Remove(value);
         else
             _values.Add(value);
-        
-        return ValuesChanged.InvokeAsync(_values);
+
+        CurrentValue = _values;
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out IEnumerable<TValue> result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
     }
 }

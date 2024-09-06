@@ -10,7 +10,8 @@
             <SelectList
                 FieldId="chat-selector"
                 Value="_formModel.ChatId"
-                ValueChanged="@((long? v) => SelectChat(v))"
+                ValueExpression="@(() => _formModel.ChatId)"
+                ValueChanged="@((long? v) => Load(v))"
                 Items="_formModel.Chats"
                 TitleSelector="i => i.Name"
                 ValueSelector="i => i.Id" />
@@ -59,33 +60,19 @@
             {
                 var chats = await RandomCoffeeService.GetChatsByBot(BotId);
                 var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
-                var result = new RandomCoffeeHistoryWidgetFormModel
-                {
-                    Chats = chats.Items,
-                    ChatId = targetChatId
-                };
-                
-                if (chats.Items.Any())
-                {
-                    var getHistoryResult = await RandomCoffeeService.GetHistory(BotId, targetChatId!.Value, Depth);
-                    result.HistoryItems = getHistoryResult.Items;
-                    result.Date = getHistoryResult.Items.FirstOrDefault()?.Created;
-                }
+                var getHistoryResult = targetChatId.HasValue
+                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, Depth)
+                    : null;
 
-                return result;
+                return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
             },
             nameof(RandomCoffeeHistoryWidget),
             r =>
             {
-                _formModel = r;
+                _formModel.Apply(r);
                 _state = RequestState.Done();
                 StateHasChanged();
             });
-    }
-
-    private async Task SelectChat(long? chatId)
-    {
-        await Load(chatId);
     }
 
     private IQueryable<PairDto> Pairs

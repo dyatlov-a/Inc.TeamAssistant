@@ -3,5 +3,10 @@
     align-items: center;
     justify-content: space-evenly;
     min-height: 80px;
+}
+.no-data_dark {
     color: #000;
+}
+.no-data_light {
+    color: #dfdfdf;
 }

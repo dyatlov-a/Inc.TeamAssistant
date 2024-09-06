@@ -38,6 +38,9 @@
 ::deep svg {
     margin-bottom: -4px;
 }
+::deep .no-data {
+    height: calc(100vh - 660px);
+}
 @media (max-width: 479.98px) {
     .assessment-session__header {
         flex-direction: column;

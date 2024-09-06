@@ -1,13 +1,10 @@
 .loading {
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
     min-height: 80px;
 }
 .loader {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-left: -23px;
-    margin-top: -23px;
     width: 46px;
 }
 .loader_light {

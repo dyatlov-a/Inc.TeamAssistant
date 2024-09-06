@@ -38,6 +38,7 @@
                                         <SelectList
                                             FieldId="@settingItem.PropertyName"
                                             Value="property.Value"
+                                            ValueExpression="@(() => property.Value)"
                                             ValueChanged="@((string v) => property.Value = v)"
                                             Items="settingItem.Values"
                                             TitleSelector="i => Resources[i.MessageId]"
@@ -55,9 +56,11 @@
                 HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
                 <Content>
                     <MultiSelectList
+                        FieldId="supported-languages"
                         Label="@Resources[Messages.Constructor_Languages]"
-                        Values="_formModel.SupportedLanguages"
-                        ValuesChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
+                        Value="_formModel.SupportedLanguages"
+                        ValueExpression="@(() => _formModel.SupportedLanguages)"
+                        ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
                         Items="LanguageSettings.LanguageIds"
                         TitleSelector="i => i.Value"
                         ValueSelector="i => i.Value"/>

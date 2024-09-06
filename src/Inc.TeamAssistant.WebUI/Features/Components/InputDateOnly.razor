@@ -7,7 +7,8 @@
         <div class="time-selector__years">
             <SelectList
                 FieldId="@FieldId"
-                Value="_selectedYear"
+                Value="_year"
+                ValueExpression="@(() => _year)"
                 ValueChanged="@((int i) => SelectYear(i))"
                 Items="_years"
                 TitleSelector="i => i.Text"
@@ -16,7 +17,8 @@
         <div class="time-selector__months">
             <SelectList
                 FieldId="@($"{FieldId}-month")"
-                Value="_selectedMonth"
+                Value="_month"
+                ValueExpression="@(() => _month)"
                 ValueChanged="@((int i) => SelectMonth(i))"
                 Items="_months"
                 TitleSelector="i => i.Text"
@@ -25,7 +27,8 @@
         <div class="time-selector__days">
             <SelectList
                 FieldId="@($"{FieldId}-day")"
-                Value="_selectedDay"
+                Value="_day"
+                ValueExpression="@(() => _day)"
                 ValueChanged="@((int i) => SelectDay(i))"
                 Items="Days"
                 TitleSelector="i => i.Text"
@@ -41,9 +44,9 @@
     [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
     
-    private int _selectedYear;
-    private int _selectedMonth;
-    private int _selectedDay;
+    private int _year;
+    private int _month;
+    private int _day;
     
     private readonly IReadOnlyCollection<(string Text, int Value)> _years = Enumerable
         .Range(24, 10)
@@ -56,36 +59,36 @@
         .ToArray();
     
     private IReadOnlyCollection<(string Text, int Value)> Days => Enumerable
-        .Range(1, DateTime.DaysInMonth(_selectedYear, _selectedMonth))
+        .Range(1, DateTime.DaysInMonth(_year, _month))
         .Select(i => (i.ToString("D2"), i))
         .ToArray();
     
     protected override void OnParametersSet()
     {
-        _selectedYear = CurrentValue.Year;
-        _selectedMonth = CurrentValue.Month;
-        _selectedDay = CurrentValue.Day;
+        _year = CurrentValue.Year;
+        _month = CurrentValue.Month;
+        _day = CurrentValue.Day;
     }
     
     private void SelectYear(int year)
     {
-        _selectedYear = year;
+        _year = year;
         SetCurrentValue();
     }
     
     private void SelectMonth(int month)
     {
-        _selectedMonth = month;
+        _month = month;
         SetCurrentValue();
     }
     
     private void SelectDay(int day)
     {
-        _selectedDay = day;
+        _day = day;
         SetCurrentValue();
     }
     
-    private void SetCurrentValue() => CurrentValue = new DateOnly(_selectedYear, _selectedMonth, _selectedDay);
+    private void SetCurrentValue() => CurrentValue = new DateOnly(_year, _month, _day);
     
     protected override bool TryParseValueFromString(
         string? value,

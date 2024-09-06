@@ -10,6 +10,7 @@
                 <SelectList
                     FieldId="map-selector"
                     Value="_formModel.MapId"
+                    ValueExpression="@(() => _formModel.MapId)"
                     ValueChanged="@((Guid? v) => _formModel.MapId = v)"
                     Items="_formModel.Maps"
                     TitleSelector="i => i.Name"
@@ -33,7 +34,7 @@
             }
             else
             {
-                <NoData/>
+                <NoData IsDark="true"/>
             }
         </div>
     </Content>
@@ -44,26 +45,18 @@
     public Guid BotId { get; set; }
     
     private RequestState _state = RequestState.Done();
-    private MapWidgetFormModel _formModel = new();
+    private readonly MapWidgetFormModel _formModel = new();
 
     protected override Task OnParametersSetAsync() => Load();
     
     private async Task Load()
     {
         _state = await RequestProcessor.Process(
-            async () =>
-            {
-                var getMaps = await CheckInService.GetMaps(BotId);
-                return new MapWidgetFormModel
-                {
-                    Maps = getMaps.Items,
-                    MapId = getMaps.Items.FirstOrDefault()?.Id
-                };
-            },
+            () => CheckInService.GetMaps(BotId),
             nameof(MapWidget),
             r =>
             {
-                _formModel = r;
+                _formModel.Apply(r);
                 _state = RequestState.Done();
                 StateHasChanged();
             });

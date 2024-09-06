@@ -7,7 +7,8 @@
         <div class="time-selector__hours">
             <SelectList
                 FieldId="@FieldId"
-                Value="_selectedHours"
+                Value="_hour"
+                ValueExpression="@(() => _hour)"
                 ValueChanged="@((int i) => SelectHour(i))"
                 Items="_hours"
                 TitleSelector="i => i.Text"
@@ -16,8 +17,9 @@
         <div class="time-selector__minutes">
             <SelectList
                 FieldId="@($"{FieldId}-minute")"
-                Value="_selectedMinutes"
-                ValueChanged="@((int i) => SelectMinutes(i))"
+                Value="_minute"
+                ValueExpression="@(() => _minute)"
+                ValueChanged="@((int i) => SelectMinute(i))"
                 Items="_minutes"
                 TitleSelector="i => i.Text"
                 ValueSelector="i => i.Value" />
@@ -32,8 +34,8 @@
     [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
     
-    private int _selectedHours;
-    private int _selectedMinutes;
+    private int _hour;
+    private int _minute;
 
     private readonly IReadOnlyCollection<(string Text, int Value)> _hours = Enumerable
         .Range(0, 24)
@@ -48,23 +50,23 @@
     
     protected override void OnParametersSet()
     {
-        _selectedHours = CurrentValue.Hour;
-        _selectedMinutes = CurrentValue.Minute;
+        _hour = CurrentValue.Hour;
+        _minute = CurrentValue.Minute;
     }
     
     private void SelectHour(int hour)
     {
-        _selectedHours = hour;
+        _hour = hour;
         SetCurrentValue();
     }
     
-    private void SelectMinutes(int minutes)
+    private void SelectMinute(int minute)
     {
-        _selectedMinutes = minutes;
+        _minute = minute;
         SetCurrentValue();
     }
     
-    private void SetCurrentValue() => CurrentValue = new TimeOnly(_selectedHours, _selectedMinutes);
+    private void SetCurrentValue() => CurrentValue = new TimeOnly(_hour, _minute);
     
     protected override bool TryParseValueFromString(
         string? value,
