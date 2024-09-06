@@ -12,11 +12,13 @@
 
 @inject IRenderContext RenderContext
 @inject IBotService BotService
+@inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
@@ -93,9 +95,10 @@
                     var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
                     var getFeaturesResult = await BotService.GetFeatures(t);
                     var getPropertiesResult = await BotService.GetProperties(t);
+                    var getCalendarResult = await CalendarService.GetCalendarByOwner(t);
 
                     return getBotResult is null
-                        ? StagesState.Create(getFeaturesResult, getPropertiesResult)
+                        ? StagesState.Create(getFeaturesResult, getPropertiesResult, getCalendarResult)
                         : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
                 });
             },
@@ -110,24 +113,26 @@
 
     private async Task MoveToNext(Stage? stage)
     {
-        var url = LinkFactory(stage);
+        if (stage.HasValue)
+        {
+            var url = LinkFactory(stage.Value);
+            
+            _currentState = stage.Value;
+            StateHasChanged();
+            
+            await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+            return;
+        }
         
-        _currentState = stage ?? Enum.GetValues<Stage>().First();
-        StateHasChanged();
-
-        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+        NavigationManager.NavigateTo(LinkBuilder.Build("constructor"));
     }
 
-    private string LinkFactory(Stage? stage)
+    private string LinkFactory(Stage stage)
     {
-        if (!stage.HasValue)
-            return LinkBuilder.Build("constructor");
-        
-        var target = stage.Value.ToString().ToLowerInvariant();
         var link = _stagesState.Id.HasValue
-            ? $"constructor/{_stagesState.Id.Value:N}/{target}"
-            : $"constructor/{target}";
+            ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
+            : $"constructor/{stage}";
 
-        return LinkBuilder.Build(link);
+        return LinkBuilder.Build(link.ToLowerInvariant());
     }
 }

@@ -4,7 +4,7 @@
     color: #000;
 }
 .assessment-history-content {
-    padding: 60px 0 40px 0;
+    padding: 20px 0 40px 0;
 }
 .assessment-history-content:nth-child(2n) {
     background-color: #dfdfdf;
@@ -13,6 +13,9 @@
 .assessment-history-content:nth-child(2n) ::deep .story__link {
     color: #000;
 }
+.assessment-history-switcher {
+    padding-top: 20px;
+}
 ::deep .loading {
-    height: calc(100vh - 420px);
+    height: calc(100vh - 400px);
 }

@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
@@ -97,7 +98,7 @@ public sealed class StagesState
 
         return new StagesState(
             bot.Id,
-            bot.CalendarId,
+            bot.Id,
             bot.UserName,
             bot.Token,
             bot.SupportedLanguages,
@@ -109,14 +110,15 @@ public sealed class StagesState
     
     public static StagesState Create(
         GetFeaturesResult availableFeatures,
-        GetPropertiesResult availableProperties)
+        GetPropertiesResult availableProperties,
+        GetCalendarByOwnerResult? calendar)
     {
         ArgumentNullException.ThrowIfNull(availableFeatures);
         ArgumentNullException.ThrowIfNull(availableProperties);
 
         return new StagesState(
             null,
-            null,
+            calendar?.Id,
             string.Empty,
             string.Empty,
             [LanguageSettings.DefaultLanguageId.Value],

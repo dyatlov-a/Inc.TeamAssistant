@@ -347,6 +347,7 @@
   "Constructor_FeaturesStore": "Магазин функционала для ботов",
   "Constructor_Configuration": "Настройка бота",
   "Constructor_CheckConfigurationTemplate": "Проверить настройки и {0}",
+  "Constructor_RequiredCalendar": "Пожалуйста, установите и сохраните рабочий календарь",
 
   "PanelOpen": "Заполнить",
   "PanelSave": "Сохранить",

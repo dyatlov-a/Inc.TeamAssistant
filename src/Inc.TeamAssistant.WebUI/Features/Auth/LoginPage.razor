@@ -58,8 +58,12 @@
     private LoadingState _state = LoadingState.Done();
     private string _botUserName = string.Empty;
 
-    protected override Task OnParametersSetAsync() => Load();
-    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!RenderContext.IsDevelopment())
+            await Load();
+    }
+
     private async Task Load()
     {
         _state = await RequestProcessor.Process(

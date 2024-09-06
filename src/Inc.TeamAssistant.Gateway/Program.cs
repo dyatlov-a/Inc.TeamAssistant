@@ -36,6 +36,7 @@ using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Serilog;
@@ -125,7 +126,12 @@ builder.Services
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
-	.AddMvc();
+	.AddMvc(o => 
+	{
+		var outputFormatter = o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
+		if (outputFormatter is not null)
+			outputFormatter.TreatNullValueAsNoContent = false;
+	});
 
 builder.Services
 	.AddHealthChecks();

@@ -4,7 +4,7 @@
     color: #000;
 }
 .assessment-session-content {
-    padding: 60px 0 40px 0;
+    padding: 20px 0 40px 0;
 }
 .assessment-session-footer {
     background-color: #dfdfdf;
@@ -25,8 +25,11 @@
 .assessment-session__text {
     margin-top: 10px;
 }
+.assessment-session-switcher {
+    padding-top: 20px;
+}
 ::deep .no-data {
-    height: calc(100vh - 660px);
+    height: calc(100vh - 640px);
 }
 @media (max-width: 479.98px) {
     .assessment-session__header {

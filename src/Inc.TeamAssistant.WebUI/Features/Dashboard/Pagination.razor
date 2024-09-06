@@ -1,0 +1,8 @@
+<div class="paginator-container">
+    <Paginator State="State"/>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PaginationState State { get; set; } = default!;
+}

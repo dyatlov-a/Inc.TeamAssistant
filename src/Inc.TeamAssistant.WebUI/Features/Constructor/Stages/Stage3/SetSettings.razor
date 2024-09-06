@@ -69,12 +69,9 @@
             </FormSection>
         </Content>
     </Panel>
+    <ValidationMessage For="@(() => _formModel.CalendarId)"/>
 </EditForm>
-<CalendarEditor Selected="SelectedCalendar" IsOpen="!_formModel.CalendarId.HasValue">
-    <Validation>
-        <ValidationMessage For="@(() => _formModel.CalendarId)"/>
-    </Validation>
-</CalendarEditor>
+<CalendarEditor Selected="SelectedCalendar" />
 <BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
 
 @code {
@@ -82,7 +79,7 @@
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    public Func<Stage, string> LinkFactory { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public Func<Stage?, Task> MoveToNext { get; set; } = default!;
@@ -102,6 +99,9 @@
     private async Task SelectedCalendar(Guid calendarId)
     {
         var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        
+        _formModel.CalendarId = calendarId;
+        
         await dataEditor.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
 

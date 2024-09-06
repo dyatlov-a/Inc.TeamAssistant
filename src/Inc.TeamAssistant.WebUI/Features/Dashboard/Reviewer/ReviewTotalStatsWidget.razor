@@ -16,7 +16,9 @@
                     <div class="review-total-stats__item">
                         <ApexChart
                             TItem="HistoryByTeamItemDto"
-                            Title="@string.Format(Resources[Messages.Dashboard_ReviewByReviewerTemplate], _formModel.IntervalInDays)"
+                            Title="@string.Format(
+                                       Resources[Messages.Dashboard_ReviewByReviewerTemplate],
+                                       _formModel.IntervalInDays)"
                             Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
                             @ref="_reviewChart">
                             <ApexPointSeries TItem="HistoryByTeamItemDto"
@@ -30,7 +32,9 @@
                     <div class="review-total-stats__item">
                         <ApexChart
                             TItem="HistoryByTeamItemDto"
-                            Title="@string.Format(Resources[Messages.Dashboard_ReviewByOwnerTemplate], _formModel.IntervalInDays)"
+                            Title="@string.Format(
+                                       Resources[Messages.Dashboard_ReviewByOwnerTemplate],
+                                       _formModel.IntervalInDays)"
                             Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
                             @ref="_requestsChart">
                             <ApexPointSeries TItem="HistoryByTeamItemDto"

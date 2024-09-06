@@ -6,35 +6,44 @@
 
 <Loading State="_state">
     <Content>
-        <div class="chat-selector">
-            <SelectList
-                FieldId="chat-selector"
-                Value="_formModel.ChatId"
-                ValueExpression="@(() => _formModel.ChatId)"
-                ValueChanged="@((long? v) => Load(v))"
-                Items="_formModel.Chats"
-                TitleSelector="i => i.Name"
-                ValueSelector="i => i.Id" />
+        <div class="component-container">
+            <div class="chat-selector">
+                <SelectList
+                    FieldId="chat-selector"
+                    Value="_formModel.ChatId"
+                    ValueExpression="@(() => _formModel.ChatId)"
+                    ValueChanged="@((long? v) => Load(v))"
+                    Items="_formModel.Chats"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+            @if (Pairs.Any())
+            {
+                <QuickGrid Items="@Pairs" class="quick-data-grid">
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                        @context.FirstName
+                        <br/>
+                        @context.FirstUserName
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                        @context.SecondName
+                        <br/>
+                        @context.SecondUserName
+                    </TemplateColumn>
+                </QuickGrid>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
         </div>
-        <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
-        <QuickGrid Items="@Pairs" class="quick-data-grid">
-            <TemplateColumn
-                Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
-                Sortable="true"
-                SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-                @context.FirstName
-                <br/>
-                @context.FirstUserName
-            </TemplateColumn>
-            <TemplateColumn
-                Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
-                Sortable="true"
-                SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-                @context.SecondName
-                <br/>
-                @context.SecondUserName
-            </TemplateColumn>
-        </QuickGrid>
     </Content>
 </Loading>
 

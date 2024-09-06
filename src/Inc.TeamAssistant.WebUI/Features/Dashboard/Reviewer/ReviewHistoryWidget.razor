@@ -8,42 +8,49 @@
 
 <Loading State="_state">
     <Content>
-        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
-        <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
-            <TemplateColumn
-                Title="@Resources[Messages.Dashboard_ReviewOwnerNameTitle]"
-                Sortable="true"
-                SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
-                @context.OwnerName
-                <br/>
-                @context.OwnerUserName
-            </TemplateColumn>
-            <TemplateColumn Title="@Resources[Messages.Dashboard_ReviewDescriptionTitle]" Sortable="false">
-                <span title="@context.Description" class="hint">
-                    @context.Description.ToShort()
-                </span>
-            </TemplateColumn>
-            <TemplateColumn
-                Title="@Resources[Messages.Dashboard_ReviewReviewerNameTitle]"
-                Sortable="true"
-                SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-                <span title="@GetReviewerTitle(context)" class="hint">
-                    @context.ReviewerName
-                    <br/>
-                    @context.ReviewerUserName
-                </span>
-            </TemplateColumn>
-            <TemplateColumn
-                Title="@Resources[Messages.Dashboard_ReviewStateTitle]"
-                Sortable="true"
-                SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
-                @context.Created.ToString("yyyy.MM.dd HH:mm")
-                <br/>
-                @StateLookup[context.State]
-            </TemplateColumn>
-        </QuickGrid>
-        <div class="paginator-container">
-            <Paginator State="_pagination"/>
+        <div class="component-container">
+            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+            @if (Tasks.Any())
+            {
+                <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_ReviewOwnerNameTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
+                        @context.OwnerName
+                        <br/>
+                        @context.OwnerUserName
+                    </TemplateColumn>
+                    <TemplateColumn Title="@Resources[Messages.Dashboard_ReviewDescriptionTitle]" Sortable="false">
+                        <span title="@context.Description" class="hint">
+                            @context.Description.ToShort()
+                        </span>
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_ReviewReviewerNameTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
+                        <span title="@GetReviewerTitle(context)" class="hint">
+                            @context.ReviewerName
+                            <br/>
+                            @context.ReviewerUserName
+                        </span>
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_ReviewStateTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
+                        @context.Created.ToString("yyyy.MM.dd HH:mm")
+                        <br/>
+                        @StateLookup[context.State]
+                    </TemplateColumn>
+                </QuickGrid>
+                <Pagination State="_pagination"/>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
         </div>
     </Content>
 </Loading>

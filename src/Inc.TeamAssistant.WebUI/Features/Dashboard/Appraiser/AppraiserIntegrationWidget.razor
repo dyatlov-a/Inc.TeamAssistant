@@ -107,8 +107,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel);
-        
-        base.OnParametersSet();
     }
 
     protected override Task OnParametersSetAsync() => Load();

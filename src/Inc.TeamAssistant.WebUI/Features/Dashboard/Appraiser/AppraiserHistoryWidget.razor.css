@@ -3,3 +3,9 @@
     justify-content: center;
     margin: 20px 0 10px 0;
 }
+.component-container {
+    height: calc(100% - 30px);
+}
+::deep .no-data {
+    height: calc(100% - 126px);
+}

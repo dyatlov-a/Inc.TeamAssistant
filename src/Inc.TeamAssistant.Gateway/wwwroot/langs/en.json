@@ -347,6 +347,7 @@
   "Constructor_FeaturesStore": "Features store",
   "Constructor_Configuration": "Bot settings",
   "Constructor_CheckConfigurationTemplate": "Check settings and {0}",
+  "Constructor_RequiredCalendar": "Please set and save the work calendar",
   
   "PanelOpen": "Open",
   "PanelSave": "Save",
