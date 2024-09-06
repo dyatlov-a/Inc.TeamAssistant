@@ -54,7 +54,7 @@ internal sealed class SummaryByStoryBuilder
             builder.AppendLine();
             builder.Append(await _messageBuilder.Build(Messages.Appraiser_AverageEstimate, summary.LanguageId));
             builder.Append(' ');
-            builder.Append(summary.Total);
+            builder.Append(summary.Mean);
         }
         
         var notification = summary.StoryExternalId.HasValue

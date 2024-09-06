@@ -6,5 +6,6 @@ public sealed record StoryDto(
     IReadOnlyCollection<string> Links,
     IReadOnlyCollection<StoryForEstimateDto> StoryForEstimates,
     bool EstimateEnded,
-    string Total,
-    string? Median);
+    string Mean,
+    string Median,
+    string AcceptedValue);

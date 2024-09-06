@@ -5,8 +5,6 @@
 @page "/en/assessment-history/{teamId:guid}/{date}/{View}"
 @page "/ru/assessment-history/{teamId:guid}/{date}/{View}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Common
-
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
@@ -35,7 +33,7 @@
                     <div class="assessment-history-content__container">
                         <DynamicComponent
                             Type="CurrentViewType"
-                            Parameters="@(new Dictionary<string, object> { ["Item"] = item })"/>
+                            Parameters="@(new Dictionary<string, object> { ["Story"] = item })"/>
                     </div>
                 </div>
             }
@@ -62,7 +60,7 @@
     };
 
     private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
+    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
 
     protected override async Task OnParametersSetAsync()
@@ -81,8 +79,7 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var view = assessmentType.ToString().ToLowerInvariant();
-        var url = LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}/{view}");
+        var url = LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant());
         
         _currentView = assessmentType;
         

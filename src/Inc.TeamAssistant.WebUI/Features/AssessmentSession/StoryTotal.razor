@@ -1,0 +1,23 @@
+@inject ResourcesManager Resources
+
+<div class="story-total">
+    <table class="story-total__items">
+        <tr>
+            <td><span class="story-total__item"><b>@Story.Mean</b></span></td>
+            <td><span class="story-total__item">@Resources[Messages.GUI_MeanRating]</span></td>
+        </tr>
+        <tr>
+            <td><span class="story-total__item"><b>@Story.Median</b></span></td>
+            <td><span class="story-total__item">@Resources[Messages.GUI_MedianRating]</span></td>
+        </tr>
+        <tr>
+            <td><span class="story-total__item"><b>@Story.AcceptedValue</b></span></td>
+            <td><span class="story-total__item">@Resources[Messages.GUI_AcceptedValue]</span></td>
+        </tr>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Story { get; set; } = default!;
+}

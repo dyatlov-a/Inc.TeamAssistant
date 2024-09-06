@@ -9,6 +9,7 @@ internal static class Messages
     public static readonly string GUI_TaskAssess = nameof(GUI_TaskAssess);
     public static readonly string GUI_MeanRating = nameof(GUI_MeanRating);
     public static readonly string GUI_MedianRating = nameof(GUI_MedianRating);
+    public static readonly string GUI_AcceptedValue = nameof(GUI_AcceptedValue);
     public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
     public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
 

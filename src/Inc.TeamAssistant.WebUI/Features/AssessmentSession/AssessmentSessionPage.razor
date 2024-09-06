@@ -5,8 +5,6 @@
 @page "/en/assessment-session/{id:guid}/{View}"
 @page "/ru/assessment-session/{id:guid}/{View}"
 
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetActiveStory
-
 @implements IAsyncDisposable
 
 @inject IAppraiserService AppraiserService
@@ -54,7 +52,7 @@
                         {
                             <DynamicComponent
                                 Type="CurrentViewType"
-                                Parameters="@(new Dictionary<string, object>{["Item"] = _item.Story})"/>
+                                Parameters="@(new Dictionary<string, object>{["Story"] = _item.Story})"/>
                         }
                         else
                         {
@@ -87,7 +85,7 @@
     };
     
     private RequestState _state = RequestState.Done();
-    private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
+    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private EventsProvider? _eventsProvider;
     
@@ -125,8 +123,7 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var view = assessmentType.ToString().ToLowerInvariant();
-        var url = LinkBuilder.Build($"assessment-session/{Id:N}/{view}");
+        var url = LinkBuilder.Build($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
         
         _currentView = assessmentType;
         

@@ -1,31 +1,16 @@
-@using Inc.TeamAssistant.Appraiser.Model.Common
-
-@inject ResourcesManager Resources
-
-<div class="story">
-    <h2 class="story__title">@Item.Title</h2>
-    @if (Item.Links.Any())
-    {
-        <ul class="story__items">
-            @foreach (var link in Item.Links)
-            {
-                <li class="story__item">
-                    <a class="link story__link" href="@link" target="_blank">@link</a>
-                </li>
-            }
-        </ul>
-    }
+<div class="estimate">
+    <StoryDetails Story="Story" />
     <div class="estimate-group-container">
-        @if (Item.EstimateEnded)
+        @if (Story.EstimateEnded)
         {
-            foreach (var group in EstimatesByGroup().OrderByDescending(g => g.Key.ValueGroup))
+            foreach (var group in EstimatesByGroup.OrderByDescending(g => g.Key.ValueGroup))
             {
                 <div class="estimate-group">
                     <div>
                         <div class="estimate-group__title">@group.Key.DisplayValue</div>
                     </div>
                     <div class="estimate-group__content">
-                        <div class="story__cards">
+                        <div class="estimate__items">
                             @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
                             {
                                 <EstimateCard
@@ -47,8 +32,8 @@
                     <div class="estimate-group__title">-</div>
                 </div>
                 <div class="estimate-group__content">
-                    <div class="story__cards">
-                        @foreach (var storyForEstimate in Estimates().OrderBy(i => i.ParticipantName))
+                    <div class="estimate__items">
+                        @foreach (var storyForEstimate in Estimates.OrderBy(i => i.ParticipantName))
                         {
                             <EstimateCard
                                 PersonId="storyForEstimate.ParticipantId"
@@ -62,38 +47,19 @@
             </div>
         }
     </div>
-    <div class="story-total">
-        <table class="story-total__items">
-            <tr>
-                <td><span class="story-total__item"><b>@Item.Total</b></span></td>
-                <td><span class="story-total__item">@Resources[Messages.GUI_MeanRating]</span></td>
-            </tr>
-            <tr>
-                <td><span class="story-total__item"><b>@Item.Median</b></span></td>
-                <td><span class="story-total__item">@Resources[Messages.GUI_MedianRating]</span></td>
-            </tr>
-        </table>
-    </div>
+    <StoryTotal Story="Story" />
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public StoryDto Item { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string MeanRating { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string MedianRating { get; set; } = default!;
+    public StoryDto Story { get; set; } = default!;
 
-    private ILookup<(int ValueGroup, string DisplayValue), StoryForEstimateDto> EstimatesByGroup()
-    {
-        return Item.StoryForEstimates
-            .Where(s => s.ValueGroup.HasValue)
-            .ToLookup(s => (s.ValueGroup!.Value, s.DisplayValue));
-    }
+    private ILookup<(int ValueGroup, string DisplayValue), StoryForEstimateDto> EstimatesByGroup => Story
+        .StoryForEstimates
+        .Where(s => s.ValueGroup.HasValue)
+        .ToLookup(s => (s.ValueGroup!.Value, s.DisplayValue));
 
-    private IEnumerable<StoryForEstimateDto> Estimates() => Item.StoryForEstimates.Where(s => s.ValueGroup.HasValue);
+    private IEnumerable<StoryForEstimateDto> Estimates => Story.StoryForEstimates.Where(s => s.ValueGroup.HasValue);
 
-    private decimal CalculatePercents(int countInGroup) => countInGroup / (decimal)Item.StoryForEstimates.Count * 100;
+    private decimal CalculatePercents(int countInGroup) => countInGroup / (decimal)Story.StoryForEstimates.Count * 100;
 }

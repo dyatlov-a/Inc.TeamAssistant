@@ -1,44 +1,6 @@
-.story__cards {
+.estimate__items {
     display: flex;
     flex-wrap: wrap;
-}
-.story__title {
-    font-size: 1.4rem;
-    line-height: 1.8rem;
-    margin-bottom: 20px;
-}
-.story__items {
-    margin-bottom: 20px;
-}
-.story__item {
-    line-height: 2rem;
-}
-.story-total {
-    overflow: hidden;
-}
-.story-total__items {
-    float: right;
-}
-.story-total__item {
-    display: block;
-    font-size: 1.8rem;
-    line-height: 2.2rem;
-    padding-right: 20px;
-}
-.story__link {
-    color: #dfdfdf;
-}
-::deep .user-card {
-    margin: 20px;
-    background-color: #9d9d9d;
-    flex: 0 1 calc(25% - 40px);
-}
-::deep .story__value {
-    text-align: center;
-    display: block;
-    margin: 40px 0;
-    font-size: 2rem;
-    font-weight: bold;
 }
 .estimate-group-container {
     min-height: 220px;
@@ -61,13 +23,25 @@
 .estimate-group__content {
     flex-grow: 1;
 }
+::deep .estimate__card {
+    margin: 20px;
+    background-color: #9d9d9d;
+    flex: 0 1 calc(25% - 40px);
+}
+::deep .story__value {
+    text-align: center;
+    display: block;
+    margin: 40px 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
 @media (max-width: 991.98px) {
-    ::deep .user-card {
+    ::deep .estimate__card {
         flex: 0 1 calc(50% - 40px);
     }
 }
 @media (max-width: 767.98px) {
-    ::deep .user-card {
+    ::deep .estimate__card {
         flex: 0 1 100%;
     }
 }

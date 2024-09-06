@@ -4,13 +4,13 @@ internal sealed class FibonacciEstimationStrategy : IEstimationStrategy
 {
     private static readonly IReadOnlyDictionary<int, Estimation> Estimations = new Dictionary<int, Estimation>
     {
-        { 1, new("1SP", 1, "1SP", "+") },
-        { 2, new("2SP", 2, "2SP", "+") },
-        { 3, new("3SP", 3, "3SP", "+") },
-        { 5, new("5SP", 5, "5SP", "+") },
-        { 8, new("8SP", 8, "8SP", "+") },
-        { 13, new("13SP", 13, "13SP", "+") },
-        { 21, new("21SP", 21, "21SP", "+") }
+        { 1, new("1SP", 1, "1 SP", "+") },
+        { 2, new("2SP", 2, "2 SP", "+") },
+        { 3, new("3SP", 3, "3 SP", "+") },
+        { 5, new("5SP", 5, "5 SP", "+") },
+        { 8, new("8SP", 8, "8 SP", "+") },
+        { 13, new("13SP", 13, "13 SP", "+") },
+        { 21, new("21SP", 21, "21 SP", "+") }
     };
 
     public IEnumerable<Estimation> GetValues()

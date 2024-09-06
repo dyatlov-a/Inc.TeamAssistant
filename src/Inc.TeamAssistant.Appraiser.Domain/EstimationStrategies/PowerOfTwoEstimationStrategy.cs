@@ -4,13 +4,13 @@ internal sealed class PowerOfTwoEstimationStrategy : IEstimationStrategy
 {
     private static readonly IReadOnlyDictionary<int, Estimation> Estimations = new Dictionary<int, Estimation>
     {
-        { 1, new("1SP", 1, "1SP", "+") },
-        { 2, new("2SP", 2, "2SP", "+") },
-        { 4, new("4SP", 4, "4SP", "+") },
-        { 8, new("8SP", 8, "8SP", "+") },
-        { 16, new("16SP", 16, "16SP", "+") },
-        { 32, new("32SP", 32, "32SP", "+") },
-        { 64, new("64SP", 64, "64SP", "+") }
+        { 1, new("1SP", 1, "1 SP", "+") },
+        { 2, new("2SP", 2, "2 SP", "+") },
+        { 4, new("4SP", 4, "4 SP", "+") },
+        { 8, new("8SP", 8, "8 SP", "+") },
+        { 16, new("16SP", 16, "16 SP", "+") },
+        { 32, new("32SP", 32, "32 SP", "+") },
+        { 64, new("64SP", 64, "64 SP", "+") }
     };
     
     public IEnumerable<Estimation> GetValues()

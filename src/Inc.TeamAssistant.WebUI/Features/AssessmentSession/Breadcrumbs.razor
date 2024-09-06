@@ -1,0 +1,13 @@
+<ol class="breadcrumbs">
+    @foreach(var item in Items)
+    {
+        <li class="breadcrumbs__item">
+            <a href="@item.Value" class="link link_dark">@item.Title</a>
+        </li>
+    }
+</ol>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<SelectItem<string>> Items { get; set; } = Array.Empty<SelectItem<string>>();
+}

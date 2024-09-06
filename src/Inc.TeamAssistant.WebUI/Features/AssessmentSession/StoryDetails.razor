@@ -1,0 +1,19 @@
+<div class="story">
+    <h2 class="story__title">@Story.Title</h2>
+    @if (Story.Links.Any())
+    {
+        <ul class="story__items">
+            @foreach (var link in Story.Links)
+            {
+                <li class="story__item">
+                    <a class="link story__link" href="@link" target="_blank">@link</a>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public StoryDto Story { get; set; } = default!;
+}
