@@ -1,0 +1,49 @@
+<div class="view-switcher">
+    @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
+    {
+        <button
+            type="button"
+            class="view-switcher__item @ViewControlCss(assessmentType)"
+            @onclick="() => ChangeView(assessmentType)">
+            <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public AssessmentType View { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback<AssessmentType> ViewChanged { get; set; }
+    
+    private AssessmentType _currentView;
+
+    protected override void OnParametersSet()
+    {
+        _currentView = View;
+    }
+
+    private Dictionary<string, object> ViewIconParameters => new()
+    {
+        ["Size"] = "40px"
+    };
+    
+    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
+    {
+        AssessmentType.Individual => typeof(GridHorizontalIcon),
+        _ => typeof(GridDividersIcon)
+    };
+
+    private async Task ChangeView(AssessmentType assessmentType)
+    {
+        _currentView = assessmentType;
+
+        await ViewChanged.InvokeAsync(assessmentType);
+    }
+
+    private string ViewControlCss(AssessmentType assessmentType)
+    {
+        return assessmentType == _currentView ? "view-switcher__item_selected" : string.Empty;
+    }
+}

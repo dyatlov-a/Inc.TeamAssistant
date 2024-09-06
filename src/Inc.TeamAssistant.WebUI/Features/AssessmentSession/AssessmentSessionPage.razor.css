@@ -25,19 +25,6 @@
 .assessment-session__text {
     margin-top: 10px;
 }
-.view-controls {
-    text-align: right;
-    margin-bottom: 20px;
-}
-.view-controls__item {
-    display: inline-block;
-}
-.view-controls__item:hover, .view-controls__item_active {
-    background-color: #9d9d9d;
-}
-::deep svg {
-    margin-bottom: -4px;
-}
 ::deep .no-data {
     height: calc(100vh - 660px);
 }

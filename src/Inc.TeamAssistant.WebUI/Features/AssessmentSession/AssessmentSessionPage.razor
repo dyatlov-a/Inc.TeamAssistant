@@ -42,20 +42,7 @@
     </div>
     <div class="assessment-session-content">
         <div class="assessment-session-content__container">
-            <div class="view-controls">
-                @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
-                {
-                    var moveToViewLink = CreateViewLink(assessmentType);
-                    
-                    <a
-                        href="@moveToViewLink"
-                        class="view-controls__item @ViewControlCss(assessmentType)"
-                        @onclick="() => ChangeView(assessmentType, moveToViewLink)"
-                        @onclick:preventDefault="true">
-                        <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
-                    </a>
-                }
-            </div>
+            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged" />
             <div>
                 <Loading State="_state">
                     <Content>
@@ -98,10 +85,6 @@
         ["MeanRating"] = Resources[Messages.GUI_MeanRating],
         ["MedianRating"] = Resources[Messages.GUI_MedianRating]
     };
-    private Dictionary<string, object> ViewIconParameters => new()
-    {
-        ["Size"] = "40px"
-    };
     
     private RequestState _state = RequestState.Done();
     private IReadOnlyCollection<BreadcrumbItem> _breadcrumbs = Array.Empty<BreadcrumbItem>();
@@ -140,29 +123,14 @@
             });
     }
     
-    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
+    private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        AssessmentType.Individual => typeof(GridHorizontalIcon),
-        _ => typeof(GridDividersIcon)
-    };
-
-    private async Task ChangeView(AssessmentType assessmentType, string url)
-    {
+        var view = assessmentType.ToString().ToLowerInvariant();
+        var url = LinkBuilder.Build($"assessment-session/{Id:N}/{view}");
+        
         _currentView = assessmentType;
         
         await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
-    }
-
-    private string CreateViewLink(AssessmentType assessmentType)
-    {
-        var view = assessmentType.ToString().ToLowerInvariant();
-        
-        return LinkBuilder.Build($"assessment-session/{Id:N}/{view}");
-    }
-
-    private string ViewControlCss(AssessmentType assessmentType)
-    {
-        return assessmentType == _currentView ? "view-controls__item_active" : string.Empty;
     }
     
     public async ValueTask DisposeAsync()

@@ -54,6 +54,8 @@ public static class ApexChartOptionsBuilder
     public static ApexChartOptions<T> DisableToolbar<T>(this ApexChartOptions<T> options)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(options);
+        
         options.Chart.Toolbar = new Toolbar
         {
             Show = false,
