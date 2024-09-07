@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
-using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -49,9 +49,9 @@ internal sealed class BotClient : IBotService
         return result;
     }
 
-    public async Task<GetBotsResult> GetByUser(long userId, CancellationToken token)
+    public async Task<GetBotsByCurrentUserResult> GetFromCurrentUser(CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetBotsResult>($"bots/{userId}/user", token);
+        var result = await _client.GetFromJsonAsync<GetBotsByCurrentUserResult>("bots/by-user", token);
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 

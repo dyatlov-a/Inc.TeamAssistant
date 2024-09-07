@@ -10,14 +10,16 @@
 
 @attribute [Authorize]
 
-@using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+@using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 
 @inject IBotService BotService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
 
-<MetaDataModule WebsiteSection="WebsiteSection.Dashboard" MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Dashboard"
+    MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
 <div class="dashboard">
     <div class="dashboard-toolbar">
@@ -74,9 +76,6 @@
     
     [Parameter]
     public Guid? TeamId { get; set; }
-    
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     private Guid? _botId;
     private Guid? _teamId;
@@ -94,11 +93,8 @@
     
     private async Task Load()
     {
-        var authenticationState = await AuthenticationStateTask;
-        var currentPerson = authenticationState.User.ToPerson();
-        
         _state = await RequestProcessor.Process(
-            () => BotService.GetByUser(currentPerson.Id),
+            () => BotService.GetFromCurrentUser(),
             nameof(DashboardPage),
             r =>
             {

@@ -28,10 +28,10 @@ public sealed class BotsController : ControllerBase
         return Ok(await _botService.GetBotById(id, token));
     }
 
-    [HttpGet("{userId:long}/user")]
-    public async Task<IActionResult> GetByUser(long userId, CancellationToken token)
+    [HttpGet("by-user")]
+    public async Task<IActionResult> GetByUser(CancellationToken token)
     {
-        return Ok(await _botService.GetByUser(userId, token));
+        return Ok(await _botService.GetFromCurrentUser(token));
     }
 
     [HttpGet("{teamId:guid}/teammates")]

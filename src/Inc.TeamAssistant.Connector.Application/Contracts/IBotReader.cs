@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Connector.Domain;
-using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 
 namespace Inc.TeamAssistant.Connector.Application.Contracts;
 

@@ -1,11 +1,15 @@
-.appraiser-actions {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0 10px 0;
-}
 .component-container {
     height: calc(100% - 30px);
 }
+.component-content {
+    height: calc(100% - 106px);
+}
+.component-actions {
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+    padding: 0 10px;
+}
 ::deep .no-data {
-    height: calc(100% - 126px);
+    height: 100%;
 }

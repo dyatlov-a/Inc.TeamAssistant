@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
-using Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -37,9 +37,9 @@ internal sealed class BotService : IBotService
         return await _mediator.Send(new GetBotQuery(botId), token);
     }
 
-    public async Task<GetBotsResult> GetByUser(long userId, CancellationToken token)
+    public async Task<GetBotsByCurrentUserResult> GetFromCurrentUser(CancellationToken token)
     {
-        return await _mediator.Send(new GetBotsQuery(userId), token);
+        return await _mediator.Send(new GetBotsByCurrentUserQuery(), token);
     }
 
     public async Task<GetTeammatesResult> GetTeammates(Guid teamId, CancellationToken token)

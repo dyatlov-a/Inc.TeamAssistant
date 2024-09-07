@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Connector.Model.Queries.GetBots;
+namespace Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 
 public sealed record BotDto(
     Guid Id,
