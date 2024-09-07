@@ -71,7 +71,7 @@
     </Panel>
     <ValidationMessage For="@(() => _formModel.CalendarId)"/>
 </EditForm>
-<CalendarEditor Selected="SelectedCalendar" />
+<CalendarEditor IsOpen="!_formModel.CalendarId.HasValue" Selected="SelectedCalendar" />
 <BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
 
 @code {

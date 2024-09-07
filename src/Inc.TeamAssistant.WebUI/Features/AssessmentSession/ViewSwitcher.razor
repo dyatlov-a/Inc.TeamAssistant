@@ -31,8 +31,8 @@
     
     private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
     {
-        AssessmentType.Individual => typeof(GridHorizontalIcon),
-        _ => typeof(GridDividersIcon)
+        AssessmentType.Individual => typeof(GridIndividualIcon),
+        _ => typeof(GridGroupIcon)
     };
 
     private async Task ChangeView(AssessmentType assessmentType)

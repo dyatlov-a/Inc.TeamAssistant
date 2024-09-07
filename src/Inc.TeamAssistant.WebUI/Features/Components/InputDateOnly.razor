@@ -43,15 +43,18 @@
     
     [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
+
+    [Parameter]
+    public int YearsStart { get; set; } = DateTimeOffset.UtcNow.Year;
+
+    [Parameter]
+    public int YearsCount { get; set; } = 10;
     
     private int _year;
     private int _month;
     private int _day;
-    
-    private readonly IReadOnlyCollection<(string Text, int Value)> _years = Enumerable
-        .Range(24, 10)
-        .Select(i => (i.ToString("D2"), i + 2000))
-        .ToArray();
+
+    private IReadOnlyCollection<(string Text, int Value)> _years = Array.Empty<(string, int)>();
     
     private readonly IReadOnlyCollection<(string Text, int Value)> _months = Enumerable
         .Range(1, 12)
@@ -68,6 +71,11 @@
         _year = CurrentValue.Year;
         _month = CurrentValue.Month;
         _day = CurrentValue.Day;
+        
+        _years = Enumerable
+            .Range(YearsStart, YearsCount)
+            .Select(i => (i.ToString("D2"), i))
+            .ToArray();
     }
     
     private void SelectYear(int year)

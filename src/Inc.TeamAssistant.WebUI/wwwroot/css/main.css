@@ -229,6 +229,9 @@ html {
     to { transform: translateY(0); }
 }
 /* ICONS */
+.icon {
+    transition: stroke 0.3s ease 0s;
+}
 .icon-star {
     width: 14px;
     aspect-ratio: 1;
@@ -239,4 +242,16 @@ html {
 }
 .icon-star_checked {
     background: #F8CA00;
+}
+.icon_light {
+    stroke: #dfdfdf;    
+}
+.icon_dark {
+    stroke: #000;
+}
+.button:hover .icon_light, .link:hover .icon_light {
+    stroke: #000;
+}
+.button:hover .icon_dark, .link:hover .icon_dark {
+    stroke: #dfdfdf;
 }

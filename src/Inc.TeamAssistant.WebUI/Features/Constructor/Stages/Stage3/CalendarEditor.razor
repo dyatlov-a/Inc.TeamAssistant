@@ -89,7 +89,7 @@
                                                 type="button"
                                                 class="button button_dark button_small work-schedule__button"
                                                 @onclick="() => _formModel.RemoveHoliday(holiday)">
-                                                <TrashIcon Size="20px" Color="#000"/>
+                                                <TrashIcon Size="20px" IsDark="true" />
                                             </button>
                                         </div>
                                     </div>
@@ -114,6 +114,9 @@
 @code {
     [Parameter, EditorRequired]
     public EventCallback<Guid> Selected { get; set; }
+    
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
 
     private bool _isOpen;
     private readonly CalendarFromModel _formModel = new();
@@ -124,6 +127,12 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && IsOpen)
+            await Load();
     }
 
     private async Task Load()

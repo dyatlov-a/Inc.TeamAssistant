@@ -8,9 +8,7 @@
         <AuthorizeView>
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
-                <a href="@MainUrl" class="link navbar__item">
-                    <HomeIcon Size="40px" Color="#fff" />
-                </a>
+                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 <span class="navbar__item navbar__item_avatar">
@@ -24,7 +22,7 @@
                 </a>
             </Authorized>
             <NotAuthorized>
-                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" Color="#fff" /></a>
+                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 @if (!CurrentUrl.Contains("/login"))
