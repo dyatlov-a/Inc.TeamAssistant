@@ -12,7 +12,7 @@
             <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
         </Actions>
         <Content>
-            <Loading State="_state">
+            <Loading State="_state" Retry="Load">
                 <Content>
                     <FormSection
                         Title="@Resources[Messages.Constructor_BotDetails]"
@@ -51,17 +51,18 @@
     private async Task Load()
     {
         _isOpen = true;
-        _state = await RequestProcessor.Process(
+        
+        await RequestProcessor.Process(
             async () =>
             {
                 var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
                 return botDetails;
             },
             nameof(BotDetailsEditor),
-            r =>
+            r => _formModel.Apply(r),
+            s =>
             {
-                _formModel.Apply(r);
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
         
@@ -73,11 +74,12 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => BotService.SetDetails(_formModel.ToCommand(Token)),
-            () =>
+            () => { },
+            s =>
             {
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

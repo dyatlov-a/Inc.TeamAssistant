@@ -10,7 +10,7 @@
         <p>@Resources[Messages.Dashboard_AppraiserIntegrationConfirmText]</p>
     </Content>
 </ConfirmDialog>
-<Loading State="_state">
+<Loading State="_state" Retry="Load">
     <Content>
         <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
             <FluentValidationValidator @ref="_fluentValidationValidator"/>
@@ -111,22 +111,27 @@
     }
 
     protected override Task OnParametersSetAsync() => Load();
+
+    private Task Load() => Load(notification: null);
     
-    private async Task Load(Notification? notification = null)
+    private async Task Load(Notification? notification)
     {
         var notificationsService = ServiceProvider.GetService<NotificationsService>();
         
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => IntegrationService.GetTeamProperties(TeamId),
             nameof(AppraiserIntegrationWidget),
             r =>
             {
                 _formModel.Apply(r);
-                _state = LoadingState.Done();
-                StateHasChanged();
                 
                 if (notificationsService is not null && notification is not null)
                     notificationsService.Add(notification);
+            },
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
             });
     }
 
@@ -136,12 +141,12 @@
 
     private async Task Disable()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId)),
-            () =>
+            () => _formModel.Clear(),
+            s =>
             {
-                _formModel.Clear();
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }
@@ -151,13 +156,14 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             async () =>
             {
                 await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId));
 
                 await Load(Notification.Info(Resources[Messages.Dashboard_AppraiserIntegrationEnableSuccess]));
             },
-            StateHasChanged);
+            () => {},
+            _ => StateHasChanged());
     }
 }

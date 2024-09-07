@@ -353,6 +353,7 @@
 
   "PanelOpen": "Заполнить",
   "PanelSave": "Сохранить",
+  "LoadingReload": "Перезагрузить",
   
   "ConfirmDialog_Yes": "Да",
   "ConfirmDialog_No": "Нет"

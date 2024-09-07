@@ -32,7 +32,7 @@
         <h1 class="constructor__title title">@Resources[Messages.Constructor_Title] @BotName</h1>
         @if (RenderContext.IsBrowser)
         {
-            <Loading State="_state">
+            <Loading State="_state" Retry="Load">
                 <Content>
                     <DynamicComponent Type="StageType" Parameters="StageParameters"/>
                 </Content>
@@ -78,16 +78,14 @@
             _currentState = value;
         
         if (RenderContext.IsBrowser)
-        {
-            var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
-            
-            await Load(dataEditor);
-        }
+            await Load();
     }
     
-    private async Task Load(DataEditor dataEditor)
+    private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        
+        await RequestProcessor.Process(
             () =>
             {
                 return dataEditor.GetValueOrDefault(BotStorageKey, async t =>
@@ -103,10 +101,10 @@
                 });
             },
             nameof(StagesPage),
-            r =>
+            r => _stagesState = r,
+            s =>
             {
-                _stagesState = r;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

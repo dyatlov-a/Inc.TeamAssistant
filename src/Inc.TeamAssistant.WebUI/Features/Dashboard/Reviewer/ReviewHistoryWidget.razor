@@ -6,7 +6,7 @@
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
-<Loading State="_state">
+<Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
@@ -79,18 +79,18 @@
     {
         _date ??= DateItems.First().Value;
 
-        await Load(_date.Value);
+        await Load();
     }
     
-    private async Task Load(DateOnly date)
+    private async Task Load()
     {
-        _state = await RequestProcessor.Process(
-            () => ReviewService.GetLast(TeamId, date),
+        await RequestProcessor.Process(
+            () => ReviewService.GetLast(TeamId, _date!.Value),
             nameof(ReviewHistoryWidget),
-            r =>
+            r => _tasks = r.Items,
+            s =>
             {
-                _tasks = r.Items;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }
@@ -99,7 +99,7 @@
     {
         _date = date;
         
-        await Load(_date.Value);
+        await Load();
     }
 
     private string GetReviewerTitle(TaskForReviewDto task)

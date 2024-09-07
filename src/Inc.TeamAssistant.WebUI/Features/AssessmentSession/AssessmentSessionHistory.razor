@@ -39,10 +39,7 @@
         await RequestProcessor.Process(
             () => AppraiserService.GetAssessmentHistory(TeamId, limit: 3),
             nameof(AssessmentSessionHistory),
-            r =>
-            {
-                _items = r.Items;
-                StateHasChanged();
-            });
+            r => _items = r.Items,
+            _ => {});
     }
 }

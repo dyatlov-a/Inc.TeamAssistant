@@ -26,38 +26,46 @@ public sealed class RequestProcessor : IDisposable
         _notificationsService = serviceProvider.GetService<NotificationsService>();
     }
 
-    public async Task<LoadingState> Process<TResponse>(
+    public async Task Process<TResponse>(
         Func<Task<TResponse>> request,
         string key,
-        Action<TResponse> onLoaded)
+        Action<TResponse> onLoaded,
+        Action<LoadingState> stateChanged)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(onLoaded);
+        ArgumentNullException.ThrowIfNull(stateChanged);
         
         if (_renderContext.IsBrowser)
         {
             if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
             {
                 onLoaded(restored);
-                return LoadingState.Done();
+                stateChanged(LoadingState.Done());
+                return;
             }
-
-            await BackgroundEnding(request, onLoaded);
             
-            return LoadingState.Loading();
+            stateChanged(LoadingState.Loading());
+
+            await BackgroundEnding(request, onLoaded, stateChanged);
+            return;
         }
 
-        await ForegroundEnding(request, key, onLoaded);
-        
-        return LoadingState.Done();
+        await ForegroundEnding(request, key, onLoaded, stateChanged);
     }
     
-    public async Task<LoadingState> Process(Func<Task> request, Action onLoaded)
+    public async Task Process(
+        Func<Task> request,
+        Action onLoaded,
+        Action<LoadingState> stateChanged)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(onLoaded);
+        ArgumentNullException.ThrowIfNull(stateChanged);
 
+        stateChanged(LoadingState.Loading());
+        
         await BackgroundEnding(async () =>
         {
             await request();
@@ -65,15 +73,18 @@ public sealed class RequestProcessor : IDisposable
         }, _ =>
         {
             onLoaded();
-        });
-            
-        return LoadingState.Loading();
+        },
+        stateChanged);
     }
 
-    private Task BackgroundEnding<TResponse>(Func<Task<TResponse>> request, Action<TResponse> onLoaded)
+    private Task BackgroundEnding<TResponse>(
+        Func<Task<TResponse>> request,
+        Action<TResponse> onLoaded,
+        Action<LoadingState> stateChanged)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(onLoaded);
+        ArgumentNullException.ThrowIfNull(stateChanged);
 
         Task.Run(async () =>
         {
@@ -87,10 +98,14 @@ public sealed class RequestProcessor : IDisposable
                 await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
                 
                 onLoaded(handler.Result);
+                
+                stateChanged(LoadingState.Done());
             }
             catch (Exception ex)
             {
                 _notificationsService?.Add(Notification.Error(ex.Message));
+                
+                stateChanged(LoadingState.Error());
             }
             finally
             {
@@ -105,7 +120,8 @@ public sealed class RequestProcessor : IDisposable
     private async Task ForegroundEnding<TResponse>(
         Func<Task<TResponse>> request,
         string key,
-        Action<TResponse> onLoaded)
+        Action<TResponse> onLoaded,
+        Action<LoadingState> stateChanged)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
@@ -122,10 +138,12 @@ public sealed class RequestProcessor : IDisposable
             }));
         
             onLoaded(response);
+            
+            stateChanged(LoadingState.Done());
         }
-        catch (Exception ex)
+        catch
         {
-            _notificationsService?.Add(Notification.Error(ex.Message));
+            stateChanged(LoadingState.Error());
         }
     }
 

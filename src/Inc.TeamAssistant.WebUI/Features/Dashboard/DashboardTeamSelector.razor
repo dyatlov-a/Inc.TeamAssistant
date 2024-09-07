@@ -10,7 +10,7 @@
         HelpText="@Resources[Messages.Dashboard_SelectTeam]"
         AsRows="true">
         <Content>
-            <Loading State="State">
+            <Loading State="State" Retry="Retry">
                 <Content>
                     <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
                         <Content>
@@ -56,6 +56,9 @@
     
     [Parameter, EditorRequired]
     public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public EventCallback<(Guid? BotId, Guid? TeamId)> TeamContextChanged { get; set; }

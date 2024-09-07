@@ -5,7 +5,7 @@
 @inject RequestProcessor RequestProcessor
 
 <div class="team-connector">
-    <Loading State="_state">
+    <Loading State="_state" Retry="Load">
         <Content>
             <FormSection
                 Title="@_team.TeamName"
@@ -37,13 +37,13 @@
     
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => BotService.GetConnector(TeamId, "000", "9d9d9d"),
             nameof(DashboardTeamConnector),
-            r =>
+            r => _team = r,
+            s =>
             {
-                _team = r;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

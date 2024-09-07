@@ -1,7 +1,18 @@
-@if (State.IsLoading)
+@inject ResourcesManager Resources
+
+@if (State.Value != LoadingState.State.Done)
 {
     <div class="loading">
-        <div class="loader @CssClass"></div>
+        @if (State.Value == LoadingState.State.Loading)
+        {
+            <div class="loader @LoaderCssClass"></div>
+        }
+        else
+        {
+            <button type="button" @onclick="Retry" class="button @ButtonCssClass">
+                @Resources[Messages.LoadingReload]
+            </button>
+        }
     </div>
 }
 else
@@ -16,8 +27,13 @@ else
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
     [Parameter]
     public bool IsDark { get; set; }
     
-    private string CssClass => IsDark ? "loader_dark" : "loader_light";
+    private string LoaderCssClass => IsDark ? "loader_dark" : "loader_light";
+    
+    private string ButtonCssClass => IsDark ? "button_dark" : "button_light";
 }

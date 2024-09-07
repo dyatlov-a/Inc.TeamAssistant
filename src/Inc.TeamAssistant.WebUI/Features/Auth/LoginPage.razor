@@ -16,7 +16,7 @@
                 <h1 class="telegram-login__header">@Resources[Messages.Login_Title]</h1>
                 <p class="telegram-login__text">@Resources[Messages.Login_TelegramText]</p>
                 <div class="telegram-login__actions">
-                    <Loading State="_state">
+                    <Loading State="_state" Retry="Load">
                         <Content>
                             @if (RenderContext.IsDevelopment())
                             {
@@ -66,13 +66,13 @@
 
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => UserService.GetAuthBotContext(),
             nameof(LoginPage),
-            r =>
+            r => _botUserName = r.UserName,
+            s =>
             {
-                _botUserName = r.UserName;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

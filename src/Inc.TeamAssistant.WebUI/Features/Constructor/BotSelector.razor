@@ -19,7 +19,7 @@
             </button>
         </Buttons>
     </BotCard>
-    <Loading State="_state">
+    <Loading State="_state" Retry="Load">
         <Content>
             @foreach (var bot in _bots)
             {
@@ -63,13 +63,13 @@
     
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
             nameof(BotSelector),
-            r =>
+            r => _bots = r.Bots.Where(b => b.OwnerId == OwnerId).ToArray(),
+            s =>
             {
-                _bots = r.Bots.Where(b => b.OwnerId == OwnerId).ToArray();
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

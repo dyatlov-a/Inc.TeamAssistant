@@ -220,4 +220,5 @@ internal static class Messages
     
     public static readonly string PanelOpen = nameof(PanelOpen);
     public static readonly string PanelSave = nameof(PanelSave);
+    public static readonly string LoadingReload = nameof(LoadingReload);
 }

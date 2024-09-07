@@ -353,6 +353,7 @@
   
   "PanelOpen": "Open",
   "PanelSave": "Save",
+  "LoadingReload": "Reload",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

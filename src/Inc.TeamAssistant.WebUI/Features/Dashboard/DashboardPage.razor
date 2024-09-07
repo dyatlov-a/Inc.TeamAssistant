@@ -29,6 +29,7 @@
                 TeamId="_teamId"
                 State="_state"
                 Bots="_bots"
+                Retry="Load"
                 TeamContextChanged="ChangeTeamContext"/>
             @if (_teamId.HasValue)
             {
@@ -93,13 +94,13 @@
     
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
             nameof(DashboardPage),
-            r =>
+            r => _bots = r.Bots,
+            s =>
             {
-                _bots = r.Bots;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

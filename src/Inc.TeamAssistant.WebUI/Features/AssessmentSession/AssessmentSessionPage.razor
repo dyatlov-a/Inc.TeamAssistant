@@ -33,7 +33,7 @@
                     <p class="assessment-session__text text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
                 </div>
                 <div class="assessment-session__link">
-                    <Loading State="_state" IsDark="true">
+                    <Loading State="_state" IsDark="true" Retry="Load">
                         <Content>
                             @((MarkupString)_item.CodeForConnect)
                         </Content>
@@ -50,7 +50,7 @@
     <div class="assessment-session-content">
         <div class="assessment-session-content__container">
             <div>
-                <Loading State="_state">
+                <Loading State="_state" Retry="Load">
                     <Content>
                         @if (_item.Story is not null)
                         {
@@ -143,13 +143,13 @@
     
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => AppraiserService.GetActiveStory(Id, "000", "dfdfdf"),
             nameof(AssessmentSessionPage),
-            r =>
+            r => _item = r,
+            s =>
             {
-                _item = r;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

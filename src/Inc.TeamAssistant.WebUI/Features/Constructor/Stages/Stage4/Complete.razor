@@ -15,7 +15,7 @@
             <button type="submit" class="button button_light">@ButtonText</button>
         </Actions>
         <Content>
-            <Loading State="_state">
+            <Loading State="_state" Retry="SubmitForm">
                 <Content>
                     <ValidationSummary />
                     <FormSection
@@ -169,7 +169,7 @@
 
         var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
 
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             async () =>
             {
                 if (StagesState.Id.HasValue)
@@ -192,10 +192,7 @@
 
                 await dataEditor.Detach(BotStorageKey);
             },
-            () =>
-            {
-                _state = LoadingState.Done();
-                MoveToNext(null);
-            });
+            () => MoveToNext(null),
+            s => _state = s);
     }
 }

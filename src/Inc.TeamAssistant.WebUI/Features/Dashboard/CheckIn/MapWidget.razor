@@ -3,7 +3,7 @@
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state">
+<Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
             <div class="map-selector">
@@ -51,13 +51,13 @@
     
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => CheckInService.GetMaps(BotId),
             nameof(MapWidget),
-            r =>
+            r => _formModel.Apply(r),
+            s =>
             {
-                _formModel.Apply(r);
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

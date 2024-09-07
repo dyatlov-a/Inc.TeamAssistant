@@ -11,7 +11,7 @@
             <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
         </Actions>
         <Content>
-            <Loading State="_state">
+            <Loading State="_state" Retry="Load">
                 <Content>
                     <FormSection
                         Title="@Resources[Messages.Constructor_WorkTimeTitle]"
@@ -140,7 +140,7 @@
         var clientTimezoneOffset = await JsRuntime.Execute<int>(JsFunctions.GetTimezone());
         
         _isOpen = true;
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
             nameof(CalendarEditor),
             r =>
@@ -149,7 +149,10 @@
                     _formModel.Apply(clientTimezoneOffset);
                 else
                     _formModel.Apply(r, clientTimezoneOffset);
-                _state = LoadingState.Done();
+            },
+            s =>
+            {
+                _state = s;
                 StateHasChanged();
             });
         
@@ -163,15 +166,16 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
         
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             async () =>
             {
                 var calendarId = await CalendarService.Update(_formModel.ToCommand());
                 await Selected.InvokeAsync(calendarId);
             },
-            () =>
+            () => {},
+            s =>
             {
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

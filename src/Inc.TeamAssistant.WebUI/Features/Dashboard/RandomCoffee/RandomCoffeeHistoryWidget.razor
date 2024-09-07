@@ -4,7 +4,7 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state">
+<Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
             <div class="chat-selector">
@@ -61,10 +61,12 @@
         .ToArray();
 
     protected override Task OnParametersSetAsync() => Load();
+
+    private Task Load() => Load(chatId: null);
     
-    private async Task Load(long? chatId = null)
+    private async Task Load(long? chatId)
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             async () =>
             {
                 var chats = await RandomCoffeeService.GetChatsByBot(BotId);
@@ -76,10 +78,10 @@
                 return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
             },
             nameof(RandomCoffeeHistoryWidget),
-            r =>
+            r => _formModel.Apply(r),
+            s =>
             {
-                _formModel.Apply(r);
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

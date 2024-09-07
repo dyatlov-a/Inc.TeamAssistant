@@ -27,7 +27,7 @@
             <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
         </div>
     </div>
-    <Loading State="_state">
+    <Loading State="_state" Retry="Load">
         <Content>
             @foreach (var item in _items)
             {
@@ -90,13 +90,13 @@
 
     private async Task Load()
     {
-        _state = await RequestProcessor.Process(
+        await RequestProcessor.Process(
             () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
             nameof(AssessmentSessionHistory),
-            r =>
+            r => _items = r.Items,
+            s =>
             {
-                _items = r.Items;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }

@@ -6,7 +6,7 @@
 @inject IRenderContext RenderContext
 @inject DateSelectorFactory DateSelectorFactory
 
-<Loading State="_state">
+<Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
@@ -64,18 +64,18 @@
     {
         _date ??= DateItems.First().Value;
 
-        await Load(_date.Value);
+        await Load();
     }
     
-    private async Task Load(DateOnly date)
+    private async Task Load()
     {
-        _state = await RequestProcessor.Process(
-            () => ReviewService.GetAverage(TeamId, date),
+        await RequestProcessor.Process(
+            () => ReviewService.GetAverage(TeamId, _date!.Value),
             nameof(ReviewAverageStatsWidget),
-            r =>
+            r => _items = r.Items,
+            s =>
             {
-                _items = r.Items;
-                _state = LoadingState.Done();
+                _state = s;
                 StateHasChanged();
             });
     }
@@ -84,6 +84,6 @@
     {
         _date = date;
         
-        await Load(_date.Value);
+        await Load();
     }
 }

@@ -2,14 +2,23 @@ namespace Inc.TeamAssistant.WebUI.Features.Components;
 
 public sealed class LoadingState
 {
-    public bool IsLoading { get; }
+    public State Value { get; }
     
-    private LoadingState(bool isLoading)
+    private LoadingState(State value)
     {
-        IsLoading = isLoading;
+        Value = value;
     }
     
-    public static LoadingState Loading() => new(isLoading: true);
+    public static LoadingState Loading() => new(State.Loading);
     
-    public static LoadingState Done() => new(isLoading: false);
+    public static LoadingState Error() => new(State.Error);
+    
+    public static LoadingState Done() => new(State.Done);
+    
+    public enum State
+    {
+        Loading = 1,
+        Error = 2,
+        Done = 3
+    }
 }
