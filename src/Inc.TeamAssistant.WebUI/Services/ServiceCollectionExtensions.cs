@@ -4,6 +4,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Features.Components;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
+using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -34,7 +35,8 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()
-            .AddSingleton<EventsProvider>();
+            .AddSingleton<EventsProvider>()
+            .AddSingleton<NotificationsService>();
 
         return services;
     }

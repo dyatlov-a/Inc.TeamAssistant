@@ -11,12 +11,13 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
+            <NotificationBar />
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <Authorizing>
-                    <Authorizing />
+                    <Authorizing/>
                 </Authorizing>
                 <NotAuthorized>
-                    <RedirectToLogin />
+                    <RedirectToLogin/>
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1"/>

@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Features.Components;
+using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Microsoft.AspNetCore.Components;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
@@ -9,15 +10,20 @@ public sealed class RequestProcessor : IDisposable
 {
     private readonly IRenderContext _renderContext;
     private readonly PersistentComponentState _applicationState;
+    private readonly NotificationsService? _notificationsService;
     private readonly List<PersistingComponentStateSubscription> _persistingSubscriptions = new();
     
     private readonly SemaphoreSlim _sync = new(1, 1);
     private volatile int _requestCount;
 
-    public RequestProcessor(IRenderContext renderContext, PersistentComponentState applicationState)
+    public RequestProcessor(
+        IRenderContext renderContext,
+        PersistentComponentState applicationState,
+        IServiceProvider serviceProvider)
     {
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _notificationsService = serviceProvider.GetService<NotificationsService>();
     }
 
     public async Task<LoadingState> Process<TResponse>(
@@ -79,13 +85,12 @@ public sealed class RequestProcessor : IDisposable
                 var handler = request();
 
                 await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
-
+                
                 onLoaded(handler.Result);
             }
             catch (Exception ex)
             {
-                // TODO: show error message for the user
-                Console.WriteLine(ex);
+                _notificationsService?.Add(Notification.Error(ex.Message));
             }
             finally
             {
@@ -105,16 +110,23 @@ public sealed class RequestProcessor : IDisposable
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(onLoaded);
-        
-        var response = await request();
 
-        _persistingSubscriptions.Add(_applicationState.RegisterOnPersisting(() =>
+        try
         {
-            _applicationState.PersistAsJson(key, response);
-            return Task.CompletedTask;
-        }));
+            var response = await request();
+            
+            _persistingSubscriptions.Add(_applicationState.RegisterOnPersisting(() =>
+            {
+                _applicationState.PersistAsJson(key, response);
+                return Task.CompletedTask;
+            }));
         
-        onLoaded(response);
+            onLoaded(response);
+        }
+        catch (Exception ex)
+        {
+            _notificationsService?.Add(Notification.Error(ex.Message));
+        }
     }
 
     public void Dispose()

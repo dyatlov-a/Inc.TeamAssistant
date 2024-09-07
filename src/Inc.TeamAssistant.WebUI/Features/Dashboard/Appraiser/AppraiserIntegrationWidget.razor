@@ -3,6 +3,7 @@
 @inject IIntegrationService IntegrationService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
 
 <ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
     <Content>
@@ -111,8 +112,10 @@
 
     protected override Task OnParametersSetAsync() => Load();
     
-    private async Task Load()
+    private async Task Load(Notification? notification = null)
     {
+        var notificationsService = ServiceProvider.GetService<NotificationsService>();
+        
         _state = await RequestProcessor.Process(
             () => IntegrationService.GetTeamProperties(TeamId),
             nameof(AppraiserIntegrationWidget),
@@ -121,6 +124,9 @@
                 _formModel.Apply(r);
                 _state = LoadingState.Done();
                 StateHasChanged();
+                
+                if (notificationsService is not null && notification is not null)
+                    notificationsService.Add(notification);
             });
     }
 
@@ -150,7 +156,7 @@
             {
                 await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId));
 
-                await Load();
+                await Load(Notification.Info(Resources[Messages.Dashboard_AppraiserIntegrationEnableSuccess]));
             },
             StateHasChanged);
     }

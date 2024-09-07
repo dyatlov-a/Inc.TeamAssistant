@@ -1,0 +1,41 @@
+@inject IServiceProvider ServiceProvider
+
+<div class="notification-bar">
+    @foreach (var notification in Notifications)
+    {
+        <div class="notification-bar__item @CssClass(notification)">
+            <a
+                href="#"
+                class="notification-bar__link"
+                @onclick="() => Remove(notification)"
+                @onclick:preventDefault="true">x</a>
+            <span class="notification-bar__message">@notification.Message</span>
+        </div>
+    }
+</div>
+
+@code {
+    private NotificationsService? _notificationsService;
+
+    private IReadOnlyCollection<Notification> Notifications
+        => _notificationsService?.Notifications ?? Array.Empty<Notification>();
+
+    protected override void OnInitialized()
+    {
+        _notificationsService = ServiceProvider.GetService<NotificationsService>();
+        
+        _notificationsService?.OnChanged(StateHasChanged);
+    }
+
+    private string CssClass(Notification notification)
+    {
+        return notification.Type switch
+        {
+            NotificationType.Info => "notification-bar__item_info",
+            NotificationType.Warning => "notification-bar__item_warning",
+            _ => "notification-bar__item_error"
+        };
+    }
+    
+    private void Remove(Notification notification) => _notificationsService?.Remove(notification);
+}
