@@ -106,14 +106,39 @@
         ];
         
         await Load();
-        
+        await StartListenEvents();
+    }
+
+    private async Task StartListenEvents()
+    {
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        var notificationsService = ServiceProvider.GetService<NotificationsService>();
+        
         if (eventsProvider is not null && !_eventScopes.ContainsKey(Id))
         {
-            var scope = await eventsProvider.OnStoryChanged(Id, Load);
+            var scope = await CreateEventsScope(eventsProvider, notificationsService);
             if (!_eventScopes.TryAdd(Id, scope))
                 await scope.DisposeAsync();
         }
+    }
+
+    private async Task<IAsyncDisposable> CreateEventsScope(
+        EventsProvider eventsProvider,
+        NotificationsService? notificationsService)
+    {
+        ArgumentNullException.ThrowIfNull(eventsProvider);
+        
+        return await eventsProvider.OnStoryChanged(
+            Id,
+            Load,
+            async v =>
+            {
+                var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
+                
+                notificationsService?.Add(Notification.Info(message));
+                    
+                await Load();
+            });
     }
     
     private async Task Load()

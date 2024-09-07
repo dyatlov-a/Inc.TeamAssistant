@@ -19,18 +19,24 @@ internal sealed class EventsProvider : IAsyncDisposable
 
 	public Task Start() => _hubConnection.StartAsync();
 
-	public async Task<IAsyncDisposable> OnStoryChanged(Guid teamId, Func<Task> changed)
+	public async Task<IAsyncDisposable> OnStoryChanged(
+		Guid teamId,
+		Func<Task> changed,
+		Func<string, Task> accepted)
 	{
         ArgumentNullException.ThrowIfNull(changed);
+        ArgumentNullException.ThrowIfNull(accepted);
 
-        var handler = _hubConnection.On("StoryChanged", changed);
+        var storyChangedHandler = _hubConnection.On("StoryChanged", changed);
+        var storyAcceptedHandler = _hubConnection.On("StoryAccepted", accepted);
 
 		await _hubConnection.InvokeAsync("JoinToGroup", teamId);
 
 		return new Scope(async () =>
 		{
 			await _hubConnection.InvokeAsync("RemoveFromGroup", teamId);
-			handler.Dispose();
+			storyChangedHandler.Dispose();
+			storyAcceptedHandler.Dispose();
 		});
 	}
 

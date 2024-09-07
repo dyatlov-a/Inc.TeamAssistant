@@ -111,12 +111,16 @@ public sealed class Story
 	public IEnumerable<Estimation> GetAssessments() => EstimationStrategy.GetValues();
 	public Estimation ToEstimation(int value) => EstimationStrategy.GetValue(value);
 
-	public void Accept(long participantId, int value)
+	public Estimation Accept(long participantId, int value)
 	{
 		if (ModeratorId != participantId)
 			throw new TeamAssistantException("User has not rights for action.");
 
-		TotalValue = ToEstimation(value).Value;
+		var totalEstimation = ToEstimation(value);
+		
+		TotalValue = totalEstimation.Value;
+
+		return totalEstimation;
 	}
 	
 	public bool EstimateEnded => StoryForEstimates.All(s => s.Value != Estimation.None.Value);
