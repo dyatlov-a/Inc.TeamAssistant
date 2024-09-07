@@ -23,8 +23,9 @@
     protected override void OnInitialized()
     {
         _notificationsService = ServiceProvider.GetService<NotificationsService>();
-        
-        _notificationsService?.OnChanged(StateHasChanged);
+
+        if (_notificationsService is INotificationsSource notificationsSource)
+            notificationsSource.OnChanged(StateHasChanged);
     }
 
     private string CssClass(Notification notification)

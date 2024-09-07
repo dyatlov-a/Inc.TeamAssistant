@@ -36,7 +36,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
-            .AddSingleton<NotificationsService>();
+            .AddSingleton(new NotificationsService(
+                messageLifetime: TimeSpan.FromSeconds(30),
+                checkInterval: TimeSpan.FromSeconds(5)));
 
         return services;
     }
