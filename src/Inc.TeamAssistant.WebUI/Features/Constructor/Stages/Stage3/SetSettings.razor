@@ -55,16 +55,20 @@
                 Title="@Resources[Messages.Constructor_SupportedLanguages]"
                 HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
                 <Content>
-                    <MultiSelectList
-                        FieldId="supported-languages"
-                        Label="@Resources[Messages.Constructor_Languages]"
-                        Value="_formModel.SupportedLanguages"
-                        ValueExpression="@(() => _formModel.SupportedLanguages)"
-                        ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
-                        Items="LanguageSettings.LanguageIds"
-                        TitleSelector="i => i.Value"
-                        ValueSelector="i => i.Value"/>
-                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                    <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
+                        <Content>
+                            <MultiSelectList
+                                FieldId="supported-languages"
+                                Label=""
+                                Value="_formModel.SupportedLanguages"
+                                ValueExpression="@(() => _formModel.SupportedLanguages)"
+                                ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
+                                Items="LanguageSettings.LanguageIds"
+                                TitleSelector="i => i.Value"
+                                ValueSelector="i => i.Value" />
+                            <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                        </Content>
+                    </FormFieldSet>
                 </Content>
             </FormSection>
         </Content>

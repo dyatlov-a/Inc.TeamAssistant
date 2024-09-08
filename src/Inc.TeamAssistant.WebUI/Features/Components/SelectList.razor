@@ -28,7 +28,7 @@ else
         Value="_value"
         ValueExpression="@(() => _value)"
         ValueChanged="@((TValue? v) => SetCurrentValue(v))"
-        class="form-control form-control_enabled">
+        class="@($"form-control form-control_enabled {CssClass} {ParentCssClass}")">
         @if (HasEmptyValue)
         {
             <option value=""></option>
@@ -52,6 +52,9 @@ else
 
     [Parameter, EditorRequired]
     public Func<TItem, TValue> ValueSelector { get; set; } = default!;
+    
+    [Parameter]
+    public string ParentCssClass { get; set; } = string.Empty;
 
     [Parameter]
     public bool IsDisabled { get; set; }

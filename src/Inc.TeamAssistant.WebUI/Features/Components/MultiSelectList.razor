@@ -3,31 +3,24 @@
 
 @inherits InputBase<IEnumerable<TValue>>
 
-<FormFieldSet FieldId="@FieldId" Label="@Label">
-    <Content>
-        <div class="form-control @DisabledCssClass">
-            @foreach (var item in Items)
-            {
-                var value = ValueSelector(item);
-        
-                <span
-                    class="multiselect__item @SelectedCssClass(value)"
-                    @onclick="() => ChangeValue(value)">
-                    @TitleSelector(item)
-                </span>
-            }
-            
-            <input type="text" value="@ValuesAsString" id="@FieldId" style="display: none;" />
-        </div>
-    </Content>
-</FormFieldSet>
+<div class="form-control @CssClass @DisabledCssClass">
+    @foreach (var item in Items)
+    {
+        var value = ValueSelector(item);
+
+        <span
+            class="multiselect__item @SelectedCssClass(value)"
+            @onclick="() => ChangeValue(value)">
+            @TitleSelector(item)
+        </span>
+    }
+    
+    <input type="text" value="@ValuesAsString" id="@FieldId" style="display: none;" />
+</div>
 
 @code {
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string Label { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public IEnumerable<TItem> Items { get; set; } = default!;

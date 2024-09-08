@@ -105,6 +105,7 @@ internal static class Messages
     public static readonly string Constructor_Configuration = nameof(Constructor_Configuration);
     public static readonly string Constructor_CheckConfigurationTemplate = nameof(Constructor_CheckConfigurationTemplate);
     public static readonly string Constructor_RequiredCalendar = nameof(Constructor_RequiredCalendar);
+    public static readonly string Constructor_DuplicateHolidays = nameof(Constructor_DuplicateHolidays);
 
     public static readonly string Dashboard_MoveToDashboard = nameof(Dashboard_MoveToDashboard);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);

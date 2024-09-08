@@ -1,38 +1,31 @@
 @inherits InputBase<TimeOnly>
 
-<FormFieldSet
-    FieldId="@FieldId"
-    Label="@Label">
-    <Content>
-        <div class="time-selector__hours">
-            <SelectList
-                FieldId="@FieldId"
-                Value="_hour"
-                ValueExpression="@(() => _hour)"
-                ValueChanged="@((int i) => SelectHour(i))"
-                Items="_hours"
-                TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value" />
-        </div>
-        <div class="time-selector__minutes">
-            <SelectList
-                FieldId="@($"{FieldId}-minute")"
-                Value="_minute"
-                ValueExpression="@(() => _minute)"
-                ValueChanged="@((int i) => SelectMinute(i))"
-                Items="_minutes"
-                TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value" />
-        </div>
-    </Content>
-</FormFieldSet>
+<div class="time-selector__hours">
+    <SelectList
+        FieldId="@FieldId"
+        Value="_hour"
+        ValueExpression="@(() => _hour)"
+        ValueChanged="@((int i) => SelectHour(i))"
+        Items="_hours"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
+<div class="time-selector__minutes">
+    <SelectList
+        FieldId="@($"{FieldId}-minute")"
+        Value="_minute"
+        ValueExpression="@(() => _minute)"
+        ValueChanged="@((int i) => SelectMinute(i))"
+        Items="_minutes"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
 
 @code {
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string Label { get; set; } = default!;
     
     private int _hour;
     private int _minute;

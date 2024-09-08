@@ -1,48 +1,42 @@
 @inherits InputBase<DateOnly>
 
-<FormFieldSet
-    FieldId="@FieldId"
-    Label="@Label">
-    <Content>
-        <div class="time-selector__years">
-            <SelectList
-                FieldId="@FieldId"
-                Value="_year"
-                ValueExpression="@(() => _year)"
-                ValueChanged="@((int i) => SelectYear(i))"
-                Items="_years"
-                TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value"/>
-        </div>
-        <div class="time-selector__months">
-            <SelectList
-                FieldId="@($"{FieldId}-month")"
-                Value="_month"
-                ValueExpression="@(() => _month)"
-                ValueChanged="@((int i) => SelectMonth(i))"
-                Items="_months"
-                TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value"/>
-        </div>
-        <div class="time-selector__days">
-            <SelectList
-                FieldId="@($"{FieldId}-day")"
-                Value="_day"
-                ValueExpression="@(() => _day)"
-                ValueChanged="@((int i) => SelectDay(i))"
-                Items="Days"
-                TitleSelector="i => i.Text"
-                ValueSelector="i => i.Value"/>
-        </div>
-    </Content>
-</FormFieldSet>
+<div class="time-selector__years">
+    <SelectList
+        FieldId="@FieldId"
+        Value="_year"
+        ValueExpression="@(() => _year)"
+        ValueChanged="@((int i) => SelectYear(i))"
+        Items="_years"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
+<div class="time-selector__months">
+    <SelectList
+        FieldId="@($"{FieldId}-month")"
+        Value="_month"
+        ValueExpression="@(() => _month)"
+        ValueChanged="@((int i) => SelectMonth(i))"
+        Items="_months"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
+<div class="time-selector__days">
+    <SelectList
+        FieldId="@($"{FieldId}-day")"
+        Value="_day"
+        ValueExpression="@(() => _day)"
+        ValueChanged="@((int i) => SelectDay(i))"
+        Items="Days"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
 
 @code {
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string Label { get; set; } = default!;
 
     [Parameter]
     public int YearsStart { get; set; } = DateTimeOffset.UtcNow.Year;

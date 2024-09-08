@@ -350,6 +350,7 @@
   "Constructor_Configuration": "Bot settings",
   "Constructor_CheckConfigurationTemplate": "Check settings and {0}",
   "Constructor_RequiredCalendar": "Please set and save the work calendar",
+  "Constructor_DuplicateHolidays": "Multiple holidays have the same date",
   
   "PanelOpen": "Open",
   "PanelSave": "Save",
