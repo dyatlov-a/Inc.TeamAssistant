@@ -2,7 +2,7 @@ using System.Timers;
 
 namespace Inc.TeamAssistant.WebUI.Features.Notifications;
 
-public sealed class NotificationsService : INotificationsSource
+internal sealed class NotificationsService : INotificationsSource
 {
     private readonly List<Notification> _notifications = new();
     private readonly System.Timers.Timer _timer;

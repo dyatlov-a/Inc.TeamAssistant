@@ -9,8 +9,5 @@ internal sealed class Scope : IAsyncDisposable
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        await _action();
-    }
+    public async ValueTask DisposeAsync() => await _action();
 }

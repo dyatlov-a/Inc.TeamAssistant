@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.WebUI.Extensions;
 
 public static class JsRuntimeExtensions
 {
-    public static async ValueTask<TValue> Execute<TValue>(this IJSRuntime jsRuntime, JsFunctions jsFunction)
+    public static async ValueTask<TValue> Execute<TValue>(this IJSRuntime jsRuntime, IJsFunction<TValue> jsFunction)
     {
         ArgumentNullException.ThrowIfNull(jsRuntime);
         ArgumentNullException.ThrowIfNull(jsFunction);
@@ -12,7 +12,7 @@ public static class JsRuntimeExtensions
         return await jsRuntime.InvokeAsync<TValue>(jsFunction.Identifier, jsFunction.Args);
     }
     
-    public static async ValueTask Execute(this IJSRuntime jsRuntime, JsFunctions jsFunction)
+    public static async ValueTask Execute(this IJSRuntime jsRuntime, IJsFunction<dynamic> jsFunction)
     {
         ArgumentNullException.ThrowIfNull(jsRuntime);
         ArgumentNullException.ThrowIfNull(jsFunction);

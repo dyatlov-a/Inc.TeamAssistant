@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-internal sealed class EventsProvider : IAsyncDisposable
+internal sealed class EventsProvider : IOnGroupHandlerBuilder, IAsyncDisposable
 {
 	private readonly HubConnection _hubConnection;
 
@@ -21,23 +21,37 @@ internal sealed class EventsProvider : IAsyncDisposable
 
 	public async Task<IAsyncDisposable> OnStoryChanged(
 		Guid teamId,
-		Func<Task> changed,
-		Func<string, Task> accepted)
+		params Func<IOnGroupHandlerBuilder, IDisposable>[] onGroupHandlers)
 	{
-        ArgumentNullException.ThrowIfNull(changed);
-        ArgumentNullException.ThrowIfNull(accepted);
+        ArgumentNullException.ThrowIfNull(onGroupHandlers);
 
-        var storyChangedHandler = _hubConnection.On("StoryChanged", changed);
-        var storyAcceptedHandler = _hubConnection.On("StoryAccepted", accepted);
+        var handlers = onGroupHandlers
+	        .Select(i => i(this))
+	        .ToArray();
 
 		await _hubConnection.InvokeAsync("JoinToGroup", teamId);
 
 		return new Scope(async () =>
 		{
 			await _hubConnection.InvokeAsync("RemoveFromGroup", teamId);
-			storyChangedHandler.Dispose();
-			storyAcceptedHandler.Dispose();
+			
+			foreach (var handler in handlers)
+				handler.Dispose();
 		});
+	}
+
+	IDisposable IOnGroupHandlerBuilder.OnStoryChanged(Func<Task> changed)
+	{
+		ArgumentNullException.ThrowIfNull(changed);
+		
+		return _hubConnection.On("StoryChanged", changed);
+	}
+
+	IDisposable IOnGroupHandlerBuilder.OnStoryAccepted(Func<string, Task> accepted)
+	{
+		ArgumentNullException.ThrowIfNull(accepted);
+		
+		return _hubConnection.On("StoryAccepted", accepted);
 	}
 
 	public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();

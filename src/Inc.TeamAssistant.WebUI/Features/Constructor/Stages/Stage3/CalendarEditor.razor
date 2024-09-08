@@ -162,7 +162,7 @@
 
     private async Task Load()
     {
-        var clientTimezoneOffset = await JsRuntime.Execute<int>(JsFunctions.GetTimezone());
+        var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
         
         _isOpen = true;
         await RequestProcessor.Process(

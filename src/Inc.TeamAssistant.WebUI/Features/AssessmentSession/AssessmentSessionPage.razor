@@ -5,8 +5,6 @@
 @page "/en/assessment-session/{id:guid}/{View}"
 @page "/ru/assessment-session/{id:guid}/{View}"
 
-@using System.Collections.Concurrent
-
 @implements IAsyncDisposable
 
 @inject IAppraiserService AppraiserService
@@ -88,10 +86,10 @@
         _ => typeof(AssessmentGroup)
     };
     
-    private readonly ConcurrentDictionary<Guid, IAsyncDisposable> _eventScopes = new();
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
+    private IAsyncDisposable? _eventListener;
     
     protected override async Task OnParametersSetAsync()
     {
@@ -106,41 +104,29 @@
         ];
         
         await Load();
+        
         await StartListenEvents();
     }
 
     private async Task StartListenEvents()
     {
         var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        var notificationsService = ServiceProvider.GetService<NotificationsService>();
         
-        if (eventsProvider is not null && !_eventScopes.ContainsKey(Id))
-        {
-            var scope = await CreateEventsScope(eventsProvider, notificationsService);
-            if (!_eventScopes.TryAdd(Id, scope))
-                await scope.DisposeAsync();
-        }
+        if (eventsProvider is not null)
+            _eventListener = await eventsProvider.OnStoryChanged(
+                Id,
+                b => b.OnStoryChanged(Load),
+                b => b.OnStoryAccepted(async v =>
+                {
+                    var notificationsService = ServiceProvider.GetRequiredService<NotificationsService>();
+                    var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
+
+                    notificationsService.Add(Notification.Info(message));
+
+                    await Load();
+                }));
     }
 
-    private async Task<IAsyncDisposable> CreateEventsScope(
-        EventsProvider eventsProvider,
-        NotificationsService? notificationsService)
-    {
-        ArgumentNullException.ThrowIfNull(eventsProvider);
-        
-        return await eventsProvider.OnStoryChanged(
-            Id,
-            Load,
-            async v =>
-            {
-                var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
-                
-                notificationsService?.Add(Notification.Info(message));
-                    
-                await Load();
-            });
-    }
-    
     private async Task Load()
     {
         await RequestProcessor.Process(
@@ -165,7 +151,7 @@
     
     public async ValueTask DisposeAsync()
     {
-        if (_eventScopes.TryRemove(Id, out var eventScope))
-            await eventScope.DisposeAsync();
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
     }
 }
