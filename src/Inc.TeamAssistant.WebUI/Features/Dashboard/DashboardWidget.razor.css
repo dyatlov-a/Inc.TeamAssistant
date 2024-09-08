@@ -11,7 +11,10 @@
     padding: 10px 0;
     height: 100%;
 }
-::deep .loading {
+.dashboard-widgets__content_has-controls ::deep .loading {
+    height: calc(100% - 66px);
+}
+.dashboard-widgets__content_no-controls ::deep .loading {
     height: calc(100% - 30px);
 }
 @media (max-width: 1080px) {

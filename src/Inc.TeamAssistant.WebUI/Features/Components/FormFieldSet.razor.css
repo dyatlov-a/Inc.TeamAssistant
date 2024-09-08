@@ -5,6 +5,3 @@
     display: block;
     margin-bottom: 5px;
 }
-::deep .validation-message {
-    margin-top: 5px;
-}

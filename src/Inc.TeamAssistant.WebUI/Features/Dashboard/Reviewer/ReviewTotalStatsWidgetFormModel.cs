@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Reviewer;
 
 public sealed class ReviewTotalStatsWidgetFormModel
 {
-    public int IntervalInDays { get; set; }
+    public int IntervalInDays { get; private set; }
     
     private readonly List<HistoryByTeamItemDto> _review = new();
     public IReadOnlyCollection<HistoryByTeamItemDto> Review => _review;

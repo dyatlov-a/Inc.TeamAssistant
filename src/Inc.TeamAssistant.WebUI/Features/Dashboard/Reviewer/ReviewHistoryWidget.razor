@@ -6,10 +6,10 @@
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
+<DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
 <Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
             @if (Tasks.Any())
             {
                 <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">

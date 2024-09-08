@@ -183,6 +183,7 @@ html {
     border: 3px solid #dc3545;
 }
 .validation-message {
+    margin-top: 5px;
     font-size: 1rem;
     color: #dc3545;
 }

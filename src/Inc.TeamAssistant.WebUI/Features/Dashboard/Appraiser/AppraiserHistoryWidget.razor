@@ -6,43 +6,41 @@
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
+<DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
 <Loading State="_state" Retry="Load">
     <Content>
         <div class="component-container">
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <div class="component-content">
-                @if (HistoryItems.Any())
-                {
-                    <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
-                        <TemplateColumn
-                            Title="@Resources[Messages.Dashboard_AssessmentDate]"
-                            Sortable="true"
-                            SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                            <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
-                                @context.AssessmentDate.ToString("dd-MM-yyyy")
-                            </a>
-                        </TemplateColumn>
-                        <PropertyColumn
-                            Title="@Resources[Messages.Dashboard_TotalStories]"
-                            Property="@(t => t.StoriesCount)"
-                            Sortable="true"/>
-                        <PropertyColumn
-                            Title="@Resources[Messages.Dashboard_AssessmentSum]"
-                            Property="@(t => t.AssessmentSum)"
-                            Sortable="true"/>
-                    </QuickGrid>
-                    <Pagination State="_pagination"/>
-                }
-                else
-                {
-                    <NoData IsDark="true"/>
-                }
-            </div>
-            <div class="component-actions">
-                <a href="@GetAssessmentSessionUrl()" class="button button_dark">
-                    @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
-                </a>
-            </div>
+            @if (HistoryItems.Any())
+            {
+                <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_AssessmentDate]"
+                        Sortable="true"
+                        SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
+                        <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
+                            @context.AssessmentDate.ToString("dd-MM-yyyy")
+                        </a>
+                    </TemplateColumn>
+                    <PropertyColumn
+                        Title="@Resources[Messages.Dashboard_TotalStories]"
+                        Property="@(t => t.StoriesCount)"
+                        Sortable="true"/>
+                    <PropertyColumn
+                        Title="@Resources[Messages.Dashboard_AssessmentSum]"
+                        Property="@(t => t.AssessmentSum)"
+                        Sortable="true"/>
+                </QuickGrid>
+                <Pagination State="_pagination"/>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
+        </div>
+        <div class="component-actions">
+            <a href="@GetAssessmentSessionUrl()" class="button button_dark">
+                @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
+            </a>
         </div>
     </Content>
 </Loading>

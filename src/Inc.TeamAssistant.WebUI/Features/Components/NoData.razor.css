@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    min-height: 80px;
+    min-height: 100px;
 }
 .no-data_dark {
     color: #000;
