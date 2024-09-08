@@ -8,8 +8,8 @@ internal sealed class ValidationCssClassProvider : FieldCssClassProvider
     {
         ArgumentNullException.ThrowIfNull(editContext);
 
-        const string isValidCssClass = "is-valid";
-        const string isInvalidCssClass = "is-invalid";
+        const string isValidCssClass = "form-control_is-valid";
+        const string isInvalidCssClass = "form-control_is-invalid";
         
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 

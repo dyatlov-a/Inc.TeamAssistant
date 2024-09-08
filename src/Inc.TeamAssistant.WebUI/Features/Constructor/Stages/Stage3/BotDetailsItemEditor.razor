@@ -6,7 +6,7 @@
     <Content>
             <InputText
                 @bind-Value="Item.Name"
-                class="form-control"
+                class="form-control form-control_enabled"
                 id="@BotNameId" />
         <ValidationMessage For="@(() => Item.Name)"/>
     </Content>
@@ -17,7 +17,7 @@
     <Content>
             <InputText
                 @bind-Value="Item.ShortDescription"
-                class="form-control"
+                class="form-control form-control_enabled"
                 id="@BotShortDescriptionId" />
         <ValidationMessage For="@(() => Item.ShortDescription)"/>
     </Content>
@@ -28,7 +28,7 @@
     <Content>
         <InputTextArea
             @bind-Value="Item.Description"
-            class="form-control form-control_textarea"
+            class="form-control form-control_enabled form-control_textarea"
             id="@BotDescriptionId" />
         <ValidationMessage For="@(() => Item.Description)"/>
     </Content>

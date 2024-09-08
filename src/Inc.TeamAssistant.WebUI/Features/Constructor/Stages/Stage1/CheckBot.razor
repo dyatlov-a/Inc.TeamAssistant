@@ -20,7 +20,7 @@
                         FieldId="bot-token"
                         Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
                         <Content>
-                            <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
+                            <InputText @bind-Value="_formModel.Token" class="form-control form-control_enabled" id="bot-token"/>
                             <ValidationMessage For="@(() => _formModel.Token)"/>
                         </Content>
                     </FormFieldSet>
@@ -30,7 +30,7 @@
                         <Content>
                             <InputText
                                 @bind-Value="_formModel.UserName"
-                                class="form-control"
+                                class="form-control form-control_disabled"
                                 id="bot-username"
                                 disabled="disabled"/>
                         </Content>

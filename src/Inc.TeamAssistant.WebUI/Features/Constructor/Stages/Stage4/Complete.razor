@@ -35,7 +35,7 @@
                                 <Content>
                                     <InputText
                                         @bind-Value="_formModel.UserName"
-                                        class="form-control"
+                                        class="form-control form-control_disabled"
                                         id="bot-username"
                                         disabled="disabled"/>
                                 </Content>
@@ -68,7 +68,7 @@
                                             type="text"
                                             id="@fieldId"
                                             value="@selected"
-                                            class="form-control"
+                                            class="form-control form-control_disabled"
                                             disabled="disabled" />
                                     </Content>
                                 </FormFieldSet>
@@ -107,7 +107,7 @@
                                                     type="text"
                                                     id="@settingItem.PropertyName"
                                                     value="@GetValueAsText(settingItem, property.Value)"
-                                                    class="form-control"
+                                                    class="form-control form-control_disabled"
                                                     disabled="disabled"/>
                                             </Content>
                                         </FormFieldSet>

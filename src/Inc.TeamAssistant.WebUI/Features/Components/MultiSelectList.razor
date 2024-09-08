@@ -50,7 +50,7 @@
             _values.AddRange(CurrentValue);
     }
     
-    private string DisabledCssClass => IsDisabled ? "disabled" : "enabled";
+    private string DisabledCssClass => IsDisabled ? "form-control_disabled" : "form-control_enabled";
     private string ValuesAsString => string.Join(',', _values);
     
     private string SelectedCssClass(TValue value) => _values.Contains(value)

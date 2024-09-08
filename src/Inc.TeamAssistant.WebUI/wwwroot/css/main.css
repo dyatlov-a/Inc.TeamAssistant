@@ -165,7 +165,10 @@ html {
     color: #000;
     background-color: #dfdfdf;
 }
-.form-control:disabled, .form-control.disabled {
+.form-control:focus, .form-control_enabled:hover {
+    border: 3px solid #000;
+}
+.form-control_disabled {
     background-color: #AAA;
     cursor: default;
 }
@@ -173,10 +176,10 @@ html {
     resize: none;
     height: 102px;
 }
-.is-valid {
+.form-control_is-valid {
     border: 3px solid #28a745;
 }
-.is-invalid {
+.form-control_is-invalid {
     border: 3px solid #dc3545;
 }
 .validation-message {

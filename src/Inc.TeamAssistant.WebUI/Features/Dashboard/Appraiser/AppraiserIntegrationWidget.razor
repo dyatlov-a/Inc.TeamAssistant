@@ -22,7 +22,7 @@
                         <Content>
                             <InputText
                                 @bind-Value="_formModel.AccessToken"
-                                class="form-control"
+                                class="form-control form-control_disabled"
                                 id="access-token"
                                 disabled="disabled"/>
                         </Content>
@@ -35,13 +35,16 @@
                             {
                                 <InputText
                                     @bind-Value="_formModel.ProjectKey"
-                                    class="form-control"
+                                    class="form-control form-control_disabled"
                                     id="project-key"
                                     disabled="disabled"/>
                             }
                             else
                             {
-                                <InputText @bind-Value="_formModel.ProjectKey" class="form-control" id="project-key"/>
+                                <InputText
+                                    @bind-Value="_formModel.ProjectKey"
+                                    class="form-control form-control_enabled"
+                                    id="project-key"/>
                             }
                             <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                         </Content>
