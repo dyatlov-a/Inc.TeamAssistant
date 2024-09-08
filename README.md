@@ -93,7 +93,7 @@ The community looks forward to your contributions.
 - [X] Add dashboard for the team (review stats, estimate stats...)
 - [X] Integrate with Jira/Trello (estimate tasks)
 - [X] Add a feature for use world map
-- [ ] Redesign UI/UX
+- [X] Redesign UI/UX
 - [ ] Integrate with GitLab (code review)
 - [ ] Split the monolith into separate services
 
