@@ -20,7 +20,7 @@ RUN mkdir -p ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/${PROJECT} ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Gateway ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
