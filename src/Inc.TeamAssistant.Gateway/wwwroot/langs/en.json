@@ -89,6 +89,7 @@
   "GUI_ToolCheckIn": "team stats",
   "GUI_CreateBotLink": "Create your bot",
   "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
+  "GUI_DataRefreshed": "Successfully updated",
   
   "Navigation_Login": "Login",
   "Navigation_Logout": "Logout",
