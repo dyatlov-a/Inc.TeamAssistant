@@ -5,7 +5,6 @@ EXPOSE 8080
 
 # VARS
 ENV APP_DIR="/app" \
-    APP_DLL="${PROJECT}.dll" \
     APP_USER=teamassist_app
     
 # Add timezones
@@ -31,4 +30,4 @@ RUN rm -f *.sh *.crt \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT dotnet ${APP_DLL}
+ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Gateway.dll"]
