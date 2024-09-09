@@ -9,6 +9,8 @@ public sealed class LoadingState
         Value = value;
     }
     
+    public bool IsLoading => Value == State.Loading;
+    
     public static LoadingState Loading() => new(State.Loading);
     
     public static LoadingState Error() => new(State.Error);
