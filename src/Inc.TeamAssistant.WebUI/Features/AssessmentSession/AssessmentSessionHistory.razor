@@ -1,19 +1,17 @@
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
-
-@inherits PersistentComponent<AssessmentSessionHistoryViewModel>
-
 @inject IAppraiserService AppraiserService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
 
-@if (ViewModel.Items.Any())
+@if (_items.Any())
 {
     <div class="history">
-        <div class="history__title">@ViewModel.Title</div>
+        <div class="history__title">@Resources[Messages.GUI_History]</div>
         <div class="history__body">
-
-            @foreach (var item in ViewModel.Items.Take(3))
+            @foreach (var item in _items)
             {
                 <a href="@MoveToItem(item)" class="link link_dark history__item">
-                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @ViewModel.TasksName
+                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
                 </a>
             }
         </div>
@@ -23,23 +21,25 @@
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
+    
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
 
     private string MoveToItem(AssessmentHistoryDto historyItem)
     {
         if (historyItem is null)
             throw new ArgumentNullException(nameof(historyItem));
 
-        return LinkBuilder($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+        return LinkBuilder.Build($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 
-    protected override async Task<AssessmentSessionHistoryViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        var getAssessmentHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, null);
+    protected override Task OnParametersSetAsync() => Load();
 
-        return new AssessmentSessionHistoryViewModel(
-            resources[Messages.GUI_History],
-            resources[Messages.GUI_Tasks],
-            resources[Messages.GUI_AssessmentSum],
-            getAssessmentHistoryResult.Result.Items);
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetAssessmentHistory(TeamId, limit: 3),
+            nameof(AssessmentSessionHistory),
+            r => _items = r.Items,
+            _ => StateHasChanged());
     }
 }

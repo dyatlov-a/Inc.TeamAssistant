@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Constructor.Model.Commands.CreateCalendar;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateCalendar;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -22,14 +21,6 @@ public sealed class CalendarsController : ControllerBase
     public async Task<IActionResult> Get(CancellationToken token)
     {
         return Ok(await _calendarService.GetCalendarByOwner(token));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody]CreateCalendarCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-
-        return Ok(await _calendarService.Create(command, token));
     }
     
     [HttpPut]

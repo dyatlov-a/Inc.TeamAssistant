@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
 using Inc.TeamAssistant.CheckIn.Domain;
 using Inc.TeamAssistant.CheckIn.Model.Commands.AddLocationToMap;
@@ -11,16 +12,16 @@ namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap
 internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocationToMapCommand, CommandResult>
 {
     private readonly ILocationsRepository _locationsRepository;
-    private readonly CheckInOptions _options;
+    private readonly MapLinksBuilder _mapLinksBuilder;
     private readonly IMessageBuilder _messageBuilder;
 
     public AddLocationToMapCommandHandler(
         ILocationsRepository locationsRepository,
-        CheckInOptions options,
+        MapLinksBuilder mapLinksBuilder,
         IMessageBuilder messageBuilder)
     {
         _locationsRepository = locationsRepository ?? throw new ArgumentNullException(nameof(locationsRepository));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _mapLinksBuilder = mapLinksBuilder ?? throw new ArgumentNullException(nameof(mapLinksBuilder));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
@@ -55,14 +56,10 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         if (existsMap is not null)
             return CommandResult.Empty;
         
-        var link = string.Format(
-            _options.ConnectToMapLinkTemplate,
-            command.MessageContext.LanguageId.Value,
-            map.Id.ToString("N"));
         var message = await _messageBuilder.Build(
             Messages.CheckIn_ConnectLinkText,
             command.MessageContext.LanguageId,
-            link);
+            _mapLinksBuilder.Build(command.MessageContext.LanguageId, map.Id));
 
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,

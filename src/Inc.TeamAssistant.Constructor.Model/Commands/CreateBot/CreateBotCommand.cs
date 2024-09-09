@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives.Bots;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
@@ -9,6 +8,5 @@ public sealed record CreateBotCommand(
     Guid CalendarId,
     IReadOnlyCollection<Guid> FeatureIds,
     IReadOnlyDictionary<string, string> Properties,
-    IReadOnlyCollection<string> SupportedLanguages,
-    IReadOnlyCollection<BotDetails> BotDetails)
+    IReadOnlyCollection<string> SupportedLanguages)
     : IRequest;

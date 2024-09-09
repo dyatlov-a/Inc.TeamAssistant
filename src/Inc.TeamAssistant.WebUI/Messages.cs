@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
-
 namespace Inc.TeamAssistant.WebUI;
 
 internal static class Messages
@@ -11,9 +9,10 @@ internal static class Messages
     public static readonly string GUI_TaskAssess = nameof(GUI_TaskAssess);
     public static readonly string GUI_MeanRating = nameof(GUI_MeanRating);
     public static readonly string GUI_MedianRating = nameof(GUI_MedianRating);
+    public static readonly string GUI_AcceptedValue = nameof(GUI_AcceptedValue);
     public static readonly string GUI_AssessmentSessionAbout = nameof(GUI_AssessmentSessionAbout);
     public static readonly string GUI_AssessmentSessionConnect = nameof(GUI_AssessmentSessionConnect);
-    public static readonly string GUI_AssessmentSessionHasNotTasks = nameof(GUI_AssessmentSessionHasNotTasks);
+    public static readonly string GUI_EstimationAcceptedTemplate = nameof(GUI_EstimationAcceptedTemplate);
 
     public static readonly string GUI_AcceptCookieButton = nameof(GUI_AcceptCookieButton);
     public static readonly string GUI_AcceptCookieText = nameof(GUI_AcceptCookieText);
@@ -22,7 +21,6 @@ internal static class Messages
     public static readonly string GUI_Tasks = nameof(GUI_Tasks);
     public static readonly string GUI_StoryList = nameof(GUI_StoryList);
     public static readonly string GUI_AssessmentSession = nameof(GUI_AssessmentSession);
-    public static readonly string GUI_AssessmentSum = nameof(GUI_AssessmentSum);
     
     public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
     public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
@@ -32,6 +30,7 @@ internal static class Messages
     public static readonly string GUI_ToolAppraiser = nameof(GUI_ToolAppraiser);
     public static readonly string GUI_ToolReviewer = nameof(GUI_ToolReviewer);
     public static readonly string GUI_ToolRandomCoffee = nameof(GUI_ToolRandomCoffee);
+    public static readonly string GUI_ToolCheckIn = nameof(GUI_ToolCheckIn);
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
     public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
 
@@ -64,8 +63,6 @@ internal static class Messages
     public static readonly string Constructor_FeatureRemove = nameof(Constructor_FeatureRemove);
     public static readonly string Constructor_FormSectionFeaturesAvailableEmptyText = nameof(Constructor_FormSectionFeaturesAvailableEmptyText);
     public static readonly string Constructor_FormSectionFeaturesSelectedEmptyText = nameof(Constructor_FormSectionFeaturesSelectedEmptyText);
-    public static readonly string Constructor_FormSectionSetSettingsScrumDescription = nameof(Constructor_FormSectionSetSettingsScrumDescription);
-    public static readonly string Constructor_FormSectionSetSettingsKanbanDescription = nameof(Constructor_FormSectionSetSettingsKanbanDescription);
     public static readonly string Constructor_FormSectionSetSettingsRoundRobinDescription = nameof(Constructor_FormSectionSetSettingsRoundRobinDescription);
     public static readonly string Constructor_FormSectionSetSettingsRandomDescription = nameof(Constructor_FormSectionSetSettingsRandomDescription);
     public static readonly string Constructor_FormSectionSetSettingsAppraiserHeader = nameof(Constructor_FormSectionSetSettingsAppraiserHeader);
@@ -86,8 +83,6 @@ internal static class Messages
     public static readonly string Constructor_BotName = nameof(Constructor_BotName);
     public static readonly string Constructor_BotShortDescription = nameof(Constructor_BotShortDescription);
     public static readonly string Constructor_BotDescription = nameof(Constructor_BotDescription);
-    public static readonly string Constructor_BotInformation = nameof(Constructor_BotInformation);
-    public static readonly string Constructor_BotInformationHelp = nameof(Constructor_BotInformationHelp);
     public static readonly string Constructor_WorkTimeTitle = nameof(Constructor_WorkTimeTitle);
     public static readonly string Constructor_WorkTimeHelp = nameof(Constructor_WorkTimeHelp);
     public static readonly string Constructor_WorkAllDayLabel = nameof(Constructor_WorkAllDayLabel);
@@ -101,9 +96,18 @@ internal static class Messages
     public static readonly string Constructor_DateLabel = nameof(Constructor_DateLabel);
     public static readonly string Constructor_WorkdayLabel = nameof(Constructor_WorkdayLabel);
     public static readonly string Constructor_AddHolidayLabel = nameof(Constructor_AddHolidayLabel);
-    public static readonly string Constructor_CheckWorkTimeHelp = nameof(Constructor_CheckWorkTimeHelp);
+    public static readonly string Constructor_ConnectingTelegram = nameof(Constructor_ConnectingTelegram);
+    public static readonly string Constructor_WorkCalendar = nameof(Constructor_WorkCalendar);
+    public static readonly string Constructor_BotDetailsTelegram = nameof(Constructor_BotDetailsTelegram);
+    public static readonly string Constructor_BotDetails = nameof(Constructor_BotDetails);
+    public static readonly string Constructor_BotDetailsHelp = nameof(Constructor_BotDetailsHelp);
+    public static readonly string Constructor_FeaturesStore = nameof(Constructor_FeaturesStore);
+    public static readonly string Constructor_Configuration = nameof(Constructor_Configuration);
+    public static readonly string Constructor_CheckConfigurationTemplate = nameof(Constructor_CheckConfigurationTemplate);
+    public static readonly string Constructor_RequiredCalendar = nameof(Constructor_RequiredCalendar);
+    public static readonly string Constructor_DuplicateHolidays = nameof(Constructor_DuplicateHolidays);
 
-    public static readonly string Dashboard_MoveToStats = nameof(Dashboard_MoveToStats);
+    public static readonly string Dashboard_MoveToDashboard = nameof(Dashboard_MoveToDashboard);
     public static readonly string Dashboard_Title = nameof(Dashboard_Title);
     public static readonly string Dashboard_SelectTeam = nameof(Dashboard_SelectTeam);
     public static readonly string Dashboard_CreateBot = nameof(Dashboard_CreateBot);
@@ -169,6 +173,7 @@ internal static class Messages
     public static readonly string Dashboard_AppraiserIntegrationDisableButton = nameof(Dashboard_AppraiserIntegrationDisableButton);
     public static readonly string Dashboard_AppraiserIntegrationEnableButton = nameof(Dashboard_AppraiserIntegrationEnableButton);
     public static readonly string Dashboard_AppraiserIntegrationConfirmText = nameof(Dashboard_AppraiserIntegrationConfirmText);
+    public static readonly string Dashboard_AppraiserIntegrationEnableSuccess = nameof(Dashboard_AppraiserIntegrationEnableSuccess);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);
@@ -214,8 +219,7 @@ internal static class Messages
     public static readonly string MetaCheckInDescription = nameof(MetaCheckInDescription);
     public static readonly string MetaCheckInKeywords = nameof(MetaCheckInKeywords);
     
-    public static string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
-    public static string GetFeatureProperty(string featureName, string propertyName)
-        => $"Constructor_Feature{featureName}{propertyName}";
-    public static string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
+    public static readonly string PanelOpen = nameof(PanelOpen);
+    public static readonly string PanelSave = nameof(PanelSave);
+    public static readonly string LoadingReload = nameof(LoadingReload);
 }

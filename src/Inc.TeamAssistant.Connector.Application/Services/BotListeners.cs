@@ -19,7 +19,7 @@ internal sealed class BotListeners : IBotListeners
         AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery, UpdateType.PollAnswer, UpdateType.EditedMessage]
     };
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _listeners = new();
-    private int _isWorking = 1;
+    private volatile int _isWorking = 1;
 
     public BotListeners(UpdateHandlerFactory updateHandlerFactory, IBotReader botReader, ILogger<BotListeners> logger)
     {

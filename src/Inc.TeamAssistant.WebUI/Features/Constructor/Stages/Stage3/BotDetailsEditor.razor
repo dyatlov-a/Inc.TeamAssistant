@@ -1,0 +1,86 @@
+@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
+
+@inject IBotService BotService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject IRenderContext RenderContext
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+        </Actions>
+        <Content>
+            <Loading State="_state" Retry="Load">
+                <Content>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_BotDetails]"
+                        HelpText="@Resources[Messages.Constructor_BotDetailsHelp]">
+                        <Content>
+                            @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
+                            {
+                                <BotDetailsItemEditor Item="item"/>
+                            }
+                        </Content>
+                    </FormSection>
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Token { get; set; } = string.Empty;
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<string> SupportedLanguages { get; set; } = Array.Empty<string>();
+    
+    private bool _isOpen;
+    private readonly BotDetailsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    private LoadingState _state = LoadingState.Done();
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel);
+    }
+
+    private async Task Load()
+    {
+        _isOpen = true;
+        
+        await RequestProcessor.Process(
+            async () =>
+            {
+                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
+                return botDetails;
+            },
+            nameof(BotDetailsEditor),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+        
+        StateHasChanged();
+    }
+    
+    public async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+        
+        await RequestProcessor.Process(
+            () => BotService.SetDetails(_formModel.ToCommand(Token)),
+            () => { },
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

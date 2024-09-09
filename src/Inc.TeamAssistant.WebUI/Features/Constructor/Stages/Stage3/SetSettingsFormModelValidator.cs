@@ -1,20 +1,26 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
+using Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
 {
-    public SetSettingsFormModelValidator(IValidator<BotDetailsFormModel> botDetailsFormModelValidator)
+    public SetSettingsFormModelValidator(ResourcesManager resources)
     {
+        ArgumentNullException.ThrowIfNull(resources);
+        
+        RuleFor(e => e.CalendarId)
+            .NotEmpty()
+            .WithMessage(resources[Messages.Constructor_RequiredCalendar]);
+        
         RuleFor(e => e.Properties)
             .NotEmpty();
         
         RuleForEach(e => e.Properties)
             .ChildRules(c =>
             {
-                c.RuleFor(e => e.Name)
+                c.RuleFor(e => e.Title)
                     .NotEmpty();
 
                 c.RuleFor(e => e.Value)
@@ -33,11 +39,5 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
                         e,
                         StringComparison.InvariantCultureIgnoreCase)));
             });
-
-        RuleFor(e => e.BotDetails)
-            .NotEmpty();
-        
-        RuleForEach(e => e.BotDetails)
-            .SetValidator(botDetailsFormModelValidator);
     }
 }

@@ -1,9 +1,10 @@
 @using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
 
-@inherits InputBase<List<Guid>>
+@inherits InputBase<IEnumerable<Guid>>
 
 @inject DragAndDropService<Guid> DragAndDropService
 @inject ResourcesManager ResourcesManager
+@inject FeaturesFactory FeaturesFactory
 
 <div class="input-features">
     <div
@@ -11,7 +12,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(AvailableFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control input-features__items @_availableFeaturesCssClass">
+        class="form-control form-control_enabled input-features__items @_availableFeaturesCssClass">
         @if (AvailableFeatures.Any())
         {
             foreach (var feature in AvailableFeatures)
@@ -19,8 +20,8 @@
                 <FeatureCard
                     FeatureId="feature.Id"
                     Icon="@FeatureType(feature.Name)"
-                    Title="@GetFeatureMessage(feature.Name, "Name")"
-                    Description="@GetFeatureMessage(feature.Name, "Description")">
+                    Title="@FeaturesFactory.CreateName(feature.Name)"
+                    Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
                         <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
                             @AddText
@@ -39,7 +40,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(SelectedFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control input-features__items @CssClass @_selectedFeaturesCssClass">
+        class="form-control form-control_enabled input-features__items @CssClass @_selectedFeaturesCssClass">
         @if (SelectedFeatures.Any())
         {
             foreach (var feature in SelectedFeatures)
@@ -47,8 +48,8 @@
                 <FeatureCard
                     FeatureId="feature.Id"
                     Icon="@FeatureType(feature.Name)"
-                    Title="@GetFeatureMessage(feature.Name, "Name")"
-                    Description="@GetFeatureMessage(feature.Name, "Description")">
+                    Title="@FeaturesFactory.CreateName(feature.Name)"
+                    Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
                         <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
                             @RemoveText
@@ -78,6 +79,9 @@
     [Parameter, EditorRequired]
     public string RemoveText { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public EventCallback<IEnumerable<Guid>> ValuesChanged { get; set; }
+    
     [Parameter]
     public string? FeaturesAvailableEmptyText { get; set; }
     
@@ -86,36 +90,29 @@
     
     [Parameter]
     public RenderFragment? Validation { get; set; }
-
-    private Dictionary<string, string> _resources = new();
+    
+    private readonly List<Guid> _values = new();
     private string _availableFeaturesCssClass = string.Empty;
     private string _selectedFeaturesCssClass = string.Empty;
     private IEnumerable<FeatureDto> AvailableFeatures => Features.Where(f => !IsSelected(f.Id));
     private IEnumerable<FeatureDto> SelectedFeatures => Features.Where(f => IsSelected(f.Id));
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        _resources = await ResourcesManager.GetResource();
-        
-        await base.OnInitializedAsync();
+        _values.Clear();
+        if (CurrentValue is not null)
+            _values.AddRange(CurrentValue);
     }
 
     protected override bool TryParseValueFromString(
         string? value,
-        out List<Guid> result,
+        out IEnumerable<Guid> result,
         out string validationErrorMessage)
     {
         throw new NotImplementedException();
     }
 
     private bool IsSelected(Guid id) => CurrentValue?.Contains(id) == true;
-
-    private string GetFeatureMessage(string featureName, string propertyName)
-    {
-        var messageId = Messages.GetFeatureProperty(featureName, propertyName);
-        
-        return _resources.GetValueOrDefault(messageId, messageId);
-    }
 
     private Type FeatureType(string featureName) => featureName switch
     {
@@ -126,23 +123,22 @@
         _ => typeof(UnknownIcon)
     };
 
-    private void ToggleFeature(Guid id)
+    private async Task ToggleFeature(Guid id)
     {
-        if (CurrentValue is null)
-            return;
-
-        if (CurrentValue.Contains(id))
-            CurrentValue.Remove(id);
+        if (_values.Contains(id))
+            _values.Remove(id);
         else
-            CurrentValue.Add(id);
+            _values.Add(id);
+
+        await ValuesChanged.InvokeAsync(_values);
     }
     
-    private void HandleDrop(IEnumerable<FeatureDto> features)
+    private async Task HandleDrop(IEnumerable<FeatureDto> features)
     {
         var featureId = DragAndDropService.End();
         
         if (features.All(f => f.Id != featureId))
-            ToggleFeature(featureId);
+            await ToggleFeature(featureId);
         
         _availableFeaturesCssClass = string.Empty;
         _selectedFeaturesCssClass = string.Empty;

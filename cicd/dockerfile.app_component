@@ -5,9 +5,8 @@ EXPOSE 8080
 
 # VARS
 ENV APP_DIR="/app" \
-    APP_USER=app_user \
-    # set environtent for aspnetcore
-    ASPNETCORE_URLS=http://+:8080
+    APP_DLL="${PROJECT}.dll" \
+    APP_USER=teamassist_app
     
 # Add timezones
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
@@ -15,14 +14,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y insta
 # Add fonts
 RUN apt-get install -y fontconfig
 
-# create app user and ko
+# create app user
 RUN mkdir -p ${APP_DIR} \
   && useradd -s /bin/bash -u 1000 -d ${APP_DIR} ${APP_USER} \
   && chown -R ${APP_USER} ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Gateway ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/${PROJECT} ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
@@ -32,4 +31,4 @@ RUN rm -f *.sh *.crt \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Gateway.dll"]
+ENTRYPOINT dotnet ${APP_DLL}

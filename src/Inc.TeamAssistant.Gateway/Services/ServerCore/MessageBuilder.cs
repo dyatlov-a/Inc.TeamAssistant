@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -21,8 +20,7 @@ internal sealed class MessageBuilder : IMessageBuilder
 
         var resources = await _messageProvider.Get();
 
-        if (resources.State == ServiceResultState.Success
-            && resources.Result[languageId.Value].TryGetValue(messageId.Value, out var message))
+        if (resources[languageId.Value].TryGetValue(messageId.Value, out var message))
             return values.Any() ? string.Format(message, values) : message;
 
         throw new TeamAssistantException($"Not supported message with id {messageId.Value}.");

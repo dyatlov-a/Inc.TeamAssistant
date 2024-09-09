@@ -2,7 +2,6 @@ using Dapper;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
@@ -16,7 +15,7 @@ internal sealed class StoryReader : IStoryReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<AssessmentHistoryDto>> GetAssessmentHistory(
+    public async Task<IReadOnlyCollection<Story>> GetStories(
         Guid teamId,
         DateTimeOffset before,
         DateTimeOffset? from,
@@ -24,18 +23,20 @@ internal sealed class StoryReader : IStoryReader
     {
         var command = new CommandDefinition(@"
             SELECT
-                DATE(s.created) AS assessmentdate,
-                COUNT(*) AS storiescount,
-                CASE 
-                WHEN s.story_type = 1
-                    THEN SUM(s.total_value)
-                    ELSE COUNT(*)
-                END as assessmentsum
+                s.id AS id,
+                s.bot_id AS botid,
+                s.story_type AS storytype,
+                s.created AS created,
+                s.team_id AS teamid,
+                s.chat_id AS chatid,
+                s.moderator_id AS moderatorid,
+                s.language_id AS languageid,
+                s.title AS title,
+                s.external_id AS externalid,
+                s.links AS links,
+                s.total_value AS totalvalue
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND s.created <= @before
-            AND (@from is null OR s.created >= @from)
-            GROUP BY DATE(s.created), s.story_type
-            ORDER BY DATE(s.created) DESC, s.story_type;",
+            WHERE s.team_id = @team_id AND s.created <= @before AND (@from is null OR s.created >= @from);",
             new
             {
                 team_id = teamId,
@@ -47,11 +48,9 @@ internal sealed class StoryReader : IStoryReader
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<(DateTime AssessmentDate, int StoriesCount, int AssessmentSum)>(command);
+        var results = await connection.QueryAsync<Story>(command);
         
-        return results
-            .Select(r => new AssessmentHistoryDto(DateOnly.FromDateTime(r.AssessmentDate), r.StoriesCount, r.AssessmentSum))
-            .ToArray();
+        return results.ToArray();
     }
 
     public async Task<IReadOnlyCollection<Story>> GetStories(

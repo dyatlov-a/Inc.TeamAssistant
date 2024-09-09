@@ -1,0 +1,21 @@
+<div class="dashboard-widgets__widget">
+    <div class="dashboard-widgets__content @CssClass">
+        <h2 class="dashboard-widgets__title">@Title</h2>
+        @Content
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter]
+    public bool HasControls { get; set; }
+    
+    private string CssClass => HasControls
+        ? "dashboard-widgets__content_has-controls"
+        : "dashboard-widgets__content_no-controls";
+}

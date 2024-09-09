@@ -19,4 +19,13 @@ internal sealed class MessagesSender : IMessagesSender
 
         return Task.CompletedTask;
     }
+
+    public Task StoryAccepted(Guid teamId, string totalValue)
+    {
+	    ArgumentException.ThrowIfNullOrWhiteSpace(totalValue);
+	    
+	    _hubContext.Clients.Group(teamId.ToString("N")).StoryAccepted(totalValue);
+
+	    return Task.CompletedTask;
+    }
 }

@@ -1,42 +1,53 @@
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam
 
-@inherits PersistentComponent<ReviewAverageStatsWidgetViewModel>
-
 @inject IReviewService ReviewService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject IRenderContext RenderContext
+@inject DateSelectorFactory DateSelectorFactory
 
-<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
-
-@if (ViewModel.Items.Any())
-{
-    <ApexChart TItem="ReviewAverageStatsDto"
-               Title="@ViewModel.Title"
-               Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
-               FormatYAxisLabel="@(y => y.ToString("N1"))"
-               @ref="_chart">
-        <ApexPointSeries TItem="ReviewAverageStatsDto"
-                         Items="ViewModel.Items"
-                         SeriesType="@SeriesType.Area"
-                         Name="@ViewModel.FirstTouch"
-                         XValue="@(e => e.Created)"
-                         YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)" />
-        <ApexPointSeries TItem="ReviewAverageStatsDto"
-                         Items="ViewModel.Items"
-                         SeriesType="@SeriesType.Area"
-                         Name="@ViewModel.Review"
-                         XValue="@(e => e.Created)"
-                         YValue="@(e => (decimal)e.Review.TotalMinutes)" />
-        <ApexPointSeries TItem="ReviewAverageStatsDto"
-                         Items="ViewModel.Items"
-                         SeriesType="@SeriesType.Area"
-                         Name="@ViewModel.Correction"
-                         XValue="@(e => e.Created)"
-                         YValue="@(e => (decimal)e.Correction.TotalMinutes)" />
-    </ApexChart>
-}
-else
-{
-    <NoData />
-}
+<DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+<Loading State="_state" Retry="Load">
+    <Content>
+        <div class="component-container">
+            @if (_items.Any())
+            {
+                <ApexChart
+                    TItem="ReviewAverageStatsDto"
+                    Title="@Resources[Messages.Dashboard_ReviewAverageStatsTitle]"
+                    Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
+                    FormatYAxisLabel="@(y => y.ToString("N1"))"
+                    @ref="_chart">
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageFirstTouch]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageReview]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
+                    <ApexPointSeries
+                        TItem="ReviewAverageStatsDto"
+                        Items="_items"
+                        SeriesType="@SeriesType.Area"
+                        Name="@Resources[Messages.Dashboard_ReviewAverageCorrection]"
+                        XValue="@(e => e.Created)"
+                        YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
+                </ApexChart>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
+        </div>
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
@@ -45,36 +56,34 @@ else
     private DateOnly? _date;
     private ApexChart<ReviewAverageStatsDto>? _chart;
 
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateLongPeriods();
+    private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
+
     protected override async Task OnParametersSetAsync()
     {
-        await base.OnParametersSetAsync();
+        _date ??= DateItems.First().Value;
 
-        _date ??= ViewModel.DateItems.First().Date;
-        
-        _chart?.RenderAsync();
-    }
-
-    protected override async Task<ReviewAverageStatsWidgetViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        var dateItems = DateSelectorDataFactory.Create(resources);
-        _date ??= dateItems.First().Date;
-        var averageMetrics = await ReviewService.GetAverage(TeamId, _date.Value);
-
-        return new(
-            resources[Messages.Dashboard_ReviewAverageStatsTitle],
-            resources[Messages.Dashboard_ReviewAverageFirstTouch],
-            resources[Messages.Dashboard_ReviewAverageReview],
-            resources[Messages.Dashboard_ReviewAverageCorrection],
-            dateItems,
-            averageMetrics.Result.Items);
+        await Load();
     }
     
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => ReviewService.GetAverage(TeamId, _date!.Value),
+            nameof(ReviewAverageStatsWidget),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
     private async Task Changed(DateOnly date)
     {
         _date = date;
         
-        await Update();
-        
-        _chart?.RenderAsync();
+        await Load();
     }
 }

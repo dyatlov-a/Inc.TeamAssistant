@@ -9,11 +9,12 @@ public sealed record SummaryByStory(
 	Guid StoryId,
 	int? StoryExternalId,
 	string StoryTitle,
+	string StoryType,
 	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
-    string Total,
+    string Mean,
 	string AcceptedValue,
     IReadOnlyCollection<EstimateItemDetails> Items,
-	IReadOnlyCollection<string> Assessments,
+	IReadOnlyCollection<EstimateDto> Assessments,
 	bool Accepted,
-	IReadOnlyCollection<string> AssessmentsToAccept);
+	IReadOnlyCollection<EstimateDto> AssessmentsToAccept);

@@ -7,8 +7,9 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
 {
     private readonly IReadOnlyDictionary<StoryType, string> _storyType = new Dictionary<StoryType, string>
     {
-        [StoryType.Scrum] = "Constructor_FormSectionSetSettingsScrumDescription",
-        [StoryType.Kanban] = "Constructor_FormSectionSetSettingsKanbanDescription"
+        [StoryType.Fibonacci] = "Constructor_FormSectionSetSettingsFibonacciDescription",
+        [StoryType.TShirt] = "Constructor_FormSectionSetSettingsTShirtDescription",
+        [StoryType.PowerOfTwo] = "Constructor_FormSectionSetSettingsPowerOfTwoDescription"
     };
 
     public string FeatureName => "Appraiser";
@@ -32,8 +33,6 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
 
     private IEnumerable<SelectValue> GetValuesForStoryType()
     {
-        yield return new SelectValue(string.Empty, string.Empty);
-
         foreach (var item in Enum.GetValues<StoryType>())
         {
             if (_storyType.TryGetValue(item, out var value))

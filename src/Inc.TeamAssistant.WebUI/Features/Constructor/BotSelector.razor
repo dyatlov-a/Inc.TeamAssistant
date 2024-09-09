@@ -1,73 +1,89 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotsByOwner
-
-@inherits PersistentComponent<BotSelectorViewModel>
+@using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
 
 @inject IBotService BotService
 @inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject LinkBuilder LinkBuilder
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
-        <p>@string.Format(ViewModel.RemoveConfirmationTemplate, _selectedBot?.Name)</p>
+        <p>@string.Format(Resources[Messages.Constructor_RemoveConfirmationText], _selectedBot?.Name)</p>
     </Content>
 </ConfirmDialog>
-
 <div class="bot-selector">
-    @foreach(var bot in ViewModel.Bots)
-    {
-        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
-            <Content>
-                <a href="@MoveToDashboardLink(bot)" class="link link_dark">@ViewModel.MoveToStats</a>
-            </Content>
-            <Buttons>
-                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToEdit(bot.Id)">
-                    @ViewModel.Edit
-                </button>
-                <button type="button" class="button button_light bot-selector__button" @onclick="() => MoveToRemove(bot)">
-                    @ViewModel.Remove
-                </button>
-            </Buttons>
-        </BotCard>
-    }
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@ViewModel.NewBot">
+    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
         <Buttons>
             <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
-                @ViewModel.AddBot
+                @Resources[Messages.Constructor_AddBot]
             </button>
         </Buttons>
     </BotCard>
+    <Loading State="_state" Retry="Load">
+        <Content>
+            @foreach (var bot in _bots)
+            {
+                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                    <Content>
+                        <a href="@MoveToDashboardLink(bot)" class="link link_dark">
+                            @Resources[Messages.Dashboard_MoveToDashboard]
+                        </a>
+                    </Content>
+                    <Buttons>
+                        <button
+                            type="button"
+                            class="button button_light bot-selector__button"
+                            @onclick="() => MoveToEdit(bot.Id)">
+                            @Resources[Messages.Constructor_Edit]
+                        </button>
+                        <button
+                            type="button"
+                            class="button button_light bot-selector__button"
+                            @onclick="() => MoveToRemove(bot)">
+                            @Resources[Messages.Constructor_Remove]
+                        </button>
+                    </Buttons>
+                </BotCard>
+            }
+        </Content>
+    </Loading>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public long OwnerId { get; set; }
 
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+
     private ConfirmDialog? _confirmDialog;
     private BotDto? _selectedBot;
+
+    protected override Task OnParametersSetAsync() => Load();
     
-    protected override async Task<BotSelectorViewModel> Initialize(Dictionary<string, string> resources)
+    private async Task Load()
     {
-        var getBotsByOwnerResult = await BotService.GetBotsByOwner(OwnerId);
-        
-        return new BotSelectorViewModel(
-            resources[Messages.Constructor_NewBot],
-            resources[Messages.Constructor_AddBot],
-            resources[Messages.Constructor_Edit],
-            resources[Messages.Constructor_Remove],
-            resources[Messages.Constructor_RemoveConfirmationText],
-            resources[Messages.Dashboard_MoveToStats],
-            getBotsByOwnerResult.Result.Bots);
+        await RequestProcessor.Process(
+            () => BotService.GetFromCurrentUser(),
+            nameof(BotSelector),
+            r => _bots = r.Bots.Where(b => b.OwnerId == OwnerId).ToArray(),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
     }
 
     private void MoveToAdd() => MoveToEdit(botId: null);
 
     private void MoveToEdit(Guid? botId)
     {
-        var stage = Stage.CheckBot.ToString().ToLower();
+        var stage = Stage.CheckBot.ToString().ToLowerInvariant();
         var link = botId.HasValue
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavigationManager.NavigateTo(LinkBuilder(link));
+        NavigationManager.NavigateTo(LinkBuilder.Build(link));
     }
 
     private void MoveToRemove(BotDto bot)
@@ -77,7 +93,14 @@
         _confirmDialog?.Open();
     }
 
-    private string MoveToDashboardLink(BotDto bot) => LinkBuilder($"dashboard/{bot.Id:N}");
+    private string MoveToDashboardLink(BotDto bot)
+    {
+        var teamId = bot.Teams.FirstOrDefault()?.Id;
+        
+        return teamId.HasValue
+            ? LinkBuilder.Build($"dashboard/{bot.Id:N}/{teamId.Value:N}")
+            : LinkBuilder.Build($"dashboard/{bot.Id:N}");
+    }
 
     private async Task Remove()
     {
@@ -86,6 +109,6 @@
         
         await BotService.Remove(_selectedBot.Id);
 
-        await Update();
+        await Load();
     }
 }

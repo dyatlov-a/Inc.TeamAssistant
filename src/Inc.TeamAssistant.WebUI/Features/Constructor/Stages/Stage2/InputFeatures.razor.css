@@ -1,3 +1,6 @@
+.can-drop {
+    border: 3px dashed #555;
+}
 .input-features {
     display: flex;
     flex-wrap: wrap;
@@ -19,8 +22,8 @@
     height: 100%;
     align-content: center;
 }
-.can-drop {
-    border: 3px dashed #555;
+.form-control_enabled:hover .input-features__text {
+    color: #000;
 }
 @media (max-width: 991.98px) {
     .input-features__items {

@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
@@ -16,20 +15,9 @@ internal sealed class IntegrationService : IIntegrationService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
     
-    public async Task<ServiceResult<GetIntegrationPropertiesResult>> GetTeamProperties(
-        Guid teamId,
-        CancellationToken token)
+    public async Task<GetIntegrationPropertiesResult> GetTeamProperties(Guid teamId, CancellationToken token)
     {
-        try
-        {
-            var result = await _mediator.Send(new GetIntegrationPropertiesQuery(teamId), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetIntegrationPropertiesResult>(ex.Message);
-        }
+        return await _mediator.Send(new GetIntegrationPropertiesQuery(teamId), token);
     }
 
     public async Task SetTeamProperties(SetIntegrationPropertiesCommand command, CancellationToken token)

@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetStories;
 using Inc.TeamAssistant.Appraiser.Model.Queries.GetActiveStory;
@@ -7,18 +6,19 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IAppraiserService
 {
-	Task<ServiceResult<GetActiveStoryResult>> GetActiveStory(
+	Task<GetActiveStoryResult> GetActiveStory(
 		Guid teamId,
 		string foreground,
 		string background,
 		CancellationToken token = default);
 	
-	Task<ServiceResult<GetAssessmentHistoryResult>> GetAssessmentHistory(
+	Task<GetAssessmentHistoryResult> GetAssessmentHistory(
 		Guid teamId,
-		DateOnly? from,
+		int? limit = null,
+		DateOnly? from = null,
 		CancellationToken token = default);
 	
-	Task<ServiceResult<GetStoriesResult>> GetStories(
+	Task<GetStoriesResult> GetStories(
 		Guid teamId,
 		DateOnly assessmentDate,
 		CancellationToken token = default);

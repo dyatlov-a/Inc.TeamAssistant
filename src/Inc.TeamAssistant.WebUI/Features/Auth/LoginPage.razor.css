@@ -30,12 +30,14 @@
     color: #fff;
     text-transform: none;
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
 }
 .login-motivation__header {
     text-align: center;
     font-size: 3rem;
     line-height: 4.2rem;
-    text-shadow: 2px 2px 4px #000;
+    text-shadow: 4px 4px 4px #000;
 }
 .telegram-login__header {
     font-size: 2.2rem;

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -16,37 +17,38 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly ReviewerOptions _options;
     private readonly ITaskForReviewReader _taskForReviewReader;
     private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
     private readonly DraftTaskForReviewService _draftTaskForReviewService;
+    private readonly IBotAccessor _botAccessor;
 
     public MoveToReviewCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
         IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor,
-        ReviewerOptions options,
         ITaskForReviewReader taskForReviewReader,
         IDraftTaskForReviewRepository draftTaskForReviewRepository,
-        DraftTaskForReviewService draftTaskForReviewService)
+        DraftTaskForReviewService draftTaskForReviewService,
+        IBotAccessor botAccessor)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _reviewMessageBuilder =
             reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
         _draftTaskForReviewRepository =
             draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
         _draftTaskForReviewService =
             draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
+        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        var botContext = await _botAccessor.GetBotContext(command.MessageContext.Bot.Id, token);
         var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
         draft.CheckRights(command.MessageContext.Person.Id);
         
@@ -63,7 +65,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             draft,
             command.MessageContext.Bot.Id,
             DateTimeOffset.UtcNow,
-            _options.NotificationInterval,
+            botContext.GetNotificationIntervals(),
             targetTeam.ChatId);
 
         if (draft.TargetPersonId.HasValue)

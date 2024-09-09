@@ -19,7 +19,7 @@ internal sealed class GeoJsonParser
                 Id = json.id,
                 Geometry = coordinates,
                 Properties = ((IEnumerable<KeyValuePair<string, JToken>>)json.properties).ToDictionary(
-                    k => k.Key.ToLower(),
+                    k => k.Key.ToLowerInvariant(),
                     v => v.Value.ToString())
             };
         }

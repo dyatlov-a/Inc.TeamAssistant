@@ -24,12 +24,9 @@ internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGener
 
     public string Generate(string data, string foreground, string background)
     {
-        if (string.IsNullOrWhiteSpace(data))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(data));
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(data);
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
 
         var key = $"data={data}&foreground={foreground}&background{background}";
         var cacheItem = _memoryCache.GetOrCreate(

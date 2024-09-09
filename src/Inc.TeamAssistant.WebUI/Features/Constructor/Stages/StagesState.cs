@@ -1,86 +1,131 @@
-using Inc.TeamAssistant.Constructor.Model.Common;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
-using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
+using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
 public sealed class StagesState
 {
     public Guid? Id { get; private set; }
+    public Guid? CalendarId { get; private set; }
     public string UserName { get; private set; }
     public string Token { get; private set; }
-    public IReadOnlyCollection<Guid> FeatureIds { get; private set; }
-    public IReadOnlyDictionary<string, string> Properties { get; private set; }
-    public IReadOnlyCollection<FeatureDto> Features { get; private set; }
-    public IReadOnlyCollection<string> SupportedLanguages { get; private set; }
-    public IReadOnlyCollection<BotDetails> BotDetails { get; private set; }
-    public Guid? CalendarId { get; private set; }
-    public CalendarState Calendar { get; private set; }
 
-    public StagesState(
-        Guid? id,
-        string userName,
-        string token,
-        IReadOnlyCollection<Guid> featureIds,
-        IReadOnlyDictionary<string, string> properties,
-        IReadOnlyCollection<FeatureDto> features,
-        IReadOnlyCollection<string> supportedLanguages,
-        IReadOnlyCollection<BotDetails> botDetails,
-        Guid? calendarId,
-        CalendarState calendar)
-    {
-        Id = id;
-        UserName = userName;
-        Token = token;
-        FeatureIds = featureIds;
-        Properties = properties;
-        Features = features;
-        SupportedLanguages = supportedLanguages;
-        BotDetails = botDetails;
-        CalendarId = calendarId;
-        Calendar = calendar;
-    }
+    private readonly List<string> _supportedLanguages = new();
+    public IReadOnlyCollection<string> SupportedLanguages => _supportedLanguages;
 
-    public IReadOnlyCollection<FeatureDto> SelectedFeatures => Features
+    private readonly List<Guid> _featureIds = new();
+    public IReadOnlyCollection<Guid> FeatureIds => _featureIds;
+    
+    private Dictionary<string, string> _properties = new(StringComparer.InvariantCultureIgnoreCase);
+    public IReadOnlyDictionary<string, string> Properties => _properties;
+
+    private readonly List<FeatureDto> _availableFeatures = new();
+    public IReadOnlyCollection<FeatureDto> AvailableFeatures => _availableFeatures;
+    
+    private readonly Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
+    public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties => _availableProperties;
+
+    public IReadOnlyCollection<FeatureDto> SelectedFeatures => AvailableFeatures
         .Where(f => FeatureIds.Contains(f.Id))
         .ToArray();
 
-    public static readonly StagesState Empty = new(
+    public static StagesState Empty { get; } = new(
+        null,
         null,
         string.Empty,
         string.Empty,
+        Array.Empty<string>(),
         Array.Empty<Guid>(),
         new Dictionary<string, string>(),
         Array.Empty<FeatureDto>(),
-        Array.Empty<string>(),
-        Array.Empty<BotDetails>(),
-        null,
-        new CalendarState(
-            WorkAllDay: false,
-            new WorkScheduleUtcDto(TimeOnly.MinValue, TimeOnly.MaxValue),
-            Array.Empty<DayOfWeek>(),
-            new Dictionary<DateOnly, string>()));
+        new Dictionary<string, IReadOnlyCollection<SettingSection>>());
 
-    public StagesState Apply(CalendarFormModel calendar)
+    public StagesState(
+        Guid? id,
+        Guid? calendarId,
+        string userName,
+        string token,
+        IReadOnlyCollection<string> supportedLanguages,
+        IReadOnlyCollection<Guid> featureIds,
+        IReadOnlyDictionary<string, string> properties,
+        IReadOnlyCollection<FeatureDto> availableFeatures,
+        IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> availableProperties)
     {
-        Calendar = new CalendarState(
-            calendar.WorkAllDay,
-            new WorkScheduleUtcDto(calendar.Start, calendar.End),
-            calendar.SelectedWeekends.ToArray(),
-            calendar.Holidays.ToDictionary(i => i.Date, i => i.IsWorkday ? "Workday" : "Holiday"));
-
-        return this;
+        ArgumentNullException.ThrowIfNull(properties);
+        ArgumentNullException.ThrowIfNull(supportedLanguages);
+        ArgumentNullException.ThrowIfNull(featureIds);
+        ArgumentNullException.ThrowIfNull(availableFeatures);
+        ArgumentNullException.ThrowIfNull(availableProperties);
+        
+        Id = id;
+        CalendarId = calendarId;
+        UserName = userName;
+        Token = token;
+        
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(supportedLanguages);
+        
+        _featureIds.Clear();
+        _featureIds.AddRange(featureIds);
+        
+        _properties.Clear();
+        foreach (var property in BotPropertiesBuilder.Build(properties))
+            _properties.Add(property.Key, property.Value);
+        
+        _availableFeatures.Clear();
+        _availableFeatures.AddRange(availableFeatures);
+        
+        _availableProperties.Clear();
+        foreach (var availableProperty in availableProperties)
+            _availableProperties.Add(availableProperty.Key, availableProperty.Value);
     }
     
-    public StagesState Apply(IReadOnlyCollection<BotDetails> botDetails)
+    public static StagesState Create(
+        GetBotResult bot,
+        GetFeaturesResult availableFeatures,
+        GetPropertiesResult availableProperties)
     {
-        BotDetails = botDetails;
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(availableFeatures);
+        ArgumentNullException.ThrowIfNull(availableProperties);
 
-        return this;
+        return new StagesState(
+            bot.Id,
+            bot.Id,
+            bot.UserName,
+            bot.Token,
+            bot.SupportedLanguages,
+            bot.FeatureIds,
+            bot.Properties,
+            availableFeatures.Features,
+            availableProperties.Properties);
+    }
+    
+    public static StagesState Create(
+        GetFeaturesResult availableFeatures,
+        GetPropertiesResult availableProperties,
+        GetCalendarByOwnerResult? calendar)
+    {
+        ArgumentNullException.ThrowIfNull(availableFeatures);
+        ArgumentNullException.ThrowIfNull(availableProperties);
+
+        return new StagesState(
+            null,
+            calendar?.Id,
+            string.Empty,
+            string.Empty,
+            [LanguageSettings.DefaultLanguageId.Value],
+            Array.Empty<Guid>(),
+            new Dictionary<string, string>(),
+            availableFeatures.Features,
+            availableProperties.Properties);
     }
 
     public StagesState Apply(CheckBotFormModel formModel)
@@ -97,14 +142,15 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        var selectedProperties = SelectedFeatures
-            .SelectMany(f => f.Properties)
-            .ToArray();
+        _featureIds.Clear();
+        _featureIds.AddRange(formModel.FeatureIds);
         
-        FeatureIds = formModel.FeatureIds.ToArray();
-        Properties = Properties
-            .Where(p => selectedProperties.Contains(p.Key, StringComparer.InvariantCultureIgnoreCase))
-            .ToDictionary();
+        return this;
+    }
+
+    public StagesState Apply(Guid calendarId)
+    {
+        CalendarId = calendarId;
         
         return this;
     }
@@ -113,15 +159,12 @@ public sealed class StagesState
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
-        Properties = formModel.Properties.ToDictionary(v => v.Name, v => v.Value);
-        SupportedLanguages = formModel.SupportedLanguages.ToArray();
-        BotDetails = formModel.BotDetails
-            .Select(b => new BotDetails(
-                b.LanguageId,
-                b.Name,
-                b.ShortDescription,
-                b.Description))
-            .ToArray();
+        _properties.Clear();
+        foreach (var property in formModel.Properties)
+            _properties.Add(property.Title, property.Value);
+
+        _supportedLanguages.Clear();
+        _supportedLanguages.AddRange(formModel.SupportedLanguages);
         
         return this;
     }

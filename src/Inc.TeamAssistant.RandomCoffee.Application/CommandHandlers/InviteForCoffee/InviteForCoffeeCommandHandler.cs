@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -15,42 +16,41 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
 {
     private readonly IRandomCoffeeRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly RandomCoffeeOptions _options;
     private readonly IMessageBuilder _messageBuilder;
+    private readonly IBotAccessor _botAccessor;
 
     public InviteForCoffeeCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
-        RandomCoffeeOptions options,
-        IMessageBuilder messageBuilder)
+        IMessageBuilder messageBuilder,
+        IBotAccessor botAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(InviteForCoffeeCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        var chatId = command.MessageContext.ChatMessage.ChatId;
-        var existsRandomCoffeeEntry = await _repository.Find(chatId, token);
-
+        
+        var existsRandomCoffeeEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
         if (existsRandomCoffeeEntry is not null && command.OnDemand)
             return CommandResult.Empty;
         
         var randomCoffeeEntry = existsRandomCoffeeEntry ?? new RandomCoffeeEntry(
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
-            chatId,
+            command.MessageContext.ChatMessage.ChatId,
             command.MessageContext.ChatName!,
             command.MessageContext.Person.Id);
+        var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
         var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
         if (owner is null)
             throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
         
-        randomCoffeeEntry.MoveToWaiting(DateTimeOffset.UtcNow, _options.WaitingInterval);
+        randomCoffeeEntry.MoveToWaiting(DateTimeOffset.UtcNow, botContext.GetVotingInterval());
 
         await _repository.Upsert(randomCoffeeEntry, token);
 

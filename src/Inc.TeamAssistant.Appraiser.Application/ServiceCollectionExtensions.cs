@@ -15,32 +15,38 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAppraiserApplication(
         this IServiceCollection services,
-        AppraiserOptions options)
+        string connectToDashboardLinkTemplate)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectToDashboardLinkTemplate);
 
         services
             .AddSingleton<ISettingSectionProvider, AppraiserSettingSectionProvider>()
-            .AddScoped<SummaryByStoryBuilder>()
-            .AddSingleton(options)
+            .AddScoped(sp => ActivatorUtilities.CreateInstance<SummaryByStoryBuilder>(sp, connectToDashboardLinkTemplate))
             .AddSingleton<ICommandCreator, AddStoryCommandCreator>()
             .AddSingleton<ICommandCreator, ReVoteEstimateCommandCreator>()
             .AddSingleton<ICommandCreator, FinishEstimateCommandCreator>()
-            .AddSingleton<ICommandCreator, MoveToSpCommandCreator>()
-            .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>();
-
-        foreach (var assessment in AssessmentValue.GetAllAssessments())
+            .AddSingleton<ICommandCreator, MoveToFibonacciCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToTShirtsCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToPowerOfTwoCommandCreator>();
+        
+        foreach (var assessment in EstimationStrategyFactory.GetAllValues())
         {
             var setCommand = string.Format(CommandList.Set, assessment);
             services.AddSingleton<ICommandCreator>(
-                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(sp, setCommand, assessment));
-            
+                sp => ActivatorUtilities.CreateInstance<SetEstimateForStoryCommandCreator>(
+                    sp,
+                    setCommand,
+                    assessment));
+
             var acceptCommand = string.Format(CommandList.AcceptEstimate, assessment);
             services.AddSingleton<ICommandCreator>(
-                sp => ActivatorUtilities.CreateInstance<AcceptEstimateCommandCreator>(sp, acceptCommand, assessment));
+                sp => ActivatorUtilities.CreateInstance<AcceptEstimateCommandCreator>(
+                    sp,
+                    acceptCommand,
+                    assessment));
         }
-        
+
         return services;
     }
 }

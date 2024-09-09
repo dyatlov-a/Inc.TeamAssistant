@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Gateway.Auth;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,6 +6,7 @@ namespace Inc.TeamAssistant.Gateway.Api;
 
 [ApiController]
 [Route("api/v1/estimates")]
+[ApiAuthorize]
 public sealed class EstimatesController : ControllerBase
 {
     private readonly EstimatesService _estimatesService;

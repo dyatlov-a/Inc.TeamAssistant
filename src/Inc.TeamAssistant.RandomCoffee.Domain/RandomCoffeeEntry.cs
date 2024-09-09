@@ -54,9 +54,11 @@ public sealed class RandomCoffeeEntry
         return this;
     }
 
-    public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval)
+    public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval, TimeSpan votingInterval)
     {
-        NextRound = now.Add(roundInterval);
+        var waitingInterval = roundInterval - votingInterval;
+        
+        NextRound = now.Add(waitingInterval);
         State = RandomCoffeeState.Idle;
 
         return this;

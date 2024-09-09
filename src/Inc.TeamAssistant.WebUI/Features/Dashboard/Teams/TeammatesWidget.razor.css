@@ -1,0 +1,6 @@
+.component-container {
+    height: calc(100% - 30px);
+}
+::deep .no-data {
+    height: 100%;
+}

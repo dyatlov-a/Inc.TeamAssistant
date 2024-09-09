@@ -1,0 +1,71 @@
+@inherits InputBase<TimeOnly>
+
+<div class="time-selector__hours">
+    <SelectList
+        FieldId="@FieldId"
+        Value="_hour"
+        ValueExpression="@(() => _hour)"
+        ValueChanged="@((int i) => SelectHour(i))"
+        Items="_hours"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
+<div class="time-selector__minutes">
+    <SelectList
+        FieldId="@($"{FieldId}-minute")"
+        Value="_minute"
+        ValueExpression="@(() => _minute)"
+        ValueChanged="@((int i) => SelectMinute(i))"
+        Items="_minutes"
+        TitleSelector="i => i.Text"
+        ValueSelector="i => i.Value"
+        ParentCssClass="@CssClass"/>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    private int _hour;
+    private int _minute;
+
+    private readonly IReadOnlyCollection<(string Text, int Value)> _hours = Enumerable
+        .Range(0, 24)
+        .Select(i => (i.ToString("D2"), i))
+        .ToArray();
+
+    private readonly IReadOnlyCollection<(string Text, int Value)> _minutes = Enumerable
+        .Range(0, 12)
+        .Select(i => i * 5)
+        .Select(i => (i.ToString("D2"), i))
+        .ToArray();
+    
+    protected override void OnParametersSet()
+    {
+        _hour = CurrentValue.Hour;
+        _minute = CurrentValue.Minute;
+    }
+    
+    private void SelectHour(int hour)
+    {
+        _hour = hour;
+        SetCurrentValue();
+    }
+    
+    private void SelectMinute(int minute)
+    {
+        _minute = minute;
+        SetCurrentValue();
+    }
+    
+    private void SetCurrentValue() => CurrentValue = new TimeOnly(_hour, _minute);
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out TimeOnly result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

@@ -1,0 +1,14 @@
+.story__title {
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+    margin-bottom: 20px;
+}
+.story__items {
+    margin-bottom: 20px;
+}
+.story__item {
+    line-height: 2rem;
+}
+.story__link {
+    color: #dfdfdf;
+}

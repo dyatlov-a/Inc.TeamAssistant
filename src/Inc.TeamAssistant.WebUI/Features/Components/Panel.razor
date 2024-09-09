@@ -1,0 +1,49 @@
+@inject ResourcesManager Resources
+
+<div class="panel">
+    <div class="panel__header">
+        <h2 class="panel__header-text">@Header</h2>
+        <div class="panel__actions">
+            @if (IsOpen)
+            {
+                @Actions
+            }
+            else
+            {
+                <button type="button" class="button button_light" @onclick="Open">
+                    @Resources[Messages.PanelOpen]
+                </button>
+            }
+        </div>
+    </div>
+    @if (IsOpen)
+    {
+        <div class="panel__body">
+            @Content
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Header { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Actions { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter]
+    public bool IsOpen { get; set; }
+    
+    [Parameter]
+    public EventCallback Opened { get; set; }
+
+    private async Task Open()
+    {
+        IsOpen = true;
+        StateHasChanged();
+        await Opened.InvokeAsync();
+    }
+}

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.ExceptionHandlers;
+using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 using Serilog.Events;
 using Prometheus.DotNetRuntime;
@@ -8,10 +9,17 @@ namespace Inc.TeamAssistant.Gateway.Services;
 
 public static class WebApplicationBuilderExtensions
 {
-    public static WebApplicationBuilder UseTelemetry(this WebApplicationBuilder builder)
+    private const string DefaultOutputTemplate =
+        "[{Timestamp:yyyy.MM.ddTHH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+    
+    public static WebApplicationBuilder ConfigureTelemetry(
+        this WebApplicationBuilder builder,
+        LogEventLevel minLogLevel = LogEventLevel.Warning,
+        string outputTemplate = DefaultOutputTemplate)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputTemplate);
+        
         var analyticsOptions = builder.Configuration
             .GetSection(nameof(AnalyticsOptions))
             .Get<AnalyticsOptions>() ?? new AnalyticsOptions();
@@ -30,8 +38,8 @@ public static class WebApplicationBuilderExtensions
         builder.Host.UseSerilog((_, c) =>
         {
             c.Enrich.FromLogContext();
-            c.MinimumLevel.Warning();
-            c.WriteTo.Console();
+            c.MinimumLevel.Is(minLogLevel);
+            c.WriteTo.Console(minLogLevel, outputTemplate);
 
             if (!string.IsNullOrWhiteSpace(analyticsOptions.SentryDsn))
                 c.WriteTo.Sentry(s =>
@@ -43,6 +51,21 @@ public static class WebApplicationBuilderExtensions
                 });
         });
         
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigureDataProtection(this WebApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        
+        var keysDirectory = builder.Environment.IsDevelopment()
+            ? Path.Combine(builder.Environment.WebRootPath, "teamassist/keys")
+            : "/teamassist/keys";
+        
+        builder.Services
+            .AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory));
+
         return builder;
     }
 }

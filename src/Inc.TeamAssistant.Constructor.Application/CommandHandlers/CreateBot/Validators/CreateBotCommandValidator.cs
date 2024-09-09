@@ -1,16 +1,13 @@
 using FluentValidation;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot.Validators;
 
 internal sealed class CreateBotCommandValidator : AbstractValidator<CreateBotCommand>
 {
-    public CreateBotCommandValidator(IValidator<BotDetails> botDetailsValidator)
+    public CreateBotCommandValidator()
     {
-        ArgumentNullException.ThrowIfNull(botDetailsValidator);
-        
         RuleFor(e => e.Name)
             .NotEmpty()
             .MaximumLength(50);
@@ -50,11 +47,5 @@ internal sealed class CreateBotCommandValidator : AbstractValidator<CreateBotCom
                         e,
                         StringComparison.InvariantCultureIgnoreCase)));
             });
-        
-        RuleFor(e => e.BotDetails)
-            .NotEmpty();
-        
-        RuleForEach(e => e.BotDetails)
-            .SetValidator(botDetailsValidator);
     }
 }

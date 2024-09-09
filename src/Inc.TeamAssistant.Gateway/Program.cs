@@ -36,6 +36,7 @@ using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Serilog;
@@ -44,52 +45,25 @@ ValidatorOptions.Global.Configure(LanguageSettings.DefaultLanguageId);
 
 var builder = WebApplication
 	.CreateBuilder(args)
-	.UseTelemetry();
+	.ConfigureTelemetry()
+	.ConfigureDataProtection();
 
+var defaultLifetime = ServiceLifetime.Scoped;
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString")!;
-var appraiserOptions = builder.Configuration
-	.GetRequiredSection(nameof(AppraiserOptions))
-	.Get<AppraiserOptions>()!;
-var checkInOptions = builder.Configuration
-	.GetRequiredSection(nameof(CheckInOptions))
-	.Get<CheckInOptions>()!;
-var reviewerOptions = builder.Configuration
-	.GetRequiredSection(nameof(ReviewerOptions))
-	.Get<ReviewerOptions>()!;
-var randomCoffeeOptions = builder.Configuration
-	.GetRequiredSection(nameof(RandomCoffeeOptions))
-	.Get<RandomCoffeeOptions>()!;
-var authOptions = builder.Configuration
-	.GetRequiredSection(nameof(AuthOptions))
-	.Get<AuthOptions>()!;
-var openGraphOptions = builder.Configuration
-	.GetRequiredSection(nameof(OpenGraphOptions))
-	.Get<OpenGraphOptions>()!;
+var linksOptions = builder.Configuration.GetRequiredSection(nameof(LinksOptions)).Get<LinksOptions>()!;
+var authOptions = builder.Configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
+var openGraphOptions = builder.Configuration.GetRequiredSection(nameof(OpenGraphOptions)).Get<OpenGraphOptions>()!;
 
 builder.Services
-	.AddValidatorsFromAssemblyContaining<IStoryRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ILocationsRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<ITeamRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IBotRepository>(
-		lifetime: ServiceLifetime.Scoped,
-		includeInternalTypes: true);
-
-builder.Services
+	.AddValidatorsFromAssemblyContaining<IStoryRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ILocationsRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITaskForReviewRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITeamRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
-		c.Lifetime = ServiceLifetime.Scoped;
+		c.Lifetime = defaultLifetime;
 		c.RegisterServicesFromAssemblyContaining<IStoryRepository>();
 		c.RegisterServicesFromAssemblyContaining<ILocationsRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITaskForReviewRepository>();
@@ -99,16 +73,6 @@ builder.Services
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
-
-builder.Services
-	.AddAuthentication(ApplicationContext.AuthenticationScheme)
-	.AddCookie(o =>
-	{
-		o.ExpireTimeSpan = TimeSpan.FromDays(2);
-		o.SlidingExpiration = true;
-		o.AccessDeniedPath = "/";
-		o.LoginPath = "/login";
-	});
 
 builder.Services
 	.AddDataAccess(connectionString)
@@ -126,33 +90,48 @@ builder.Services
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
 	.AddJsonType<IReadOnlyDictionary<string, string>>()
 	.AddJsonType<WorkScheduleUtc>()
-	.Build()
+	.Build();
 
-	.AddSingleton(openGraphOptions)
+builder.Services
 	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
-	.AddServices(authOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
+	.AddServices(authOptions, openGraphOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
 	.AddIsomorphic()
-
-	.AddAppraiserApplication(appraiserOptions)
+	.AddAppraiserApplication(linksOptions.ConnectToDashboardLinkTemplate)
 	.AddAppraiserDataAccess()
-	.AddCheckInApplication(checkInOptions)
+	.AddCheckInApplication(linksOptions.ConnectToMapLinkTemplate)
 	.AddCheckInDataAccess()
 	.AddCheckInGeoCountry(builder.Environment.WebRootPath)
-	.AddReviewerApplication(reviewerOptions)
+	.AddReviewerApplication()
 	.AddReviewerDataAccess()
-	.AddRandomCoffeeApplication(randomCoffeeOptions)
+	.AddRandomCoffeeApplication()
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
-	.AddConstructorDataAccess()
+	.AddConstructorDataAccess();
 
+builder.Services
+	.AddAuthentication(ApplicationContext.AuthenticationScheme)
+	.AddCookie(o =>
+	{
+		o.ExpireTimeSpan = TimeSpan.FromDays(2);
+		o.SlidingExpiration = true;
+		o.AccessDeniedPath = "/";
+		o.LoginPath = "/login";
+	});
+
+builder.Services
 	.AddHttpContextAccessor()
 	.AddMemoryCache()
 	.AddOutputCache(c => c.AddPolicy(
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
-	.AddMvc();
+	.AddMvc(o => 
+	{
+		var outputFormatter = o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
+		if (outputFormatter is not null)
+			outputFormatter.TreatNullValueAsNoContent = false;
+	});
 
 builder.Services
 	.AddHealthChecks();

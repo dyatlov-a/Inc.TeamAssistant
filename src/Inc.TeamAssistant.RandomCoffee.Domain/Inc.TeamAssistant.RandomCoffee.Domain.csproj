@@ -2,4 +2,7 @@
     <ItemGroup>
         <InternalsVisibleTo Include="$(AssemblyName)Tests" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
+    </ItemGroup>
 </Project>

@@ -1,6 +1,3 @@
-using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
-
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class TaskForReview
@@ -34,11 +31,12 @@ public sealed class TaskForReview
         DraftTaskForReview draft,
         Guid botId,
         DateTimeOffset now,
-        TimeSpan notificationInterval,
+        NotificationIntervals notificationIntervals,
         long chatId)
         : this()
     {
         ArgumentNullException.ThrowIfNull(draft);
+        ArgumentNullException.ThrowIfNull(notificationIntervals);
 
         Id = id;
         BotId = botId;
@@ -50,7 +48,7 @@ public sealed class TaskForReview
         Description = draft.Description;
         State = TaskForReviewState.New;
         
-        SetNextNotificationTime(now, notificationInterval);
+        SetNextNotificationTime(now, notificationIntervals);
     }
 
     public void AttachMessage(MessageType messageType, int messageId)
@@ -74,13 +72,11 @@ public sealed class TaskForReview
         }
     }
 
-    public void SetNextNotificationTime(DateTimeOffset now, TimeSpan notificationInterval)
+    public void SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
-        const int inProgressIndex = 2;
-        var interval = State == TaskForReviewState.InProgress
-            ? notificationInterval * inProgressIndex
-            : notificationInterval;
-        NextNotification = now.Add(interval);
+        ArgumentNullException.ThrowIfNull(notificationIntervals);
+        
+        NextNotification = now.Add(notificationIntervals.GetNotificationInterval(State));
     }
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
@@ -116,12 +112,14 @@ public sealed class TaskForReview
 
     public bool CanMoveToInProgress() => State == TaskForReviewState.New;
 
-    public void MoveToInProgress(TimeSpan notificationInterval, DateTimeOffset now)
+    public void MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
+        ArgumentNullException.ThrowIfNull(notificationIntervals);
+        
         AddReviewInterval(ReviewerId, now);
         
         State = TaskForReviewState.InProgress;
-        SetNextNotificationTime(now, notificationInterval);
+        SetNextNotificationTime(now, notificationIntervals);
     }
 
     private void AddReviewInterval(long userId, DateTimeOffset end)
@@ -164,16 +162,11 @@ public sealed class TaskForReview
         ArgumentNullException.ThrowIfNull(teammates);
         ArgumentNullException.ThrowIfNull(history);
 
-        INextReviewerStrategy reviewerStrategy = Strategy switch
-        {
-            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates),
-            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history),
-            _ => throw new TeamAssistantException($"Strategy {Strategy} was not supported.")
-        };
-
         var excludedPersonIds = excludedPersonId.HasValue
             ? new[] { OwnerId, excludedPersonId.Value }
             : [OwnerId];
+        var reviewerStrategy = NextReviewerStrategyFactory.Create(Strategy, teammates, history);
+        
         SetReviewer(reviewerStrategy.Next(excludedPersonIds, lastReviewerId));
 
         return this;

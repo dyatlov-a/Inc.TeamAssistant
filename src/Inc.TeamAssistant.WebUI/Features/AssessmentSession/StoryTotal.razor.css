@@ -1,0 +1,12 @@
+.story-total {
+    overflow: hidden;
+}
+.story-total__items {
+    float: right;
+}
+.story-total__item {
+    display: block;
+    font-size: 1.8rem;
+    line-height: 2.2rem;
+    padding-right: 20px;
+}

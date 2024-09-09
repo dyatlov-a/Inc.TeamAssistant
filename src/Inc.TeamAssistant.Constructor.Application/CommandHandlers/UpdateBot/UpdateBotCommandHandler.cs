@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.Primitives.Languages;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot;
@@ -47,7 +48,7 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
         
         await _botRepository.Upsert(bot, token);
 
-        await _botConnector.Update(bot.Id, command.BotDetails, token);
+        await _botConnector.SetCommands(bot.Id, bot.SupportedLanguages, token);
         await _botListeners.Restart(bot.Id);
     }
 }

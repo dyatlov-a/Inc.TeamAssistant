@@ -1,0 +1,43 @@
+@inject IRenderContext RenderContext
+@inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+
+<div class="navbar">
+    <div class="navbar-container">
+        <AuthorizeView>
+            <Authorized>
+                @{ var person = context.User.ToPerson(); }
+                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
+                <CultureSelector/>
+                <div class="navbar__divider"></div>
+                <span class="navbar__item navbar__item_avatar">
+                    <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
+                    @person.Name
+                    <br/>
+                    @person.Username
+                </span>
+                <a href="@LogoutUrl" class="link link_light navbar__item">
+                    @Resources[Messages.Navigation_Logout]
+                </a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
+                <CultureSelector/>
+                <div class="navbar__divider"></div>
+                @if (!CurrentUrl.Contains("/login"))
+                {
+                    <a href="@LinkBuilder.Build($"login?returnUrl={CurrentUrl}")" class="link link_light navbar__item">
+                        @Resources[Messages.Navigation_Login]
+                    </a>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private string CurrentUrl => NavigationManager.Uri;
+    private string MainUrl => LinkBuilder.Build(null);
+    private string LogoutUrl => $"accounts/logout?returnUrl={CurrentUrl}";
+}

@@ -1,0 +1,46 @@
+@inject ResourcesManager Resources
+
+<FormFieldSet
+    FieldId="@BotNameId"
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], Item.LanguageId)">
+    <Content>
+            <InputText
+                @bind-Value="Item.Name"
+                class="form-control form-control_enabled"
+                id="@BotNameId" />
+        <ValidationMessage For="@(() => Item.Name)"/>
+    </Content>
+</FormFieldSet>
+<FormFieldSet
+    FieldId="@BotShortDescriptionId"
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], Item.LanguageId)">
+    <Content>
+            <InputText
+                @bind-Value="Item.ShortDescription"
+                class="form-control form-control_enabled"
+                id="@BotShortDescriptionId" />
+        <ValidationMessage For="@(() => Item.ShortDescription)"/>
+    </Content>
+</FormFieldSet>
+<FormFieldSet
+    FieldId="@BotDescriptionId"
+    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], Item.LanguageId)">
+    <Content>
+        <InputTextArea
+            @bind-Value="Item.Description"
+            class="form-control form-control_enabled form-control_textarea"
+            id="@BotDescriptionId" />
+        <ValidationMessage For="@(() => Item.Description)"/>
+    </Content>
+</FormFieldSet>
+
+@code {
+    [Parameter, EditorRequired]
+    public BotDetailsItemFormModel Item { get; set; } = default!;
+    
+    private string BotNameId => $"bot-name-{Item.LanguageId}";
+    private string BotShortDescriptionId => $"bot-short-description-{Item.LanguageId}";
+    private string BotDescriptionId => $"bot-description-{Item.LanguageId}";
+    
+    private string MessageWithLanguage(string message, string languageCode) => $"{message} {languageCode}";
+}

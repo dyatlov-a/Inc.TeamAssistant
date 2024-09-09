@@ -1,7 +1,0 @@
-.dashboard-widgets__no-data {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    min-height: 100px;
-    color: #000;
-}

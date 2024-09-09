@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Extensions;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Common;
 
@@ -11,17 +10,21 @@ internal static class SummaryByStoryConverter
         ArgumentNullException.ThrowIfNull(story);
 
         var storyForEstimates = story.StoryForEstimates
-            .Select(s => new EstimateItemDetails(
-                s.ParticipantDisplayName,
-                s.Value.ToDisplayHasValue(),
-                s.Value.ToDisplayValue(story.StoryType)))
+            .Select(s =>
+            {
+                var estimation = story.ToEstimation(s.Value);
+                return new EstimateItemDetails(
+                    s.ParticipantDisplayName,
+                    estimation.HasValue,
+                    estimation.DisplayValue);
+            })
             .ToArray();
         var assessments = story.GetAssessments()
-            .Select(s => s.ToString())
+            .Select(s => new EstimateDto(s.Code, s.Value))
             .ToArray();
         var assessmentsToAccept = story.GetTopValues()
-            .OrderBy(s => s)
-            .Select(s => s.ToString())
+            .OrderBy(s => s.Value)
+            .Select(s => new EstimateDto(s.Code, s.Value))
             .ToArray();
 
         return new SummaryByStory(
@@ -31,10 +34,11 @@ internal static class SummaryByStoryConverter
             story.Id,
             story.ExternalId,
             story.Title,
+            story.StoryType.ToString(),
             story.Links.ToArray(),
             story.EstimateEnded,
-            story.GetTotalValue(),
-            story.GetAcceptedValue(),
+            story.CalculateMean().DisplayValue,
+            story.AcceptedValue.DisplayValue,
             storyForEstimates,
             assessments,
             story.Accepted,

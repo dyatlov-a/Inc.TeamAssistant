@@ -1,4 +1,5 @@
 using FluentValidation;
+using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory.Validators;
@@ -11,6 +12,6 @@ internal sealed class SetEstimateForStoryCommandValidator : AbstractValidator<Se
             .NotEmpty();
         
         RuleFor(e => e.Value)
-            .NotEmpty();
+            .GreaterThan(Estimation.None.Value);
     }
 }

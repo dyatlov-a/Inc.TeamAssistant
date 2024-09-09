@@ -354,3 +354,4 @@ MigrationBackup/
 .DS_Store
 .idea/
 output/
+src/Inc.TeamAssistant.Gateway/wwwroot/teamassist/keys

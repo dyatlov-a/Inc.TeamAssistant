@@ -1,20 +1,23 @@
 ﻿@using FluentValidation
 @using Inc.TeamAssistant.WebUI.Services
 
-@implements IDisposable
+@implements IAsyncDisposable
 
 @inject IRenderContext RenderContext
 @inject NavigationManager NavigationManager
+@inject ResourcesManager ResourcesManager
+@inject IServiceProvider ServiceProvider
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
+            <NotificationBar />
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <Authorizing>
-                    <AuthorizingDetails />
+                    <Authorizing/>
                 </Authorizing>
                 <NotAuthorized>
-                    <RedirectToLogin />
+                    <RedirectToLogin/>
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
@@ -28,11 +31,19 @@
 </CascadingAuthenticationState>
 
 @code {
-    protected override void OnInitialized()
+    private EventsProvider? _eventsProvider;
+    
+    protected override async Task OnInitializedAsync()
     {
         SetCurrentLanguage();
         
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        await ResourcesManager.Load();
+        
+        _eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        if (_eventsProvider is not null)
+            await _eventsProvider.Start();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -42,12 +53,16 @@
     
     private void SetCurrentLanguage()
     {
-        var currentLanguage = RenderContext.GetCurrentLanguageId();
-        ValidatorOptions.Global.Configure(currentLanguage.Language);
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        
+        if (_eventsProvider is not null)
+            await _eventsProvider.DisposeAsync();
     }
 }

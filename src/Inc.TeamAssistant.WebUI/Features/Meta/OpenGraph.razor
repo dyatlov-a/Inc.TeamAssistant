@@ -1,12 +1,11 @@
 @using Inc.TeamAssistant.Primitives
 
 @inject IRenderContext RenderContext
+@inject ResourcesManager Resources
 
-@inherits PersistentComponent<OpenGraphViewModel>
-
-<meta property="og:locale" content="@GetLocale(ViewModel.LanguageId)">
-<meta property="og:title" content="@ViewModel.Title">
-<meta property="og:description" content="@ViewModel.Description">
+<meta property="og:locale" content="@_languageId">
+<meta property="og:title" content="@Resources[_data.Title]">
+<meta property="og:description" content="@Resources[_data.Description]">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
 <meta property="og:site_name" content="@GlobalSettings.CanonicalName">
@@ -16,8 +15,8 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
-<meta name="twitter:title" content="@ViewModel.Title">
-<meta name="twitter:description" content="@ViewModel.Description">
+<meta name="twitter:title" content="@Resources[_data.Title]">
+<meta name="twitter:description" content="@Resources[_data.Description]">
 <meta name="twitter:image" content="@ImageUrl">
 
 <meta property="vk:image" content="@ImageUrl">
@@ -26,36 +25,23 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
 
-    protected override Task<OpenGraphViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        var languageId = RenderContext.GetCurrentLanguageId().Language.Value;
-        var data = WebsiteSection switch
-        {
-            WebsiteSection.Assessment => new OpenGraphViewModel(
-                languageId,
-                resources[Messages.OgAppraiserTitle],
-                resources[Messages.OgAppraiserDescription],
-                "main.jpg",
-                resources[Messages.OgAppraiserImageText]),
-            WebsiteSection.Map => new OpenGraphViewModel(
-                languageId,
-                resources[Messages.OgCheckInTitle],
-                resources[Messages.OgCheckInDescription],
-                "map.jpg",
-                resources[Messages.OgCheckInImageText]),
-            _ => new OpenGraphViewModel(
-                languageId,
-                resources[Messages.OgMainTitle],
-                resources[Messages.OgMainDescription],
-                "main.jpg",
-                resources[Messages.OgMainImageText])
-        };
+    private string _languageId = string.Empty;
+    private (string Title, string Description, string Image, string ImageText) _data = default;
 
-        return Task.FromResult(data);
+    protected override void OnParametersSet() => Load();
+
+    private void Load()
+    {
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        _languageId = $"{languageContext.CurrentLanguage.Value.ToLowerInvariant()}_{languageContext.CurrentLanguage.Value.ToUpperInvariant()}";
+        _data = WebsiteSection switch
+        {
+            WebsiteSection.Assessment => (Messages.OgAppraiserTitle, Messages.OgAppraiserDescription, "main.jpg", Messages.OgAppraiserImageText),
+            WebsiteSection.Map => (Messages.OgCheckInTitle, Messages.OgCheckInDescription, "map.jpg", Messages.OgCheckInImageText),
+            _ => (Messages.OgMainTitle, Messages.OgMainDescription, "main.jpg", Messages.OgMainImageText)
+        };
     }
 
-    private string GetLocale(string languageId) => $"{languageId.ToLower()}_{languageId.ToUpper()}";
-
-    private string ImageUrl =>
-        $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{ViewModel.Image}?text={ViewModel.ImageText}";
+    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Resources[_data.ImageText]}";
 }

@@ -119,6 +119,7 @@ public sealed class Build : NukeBuild
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.app_component")
+                .SetBuildArg("Inc.TeamAssistant.Gateway")
                 .SetTag(GetImageName("inc.teamassistant.gateway")));
 
             DockerBuild(x => x

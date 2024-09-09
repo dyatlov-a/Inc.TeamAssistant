@@ -5,51 +5,64 @@
 @page "/en/assessment-session/{id:guid}/{View}"
 @page "/ru/assessment-session/{id:guid}/{View}"
 
-@inherits PersistentComponent<AssessmentSessionPageViewModel>
+@implements IAsyncDisposable
 
 @inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
+@inject IJSRuntime JsRuntime
 
-<MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.TaskAssess" />
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Assessment"
+    MetaOverrideTitle="@Resources[Messages.GUI_TaskAssess]" />
 
 <main class="main">
     <div class="assessment-session-header">
         <div class="assessment-session-header__container">
             <div class="assessment-session__header">
                 <div class="assessment-session__about">
-                    <Breadcrumbs Items="ViewModel.Items" />
-                    <h1 class="title">@ViewModel.TaskAssess</h1>
+                    <Breadcrumbs Items="_breadcrumbs" />
+                    <h1 class="title">@Resources[Messages.GUI_TaskAssess]</h1>
                     <p class="assessment-session__text text">
-                        @string.Format(ViewModel.AboutTemplate, ViewModel.TeamName)
+                        @string.Format(Resources[Messages.GUI_AssessmentSessionAbout], _item.TeamName)
                     </p>
-                    <p class="assessment-session__text text">@ViewModel.ConnectToTeam</p>
+                    <p class="assessment-session__text text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
                 </div>
                 <div class="assessment-session__link">
-                    @((MarkupString)ViewModel.CodeForConnect)
+                    <Loading State="_state" IsDark="true" Retry="() => Load()">
+                        <Content>
+                            @((MarkupString)_item.CodeForConnect)
+                        </Content>
+                    </Loading>
                 </div>
             </div>
         </div>
     </div>
+    <div class="assessment-session-switcher">
+        <div class="assessment-session-switcher__container">
+            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
+        </div>
+    </div>
     <div class="assessment-session-content">
         <div class="assessment-session-content__container">
-            <div class="view-controls">
-                @foreach (var assessmentType in Enum.GetValues<AssessmentType>())
-                {
-                    <a
-                        href="@MoveToView(assessmentType)"
-                        class="view-controls__item @ViewControlsItemCss(assessmentType)">
-                        <DynamicComponent Type="GetViewIconType(assessmentType)" Parameters="ViewIconParameters" />
-                    </a>
-                }
+            <div>
+                <Loading State="_state" Retry="() => Load()">
+                    <Content>
+                        @if (_item.Story is not null)
+                        {
+                            <DynamicComponent
+                                Type="CurrentViewType"
+                                Parameters="@(new Dictionary<string, object>{["Story"] = _item.Story})"/>
+                        }
+                        else
+                        {
+                            <NoData/>
+                        }
+                    </Content>
+                </Loading>
             </div>
-            @if (ViewModel.Story is not null)
-            {
-                <DynamicComponent Type="ViewType" Parameters="ViewParameters"/>
-            }
-            else
-            {
-                <h2 class="text">@ViewModel.HasNotTasks</h2>
-            }
         </div>
     </div>
 </main>
@@ -64,86 +77,85 @@
     public Guid Id { get; set; }
     
     [Parameter]
-    public string View { get; set; } = default!;
+    public string View { get; set; } = string.Empty;
     
-    private AssessmentType SelectedView => Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value)
-        ? value
-        : Enum.GetValues<AssessmentType>().First();
-
-    private Type ViewType => SelectedView switch
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
+    private Type CurrentViewType => _currentView switch
     {
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
     };
-
-    private Type GetViewIconType(AssessmentType assessmentType) => assessmentType switch
-    {
-        AssessmentType.Individual => typeof(GridHorizontalIcon),
-        _ => typeof(GridDividersIcon)
-    };
     
-    private Dictionary<string, object> ViewParameters => new()
-    {
-        ["Item"] = ViewModel.Story!,
-        ["MeanRating"] = ViewModel.MeanRating,
-        ["MedianRating"] = ViewModel.MedianRating
-    };
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
+    private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
+    private IAsyncDisposable? _eventListener;
     
-    private Dictionary<string, object> ViewIconParameters => new()
-    {
-        ["Size"] = "40px"
-    };
-    
-    private EventsProvider? _eventsProvider;
-
     protected override async Task OnParametersSetAsync()
     {
-        await base.OnParametersSetAsync();
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
         
-        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (eventsProvider is not null)
-            _eventsProvider ??= await eventsProvider.OnStoryChanged(Id, Update);
-    }
-
-    protected override async Task<AssessmentSessionPageViewModel> Initialize(Dictionary<string, string> resources)
-    {
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        var newStoryState = await AppraiserService.GetActiveStory(Id, "000", "dfdfdf");
-
-        return new(
-            resources[Messages.GUI_TaskAssess],
-            resources[Messages.GUI_MeanRating],
-            resources[Messages.GUI_MedianRating],
-            resources[Messages.GUI_AssessmentSessionAbout],
-            resources[Messages.GUI_AssessmentSessionConnect],
-            resources[Messages.GUI_AssessmentSessionHasNotTasks],
-            newStoryState.Result.TeamName,
-            newStoryState.Result.CodeForConnect,
-            new BreadcrumbItem[]
-            {
-                new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{Id:N}")),
-                new (date, LinkBuilder($"assessment-history/{Id:N}/{date}"))
-            },
-            newStoryState.Result.Story);
-    }
-
-    private string MoveToView(AssessmentType assessmentType)
-    {
-        var view = assessmentType.ToString().ToLower();
+        _breadcrumbs =
+        [
+            new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{Id:N}")),
+            new(date, LinkBuilder.Build($"assessment-history/{Id:N}/{date}"))
+        ];
         
-        return LinkBuilder($"assessment-session/{Id}/{view}");
+        await Load();
+        
+        await StartListenEvents();
     }
 
-    private string ViewControlsItemCss(AssessmentType assessmentType)
+    private async Task StartListenEvents()
     {
-        return assessmentType == SelectedView ? "view-controls__item_active" : string.Empty;
+        var showLoading = false;
+        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        
+        if (eventsProvider is not null)
+            _eventListener = await eventsProvider.OnStoryChanged(
+                Id,
+                b => b.OnStoryChanged(() => Load(showLoading)),
+                b => b.OnStoryAccepted(async v =>
+                {
+                    var notificationsService = ServiceProvider.GetRequiredService<NotificationsService>();
+                    var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
+
+                    notificationsService.Add(Notification.Info(message));
+
+                    await Load(showLoading);
+                }));
+    }
+
+    private async Task Load(bool showLoading = true)
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetActiveStory(Id, "000", "dfdfdf"),
+            nameof(AssessmentSessionPage),
+            r => _item = r,
+            s =>
+            {
+                if (showLoading || !s.IsLoading)
+                {
+                    _state = s;
+                    StateHasChanged();
+                }
+            });
     }
     
-    public override async ValueTask DisposeAsync()
+    private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        if (_eventsProvider is not null)
-            await _eventsProvider.DisposeAsync();
-
-        await base.DisposeAsync();
+        var url = LinkBuilder.Build($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
+        
+        _currentView = assessmentType;
+        
+        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
     }
 }

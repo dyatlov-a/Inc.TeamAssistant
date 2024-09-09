@@ -1,37 +1,49 @@
 @using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
 
-@inherits PersistentComponent<AppraiserHistoryWidgetViewModel>
-
 @inject IAppraiserService AppraiserService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
+@inject DateSelectorFactory DateSelectorFactory
 
-<DateSelector Date="_date" Items="ViewModel.DateItems" OnSelected="Changed" />
-
-@if (ViewModel.Items.Any())
-{
-    <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
-        <TemplateColumn 
-            Title="@ViewModel.AssessmentDate"
-            Sortable="true"
-            SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-            <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
-                @context.AssessmentDate.ToString("dd-MM-yyyy")
+<DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+<Loading State="_state" Retry="Load">
+    <Content>
+        <div class="component-container">
+            @if (HistoryItems.Any())
+            {
+                <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_AssessmentDate]"
+                        Sortable="true"
+                        SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
+                        <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
+                            @context.AssessmentDate.ToString("dd-MM-yyyy")
+                        </a>
+                    </TemplateColumn>
+                    <PropertyColumn
+                        Title="@Resources[Messages.Dashboard_TotalStories]"
+                        Property="@(t => t.StoriesCount)"
+                        Sortable="true"/>
+                    <PropertyColumn
+                        Title="@Resources[Messages.Dashboard_AssessmentSum]"
+                        Property="@(t => t.AssessmentSum)"
+                        Sortable="true"/>
+                </QuickGrid>
+                <Pagination State="_pagination"/>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
+        </div>
+        <div class="component-actions">
+            <a href="@GetAssessmentSessionUrl()" class="button button_dark">
+                @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
             </a>
-        </TemplateColumn>
-        <PropertyColumn Title="@ViewModel.StoriesCountText" Property="@(t => t.StoriesCount)" Sortable="true"/>
-        <PropertyColumn Title="@ViewModel.AssessmentSumText" Property="@(t => t.AssessmentSum)" Sortable="true"/>
-    </QuickGrid>
-    <div class="paginator-container">
-        <Paginator State="_pagination"/>
-    </div>
-}
-else
-{
-    <NoData />
-}
-
-<div class="appraiser-actions">
-    <a href="@GetAssessmentSessionUrl()" class="button button_dark">@ViewModel.GoToCurrentSessionButtonText</a>
-</div>
+        </div>
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired]
@@ -39,38 +51,39 @@ else
     
     private DateOnly? _date;
     private readonly PaginationState _pagination = new();
-
-    private IQueryable<AssessmentHistoryDto> HistoryItems => ViewModel.Items.AsQueryable();
+    
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateLongPeriods();
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
+    private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
     
     protected override async Task OnParametersSetAsync()
     {
-        await base.OnParametersSetAsync();
+        _date ??= DateItems.First().Value;
 
-        _date ??= ViewModel.DateItems.First().Date;
+        await Load();
     }
     
-    protected override async Task<AppraiserHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
+    private async Task Load()
     {
-        var dateItems = DateSelectorDataFactory.CreateLongPeriod(resources); 
-        _date ??= dateItems.First().Date; 
-        var getSessionHistoryResult = await AppraiserService.GetAssessmentHistory(TeamId, _date.Value);
-
-       return new AppraiserHistoryWidgetViewModel(
-           resources[Messages.Dashboard_TotalStories],
-           resources[Messages.Dashboard_GoToCurrentSessionButtonText],
-           resources[Messages.Dashboard_AssessmentSum],
-           resources[Messages.Dashboard_AssessmentDate],
-           dateItems,
-           getSessionHistoryResult.Result.Items);
+         await RequestProcessor.Process(
+            () => AppraiserService.GetAssessmentHistory(TeamId, from: _date!.Value),
+            nameof(AppraiserHistoryWidget),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
     }
 
-    private string GetAssessmentSessionUrl() => LinkBuilder($"assessment-session/{TeamId:N}");
+    private string GetAssessmentSessionUrl() => LinkBuilder.Build($"assessment-session/{TeamId:N}");
     
-    private string MoveToItem(DateOnly date) => LinkBuilder($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
+    private string MoveToItem(DateOnly date) => LinkBuilder.Build($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 
     private async Task Changed(DateOnly date)
     {
         _date = date;
-        await Update();
+        await Load();
     }
 }

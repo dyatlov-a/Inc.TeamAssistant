@@ -1,37 +1,44 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
-
-@inherits PersistentComponent<CheckBotViewModel>
-
-@inject IBotService BotService
-@inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
 
 <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
-    <div class="constructor__form">
-        <FormSection Title="@ViewModel.FormSectionTokenTitle">
-            <HelpContent>
-                @((MarkupString)string.Format(ViewModel.FormSectionTokenHelpTemplate, "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
-            </HelpContent>
-            <Content>
-                <FormFieldSet FieldId="bot-token" Label="@ViewModel.FormSectionTokenFieldTokenLabel">
-                    <Content>
-                        <InputText @bind-Value="_formModel.Token" class="form-control" id="bot-token"/>
-                        <ValidationMessage For="@(() => _formModel.Token)"/>
-                    </Content>
-                </FormFieldSet>
-                <FormFieldSet FieldId="bot-username" Label="@ViewModel.FormSectionTokenFieldUserNameLabel">
-                    <Content>
-                        <InputText @bind-Value="_formModel.UserName" class="form-control" id="bot-username" disabled="disabled"/>
-                    </Content>
-                </FormFieldSet>
-            </Content>
-        </FormSection>
-    </div>
-    <div class="constructor__actions">
-        <button type="submit" class="button button_light">@ViewModel.MoveNextTitle</button>
-    </div>
+    <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
+        </Actions>
+        <Content>
+            <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
+                <HelpContent>
+                    @((MarkupString)string.Format(
+                        Resources[Messages.Constructor_FormSectionTokenHelpTemplate],
+                        "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                </HelpContent>
+                <Content>
+                    <FormFieldSet
+                        FieldId="bot-token"
+                        Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
+                        <Content>
+                            <InputText @bind-Value="_formModel.Token" class="form-control form-control_enabled" id="bot-token"/>
+                            <ValidationMessage For="@(() => _formModel.Token)"/>
+                        </Content>
+                    </FormFieldSet>
+                    <FormFieldSet
+                        FieldId="bot-username"
+                        Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                        <Content>
+                            <InputText
+                                @bind-Value="_formModel.UserName"
+                                class="form-control form-control_disabled"
+                                id="bot-username"
+                                disabled="disabled"/>
+                        </Content>
+                    </FormFieldSet>
+                </Content>
+            </FormSection>
+        </Content>
+    </Panel>
 </EditForm>
 
 @code {
@@ -39,7 +46,10 @@
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    public Func<Stage, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
@@ -51,18 +61,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-        
-        base.OnParametersSet();
-    }
-    
-    protected override Task<CheckBotViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        return Task.FromResult(new CheckBotViewModel(
-            resources[Messages.Constructor_FormSectionTokenTitle],
-            resources[Messages.Constructor_FormSectionTokenHelpTemplate],
-            resources[Messages.Constructor_FormSectionTokenFieldTokenLabel],
-            resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel],
-            resources[Messages.Constructor_MoveNextTitle]));
     }
 
     private async Task SubmitForm()
@@ -70,12 +68,9 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        var getBotDetailsResult = await BotService.GetDetails(new GetBotDetailsQuery(_formModel.Token));
-        
-        await ServiceProvider.GetRequiredService<DataEditor>().Attach(
-            BotStorageKey,
-            StagesState.Apply(getBotDetailsResult.Result.Items).Apply(_formModel));
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
 
-        NavigationManager.NavigateTo(LinkFactory(Stage.SelectFeatures));
+        await MoveToNext(Stage.SelectFeatures);
     }
 }

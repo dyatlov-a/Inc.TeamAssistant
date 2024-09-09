@@ -25,19 +25,33 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
                     new(
                         TeamProperties.NextReviewerTypeKey,
                         "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel",
-                        GetValuesForNextReviewerType().ToArray())
+                        GetValuesForNextReviewerType().ToArray()),
+                    new(
+                        TeamProperties.WaitingNotificationIntervalKey,
+                        "Constructor_FormSectionSetSettingsWaitingNotificationIntervalFieldLabel",
+                        GetValuesForNotificationInterval().ToArray()),
+                    new(
+                        TeamProperties.InProgressNotificationIntervalKey,
+                        "Constructor_FormSectionSetSettingsInProgressNotificationIntervalFieldLabel",
+                        GetValuesForNotificationInterval().ToArray())
                 })
         };
     }
     
     private IEnumerable<SelectValue> GetValuesForNextReviewerType()
     {
-        yield return new SelectValue(string.Empty, string.Empty);
-
         foreach (var item in Enum.GetValues<NextReviewerType>())
         {
             if (_storyType.TryGetValue(item, out var value))
                 yield return new SelectValue(value, item.ToString());
         }
+    }
+    
+    private IEnumerable<SelectValue> GetValuesForNotificationInterval()
+    {
+        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval1Description", "00:30:00");
+        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval2Description", "01:00:00");
+        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval3Description", "01:30:00");
+        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval4Description", "02:00:00");
     }
 }

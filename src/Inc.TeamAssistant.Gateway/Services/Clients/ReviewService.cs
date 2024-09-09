@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Model.Common;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
@@ -16,51 +15,18 @@ internal sealed class ReviewService : IReviewService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<ServiceResult<GetHistoryByTeamResult>> GetHistory(
-        Guid teamId,
-        DateOnly from,
-        CancellationToken token)
+    public async Task<GetHistoryByTeamResult> GetHistory(Guid teamId, DateOnly from, CancellationToken token)
     {
-        try
-        {
-            var result = await _mediator.Send(new GetHistoryByTeamQuery(teamId, from), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetHistoryByTeamResult>(ex.Message);
-        }
+        return await _mediator.Send(new GetHistoryByTeamQuery(teamId, from), token);
     }
 
-    public async Task<ServiceResult<GetAverageByTeamResult>> GetAverage(
-        Guid teamId,
-        DateOnly from,
-        CancellationToken token)
+    public async Task<GetAverageByTeamResult> GetAverage(Guid teamId, DateOnly from, CancellationToken token)
     {
-        try
-        {
-            var result = await _mediator.Send(new GetAverageByTeamQuery(teamId, from), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetAverageByTeamResult>(ex.Message);
-        }
+        return await _mediator.Send(new GetAverageByTeamQuery(teamId, from), token);
     }
 
-    public async Task<ServiceResult<GetLastTasksResult>> GetLast(Guid teamId, DateOnly from, CancellationToken token)
+    public async Task<GetLastTasksResult> GetLast(Guid teamId, DateOnly from, CancellationToken token)
     {
-        try
-        {
-            var result = await _mediator.Send(new GetLastTasksQuery(teamId, from), token);
-
-            return ServiceResult.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return ServiceResult.Failed<GetLastTasksResult>(ex.Message);
-        }
+        return await _mediator.Send(new GetLastTasksQuery(teamId, from), token);
     }
 }

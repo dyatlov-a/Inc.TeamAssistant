@@ -1,11 +1,11 @@
-@inherits PersistentComponent<AppraiserModuleViewModel>
+@inject ResourcesManager Resources
 
-<DashboardWidget Title="@ViewModel.AssessmentHistoryWidgetTitle">
+<DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_AppraiserHistoryTitle]">
     <Content>
         <AppraiserHistoryWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
-<DashboardWidget Title="@ViewModel.IntegrationTitle">
+<DashboardWidget Title="@Resources[Messages.Dashboard_AppraiserIntegrationTitle]">
     <Content>
         <AppraiserIntegrationWidget TeamId="TeamId" />
     </Content>
@@ -14,11 +14,4 @@
 @code {
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
-    protected override Task<AppraiserModuleViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        return Task.FromResult(new AppraiserModuleViewModel(
-            resources[Messages.Dashboard_AppraiserHistoryTitle],
-            resources[Messages.Dashboard_AppraiserIntegrationTitle]));
-    }
 }

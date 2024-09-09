@@ -1,17 +1,17 @@
-.user-card__name {
+.estimate__card__name {
     font-size: 1.1rem;
     word-break: break-all;
     text-align: center;
 }
-.user-card__header {
+.estimate__card__header {
     background-color: #fff;
     position: relative;
     height: 60px;
 }
-.user-card__content {
+.estimate__card__content {
     padding: 60px 20px 20px 20px;
 }
-.user-card__avatar {
+.estimate__card__avatar {
     position: absolute;
     width: 80px;
     height: 80px;
@@ -20,10 +20,10 @@
     bottom: 0;
     margin: 0 0 -40px -40px;
 }
-.user-card_dark {
+.estimate__card_dark {
     color: #dfdfdf;
     background-color: #616161;
 }
-.user-card_dark .user-card__header {
+.estimate__card_dark .estimate__card__header {
     background-color: #9d9d9d;
 }

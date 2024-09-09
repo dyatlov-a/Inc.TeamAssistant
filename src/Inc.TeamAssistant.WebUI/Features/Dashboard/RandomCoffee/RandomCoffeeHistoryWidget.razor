@@ -1,49 +1,51 @@
 @using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory
 
-@inherits PersistentComponent<RandomCoffeeHistoryWidgetViewModel>
-
 @inject IRandomCoffeeService RandomCoffeeService
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
 
-<div class="chat-selector">
-    <InputSelect
-        id="chat-selector"
-        Value="_chatId"
-        ValueExpression="@(() => _chatId)"
-        ValueChanged="@((long? v) => SelectChat(v))"
-        class="form-control">
-        @foreach (var chat in ViewModel.Chats)
-        {
-            <option value="@chat.Id">@chat.Name</option>
-        }
-    </InputSelect>
-</div>
-
-@if (ViewModel.HistoryItems.Any())
-{
-    <DateSelector Date="_date" Items="DateItems" OnSelected="d => _date = d" />
-    <QuickGrid Items="@Pairs" class="quick-data-grid">
-        <TemplateColumn
-            Title="@ViewModel.FirstTitle"
-            Sortable="true"
-            SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-            @context.FirstName
-            <br/>
-            @context.FirstUserName
-        </TemplateColumn>
-        <TemplateColumn
-            Title="@ViewModel.SecondTitle"
-            Sortable="true"
-            SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-            @context.SecondName
-            <br/>
-            @context.SecondUserName
-        </TemplateColumn>
-    </QuickGrid>
-}
-else
-{
-    <NoData />
-}
+<Loading State="_state" Retry="Load">
+    <Content>
+        <div class="component-container">
+            <div class="chat-selector">
+                <SelectList
+                    FieldId="chat-selector"
+                    Value="_formModel.ChatId"
+                    ValueExpression="@(() => _formModel.ChatId)"
+                    ValueChanged="@((long? v) => Load(v))"
+                    Items="_formModel.Chats"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+            @if (Pairs.Any())
+            {
+                <QuickGrid Items="@Pairs" class="quick-data-grid">
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                        @context.FirstName
+                        <br/>
+                        @context.FirstUserName
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                        @context.SecondName
+                        <br/>
+                        @context.SecondUserName
+                    </TemplateColumn>
+                </QuickGrid>
+            }
+            else
+            {
+                <NoData IsDark="true"/>
+            }
+        </div>
+    </Content>
+</Loading>
 
 @code {
     [Parameter, EditorRequired] 
@@ -52,56 +54,44 @@ else
     [Parameter, EditorRequired] 
     public int Depth { get; set; }
 
-    private long? _chatId;
-    private DateOnly? _date;
-
-    private IReadOnlyCollection<DateSelectorItem> DateItems => ViewModel.HistoryItems
-        .Select(i => new DateSelectorItem(i.Created.ToString("yyyy-MM-dd"), i.Created))
+    private LoadingState _state = LoadingState.Done();
+    private RandomCoffeeHistoryWidgetFormModel _formModel = new();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
+        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yyyy-MM-dd"), i.Created))
         .ToArray();
 
-    protected override async Task OnParametersSetAsync()
+    protected override Task OnParametersSetAsync() => Load();
+
+    private Task Load() => Load(chatId: null);
+    
+    private async Task Load(long? chatId)
     {
-        await base.OnParametersSetAsync();
+        await RequestProcessor.Process(
+            async () =>
+            {
+                var chats = await RandomCoffeeService.GetChatsByBot(BotId);
+                var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
+                var getHistoryResult = targetChatId.HasValue
+                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, Depth)
+                    : null;
 
-        _chatId = ViewModel.Chats.FirstOrDefault()?.Id;
-        _date = ViewModel.HistoryItems.FirstOrDefault()?.Created;
-    }
-
-    protected override async Task<RandomCoffeeHistoryWidgetViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        var getChatsResult = await RandomCoffeeService.GetChatsByBot(BotId);
-        IReadOnlyCollection<RandomCoffeeHistoryDto>? historyItems = null;
-
-        if (getChatsResult.Result.Items.Any())
-        {
-            var chatId = _chatId ?? getChatsResult.Result.Items.First().Id;
-            var getHistoryResult = await RandomCoffeeService.GetHistory(BotId, chatId, Depth);
-
-            historyItems = getHistoryResult.Result.Items;
-        }
-
-        return new RandomCoffeeHistoryWidgetViewModel(
-            resources[Messages.Dashboard_RandomCoffeeFirstTitle],
-            resources[Messages.Dashboard_RandomCoffeeSecondTitle],
-            resources[Messages.Dashboard_RandomCoffeeNoPair],
-            getChatsResult.Result.Items,
-            historyItems ?? Array.Empty<RandomCoffeeHistoryDto>());
-    }
-
-    private async Task SelectChat(long? chatId)
-    {
-        _chatId = chatId;
-
-        await Update();
-
-        _date = ViewModel.HistoryItems.FirstOrDefault()?.Created;
+                return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
+            },
+            nameof(RandomCoffeeHistoryWidget),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
     }
 
     private IQueryable<PairDto> Pairs
     {
         get
         {
-            var historyItems = ViewModel.HistoryItems.FirstOrDefault(i => !_date.HasValue || i.Created == _date.Value);
+            var historyItems = _formModel.HistoryItems
+                .FirstOrDefault(i => !_formModel.Date.HasValue || i.Created == _formModel.Date.Value);
 
             var pairs = new List<PairDto>();
             if (historyItems?.Pairs is not null)
@@ -110,7 +100,7 @@ else
                 pairs.Add(new PairDto(
                     historyItems.ExcludedPersonName,
                     historyItems.ExcludedPersonUserName,
-                    ViewModel.NoPair,
+                    Resources[Messages.Dashboard_RandomCoffeeNoPair],
                     SecondUserName: null));
 
             return pairs.AsQueryable();

@@ -20,9 +20,7 @@ internal sealed class NeedReviewCommandCreator : ICommandCreator
         return Task.FromResult<IDialogCommand>(new NeedReviewCommand(
             messageContext,
             teamContext.TeamId,
-            teamContext.Properties.GetValueOrDefault(
-                TeamProperties.NextReviewerTypeKey,
-                TeamProperties.NextReviewerTypeDefault),
+            teamContext.GetNextReviewerType(),
             messageContext.Text));
     }
 }

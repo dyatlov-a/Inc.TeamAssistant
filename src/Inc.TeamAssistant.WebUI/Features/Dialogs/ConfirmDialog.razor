@@ -1,4 +1,4 @@
-@inject ResourcesManager ResourcesManager
+@inject ResourcesManager Resources
 
 @if (_isOpen)
 {
@@ -9,11 +9,17 @@
                 @Content
             </div>
             <div class="confirm-dialog__actions">
-                <button type="button" class="button button_light confirm-dialog__button" @onclick="() => Close(OnConfirm)">
-                    @_viewModel.ConfirmText
+                <button
+                    type="button"
+                    class="button button_light confirm-dialog__button"
+                    @onclick="() => Close(OnConfirm)">
+                    @Resources[Messages.ConfirmDialog_Yes]
                 </button>
-                <button type="button" class="button button_dark confirm-dialog__button" @onclick="() => Close()">
-                    @_viewModel.RejectText
+                <button
+                    type="button"
+                    class="button button_dark confirm-dialog__button"
+                    @onclick="() => Close()">
+                    @Resources[Messages.ConfirmDialog_No]
                 </button>
             </div>
         </div>
@@ -28,16 +34,6 @@
     public EventCallback OnConfirm { get; set; }
     
     private bool _isOpen;
-    private ConfirmDialogViewModel _viewModel = ConfirmDialogViewModel.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var resources = await ResourcesManager.GetResource();
-        
-        _viewModel = new ConfirmDialogViewModel(
-            resources[Messages.ConfirmDialog_Yes],
-            resources[Messages.ConfirmDialog_No]);
-    }
 
     public void Open()
     {

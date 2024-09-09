@@ -1,16 +1,19 @@
-@inherits PersistentComponent<AcceptCookieDialogViewModel>
+@implements IAsyncDisposable
 
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
+@inject ResourcesManager Resources
 
 @if (_isShow)
 {
     <div class="inline-dialog">
         <div class="inline-dialog__content">
-            <p>@ViewModel.Message</p>
+            <p>@Resources[Messages.GUI_AcceptCookieText]</p>
         </div>
         <div class="inline-dialog__actions">
-            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_light">@ViewModel.ButtonText</a>
+            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_light">
+                @Resources[Messages.GUI_AcceptCookieButton]
+            </a>
         </div>
     </div>
 }
@@ -52,19 +55,10 @@
 
         _isShow = false;
     }
-    
-    protected override Task<AcceptCookieDialogViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        return Task.FromResult(new AcceptCookieDialogViewModel(
-            resources[Messages.GUI_AcceptCookieText],
-            resources[Messages.GUI_AcceptCookieButton]));
-    }
 
-    public override async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_cookieModule is not null)
             await _cookieModule.DisposeAsync();
-
-        await base.DisposeAsync();
     }
 }

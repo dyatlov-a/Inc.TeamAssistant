@@ -41,7 +41,7 @@ internal sealed class StoryRepository : IStoryRepository
             storyIds.Add(storyForEstimate.StoryId);
             participantIds.Add(storyForEstimate.ParticipantId);
             participantDisplayNames.Add(storyForEstimate.ParticipantDisplayName);
-            values.Add((int)storyForEstimate.Value);
+            values.Add(storyForEstimate.Value);
         }
         
         var upsertStory = new CommandDefinition(@"

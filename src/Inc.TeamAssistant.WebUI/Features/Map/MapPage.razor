@@ -5,13 +5,12 @@
 @page "/en/map/{id:guid}/{DisableLayout:bool}"
 @page "/ru/map/{id:guid}/{DisableLayout:bool}"
 
-@layout CleanLayout
-
-@inherits PersistentComponent<MapPageViewModel>
+@implements IAsyncDisposable
 
 @inject ICheckInService CheckInService
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
+@inject ResourcesManager Resources
 
 <MetaDataModule WebsiteSection="WebsiteSection.Map" />
 
@@ -33,10 +32,16 @@
     [Parameter]
     public bool DisableLayout { get; set; }
 
-    private string CssClass => DisableLayout ? string.Empty : "map__navbar";
-
     private ElementReference _map;
     private IJSObjectReference? _mapModule;
+    private string CssClass => DisableLayout ? string.Empty : "map__navbar";
+    private IReadOnlyDictionary<string, string> FeatureNamesLookup => new Dictionary<string, string>
+    {
+        ["Review"] = Resources[Messages.Constructor_FeatureReviewerName],
+        ["RandomCoffee"] = Resources[Messages.Constructor_FeatureRandomCoffeeName],
+        ["Estimates"] = Resources[Messages.Constructor_FeatureAppraiserName],
+        ["CheckIn"] = Resources[Messages.Constructor_FeatureCheckInName]
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -47,38 +52,21 @@
                 "./Features/Map/MapPage.razor.js");
             
             var getLocations = await CheckInService.GetLocations(Id);
-            if (getLocations.Result is not null)
+            if (getLocations is not null)
                 await _mapModule.InvokeVoidAsync(
                     "initialize",
                     _map,
-                    getLocations.Result.Locations,
-                    ViewModel.FeatureNamesLookup,
-                    ViewModel.ShowRouteText,
-                    ViewModel.HideRouteText,
-                    ViewModel.DefaultLayerTitle);
+                    getLocations.Locations,
+                    FeatureNamesLookup,
+                    Resources[Messages.CheckIn_RouteShow],
+                    Resources[Messages.CheckIn_RouteHide],
+                    Resources[Messages.CheckIn_DefaultLayerTitle]);
         }
     }
 
-    protected override Task<MapPageViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        return Task.FromResult(new MapPageViewModel(
-            resources[Messages.CheckIn_DefaultLayerTitle],
-            resources[Messages.CheckIn_RouteShow],
-            resources[Messages.CheckIn_RouteHide],
-            new Dictionary<string, string>
-            {
-                ["Review"] = resources[Messages.Constructor_FeatureReviewerName],
-                ["RandomCoffee"] = resources[Messages.Constructor_FeatureRandomCoffeeName],
-                ["Estimates"] = resources[Messages.Constructor_FeatureAppraiserName],
-                ["CheckIn"] = resources[Messages.Constructor_FeatureCheckInName]
-            }));
-    }
-
-    public override async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_mapModule is not null)
             await _mapModule.DisposeAsync();
-
-        await base.DisposeAsync();
     }
 }

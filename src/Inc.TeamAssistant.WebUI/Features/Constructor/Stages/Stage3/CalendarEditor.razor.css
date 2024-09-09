@@ -1,0 +1,33 @@
+.holiday-items {
+    display: flex;
+    flex-wrap: wrap;
+}
+.holiday-items__item {
+    flex: 0 1 calc(50% - 20px);
+    margin: 0 10px;
+    display: flex;
+}
+.holiday-items__item-control {
+    margin: 0 10px 10px 0;
+}
+.work-schedule__items {
+    display: flex;
+    flex-wrap: wrap;
+}
+.work-schedule__button {
+    margin: 25px 0 15px 0;
+}
+.work-schedule__item {
+    flex: 0 1 50%;
+}
+@media (max-width: 991.98px) {
+    .holiday-items__item {
+        flex: 0 1 100%;
+        margin: 0;
+    }
+}
+@media (max-width: 479.98px) {
+    .work-schedule__item {
+        flex: 0 1 100%;
+    }
+}

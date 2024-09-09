@@ -1,13 +1,11 @@
-@inherits PersistentComponent<NavigationStagesViewModel>
-
-@inject NavigationManager NavigationManager
+@inject ResourcesManager Resources
 
 <div class="nav-stages">
-    @foreach (var stage in Stages)
+    @foreach (var stage in _stages)
     {
-        ViewModel.StagesLookup.TryGetValue(stage, out var stageName);
-
-        <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">@stageName</div>
+        <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
+            @Resources[GetStageTitle(stage)]
+        </div>
     }
 </div>
 
@@ -16,9 +14,9 @@
     public Stage Current { get; set; }
     
     [Parameter, EditorRequired]
-    public Func<Stage?, string> LinkFactory { get; set; } = default!;
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
 
-    private IReadOnlyCollection<Stage> Stages => Enum.GetValues<Stage>();
+    private IReadOnlyCollection<Stage> _stages = Enum.GetValues<Stage>();
     
     private bool CanMove(Stage stage) => Current > stage;
 
@@ -27,19 +25,14 @@
         : CanMove(stage)
             ? "nav-stages__item_can-move"
             : string.Empty;
+    
+    private string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
 
     private void MoveTo(Stage stage)
     {
         if (!CanMove(stage))
             return;
-        
-        NavigationManager.NavigateTo(LinkFactory(stage));
-    }
 
-    protected override Task<NavigationStagesViewModel> Initialize(Dictionary<string, string> resources)
-    {
-        var stagesLookup = Enum.GetValues<Stage>().ToDictionary(s => s, s => resources[Messages.GetStageTitle(s)]);
-        
-        return Task.FromResult(new NavigationStagesViewModel(stagesLookup));
+        MoveToNext(stage);
     }
 }

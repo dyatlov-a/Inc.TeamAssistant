@@ -1,0 +1,12 @@
+.no-data {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    min-height: 100px;
+}
+.no-data_dark {
+    color: #000;
+}
+.no-data_light {
+    color: #dfdfdf;
+}

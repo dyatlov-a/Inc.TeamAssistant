@@ -1,16 +1,13 @@
 using FluentValidation;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot.Validators;
 
 internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCommand>
 {
-    public UpdateBotCommandValidator(IValidator<BotDetails> botDetailsValidator)
+    public UpdateBotCommandValidator()
     {
-        ArgumentNullException.ThrowIfNull(botDetailsValidator);
-        
         RuleFor(e => e.Id)
             .NotEmpty();
         
@@ -53,11 +50,5 @@ internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCom
                         e,
                         StringComparison.InvariantCultureIgnoreCase)));
             });
-        
-        RuleFor(e => e.BotDetails)
-            .NotEmpty();
-        
-        RuleForEach(e => e.BotDetails)
-            .SetValidator(botDetailsValidator);
     }
 }

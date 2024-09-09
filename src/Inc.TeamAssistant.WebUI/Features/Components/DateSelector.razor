@@ -1,0 +1,25 @@
+<div class="date-selector">
+    @foreach (var item in Items)
+    {
+        <span class="date-selector__item @CssClass(item)" @onclick="() => Selected(item)">
+            @item.Title
+        </span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<SelectItem<DateOnly>> Items { get; set; } = Array.Empty<SelectItem<DateOnly>>();
+    
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+    
+    private string CssClass(SelectItem<DateOnly> item) => Date == item.Value
+        ? "date-selector__item_selected"
+        : string.Empty;
+
+    private void Selected(SelectItem<DateOnly> item) => OnSelected.InvokeAsync(item.Value);
+}

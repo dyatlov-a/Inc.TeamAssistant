@@ -1,28 +1,46 @@
 @page "/assessment-history/{teamId:guid}/{date}"
 @page "/en/assessment-history/{teamId:guid}/{date}"
 @page "/ru/assessment-history/{teamId:guid}/{date}"
-
-@inherits PersistentComponent<AssessmentSessionHistoryPageViewModel>
+@page "/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/en/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/ru/assessment-history/{teamId:guid}/{date}/{View}"
 
 @inject IAppraiserService AppraiserService
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+@inject RequestProcessor RequestProcessor
+@inject IJSRuntime JsRuntime
 
-<MetaDataModule WebsiteSection="WebsiteSection.Assessment" MetaOverrideTitle="@ViewModel.StoryList" />
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Assessment"
+    MetaOverrideTitle="@Resources[Messages.GUI_StoryList]" />
 
 <main class="main">
     <div class="assessment-history-header">
         <div class="assessment-history-header__container">
-            <Breadcrumbs Items="ViewModel.Breadcrumbs" />
-            <h1 class="title">@ViewModel.StoryList</h1>
+            <Breadcrumbs Items="_breadcrumbs" />
+            <h1 class="title">@Resources[Messages.GUI_StoryList]</h1>
         </div>
     </div>
-        @foreach(var item in ViewModel.Items)
-        {
-            <div class="assessment-history-content">
-                <div class="assessment-history-content__container">
-                    <AssessmentIndividual Item="item" MeanRating="@ViewModel.MeanRating"/>
+    <div class="assessment-history-switcher">
+        <div class="assessment-history-switcher__container">
+            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
+        </div>
+    </div>
+    <Loading State="_state" Retry="Load">
+        <Content>
+            @foreach (var item in _items)
+            {
+                <div class="assessment-history-content">
+                    <div class="assessment-history-content__container">
+                        <DynamicComponent
+                            Type="CurrentViewType"
+                            Parameters="@(new Dictionary<string, object> { ["Story"] = item })"/>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </Content>
+    </Loading>
 </main>
 <MainFooter />
         
@@ -31,21 +49,55 @@
     public Guid TeamId { get; set; }
 
     [Parameter, EditorRequired]
-    public string Date { get; set; } = default!;
+    public string Date { get; set; } = string.Empty;
     
-    protected override async Task<AssessmentSessionHistoryPageViewModel> Initialize(
-        Dictionary<string, string> resources)
+    [Parameter]
+    public string View { get; set; } = string.Empty;
+    
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().Last();
+    private Type CurrentViewType => _currentView switch
     {
-        var getStoriesResult = await AppraiserService.GetStories(TeamId, DateOnly.Parse(Date));
+        AssessmentType.Individual => typeof(AssessmentIndividual),
+        _ => typeof(AssessmentGroup)
+    };
+
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
+    private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
         
-        return new AssessmentSessionHistoryPageViewModel(
-            resources[Messages.GUI_StoryList],
-            resources[Messages.GUI_MeanRating],
-            new BreadcrumbItem[]
+        _breadcrumbs =
+        [
+            new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{TeamId:N}")),
+            new(Date, LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}"))
+        ];
+
+        await Load();
+    }
+    
+    private async Task OnViewChanged(AssessmentType assessmentType)
+    {
+        var url = LinkBuilder.Build($"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant());
+        
+        _currentView = assessmentType;
+        
+        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+    }
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
+            nameof(AssessmentSessionHistory),
+            r => _items = r.Items,
+            s =>
             {
-                new (resources[Messages.GUI_AssessmentSession], LinkBuilder($"assessment-session/{TeamId:N}")),
-                new (Date, LinkBuilder($"assessment-history/{TeamId:N}/{Date}"))
-            },
-            getStoriesResult.Result.Items);
+                _state = s;
+                StateHasChanged();
+            });
     }
 }

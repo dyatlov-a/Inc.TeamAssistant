@@ -29,12 +29,10 @@ internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalen
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var calendar = await _calendarRepository.GetById(command.Id, token);
-        if (calendar.OwnerId != currentPerson.Id)
-            throw new ApplicationException($"User {currentPerson.Id} has not access to calendar {command.Id}.");
+        var existCalendar = await _calendarRepository.FindByOwner(currentPerson.Id, token);
+        var calendar = existCalendar?.Clear() ?? new Calendar(Guid.NewGuid(), currentPerson.Id);
 
         calendar
-            .Clear()
             .SetSchedule(command.Schedule is null
                 ? null
                 : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End));

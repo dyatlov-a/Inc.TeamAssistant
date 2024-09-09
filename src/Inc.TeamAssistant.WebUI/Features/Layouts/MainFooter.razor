@@ -1,0 +1,90 @@
+@inject IRenderContext RenderContext
+@inject ResourcesManager Resources
+@inject LinkBuilder LinkBuilder
+
+<div class="footer">
+    <div class="footer__container">
+        <div class="footer__content">
+            @foreach (var group in _links)
+            {
+                <div class="footer-group">
+                    <span class="footer-group__header">@group.Key</span>
+                    @foreach (var link in group)
+                    {
+                        <a
+                            href="@link.Url"
+                            class="link link_light footer-group__link"
+                            target="@(link.External ? "_blank" : "_self")">
+                            @link.Title
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private ILookup<string, FooterLink> _links = Enumerable.Empty<FooterLink>().ToLookup(_ => string.Empty);
+
+    protected override void OnInitialized() => Load();
+
+    private void Load()
+    {
+        const bool external = true;
+
+        var links = new (string Key, FooterLink Value)[]
+        {
+            (Messages.Footer_GroupNavigation, new FooterLink(
+                Resources[Messages.Footer_LinkMain],
+                LinkBuilder.Build(null),
+                !external)),
+            (Messages.Footer_GroupNavigation, new FooterLink(
+                Resources[Messages.Footer_LinkConstructor],
+                LinkBuilder.Build("constructor"),
+                !external)),
+            (Messages.Footer_GroupNavigation, new FooterLink(
+                Resources[Messages.Footer_LinkDashboard],
+                LinkBuilder.Build("dashboard"),
+                !external)),
+            (Messages.Footer_GroupTech, new FooterLink(
+                "DotNet",
+                "https://dotnet.microsoft.com/",
+                external)),
+            (Messages.Footer_GroupTech, new FooterLink(
+                "Blazor",
+                "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
+                external)),
+            (Messages.Footer_GroupTech, new FooterLink(
+                "Nuke",
+                "https://nuke.build/",
+                external)),
+            (Messages.Footer_GroupStorage, new FooterLink(
+                "Postgres",
+                "https://www.postgresql.org/",
+                external)),
+            (Messages.Footer_GroupStorage, new FooterLink(
+                "Npgsql",
+                "https://www.npgsql.org/",
+                external)),
+            (Messages.Footer_GroupStorage, new FooterLink(
+                "FluentMigrator",
+                "https://fluentmigrator.github.io/",
+                external)),
+            (Messages.Footer_GroupTools, new FooterLink(
+                "Telegram.Bot",
+                "https://github.com/TelegramBots/Telegram.Bot",
+                external)),
+            (Messages.Footer_GroupTools, new FooterLink(
+                "FluentValidator",
+                "https://docs.fluentvalidation.net/",
+                external)),
+            (Messages.Footer_GroupTools, new FooterLink(
+                "GitHub",
+                "https://github.com/dyatlov-a/Inc.TeamAssistant",
+                external))
+        };
+
+        _links = links.ToLookup(i => Resources[i.Key], i => i.Value);
+    }
+}

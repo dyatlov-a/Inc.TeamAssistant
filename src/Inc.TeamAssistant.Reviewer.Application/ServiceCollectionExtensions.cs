@@ -19,13 +19,11 @@ namespace Inc.TeamAssistant.Reviewer.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddReviewerApplication(this IServiceCollection services, ReviewerOptions options)
+    public static IServiceCollection AddReviewerApplication(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
 
         services
-            .AddSingleton(options)
             .AddSingleton<DraftTaskForReviewService>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()

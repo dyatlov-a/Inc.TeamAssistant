@@ -13,8 +13,7 @@ internal sealed class CommandCreatorResolver
 
     public ICommandCreator? TryResolve(string input, bool onlySingleLineCommand = false)
     {
-        if (string.IsNullOrWhiteSpace(input))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(input));
+        ArgumentNullException.ThrowIfNull(input);
 
         return _commandCreators.SingleOrDefault(c => (!onlySingleLineCommand || c.SupportSingleLineMode) &&
             input.StartsWith(c.Command, StringComparison.InvariantCultureIgnoreCase));

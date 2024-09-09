@@ -1,21 +1,8 @@
-@using Inc.TeamAssistant.Appraiser.Model.Common
-
-<div class="story">
-    <h2 class="story__title">@Item.Title</h2>
-    @if (Item.Links.Any())
-    {
-        <ul class="story__items">
-            @foreach (var link in Item.Links)
-            {
-                <li class="story__item">
-                    <a class="link story__link" href="@link" target="_blank">@link</a>
-                </li>
-            }
-        </ul>
-    }
+<div class="estimate">
+    <StoryDetails Story="Story" />
     <div>
-        <div class="story__cards">
-            @foreach (var storyForEstimate in Item.StoryForEstimates)
+        <div class="estimate__items">
+            @foreach (var storyForEstimate in Story.StoryForEstimates)
             {
                 <EstimateCard
                     PersonId="storyForEstimate.ParticipantId"
@@ -27,16 +14,10 @@
             }
         </div>
     </div>
-    <span class="story__value-total"><b>@Item.Total</b> @MeanRating</span>
+    <StoryTotal Story="Story" />
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public StoryDto Item { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string MeanRating { get; set; } = default!;
-    
-    [Parameter]
-    public string? MedianRating { get; set; }
+    public StoryDto Story { get; set; } = default!;
 }

@@ -1,10 +1,12 @@
 using Blazored.LocalStorage;
 using FluentValidation;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Common;
+using Inc.TeamAssistant.WebUI.Features.Components;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
+using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
-using Inc.TeamAssistant.WebUI.Services.Render;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;
@@ -29,16 +31,14 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
-            .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
+            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             
-            .AddScoped<IRenderContext, ClientRenderContext>()
-            .AddSingleton<MessageProviderClient>()
-            .AddSingleton<IMessageProvider>(sp => new MessageProviderClientCached(
-                sp.GetRequiredService<ILocalStorageService>(),
-                sp.GetRequiredService<MessageProviderClient>(),
-                appVersion))
-            
-            .AddTransient<EventsProvider>();
+            .AddSingleton<IRenderContext, ClientRenderContext>()
+            .AddSingleton<IMessageProvider, MessageProviderClient>()
+            .AddSingleton<EventsProvider>()
+            .AddSingleton(new NotificationsService(
+                messageLifetime: TimeSpan.FromSeconds(30),
+                checkInterval: TimeSpan.FromSeconds(5)));
 
         return services;
     }
@@ -52,6 +52,10 @@ public static class ServiceCollectionExtensions
             .AddAuthorizationCore()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<ResourcesManager>()
+            .AddScoped<FeaturesFactory>()
+            .AddScoped<DateSelectorFactory>()
+            .AddScoped<RequestProcessor>()
+            .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));
 
         return services;

@@ -7,3 +7,13 @@
     margin: 5px;
     min-width: 166px;
 }
+::deep .loading
+{
+    margin-bottom: 40px;
+    flex: 0 1 48%;
+}
+@media (max-width: 991.98px) {
+    ::deep .loading {
+        flex: 0 1 100%;
+    }
+}

@@ -9,12 +9,14 @@ namespace Inc.TeamAssistant.Appraiser.Application.Services;
 internal sealed class SummaryByStoryBuilder
 {
 	private readonly IMessageBuilder _messageBuilder;
-    private readonly AppraiserOptions _options;
+    private readonly string _connectToDashboardLinkTemplate;
 
-    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, AppraiserOptions options)
+    public SummaryByStoryBuilder(IMessageBuilder messageBuilder, string connectToDashboardLinkTemplate)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectToDashboardLinkTemplate);
+        
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _connectToDashboardLinkTemplate = connectToDashboardLinkTemplate;
     }
 
     public async Task<NotificationMessage> Build(SummaryByStory summary)
@@ -52,7 +54,7 @@ internal sealed class SummaryByStoryBuilder
             builder.AppendLine();
             builder.Append(await _messageBuilder.Build(Messages.Appraiser_AverageEstimate, summary.LanguageId));
             builder.Append(' ');
-            builder.Append(summary.Total);
+            builder.Append(summary.Mean);
         }
         
         var notification = summary.StoryExternalId.HasValue
@@ -71,12 +73,12 @@ internal sealed class SummaryByStoryBuilder
             foreach (var assessment in summary.Assessments)
             {
                 var buttonText = await _messageBuilder.Build(
-                    new MessageId($"Appraiser_{assessment}"),
+                    new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
                     summary.LanguageId);
                 
                 notification.WithButton(new Button(
                     buttonText,
-                    $"{string.Format(CommandList.Set, assessment)}{summary.StoryId:N}"));
+                    $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}"));
             }
 
             var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
@@ -91,12 +93,12 @@ internal sealed class SummaryByStoryBuilder
                     summary.LanguageId);
 
                 var buttonAssessmentText = await _messageBuilder.Build(
-                    new MessageId($"Appraiser_{assessment}"),
+                    new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
                     summary.LanguageId);
 
                 notification.WithButton(new Button(
                     $"{acceptText} {buttonAssessmentText}",
-                    $"{string.Format(CommandList.AcceptEstimate, assessment)}{summary.StoryId:N}"));
+                    $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}"));
             }
             
             var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
@@ -116,7 +118,7 @@ internal sealed class SummaryByStoryBuilder
     private string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
     {
         return string.Format(
-            _options.ConnectToDashboardLinkTemplate,
+            _connectToDashboardLinkTemplate,
             languageId.Value,
             teamId.ToString("N"));
     }

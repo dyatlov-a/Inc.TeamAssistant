@@ -1,0 +1,198 @@
+@using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
+@using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
+@using Inc.TeamAssistant.Primitives.FeatureProperties
+
+@inject IBotService BotService
+@inject IServiceProvider ServiceProvider
+@inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
+@inject FeaturesFactory FeaturesFactory
+
+<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@PanelHeader" IsOpen="true">
+        <Actions>
+            <button type="submit" class="button button_light">@ButtonText</button>
+        </Actions>
+        <Content>
+            <Loading State="_state" Retry="SubmitForm">
+                <Content>
+                    <ValidationSummary />
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_ConnectingTelegram]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
+                        <Content>
+                            <a
+                                href="@LinkFactory(Stage.CheckBot)"
+                                class="link link_dark constructor__edit-link"
+                                @onclick="() => MoveToNext(Stage.CheckBot)"
+                                @onclick:preventDefault="true">
+                                @Resources[Messages.Constructor_Edit]
+                            </a>
+                            <FormFieldSet
+                                FieldId="bot-username"
+                                Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                                <Content>
+                                    <InputText
+                                        @bind-Value="_formModel.UserName"
+                                        class="form-control form-control_disabled"
+                                        id="bot-username"
+                                        disabled="disabled"/>
+                                </Content>
+                            </FormFieldSet>
+                        </Content>
+                    </FormSection>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_FeaturesStore]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                        <Content>
+                            <a
+                                href="@LinkFactory(Stage.SelectFeatures)"
+                                class="link link_dark constructor__edit-link"
+                                @onclick="() => MoveToNext(Stage.SelectFeatures)"
+                                @onclick:preventDefault="true">
+                                @Resources[Messages.Constructor_Edit]
+                            </a>
+                            @foreach (var feature in StagesState.AvailableFeatures)
+                            {
+                                var fieldId = feature.Id.ToString();
+                                var selected = StagesState.FeatureIds.Contains(feature.Id)
+                                    ? Resources[Messages.Constructor_BooleanTrueText]
+                                    : Resources[Messages.Constructor_BooleanFalseText];
+
+                                <FormFieldSet
+                                    FieldId="@fieldId"
+                                    Label="@FeaturesFactory.CreateName(feature.Name)">
+                                    <Content>
+                                        <input
+                                            type="text"
+                                            id="@fieldId"
+                                            value="@selected"
+                                            class="form-control form-control_disabled"
+                                            disabled="disabled" />
+                                    </Content>
+                                </FormFieldSet>
+                            }
+                        </Content>
+                    </FormSection>
+                    @foreach (var feature in StagesState.SelectedFeatures)
+                    {
+                        if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                            continue;
+
+                        foreach (var settingSection in settingSections)
+                        {
+                            <FormSection
+                                Title="@Resources[settingSection.HeaderMessageId]"
+                                HelpText="@Resources[settingSection.HelpMessageId]">
+                                <Content>
+                                    <a
+                                        href="@LinkFactory(Stage.SetSettings)"
+                                        class="link link_dark constructor__edit-link"
+                                        @onclick="() => MoveToNext(Stage.SetSettings)"
+                                        @onclick:preventDefault="true">
+                                        @Resources[Messages.Constructor_Edit]
+                                    </a>
+                                    @foreach (var settingItem in settingSection.SettingItems)
+                                    {
+                                        var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                            settingItem.PropertyName,
+                                            StringComparison.InvariantCultureIgnoreCase));
+
+                                        <FormFieldSet
+                                            FieldId="@settingItem.PropertyName"
+                                            Label="@Resources[settingItem.LabelMessageId]">
+                                            <Content>
+                                                <input
+                                                    type="text"
+                                                    id="@settingItem.PropertyName"
+                                                    value="@GetValueAsText(settingItem, property.Value)"
+                                                    class="form-control form-control_disabled"
+                                                    disabled="disabled"/>
+                                            </Content>
+                                        </FormFieldSet>
+                                    }
+                                </Content>
+                            </FormSection>
+                        }
+                    }
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage, string> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+
+    private string ButtonText => Resources[StagesState.Id.HasValue
+        ? Messages.Constructor_ButtonUpdateText
+        : Messages.Constructor_ButtonCreateText];
+    
+    private string PanelHeader => string.Format(
+        Resources[Messages.Constructor_CheckConfigurationTemplate],
+        ButtonText.ToLowerInvariant());
+    
+    private readonly CompleteFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    private LoadingState _state = LoadingState.Done();
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+    }
+
+    private string GetValueAsText(SettingItem settingItem, string value)
+    {
+        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(
+            value,
+            StringComparison.InvariantCultureIgnoreCase));
+        
+        return item is null ? string.Empty : Resources[item.MessageId];
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
+            return;
+
+        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+
+        await RequestProcessor.Process(
+            async () =>
+            {
+                if (StagesState.Id.HasValue)
+                    await BotService.Update(new UpdateBotCommand(
+                        StagesState.Id.Value,
+                        _formModel.UserName,
+                        _formModel.Token,
+                        _formModel.CalendarId!.Value,
+                        _formModel.FeatureIds,
+                        _formModel.Properties,
+                        _formModel.SupportedLanguages));
+                else
+                    await BotService.Create(new CreateBotCommand(
+                        _formModel.UserName,
+                        _formModel.Token,
+                        _formModel.CalendarId!.Value,
+                        _formModel.FeatureIds,
+                        _formModel.Properties,
+                        _formModel.SupportedLanguages));
+
+                await dataEditor.Detach(BotStorageKey);
+            },
+            () => MoveToNext(null),
+            s => _state = s);
+    }
+}

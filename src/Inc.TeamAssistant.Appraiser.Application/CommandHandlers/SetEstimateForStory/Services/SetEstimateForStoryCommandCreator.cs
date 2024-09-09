@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.SetEstimateForStory;
 using Inc.TeamAssistant.Primitives.Commands;
 
@@ -6,11 +5,11 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateFor
 
 internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
 {
-    private readonly AssessmentValue.Value _value;
+    private readonly int _value;
     
     public string Command { get; }
 
-    public SetEstimateForStoryCommandCreator(string command, AssessmentValue.Value value)
+    public SetEstimateForStoryCommandCreator(string command, int value)
     {
         if (string.IsNullOrWhiteSpace(command))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
@@ -30,6 +29,6 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         return Task.FromResult<IDialogCommand>(new SetEstimateForStoryCommand(
             messageContext,
             messageContext.TryParseId(Command),
-            _value.ToString()));
+            _value));
     }
 }
