@@ -31,10 +31,8 @@ public sealed class Bot
         ArgumentNullException.ThrowIfNull(featureIds);
         ArgumentNullException.ThrowIfNull(supportedLanguages);
         
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(token));
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(token);
         
         Id = id;
         Name = name;
@@ -48,8 +46,7 @@ public sealed class Bot
 
     public Bot ChangeName(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
         
         Name = value;
 
@@ -58,8 +55,7 @@ public sealed class Bot
     
     public Bot ChangeToken(string token)
     {
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(token));
+        ArgumentException.ThrowIfNullOrWhiteSpace(token);
         
         Token = token;
 
@@ -87,22 +83,16 @@ public sealed class Bot
     {
         ArgumentNullException.ThrowIfNull(supportedLanguages);
 
-        SupportedLanguages = supportedLanguages;
+        SupportedLanguages = supportedLanguages.ToArray();
         
         return this;
     }
     
-    public Bot ChangeProperty(string name, string value)
+    public Bot ChangeProperties(IReadOnlyDictionary<string, string> properties)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
-        
-        Properties = new Dictionary<string, string>(Properties)
-        {
-            [name] = value
-        };
+        ArgumentNullException.ThrowIfNull(properties);
+
+        Properties = properties.ToDictionary();
         
         return this;
     }

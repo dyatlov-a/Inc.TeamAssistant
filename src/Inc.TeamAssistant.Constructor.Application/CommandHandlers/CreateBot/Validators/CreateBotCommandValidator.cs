@@ -24,6 +24,9 @@ internal sealed class CreateBotCommandValidator : AbstractValidator<CreateBotCom
 
         RuleForEach(e => e.FeatureIds)
             .NotEmpty();
+        
+        RuleFor(e => e.Properties)
+            .NotNull();
 
         RuleForEach(e => e.Properties)
             .ChildRules(p =>

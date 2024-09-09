@@ -15,7 +15,7 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
             .WithMessage(resources[Messages.Constructor_RequiredCalendar]);
         
         RuleFor(e => e.Properties)
-            .NotEmpty();
+            .NotNull();
         
         RuleForEach(e => e.Properties)
             .ChildRules(c =>

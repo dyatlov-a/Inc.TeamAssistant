@@ -21,7 +21,8 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
         IBotConnector botConnector)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _currentPersonResolver =
+            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
         _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }

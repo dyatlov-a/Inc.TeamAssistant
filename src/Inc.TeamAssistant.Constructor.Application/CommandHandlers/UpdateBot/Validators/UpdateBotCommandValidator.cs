@@ -27,6 +27,9 @@ internal sealed class UpdateBotCommandValidator : AbstractValidator<UpdateBotCom
 
         RuleForEach(e => e.FeatureIds)
             .NotEmpty();
+        
+        RuleFor(e => e.Properties)
+            .NotNull();
 
         RuleForEach(e => e.Properties)
             .ChildRules(p =>
