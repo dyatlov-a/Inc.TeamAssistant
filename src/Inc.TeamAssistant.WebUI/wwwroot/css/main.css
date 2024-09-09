@@ -209,6 +209,9 @@ html {
     border-spacing: 0;
     word-break: break-all;
 }
+.col-title-text {
+    white-space: normal !important;
+}
 .quick-data-grid .link {
     font-size: 13px;
 }
