@@ -89,6 +89,7 @@
   "GUI_ToolCheckIn": "статистика команды",
   "GUI_CreateBotLink": "Создать бота",
   "GUI_VideoNotSupported": "Ваш браузер не поддерживает видео в формате HTML5.",
+  "GUI_DataRefreshed": "Успешно обновлено",
 
   "Navigation_Login": "Войти",
   "Navigation_Logout": "Выйти",

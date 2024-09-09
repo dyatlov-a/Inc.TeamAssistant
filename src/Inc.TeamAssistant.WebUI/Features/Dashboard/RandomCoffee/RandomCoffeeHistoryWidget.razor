@@ -57,7 +57,7 @@
     private LoadingState _state = LoadingState.Done();
     private RandomCoffeeHistoryWidgetFormModel _formModel = new();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
-        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yyyy-MM-dd"), i.Created))
+        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yy-MM-dd"), i.Created))
         .ToArray();
 
     protected override Task OnParametersSetAsync() => Load();

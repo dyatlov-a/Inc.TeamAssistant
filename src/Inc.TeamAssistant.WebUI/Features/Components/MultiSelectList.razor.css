@@ -1,6 +1,6 @@
 .multiselect__item {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 5px;
     margin-right: 5px;
 }
 .multiselect__item_selected {

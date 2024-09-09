@@ -2,7 +2,6 @@ using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
-using Inc.TeamAssistant.Primitives.Languages;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot;
@@ -21,7 +20,8 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
         IBotConnector botConnector)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _currentPersonResolver =
+            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
         _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }
@@ -41,14 +41,13 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
             .ChangeToken(command.Token)
             .ChangeCalendarId(command.CalendarId)
             .ChangeFeatures(command.FeatureIds)
-            .ChangeSupportedLanguages(command.SupportedLanguages);
-
-        foreach (var property in command.Properties)
-            bot.ChangeProperty(property.Key, property.Value);
+            .ChangeSupportedLanguages(command.SupportedLanguages)
+            .ChangeProperties(command.Properties);
         
         await _botRepository.Upsert(bot, token);
 
         await _botConnector.SetCommands(bot.Id, bot.SupportedLanguages, token);
+        
         await _botListeners.Restart(bot.Id);
     }
 }

@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
+using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
@@ -44,5 +46,28 @@ public sealed class CompleteFormModel
             _availableProperties.Add(availableProperty.Key, availableProperty.Value);
 
         return this;
+    }
+
+    public UpdateBotCommand ToUpdateBotCommand(Guid botId)
+    {
+        return new UpdateBotCommand(
+            botId,
+            UserName,
+            Token,
+            CalendarId!.Value,
+            FeatureIds,
+            Properties,
+            SupportedLanguages);
+    }
+
+    public CreateBotCommand ToCreateBotCommand()
+    {
+        return new CreateBotCommand(
+            UserName,
+            Token,
+            CalendarId!.Value,
+            FeatureIds,
+            Properties,
+            SupportedLanguages);
     }
 }

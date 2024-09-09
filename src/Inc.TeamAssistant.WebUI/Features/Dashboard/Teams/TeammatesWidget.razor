@@ -25,7 +25,7 @@
         }
     </Content>
 </ConfirmDialog>
-<Loading State="_state" Retry="Load">
+<Loading State="_state" Retry="() => Load()">
     <Content>
         <div class="component-container">
             @if (Teammates.Any())
@@ -111,7 +111,7 @@
 
     protected override Task OnParametersSetAsync() => Load();
     
-    private async Task Load()
+    private async Task Load(bool showLoading = true)
     {
         await RequestProcessor.Process(
             () => BotService.GetTeammates(TeamId),
@@ -119,8 +119,11 @@
             r => _item = r,
             s =>
             {
-                _state = s;
-                StateHasChanged();
+                if (showLoading || !s.IsLoading)
+                {
+                    _state = s;
+                    StateHasChanged();
+                }
             });
     }
 
@@ -150,7 +153,7 @@
                 _leaveUntil = null;
                 _selectedTeammate = null;
                 
-                await Load();
+                await Load(showLoading: false);
             },
             () => { },
             _ => StateHasChanged());

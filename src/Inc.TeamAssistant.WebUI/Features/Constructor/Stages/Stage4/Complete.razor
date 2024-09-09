@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot
-@using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot
 @using Inc.TeamAssistant.Primitives.FeatureProperties
 
 @inject IBotService BotService
@@ -173,22 +171,9 @@
             async () =>
             {
                 if (StagesState.Id.HasValue)
-                    await BotService.Update(new UpdateBotCommand(
-                        StagesState.Id.Value,
-                        _formModel.UserName,
-                        _formModel.Token,
-                        _formModel.CalendarId!.Value,
-                        _formModel.FeatureIds,
-                        _formModel.Properties,
-                        _formModel.SupportedLanguages));
+                    await BotService.Update(_formModel.ToUpdateBotCommand(StagesState.Id.Value));
                 else
-                    await BotService.Create(new CreateBotCommand(
-                        _formModel.UserName,
-                        _formModel.Token,
-                        _formModel.CalendarId!.Value,
-                        _formModel.FeatureIds,
-                        _formModel.Properties,
-                        _formModel.SupportedLanguages));
+                    await BotService.Create(_formModel.ToCreateBotCommand());
 
                 await dataEditor.Detach(BotStorageKey);
             },

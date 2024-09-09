@@ -40,7 +40,7 @@ body {
 	font-size: 16px;
 	color: #dfdfdf;
 	background-color: #616161;
-	min-width: 315px;
+	min-width: 428px;
     line-height: 1.25rem;
     font-weight: 400;
 }
@@ -208,6 +208,9 @@ html {
     font-size: 13px;
     border-spacing: 0;
     word-break: break-all;
+}
+.col-title-text {
+    white-space: normal !important;
 }
 .quick-data-grid .link {
     font-size: 13px;

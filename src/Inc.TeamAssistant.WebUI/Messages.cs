@@ -33,6 +33,7 @@ internal static class Messages
     public static readonly string GUI_ToolCheckIn = nameof(GUI_ToolCheckIn);
     public static readonly string GUI_CreateBotLink = nameof(GUI_CreateBotLink);
     public static readonly string GUI_VideoNotSupported = nameof(GUI_VideoNotSupported);
+    public static readonly string GUI_DataRefreshed = nameof(GUI_DataRefreshed);
 
     public static readonly string Navigation_Login = nameof(Navigation_Login);
     public static readonly string Navigation_Logout = nameof(Navigation_Logout);
