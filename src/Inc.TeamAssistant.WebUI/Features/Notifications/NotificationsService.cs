@@ -1,26 +1,23 @@
-using System.Timers;
-
 namespace Inc.TeamAssistant.WebUI.Features.Notifications;
 
-internal sealed class NotificationsService : INotificationsSource
+internal sealed class NotificationsService : INotificationsSource, INotificationsService
 {
     private readonly List<Notification> _notifications = new();
-    private readonly System.Timers.Timer _timer;
+    
     private readonly TimeSpan _messageLifetime;
+    private readonly TimeSpan _checkInterval;
     
     private Action? _changed;
 
     public NotificationsService(TimeSpan messageLifetime, TimeSpan checkInterval)
     {
         _messageLifetime = messageLifetime;
-        _timer = new System.Timers.Timer(checkInterval);
-        _timer.Elapsed += CheckMessages;
-        _timer.Enabled = true;
+        _checkInterval = checkInterval;
     }
     
     public IReadOnlyCollection<Notification> Notifications => _notifications;
     
-    public void Add(Notification notification)
+    public void Publish(Notification notification)
     {
         ArgumentNullException.ThrowIfNull(notification);
         
@@ -36,7 +33,16 @@ internal sealed class NotificationsService : INotificationsSource
         _notifications.Remove(notification);
     }
     
-    private void CheckMessages(object? sender, ElapsedEventArgs e)
+    public IDisposable OnChanged(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        
+        _changed = action;
+
+        return new TimerScope(CheckMessages, _checkInterval);
+    }
+    
+    private void CheckMessages()
     {
         var from = DateTimeOffset.UtcNow.Subtract(_messageLifetime);
         var notifications = _notifications
@@ -47,18 +53,5 @@ internal sealed class NotificationsService : INotificationsSource
             Remove(notification);
         
         _changed?.Invoke();
-    }
-    
-    void INotificationsSource.OnChanged(Action action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
-        
-        _changed = action;
-    }
-
-    public void Dispose()
-    {
-        _timer.Elapsed -= CheckMessages;
-        _timer.Dispose();
     }
 }

@@ -35,7 +35,7 @@
                                     FieldId="@settingItem.PropertyName"
                                     Label="@Resources[settingItem.LabelMessageId]">
                                     <Content>
-                                        <SelectList
+                                        <InputSelectList
                                             FieldId="@settingItem.PropertyName"
                                             Value="property.Value"
                                             ValueExpression="@(() => property.Value)"
@@ -57,11 +57,10 @@
                 <Content>
                     <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
                         <Content>
-                            <MultiSelectList
+                            <InputMultiSelectList
                                 FieldId="supported-languages"
-                                Label=""
                                 Value="_formModel.SupportedLanguages"
-                                ValueExpression="@(() => _formModel.SupportedLanguages)"
+                                ValueExpression="() => _formModel.SupportedLanguages"
                                 ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
                                 Items="LanguageSettings.LanguageIds"
                                 TitleSelector="i => i.Value"

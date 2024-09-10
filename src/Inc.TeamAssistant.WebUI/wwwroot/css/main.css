@@ -40,7 +40,7 @@ body {
 	font-size: 16px;
 	color: #dfdfdf;
 	background-color: #616161;
-	min-width: 428px;
+	min-width: 370px;
     line-height: 1.25rem;
     font-weight: 400;
 }
@@ -158,12 +158,13 @@ html {
 /* FORMS */
 .form-control {
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 5px;
     font-size: 1rem;
     border: 3px solid #555;
     border-radius: 0;
     color: #000;
     background-color: #dfdfdf;
+    min-height: 45px;
 }
 .form-control:focus, .form-control_enabled:hover {
     border: 3px solid #000;

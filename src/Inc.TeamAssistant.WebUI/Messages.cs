@@ -80,6 +80,7 @@ internal static class Messages
     public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
     public static readonly string Constructor_SupportedLanguages = nameof(Constructor_SupportedLanguages);
     public static readonly string Constructor_SupportedLanguagesHelp = nameof(Constructor_SupportedLanguagesHelp);
+    public static readonly string Constructor_SupportedLanguagesCheck = nameof(Constructor_SupportedLanguagesCheck);
     public static readonly string Constructor_Languages = nameof(Constructor_Languages);
     public static readonly string Constructor_BotName = nameof(Constructor_BotName);
     public static readonly string Constructor_BotShortDescription = nameof(Constructor_BotShortDescription);

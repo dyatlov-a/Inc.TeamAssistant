@@ -52,6 +52,9 @@
 
     private void ChangeValue(TValue value)
     {
+        if (IsDisabled)
+            return;
+        
         if (_values.Contains(value))
             _values.Remove(value);
         else

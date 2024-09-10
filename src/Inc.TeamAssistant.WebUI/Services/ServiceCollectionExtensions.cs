@@ -32,13 +32,10 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
             .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
-            
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
-            .AddSingleton(new NotificationsService(
-                messageLifetime: TimeSpan.FromSeconds(30),
-                checkInterval: TimeSpan.FromSeconds(5)));
+            .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
 
         return services;
     }
@@ -58,6 +55,22 @@ public static class ServiceCollectionExtensions
             .AddSingleton<LinkBuilder>()
             .AddScoped(typeof(DragAndDropService<>));
 
+        return services;
+    }
+    
+    private static IServiceCollection AddNotificationsService(
+        this IServiceCollection services,
+        TimeSpan messageLifetime,
+        TimeSpan checkInterval)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        
+        var notificationsService = new NotificationsService(messageLifetime, checkInterval);
+        
+        services
+            .AddSingleton<INotificationsSource>(notificationsService)
+            .AddSingleton<INotificationsService>(notificationsService);
+        
         return services;
     }
 }

@@ -7,8 +7,6 @@
     background-color: #555;
     color: #dfdfdf;
 }
-.form-control_enabled .multiselect__item_selected, .form-control_enabled .multiselect__item:hover {
-    background-color: #555;
-    color: #dfdfdf;
+.form-control_enabled .multiselect__item {
     cursor: pointer;
 }

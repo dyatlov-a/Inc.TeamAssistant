@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-public interface IOnGroupHandlerBuilder
+public interface IOnGroupEventBuilder
 {
     IDisposable OnStoryChanged(Func<Task> changed);
 

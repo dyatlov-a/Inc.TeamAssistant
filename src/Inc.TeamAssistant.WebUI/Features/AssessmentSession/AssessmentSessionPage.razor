@@ -119,10 +119,10 @@
                 b => b.OnStoryChanged(() => Load(showLoading)),
                 b => b.OnStoryAccepted(async v =>
                 {
-                    var notificationsService = ServiceProvider.GetRequiredService<NotificationsService>();
+                    var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
                     var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
 
-                    notificationsService.Add(Notification.Info(message));
+                    notificationsService.Publish(Notification.Info(message));
 
                     await Load(showLoading);
                 }));

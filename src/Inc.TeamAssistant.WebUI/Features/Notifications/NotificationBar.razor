@@ -1,5 +1,7 @@
 @inject IServiceProvider ServiceProvider
 
+@implements IDisposable
+
 <div class="notification-bar">
     @foreach (var notification in Notifications)
     {
@@ -15,17 +17,16 @@
 </div>
 
 @code {
-    private NotificationsService? _notificationsService;
+    private INotificationsSource? _notificationsSource;
+    private IDisposable? _notificationsScope;
 
     private IReadOnlyCollection<Notification> Notifications
-        => _notificationsService?.Notifications ?? Array.Empty<Notification>();
+        => _notificationsSource?.Notifications ?? Array.Empty<Notification>();
 
     protected override void OnInitialized()
     {
-        _notificationsService = ServiceProvider.GetService<NotificationsService>();
-
-        if (_notificationsService is INotificationsSource notificationsSource)
-            notificationsSource.OnChanged(StateHasChanged);
+        _notificationsSource = ServiceProvider.GetService<INotificationsSource>();
+        _notificationsScope = _notificationsSource?.OnChanged(StateHasChanged);
     }
 
     private string CssClass(Notification notification)
@@ -38,5 +39,7 @@
         };
     }
     
-    private void Remove(Notification notification) => _notificationsService?.Remove(notification);
+    private void Remove(Notification notification) => _notificationsSource?.Remove(notification);
+    
+    public void Dispose() => _notificationsScope?.Dispose();
 }

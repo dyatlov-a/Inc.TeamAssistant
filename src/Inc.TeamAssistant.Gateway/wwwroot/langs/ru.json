@@ -318,6 +318,7 @@
   "Constructor_BooleanFalseText": "Нет",
   "Constructor_SupportedLanguages": "Поддерживаемые языки",
   "Constructor_SupportedLanguagesHelp": "Пожалуйста, выберите языки, которые будет поддерживать бот",
+  "Constructor_SupportedLanguagesCheck": "Пожалуйста проверьте выбранные языки",
   "Constructor_Languages": "Языки",
   "Constructor_BotName": "Имя бота (будет отображаться в telegram)",
   "Constructor_BotShortDescription": "Короткое описание бота (будет отображаться в telegram)",
