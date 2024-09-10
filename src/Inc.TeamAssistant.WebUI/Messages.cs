@@ -154,14 +154,12 @@ internal static class Messages
     public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
     public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
     public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
-    public static readonly string Dashboard_OneWeek = nameof(Dashboard_OneWeek);
     public static readonly string Dashboard_TwoWeeks = nameof(Dashboard_TwoWeeks);
     public static readonly string Dashboard_FourWeeks = nameof(Dashboard_FourWeeks);
     public static readonly string Dashboard_TwelveWeeks = nameof(Dashboard_TwelveWeeks);
     public static readonly string Dashboard_OneMonth = nameof(Dashboard_OneMonth);
     public static readonly string Dashboard_ThreeMonths = nameof(Dashboard_ThreeMonths);
     public static readonly string Dashboard_SixMonths = nameof(Dashboard_SixMonths);
-    public static readonly string Dashboard_OneYear = nameof(Dashboard_OneYear);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
     public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);
