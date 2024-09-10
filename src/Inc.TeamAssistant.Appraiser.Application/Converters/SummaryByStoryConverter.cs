@@ -38,6 +38,7 @@ internal static class SummaryByStoryConverter
             story.Links.ToArray(),
             story.EstimateEnded,
             story.CalculateMean().DisplayValue,
+            story.CalculateMedian().DisplayValue,
             story.AcceptedValue.DisplayValue,
             storyForEstimates,
             assessments,

@@ -13,6 +13,7 @@ public sealed record SummaryByStory(
 	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
     string Mean,
+	string Median,
 	string AcceptedValue,
     IReadOnlyCollection<EstimateItemDetails> Items,
 	IReadOnlyCollection<EstimateDto> Assessments,
