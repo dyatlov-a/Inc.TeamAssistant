@@ -44,6 +44,22 @@
                         <br/>
                         @StateLookup[context.State]
                     </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Resources[Messages.Dashboard_ReviewStats]"
+                        Sortable="true"
+                        SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.FirstTouch + e.Correction + e.Review)">
+                        <span class="task__time hint" title="@Resources[Messages.Dashboard_FirstTouch]">
+                            @ConvertToString(context.FirstTouch)FT
+                        </span>
+                        <br/>
+                        <span class="task__time hint" title="@CorrectionTitle(context)">
+                            @ConvertToString(context.Correction)C
+                        </span>
+                        <br/>
+                        <span class="task__time hint" title="@Resources[Messages.Dashboard_Review]">
+                            @ConvertToString(context.Review)R
+                        </span>
+                    </TemplateColumn>
                 </QuickGrid>
                 <Pagination State="_pagination"/>
             }
@@ -116,5 +132,19 @@
         builder.Append($"{Resources[Messages.Dashboard_IsOriginalReviewer]} - {isOriginalReviewer}");
         
         return builder.ToString();
+    }
+
+    private string ConvertToString(TimeSpan value)
+    { 
+        const string timeFormat = @"d\.hh\:mm";
+
+        return value.ToString(timeFormat);
+    }
+
+    private string CorrectionTitle(TaskForReviewDto task)
+    {
+        return task.Iterations == 0
+            ? Resources[Messages.Dashboard_Correction]
+            : $"{Resources[Messages.Dashboard_Correction]} ({task.Iterations})";
     }
 }

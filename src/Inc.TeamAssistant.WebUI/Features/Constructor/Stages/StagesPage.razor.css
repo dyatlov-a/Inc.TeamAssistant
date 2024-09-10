@@ -1,9 +1,10 @@
 .constructor {
-    margin: 120px 0 60px 0;
+    margin: 50px 0 40px 0;
 }
 .constructor__nav {
     margin-bottom: 30px;
 }
 .constructor__title {
     padding: 0 10px;
+    word-break: break-all;
 }

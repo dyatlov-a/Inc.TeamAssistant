@@ -80,6 +80,7 @@ internal static class Messages
     public static readonly string Constructor_BooleanFalseText = nameof(Constructor_BooleanFalseText);
     public static readonly string Constructor_SupportedLanguages = nameof(Constructor_SupportedLanguages);
     public static readonly string Constructor_SupportedLanguagesHelp = nameof(Constructor_SupportedLanguagesHelp);
+    public static readonly string Constructor_SupportedLanguagesCheck = nameof(Constructor_SupportedLanguagesCheck);
     public static readonly string Constructor_Languages = nameof(Constructor_Languages);
     public static readonly string Constructor_BotName = nameof(Constructor_BotName);
     public static readonly string Constructor_BotShortDescription = nameof(Constructor_BotShortDescription);
@@ -137,6 +138,10 @@ internal static class Messages
     public static readonly string Dashboard_ReviewStateInProgress = nameof(Dashboard_ReviewStateInProgress);
     public static readonly string Dashboard_ReviewStateOnCorrection = nameof(Dashboard_ReviewStateOnCorrection);
     public static readonly string Dashboard_ReviewStateAccept = nameof(Dashboard_ReviewStateAccept);
+    public static readonly string Dashboard_ReviewStats = nameof(Dashboard_ReviewStats);
+    public static readonly string Dashboard_FirstTouch = nameof(Dashboard_FirstTouch);
+    public static readonly string Dashboard_Correction = nameof(Dashboard_Correction);
+    public static readonly string Dashboard_Review = nameof(Dashboard_Review);
     public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
     public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
     public static readonly string Dashboard_BotWidgetTitle = nameof(Dashboard_BotWidgetTitle);
@@ -149,14 +154,12 @@ internal static class Messages
     public static readonly string Dashboard_RandomCoffeeNoPair = nameof(Dashboard_RandomCoffeeNoPair);
     public static readonly string Dashboard_RandomCoffeeFirstTitle = nameof(Dashboard_RandomCoffeeFirstTitle);
     public static readonly string Dashboard_RandomCoffeeSecondTitle = nameof(Dashboard_RandomCoffeeSecondTitle);
-    public static readonly string Dashboard_OneWeek = nameof(Dashboard_OneWeek);
     public static readonly string Dashboard_TwoWeeks = nameof(Dashboard_TwoWeeks);
     public static readonly string Dashboard_FourWeeks = nameof(Dashboard_FourWeeks);
     public static readonly string Dashboard_TwelveWeeks = nameof(Dashboard_TwelveWeeks);
     public static readonly string Dashboard_OneMonth = nameof(Dashboard_OneMonth);
     public static readonly string Dashboard_ThreeMonths = nameof(Dashboard_ThreeMonths);
     public static readonly string Dashboard_SixMonths = nameof(Dashboard_SixMonths);
-    public static readonly string Dashboard_OneYear = nameof(Dashboard_OneYear);
     public static readonly string Dashboard_GoToCurrentSessionButtonText = nameof(Dashboard_GoToCurrentSessionButtonText);
     public static readonly string Dashboard_AssessmentDate = nameof(Dashboard_AssessmentDate);
     public static readonly string Dashboard_AppraiserHistoryTitle = nameof(Dashboard_AppraiserHistoryTitle);

@@ -4,7 +4,7 @@ public sealed record ReviewTeamMetrics(
     TimeSpan FirstTouch,
     TimeSpan Review,
     TimeSpan Correction,
-    decimal Iterations,
+    int Iterations,
     int Total)
 {
     public static ReviewTeamMetrics Empty { get; } = new(TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, 0, 0);
@@ -27,6 +27,11 @@ public sealed record ReviewTeamMetrics(
     }
 
     private decimal Add(decimal average, decimal value, int count)
+    {
+        return (average * Total + value * count) / (Total + count);
+    }
+    
+    private int Add(int average, int value, int count)
     {
         return (average * Total + value * count) / (Total + count);
     }

@@ -12,6 +12,7 @@ using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.NeedReview.Services
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.Services;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Handlers;
+using Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<ReviewTeamMetricsFactory>()
+            .AddSingleton<TaskForReviewHistoryConverter>()
             .AddHostedService<ReviewMetricsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()

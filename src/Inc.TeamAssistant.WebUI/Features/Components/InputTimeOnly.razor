@@ -1,7 +1,7 @@
 @inherits InputBase<TimeOnly>
 
 <div class="time-selector__hours">
-    <SelectList
+    <InputSelectList
         FieldId="@FieldId"
         Value="_hour"
         ValueExpression="@(() => _hour)"
@@ -12,7 +12,7 @@
         ParentCssClass="@CssClass"/>
 </div>
 <div class="time-selector__minutes">
-    <SelectList
+    <InputSelectList
         FieldId="@($"{FieldId}-minute")"
         Value="_minute"
         ValueExpression="@(() => _minute)"

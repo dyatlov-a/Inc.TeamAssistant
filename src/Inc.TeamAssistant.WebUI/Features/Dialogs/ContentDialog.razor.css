@@ -1,0 +1,23 @@
+.content-dialog {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #9d9d9d;
+    z-index: 1001;
+}
+.content-dialog__header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #555;
+    margin-bottom: 10px;
+}
+.content-dialog__header-text {
+    flex: 1;
+    font-size: 1.2rem;
+}
+.content-dialog__actions {
+    margin-left: 20px;
+}

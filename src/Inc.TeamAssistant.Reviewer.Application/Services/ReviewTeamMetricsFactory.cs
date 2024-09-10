@@ -15,7 +15,7 @@ internal sealed class ReviewTeamMetricsFactory
         _holidayService = holidayService ?? throw new ArgumentNullException(nameof(holidayService));
     }
     
-    public async Task<ReviewTeamMetrics> Create(TaskForReview taskForReview, CancellationToken token)
+    public async Task<ReviewTeamMetrics> Create(ITaskForReviewStats taskForReview, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
 

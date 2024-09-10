@@ -53,7 +53,7 @@
                         FieldId="scrum-master"
                         Label="@Resources[Messages.Dashboard_AppraiserIntegrationScrumMasterLabel]">
                         <Content>
-                            <SelectList
+                            <InputSelectList
                                 FieldId="scrum-master"
                                 Value="_formModel.ScrumMasterId"
                                 ValueExpression="@(() => _formModel.ScrumMasterId)"
@@ -119,7 +119,7 @@
     
     private async Task Load(Notification? notification)
     {
-        var notificationsService = ServiceProvider.GetService<NotificationsService>();
+        var notificationsService = ServiceProvider.GetService<INotificationsService>();
         
         await RequestProcessor.Process(
             () => IntegrationService.GetTeamProperties(TeamId),
@@ -129,7 +129,7 @@
                 _formModel.Apply(r);
                 
                 if (notificationsService is not null && notification is not null)
-                    notificationsService.Add(notification);
+                    notificationsService.Publish(notification);
             },
             s =>
             {

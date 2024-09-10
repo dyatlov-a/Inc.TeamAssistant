@@ -122,9 +122,9 @@
             return;
         }
         
-        var notificationsService = ServiceProvider.GetRequiredService<NotificationsService>();
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
         
-        notificationsService.Add(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
+        notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
         
         NavigationManager.NavigateTo(LinkBuilder.Build("constructor"));
     }

@@ -1,10 +1,10 @@
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-internal sealed class Scope : IAsyncDisposable
+internal sealed class EventsScope : IAsyncDisposable
 {
     private readonly Func<Task> _action;
 
-    public Scope(Func<Task> action)
+    public EventsScope(Func<Task> action)
     {
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }

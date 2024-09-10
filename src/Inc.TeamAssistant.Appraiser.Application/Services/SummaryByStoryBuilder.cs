@@ -25,15 +25,7 @@ internal sealed class SummaryByStoryBuilder
 
         var builder = new StringBuilder();
 
-        var storyHeader = await _messageBuilder.Build(
-            summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
-            summary.LanguageId);
-        builder.AppendLine(storyHeader);
-        
-        builder.AppendLine(summary.StoryTitle);
-        if (summary.StoryLinks.Any())
-            foreach (var link in summary.StoryLinks)
-                builder.AppendLine(link);
+        await AddBody(builder, summary);
 
         builder.AppendLine();
         builder.AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
@@ -42,20 +34,10 @@ internal sealed class SummaryByStoryBuilder
         foreach (var item in summary.Items)
             builder.AppendLine($"{item.AppraiserName} {AddEstimate(summary.EstimateEnded, item)}");
 
+        if (summary.EstimateEnded)
+            await AddEstimateSummary(builder, summary);
         if (summary.Accepted)
-        {
-            builder.AppendLine();
-            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId));
-            builder.Append(' ');
-            builder.Append(summary.AcceptedValue);
-        }
-        else if (summary.EstimateEnded)
-        {
-            builder.AppendLine();
-            builder.Append(await _messageBuilder.Build(Messages.Appraiser_AverageEstimate, summary.LanguageId));
-            builder.Append(' ');
-            builder.Append(summary.Mean);
-        }
+            await AddAcceptedValue(builder, summary);
         
         var notification = summary.StoryExternalId.HasValue
             ? NotificationMessage.Edit(
@@ -64,48 +46,105 @@ internal sealed class SummaryByStoryBuilder
             : NotificationMessage
                 .Create(summary.ChatId, builder.ToString())
                 .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p)));
-        
+
         if (summary.Accepted)
             return notification;
         
-        if (!summary.EstimateEnded)
-        {
-            foreach (var assessment in summary.Assessments)
-            {
-                var buttonText = await _messageBuilder.Build(
-                    new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
-                    summary.LanguageId);
-                
-                notification.WithButton(new Button(
-                    buttonText,
-                    $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}"));
-            }
-
-            var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
-            notification.WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"));
-        }
+        if (summary.EstimateEnded)
+            await AddOwnerActions(builder, summary, notification);
         else
-        {
-            foreach (var assessment in summary.AssessmentsToAccept)
-            {
-                var acceptText = await _messageBuilder.Build(
-                    Messages.Appraiser_Accept,
-                    summary.LanguageId);
-
-                var buttonAssessmentText = await _messageBuilder.Build(
-                    new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
-                    summary.LanguageId);
-
-                notification.WithButton(new Button(
-                    $"{acceptText} {buttonAssessmentText}",
-                    $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}"));
-            }
-            
-            var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
-            notification.WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
-        }
+            await AddTeamActions(builder, summary, notification);
 
         return notification;
+    }
+
+    private async Task AddBody(StringBuilder builder, SummaryByStory summary)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        
+        var storyHeader = await _messageBuilder.Build(
+            summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
+            summary.LanguageId);
+        
+        builder.AppendLine(storyHeader);
+        builder.AppendLine(summary.StoryTitle);
+        if (summary.StoryLinks.Any())
+            foreach (var link in summary.StoryLinks)
+                builder.AppendLine(link);
+    }
+
+    private async Task AddEstimateSummary(StringBuilder builder, SummaryByStory summary)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        
+        builder.AppendLine();
+        builder.Append(await _messageBuilder.Build(Messages.Appraiser_MeanEstimate, summary.LanguageId));
+        builder.Append(' ');
+        builder.Append(summary.Mean);
+            
+        builder.AppendLine();
+        builder.Append(await _messageBuilder.Build(Messages.Appraiser_MedianEstimate, summary.LanguageId));
+        builder.Append(' ');
+        builder.Append(summary.Median);
+    }
+
+    private async Task AddAcceptedValue(StringBuilder builder, SummaryByStory summary)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        
+        builder.AppendLine();
+        builder.Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId));
+        builder.Append(' ');
+        builder.Append(summary.AcceptedValue);
+    }
+
+    private async Task AddTeamActions(StringBuilder builder, SummaryByStory summary, NotificationMessage notification)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        ArgumentNullException.ThrowIfNull(notification);
+        
+        foreach (var assessment in summary.Assessments)
+        {
+            var buttonText = await _messageBuilder.Build(
+                new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
+                summary.LanguageId);
+                
+            notification.WithButton(new Button(
+                buttonText,
+                $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}"));
+        }
+
+        var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
+        notification.WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"));
+    }
+
+    private async Task AddOwnerActions(StringBuilder builder, SummaryByStory summary, NotificationMessage notification)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        ArgumentNullException.ThrowIfNull(notification);
+        
+        foreach (var assessment in summary.AssessmentsToAccept)
+        {
+            var acceptText = await _messageBuilder.Build(
+                Messages.Appraiser_Accept,
+                summary.LanguageId);
+
+            var buttonAssessmentText = await _messageBuilder.Build(
+                new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
+                summary.LanguageId);
+
+            notification.WithButton(new Button(
+                $"{acceptText} {buttonAssessmentText}",
+                $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}"));
+        }
+            
+        var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
+        notification.WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
     }
 
     private string AddEstimate(bool estimateEnded, EstimateItemDetails item)

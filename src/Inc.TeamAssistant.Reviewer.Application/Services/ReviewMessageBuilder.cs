@@ -13,7 +13,7 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 {
-    private const string TimeFormat = @"d\.hh\:mm\:ss";
+    private const string TimeFormat = @"d\.hh\:mm";
     
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;

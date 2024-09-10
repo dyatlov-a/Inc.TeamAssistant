@@ -16,9 +16,14 @@
     background-color: #dfdfdf;
     position: relative;
     height: 60px;
+    display: flex;
+    align-items: center;
 }
 .feature-card__content {
     padding: 60px 20px 20px 20px;
+}
+.feature-card__drag {
+    margin-bottom: -4px;
 }
 .feature-card__avatar {
     position: absolute;

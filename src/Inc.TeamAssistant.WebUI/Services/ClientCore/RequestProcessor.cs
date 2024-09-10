@@ -10,7 +10,7 @@ public sealed class RequestProcessor : IDisposable
 {
     private readonly IRenderContext _renderContext;
     private readonly PersistentComponentState _applicationState;
-    private readonly NotificationsService? _notificationsService;
+    private readonly INotificationsService? _notificationsService;
     private readonly List<PersistingComponentStateSubscription> _persistingSubscriptions = new();
     
     private readonly SemaphoreSlim _sync = new(1, 1);
@@ -23,7 +23,7 @@ public sealed class RequestProcessor : IDisposable
     {
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
-        _notificationsService = serviceProvider.GetService<NotificationsService>();
+        _notificationsService = serviceProvider.GetService<INotificationsService>();
     }
 
     public async Task Process<TResponse>(
@@ -103,7 +103,7 @@ public sealed class RequestProcessor : IDisposable
             }
             catch (Exception ex)
             {
-                _notificationsService?.Add(Notification.Error(ex.Message));
+                _notificationsService?.Publish(Notification.Error(ex.Message));
                 
                 stateChanged(LoadingState.Error());
             }

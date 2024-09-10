@@ -5,6 +5,7 @@ EXPOSE 8080
 
 # VARS
 ENV APP_DIR="/app" \
+    APP_DLL="${PROJECT}.dll" \
     APP_USER=teamassist_app
     
 # Add timezones
@@ -20,7 +21,7 @@ RUN mkdir -p ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.Gateway ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/${PROJECT} ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
@@ -30,4 +31,4 @@ RUN rm -f *.sh *.crt \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", "Inc.TeamAssistant.Gateway.dll"]
+ENTRYPOINT dotnet ${APP_DLL}

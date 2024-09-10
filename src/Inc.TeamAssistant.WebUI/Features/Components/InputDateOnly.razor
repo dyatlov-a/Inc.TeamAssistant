@@ -1,7 +1,7 @@
 @inherits InputBase<DateOnly>
 
 <div class="time-selector__years">
-    <SelectList
+    <InputSelectList
         FieldId="@FieldId"
         Value="_year"
         ValueExpression="@(() => _year)"
@@ -12,7 +12,7 @@
         ParentCssClass="@CssClass"/>
 </div>
 <div class="time-selector__months">
-    <SelectList
+    <InputSelectList
         FieldId="@($"{FieldId}-month")"
         Value="_month"
         ValueExpression="@(() => _month)"
@@ -23,7 +23,7 @@
         ParentCssClass="@CssClass"/>
 </div>
 <div class="time-selector__days">
-    <SelectList
+    <InputSelectList
         FieldId="@($"{FieldId}-day")"
         Value="_day"
         ValueExpression="@(() => _day)"
@@ -44,6 +44,9 @@
     [Parameter]
     public int YearsCount { get; set; } = 10;
     
+    [Parameter]
+    public bool HasThousands { get; set; }
+    
     private int _year;
     private int _month;
     private int _day;
@@ -62,13 +65,15 @@
     
     protected override void OnParametersSet()
     {
+        int YearFormatter(int i) => HasThousands ? i : i % 100;
+        
         _year = CurrentValue.Year;
         _month = CurrentValue.Month;
         _day = CurrentValue.Day;
         
         _years = Enumerable
             .Range(YearsStart, YearsCount)
-            .Select(i => (i.ToString("D2"), i))
+            .Select(i => (YearFormatter(i).ToString("D2"), i))
             .ToArray();
     }
     

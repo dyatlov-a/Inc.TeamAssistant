@@ -1,4 +1,5 @@
 @using Inc.TeamAssistant.Primitives.FeatureProperties
+@using Inc.TeamAssistant.Primitives.Languages
 
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
@@ -114,6 +115,32 @@
                             </FormSection>
                         }
                     }
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_SupportedLanguages]"
+                        HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
+                        <Content>
+                            <a
+                                href="@LinkFactory(Stage.SetSettings)"
+                                class="link link_dark constructor__edit-link"
+                                @onclick="() => MoveToNext(Stage.SetSettings)"
+                                @onclick:preventDefault="true">
+                                @Resources[Messages.Constructor_Edit]
+                            </a>
+                            <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
+                                <Content>
+                                    <InputMultiSelectList
+                                        FieldId="supported-languages"
+                                        Value="_formModel.SupportedLanguages"
+                                        ValueExpression="() => _formModel.SupportedLanguages"
+                                        Items="LanguageSettings.LanguageIds"
+                                        TitleSelector="i => i.Value"
+                                        ValueSelector="i => i.Value"
+                                        IsDisabled="true"/>
+                                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                                </Content>
+                            </FormFieldSet>
+                        </Content>
+                    </FormSection>
                 </Content>
             </Loading>
         </Content>

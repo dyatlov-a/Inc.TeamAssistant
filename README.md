@@ -4,7 +4,7 @@ A platform for creating telegram bots.
 Allows you to create bots to manage processes in scrum teams.
 Conduct an estimate of tasks 👌.
 Organize code review process 🤝.
-Manage distributed development teams 🌴.
+Manage distributed dev teams (team stats) ⭐.
 Collect a random coffee meetings 💬.
 
 ## Table of contents

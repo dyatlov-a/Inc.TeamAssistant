@@ -1,6 +1,22 @@
+<ContentDialog Title="@Title" @ref="_contentDialog">
+    <Content>
+        @Content
+    </Content>
+</ContentDialog>
+
 <div class="dashboard-widgets__widget">
     <div class="dashboard-widgets__content @CssClass">
-        <h2 class="dashboard-widgets__title">@Title</h2>
+        <div class="dashboard-widgets__header">
+            <h2 class="dashboard-widgets__title">@Title</h2>
+            <div class="dashboard-widgets__actions">
+                <button
+                    type="button"
+                    class="button button_dark dashboard-widgets__button"
+                    @onclick="() => _contentDialog?.Open()">
+                    <MaximizeIcon IsDark="true" Size="20px"/>
+                </button>
+            </div>
+        </div>
         @Content
     </div>
 </div>
@@ -14,6 +30,8 @@
     
     [Parameter]
     public bool HasControls { get; set; }
+    
+    private ContentDialog? _contentDialog;
     
     private string CssClass => HasControls
         ? "dashboard-widgets__content_has-controls"

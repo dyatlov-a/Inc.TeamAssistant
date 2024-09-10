@@ -70,7 +70,8 @@ internal sealed class BotReader : IBotReader
         
         await using var query = await connection.QueryMultipleAsync(dataCommand);
         
-        var teams = (await query.ReadAsync<(Guid Id, Guid BotId, string Name)>()).ToLookup(t => t.BotId);
+        var teams = (await query.ReadAsync<(Guid Id, Guid BotId, string Name)>())
+            .ToLookup(t => t.BotId);
         var features = (await query.ReadAsync<(Guid BotId, string FeatureName)>())
             .ToLookup(f => f.BotId, f => f.FeatureName);
         var results = bots
@@ -78,8 +79,14 @@ internal sealed class BotReader : IBotReader
                 b.BotId,
                 b.Name,
                 b.OwnerId,
-                features[b.BotId].ToArray(),
-                teams[b.BotId].Select(t => new TeamDto(t.Id, t.Name)).ToArray()))
+                features[b.BotId]
+                    .OrderBy(f => f)
+                    .ToArray(),
+                teams[b.BotId]
+                    .Select(t => new TeamDto(t.Id, t.Name))
+                    .OrderBy(t => t.Name)
+                    .ToArray()))
+            .OrderBy(b => b.Name)
             .ToArray();
         
         return results;
