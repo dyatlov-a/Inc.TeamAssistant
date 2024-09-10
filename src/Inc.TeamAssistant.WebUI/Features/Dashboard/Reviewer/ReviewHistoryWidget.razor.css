@@ -1,6 +1,9 @@
 .component-container {
     height: calc(100% - 66px);
 }
+.task__time {
+    word-break: keep-all;
+}
 ::deep .no-data {
     height: 100%;
 }

@@ -192,17 +192,19 @@ ORDER BY t.created;",
         return history.ToDictionary(h => h.ReviewerId, h => h.Count);
     }
 
-    public async Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(
+    public async Task<IReadOnlyCollection<TaskForReviewHistory>> GetLastTasks(
         Guid teamId,
         DateTimeOffset from,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
 SELECT
-    'state' AS state,
     t.id AS id,
     t.created AS created,
+    t.state AS state,
+    t.bot_id AS botid,
     t.description AS description,
+    t.review_intervals AS reviewintervals,
     r.id AS reviewerid,
     r.name AS reviewername,
     r.username AS reviewerusername,
@@ -210,8 +212,7 @@ SELECT
     o.name AS ownername,
     o.username AS ownerusername,
     t.has_concrete_reviewer AS hasconcretereviewer,
-    t.original_reviewer_id IS NULL AS isoriginalreviewer,
-    t.state AS state
+    t.original_reviewer_id IS NULL AS isoriginalreviewer
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id
 JOIN connector.persons AS o ON o.id = t.owner_id
@@ -222,15 +223,12 @@ ORDER BY t.created DESC;",
                 team_id = teamId,
                 from
             },
-            flags: CommandFlags.Buffered,
+            flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var results = await connection.QueryAsync<TaskForReviewDto, TaskForReviewState, TaskForReviewDto>(
-            command,
-            (t, s) => t with { State = s.ToString() },
-            splitOn: "state");
+        var results = await connection.QueryAsync<TaskForReviewHistory>(command);
 
         return results.ToArray();
     }

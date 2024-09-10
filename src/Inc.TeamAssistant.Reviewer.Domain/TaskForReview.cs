@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
-public sealed class TaskForReview
+public sealed class TaskForReview : ITaskForReviewStats
 {
     public Guid Id { get; private set; }
     public Guid BotId { get; private set; }

@@ -189,6 +189,10 @@
   "Dashboard_ReviewStateInProgress": "InProgress",
   "Dashboard_ReviewStateOnCorrection": "OnCorrection",
   "Dashboard_ReviewStateAccept": "Accept",
+  "Dashboard_ReviewStats": "Stats",
+  "Dashboard_FirstTouch": "First touch",
+  "Dashboard_Correction": "Correction",
+  "Dashboard_Review": "Review",
   "Dashboard_NoData": "No data",
   "Dashboard_TeammatesWidgetTitle": "Teammates",
   "Dashboard_BotWidgetTitle": "Bot has not selected",
@@ -357,7 +361,7 @@
   
   "PanelOpen": "Open",
   "PanelSave": "Save",
-  "LoadingReload": "Reload",
+  "LoadingReload": "Try again",
 
   "ConfirmDialog_Yes": "Yes",
   "ConfirmDialog_No": "No"

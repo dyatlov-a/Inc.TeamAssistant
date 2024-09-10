@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Reviewer.Domain;
-using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
@@ -22,5 +21,5 @@ public interface ITaskForReviewReader
     
     Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
     
-    Task<IReadOnlyCollection<TaskForReviewDto>> GetLastTasks(Guid teamId, DateTimeOffset from, CancellationToken token);
+    Task<IReadOnlyCollection<TaskForReviewHistory>> GetLastTasks(Guid teamId, DateTimeOffset from, CancellationToken token);
 }

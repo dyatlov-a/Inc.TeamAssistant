@@ -138,6 +138,10 @@ internal static class Messages
     public static readonly string Dashboard_ReviewStateInProgress = nameof(Dashboard_ReviewStateInProgress);
     public static readonly string Dashboard_ReviewStateOnCorrection = nameof(Dashboard_ReviewStateOnCorrection);
     public static readonly string Dashboard_ReviewStateAccept = nameof(Dashboard_ReviewStateAccept);
+    public static readonly string Dashboard_ReviewStats = nameof(Dashboard_ReviewStats);
+    public static readonly string Dashboard_FirstTouch = nameof(Dashboard_FirstTouch);
+    public static readonly string Dashboard_Correction = nameof(Dashboard_Correction);
+    public static readonly string Dashboard_Review = nameof(Dashboard_Review);
     public static readonly string Dashboard_NoData = nameof(Dashboard_NoData);
     public static readonly string Dashboard_TeammatesWidgetTitle = nameof(Dashboard_TeammatesWidgetTitle);
     public static readonly string Dashboard_BotWidgetTitle = nameof(Dashboard_BotWidgetTitle);
