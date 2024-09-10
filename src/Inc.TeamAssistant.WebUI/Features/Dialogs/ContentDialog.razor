@@ -1,0 +1,38 @@
+@if (_isOpen)
+{
+    <div class="content-dialog">
+        <div class="content-dialog__header">
+            <h2 class="content-dialog__header-text">@Title</h2>
+            <div class="content-dialog__actions">
+                <button type="button" class="button button_light" @onclick="Close">Close</button>
+            </div>
+        </div>
+        <div class="content-dialog__body">
+            @Content
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    private bool _isOpen;
+
+    public void Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+    }
+    
+    private void Close()
+    {
+        _isOpen = false;
+        
+        StateHasChanged();
+    }
+}

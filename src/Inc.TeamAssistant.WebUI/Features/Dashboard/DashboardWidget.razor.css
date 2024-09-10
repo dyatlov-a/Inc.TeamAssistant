@@ -4,12 +4,26 @@
     margin: 30px 10px 0 10px;
 }
 .dashboard-widgets__title {
-    padding: 0 10px 10px;
+    flex: 1;
 }
 .dashboard-widgets__content {
     border-top: 5px #555 solid;
     padding: 10px 0;
     height: 100%;
+}
+.dashboard-widgets__header {
+    display: flex;
+    align-items: center;
+    padding: 0 10px 10px;
+    height: 30px;
+}
+.dashboard-widgets__actions {
+    margin-left: 20px;
+}
+.dashboard-widgets__button {
+    padding: 2px;
+    border-radius: 10px;
+    height: 30px;
 }
 .dashboard-widgets__content_has-controls ::deep .loading {
     height: calc(100% - 66px);
