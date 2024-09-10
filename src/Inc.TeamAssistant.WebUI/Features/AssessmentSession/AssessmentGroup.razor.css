@@ -35,6 +35,9 @@
     font-size: 2rem;
     font-weight: bold;
 }
+.estimate-group__percents-small {
+    visibility: hidden;
+}
 @media (max-width: 991.98px) {
     ::deep .estimate__card {
         flex: 0 1 calc(50% - 40px);
@@ -52,5 +55,11 @@
     .estimate-group__title, .estimate-group__summary {
         padding: 20px;
         width: 100%;
+    }
+    .estimate-group__percents-small {
+        visibility: visible;
+    }
+    .estimate-group__percents-big {
+        visibility: hidden;
     }
 }

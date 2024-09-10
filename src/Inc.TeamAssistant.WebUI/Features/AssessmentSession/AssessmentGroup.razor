@@ -5,9 +5,13 @@
         {
             foreach (var group in EstimatesByGroup.OrderByDescending(g => g.Key.ValueGroup))
             {
+                var percents = $"{CalculatePercents(group.Count()):#}%";
+                
                 <div class="estimate-group">
                     <div>
-                        <div class="estimate-group__title">@group.Key.DisplayValue</div>
+                        <div class="estimate-group__title">
+                            @group.Key.DisplayValue <span class="estimate-group__percents-small">/ @percents</span>
+                        </div>
                     </div>
                     <div class="estimate-group__content">
                         <div class="estimate__items">
@@ -19,8 +23,10 @@
                             }
                         </div>
                     </div>
-                    <div>
-                        <div class="estimate-group__summary">@CalculatePercents(group.Count()).ToString("#")%</div>
+                    <div class="estimate-group__percents-big">
+                        <div class="estimate-group__summary">
+                            @percents
+                        </div>
                     </div>
                 </div>
             }
@@ -41,7 +47,7 @@
                         }
                     </div>
                 </div>
-                <div>
+                <div class="estimate-group__percents-big">
                     <div class="estimate-group__summary">-</div>
                 </div>
             </div>
