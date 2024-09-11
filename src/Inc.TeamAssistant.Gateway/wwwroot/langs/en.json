@@ -362,5 +362,6 @@
   "LoadingReload": "Try again",
 
   "ConfirmDialog_Yes": "Yes",
-  "ConfirmDialog_No": "No"
+  "ConfirmDialog_No": "No",
+  "ContentDialog_Close": "Close"
 }

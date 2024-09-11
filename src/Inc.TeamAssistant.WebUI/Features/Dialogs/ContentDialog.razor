@@ -1,14 +1,21 @@
+@inject ResourcesManager Resources
+
 @if (_isOpen)
 {
+    <div class="content-dialog-bg"></div>
     <div class="content-dialog">
-        <div class="content-dialog__header">
-            <h2 class="content-dialog__header-text">@Title</h2>
-            <div class="content-dialog__actions">
-                <button type="button" class="button button_light" @onclick="Close">Close</button>
-            </div>
-        </div>
         <div class="content-dialog__body">
-            @Content
+            <div class="content-dialog__header">
+                <h2 class="content-dialog__header-text">@Title</h2>
+                <div class="content-dialog__actions">
+                    <button type="button" class="button button_light" @onclick="Close">
+                        @Resources[Messages.ContentDialog_Close]
+                    </button>
+                </div>
+            </div>
+            <div class="content-dialog__content">
+                @Content
+            </div>
         </div>
     </div>
 }

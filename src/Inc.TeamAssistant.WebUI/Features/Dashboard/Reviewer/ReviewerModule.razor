@@ -1,16 +1,24 @@
 @inject ResourcesManager Resources
 
-<DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
+<DashboardWidget
+    HasControls="true"
+    HasChart="true"
+    Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
     <Content>
         <ReviewTotalStatsWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
-<DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
+<DashboardWidget
+    HasControls="true"
+    Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
     <Content>
         <ReviewHistoryWidget TeamId="TeamId" />
     </Content>
 </DashboardWidget>
-<DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]">
+<DashboardWidget
+    HasControls="true"
+    HasChart="true"
+    Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]">
     <Content>
         <ReviewAverageStatsWidget TeamId="TeamId" />
     </Content>

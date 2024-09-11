@@ -31,9 +31,16 @@
     [Parameter]
     public bool HasControls { get; set; }
     
-    private ContentDialog? _contentDialog;
+    [Parameter]
+    public bool HasChart { get; set; }
     
-    private string CssClass => HasControls
-        ? "dashboard-widgets__content_has-controls"
-        : "dashboard-widgets__content_no-controls";
+    private ContentDialog? _contentDialog;
+
+    private string CssClass => (HasControls, HasChart) switch
+    {
+        (true, true) => "dashboard-widgets__content_has-controls dashboard-widgets__content_has-chart",
+        (true, false) => "dashboard-widgets__content_has-controls",
+        (false, true) => "dashboard-widgets__content_no-controls dashboard-widgets__content_has-chart",
+        (false, false) => "dashboard-widgets__content_no-controls",
+    };
 }
