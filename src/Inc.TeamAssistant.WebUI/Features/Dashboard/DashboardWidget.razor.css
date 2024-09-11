@@ -2,12 +2,12 @@
     flex: 0 1 calc(50% - 20px);
     background-color: #9d9d9d;
     margin: 30px 10px 0 10px;
+    border-top: 5px #555 solid;
 }
 .dashboard-widgets__title {
     flex: 1;
 }
 .dashboard-widgets__content {
-    border-top: 5px #555 solid;
     padding: 10px 0;
     height: 100%;
 }
@@ -24,6 +24,10 @@
     padding: 2px;
     border-radius: 10px;
     height: 30px;
+}
+.dashboard-widgets__content_has-chart {
+    width: 98%;
+    margin-left: 1%;
 }
 .dashboard-widgets__content_has-controls ::deep .loading {
     height: calc(100% - 66px);
