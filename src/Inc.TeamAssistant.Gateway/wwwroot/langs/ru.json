@@ -362,5 +362,6 @@
   "LoadingReload": "Перезагрузить",
   
   "ConfirmDialog_Yes": "Да",
-  "ConfirmDialog_No": "Нет"
+  "ConfirmDialog_No": "Нет",
+  "ContentDialog_Close": "Закрыть"
 }

@@ -178,6 +178,7 @@ internal static class Messages
     public static readonly string Dashboard_AppraiserIntegrationEnableButton = nameof(Dashboard_AppraiserIntegrationEnableButton);
     public static readonly string Dashboard_AppraiserIntegrationConfirmText = nameof(Dashboard_AppraiserIntegrationConfirmText);
     public static readonly string Dashboard_AppraiserIntegrationEnableSuccess = nameof(Dashboard_AppraiserIntegrationEnableSuccess);
+    public static readonly string ContentDialog_Close = nameof(ContentDialog_Close);
     
     public static readonly string Footer_GroupNavigation = nameof(Footer_GroupNavigation);
     public static readonly string Footer_GroupTech = nameof(Footer_GroupTech);
