@@ -1,4 +1,4 @@
-<ContentDialog Title="@Title" HasChart="HasChart" @ref="_contentDialog">
+<ContentDialog Title="@Title" HasChart="HasChart" HasControls="HasControls" @ref="_contentDialog">
     <Content>
         @Content
     </Content>
@@ -39,8 +39,8 @@
     private string CssClass => (HasControls, HasChart) switch
     {
         (true, true) => "dashboard-widgets__content_has-controls dashboard-widgets__content_has-chart",
-        (true, false) => "dashboard-widgets__content_has-controls",
+        (true, false) => "dashboard-widgets__content_has-controls dashboard-widgets__content_no-chart",
         (false, true) => "dashboard-widgets__content_no-controls dashboard-widgets__content_has-chart",
-        (false, false) => "dashboard-widgets__content_no-controls",
+        (false, false) => "dashboard-widgets__content_no-controls dashboard-widgets__content_no-chart",
     };
 }

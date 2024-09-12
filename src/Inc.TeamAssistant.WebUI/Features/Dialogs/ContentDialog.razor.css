@@ -14,7 +14,7 @@
 .content-dialog {
     z-index: 1001;
 }
-.content-dialog__body {
+.content-dialog__content {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -24,11 +24,17 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, .5);
     z-index: 1001;
 }
-.content-dialog__body_no-chart {
+.content-dialog__content_no-chart {
     width: 80vw;
 }
-.content-dialog__body_has-chart {
+.content-dialog__content_has-chart {
     width: 60vw;
+}
+.content-dialog__content_no-controls ::deep .loading {
+    height: 100%;
+}
+.content-dialog__content_has-controls ::deep .loading {
+    height: calc(100% - 36px);
 }
 .content-dialog__header {
     display: flex;
@@ -36,6 +42,7 @@
     padding: 10px;
     background-color: #555;
     margin-bottom: 10px;
+    height: 70px;
 }
 .content-dialog__header-text {
     flex: 1;
@@ -44,7 +51,7 @@
 .content-dialog__actions {
     margin-left: 20px;
 }
-.content-dialog__content {
+.content-dialog__body {
     height: calc(100% - 80px);
     overflow-y: auto;
 }

@@ -4,7 +4,7 @@
 {
     <div class="content-dialog-bg"></div>
     <div class="content-dialog">
-        <div class="content-dialog__body @CssClass">
+        <div class="content-dialog__content @CssClass">
             <div class="content-dialog__header">
                 <h2 class="content-dialog__header-text">@Title</h2>
                 <div class="content-dialog__actions">
@@ -13,7 +13,7 @@
                     </button>
                 </div>
             </div>
-            <div class="content-dialog__content">
+            <div class="content-dialog__body">
                 @Content
             </div>
         </div>
@@ -26,6 +26,9 @@
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool HasControls { get; set; }
     
     [Parameter, EditorRequired]
     public bool HasChart { get; set; }
@@ -46,5 +49,11 @@
         StateHasChanged();
     }
     
-    private string CssClass => HasChart ? "content-dialog__body_has-chart" : "content-dialog__body_no-chart";
+    private string CssClass => (HasControls, HasChart) switch
+    {
+        (true, true) => "content-dialog__content_has-controls content-dialog__content_has-chart",
+        (true, false) => "content-dialog__content_has-controls content-dialog__content_no-chart",
+        (false, true) => "content-dialog__content_no-controls content-dialog__content_has-chart",
+        (false, false) => "content-dialog__content_no-controls content-dialog__content_no-chart",
+    };
 }

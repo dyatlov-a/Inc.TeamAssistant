@@ -12,9 +12,9 @@
 </ConfirmDialog>
 <Loading State="_state" Retry="Load">
     <Content>
-        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-            <FluentValidationValidator @ref="_fluentValidationValidator"/>
-            <div class="appraiser-integration">
+        <div class="component-container">
+            <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator"/>
                 <div class="appraiser-integration__body">
                     <FormFieldSet
                         FieldId="access-token"
@@ -65,23 +65,23 @@
                             <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
                         </Content>
                     </FormFieldSet>
-                    @if (!_formModel.IsDisableControls)
-                    {
-                        <div class="appraiser-integration__buttons">
-                            <button
-                                type="submit"
-                                class="button button_dark appraiser-integration__button">
-                                @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
-                            </button>
-                            <button
-                                type="button"
-                                class="button button_dark appraiser-integration__button"
-                                @onclick="BeginDisable">
-                                @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
-                            </button>
-                        </div>
-                    }
                 </div>
+                @if (!_formModel.IsDisableControls)
+                {
+                    <div class="component-actions">
+                        <button
+                            type="submit"
+                            class="button button_dark appraiser-integration__button">
+                            @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
+                        </button>
+                        <button
+                            type="button"
+                            class="button button_dark appraiser-integration__button"
+                            @onclick="BeginDisable">
+                            @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
+                        </button>
+                    </div>
+                }
                 @if (!_formModel.IsEnabled)
                 {
                     <div class="appraiser-integration__bg"></div>
@@ -93,8 +93,8 @@
                         </div>
                     </div>
                 }
-            </div>
-        </EditForm>
+            </EditForm>
+        </div>
     </Content>
 </Loading>
 
