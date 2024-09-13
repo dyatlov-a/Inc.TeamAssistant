@@ -1,11 +1,11 @@
-<ContentDialog Title="@Title" HasChart="HasChart" HasControls="HasControls" @ref="_contentDialog">
+<ContentDialog Title="@Title" IsGrand="!HasChart" @ref="_contentDialog">
     <Content>
         @Content
     </Content>
 </ContentDialog>
 
 <div class="dashboard-widgets__widget">
-    <div class="dashboard-widgets__content @CssClass">
+    <div class="dashboard-widgets__content @ControlsCssClass @HasChartCssClass">
         <div class="dashboard-widgets__header">
             <h2 class="dashboard-widgets__title">@Title</h2>
             <div class="dashboard-widgets__actions">
@@ -35,12 +35,12 @@
     public bool HasChart { get; set; }
     
     private ContentDialog? _contentDialog;
+    
+    private string ControlsCssClass => HasControls
+        ? "dashboard-widgets__content_has-controls"
+        : "dashboard-widgets__content_no-controls";
 
-    private string CssClass => (HasControls, HasChart) switch
-    {
-        (true, true) => "dashboard-widgets__content_has-controls dashboard-widgets__content_has-chart",
-        (true, false) => "dashboard-widgets__content_has-controls dashboard-widgets__content_no-chart",
-        (false, true) => "dashboard-widgets__content_no-controls dashboard-widgets__content_has-chart",
-        (false, false) => "dashboard-widgets__content_no-controls dashboard-widgets__content_no-chart",
-    };
+    private string HasChartCssClass => HasChart
+        ? "dashboard-widgets__content_has-chart"
+        : "dashboard-widgets__content_no-chart";
 }

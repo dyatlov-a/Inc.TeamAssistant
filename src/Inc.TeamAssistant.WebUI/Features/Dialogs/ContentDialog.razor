@@ -28,10 +28,7 @@
     public RenderFragment Content { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public bool HasControls { get; set; }
-    
-    [Parameter, EditorRequired]
-    public bool HasChart { get; set; }
+    public bool IsGrand { get; set; }
     
     private bool _isOpen;
 
@@ -48,12 +45,6 @@
         
         StateHasChanged();
     }
-    
-    private string CssClass => (HasControls, HasChart) switch
-    {
-        (true, true) => "content-dialog__content_has-controls content-dialog__content_has-chart",
-        (true, false) => "content-dialog__content_has-controls content-dialog__content_no-chart",
-        (false, true) => "content-dialog__content_no-controls content-dialog__content_has-chart",
-        (false, false) => "content-dialog__content_no-controls content-dialog__content_no-chart",
-    };
+
+    private string CssClass => IsGrand ? "content-dialog__content_grand" : "content-dialog__content_small";
 }
