@@ -159,12 +159,14 @@ html {
 .form-control {
     width: 100%;
     padding: 10px 5px;
-    font-size: 1rem;
     border: 3px solid #555;
     border-radius: 0;
     color: #000;
     background-color: #dfdfdf;
+}
+.form-control, select {
     min-height: 45px;
+    font-size: 1rem;
 }
 .form-control:focus, .form-control_enabled:hover {
     border: 3px solid #000;
