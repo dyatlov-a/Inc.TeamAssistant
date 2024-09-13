@@ -2,15 +2,14 @@ using Blazored.LocalStorage;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-internal sealed class DataEditor
+internal sealed class AppLocalStorage
 {
     private readonly ILocalStorageService _localStorage;
     private readonly string _appVersion;
 
-    public DataEditor(ILocalStorageService localStorage, string appVersion)
+    public AppLocalStorage(ILocalStorageService localStorage, string appVersion)
     {
-        if (string.IsNullOrWhiteSpace(appVersion))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(appVersion));
+        ArgumentException.ThrowIfNullOrWhiteSpace(appVersion);
 
         _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
         _appVersion = appVersion;
@@ -23,8 +22,10 @@ internal sealed class DataEditor
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(defaultFactory);
-
-        var storeKey = ToStoreKey(key);
+        
+        var storeKey = ToStoreKey<T>(key);
+        
+        await EnsureStoreVersion(token);
 
         if (await _localStorage.ContainKeyAsync(storeKey, token))
         {
@@ -42,15 +43,22 @@ internal sealed class DataEditor
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(data);
         
-        await _localStorage.SetItemAsync(ToStoreKey(key), data, token);
+        await _localStorage.SetItemAsync(ToStoreKey<T>(key), data, token);
     }
 
-    public async Task Detach(string key, CancellationToken token = default)
+    public async Task Detach<T>(string key, CancellationToken token = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         
-        await _localStorage.RemoveItemAsync(ToStoreKey(key), token);
+        await _localStorage.RemoveItemAsync(ToStoreKey<T>(key), token);
+    }
+
+    private async Task EnsureStoreVersion(CancellationToken token)
+    {
+        foreach (var key in await _localStorage.KeysAsync(token))
+            if (!key.StartsWith(_appVersion))
+                await _localStorage.RemoveItemAsync(key, token);
     }
     
-    private string ToStoreKey(string key) => $"{_appVersion}_{key}";
+    private string ToStoreKey<T>(string key) => $"{_appVersion}_{typeof(T).Name}_{key}";
 }

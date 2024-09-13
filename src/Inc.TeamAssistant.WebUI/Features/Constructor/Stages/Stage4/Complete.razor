@@ -192,7 +192,7 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
-        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
 
         await RequestProcessor.Process(
             async () =>
@@ -202,7 +202,7 @@
                 else
                     await BotService.Create(_formModel.ToCreateBotCommand());
 
-                await dataEditor.Detach(BotStorageKey);
+                await appLocalStorage.Detach<StagesState>(BotStorageKey);
             },
             () => MoveToNext(null),
             s => _state = s);

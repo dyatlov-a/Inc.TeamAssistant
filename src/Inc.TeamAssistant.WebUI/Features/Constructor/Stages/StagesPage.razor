@@ -83,12 +83,12 @@
     
     private async Task Load()
     {
-        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
         
         await RequestProcessor.Process(
             () =>
             {
-                return dataEditor.GetValueOrDefault(BotStorageKey, async t =>
+                return appLocalStorage.GetValueOrDefault(BotStorageKey, async t =>
                 {
                     var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
                     var getFeaturesResult = await BotService.GetFeatures(t);
