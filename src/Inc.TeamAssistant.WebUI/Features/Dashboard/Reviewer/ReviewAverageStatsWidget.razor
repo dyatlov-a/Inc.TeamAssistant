@@ -57,7 +57,7 @@
     private ApexChart<ReviewAverageStatsDto>? _chart;
 
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateLongPeriods();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
     private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
 
     protected override async Task OnParametersSetAsync()

@@ -11,7 +11,7 @@ internal sealed class DateSelectorFactory
         _resources = resources ?? throw new ArgumentNullException(nameof(resources));
     }
 
-    public IReadOnlyCollection<SelectItem<DateOnly>> CreateShortPeriods()
+    public IReadOnlyCollection<SelectItem<DateOnly>> CreateWeeks()
     {
         return
         [
@@ -27,7 +27,7 @@ internal sealed class DateSelectorFactory
         ];
     }
     
-    public IReadOnlyCollection<SelectItem<DateOnly>> CreateLongPeriods()
+    public IReadOnlyCollection<SelectItem<DateOnly>> CreateMonths()
     {
         return
         [

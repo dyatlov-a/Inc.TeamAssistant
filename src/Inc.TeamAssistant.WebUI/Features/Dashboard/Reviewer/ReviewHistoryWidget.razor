@@ -87,7 +87,7 @@
     private DateOnly? _date;
     private readonly PaginationState _pagination = new() { ItemsPerPage = 8 };
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateShortPeriods();
+    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
     private IReadOnlyCollection<TaskForReviewDto> _tasks = Array.Empty<TaskForReviewDto>();
     private IQueryable<TaskForReviewDto> Tasks => _tasks.AsQueryable();
     
