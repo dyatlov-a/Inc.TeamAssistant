@@ -22,8 +22,6 @@ internal static class Messages
     public static readonly string GUI_StoryList = nameof(GUI_StoryList);
     public static readonly string GUI_AssessmentSession = nameof(GUI_AssessmentSession);
     
-    public static readonly string GUI_RequestDemo = nameof(GUI_RequestDemo);
-    public static readonly string GUI_RequestDemoBody = nameof(GUI_RequestDemoBody);
     public static readonly string GUI_MainTitle = nameof(GUI_MainTitle);
     public static readonly string GUI_MainHeader = nameof(GUI_MainHeader);
     public static readonly string GUI_MainSubHeader = nameof(GUI_MainSubHeader);

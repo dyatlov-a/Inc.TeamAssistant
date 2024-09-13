@@ -23,10 +23,6 @@
     text-align: center;
     float: left;
 }
-.about-bots__link {
-    margin-top: 10px;
-    display: block;
-}
 @media (max-width: 479.98px) {
     .about-bots__header {
         font-size: 1.8rem;
