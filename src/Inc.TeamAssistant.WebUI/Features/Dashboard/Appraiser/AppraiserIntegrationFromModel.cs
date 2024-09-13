@@ -6,8 +6,8 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 
 public sealed class AppraiserIntegrationFromModel
 {
-    public bool IsDisableControls { get; set; }
-    public bool IsEnabled { get; set; }
+    public bool HasManagerAccess { get; private set; }
+    public bool IsEnabled { get; private set; }
     public string AccessToken { get; set; } = string.Empty;
     public string ProjectKey { get; set; } = string.Empty;
     public long ScrumMasterId { get; set; }
@@ -19,26 +19,14 @@ public sealed class AppraiserIntegrationFromModel
     {
         ArgumentNullException.ThrowIfNull(integration);
         
-        if (integration.Properties is not null)
-        {
-            AccessToken = integration.Properties.AccessToken;
-            ProjectKey = integration.Properties.ProjectKey;
-            ScrumMasterId = integration.Properties.ScrumMasterId;
-        }
-        else
-        {
-            AccessToken = string.Empty;
-            ProjectKey = string.Empty;
-            ScrumMasterId = 0;
-        }
-        
-        IsEnabled = integration.Properties is not null;
-        IsDisableControls = !integration.HasManagerAccess;
+        HasManagerAccess = integration.HasManagerAccess;
         
         _teammates.Clear();
         _teammates.AddRange(integration.Teammates);
         
-        return this;
+        return integration.Properties is null
+            ? Clear()
+            : Apply(integration.Properties);
     }
 
     public AppraiserIntegrationFromModel Clear()
@@ -57,5 +45,17 @@ public sealed class AppraiserIntegrationFromModel
             teamId,
             ProjectKey,
             ScrumMasterId);
+    }
+
+    private AppraiserIntegrationFromModel Apply(IntegrationProperties properties)
+    {
+        ArgumentNullException.ThrowIfNull(properties);
+        
+        AccessToken = properties.AccessToken;
+        ProjectKey = properties.ProjectKey;
+        ScrumMasterId = properties.ScrumMasterId;
+        IsEnabled = true;
+
+        return this;
     }
 }

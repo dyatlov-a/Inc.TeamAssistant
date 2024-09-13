@@ -3,7 +3,8 @@
 }
 .checkin-map {
     width: 100%;
-    height: 300px;
+    min-height: 300px;
+    height: calc(100% - 56px);
     position: relative;
 }
 .checkin-map__body {

@@ -98,7 +98,7 @@ public sealed class StagesState
 
         return new StagesState(
             bot.Id,
-            bot.Id,
+            bot.CalendarId,
             bot.UserName,
             bot.Token,
             bot.SupportedLanguages,

@@ -3,7 +3,7 @@
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
         <Actions>
@@ -101,11 +101,11 @@
 
     private async Task SelectedCalendar(Guid calendarId)
     {
-        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
         
         _formModel.CalendarId = calendarId;
         
-        await dataEditor.Attach(BotStorageKey, StagesState.Apply(calendarId));
+        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
 
     private async Task SubmitForm()
@@ -113,8 +113,8 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
-        await dataEditor.Attach(BotStorageKey, StagesState.Apply(_formModel));
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
 
         await MoveToNext(Stage.Complete);
     }

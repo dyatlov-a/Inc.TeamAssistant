@@ -4,7 +4,7 @@
 {
     <div class="content-dialog-bg"></div>
     <div class="content-dialog">
-        <div class="content-dialog__body">
+        <div class="content-dialog__content @CssClass">
             <div class="content-dialog__header">
                 <h2 class="content-dialog__header-text">@Title</h2>
                 <div class="content-dialog__actions">
@@ -13,7 +13,7 @@
                     </button>
                 </div>
             </div>
-            <div class="content-dialog__content">
+            <div class="content-dialog__body">
                 @Content
             </div>
         </div>
@@ -26,6 +26,9 @@
     
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool IsGrand { get; set; }
     
     private bool _isOpen;
 
@@ -42,4 +45,6 @@
         
         StateHasChanged();
     }
+
+    private string CssClass => IsGrand ? "content-dialog__content_grand" : "content-dialog__content_small";
 }

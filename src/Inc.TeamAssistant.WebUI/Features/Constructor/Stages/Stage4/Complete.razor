@@ -7,7 +7,7 @@
 @inject RequestProcessor RequestProcessor
 @inject FeaturesFactory FeaturesFactory
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@FormId" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
@@ -164,6 +164,10 @@
         ? Messages.Constructor_ButtonUpdateText
         : Messages.Constructor_ButtonCreateText];
     
+    private string FormId => StagesState.Id.HasValue
+        ? AnalyticEvents.BotUpdated
+        : AnalyticEvents.BotCreated;
+    
     private string PanelHeader => string.Format(
         Resources[Messages.Constructor_CheckConfigurationTemplate],
         ButtonText.ToLowerInvariant());
@@ -192,7 +196,7 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
-        var dataEditor = ServiceProvider.GetRequiredService<DataEditor>();
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
 
         await RequestProcessor.Process(
             async () =>
@@ -202,7 +206,7 @@
                 else
                     await BotService.Create(_formModel.ToCreateBotCommand());
 
-                await dataEditor.Detach(BotStorageKey);
+                await appLocalStorage.Detach<StagesState>(BotStorageKey);
             },
             () => MoveToNext(null),
             s => _state = s);

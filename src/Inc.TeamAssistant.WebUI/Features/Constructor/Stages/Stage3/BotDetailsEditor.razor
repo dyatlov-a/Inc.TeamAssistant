@@ -5,7 +5,7 @@
 @inject RequestProcessor RequestProcessor
 @inject IRenderContext RenderContext
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
         <Actions>

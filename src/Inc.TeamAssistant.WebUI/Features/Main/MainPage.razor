@@ -2,8 +2,6 @@
 @page "/en"
 @page "/ru"
 
-@using Inc.TeamAssistant.Primitives
-
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
@@ -31,14 +29,10 @@
         </p>
         <div class="about-bots__actions">
             <a
+                id="@AnalyticEvents.ConstructorOpened"
                 href="@LinkBuilder.Build("constructor")"
                 class="button button_dark">
                 @Resources[Messages.GUI_CreateBotLink]
-            </a>
-            <a
-                href="mailto:@(GlobalSettings.RequestDemoEmail)?body=@(Resources[Messages.GUI_RequestDemoBody])&subject=@($"{Resources[Messages.GUI_RequestDemo]} [TeamAssistant]")"
-                class="link link_dark about-bots__link">
-                @Resources[Messages.GUI_RequestDemo]
             </a>
         </div>
     </div>

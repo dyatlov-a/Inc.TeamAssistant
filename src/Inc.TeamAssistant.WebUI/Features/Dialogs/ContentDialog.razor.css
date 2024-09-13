@@ -14,16 +14,21 @@
 .content-dialog {
     z-index: 1001;
 }
-.content-dialog__body {
+.content-dialog__content {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: min(150vh, 90vw);
+    height: 90vh;
     transform: translate(-50%, -50%);
     background-color: #9d9d9d;
     box-shadow: 0 0 10px rgba(0, 0, 0, .5);
     z-index: 1001;
-    padding-bottom: 10px;
+}
+.content-dialog__content_grand {
+    width: 80vw;
+}
+.content-dialog__content_small {
+    width: 60vw;
 }
 .content-dialog__header {
     display: flex;
@@ -31,6 +36,7 @@
     padding: 10px;
     background-color: #555;
     margin-bottom: 10px;
+    height: 70px;
 }
 .content-dialog__header-text {
     flex: 1;
@@ -38,4 +44,11 @@
 }
 .content-dialog__actions {
     margin-left: 20px;
+}
+.content-dialog__body {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+}
+::deep .loading {
+    height: calc(100% - 36px);
 }

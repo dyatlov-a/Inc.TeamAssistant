@@ -37,6 +37,9 @@ internal sealed class NotificationsService : INotificationsSource, INotification
     {
         ArgumentNullException.ThrowIfNull(action);
         
+        if (_changed is not null)
+            throw new ApplicationException("Only one listener is supported");
+        
         _changed = action;
 
         return new TimerScope(CheckMessages, _checkInterval);

@@ -15,7 +15,6 @@ public sealed class CheckBotFormTracker : ComponentBase, IDisposable
     
     [CascadingParameter]
     private EditContext CascadedEditContext { get; set; } = default!;
-    private CheckBotFormModel? _oldValues;
 
     protected override void OnInitialized()
     {
@@ -27,35 +26,19 @@ public sealed class CheckBotFormTracker : ComponentBase, IDisposable
 
     private async void OnFieldChanged(object? sender, FieldChangedEventArgs e)
     {
-        var model = (CheckBotFormModel)e.FieldIdentifier.Model;
-
-        if (_oldValues is not null &&
-            _oldValues.HasAccess == model.HasAccess &&
-            _oldValues.Token == model.Token &&
-            _oldValues.UserName == model.UserName)
+        if (e.FieldIdentifier.FieldName != nameof(CheckBotFormModel.Token))
             return;
         
+        var model = (CheckBotFormModel)e.FieldIdentifier.Model;
+
         if (string.IsNullOrWhiteSpace(model.Token))
-        {
-            model.UserName = string.Empty;
-            model.HasAccess = false;
-        }
+            model.Clear();
         else
         {
             var getBotUserNameResult = await BotService.Check(new GetBotUserNameQuery(model.Token));
-            model.UserName = getBotUserNameResult.UserName;
-            model.HasAccess = getBotUserNameResult.HasAccess;
+            model.Apply(getBotUserNameResult);
         }
-
-        _oldValues = new CheckBotFormModel
-        {
-            HasAccess = model.HasAccess,
-            Token = model.Token,
-            UserName = model.UserName
-        };
         
-        CascadedEditContext.NotifyFieldChanged(e.FieldIdentifier);
-        CascadedEditContext.NotifyFieldChanged(new FieldIdentifier(model, nameof(model.UserName)));
         OnChange();
     }
 

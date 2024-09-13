@@ -7,10 +7,6 @@
 .dashboard-widgets__title {
     flex: 1;
 }
-.dashboard-widgets__content {
-    padding: 10px 0;
-    height: 100%;
-}
 .dashboard-widgets__header {
     display: flex;
     align-items: center;
@@ -25,9 +21,17 @@
     border-radius: 10px;
     height: 30px;
 }
+.dashboard-widgets__content {
+    height: 100%;
+    padding: 10px 0;
+}
 .dashboard-widgets__content_has-chart {
     width: 98%;
     margin-left: 1%;
+}
+.dashboard-widgets__content_has-chart .dashboard-widgets__header,
+.dashboard-widgets__content_has-chart ::deep .date-selector {
+    margin: 0 -1%;
 }
 .dashboard-widgets__content_has-controls ::deep .loading {
     height: calc(100% - 66px);

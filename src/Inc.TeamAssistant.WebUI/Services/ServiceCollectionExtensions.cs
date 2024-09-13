@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
-            .AddScoped(sp => ActivatorUtilities.CreateInstance<DataEditor>(sp, appVersion))
+            .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<IMessageProvider, MessageProviderClient>()
