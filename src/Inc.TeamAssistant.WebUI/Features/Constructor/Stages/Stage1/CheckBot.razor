@@ -1,7 +1,7 @@
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@AnalyticEvents.BotChecked" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
     <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">

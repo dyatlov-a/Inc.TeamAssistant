@@ -3,7 +3,7 @@
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
         <Actions>

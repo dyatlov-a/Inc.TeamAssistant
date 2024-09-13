@@ -7,7 +7,7 @@
 @inject RequestProcessor RequestProcessor
 @inject FeaturesFactory FeaturesFactory
 
-<EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@FormId" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
@@ -163,6 +163,10 @@
     private string ButtonText => Resources[StagesState.Id.HasValue
         ? Messages.Constructor_ButtonUpdateText
         : Messages.Constructor_ButtonCreateText];
+    
+    private string FormId => StagesState.Id.HasValue
+        ? AnalyticEvents.BotUpdated
+        : AnalyticEvents.BotCreated;
     
     private string PanelHeader => string.Format(
         Resources[Messages.Constructor_CheckConfigurationTemplate],
