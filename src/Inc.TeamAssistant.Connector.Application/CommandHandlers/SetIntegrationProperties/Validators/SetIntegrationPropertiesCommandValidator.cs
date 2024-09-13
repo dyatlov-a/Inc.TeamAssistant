@@ -12,6 +12,7 @@ internal sealed class SetIntegrationPropertiesCommandValidator : AbstractValidat
 
         RuleFor(e => e.ProjectKey)
             .NotEmpty()
+            .MinimumLength(3)
             .MaximumLength(50);
 
         RuleFor(e => e.ScrumMasterId)

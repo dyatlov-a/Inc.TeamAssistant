@@ -31,20 +31,20 @@
                         FieldId="project-key"
                         Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
                         <Content>
-                            @if (_formModel.IsDisableControls)
+                            @if (_formModel.HasManagerAccess)
+                            {
+                                <InputText
+                                    @bind-Value="_formModel.ProjectKey"
+                                    class="form-control form-control_enabled"
+                                    id="project-key"/>
+                            }
+                            else
                             {
                                 <InputText
                                     @bind-Value="_formModel.ProjectKey"
                                     class="form-control form-control_disabled"
                                     id="project-key"
                                     disabled="disabled"/>
-                            }
-                            else
-                            {
-                                <InputText
-                                    @bind-Value="_formModel.ProjectKey"
-                                    class="form-control form-control_enabled"
-                                    id="project-key"/>
                             }
                             <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                         </Content>
@@ -61,12 +61,12 @@
                                 Items="_formModel.Teammates"
                                 TitleSelector="i => i.DisplayName"
                                 ValueSelector="i => i.Id"
-                                IsDisabled="_formModel.IsDisableControls" />
+                                IsDisabled="!_formModel.HasManagerAccess" />
                             <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
                         </Content>
                     </FormFieldSet>
                 </div>
-                @if (!_formModel.IsDisableControls)
+                @if (_formModel.HasManagerAccess)
                 {
                     <div class="component-actions">
                         <button
@@ -82,7 +82,7 @@
                         </button>
                     </div>
                 }
-                @if (!_formModel.IsEnabled)
+                @if (!_isEnabled)
                 {
                     <div class="appraiser-integration__bg"></div>
                     <div class="appraiser-integration__controls">
@@ -102,6 +102,7 @@
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
     
+    private bool _isEnabled;
     private ConfirmDialog? _confirmDialog;
     private readonly AppraiserIntegrationFromModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -127,6 +128,7 @@
             r =>
             {
                 _formModel.Apply(r);
+                _isEnabled = _formModel.IsEnabled;
                 
                 if (notificationsService is not null && notification is not null)
                     notificationsService.Publish(notification);
@@ -138,15 +140,25 @@
             });
     }
 
-    private void BeginDisable() => _confirmDialog?.Open();
+    private void BeginDisable()
+    {
+        if (_formModel.IsEnabled)
+            _confirmDialog?.Open();
+        else
+            _isEnabled = false;
+    }
 
-    private void Enable() => _formModel.IsEnabled = true;
+    private void Enable() => _isEnabled = true;
 
     private async Task Disable()
     {
         await RequestProcessor.Process(
             () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId)),
-            () => _formModel.Clear(),
+            () =>
+            {
+                _formModel.Clear();
+                _isEnabled = false;
+            },
             s =>
             {
                 _state = s;
