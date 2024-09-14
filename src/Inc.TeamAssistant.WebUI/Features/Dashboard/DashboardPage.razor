@@ -31,6 +31,7 @@
                 Bots="_bots"
                 Retry="Load"
                 TeamContextChanged="ChangeTeamContext"/>
+            
             @if (_teamId.HasValue)
             {
                 <DashboardTeamConnector TeamId="_teamId.Value"/>
@@ -41,14 +42,51 @@
         <div class="dashboard-widgets">
             @if (_teamId.HasValue)
             {
-                <TeamModule TeamId="_teamId.Value" />
+                <DashboardWidget Title="@Resources[Messages.Dashboard_TeammatesWidgetTitle]">
+                    <Content>
+                        <TeammatesWidget TeamId="_teamId.Value"/>
+                    </Content>
+                </DashboardWidget>
+
                 if (HasFeature("Reviewer"))
                 {
-                    <ReviewerModule TeamId="_teamId.Value"/>
+                    <DashboardWidget
+                        HasControls="true"
+                        HasChart="true"
+                        Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
+                        <Content>
+                            <ReviewTotalStatsWidget TeamId="_teamId.Value"/>
+                        </Content>
+                    </DashboardWidget>
+                    <DashboardWidget
+                        HasControls="true"
+                        Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
+                        <Content>
+                            <ReviewHistoryWidget TeamId="_teamId.Value"/>
+                        </Content>
+                    </DashboardWidget>
+                    <DashboardWidget
+                        HasControls="true"
+                        HasChart="true"
+                        Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]">
+                        <Content>
+                            <ReviewAverageStatsWidget TeamId="_teamId.Value"/>
+                        </Content>
+                    </DashboardWidget>
                 }
+
                 if (HasFeature("Appraiser"))
                 {
-                    <AppraiserModule TeamId="_teamId.Value"/>
+                    <DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_AppraiserHistoryTitle]">
+                        <Content>
+                            <AppraiserHistoryWidget TeamId="_teamId.Value"/>
+                        </Content>
+                    </DashboardWidget>
+                    <DashboardWidget Title="@Resources[Messages.Dashboard_AppraiserIntegrationTitle]">
+                        <Content>
+                            <AppraiserIntegrationWidget TeamId="_teamId.Value"/>
+                        </Content>
+                    </DashboardWidget>
                 }
             }
 
@@ -56,11 +94,20 @@
             {
                 if (HasFeature("RandomCoffee"))
                 {
-                    <RandomCoffeeModule BotId="_botId.Value"/>
+                    <DashboardWidget Title="@Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]">
+                        <Content>
+                            <RandomCoffeeHistoryWidget BotId="_botId.Value" />
+                        </Content>
+                    </DashboardWidget>
                 }
+                
                 if (HasFeature("CheckIn"))
                 {
-                    <CheckInModule BotId="_botId.Value" />
+                    <DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
+                        <Content>
+                            <MapWidget BotId="_botId.Value" />
+                        </Content>
+                    </DashboardWidget>
                 }
             }
             else

@@ -50,10 +50,7 @@
 @code {
     [Parameter, EditorRequired] 
     public Guid BotId { get; set; }
-
-    [Parameter, EditorRequired] 
-    public int Depth { get; set; }
-
+    
     private LoadingState _state = LoadingState.Done();
     private RandomCoffeeHistoryWidgetFormModel _formModel = new();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
@@ -72,7 +69,7 @@
                 var chats = await RandomCoffeeService.GetChatsByBot(BotId);
                 var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
                 var getHistoryResult = targetChatId.HasValue
-                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, Depth)
+                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, depth: 3)
                     : null;
 
                 return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
