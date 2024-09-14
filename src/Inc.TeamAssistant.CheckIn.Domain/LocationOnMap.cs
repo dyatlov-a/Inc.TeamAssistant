@@ -14,13 +14,18 @@ public sealed class LocationOnMap
     {
     }
 
-    public LocationOnMap(long userId, string displayName, double longitude, double latitude, Map map)
+    public LocationOnMap(
+        Guid id,
+        long userId,
+        string displayName,
+        double longitude,
+        double latitude,
+        Map map)
         : this()
     {
-        if (string.IsNullOrWhiteSpace(displayName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(displayName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
 
-        Id = Guid.NewGuid();
+        Id = id;
         UserId = userId;
         DisplayName = displayName;
         Longitude = longitude;

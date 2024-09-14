@@ -11,12 +11,12 @@ public sealed class Map
     {
     }
 
-    public Map(Guid botId, long chatId, string name)
+    public Map(Guid id, Guid botId, long chatId, string name)
         : this()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         
-        Id = Guid.NewGuid();
+        Id = id;
         BotId = botId;
         ChatId = chatId;
         Name = name;

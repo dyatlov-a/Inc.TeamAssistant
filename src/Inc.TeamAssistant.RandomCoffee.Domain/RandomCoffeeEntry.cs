@@ -96,11 +96,12 @@ public sealed class RandomCoffeeEntry
             .Select(i => i.Pairs.ToArray())
             .ToArray();
         var lastExcludedPersonId = History.MaxBy(i => i.Created)?.ExcludedPersonId;
+        var strategy = new SelectPairsStrategy(ParticipantIds, orderedHistory);
+        var detectedPairs = strategy.Detect(lastExcludedPersonId);
+        var randomCoffeeHistory = RandomCoffeeHistory.Build(Id, detectedPairs.Pairs, detectedPairs.ExcludedPersonId);
         
-        var result = new SelectPairsStrategy(ParticipantIds, orderedHistory).Detect(lastExcludedPersonId);
-        
-        var randomCoffeeHistory = RandomCoffeeHistory.Build(Id, result.Pairs, result.ExcludedPersonId);
         _history.Add(randomCoffeeHistory);
+        
         return randomCoffeeHistory;
     }
 }

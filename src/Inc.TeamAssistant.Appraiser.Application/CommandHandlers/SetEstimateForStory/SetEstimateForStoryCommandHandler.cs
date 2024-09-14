@@ -11,16 +11,16 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateFor
 internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEstimateForStoryCommand, CommandResult>
 {
 	private readonly IStoryRepository _storyRepository;
-    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly SummaryByStoryBuilder _summaryBuilder;
     private readonly IMessagesSender _messagesSender;
 
 	public SetEstimateForStoryCommandHandler(
 		IStoryRepository storyRepository,
-		SummaryByStoryBuilder summaryByStoryBuilder,
+		SummaryByStoryBuilder summaryBuilder,
 		IMessagesSender messagesSender)
 	{
 		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
-		_summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+		_summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
 		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
 	}
 
@@ -32,14 +32,19 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
         if (story is null)
 	        throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
 
-        var alreadyHasValue = story.Estimate(command.MessageContext.Person.Id, command.Value);
+        var alreadyEstimate = story.Estimate(command.MessageContext.Person.Id, command.Value);
 
         await _storyRepository.Upsert(story, token);
         
-        await _messagesSender.StoryChanged(story.TeamId);
-
-        return alreadyHasValue
-	        ? CommandResult.Empty
-	        : CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+        switch (alreadyEstimate)
+        {
+	        case null:
+		        throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
+	        case true:
+		        return CommandResult.Empty;
+	        default:
+		        await _messagesSender.StoryChanged(story.TeamId);
+		        return CommandResult.Build(await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+        }
     }
 }

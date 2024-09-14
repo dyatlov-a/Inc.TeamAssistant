@@ -33,6 +33,8 @@ public sealed class Bot
     
     public ContextCommand? FindCommand(string cmd)
     {
+        ArgumentNullException.ThrowIfNull(cmd);
+        
         foreach (var botCommand in Commands)
             if (cmd.StartsWith(botCommand.Value, StringComparison.InvariantCultureIgnoreCase))
                 return botCommand;
