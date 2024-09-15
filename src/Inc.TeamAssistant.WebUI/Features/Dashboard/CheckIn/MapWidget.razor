@@ -3,46 +3,53 @@
 @inject LinkBuilder LinkBuilder
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state" Retry="Load">
+<DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
     <Content>
-        <div class="component-container">
-            <div class="map-selector">
-                <InputSelectList
-                    FieldId="map-selector"
-                    Value="_formModel.MapId"
-                    ValueExpression="@(() => _formModel.MapId)"
-                    ValueChanged="@((Guid? v) => _formModel.MapId = v)"
-                    Items="_formModel.Maps"
-                    TitleSelector="i => i.Name"
-                    ValueSelector="i => i.Id"/>
-            </div>
-            @if (_formModel.MapId.HasValue)
-            {
-                var mapUrl = LinkBuilder.Build($"map/{_formModel.MapId.Value:N}");
-
-                <div class="checkin-map">
-                    <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
-                    <div class="checkin-map__bg"></div>
-                    <div class="checkin-map__controls">
-                        <div class="checkin-map__controls-body">
-                            <a href="@mapUrl" target="_blank" class="button button_dark">
-                                @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
-                            </a>
-                        </div>
+        <Loading State="_state" Retry="Load">
+            <Content>
+                <div class="component-container">
+                    <div class="map-selector">
+                        <InputSelectList
+                            FieldId="map-selector"
+                            Value="_formModel.MapId"
+                            ValueExpression="@(() => _formModel.MapId)"
+                            ValueChanged="@((Guid? v) => _formModel.MapId = v)"
+                            Items="_formModel.Maps"
+                            TitleSelector="i => i.Name"
+                            ValueSelector="i => i.Id"/>
                     </div>
+                    @if (_formModel.MapId.HasValue)
+                    {
+                        var mapUrl = LinkBuilder.Build($"map/{_formModel.MapId.Value:N}");
+
+                        <div class="checkin-map">
+                            <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
+                            <div class="checkin-map__bg"></div>
+                            <div class="checkin-map__controls">
+                                <div class="checkin-map__controls-body">
+                                    <a href="@mapUrl" target="_blank" class="button button_dark">
+                                        @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <NoData IsDark="true"/>
+                    }
                 </div>
-            }
-            else
-            {
-                <NoData IsDark="true"/>
-            }
-        </div>
+            </Content>
+        </Loading>
     </Content>
-</Loading>
+</DashboardWidget>
 
 @code {
     [Parameter, EditorRequired]
     public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
     
     private LoadingState _state = LoadingState.Done();
     private readonly MapWidgetFormModel _formModel = new();

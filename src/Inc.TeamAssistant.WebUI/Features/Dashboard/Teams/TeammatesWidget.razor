@@ -25,79 +25,90 @@
         }
     </Content>
 </ConfirmDialog>
-<Loading State="_state" Retry="() => Load()">
-    <Content>
-        <div class="component-container">
-            @if (Teammates.Any())
-            {
-                <QuickGrid Items="Teammates" class="quick-data-grid">
-                    <TemplateColumn
-                        Title="@Resources[Messages.Dashboard_PersonName]"
-                        Sortable="true"
-                        SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
-                        @context.Name
-                        <br/>
-                        @context.UserName
-                    </TemplateColumn>
-                    <TemplateColumn
-                        Title="@Resources[Messages.Dashboard_LeaveUntil]"
-                        Sortable="true"
-                        SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
-                        @if (context.LeaveUntil.HasValue)
+
+@if (TeamId.HasValue)
+{
+    <DashboardWidget Title="@Resources[Messages.Dashboard_TeammatesWidgetTitle]">
+        <Content>
+            <Loading State="_state" Retry="() => Load()">
+                <Content>
+                    <div class="component-container">
+                        @if (Teammates.Any())
                         {
-                            <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-                            if (_item.HasManagerAccess)
-                            {
-                                <a
-                                    href="#"
-                                    @onclick="() => ExcludeFromTeam(context, false)"
-                                    class="link link_light" @onclick:preventDefault="true">[X]</a>
-                            }
-                        }
-                    </TemplateColumn>
-                    <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
-                        @if (_item.HasManagerAccess)
-                        {
-                            <a
-                                href="#"
-                                @onclick="() => ExcludeFromTeam(context, false, 1)"
-                                class="link link_light"
-                                @onclick:preventDefault="true">1</a>
-                            <a
-                                href="#"
-                                @onclick="() => ExcludeFromTeam(context, false, 7)"
-                                class="link link_light"
-                                @onclick:preventDefault="true">7</a>
-                            <a
-                                href="#"
-                                @onclick="() => ExcludeFromTeam(context, false, 14)"
-                                class="link link_light"
-                                @onclick:preventDefault="true">14</a>
-                            <br/>
-                            <a
-                                href="#"
-                                @onclick="() => ExcludeFromTeam(context, true)"
-                                class="link link_light"
-                                @onclick:preventDefault="true">@Resources[Messages.Dashboard_Forever]</a>
+                            <QuickGrid Items="Teammates" class="quick-data-grid">
+                                <TemplateColumn
+                                    Title="@Resources[Messages.Dashboard_PersonName]"
+                                    Sortable="true"
+                                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
+                                    @context.Name
+                                    <br/>
+                                    @context.UserName
+                                </TemplateColumn>
+                                <TemplateColumn
+                                    Title="@Resources[Messages.Dashboard_LeaveUntil]"
+                                    Sortable="true"
+                                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
+                                    @if (context.LeaveUntil.HasValue)
+                                    {
+                                        <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
+                                        if (_item.HasManagerAccess)
+                                        {
+                                            <a
+                                                href="#"
+                                                @onclick="() => ExcludeFromTeam(context, false)"
+                                                class="link link_light" @onclick:preventDefault="true">[X]</a>
+                                        }
+                                    }
+                                </TemplateColumn>
+                                <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
+                                    @if (_item.HasManagerAccess)
+                                    {
+                                        <a
+                                            href="#"
+                                            @onclick="() => ExcludeFromTeam(context, false, 1)"
+                                            class="link link_light"
+                                            @onclick:preventDefault="true">1</a>
+                                        <a
+                                            href="#"
+                                            @onclick="() => ExcludeFromTeam(context, false, 7)"
+                                            class="link link_light"
+                                            @onclick:preventDefault="true">7</a>
+                                        <a
+                                            href="#"
+                                            @onclick="() => ExcludeFromTeam(context, false, 14)"
+                                            class="link link_light"
+                                            @onclick:preventDefault="true">14</a>
+                                        <br/>
+                                        <a
+                                            href="#"
+                                            @onclick="() => ExcludeFromTeam(context, true)"
+                                            class="link link_light"
+                                            @onclick:preventDefault="true">@Resources[Messages.Dashboard_Forever]</a>
+                                    }
+                                    else
+                                    {
+                                        <p>-</p>
+                                    }
+                                </TemplateColumn>
+                            </QuickGrid>
                         }
                         else
                         {
-                            <p>-</p>
+                            <NoData IsDark="true"/>
                         }
-                    </TemplateColumn>
-                </QuickGrid>
-            }
-            else
-            {
-                <NoData IsDark="true"/>
-            }
-        </div>
-    </Content>
-</Loading>
+                    </div>
+                </Content>
+            </Loading>
+        </Content>
+    </DashboardWidget>
+}
 
 @code {
     [Parameter, EditorRequired]
-    public Guid TeamId { get; set; }
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
 
     private ConfirmDialog? _confirmDialog;
 
@@ -110,11 +121,14 @@
     private IQueryable<TeammateDto> Teammates => _item.Teammates.AsQueryable();
 
     protected override Task OnParametersSetAsync() => Load();
-    
+
     private async Task Load(bool showLoading = true)
     {
+        if (!TeamId.HasValue)
+            return;
+
         await RequestProcessor.Process(
-            () => BotService.GetTeammates(TeamId),
+            () => BotService.GetTeammates(TeamId.Value),
             nameof(TeammatesWidget),
             r => _item = r,
             s =>

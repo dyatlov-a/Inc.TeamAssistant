@@ -16,4 +16,7 @@ public sealed record TaskForReviewDto(
     string OwnerName,
     string? OwnerUserName,
     bool HasConcreteReviewer,
-    bool IsOriginalReviewer);
+    bool IsOriginalReviewer)
+{
+    public TimeSpan TotalTime => FirstTouch + Correction + Review;
+}

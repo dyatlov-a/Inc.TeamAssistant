@@ -33,6 +33,12 @@ public sealed class BotsController : ControllerBase
     {
         return Ok(await _botService.GetFromCurrentUser(token));
     }
+    
+    [HttpGet("{botId:guid}/widgets")]
+    public async Task<IActionResult> Widgets(Guid botId, CancellationToken token)
+    {
+        return Ok(await _botService.GetWidgetsForCurrentUser(botId, token));
+    }
 
     [HttpGet("{teamId:guid}/teammates")]
     public async Task<IActionResult> GetTeammates(Guid teamId, CancellationToken token)
