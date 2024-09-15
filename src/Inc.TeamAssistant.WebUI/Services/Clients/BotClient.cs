@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
@@ -66,6 +67,13 @@ internal sealed class BotClient : IBotService
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
+    }
+
+    public async Task UpdateWidgets(UpdateWidgetsCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _client.PutAsJsonAsync("bots/widgets", command, token);
     }
 
     public async Task<GetTeammatesResult> GetTeammates(Guid teamId, CancellationToken token)

@@ -227,6 +227,7 @@
   "Dashboard_AppraiserIntegrationEnableButton": "Включить",
   "Dashboard_AppraiserIntegrationConfirmText": "После отключения интеграции автоматическое создание заданий для составления смет будет отключено. Хотите подтвердить это действие?",
   "Dashboard_AppraiserIntegrationEnableSuccess": "Интеграция настроена",
+  "Dashboard_Settings": "Настройка",
   
   "Footer_GroupNavigation": "Навигация",
   "Footer_GroupTech": "Технологии",

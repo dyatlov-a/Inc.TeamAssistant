@@ -83,6 +83,7 @@ builder.Services
 	.AddJsonType<ICollection<string>>()
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
+	.AddJsonType<ICollection<DashboardWidget>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ContextScope>>()

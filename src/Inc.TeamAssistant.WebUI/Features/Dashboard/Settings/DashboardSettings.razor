@@ -1,0 +1,101 @@
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+@inject ResourcesManager Resources
+
+<ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
+    <Content>
+        <div class="widget-settings">
+            <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator"/>
+                <Loading State="_state" Retry="Load">
+                    <Content>
+                        <div class="widget-settings__body">
+                            <ValidationSummary/>
+                            @foreach (var widget in _formModel.Items.OrderBy(w => w.Position))
+                            {
+                                var isEnabledId = "is-enabled-" + widget.Type;
+
+                                <div class="widget-settings__item">
+                                    @if (widget.CanEnabled)
+                                    {
+                                        <InputCheckbox id="@isEnabledId" @bind-Value="widget.IsEnabled"/>
+                                        <label for="@isEnabledId">@widget.Type</label>
+                                    }
+                                    else
+                                    {
+                                        <InputCheckbox id="@isEnabledId" @bind-Value="widget.IsEnabled" disabled="disabled"/>
+                                        <label for="@isEnabledId">@widget.Type</label>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="widget-settings__actions">
+                            <button type="submit" class="button button_dark">@Resources[Messages.PanelSave]</button>
+                        </div>
+                    </Content>
+                </Loading>
+            </EditForm>
+        </div>
+    </Content>
+</ContentDialog>
+
+<div class="dashboard-settings">
+    <button type="button" class="button button_dark button_small" @onclick="Open">
+        <SettingsIcon Size="20px" IsDark="true" />
+    </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback Changed { get; set; }
+
+    private ContentDialog? _contentDialog;
+    
+    private LoadingState _state = LoadingState.Done();
+    private readonly DashboardSettingsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel);
+    }
+
+    private async Task Load()
+    {
+        if (!BotId.HasValue)
+            return;
+        
+        await RequestProcessor.Process(
+            () => BotService.GetWidgetsForCurrentUser(BotId.Value),
+            nameof(DashboardSettings),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
+    private async Task Open()
+    {
+        _contentDialog?.Open();
+
+        await Load();
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+
+        await BotService.UpdateWidgets(_formModel.ToCommand(BotId.Value));
+        
+        _contentDialog?.Close();
+
+        await Changed.InvokeAsync();
+    }
+}

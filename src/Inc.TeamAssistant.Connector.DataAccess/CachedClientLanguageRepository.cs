@@ -32,8 +32,7 @@ internal sealed class CachedClientLanguageRepository : IClientLanguageRepository
 
     public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(languageId))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(languageId));
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
         
         var key = GetKey(botId, personId);
 

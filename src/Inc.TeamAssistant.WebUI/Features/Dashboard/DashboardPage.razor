@@ -21,6 +21,8 @@
     WebsiteSection="WebsiteSection.Dashboard"
     MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
+<DashboardSettings BotId="BotId" Changed="Load" />
+
 <div class="dashboard">
     <div class="dashboard-toolbar">
         <div class="dashboard-toolbar__content">
@@ -98,7 +100,7 @@
             await RequestProcessor.Process(
                 () => BotService.GetWidgetsForCurrentUser(_botId.Value),
                 nameof(DashboardPage),
-                r => _widgets = r.Widgets,
+                r => _widgets = r.Widgets.Where(w => w.IsEnabled).ToArray(),
                 s =>
                 {
                     _state = s;
@@ -106,6 +108,8 @@
                 });
         else
             _widgets = Array.Empty<WidgetDto>();
+        
+        StateHasChanged();
     }
 
     private Type ToWidgetType(string type) => _widgetsLookup[type];

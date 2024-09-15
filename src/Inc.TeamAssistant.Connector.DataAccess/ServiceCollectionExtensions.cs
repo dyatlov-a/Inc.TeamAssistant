@@ -13,19 +13,18 @@ public static class ServiceCollectionExtensions
         
         services
             .AddSingleton<IIntegrationsAccessor, IntegrationsAccessor>()
-                
-            .AddSingleton<ITeamRepository, TeamRepository>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
             
             .AddSingleton<IBotReader, BotReader>()
             .AddSingleton<ITeamReader, TeamReader>()
             
+            .AddSingleton<ITeamRepository, TeamRepository>()
+            .AddSingleton<IDashboardSettingsRepository, DashboardSettingsRepository>()
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(
                 sp,
                 sp.GetRequiredService<PersonRepository>(),
                 cacheTimeout))
-            
             .AddSingleton<ClientLanguageRepository>()
             .AddSingleton<IClientLanguageRepository>(sp => ActivatorUtilities.CreateInstance<CachedClientLanguageRepository>(
                 sp,

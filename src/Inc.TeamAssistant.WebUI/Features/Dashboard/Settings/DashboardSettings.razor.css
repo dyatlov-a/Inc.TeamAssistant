@@ -1,0 +1,31 @@
+.dashboard-settings {
+    margin: 10px 10px 0;
+    display: flex;
+    justify-content: right;
+}
+.widget-settings__body {
+    margin: 20px;
+    height: calc(100% - 90px);
+}
+.widget-settings__item {
+    background-color: #555;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.widget-settings__actions {
+    display: flex;
+    justify-content: right;
+    padding: 0 10px;
+}
+.widget-settings {
+    height: calc(100% - 20px);
+}
+::deep form {
+    height: 100%;
+}
+@media (max-width: 767.98px) {
+    .dashboard-settings {
+        display: none;
+    }
+}
