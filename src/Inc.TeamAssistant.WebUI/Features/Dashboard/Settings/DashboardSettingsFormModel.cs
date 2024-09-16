@@ -18,7 +18,7 @@ public sealed class DashboardSettingsFormModel
             Type = w.Type,
             Position = w.Position,
             CanEnabled = w.CanEnabled,
-            IsEnabled = w.IsEnabled
+            IsVisible = w.IsVisible
         }));
 
         return this;
@@ -36,7 +36,7 @@ public sealed class DashboardSettingsFormModel
 
     public UpdateWidgetsCommand ToCommand(Guid botId)
     {
-        var items = _items.ToDictionary(i => i.Type, i => new UpdateWidgetDto(i.Position, i.IsEnabled));
+        var items = _items.ToDictionary(i => i.Type, i => new UpdateWidgetDto(i.Position, i.IsVisible));
         
         return new UpdateWidgetsCommand(botId, items);
     }

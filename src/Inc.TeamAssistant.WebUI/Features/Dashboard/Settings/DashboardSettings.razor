@@ -20,7 +20,7 @@
                                     var current = widgets[i];
                                     var next = i < widgets.Length - 1 ? widgets[i + 1] : null;
                                     var prev = i > 0 ? widgets[i - 1] : null;
-                                    var isEnabledId = "is-enabled-" + current.Type;
+                                    var isVisibleId = "is-visible-" + current.Type;
 
                                     <div
                                         class="widget-settings__item draggable"
@@ -71,20 +71,23 @@
                                         @if (current.CanEnabled)
                                         {
                                             <InputCheckbox
-                                                id="@isEnabledId"
-                                                @bind-Value="current.IsEnabled"
+                                                id="@isVisibleId"
+                                                @bind-Value="current.IsVisible"
                                                 class="widget-settings__checkbox"/>
-                                            <label for="@isEnabledId" class="widget-settings__label">
+                                            <label for="@isVisibleId" class="widget-settings__label">
                                                 @ToWidgetTitle(current.Type)
                                             </label>
                                         }
                                         else
                                         {
                                             <InputCheckbox
-                                                id="@isEnabledId"
-                                                @bind-Value="current.IsEnabled"
+                                                id="@isVisibleId"
+                                                @bind-Value="current.IsVisible"
+                                                class="widget-settings__checkbox"
                                                 disabled="disabled"/>
-                                            <label for="@isEnabledId">@current.Type</label>
+                                            <label for="@isVisibleId" class="widget-settings__label">
+                                                @ToWidgetTitle(current.Type)
+                                            </label>
                                         }
                                     </div>
                                 }
