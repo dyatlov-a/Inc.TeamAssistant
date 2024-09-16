@@ -1,10 +1,11 @@
 @inject IBotService BotService
 @inject RequestProcessor RequestProcessor
 @inject ResourcesManager Resources
+@inject DragAndDropService<DashboardSettingsItem> DragAndDropService
 
 <ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
     <Content>
-        <div class="widget-settings">
+        <div class="widget-settings @CssClass">
             <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
                 <FluentValidationValidator @ref="_fluentValidationValidator"/>
                 <Loading State="_state" Retry="Load">
@@ -21,13 +22,22 @@
                                     var prev = i > 0 ? widgets[i - 1] : null;
                                     var isEnabledId = "is-enabled-" + current.Type;
 
-                                    <div class="widget-settings__item">
+                                    <div
+                                        class="widget-settings__item draggable"
+                                        draggable="true"
+                                        ondragover="event.preventDefault();"
+                                        @ondrop="() => HandleDrop(widgets, current)"
+                                        @ondragenter="HandleDragEnter"
+                                        @ondragstart="@(() => HandleDragStart(current))">
+                                        <div class="widget-settings__drag">
+                                            <DragVerticalIcon Size="30px" IsDark="true"/>
+                                        </div>
                                         @if (next is not null)
                                         {
                                             <button
                                                 type="button"
                                                 class="button button_dark button_small widget-settings__button"
-                                                @onclick="() => Swap(current, next)">
+                                                @onclick="() => MoveDown(widgets, current, next)">
                                                 <ArrowDownIcon Size="20px" IsDark="true"/>
                                             </button>
                                         }
@@ -45,7 +55,7 @@
                                             <button
                                                 type="button"
                                                 class="button button_dark button_small widget-settings__button"
-                                                @onclick="() => Swap(current, prev)">
+                                                @onclick="() => MoveUp(widgets, current, prev)">
                                                 <ArrowUpIcon Size="20px" IsDark="true"/>
                                             </button>
                                         }
@@ -104,7 +114,8 @@
     public EventCallback Changed { get; set; }
 
     private ContentDialog? _contentDialog;
-    
+
+    private bool _isDragStarting;
     private LoadingState _state = LoadingState.Done();
     private readonly DashboardSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -121,6 +132,8 @@
         [nameof(RandomCoffeeHistoryWidget)] = Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle],
         [nameof(MapWidget)] = Resources[Messages.Dashboard_CheckInMapWidgetTitle]
     };
+    
+    private string CssClass => _isDragStarting ? "widget-settings_on-drag" : "widget-settings_no-drag";
     
     protected override void OnParametersSet()
     {
@@ -144,6 +157,19 @@
     }
     
     private string ToWidgetTitle(string type) => WidgetsLookup.GetValueOrDefault(type, type);
+    
+    private void HandleDrop(DashboardSettingsItem[] items, DashboardSettingsItem target)
+    {
+        var source = DragAndDropService.End();
+        
+        Swap(items, source, target);
+        
+        _isDragStarting = false;
+    }
+    
+    private void HandleDragStart(DashboardSettingsItem source) => DragAndDropService.Start(source);
+    
+    private void HandleDragEnter() => _isDragStarting = true;
 
     private async Task Open()
     {
@@ -152,10 +178,32 @@
         await Load();
     }
 
-    private void Swap(DashboardSettingsItem first, DashboardSettingsItem second)
+    private void Swap(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
     {
-        _formModel.Swap(first, second);
-        StateHasChanged();
+        if (first.Position < second.Position)
+            MoveDown(items, first, second);
+        else
+            MoveUp(items, first, second);
+    }
+
+    private void MoveDown(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        var targets = items
+            .Where(i => i.Position > first.Position && i.Position <= second.Position)
+            .OrderBy(i => i.Position);
+        
+        foreach (var target in targets)
+            _formModel.Swap(first, target);
+    }
+
+    private void MoveUp(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        var targets = items
+            .Where(i => i.Position <= first.Position && i.Position > second.Position)
+            .OrderByDescending(i => i.Position);
+        
+        foreach (var target in targets)
+            _formModel.Swap(second, target);
     }
     
     private async Task SubmitForm()
