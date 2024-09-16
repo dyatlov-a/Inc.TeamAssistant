@@ -10,14 +10,20 @@
             <td><span class="story-total__item"><b>@Story.Median</b></span></td>
             <td><span class="story-total__item">@Resources[Messages.GUI_MedianRating]</span></td>
         </tr>
-        <tr>
-            <td><span class="story-total__item"><b>@Story.AcceptedValue</b></span></td>
-            <td><span class="story-total__item">@Resources[Messages.GUI_AcceptedValue]</span></td>
-        </tr>
+        @if (HasAcceptedValue)
+        {
+            <tr>
+                <td><span class="story-total__item"><b>@Story.AcceptedValue</b></span></td>
+                <td><span class="story-total__item">@Resources[Messages.GUI_AcceptedValue]</span></td>
+            </tr>
+        }
     </table>
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public StoryDto Story { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool HasAcceptedValue { get; set; }
 }
