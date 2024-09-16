@@ -18,9 +18,11 @@ internal sealed class BotReader : IBotReader
     
     public async Task<IReadOnlyCollection<Guid>> GetBotIds(CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT b.id AS id
-            FROM connector.bots AS b;",
+            FROM connector.bots AS b;
+            """,
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -32,7 +34,8 @@ internal sealed class BotReader : IBotReader
 
     public async Task<IReadOnlyCollection<BotDto>> GetBotsByUser(long userId, CancellationToken token)
     {
-        var botsCommand = new CommandDefinition(@"
+        var botsCommand = new CommandDefinition(
+            """
             SELECT DISTINCT
                 b.id AS id,
                 b.name AS name,
@@ -40,7 +43,8 @@ internal sealed class BotReader : IBotReader
             FROM connector.bots AS b
             LEFT JOIN connector.teams AS t ON t.bot_id = b.id
             LEFT JOIN connector.teammates AS tm ON t.id = tm.team_id
-            WHERE t.owner_id = @user_id OR tm.person_id = @user_id OR b.owner_id = @user_id;",
+            WHERE t.owner_id = @user_id OR tm.person_id = @user_id OR b.owner_id = @user_id;
+            """,
             new { user_id = userId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -50,38 +54,27 @@ internal sealed class BotReader : IBotReader
         var bots = (await connection.QueryAsync<(Guid BotId, string Name, long OwnerId)>(botsCommand)).ToArray();
         var botIds = bots.Select(b => b.BotId).ToArray();
         
-        var dataCommand = new CommandDefinition(@"
+        var dataCommand = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
                 t.name AS name
             FROM connector.teams AS t
             WHERE t.bot_id = ANY(@bot_ids);
-
-            SELECT
-                af.bot_id AS botid,
-                f.name AS featurename
-            FROM connector.features AS f
-            JOIN connector.activated_features AS af ON f.id = af.feature_id
-            WHERE af.bot_id = ANY(@bot_ids);",
+            """,
             new { bot_ids = botIds },
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var query = await connection.QueryMultipleAsync(dataCommand);
-        
-        var teams = (await query.ReadAsync<(Guid Id, Guid BotId, string Name)>())
+        var teams = (await connection.QueryAsync<(Guid Id, Guid BotId, string Name)>(dataCommand))
             .ToLookup(t => t.BotId);
-        var features = (await query.ReadAsync<(Guid BotId, string FeatureName)>())
-            .ToLookup(f => f.BotId, f => f.FeatureName);
+        
         var results = bots
             .Select(b => new BotDto(
                 b.BotId,
                 b.Name,
                 b.OwnerId,
-                features[b.BotId]
-                    .OrderBy(f => f)
-                    .ToArray(),
                 teams[b.BotId]
                     .Select(t => new TeamDto(t.Id, t.Name))
                     .OrderBy(t => t.Name)
@@ -94,7 +87,8 @@ internal sealed class BotReader : IBotReader
 
     public async Task<Bot?> Find(Guid id, DateTimeOffset now, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 b.id AS id,
                 b.name AS name,
@@ -145,7 +139,8 @@ internal sealed class BotReader : IBotReader
                 bcs.value AS value,
                 bcs.dialog_message_id AS dialogmessageid,
                 bcs.position AS position
-            FROM connector.bot_command_stages AS bcs;",
+            FROM connector.bot_command_stages AS bcs;
+            """,
             new
             {
                 id,
@@ -193,10 +188,12 @@ internal sealed class BotReader : IBotReader
 
     public async Task<string> GetToken(Guid botId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT b.token AS token
             FROM connector.bots AS b
-            WHERE b.id = @bot_id;",
+            WHERE b.id = @bot_id;
+            """,
             new { bot_id = botId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -205,5 +202,25 @@ internal sealed class BotReader : IBotReader
 
         var botToken = await connection.QuerySingleAsync<string>(command);
         return botToken;
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetFeatures(Guid botId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                f.name AS featurename
+            FROM connector.features AS f
+            JOIN connector.activated_features AS af ON f.id = af.feature_id
+            WHERE af.bot_id = @bot_id;
+            """,
+            new { bot_id = botId },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var results = await connection.QueryAsync<string>(command);
+        return results.ToArray();
     }
 }

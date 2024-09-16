@@ -28,12 +28,12 @@ internal sealed class GetWidgetsQueryHandler : IRequestHandler<GetWidgetsQuery, 
         ArgumentNullException.ThrowIfNull(query);
 
         var person = _personResolver.GetCurrentPerson();
-        var bots = await _botReader.GetBotsByUser(person.Id, token);
+        var features = await _botReader.GetFeatures(query.BotId, token);
         var dashboardSettings = await _repository.Find(person.Id, query.BotId, token);
         
         var widgets = DashboardSettingsConverter.Convert(
-            dashboardSettings?? DashboardSettings.CreateDefaultSettings(person.Id, query.BotId),
-            bots.SingleOrDefault(b => b.Id == query.BotId)?.Features ?? Array.Empty<string>());
+            dashboardSettings ?? DashboardSettings.CreateDefaultSettings(person.Id, query.BotId),
+            features);
 
         return new GetWidgetsResult(widgets);
     }
