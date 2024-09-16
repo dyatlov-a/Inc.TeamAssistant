@@ -112,6 +112,12 @@ html {
     background-color: #000;
     color: #dfdfdf;
 }
+.button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
+    background-color: #AAA;
+    color: #000;
+    border: .1875rem solid #AAA;
+    cursor: default;
+}
 .button_small {
     padding: 5px;
     border-radius: 10px;
@@ -264,4 +270,10 @@ html {
 }
 .button:hover .icon_dark, .link:hover .icon_dark {
     stroke: #dfdfdf;
+}
+.button:disabled:hover .icon_light, .link:disabled:hover .icon_light {
+    stroke: #dfdfdf;
+}
+.button:disabled:hover .icon_dark, .link:disabled:hover .icon_dark {
+    stroke: #000;
 }

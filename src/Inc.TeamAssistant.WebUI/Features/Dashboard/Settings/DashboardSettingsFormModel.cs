@@ -24,6 +24,16 @@ public sealed class DashboardSettingsFormModel
         return this;
     }
 
+    public DashboardSettingsFormModel Swap(DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        ArgumentNullException.ThrowIfNull(first);
+        ArgumentNullException.ThrowIfNull(second);
+
+        (first.Position, second.Position) = (second.Position, first.Position);
+        
+        return this;
+    }
+
     public UpdateWidgetsCommand ToCommand(Guid botId)
     {
         var items = _items.ToDictionary(i => i.Type, i => new UpdateWidgetDto(i.Position, i.IsEnabled));

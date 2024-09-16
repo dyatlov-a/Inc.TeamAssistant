@@ -11,22 +11,73 @@
                     <Content>
                         <div class="widget-settings__body">
                             <ValidationSummary/>
-                            @foreach (var widget in _formModel.Items.OrderBy(w => w.Position))
-                            {
-                                var isEnabledId = "is-enabled-" + widget.Type;
+                            @{
+                                var widgets = _formModel.Items.OrderBy(w => w.Position).ToArray();
 
-                                <div class="widget-settings__item">
-                                    @if (widget.CanEnabled)
-                                    {
-                                        <InputCheckbox id="@isEnabledId" @bind-Value="widget.IsEnabled"/>
-                                        <label for="@isEnabledId">@widget.Type</label>
-                                    }
-                                    else
-                                    {
-                                        <InputCheckbox id="@isEnabledId" @bind-Value="widget.IsEnabled" disabled="disabled"/>
-                                        <label for="@isEnabledId">@widget.Type</label>
-                                    }
-                                </div>
+                                for (var i = 0; i < widgets.Length; i++)
+                                {
+                                    var current = widgets[i];
+                                    var next = i < widgets.Length - 1 ? widgets[i + 1] : null;
+                                    var prev = i > 0 ? widgets[i - 1] : null;
+                                    var isEnabledId = "is-enabled-" + current.Type;
+
+                                    <div class="widget-settings__item">
+                                        @if (next is not null)
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                @onclick="() => Swap(current, next)">
+                                                <ArrowDownIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                disabled="disabled">
+                                                <ArrowDownIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        @if (prev is not null)
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                @onclick="() => Swap(current, prev)">
+                                                <ArrowUpIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                disabled="disabled">
+                                                <ArrowUpIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        @if (current.CanEnabled)
+                                        {
+                                            <InputCheckbox
+                                                id="@isEnabledId"
+                                                @bind-Value="current.IsEnabled"
+                                                class="widget-settings__checkbox"/>
+                                            <label for="@isEnabledId" class="widget-settings__label">
+                                                @ToWidgetTitle(current.Type)
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <InputCheckbox
+                                                id="@isEnabledId"
+                                                @bind-Value="current.IsEnabled"
+                                                disabled="disabled"/>
+                                            <label for="@isEnabledId">@current.Type</label>
+                                        }
+                                    </div>
+                                }
                             }
                         </div>
                         <div class="widget-settings__actions">
@@ -59,6 +110,18 @@
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
     
+    private Dictionary<string, string> WidgetsLookup => new()
+    {
+        [nameof(TeammatesWidget)] = Resources[Messages.Dashboard_TeammatesWidgetTitle],
+        [nameof(ReviewAverageStatsWidget)] = Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle],
+        [nameof(ReviewHistoryWidget)] = Resources[Messages.Dashboard_LastTasksWidgetTitle],
+        [nameof(ReviewTotalStatsWidget)] = Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],
+        [nameof(AppraiserHistoryWidget)] = Resources[Messages.Dashboard_AppraiserHistoryTitle],
+        [nameof(AppraiserIntegrationWidget)] = Resources[Messages.Dashboard_AppraiserIntegrationTitle],
+        [nameof(RandomCoffeeHistoryWidget)] = Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle],
+        [nameof(MapWidget)] = Resources[Messages.Dashboard_CheckInMapWidgetTitle]
+    };
+    
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel);
@@ -79,12 +142,20 @@
                 StateHasChanged();
             });
     }
+    
+    private string ToWidgetTitle(string type) => WidgetsLookup.GetValueOrDefault(type, type);
 
     private async Task Open()
     {
         _contentDialog?.Open();
 
         await Load();
+    }
+
+    private void Swap(DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        _formModel.Swap(first, second);
+        StateHasChanged();
     }
     
     private async Task SubmitForm()
