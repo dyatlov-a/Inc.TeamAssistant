@@ -52,6 +52,10 @@ html {
 	margin: 0 auto;
 	padding: 0 1rem;
 }
+[class*="__fluent-container"] {
+    max-width: 1880px;
+    margin: 0 auto;
+}
 .wrapper {
     overflow: hidden;
     display: flex;
@@ -60,6 +64,12 @@ html {
 }
 .main {
     flex: 1 1 auto;
+}
+/* GRAND PC  */
+@media (max-width: 1919.98px) {
+    [class*="__fluent-container"] {
+        max-width: 100%;
+    }
 }
 /* PC */
 @media (max-width: 1080px) {

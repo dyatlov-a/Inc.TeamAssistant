@@ -21,37 +21,39 @@
     WebsiteSection="WebsiteSection.Dashboard"
     MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
-<DashboardSettings BotId="BotId" Changed="Load" />
+<div class="dashboard__fluent-container">
+    <DashboardSettings BotId="BotId" Changed="Load" />
+    
+    <div class="dashboard">
+        <div class="dashboard-toolbar">
+            <div class="dashboard-toolbar__content">
+                <DashboardTeamSelector BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext"/>
 
-<div class="dashboard">
-    <div class="dashboard-toolbar">
-        <div class="dashboard-toolbar__content">
-            <DashboardTeamSelector BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext"/>
-            
-            @if (_teamId.HasValue)
-            {
-                <DashboardTeamConnector TeamId="_teamId.Value"/>
-            }
+                @if (_teamId.HasValue)
+                {
+                    <DashboardTeamConnector TeamId="_teamId.Value"/>
+                }
+            </div>
         </div>
-    </div>
-    <div class="dashboard-content">
-        <Loading State="_state" Retry="Load">
-            <Content>
-                <div class="dashboard-widgets">
-                    @if (_botId.HasValue)
-                    {
-                        foreach (var widget in _widgets)
+        <div class="dashboard-content">
+            <Loading State="_state" Retry="Load">
+                <Content>
+                    <div class="dashboard-widgets">
+                        @if (_botId.HasValue)
                         {
-                            <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
+                            foreach (var widget in _widgets)
+                            {
+                                <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
+                            }
                         }
-                    }
-                    else
-                    {
-                        <BotNotSelected/>
-                    }
-                </div>
-            </Content>
-        </Loading>
+                        else
+                        {
+                            <BotNotSelected/>
+                        }
+                    </div>
+                </Content>
+            </Loading>
+        </div>
     </div>
 </div>
 
