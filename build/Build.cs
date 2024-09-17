@@ -38,8 +38,9 @@ public sealed class Build : NukeBuild
     private AbsolutePath TestsDirectory => RootDirectory / "tests";
     private AbsolutePath TestReportsDirectory => OutputDirectory / "test-reports";
 
-    private readonly string MigrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
-    private readonly IEnumerable<string> AppProjects = new[] { "Inc.TeamAssistant.Gateway" };
+    private const string MigrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
+    private const string GatewayProject = "Inc.TeamAssistant.Gateway";
+    private readonly IEnumerable<string> AppProjects = [GatewayProject];
 
     private IEnumerable<string> ProjectsForPublish => AppProjects.Concat(MigrationRunnerProject);
 
@@ -119,16 +120,16 @@ public sealed class Build : NukeBuild
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.app_component")
-                .SetBuildArg("PROJECT=Inc.TeamAssistant.Gateway")
-                .SetTag(GetImageName("inc.teamassistant.gateway")));
-
+                .SetBuildArg($"PROJECT={GatewayProject}")
+                .SetTag(GetImageName(GatewayProject)));
+            
             DockerBuild(x => x
                 .DisableProcessLogOutput()
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.migrations_runner")
-                .SetBuildArg("PROJECT=Inc.TeamAssistant.MigrationsRunner")
-                .SetTag(GetImageName("inc.teamassistant.migrationsrunner")));
+                .SetBuildArg($"PROJECT={MigrationRunnerProject}")
+                .SetTag(GetImageName(MigrationRunnerProject)));
         });
 
     private Target PushImages => _ => _
@@ -141,10 +142,10 @@ public sealed class Build : NukeBuild
                 .DisableProcessLogOutput());
 
             DockerPush(s => s
-                .SetName(GetImageName("inc.teamassistant.gateway"))
+                .SetName(GetImageName(GatewayProject))
                 .DisableProcessLogOutput());
             DockerPush(s => s
-                .SetName(GetImageName("inc.teamassistant.migrationsrunner"))
+                .SetName(GetImageName(MigrationRunnerProject))
                 .DisableProcessLogOutput());
         });
 
@@ -153,8 +154,8 @@ public sealed class Build : NukeBuild
         .Executes(() =>
         {
             var appDirectory = "/home/teamassist/prod";
-            var appraiserImage = GetImageName("inc.teamassistant.gateway");
-            var migrationsRunnerImage = GetImageName("inc.teamassistant.migrationsrunner");
+            var appraiserImage = GetImageName(GatewayProject);
+            var migrationsRunnerImage = GetImageName(MigrationRunnerProject);
 
             using var client = new SshClient(ServerName, ServerUsername, ServerPassword);
 
@@ -177,6 +178,6 @@ public sealed class Build : NukeBuild
 
     private string GetImageName(string projectName)
     {
-        return $"dyatlovhome/{projectName}:latest";
+        return $"dyatlovhome/{projectName.ToLowerInvariant()}:latest";
     }
 }
