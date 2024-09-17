@@ -46,10 +46,7 @@
             await _eventsProvider.Start();
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        SetCurrentLanguage();
-    }
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => SetCurrentLanguage();
     
     private void SetCurrentLanguage()
     {
