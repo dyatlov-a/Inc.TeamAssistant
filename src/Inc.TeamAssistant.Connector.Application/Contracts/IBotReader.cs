@@ -12,4 +12,6 @@ public interface IBotReader
     Task<Bot?> Find(Guid id, DateTimeOffset now, CancellationToken token);
     
     Task<string> GetToken(Guid botId, CancellationToken token);
+    
+    Task<IReadOnlyCollection<string>> GetFeatures(Guid botId, CancellationToken token);
 }

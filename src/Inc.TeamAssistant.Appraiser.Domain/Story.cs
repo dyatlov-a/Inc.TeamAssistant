@@ -57,16 +57,14 @@ public sealed class Story
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
 
-	public bool Estimate(long participantId, int value)
+	public bool? Estimate(long participantId, int value)
     {
 	    if (Accepted)
 		    return false;
 	    
         var storyForEstimate = _storyForEstimates.SingleOrDefault(a => a.ParticipantId == participantId);
-        if (storyForEstimate is null)
-            throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
-        
-        return storyForEstimate.SetValue(ToEstimation(value));
+
+        return storyForEstimate?.SetValue(ToEstimation(value));
 	}
 
 	public void AddStoryForEstimate(StoryForEstimate storyForEstimate)

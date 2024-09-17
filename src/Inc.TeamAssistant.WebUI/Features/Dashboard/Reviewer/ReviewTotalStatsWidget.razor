@@ -3,65 +3,73 @@
 @inject IReviewService ReviewService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
-@inject IRenderContext RenderContext
 @inject DateSelectorFactory DateSelectorFactory
 
-<DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
-<Loading State="_state" Retry="Load">
-    <Content>
-        <div class="component-container">
-            @if (_formModel.Review.Any())
-            {
-                <div class="review-total-stats">
-                    <div class="review-total-stats__item">
-                        <ApexChart
-                            TItem="HistoryByTeamItemDto"
-                            Title="@string.Format(
-                                       Resources[Messages.Dashboard_ReviewByReviewerTemplate],
-                                       _formModel.IntervalInDays)"
-                            Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
-                            @ref="_reviewChart">
-                            <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                             Items="_formModel.Review"
-                                             SeriesType="SeriesType.Donut"
-                                             XValue="@(e => e.PersonName)"
-                                             YValue="@(e => e.Count)"
-                                             OrderByDescending="e => e.Y!"/>
-                        </ApexChart>
+@if (TeamId.HasValue)
+{
+    <DashboardWidget
+        HasControls="true"
+        HasChart="true"
+        Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
+        <Content>
+            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
+            <Loading State="_state" Retry="Load">
+                <Content>
+                    <div class="component-container">
+                        @if (_formModel.Review.Any())
+                        {
+                            <div class="review-total-stats">
+                                <div class="review-total-stats__item">
+                                    <ApexChart
+                                        TItem="HistoryByTeamItemDto"
+                                        Title="@string.Format(
+                                                   Resources[Messages.Dashboard_ReviewByReviewerTemplate],
+                                                   _formModel.IntervalInDays)"
+                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                         Items="_formModel.Review"
+                                                         SeriesType="SeriesType.Donut"
+                                                         XValue="@(e => e.PersonName)"
+                                                         YValue="@(e => e.Count)"
+                                                         OrderByDescending="e => e.Y!"/>
+                                    </ApexChart>
+                                </div>
+                                <div class="review-total-stats__item">
+                                    <ApexChart
+                                        TItem="HistoryByTeamItemDto"
+                                        Title="@string.Format(
+                                                   Resources[Messages.Dashboard_ReviewByOwnerTemplate],
+                                                   _formModel.IntervalInDays)"
+                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                         Items="_formModel.Requests"
+                                                         SeriesType="SeriesType.Donut"
+                                                         XValue="@(e => e.PersonName)"
+                                                         YValue="@(e => e.Count)"
+                                                         OrderByDescending="e => e.Y!"/>
+                                    </ApexChart>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <NoData IsDark="true"/>
+                        }
                     </div>
-                    <div class="review-total-stats__item">
-                        <ApexChart
-                            TItem="HistoryByTeamItemDto"
-                            Title="@string.Format(
-                                       Resources[Messages.Dashboard_ReviewByOwnerTemplate],
-                                       _formModel.IntervalInDays)"
-                            Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()"
-                            @ref="_requestsChart">
-                            <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                             Items="_formModel.Requests"
-                                             SeriesType="SeriesType.Donut"
-                                             XValue="@(e => e.PersonName)"
-                                             YValue="@(e => e.Count)"
-                                             OrderByDescending="e => e.Y!"/>
-                        </ApexChart>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <NoData IsDark="true"/>
-            }
-        </div>
-    </Content>
-</Loading>
+                </Content>
+            </Loading>
+        </Content>
+    </DashboardWidget>
+}
 
 @code {
     [Parameter, EditorRequired]
-    public Guid TeamId { get; set; }
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
     
     private DateOnly? _date;
-    private ApexChart<HistoryByTeamItemDto>? _reviewChart;
-    private ApexChart<HistoryByTeamItemDto>? _requestsChart;
 
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
@@ -76,10 +84,13 @@
     
     private async Task Load()
     {
-        var date = _date!.Value;
+        if (!TeamId.HasValue)
+            return;
         
+        var date = _date!.Value;
+
         await RequestProcessor.Process(
-            () => ReviewService.GetHistory(TeamId, date),
+            () => ReviewService.GetHistory(TeamId.Value, date),
             nameof(ReviewTotalStatsWidget),
             r =>
             {

@@ -1,7 +1,9 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
+using Inc.TeamAssistant.Connector.Model.Queries.GetWidgets;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.RemoveBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
@@ -40,6 +42,18 @@ internal sealed class BotService : IBotService
     public async Task<GetBotsByCurrentUserResult> GetFromCurrentUser(CancellationToken token)
     {
         return await _mediator.Send(new GetBotsByCurrentUserQuery(), token);
+    }
+
+    public async Task<GetWidgetsResult> GetWidgetsForCurrentUser(Guid botId, CancellationToken token)
+    {
+        return await _mediator.Send(new GetWidgetsQuery(botId), token);
+    }
+
+    public async Task UpdateWidgets(UpdateWidgetsCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
     }
 
     public async Task<GetTeammatesResult> GetTeammates(Guid teamId, CancellationToken token)

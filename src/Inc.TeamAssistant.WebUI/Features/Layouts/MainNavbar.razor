@@ -1,3 +1,5 @@
+@implements IDisposable
+
 @inject IRenderContext RenderContext
 @inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
@@ -25,9 +27,9 @@
                 <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
-                @if (!CurrentUrl.Contains("/login"))
+                @if (!_currentUrl.Contains("/login"))
                 {
-                    <a href="@LinkBuilder.Build($"login?returnUrl={CurrentUrl}")" class="link link_light navbar__item">
+                    <a href="@LinkBuilder.Build($"login?returnUrl={_currentUrl}")" class="link link_light navbar__item">
                         @Resources[Messages.Navigation_Login]
                     </a>
                 }
@@ -37,7 +39,32 @@
 </div>
 
 @code {
-    private string CurrentUrl => NavigationManager.Uri;
+    private string _currentUrl = string.Empty;
+    
     private string MainUrl => LinkBuilder.Build(null);
-    private string LogoutUrl => $"accounts/logout?returnUrl={CurrentUrl}";
+    private string LogoutUrl => $"accounts/logout?returnUrl={_currentUrl}";
+
+    protected override void OnInitialized()
+    {
+        SetPath();
+        
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void SetPath()
+    {
+        _currentUrl = NavigationManager.Uri;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetPath();
+        
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }

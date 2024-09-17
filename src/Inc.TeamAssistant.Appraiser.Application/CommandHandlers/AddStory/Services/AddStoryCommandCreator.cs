@@ -42,7 +42,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
         return new AddStoryCommand(
             messageContext,
             teamContext.TeamId,
-            teamContext.GetStoryType(),
+            teamContext.Properties.GetStoryType(),
             string.Join(separator, text),
             links,
             teammates);

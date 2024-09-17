@@ -27,7 +27,7 @@
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
-    [Parameter, EditorRequired]
+    [Parameter]
     public bool IsGrand { get; set; }
     
     private bool _isOpen;
@@ -39,7 +39,7 @@
         StateHasChanged();
     }
     
-    private void Close()
+    public void Close()
     {
         _isOpen = false;
         

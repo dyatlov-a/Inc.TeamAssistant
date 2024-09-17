@@ -4,58 +4,62 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 
-<Loading State="_state" Retry="Load">
+<DashboardWidget Title="@Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]">
     <Content>
-        <div class="component-container">
-            <div class="chat-selector">
-                <InputSelectList
-                    FieldId="chat-selector"
-                    Value="_formModel.ChatId"
-                    ValueExpression="@(() => _formModel.ChatId)"
-                    ValueChanged="@((long? v) => Load(v))"
-                    Items="_formModel.Chats"
-                    TitleSelector="i => i.Name"
-                    ValueSelector="i => i.Id"/>
-            </div>
-            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
-            @if (Pairs.Any())
-            {
-                <QuickGrid Items="@Pairs" class="quick-data-grid">
-                    <TemplateColumn
-                        Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
-                        Sortable="true"
-                        SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-                        @context.FirstName
-                        <br/>
-                        @context.FirstUserName
-                    </TemplateColumn>
-                    <TemplateColumn
-                        Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
-                        Sortable="true"
-                        SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-                        @context.SecondName
-                        <br/>
-                        @context.SecondUserName
-                    </TemplateColumn>
-                </QuickGrid>
-            }
-            else
-            {
-                <NoData IsDark="true"/>
-            }
-        </div>
+        <Loading State="_state" Retry="Load">
+            <Content>
+                <div class="component-container">
+                    <div class="chat-selector">
+                        <InputSelectList
+                            FieldId="chat-selector"
+                            Value="_formModel.ChatId"
+                            ValueExpression="@(() => _formModel.ChatId)"
+                            ValueChanged="@((long? v) => Load(v))"
+                            Items="_formModel.Chats"
+                            TitleSelector="i => i.Name"
+                            ValueSelector="i => i.Id"/>
+                    </div>
+                    <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+                    @if (Pairs.Any())
+                    {
+                        <QuickGrid Items="@Pairs" class="quick-data-grid">
+                            <TemplateColumn
+                                Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
+                                Sortable="true"
+                                SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                                @context.FirstName
+                                <br/>
+                                @context.FirstUserName
+                            </TemplateColumn>
+                            <TemplateColumn
+                                Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
+                                Sortable="true"
+                                SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                                @context.SecondName
+                                <br/>
+                                @context.SecondUserName
+                            </TemplateColumn>
+                        </QuickGrid>
+                    }
+                    else
+                    {
+                        <NoData IsDark="true"/>
+                    }
+                </div>
+            </Content>
+        </Loading>
     </Content>
-</Loading>
+</DashboardWidget>
 
 @code {
     [Parameter, EditorRequired] 
     public Guid BotId { get; set; }
-
+    
     [Parameter, EditorRequired] 
-    public int Depth { get; set; }
-
+    public Guid? TeamId { get; set; }
+    
     private LoadingState _state = LoadingState.Done();
-    private RandomCoffeeHistoryWidgetFormModel _formModel = new();
+    private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
     private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
         .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yy-MM-dd"), i.Created))
         .ToArray();
@@ -72,7 +76,7 @@
                 var chats = await RandomCoffeeService.GetChatsByBot(BotId);
                 var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
                 var getHistoryResult = targetChatId.HasValue
-                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, Depth)
+                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, depth: 3)
                     : null;
 
                 return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);

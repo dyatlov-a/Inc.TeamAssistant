@@ -30,7 +30,6 @@ public sealed class Bot
     {
         ArgumentNullException.ThrowIfNull(featureIds);
         ArgumentNullException.ThrowIfNull(supportedLanguages);
-        
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(token);
         

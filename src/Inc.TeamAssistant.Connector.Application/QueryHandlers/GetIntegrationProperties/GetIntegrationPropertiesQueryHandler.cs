@@ -37,7 +37,7 @@ internal sealed class GetIntegrationPropertiesQueryHandler
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
         var hasManagerAccess = await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token);
-        var scrumMaster = team.GetPropertyValueOrDefault(Team.PropertyKey.ScrumMaster, string.Empty);
+        var scrumMaster = team.Properties.GetPropertyValueOrDefault(ConnectorProperties.ScrumMaster);
         var scrumMasterId = long.TryParse(scrumMaster, out var value)
             ? value
             : (long?)null;
@@ -48,8 +48,8 @@ internal sealed class GetIntegrationPropertiesQueryHandler
             .ToArray();
         var integrationProperties = scrumMasterId is not null
             ? new IntegrationProperties(
-                team.GetPropertyValueOrDefault(Team.PropertyKey.AccessToken, string.Empty),
-                team.GetPropertyValueOrDefault(Team.PropertyKey.ProjectKey, string.Empty),
+                team.Properties.GetPropertyValueOrDefault(ConnectorProperties.AccessToken),
+                team.Properties.GetPropertyValueOrDefault(ConnectorProperties.ProjectKey),
                 scrumMasterId.Value)
             : null;
         

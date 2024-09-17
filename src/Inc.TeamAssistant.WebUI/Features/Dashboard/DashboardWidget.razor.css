@@ -1,7 +1,7 @@
 .dashboard-widgets__widget {
     flex: 0 1 calc(50% - 20px);
     background-color: #9d9d9d;
-    margin: 30px 10px 0 10px;
+    margin: 10px;
     border-top: 5px #555 solid;
 }
 .dashboard-widgets__title {

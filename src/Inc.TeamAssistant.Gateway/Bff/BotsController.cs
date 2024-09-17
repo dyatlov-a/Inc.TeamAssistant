@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
@@ -32,6 +33,22 @@ public sealed class BotsController : ControllerBase
     public async Task<IActionResult> GetByUser(CancellationToken token)
     {
         return Ok(await _botService.GetFromCurrentUser(token));
+    }
+    
+    [HttpGet("{botId:guid}/widgets")]
+    public async Task<IActionResult> Widgets(Guid botId, CancellationToken token)
+    {
+        return Ok(await _botService.GetWidgetsForCurrentUser(botId, token));
+    }
+    
+    [HttpPut("widgets")]
+    public async Task<IActionResult> Widgets(UpdateWidgetsCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _botService.UpdateWidgets(command, token);
+
+        return Ok();
     }
 
     [HttpGet("{teamId:guid}/teammates")]

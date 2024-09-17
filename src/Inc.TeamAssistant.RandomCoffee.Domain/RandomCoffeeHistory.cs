@@ -13,20 +13,19 @@ public sealed class RandomCoffeeHistory
         Pairs = new List<PersonPair>();
     }
 
-    private RandomCoffeeHistory(Guid randomCoffeeEntryId)
+    private RandomCoffeeHistory(Guid id, DateTimeOffset now, Guid randomCoffeeEntryId)
         : this()
     {
-        Id = Guid.NewGuid();
-        Created = DateTimeOffset.UtcNow;
+        Id = id;
+        Created = now;
         RandomCoffeeEntryId = randomCoffeeEntryId;
     }
     
     public static RandomCoffeeHistory Build(Guid entryId, IReadOnlyCollection<PersonPair> pairs, long? excludedPersonId)
     {
-        if (pairs is null)
-            throw new ArgumentNullException(nameof(pairs));
-        
-        var randomCoffeeHistory = new RandomCoffeeHistory(entryId);
+        ArgumentNullException.ThrowIfNull(pairs);
+
+        var randomCoffeeHistory = new RandomCoffeeHistory(Guid.NewGuid(), DateTimeOffset.UtcNow, entryId);
         
         foreach (var pair in pairs)
             randomCoffeeHistory.Pairs.Add(pair);

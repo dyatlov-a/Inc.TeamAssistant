@@ -25,7 +25,7 @@ internal sealed class MoveToPowerOfTwoCommandCreator : ICommandCreator
 
         var command = _commandFactory.Create(
             messageContext,
-            TeamProperties.StoryTypeKey,
+            AppraiserProperties.StoryTypeKey,
             StoryType.PowerOfTwo.ToString());
 
         return Task.FromResult(command);

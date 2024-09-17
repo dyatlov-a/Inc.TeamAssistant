@@ -37,12 +37,14 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
         
-        var accessToken = team.GetPropertyValueOrDefault(Team.PropertyKey.AccessToken, Guid.NewGuid().ToString("N"));
+        var accessToken = team.Properties.GetPropertyValueOrDefault(
+            ConnectorProperties.AccessToken,
+            Guid.NewGuid().ToString("N"));
         
         team
-            .ChangeProperty(Team.PropertyKey.AccessToken, accessToken)
-            .ChangeProperty(Team.PropertyKey.ProjectKey, command.ProjectKey)
-            .ChangeProperty(Team.PropertyKey.ScrumMaster, command.ScrumMasterId.ToString());
+            .ChangeProperty(ConnectorProperties.AccessToken, accessToken)
+            .ChangeProperty(ConnectorProperties.ProjectKey, command.ProjectKey)
+            .ChangeProperty(ConnectorProperties.ScrumMaster, command.ScrumMasterId.ToString());
 
         await _teamRepository.Upsert(team, token);
     }

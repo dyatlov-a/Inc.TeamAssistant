@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.CheckIn.Geo;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCheckInGeoCountry(this IServiceCollection services, string webRootPath)
+    public static IServiceCollection AddCheckInGeo(this IServiceCollection services, string webRootPath)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);

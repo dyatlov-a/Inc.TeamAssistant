@@ -57,8 +57,7 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
 
     public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(languageId))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(languageId));
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
 
         var command = new CommandDefinition(@"
             INSERT INTO connector.client_languages AS p (person_id, language_id, last_use)

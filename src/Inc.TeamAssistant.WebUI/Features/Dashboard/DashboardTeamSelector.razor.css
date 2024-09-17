@@ -1,3 +1,6 @@
 ::deep .loading {
     height: 182px;
 }
+::deep .form-section_rows {
+    margin-bottom: 20px;
+}

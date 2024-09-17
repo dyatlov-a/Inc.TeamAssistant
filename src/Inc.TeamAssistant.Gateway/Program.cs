@@ -21,7 +21,7 @@ using Inc.TeamAssistant.Gateway.Services;
 using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
-using Inc.TeamAssistant.Gateway.Components;
+using Inc.TeamAssistant.Gateway.Apps;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
@@ -75,7 +75,7 @@ builder.Services
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
 
 builder.Services
-	.AddDataAccess(connectionString)
+	.AddDataAccessPrimitives(connectionString)
 	.AddMessageIdType()
 	.AddLanguageIdType()
 	.AddDateOnlyType()
@@ -83,6 +83,7 @@ builder.Services
 	.AddJsonType<ICollection<string>>()
 	.AddJsonType<ICollection<long>>()
 	.AddJsonType<ICollection<PersonPair>>()
+	.AddJsonType<ICollection<DashboardWidget>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ContextScope>>()
@@ -100,7 +101,7 @@ builder.Services
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(linksOptions.ConnectToMapLinkTemplate)
 	.AddCheckInDataAccess()
-	.AddCheckInGeoCountry(builder.Environment.WebRootPath)
+	.AddCheckInGeo(builder.Environment.WebRootPath)
 	.AddReviewerApplication()
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication()
@@ -166,7 +167,7 @@ app
 	});
 
 app
-	.MapRazorComponents<App>()
+	.MapRazorComponents<MainApp>()
 	.AddInteractiveWebAssemblyRenderMode()
 	.AddAdditionalAssemblies(typeof(IRenderContext).Assembly);
 

@@ -7,15 +7,13 @@ namespace Inc.TeamAssistant.Primitives.DataAccess;
 
 public static class ServiceCollectionExtensions
 {
-    public static IDataTypeBuilder AddDataAccess(
+    public static IDataTypeBuilder AddDataAccessPrimitives(
         this IServiceCollection services,
         string connectionString,
         bool logQueryParameters = false)
     {
         ArgumentNullException.ThrowIfNull(services);
-        
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         services
             .AddSingleton<NpgsqlDataSource>(sp => new NpgsqlDataSourceBuilder(connectionString)

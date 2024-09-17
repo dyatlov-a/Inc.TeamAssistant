@@ -8,10 +8,7 @@
     margin-bottom: 20px;
 }
 ::deep .loading {
-    height: 428px;
-    border-top: 5px #555 solid;
-    background-color: #9d9d9d;
-    margin-top: 30px;
+    height: 324px;
 }
 @media (max-width: 767.98px) {
     .team-connector {

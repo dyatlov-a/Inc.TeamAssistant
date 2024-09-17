@@ -1,7 +1,9 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
 
+@inject IBotService BotService
 @inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
+@inject RequestProcessor RequestProcessor
 @inject LinkBuilder LinkBuilder
 
 <div class="component-container">
@@ -10,16 +12,16 @@
         HelpText="@Resources[Messages.Dashboard_SelectTeam]"
         AsRows="true">
         <Content>
-            <Loading State="State" Retry="Retry">
+            <Loading State="_state" Retry="Load">
                 <Content>
                     <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
                         <Content>
                             <InputSelectList 
                                 FieldId="bot-selector"
-                                Value="BotId"
-                                ValueExpression="@(() => BotId)"
+                                Value="_botId"
+                                ValueExpression="@(() => _botId)"
                                 ValueChanged="@((Guid? v) => ChangeBot(v))"
-                                Items="Bots"
+                                Items="_bots"
                                 TitleSelector="i => i.Name"
                                 ValueSelector="i => i.Id"
                                 HasEmptyValue="true"/>
@@ -29,8 +31,8 @@
                         <Content>
                             <InputSelectList
                                 FieldId="team-selector"
-                                Value="TeamId"
-                                ValueExpression="@(() => TeamId)"
+                                Value="_teamId"
+                                ValueExpression="@(() => _teamId)"
                                 ValueChanged="@((Guid? v) => ChangeTeam(v))"
                                 Items="TeamsByBot"
                                 TitleSelector="i => i.Name"
@@ -52,22 +54,19 @@
     public Guid? TeamId { get; set; }
     
     [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
     public EventCallback<(Guid? BotId, Guid? TeamId)> TeamContextChanged { get; set; }
+    
+    private Guid? _botId;
+    private Guid? _teamId;
+    
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     private IEnumerable<TeamDto> TeamsByBot
     {
         get
         {
-            var bot = Bots.SingleOrDefault(b => b.Id == BotId);
+            var bot = _bots.SingleOrDefault(b => b.Id == _botId);
 
             return bot is not null
                 ? bot.Teams
@@ -75,27 +74,57 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_botId != BotId || _teamId != TeamId)
+        {
+            _botId = BotId;
+            _teamId = TeamId;
+            
+            await Load();
+        }
+    }
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => BotService.GetFromCurrentUser(),
+            nameof(DashboardTeamSelector),
+            r => _bots = r.Bots,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+    
     private async Task ChangeTeam(Guid? value)
     {
-        TeamId = value;
+        _teamId = value;
         
-        await ChangeTeamContext(BotId, TeamId);
+        await ChangeTeamContext(_botId, _teamId);
     }
     
     private async Task ChangeBot(Guid? value)
     {
-        BotId = value;
+        _botId = value;
 
-        if (BotId.HasValue)
+        if (_botId.HasValue)
         {
-            var bot = Bots.SingleOrDefault(b => b.Id == BotId);
+            var bot = _bots.SingleOrDefault(b => b.Id == _botId.Value);
             var team = bot?.Teams.FirstOrDefault();
 
-            await ChangeTeamContext(BotId.Value, team?.Id);
+            await ChangeTeamContext(_botId.Value, team?.Id);
         }
         else
-            await ChangeTeamContext(BotId, null);
+            await ChangeTeamContext(null, null);
     }
 
-    private Task ChangeTeamContext(Guid? botId, Guid? teamId) => TeamContextChanged.InvokeAsync((botId, teamId));
+    private async Task ChangeTeamContext(Guid? botId, Guid? teamId)
+    {
+        _botId = botId;
+        _teamId = teamId;
+        
+        await TeamContextChanged.InvokeAsync((botId, teamId));
+    }
 }

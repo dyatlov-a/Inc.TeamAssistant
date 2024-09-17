@@ -14,10 +14,13 @@
             }
         </div>
     </div>
-    <StoryTotal Story="Story" />
+    <StoryTotal Story="Story" HasAcceptedValue="HasAcceptedValue" />
 </div>
 
 @code {
     [Parameter, EditorRequired]
     public StoryDto Story { get; set; } = default!;
+    
+    [Parameter]
+    public bool HasAcceptedValue { get; set; }
 }

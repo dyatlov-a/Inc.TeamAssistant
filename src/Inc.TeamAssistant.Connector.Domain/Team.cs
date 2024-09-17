@@ -55,14 +55,6 @@ public sealed class Team
         return this;
     }
 
-    public string GetPropertyValueOrDefault(PropertyKey propertyKey, string defaultValue)
-    {
-        ArgumentNullException.ThrowIfNull(propertyKey);
-        ArgumentNullException.ThrowIfNull(defaultValue);
-        
-        return Properties.GetValueOrDefault(propertyKey.Key, defaultValue);
-    }
-
     public Team ChangeProperty(PropertyKey propertyKey, string value)
     {
         ArgumentNullException.ThrowIfNull(propertyKey);
@@ -87,21 +79,5 @@ public sealed class Team
         Properties = new Dictionary<string, string>(newProperties);
         
         return this;
-    }
-    
-    public sealed record PropertyKey
-    {
-        internal string Key { get; }
-
-        public PropertyKey(string key)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(key);
-            
-            Key = key;
-        }
-        
-        public static readonly PropertyKey AccessToken = new("accessToken");
-        public static readonly PropertyKey ProjectKey = new("projectKey");
-        public static readonly PropertyKey ScrumMaster = new("scrumMaster");
     }
 }

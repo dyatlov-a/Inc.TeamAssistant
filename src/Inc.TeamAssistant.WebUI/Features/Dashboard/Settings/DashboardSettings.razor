@@ -1,0 +1,221 @@
+@using Inc.TeamAssistant.Connector.Model.Queries.GetWidgets
+
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+@inject ResourcesManager Resources
+@inject DragAndDropService<DashboardSettingsItem> DragAndDropService
+@inject IServiceProvider ServiceProvider
+
+<ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
+    <Content>
+        <div class="widget-settings @CssClass">
+            <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator"/>
+                <Loading State="_state" Retry="SubmitForm">
+                    <Content>
+                        <div class="widget-settings__body">
+                            <ValidationSummary/>
+                            @{
+                                var widgets = _formModel.Items.OrderBy(w => w.Position).ToArray();
+
+                                for (var i = 0; i < widgets.Length; i++)
+                                {
+                                    var current = widgets[i];
+                                    var next = i < widgets.Length - 1 ? widgets[i + 1] : null;
+                                    var prev = i > 0 ? widgets[i - 1] : null;
+                                    var isVisibleId = "is-visible-" + current.Type;
+
+                                    <div
+                                        class="widget-settings__item draggable"
+                                        draggable="true"
+                                        ondragover="event.preventDefault();"
+                                        @ondrop="() => HandleDrop(widgets, current)"
+                                        @ondragenter="HandleDragEnter"
+                                        @ondragstart="@(() => HandleDragStart(current))">
+                                        <div class="widget-settings__drag">
+                                            <DragVerticalIcon Size="30px" IsDark="true"/>
+                                        </div>
+                                        @if (next is not null)
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                @onclick="() => MoveDown(widgets, current, next)">
+                                                <ArrowDownIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                disabled="disabled">
+                                                <ArrowDownIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        @if (prev is not null)
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                @onclick="() => MoveUp(widgets, current, prev)">
+                                                <ArrowUpIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button
+                                                type="button"
+                                                class="button button_dark button_small widget-settings__button"
+                                                disabled="disabled">
+                                                <ArrowUpIcon Size="20px" IsDark="true"/>
+                                            </button>
+                                        }
+                                        @if (current.CanEnabled)
+                                        {
+                                            <InputCheckbox
+                                                id="@isVisibleId"
+                                                @bind-Value="current.IsVisible"
+                                                class="widget-settings__checkbox"/>
+                                            <label for="@isVisibleId" class="widget-settings__label">
+                                                @ToWidgetTitle(current.Type)
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <InputCheckbox
+                                                id="@isVisibleId"
+                                                @bind-Value="current.IsVisible"
+                                                class="widget-settings__checkbox"
+                                                disabled="disabled"/>
+                                            <label for="@isVisibleId" class="widget-settings__label">
+                                                @ToWidgetTitle(current.Type)
+                                            </label>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="widget-settings__actions">
+                            <button type="submit" class="button button_dark">
+                                @Resources[Messages.Dashboard_Apply]
+                            </button>
+                        </div>
+                    </Content>
+                </Loading>
+            </EditForm>
+        </div>
+    </Content>
+</ContentDialog>
+
+<div class="dashboard-settings">
+    <button type="button" class="button button_dark button_small" @onclick="Open">
+        <SettingsIcon Size="20px" IsDark="true" />
+    </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback Changed { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = Array.Empty<WidgetDto>();
+
+    private ContentDialog? _contentDialog;
+
+    private bool _isDragStarting;
+    private LoadingState _state = LoadingState.Done();
+    private readonly DashboardSettingsFormModel _formModel = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    
+    private Dictionary<string, string> WidgetsLookup => new()
+    {
+        [nameof(TeammatesWidget)] = Resources[Messages.Dashboard_TeammatesWidgetTitle],
+        [nameof(ReviewAverageStatsWidget)] = Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle],
+        [nameof(ReviewHistoryWidget)] = Resources[Messages.Dashboard_LastTasksWidgetTitle],
+        [nameof(ReviewTotalStatsWidget)] = Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],
+        [nameof(AppraiserHistoryWidget)] = Resources[Messages.Dashboard_AppraiserHistoryTitle],
+        [nameof(AppraiserIntegrationWidget)] = Resources[Messages.Dashboard_AppraiserIntegrationTitle],
+        [nameof(RandomCoffeeHistoryWidget)] = Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle],
+        [nameof(MapWidget)] = Resources[Messages.Dashboard_CheckInMapWidgetTitle]
+    };
+    
+    private string CssClass => _isDragStarting ? "widget-settings_on-drag" : "widget-settings_no-drag";
+    
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(_formModel.Apply(Widgets));
+    }
+    
+    private string ToWidgetTitle(string type) => WidgetsLookup.GetValueOrDefault(type, type);
+    
+    private void HandleDrop(DashboardSettingsItem[] items, DashboardSettingsItem target)
+    {
+        var source = DragAndDropService.End();
+        
+        Swap(items, source, target);
+        
+        _isDragStarting = false;
+    }
+    
+    private void HandleDragStart(DashboardSettingsItem source) => DragAndDropService.Start(source);
+    
+    private void HandleDragEnter() => _isDragStarting = true;
+
+    private void Open() => _contentDialog?.Open();
+
+    private void Swap(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        if (first.Position < second.Position)
+            MoveDown(items, first, second);
+        else
+            MoveUp(items, first, second);
+    }
+
+    private void MoveDown(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        var targets = items
+            .Where(i => i.Position > first.Position && i.Position <= second.Position)
+            .OrderBy(i => i.Position);
+        
+        foreach (var target in targets)
+            _formModel.Swap(first, target);
+    }
+
+    private void MoveUp(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
+    {
+        var targets = items
+            .Where(i => i.Position <= first.Position && i.Position > second.Position)
+            .OrderByDescending(i => i.Position);
+        
+        foreach (var target in targets)
+            _formModel.Swap(second, target);
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        var notification = Notification.Info(Resources[Messages.Dashboard_SettingsApplied]);
+
+        await RequestProcessor.Process(
+            async () =>
+            {
+                await BotService.UpdateWidgets(_formModel.ToCommand(BotId.Value));
+
+                await Changed.InvokeAsync();
+            },
+            () =>
+            {
+                _contentDialog?.Close();
+                notificationsService.Publish(notification);
+            },
+            s => _state = s);
+    }
+}

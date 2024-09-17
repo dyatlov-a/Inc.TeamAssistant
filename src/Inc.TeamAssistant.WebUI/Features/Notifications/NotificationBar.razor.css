@@ -3,7 +3,7 @@
     top: 80px;
     right: 0;
     width: 315px;
-    z-index: 999;
+    z-index: 9999;
     max-height: 400px;
     overflow-y: scroll;
 }

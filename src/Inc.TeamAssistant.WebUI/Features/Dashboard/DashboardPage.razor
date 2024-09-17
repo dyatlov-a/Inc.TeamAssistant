@@ -10,7 +10,7 @@
 
 @attribute [Authorize]
 
-@using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
+@using Inc.TeamAssistant.Connector.Model.Queries.GetWidgets
 
 @inject IBotService BotService
 @inject ResourcesManager Resources
@@ -21,52 +21,38 @@
     WebsiteSection="WebsiteSection.Dashboard"
     MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
-<div class="dashboard">
-    <div class="dashboard-toolbar">
-        <div class="dashboard-toolbar__content">
-            <DashboardTeamSelector
-                BotId="_botId"
-                TeamId="_teamId"
-                State="_state"
-                Bots="_bots"
-                Retry="Load"
-                TeamContextChanged="ChangeTeamContext"/>
-            @if (_teamId.HasValue)
-            {
-                <DashboardTeamConnector TeamId="_teamId.Value"/>
-            }
-        </div>
-    </div>
-    <div class="dashboard-content">
-        <div class="dashboard-widgets">
-            @if (_teamId.HasValue)
-            {
-                <TeamModule TeamId="_teamId.Value" />
-                if (HasFeature("Reviewer"))
-                {
-                    <ReviewerModule TeamId="_teamId.Value"/>
-                }
-                if (HasFeature("Appraiser"))
-                {
-                    <AppraiserModule TeamId="_teamId.Value"/>
-                }
-            }
+<div class="dashboard__fluent-container">
+    <DashboardSettings BotId="BotId" Widgets="_widgets" Changed="Load" />
+    
+    <div class="dashboard">
+        <div class="dashboard-toolbar">
+            <div class="dashboard-toolbar__content">
+                <DashboardTeamSelector BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext"/>
 
-            @if (_botId.HasValue)
-            {
-                if (HasFeature("RandomCoffee"))
+                @if (_teamId.HasValue)
                 {
-                    <RandomCoffeeModule BotId="_botId.Value"/>
+                    <DashboardTeamConnector TeamId="_teamId.Value"/>
                 }
-                if (HasFeature("CheckIn"))
-                {
-                    <CheckInModule BotId="_botId.Value" />
-                }
-            }
-            else
-            {
-                <BotNotSelected />
-            }
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <Loading State="_state" Retry="Load">
+                <Content>
+                    <div class="dashboard-widgets">
+                        @if (_botId.HasValue)
+                        {
+                            foreach (var widget in _widgets.Where(w => w.IsVisible).OrderBy(w => w.Position))
+                            {
+                                <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
+                            }
+                        }
+                        else
+                        {
+                            <BotNotSelected/>
+                        }
+                    </div>
+                </Content>
+            </Loading>
         </div>
     </div>
 </div>
@@ -82,7 +68,25 @@
     private Guid? _teamId;
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+    private IReadOnlyCollection<WidgetDto> _widgets = Array.Empty<WidgetDto>();
+    
+    private Dictionary<string, object?> WidgetParameters => new()
+    {
+        ["BotId"] = _botId!.Value,
+        ["TeamId"] = _teamId
+    };
+    
+    private readonly Dictionary<string, Type> _widgetsLookup = new()
+    {
+        [nameof(TeammatesWidget)] = typeof(TeammatesWidget),
+        [nameof(ReviewAverageStatsWidget)] = typeof(ReviewAverageStatsWidget),
+        [nameof(ReviewHistoryWidget)] = typeof(ReviewHistoryWidget),
+        [nameof(ReviewTotalStatsWidget)] = typeof(ReviewTotalStatsWidget),
+        [nameof(AppraiserHistoryWidget)] = typeof(AppraiserHistoryWidget),
+        [nameof(AppraiserIntegrationWidget)] = typeof(AppraiserIntegrationWidget),
+        [nameof(RandomCoffeeHistoryWidget)] = typeof(RandomCoffeeHistoryWidget),
+        [nameof(MapWidget)] = typeof(MapWidget)
+    };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -94,23 +98,23 @@
     
     private async Task Load()
     {
-        await RequestProcessor.Process(
-            () => BotService.GetFromCurrentUser(),
-            nameof(DashboardPage),
-            r => _bots = r.Bots,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        if (_botId.HasValue)
+            await RequestProcessor.Process(
+                () => BotService.GetWidgetsForCurrentUser(_botId.Value),
+                nameof(DashboardPage),
+                r => _widgets = r.Widgets,
+                s =>
+                {
+                    _state = s;
+                    StateHasChanged();
+                });
+        else
+            _widgets = Array.Empty<WidgetDto>();
+        
+        StateHasChanged();
     }
 
-    private bool HasFeature(string feature)
-    {
-        var bot = _bots.SingleOrDefault(b => b.Id == _botId);
-
-        return bot?.Features.Contains(feature, StringComparer.InvariantCultureIgnoreCase) == true;
-    }
+    private Type ToWidgetType(string type) => _widgetsLookup[type];
     
     private async Task ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
     {

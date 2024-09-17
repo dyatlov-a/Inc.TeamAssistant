@@ -1,7 +1,9 @@
 using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
+using Inc.TeamAssistant.Connector.Model.Queries.GetWidgets;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
@@ -20,6 +22,10 @@ public interface IBotService
     Task<GetBotResult> GetBotById(Guid botId, CancellationToken token = default);
     
     Task<GetBotsByCurrentUserResult> GetFromCurrentUser(CancellationToken token = default);
+    
+    Task<GetWidgetsResult> GetWidgetsForCurrentUser(Guid botId, CancellationToken token = default);
+    
+    Task UpdateWidgets(UpdateWidgetsCommand command, CancellationToken token = default);
     
     Task<GetTeammatesResult> GetTeammates(Guid teamId, CancellationToken token = default);
 
