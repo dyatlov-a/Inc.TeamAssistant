@@ -128,7 +128,6 @@ public sealed class Build : NukeBuild
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.migrations_runner")
-                .SetBuildArg($"PROJECT={MigrationRunnerProject}")
                 .SetTag(GetImageName(MigrationRunnerProject)));
         });
 
