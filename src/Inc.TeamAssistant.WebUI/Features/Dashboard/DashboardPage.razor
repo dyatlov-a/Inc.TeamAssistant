@@ -22,7 +22,7 @@
     MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
 
 <div class="dashboard__fluent-container">
-    <DashboardSettings BotId="BotId" Changed="Load" />
+    <DashboardSettings BotId="BotId" Widgets="_widgets" Changed="Load" />
     
     <div class="dashboard">
         <div class="dashboard-toolbar">
@@ -41,7 +41,7 @@
                     <div class="dashboard-widgets">
                         @if (_botId.HasValue)
                         {
-                            foreach (var widget in _widgets)
+                            foreach (var widget in _widgets.Where(w => w.IsVisible).OrderBy(w => w.Position))
                             {
                                 <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
                             }
@@ -102,7 +102,7 @@
             await RequestProcessor.Process(
                 () => BotService.GetWidgetsForCurrentUser(_botId.Value),
                 nameof(DashboardPage),
-                r => _widgets = r.Widgets.Where(w => w.IsVisible).OrderBy(w => w.Position).ToArray(),
+                r => _widgets = r.Widgets,
                 s =>
                 {
                     _state = s;

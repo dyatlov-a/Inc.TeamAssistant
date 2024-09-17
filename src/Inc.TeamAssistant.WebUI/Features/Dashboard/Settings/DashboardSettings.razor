@@ -1,14 +1,17 @@
+@using Inc.TeamAssistant.Connector.Model.Queries.GetWidgets
+
 @inject IBotService BotService
 @inject RequestProcessor RequestProcessor
 @inject ResourcesManager Resources
 @inject DragAndDropService<DashboardSettingsItem> DragAndDropService
+@inject INotificationsService NotificationsService
 
 <ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
     <Content>
         <div class="widget-settings @CssClass">
             <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
                 <FluentValidationValidator @ref="_fluentValidationValidator"/>
-                <Loading State="_state" Retry="Load">
+                <Loading State="_state" Retry="SubmitForm">
                     <Content>
                         <div class="widget-settings__body">
                             <ValidationSummary/>
@@ -94,7 +97,9 @@
                             }
                         </div>
                         <div class="widget-settings__actions">
-                            <button type="submit" class="button button_dark">@Resources[Messages.PanelSave]</button>
+                            <button type="submit" class="button button_dark">
+                                @Resources[Messages.Dashboard_Apply]
+                            </button>
                         </div>
                     </Content>
                 </Loading>
@@ -115,6 +120,9 @@
     
     [Parameter, EditorRequired]
     public EventCallback Changed { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = Array.Empty<WidgetDto>();
 
     private ContentDialog? _contentDialog;
 
@@ -140,23 +148,7 @@
     
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel);
-    }
-
-    private async Task Load()
-    {
-        if (!BotId.HasValue)
-            return;
-        
-        await RequestProcessor.Process(
-            () => BotService.GetWidgetsForCurrentUser(BotId.Value),
-            nameof(DashboardSettings),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        _editContext = EditContextFactory.Create(_formModel.Apply(Widgets));
     }
     
     private string ToWidgetTitle(string type) => WidgetsLookup.GetValueOrDefault(type, type);
@@ -174,12 +166,7 @@
     
     private void HandleDragEnter() => _isDragStarting = true;
 
-    private async Task Open()
-    {
-        _contentDialog?.Open();
-
-        await Load();
-    }
+    private void Open() => _contentDialog?.Open();
 
     private void Swap(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
     {
@@ -214,10 +201,18 @@
         if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        await BotService.UpdateWidgets(_formModel.ToCommand(BotId.Value));
-        
-        _contentDialog?.Close();
+        await RequestProcessor.Process(
+            async () =>
+            {
+                await BotService.UpdateWidgets(_formModel.ToCommand(BotId.Value));
 
-        await Changed.InvokeAsync();
+                await Changed.InvokeAsync();
+            },
+            () =>
+            {
+                _contentDialog?.Close();
+                NotificationsService.Publish(Notification.Info(Messages.Dashboard_SettingsApplied));
+            },
+            s => _state = s);
     }
 }

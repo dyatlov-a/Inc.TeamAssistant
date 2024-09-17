@@ -8,12 +8,12 @@ public sealed class DashboardSettingsFormModel
     private readonly List<DashboardSettingsItem> _items = new();
     public IReadOnlyCollection<DashboardSettingsItem> Items => _items;
 
-    public DashboardSettingsFormModel Apply(GetWidgetsResult getWidgets)
+    public DashboardSettingsFormModel Apply(IReadOnlyCollection<WidgetDto> widgets)
     {
-        ArgumentNullException.ThrowIfNull(getWidgets);
+        ArgumentNullException.ThrowIfNull(widgets);
 
         _items.Clear();
-        _items.AddRange(getWidgets.Widgets.Select(w => new DashboardSettingsItem
+        _items.AddRange(widgets.Select(w => new DashboardSettingsItem
         {
             Type = w.Type,
             Position = w.Position,

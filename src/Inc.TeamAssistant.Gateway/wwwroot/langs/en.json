@@ -228,6 +228,8 @@
   "Dashboard_AppraiserIntegrationConfirmText": "After disabling the integration, the automatic creation of tasks for estimates will be disabled. Would you like to confirm this action?",
   "Dashboard_AppraiserIntegrationEnableSuccess": "Integration is configured",
   "Dashboard_Settings": "Settings",
+  "Dashboard_Apply": "Apply",
+  "Dashboard_SettingsApplied": "Settings applied",
   
   "Footer_GroupNavigation": "Navigation",
   "Footer_GroupTech": "Tech",
