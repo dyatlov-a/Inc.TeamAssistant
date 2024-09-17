@@ -16,10 +16,10 @@
     transition: border 0.3s;
 }
 .widget-settings_no-drag .widget-settings__item {
-    border: 5px #555 solid;
+    border: 3px #555 solid;
 }
 .widget-settings_on-drag .widget-settings__item {
-    border: 5px #AAA dashed;
+    border: 3px #AAA dashed;
 }
 .widget-settings__actions {
     display: flex;
