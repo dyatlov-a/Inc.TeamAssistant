@@ -1,10 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-amd64
 
-ARG PROJECT
-
 # VARS
 ENV APP_DIR="/migrations" \
-    APP_DLL="${PROJECT}.dll" \
     APP_USER=teamassist_migrations
 
 # create app user and ko
@@ -14,7 +11,7 @@ RUN mkdir -p ${APP_DIR} \
   && chmod 700 ${APP_DIR}
 
 # copy already builded project
-COPY --chown=${APP_USER}:${APP_USER} ./output/${PROJECT} ${APP_DIR}
+COPY --chown=${APP_USER}:${APP_USER} ./output/Inc.TeamAssistant.MigrationsRunner ${APP_DIR}
 WORKDIR ${APP_DIR}
 
 # post install commands
@@ -24,4 +21,4 @@ RUN rm -f *.sh \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", "${APP_DLL}"]
+ENTRYPOINT ["dotnet", "Inc.TeamAssistant.MigrationsRunner.dll"]
