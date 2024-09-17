@@ -4,7 +4,7 @@
 @inject RequestProcessor RequestProcessor
 @inject ResourcesManager Resources
 @inject DragAndDropService<DashboardSettingsItem> DragAndDropService
-@inject INotificationsService NotificationsService
+@inject IServiceProvider ServiceProvider
 
 <ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
     <Content>
@@ -201,6 +201,9 @@
         if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        var notification = Notification.Info(Resources[Messages.Dashboard_SettingsApplied]);
+
         await RequestProcessor.Process(
             async () =>
             {
@@ -211,7 +214,7 @@
             () =>
             {
                 _contentDialog?.Close();
-                NotificationsService.Publish(Notification.Info(Messages.Dashboard_SettingsApplied));
+                notificationsService.Publish(notification);
             },
             s => _state = s);
     }
