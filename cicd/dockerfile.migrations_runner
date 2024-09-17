@@ -24,4 +24,4 @@ RUN rm -f *.sh \
 # Run app as non root user
 USER ${APP_USER}
 
-ENTRYPOINT ["dotnet", ${APP_DLL}]
+ENTRYPOINT ["dotnet", "${APP_DLL}"]
