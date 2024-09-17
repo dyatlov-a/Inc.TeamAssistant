@@ -15,36 +15,33 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
 
     public IReadOnlyCollection<SettingSection> GetSections()
     {
-        return new[]
-        {
+        return
+        [
             new SettingSection(
                 "Constructor_FormSectionSetSettingsReviewerHeader",
                 "Constructor_FormSectionSetSettingsReviewerHelp",
-                new SettingItem[]
-                {
+                [
                     new(
-                        TeamProperties.NextReviewerTypeKey,
+                        ReviewerProperties.NextReviewerTypeKey,
                         "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel",
                         GetValuesForNextReviewerType().ToArray()),
                     new(
-                        TeamProperties.WaitingNotificationIntervalKey,
+                        ReviewerProperties.WaitingNotificationIntervalKey,
                         "Constructor_FormSectionSetSettingsWaitingNotificationIntervalFieldLabel",
                         GetValuesForNotificationInterval().ToArray()),
                     new(
-                        TeamProperties.InProgressNotificationIntervalKey,
+                        ReviewerProperties.InProgressNotificationIntervalKey,
                         "Constructor_FormSectionSetSettingsInProgressNotificationIntervalFieldLabel",
                         GetValuesForNotificationInterval().ToArray())
-                })
-        };
+                ])
+        ];
     }
     
     private IEnumerable<SelectValue> GetValuesForNextReviewerType()
     {
         foreach (var item in Enum.GetValues<NextReviewerType>())
-        {
             if (_storyType.TryGetValue(item, out var value))
                 yield return new SelectValue(value, item.ToString());
-        }
     }
     
     private IEnumerable<SelectValue> GetValuesForNotificationInterval()

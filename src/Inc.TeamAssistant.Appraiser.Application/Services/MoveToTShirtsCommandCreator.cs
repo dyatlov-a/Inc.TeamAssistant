@@ -25,7 +25,7 @@ internal sealed class MoveToTShirtsCommandCreator : ICommandCreator
 
         var command = _commandFactory.Create(
             messageContext,
-            TeamProperties.StoryTypeKey,
+            AppraiserProperties.StoryTypeKey,
             StoryType.TShirt.ToString());
 
         return Task.FromResult(command);

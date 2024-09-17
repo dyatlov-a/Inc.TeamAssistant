@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 
@@ -8,16 +9,16 @@ namespace Inc.TeamAssistant.Gateway.Services.Integrations;
 public sealed class EstimatesService
 {
     private readonly ICommandExecutor _commandExecutor;
-    private readonly IntegrationContextProvider _integrationContextProvider;
+    private readonly IntegrationContextProvider _contextProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public EstimatesService(
         ICommandExecutor commandExecutor,
-        IntegrationContextProvider integrationContextProvider,
+        IntegrationContextProvider contextProvider,
         ITeamAccessor teamAccessor)
     {
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
-        _integrationContextProvider = integrationContextProvider ?? throw new ArgumentNullException(nameof(integrationContextProvider));
+        _contextProvider = contextProvider ?? throw new ArgumentNullException(nameof(contextProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -25,16 +26,17 @@ public sealed class EstimatesService
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var integrationContext = _integrationContextProvider.Get();
-        
-        var teammates = await _teamAccessor.GetTeammates(integrationContext.TeamId, DateTimeOffset.UtcNow, token);
-        var ownerId = integrationContext.TeamProperties.TryGetValue("scrumMaster", out var scrumMaster) && long.TryParse(scrumMaster, out var value)
+        var context = _contextProvider.Get();
+
+        var teammates = await _teamAccessor.GetTeammates(context.TeamId, DateTimeOffset.UtcNow, token);
+        var ownerId = context.TeamProperties.TryGetValue(ConnectorProperties.ScrumMaster, out var scrumMaster) &&
+                      long.TryParse(scrumMaster, out var value)
             ? value
-            : integrationContext.OwnerId;
+            : context.OwnerId;
         var messageContext = MessageContext.CreateFromIntegration(
-            integrationContext.BotId,
-            integrationContext.TeamId,
-            integrationContext.ChatId,
+            context.BotId,
+            context.TeamId,
+            context.ChatId,
             ownerId);
         var title = string.IsNullOrWhiteSpace(request.IssueKey)
             ? request.Subject
@@ -44,8 +46,8 @@ public sealed class EstimatesService
             : [request.IssueUrl];
         var command = new AddStoryCommand(
             messageContext,
-            integrationContext.TeamId,
-            integrationContext.TeamProperties.GetValueOrDefault("storyType", StoryType.Fibonacci.ToString()),
+            context.TeamId,
+            context.TeamProperties.GetStoryType(),
             title,
             links,
             teammates);

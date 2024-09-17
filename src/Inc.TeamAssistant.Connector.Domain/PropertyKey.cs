@@ -10,8 +10,4 @@ public sealed record PropertyKey
             
         Key = key;
     }
-        
-    public static readonly PropertyKey AccessToken = new("accessToken");
-    public static readonly PropertyKey ProjectKey = new("projectKey");
-    public static readonly PropertyKey ScrumMaster = new("scrumMaster");
 }

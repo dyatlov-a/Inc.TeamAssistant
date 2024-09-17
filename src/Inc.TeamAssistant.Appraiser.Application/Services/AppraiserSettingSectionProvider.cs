@@ -16,27 +16,24 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
 
     public IReadOnlyCollection<SettingSection> GetSections()
     {
-        return new[]
-        {
+        return
+        [
             new SettingSection(
                 "Constructor_FormSectionSetSettingsAppraiserHeader",
                 "Constructor_FormSectionSetSettingsAppraiserHelp",
-                new SettingItem[]
-                {
+                [
                     new(
-                        TeamProperties.StoryTypeKey,
+                        AppraiserProperties.StoryTypeKey,
                         "Constructor_FormSectionSetSettingsStoryTypeFieldLabel",
                         GetValuesForStoryType().ToArray())
-                })
-        };
+                ])
+        ];
     }
 
     private IEnumerable<SelectValue> GetValuesForStoryType()
     {
         foreach (var item in Enum.GetValues<StoryType>())
-        {
             if (_storyType.TryGetValue(item, out var value))
                 yield return new SelectValue(value, item.ToString());
-        }
     }
 }

@@ -9,23 +9,22 @@ internal sealed class RandomCoffeeSettingSectionProvider : ISettingSectionProvid
     
     public IReadOnlyCollection<SettingSection> GetSections()
     {
-        return new[]
-        {
+        return
+        [
             new SettingSection(
                 "Constructor_FormSectionSetSettingsRandomCoffeeHeader",
                 "Constructor_FormSectionSetSettingsRandomCoffeeHelp",
-                new SettingItem[]
-                {
+                [
                     new(
-                        BotProperties.RoundIntervalKey,
+                        RandomCoffeeProperties.RoundIntervalKey,
                         "Constructor_FormSectionSetSettingsRoundIntervalFieldLabel",
                         GetValuesForRoundInterval().ToArray()),
                     new(
-                        BotProperties.VotingIntervalKey,
+                        RandomCoffeeProperties.VotingIntervalKey,
                         "Constructor_FormSectionSetSettingsVotingIntervalFieldLabel",
                         GetValuesForVotingInterval().ToArray())
-                })
-        };
+                ])
+        ];
     }
     
     private IEnumerable<SelectValue> GetValuesForRoundInterval()

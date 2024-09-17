@@ -37,7 +37,10 @@ internal sealed class DisableIntegrationCommandHandler : IRequestHandler<Disable
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
         
-        team.RemoveProperty(PropertyKey.AccessToken, PropertyKey.ProjectKey, PropertyKey.ScrumMaster);
+        team.RemoveProperty(
+            ConnectorProperties.AccessToken,
+            ConnectorProperties.ProjectKey,
+            ConnectorProperties.ScrumMaster);
 
         await _teamRepository.Upsert(team, token);
     }

@@ -25,7 +25,7 @@ internal sealed class ChangeToRoundRobinCommandCreator : ICommandCreator
 
         var command = _commandFactory.Create(
             messageContext,
-            TeamProperties.NextReviewerTypeKey,
+            ReviewerProperties.NextReviewerTypeKey,
             NextReviewerType.RoundRobin.ToString());
 
         return Task.FromResult(command);

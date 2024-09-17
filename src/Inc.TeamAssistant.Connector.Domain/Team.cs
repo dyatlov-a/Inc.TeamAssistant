@@ -55,14 +55,6 @@ public sealed class Team
         return this;
     }
 
-    public string GetPropertyValueOrDefault(PropertyKey propertyKey, string defaultValue)
-    {
-        ArgumentNullException.ThrowIfNull(propertyKey);
-        ArgumentNullException.ThrowIfNull(defaultValue);
-        
-        return Properties.GetValueOrDefault(propertyKey.Key, defaultValue);
-    }
-
     public Team ChangeProperty(PropertyKey propertyKey, string value)
     {
         ArgumentNullException.ThrowIfNull(propertyKey);

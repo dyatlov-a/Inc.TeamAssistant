@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
-public static class TeamProperties
+public static class ReviewerProperties
 {
     public const string NextReviewerTypeKey = "nextReviewerStrategy";
     public const string WaitingNotificationIntervalKey = "waitingNotificationInterval";

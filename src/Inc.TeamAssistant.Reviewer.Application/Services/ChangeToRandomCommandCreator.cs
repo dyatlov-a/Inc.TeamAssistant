@@ -25,7 +25,7 @@ internal sealed class ChangeToRandomCommandCreator : ICommandCreator
 
         var command = _commandFactory.Create(
             messageContext,
-            TeamProperties.NextReviewerTypeKey,
+            ReviewerProperties.NextReviewerTypeKey,
             NextReviewerType.Random.ToString());
 
         return Task.FromResult(command);

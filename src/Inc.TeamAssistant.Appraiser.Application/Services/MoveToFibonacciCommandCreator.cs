@@ -25,7 +25,7 @@ internal sealed class MoveToFibonacciCommandCreator : ICommandCreator
 
         var command = _commandFactory.Create(
             messageContext,
-            TeamProperties.StoryTypeKey,
+            AppraiserProperties.StoryTypeKey,
             StoryType.Fibonacci.ToString());
 
         return Task.FromResult(command);

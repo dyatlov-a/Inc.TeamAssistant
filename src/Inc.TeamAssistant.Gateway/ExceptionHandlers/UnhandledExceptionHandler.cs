@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Diagnostics;
@@ -17,7 +16,7 @@ internal sealed class UnhandledExceptionHandler : IExceptionHandler
                             "type": "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
                             "title": "Internal server error.",
                             "status": {{statusCode}},
-                            "traceId": "{{GetTraceId()}}",
+                            "traceId": "{{context.TraceIdentifier}}",
                             "errors": {"message":["See logs for details."]}
                         }
                         """;
@@ -29,6 +28,4 @@ internal sealed class UnhandledExceptionHandler : IExceptionHandler
 
         return true;
     }
-
-    private string GetTraceId() => Activity.Current?.TraceId.ToString() ?? string.Empty;
 }

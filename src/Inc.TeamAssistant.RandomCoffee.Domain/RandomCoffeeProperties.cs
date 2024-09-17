@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives.Bots;
 
 namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
-public static class BotProperties
+public static class RandomCoffeeProperties
 {
     public const string RoundIntervalKey = "roundInterval";
     public const string VotingIntervalKey = "votingInterval";

@@ -179,6 +179,7 @@ html {
     border-radius: 0;
     color: #000;
     background-color: #dfdfdf;
+    transition: border 0.3s;
 }
 .form-control, select {
     min-height: 45px;
