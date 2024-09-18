@@ -8,7 +8,6 @@ internal sealed class AcceptEstimateCommandCreator : ICommandCreator
     private readonly int _value;
     
     public string Command { get; }
-    public bool SupportSingleLineMode => false;
 
     public AcceptEstimateCommandCreator(string command, int value)
     {
