@@ -44,6 +44,15 @@ internal sealed class TeamAccessor : ITeamAccessor
         return await _personRepository.Find(personId, token);
     }
 
+    public async Task<Person> GetPerson(long personId, CancellationToken token)
+    {
+        var person = await _personRepository.Find(personId, token);
+        if (person is null)
+            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, personId);
+
+        return person;
+    }
+
     public async Task<LanguageId> GetClientLanguage(Guid botId, long personId, CancellationToken token)
     {
         return await _clientLanguageRepository.Get(botId, personId, token);

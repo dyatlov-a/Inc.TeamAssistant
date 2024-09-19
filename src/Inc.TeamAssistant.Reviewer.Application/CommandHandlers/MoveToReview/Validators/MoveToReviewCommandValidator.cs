@@ -21,14 +21,25 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
 
         RuleFor(e => e.DraftId)
             .NotEmpty()
-            .MustAsync(HasDescriptionAndLinks)
-            .WithMessage("'Description' must contains a link to the source code and some description");
+            .CustomAsync(ValidateDraft);
     }
 
-    private async Task<bool> HasDescriptionAndLinks(Guid draftId, CancellationToken token)
+    private async Task ValidateDraft(
+        Guid draftId,
+        ValidationContext<MoveToReviewCommand> context,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(context);
+        
         var draft = await _draftTaskForReviewRepository.GetById(draftId, token);
 
-        return _draftTaskForReviewService.HasDescriptionAndLinks(draft.Description);
+        if (!_draftTaskForReviewService.HasDescriptionAndLinks(draft.Description))
+            context.AddFailure(
+                nameof(draft.Description),
+                "Must contains a link to the source code and some description");
+        
+        if (draft.TargetPersonId.HasValue &&
+            !await _draftTaskForReviewService.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
+            context.AddFailure(nameof(draft.TargetPersonId), "Teammate not found");
     }
 }

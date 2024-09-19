@@ -106,24 +106,37 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(draft);
         ArgumentNullException.ThrowIfNull(languageId);
         
+        var teamContext = await _teamAccessor.GetTeamContext(draft.TeamId, token);
+        var reviewTargetMessageTemplate = await _messageBuilder.Build(
+            Messages.Reviewer_PreviewReviewerTemplate,
+            languageId);
         var messageBuilder = new StringBuilder();
+        
         messageBuilder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId));
         messageBuilder.AppendLine();
         messageBuilder.AppendLine(draft.Description);
+        messageBuilder.AppendLine();
 
         if (draft.TargetPersonId.HasValue)
         {
-            var targetPersonMessageTemplate = await _messageBuilder.Build(
-                Messages.Reviewer_PreviewReviewerTemplate,
-                languageId);
-            var targetPerson = await _teamAccessor.FindPerson(draft.TargetPersonId.Value, token);
-            if (targetPerson is null)
-                throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, draft.TargetPersonId.Value);
+            var reviewTarget = await _teamAccessor.GetPerson(draft.TargetPersonId.Value, token);
+            messageBuilder.AppendLine(string.Format(reviewTargetMessageTemplate, reviewTarget.DisplayName));
             
-            messageBuilder.AppendLine();
-            messageBuilder.AppendLine(string.Format(targetPersonMessageTemplate, targetPerson.DisplayName));
+            if (!await _service.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
+            {
+                messageBuilder.AppendLine();
+                messageBuilder.Append('❗');
+                messageBuilder.Append(await _messageBuilder.Build(
+                    Messages.Reviewer_PreviewCheckTeammate,
+                    languageId,
+                    reviewTarget.DisplayName,
+                    teamContext.TeamName));
+                messageBuilder.AppendLine();
+            }
         }
-
+        else
+            messageBuilder.AppendLine(string.Format(reviewTargetMessageTemplate, teamContext.TeamName));
+        
         if (!_service.HasDescriptionAndLinks(draft.Description))
         {
             messageBuilder.AppendLine();

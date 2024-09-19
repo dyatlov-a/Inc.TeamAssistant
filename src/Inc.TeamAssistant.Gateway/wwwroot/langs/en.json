@@ -132,6 +132,7 @@
   "Reviewer_PreviewTitle": "Previewing a draft of the task for review.",
   "Reviewer_PreviewReviewerTemplate": "The task will be assigned to {0}",
   "Reviewer_PreviewCheckDescription": "You need to provide a link to the source code and a description.",
+  "Reviewer_PreviewCheckTeammate": "Participant {0} is not part of team {1}.",
   "Reviewer_PreviewEditHelp": "To edit a draft, please edit the original post.",
   "Reviewer_PreviewMoveToReview": "Submit",
   "Reviewer_PreviewRemoveDraft": "Cancel",

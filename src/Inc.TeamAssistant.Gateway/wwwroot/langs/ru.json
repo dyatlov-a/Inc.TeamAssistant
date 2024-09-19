@@ -132,6 +132,7 @@
   "Reviewer_PreviewTitle": "Предварительный просмотр черновика задачи на ревью.",
   "Reviewer_PreviewReviewerTemplate": "Задача будет назначена на {0}",
   "Reviewer_PreviewCheckDescription": "Необходимо указать ссылку на исходный код и описание.",
+  "Reviewer_PreviewCheckTeammate": "Участник {0} не подключен к команде {1}.",
   "Reviewer_PreviewEditHelp": "Для редактирования черновика необходимо отредактировать исходное сообщение.",
   "Reviewer_PreviewMoveToReview": "Отправить на ревью",
   "Reviewer_PreviewRemoveDraft": "Отменить",
