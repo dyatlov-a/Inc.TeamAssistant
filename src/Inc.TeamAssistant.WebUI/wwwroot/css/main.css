@@ -158,7 +158,7 @@ html {
 .marker-btn:hover {
     text-decoration: none;
 }
-.map__navbar .leaflet-top {
+.map_navbar .leaflet-top {
     top: 80px;
 }
 .map-popup {
