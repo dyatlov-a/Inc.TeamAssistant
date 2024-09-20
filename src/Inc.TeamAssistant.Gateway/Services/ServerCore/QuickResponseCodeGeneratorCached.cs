@@ -6,18 +6,15 @@ namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGenerator
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<QuickResponseCodeGeneratorCached> _logger;
     private readonly IQuickResponseCodeGenerator _generator;
     private readonly TimeSpan _cacheAbsoluteExpiration;
 
     public QuickResponseCodeGeneratorCached(
         IMemoryCache memoryCache,
-        ILogger<QuickResponseCodeGeneratorCached> logger,
         IQuickResponseCodeGenerator generator,
         TimeSpan cacheAbsoluteExpiration)
     {
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
@@ -37,11 +34,7 @@ internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGener
 
                 return _generator.Generate(data, foreground, background);
             });
-
-        if (cacheItem is not null)
-            return cacheItem;
         
-        _logger.LogWarning("Can not get object with key {CacheKey} from cache", key);
-        return _generator.Generate(key, foreground, background);
+        return cacheItem ?? _generator.Generate(key, foreground, background);
     }
 }

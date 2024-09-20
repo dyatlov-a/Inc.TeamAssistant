@@ -6,18 +6,15 @@ namespace Inc.TeamAssistant.Gateway.Services.Clients;
 internal sealed class MessageProviderCached : IMessageProvider
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<MessageProviderCached> _logger;
     private readonly IMessageProvider _messageProvider;
     private readonly TimeSpan _cacheAbsoluteExpiration;
 
     public MessageProviderCached(
         IMemoryCache memoryCache,
-        ILogger<MessageProviderCached> logger,
         IMessageProvider messageProvider,
         TimeSpan cacheAbsoluteExpiration)
     {
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _messageProvider = messageProvider ?? throw new ArgumentNullException(nameof(messageProvider));
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
@@ -32,13 +29,7 @@ internal sealed class MessageProviderCached : IMessageProvider
                 c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
                 return await _messageProvider.Get(token);
             });
-        
-        if (cacheItem is null)
-        {
-            _logger.LogWarning("Can not get object with key {CacheKey} from cache", cacheKey);
-            return await _messageProvider.Get(token);
-        }
 
-        return cacheItem;
+        return cacheItem ?? await _messageProvider.Get(token);
     }
 }
