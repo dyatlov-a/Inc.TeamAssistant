@@ -1,33 +1,33 @@
 using GeoTimeZone;
 using Inc.TeamAssistant.CheckIn.Application.Contracts;
+using Inc.TeamAssistant.CheckIn.Geo.Models;
 
 namespace Inc.TeamAssistant.CheckIn.Geo;
 
 internal sealed class GeoService : IGeoService
 {
-    private readonly GeoJsonParser _geoJsonParser;
     private readonly Region[] _regions;
 
-    public GeoService(RegionLoader regionLoader, GeoJsonParser geoJsonParser)
+    public GeoService(RegionLoader regionLoader, GeoParser geoParser)
     {
-        _geoJsonParser = geoJsonParser;
-        _regions = ParseInput(regionLoader.LoadFile()).ToArray();
+        ArgumentNullException.ThrowIfNull(regionLoader);
+        ArgumentNullException.ThrowIfNull(geoParser);
+        
+        _regions = geoParser.Parse(regionLoader.LoadFile()).ToArray();
     }
     
     public Region? FindCountry(double lat, double lng, params RegionType[] types)
     {
-        var coords = new[] { (float)lng, (float)lat };
-        var subset = types.Any()
+        ArgumentNullException.ThrowIfNull(types);
+        
+        var point = new Point((float)lng, (float)lat);
+        var items = types.Any()
             ? _regions.Where(x => types.Any(y => y == x.Type))
             : _regions;
 
-        foreach (var country in subset)
-        {
-            if (InPolygon(coords, country.Polygon))
-            {
-                return country;
-            }
-        }
+        foreach (var item in items)
+            if (InPolygon(point, item.Polygon))
+                return item;
 
         return null;
     }
@@ -38,37 +38,21 @@ internal sealed class GeoService : IGeoService
         return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId.Result);
     }
     
-    private bool InPolygon(float[] point, float[][] polygon)
+    private bool InPolygon(Point point, float[][] polygon)
     {
-        var polygonLength = polygon.Length;
-        var c = false;
+        ArgumentNullException.ThrowIfNull(point);
+        ArgumentNullException.ThrowIfNull(polygon);
+        
+        var result = false;
         var i = 0;
         var j = 0;
-        for (i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
-        {
-            if (polygon[i][1] > point[1] != (polygon[j][1] > point[1]) &&
-                point[0] < (polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1]) /
+        
+        for (i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+            if (polygon[i][1] > point.Lat != polygon[j][1] > point.Lat &&
+                point.Lng < (polygon[j][0] - polygon[i][0]) * (point.Lat - polygon[i][1]) /
                 (polygon[j][1] - polygon[i][1]) + polygon[i][0])
-            {
-                c = !c;
-            }
-        }
+                result = !result;
 
-        return c;
-    }
-
-    private IEnumerable<Region> ParseInput(IEnumerable<string> geojson)
-    {
-        foreach (var line in geojson)
-        {
-            foreach (var polygon in _geoJsonParser.Convert(line))
-            {
-                yield return new Region(
-                    polygon.Properties["name"],
-                    polygon.Id,
-                    polygon.Properties["type"] == "country" ? RegionType.Country : RegionType.Ocean,
-                    polygon.Geometry);
-            }
-        }
+        return result;
     }
 }
