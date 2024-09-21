@@ -1,4 +1,5 @@
 @using System.Text
+@using Inc.TeamAssistant.Primitives
 @using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks
 
 @inject IReviewService ReviewService
@@ -149,12 +150,7 @@
         return builder.ToString();
     }
 
-    private string ConvertToString(TimeSpan value)
-    { 
-        const string timeFormat = @"d\.hh\:mm";
-
-        return value.ToString(timeFormat);
-    }
+    private string ConvertToString(TimeSpan value) => value.ToString(GlobalSettings.TimeFormat);
 
     private string CorrectionTitle(TaskForReviewDto task)
     {

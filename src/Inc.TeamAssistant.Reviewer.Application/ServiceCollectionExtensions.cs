@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton<DraftTaskForReviewService>()
+            .AddScoped<ReviewStatsBuilder>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
             .AddHostedService<PushService>()
