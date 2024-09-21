@@ -92,12 +92,17 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     public void MoveToAccept() => State = TaskForReviewState.Accept;
 
-    public void Decline(DateTimeOffset now)
+    public void Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
+        ArgumentNullException.ThrowIfNull(notificationIntervals);
+        
         AddReviewInterval(ReviewerId, now);
         
         State = TaskForReviewState.OnCorrection;
         NextNotification = now;
+
+        if (ReviewIntervals.All(i => i.State != TaskForReviewState.OnCorrection))
+            SetNextNotificationTime(now, notificationIntervals);
     }
 
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
