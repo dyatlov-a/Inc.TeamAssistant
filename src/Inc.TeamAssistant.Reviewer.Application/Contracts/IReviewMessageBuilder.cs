@@ -9,12 +9,12 @@ public interface IReviewMessageBuilder
 {
     Task<IReadOnlyCollection<NotificationMessage>> Build(
         int messageId,
-        TaskForReview taskForReview,
+        TaskForReview task,
         Person reviewer,
         Person owner,
         CancellationToken token);
 
-    Task<NotificationMessage?> Push(TaskForReview taskForReview, CancellationToken token);
+    Task<NotificationMessage?> Push(TaskForReview task, CancellationToken token);
 
     Task<NotificationMessage> Build(DraftTaskForReview draft, LanguageId languageId, CancellationToken token);
 }
