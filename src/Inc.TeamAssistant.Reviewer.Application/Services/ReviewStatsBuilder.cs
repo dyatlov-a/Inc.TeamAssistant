@@ -8,9 +8,6 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewStatsBuilder
 {
-    private const string TrendUp = "👍";
-    private const string TrendDown = "👎";
-    
     private readonly IMessageBuilder _messageBuilder;
 
     public ReviewStatsBuilder(IMessageBuilder messageBuilder)
@@ -45,7 +42,9 @@ internal sealed class ReviewStatsBuilder
         {
             if (hasReviewMetrics)
             {
-                var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch ? TrendUp : TrendDown;
+                var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch
+                    ? Icons.TrendUp
+                    : Icons.TrendDown;
                 var firstTouchMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsFirstTouch,
                     languageId,
@@ -53,7 +52,9 @@ internal sealed class ReviewStatsBuilder
                     metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat));
                 builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
                 
-                var reviewTrend = metricsByTask.Review <= metricsByTeam.Review ? TrendUp : TrendDown;
+                var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
+                    ? Icons.TrendUp
+                    : Icons.TrendDown;
                 var reviewMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsReview,
                     languageId,
@@ -64,7 +65,9 @@ internal sealed class ReviewStatsBuilder
 
             if (hasCorrectionMetrics && attempts.HasValue)
             {
-                var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction ? TrendUp : TrendDown;
+                var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction
+                    ? Icons.TrendUp
+                    : Icons.TrendDown;
                 var correctionMessage = await _messageBuilder.Build(
                     Messages.Reviewer_StatsCorrection,
                     languageId,

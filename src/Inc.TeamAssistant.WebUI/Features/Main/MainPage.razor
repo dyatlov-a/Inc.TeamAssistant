@@ -2,6 +2,8 @@
 @page "/en"
 @page "/ru"
 
+@using Inc.TeamAssistant.Primitives
+
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
 @inject LinkBuilder LinkBuilder
@@ -19,13 +21,13 @@
         </h1>
         <br/>
         <p class="about-bots__description">
-            <span class="about-bots__item">👌 @Resources[Messages.GUI_ToolAppraiser]</span>
+            <span class="about-bots__item">@Icons.Ok @Resources[Messages.GUI_ToolAppraiser]</span>
             <br/>
-            <span class="about-bots__item">🤝 @Resources[Messages.GUI_ToolReviewer]</span>
+            <span class="about-bots__item">@Icons.Accept @Resources[Messages.GUI_ToolReviewer]</span>
             <br/>
-            <span class="about-bots__item">💬 @Resources[Messages.GUI_ToolRandomCoffee]</span>
+            <span class="about-bots__item">@Icons.Comment @Resources[Messages.GUI_ToolRandomCoffee]</span>
             <br/>
-            <span class="about-bots__item">⭐ @Resources[Messages.GUI_ToolCheckIn]</span>
+            <span class="about-bots__item">@Icons.Start @Resources[Messages.GUI_ToolCheckIn]</span>
         </p>
         <div class="about-bots__actions">
             <a

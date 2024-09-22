@@ -129,7 +129,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             if (!await _service.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
             {
                 messageBuilder.AppendLine();
-                messageBuilder.Append('❗');
+                messageBuilder.Append(Icons.Alert);
                 messageBuilder.Append(await _messageBuilder.Build(
                     Messages.Reviewer_PreviewCheckTeammate,
                     languageId,
@@ -144,7 +144,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         if (!_service.HasDescriptionAndLinks(draft.Description))
         {
             messageBuilder.AppendLine();
-            messageBuilder.Append('❗');
+            messageBuilder.Append(Icons.Alert);
             messageBuilder.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
             messageBuilder.AppendLine();
         }
@@ -194,33 +194,30 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     }
     
     private async Task<NotificationMessage> MessageForTeam(
-        TaskForReview taskForReview,
+        TaskForReview task,
         Person reviewer,
         Person owner,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(taskForReview);
+        ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(reviewer);
         ArgumentNullException.ThrowIfNull(owner);
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
 
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
-        var languageId = await _teamAccessor.GetClientLanguage(taskForReview.BotId, owner.Id, token);
-        var state = taskForReview.State switch
+        var languageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
+        var state = task.State switch
         {
-            TaskForReviewState.New => "⏳",
-            TaskForReviewState.InProgress => "🤩",
-            TaskForReviewState.OnCorrection => "😱",
-            TaskForReviewState.Accept => "🤝",
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(TaskForReviewState),
-                taskForReview.State,
-                "State out of range.")
+            TaskForReviewState.New => Icons.Waiting,
+            TaskForReviewState.InProgress => Icons.InProgress,
+            TaskForReviewState.OnCorrection => Icons.OnCorrection,
+            TaskForReviewState.Accept => Icons.Accept,
+            _ => throw new ArgumentOutOfRangeException(nameof(TaskForReviewState), task.State, "State out of range.")
         };
-        var reviewerTargetMessageKey = taskForReview.HasConcreteReviewer
+        var reviewerTargetMessageKey = task.HasConcreteReviewer
             ? Messages.Reviewer_TargetManually
             : Messages.Reviewer_TargetAutomatically;
         
@@ -233,11 +230,11 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         messageBuilder.AppendLine();
         
         messageBuilder.AppendLine();
-        messageBuilder.AppendLine(taskForReview.Description);
+        messageBuilder.AppendLine(task.Description);
         messageBuilder.AppendLine(state);
         
         var stats = await _reviewStatsBuilder.Build(
-            taskForReview,
+            task,
             metricsByTeam,
             metricsByTask,
             languageId,
@@ -246,13 +243,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         messageBuilder.Append(stats);
         
         var message = messageBuilder.ToString();
-        var notification = taskForReview.MessageId.HasValue
-            ? NotificationMessage.Edit(new ChatMessage(taskForReview.ChatId, taskForReview.MessageId.Value), message)
+        var notification = task.MessageId.HasValue
+            ? NotificationMessage.Edit(new ChatMessage(task.ChatId, task.MessageId.Value), message)
             : NotificationMessage
-                .Create(taskForReview.ChatId, message)
+                .Create(task.ChatId, message)
                 .AddHandler((c, p) => new AttachMessageCommand(
                     c,
-                    taskForReview.Id,
+                    task.Id,
                     int.Parse(p),
                     MessageType.Shared.ToString()));
 
