@@ -68,10 +68,7 @@ internal sealed class ContextCommandConverter
         {
             ContextScope.Chats => BotCommandScope.AllGroupChats(),
             ContextScope.Private => BotCommandScope.Default(),
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(contextScope),
-                contextScope,
-                "ContextScope value was out of range.")
+            _ => throw new ArgumentOutOfRangeException(nameof(contextScope), contextScope, "State out of range.")
         };
     }
 }

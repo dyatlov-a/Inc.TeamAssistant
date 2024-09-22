@@ -9,94 +9,133 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 internal sealed class ReviewStatsBuilder
 {
     private readonly IMessageBuilder _messageBuilder;
+    private readonly StringBuilder _builder;
+    
+    private bool _hasReviewMetrics;
+    private bool _hasCorrectionMetrics;
 
-    public ReviewStatsBuilder(IMessageBuilder messageBuilder)
+    private ReviewStatsBuilder(IMessageBuilder messageBuilder, StringBuilder builder)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _builder = builder ?? throw new ArgumentNullException(nameof(builder));
     }
 
-    public async Task<StringBuilder> Build(
-        TaskForReview taskForReview,
+    public static ReviewStatsBuilder Create(IMessageBuilder messageBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(messageBuilder);
+        
+        return new ReviewStatsBuilder(messageBuilder, new StringBuilder());
+    }
+    
+    public ReviewStatsBuilder WithReviewMetrics()
+    {
+        _hasReviewMetrics = true;
+        
+        return this;
+    }
+    
+    public ReviewStatsBuilder WithCorrectionMetrics()
+    {
+        _hasCorrectionMetrics = true;
+        
+        return this;
+    }
+
+    public async Task<string> Build(
+        TaskForReview task,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
-        LanguageId languageId,
-        bool hasReviewMetrics,
-        bool hasCorrectionMetrics)
+        LanguageId languageId)
     {
-        ArgumentNullException.ThrowIfNull(taskForReview);
+        ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
         ArgumentNullException.ThrowIfNull(languageId);
 
-        var builder = new StringBuilder();
-
-        builder.AppendLine();
-        var attempts = taskForReview.GetAttempts();
+        _builder.AppendLine();
+        var attempts = task.GetAttempts();
         if (attempts.HasValue)
-            builder.AppendLine(await _messageBuilder.Build(
+            _builder.AppendLine(await _messageBuilder.Build(
                 Messages.Reviewer_StatsAttempts,
                 languageId,
                 attempts.Value));
         
-        if (taskForReview.State == TaskForReviewState.Accept)
-        {
-            if (hasReviewMetrics)
-            {
-                var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch
-                    ? Icons.TrendUp
-                    : Icons.TrendDown;
-                var firstTouchMessage = await _messageBuilder.Build(
-                    Messages.Reviewer_StatsFirstTouch,
-                    languageId,
-                    metricsByTask.FirstTouch.ToString(GlobalSettings.TimeFormat),
-                    metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat));
-                builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
-                
-                var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
-                    ? Icons.TrendUp
-                    : Icons.TrendDown;
-                var reviewMessage = await _messageBuilder.Build(
-                    Messages.Reviewer_StatsReview,
-                    languageId,
-                    metricsByTask.Review.ToString(GlobalSettings.TimeFormat),
-                    metricsByTeam.Review.ToString(GlobalSettings.TimeFormat));
-                builder.AppendLine($"{reviewMessage} {reviewTrend}");
-            }
-
-            if (hasCorrectionMetrics && attempts.HasValue)
-            {
-                var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction
-                    ? Icons.TrendUp
-                    : Icons.TrendDown;
-                var correctionMessage = await _messageBuilder.Build(
-                    Messages.Reviewer_StatsCorrection,
-                    languageId,
-                    metricsByTask.Correction.ToString(GlobalSettings.TimeFormat),
-                    metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat));
-                builder.AppendLine($"{correctionMessage} {correctionTrend}");
-            }
-        }
+        if (task.State == TaskForReviewState.Accept)
+            await ByAccept(metricsByTeam, metricsByTask, languageId, attempts);
         else
+            await ByInProgress(metricsByTeam, languageId, attempts);
+
+        return _builder.ToString();
+    }
+
+    private async Task ByInProgress(ReviewTeamMetrics metricsByTeam, LanguageId languageId, int? attempts)
+    {
+        ArgumentNullException.ThrowIfNull(metricsByTeam);
+        ArgumentNullException.ThrowIfNull(languageId);
+        
+        if (_hasReviewMetrics)
         {
-            if (hasReviewMetrics)
-            {
-                builder.AppendLine(await _messageBuilder.Build(
-                    Messages.Reviewer_StatsFirstTouchAverage,
-                    languageId,
-                    metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat)));
-                builder.AppendLine(await _messageBuilder.Build(
-                    Messages.Reviewer_StatsReviewAverage,
-                    languageId,
-                    metricsByTeam.Review.ToString(GlobalSettings.TimeFormat)));
-            }
-            
-            if (hasCorrectionMetrics && attempts.HasValue)
-                builder.AppendLine(await _messageBuilder.Build(
-                    Messages.Reviewer_StatsCorrectionAverage,
-                    languageId,
-                    metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat)));
+            _builder.AppendLine(await _messageBuilder.Build(
+                Messages.Reviewer_StatsFirstTouchAverage,
+                languageId,
+                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat)));
+            _builder.AppendLine(await _messageBuilder.Build(
+                Messages.Reviewer_StatsReviewAverage,
+                languageId,
+                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat)));
         }
 
-        return builder;
+        if (_hasCorrectionMetrics && attempts.HasValue)
+            _builder.AppendLine(await _messageBuilder.Build(
+                Messages.Reviewer_StatsCorrectionAverage,
+                languageId,
+                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat)));
+    }
+
+    private async Task ByAccept(
+        ReviewTeamMetrics metricsByTeam,
+        ReviewTeamMetrics metricsByTask,
+        LanguageId languageId,
+        int? attempts)
+    {
+        ArgumentNullException.ThrowIfNull(metricsByTeam);
+        ArgumentNullException.ThrowIfNull(metricsByTask);
+        ArgumentNullException.ThrowIfNull(languageId);
+        
+        if (_hasReviewMetrics)
+        {
+            var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch
+                ? Icons.TrendUp
+                : Icons.TrendDown;
+            var firstTouchMessage = await _messageBuilder.Build(
+                Messages.Reviewer_StatsFirstTouch,
+                languageId,
+                metricsByTask.FirstTouch.ToString(GlobalSettings.TimeFormat),
+                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat));
+            _builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
+                
+            var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
+                ? Icons.TrendUp
+                : Icons.TrendDown;
+            var reviewMessage = await _messageBuilder.Build(
+                Messages.Reviewer_StatsReview,
+                languageId,
+                metricsByTask.Review.ToString(GlobalSettings.TimeFormat),
+                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat));
+            _builder.AppendLine($"{reviewMessage} {reviewTrend}");
+        }
+
+        if (_hasCorrectionMetrics && attempts.HasValue)
+        {
+            var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction
+                ? Icons.TrendUp
+                : Icons.TrendDown;
+            var correctionMessage = await _messageBuilder.Build(
+                Messages.Reviewer_StatsCorrection,
+                languageId,
+                metricsByTask.Correction.ToString(GlobalSettings.TimeFormat),
+                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat));
+            _builder.AppendLine($"{correctionMessage} {correctionTrend}");
+        }
     }
 }

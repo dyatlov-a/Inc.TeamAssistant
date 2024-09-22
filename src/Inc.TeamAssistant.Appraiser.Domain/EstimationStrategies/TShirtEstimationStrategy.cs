@@ -30,10 +30,7 @@ internal sealed class TShirtEstimationStrategy : IEstimationStrategy
         if (Estimations.TryGetValue(value, out var estimation))
             return estimation;
         
-        throw new ArgumentOutOfRangeException(
-            nameof(value),
-            value,
-            $"Value is not valid for {nameof(TShirtEstimationStrategy)}.");
+        throw new ArgumentOutOfRangeException(nameof(value), value, "State out of range.");
     }
     
     public int GetWeight(Story story)

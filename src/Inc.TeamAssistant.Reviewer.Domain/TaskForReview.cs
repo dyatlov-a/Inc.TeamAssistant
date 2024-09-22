@@ -65,10 +65,7 @@ public sealed class TaskForReview : ITaskForReviewStats
                 OwnerMessageId = messageId;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(messageType),
-                    messageType,
-                    "MessageType was not supported.");
+                throw new ArgumentOutOfRangeException(nameof(messageType), messageType, "State out of range.");
         }
     }
 
