@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<FeaturesFactory>()
             .AddScoped<DateSelectorFactory>()
             .AddScoped<RequestProcessor>()
-            .AddSingleton<LinkBuilder>()
+            .AddScoped<TeamAssistantRouter>()
             .AddScoped(typeof(DragAndDropService<>));
 
         return services;

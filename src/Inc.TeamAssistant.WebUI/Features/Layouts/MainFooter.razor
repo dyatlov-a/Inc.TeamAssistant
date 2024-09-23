@@ -1,6 +1,6 @@
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject TeamAssistantRouter TeamAssistantRouter
 
 <div class="footer">
     <div class="footer__container">
@@ -37,15 +37,15 @@
         {
             (Messages.Footer_GroupNavigation, new FooterLink(
                 Resources[Messages.Footer_LinkMain],
-                LinkBuilder.Build(null),
+                TeamAssistantRouter.CreateRoute(null),
                 !external)),
             (Messages.Footer_GroupNavigation, new FooterLink(
                 Resources[Messages.Footer_LinkConstructor],
-                LinkBuilder.Build("constructor"),
+                TeamAssistantRouter.CreateRoute("constructor"),
                 !external)),
             (Messages.Footer_GroupNavigation, new FooterLink(
                 Resources[Messages.Footer_LinkDashboard],
-                LinkBuilder.Build("dashboard"),
+                TeamAssistantRouter.CreateRoute("dashboard"),
                 !external)),
             (Messages.Footer_GroupTech, new FooterLink(
                 "DotNet",

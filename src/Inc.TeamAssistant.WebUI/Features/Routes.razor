@@ -4,9 +4,9 @@
 @implements IAsyncDisposable
 
 @inject IRenderContext RenderContext
-@inject NavigationManager NavigationManager
 @inject ResourcesManager ResourcesManager
 @inject IServiceProvider ServiceProvider
+@inject TeamAssistantRouter TeamAssistantRouter
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
@@ -35,22 +35,24 @@
     
     protected override async Task OnInitializedAsync()
     {
+        SetCurrentLanguage();
+        await ResourcesManager.Initialize();
+        TeamAssistantRouter.OnRouteChanged(SetCurrentLanguage);
+        
         _eventsProvider = ServiceProvider.GetService<EventsProvider>();
         if (_eventsProvider is not null)
             await _eventsProvider.Start();
-        
-        NavigationManager.LocationChanged += OnLocationChanged;
     }
 
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void SetCurrentLanguage()
     {
-        await ValidatorOptions.Global.SetCulture(ServiceProvider);
+        var languageContext = RenderContext.GetLanguageContext();
+        
+        ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
     }
 
     public async ValueTask DisposeAsync()
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-        
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
     }

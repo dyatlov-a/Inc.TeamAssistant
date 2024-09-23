@@ -5,4 +5,6 @@ public interface IJsFunction<TResult>
     string Identifier { get; }
     
     object?[]? Args { get; }
+    
+    Action? PostAction { get; }
 }

@@ -1,9 +1,6 @@
-@implements IDisposable
-
 @inject IRenderContext RenderContext
-@inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject TeamAssistantRouter TeamAssistantRouter
 
 <div class="navbar">
     <div class="navbar-container">
@@ -27,9 +24,11 @@
                 <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
-                @if (!_currentUrl.Contains("/login"))
+                @if (!CurrentUrl.Contains("/login"))
                 {
-                    <a href="@LinkBuilder.Build($"login?returnUrl={_currentUrl}")" class="link link_light navbar__item">
+                    <a
+                        href="@TeamAssistantRouter.CreateRoute($"login?returnUrl={CurrentUrl}")"
+                        class="link link_light navbar__item">
                         @Resources[Messages.Navigation_Login]
                     </a>
                 }
@@ -39,32 +38,13 @@
 </div>
 
 @code {
-    private string _currentUrl = string.Empty;
+    private string CurrentUrl => TeamAssistantRouter.CurrentRelativeUrl;
     
-    private string MainUrl => LinkBuilder.Build(null);
-    private string LogoutUrl => $"accounts/logout?returnUrl={_currentUrl}";
+    private string MainUrl => TeamAssistantRouter.CreateRoute(null);
+    private string LogoutUrl => $"accounts/logout?returnUrl={CurrentUrl}";
 
     protected override void OnInitialized()
     {
-        SetPath();
-        
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void SetPath()
-    {
-        _currentUrl = NavigationManager.Uri;
-    }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        SetPath();
-        
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        TeamAssistantRouter.OnRouteChanged(StateHasChanged);
     }
 }

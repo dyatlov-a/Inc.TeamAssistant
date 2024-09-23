@@ -1,31 +1,21 @@
-using System.Globalization;
 using FluentValidation;
-using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
 public static class ValidatorConfigurationExtensions
 {
-    public static async Task<CultureInfo> SetCulture(
+    public static ValidatorConfiguration Configure(
         this ValidatorConfiguration validatorConfiguration,
-        IServiceProvider serviceProvider)
+        LanguageId languageId)
     {
         ArgumentNullException.ThrowIfNull(validatorConfiguration);
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-
-        var renderContext = serviceProvider.GetRequiredService<IRenderContext>();
-        var resourcesManager = serviceProvider.GetRequiredService<ResourcesManager>();
+        ArgumentNullException.ThrowIfNull(languageId);
         
-        var languageContext = renderContext.GetLanguageContext();
-        var culture = new CultureInfo(languageContext.CurrentLanguage.Value);
-        
-        validatorConfiguration.LanguageManager.Culture = culture;
+        validatorConfiguration.LanguageManager.Culture = new(languageId.Value);
         validatorConfiguration.DefaultClassLevelCascadeMode = CascadeMode.Continue;
         validatorConfiguration.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
-        await resourcesManager.Initialize();
-
-        return culture;
+        return validatorConfiguration;
     }
 }

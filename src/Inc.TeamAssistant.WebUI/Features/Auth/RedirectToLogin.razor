@@ -1,10 +1,10 @@
-@inject NavigationManager NavigationManager
+@inject TeamAssistantRouter TeamAssistantRouter
 
 @code {
-    private string CurrentUrl => NavigationManager.Uri;
+    private string CurrentUrl => TeamAssistantRouter.CurrentRelativeUrl;
     
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo($"/login?returnUrl={CurrentUrl}");
+        TeamAssistantRouter.NavigateTo($"/login?returnUrl={CurrentUrl}");
     }
 }

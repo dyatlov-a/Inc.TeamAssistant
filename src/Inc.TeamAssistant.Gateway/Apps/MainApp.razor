@@ -1,13 +1,11 @@
-@using FluentValidation
 @using Inc.TeamAssistant.Gateway.Configs
 @using Inc.TeamAssistant.Primitives.Languages
 @using Inc.TeamAssistant.WebUI.Contracts
 @using Microsoft.AspNetCore.Components.Web
 @using Inc.TeamAssistant.WebUI.Features
-@using Inc.TeamAssistant.WebUI.Services
 
 @inject AnalyticsOptions AnalyticsOptions
-@inject IServiceProvider ServiceProvider
+@inject IRenderContext RenderContext
 
 <!DOCTYPE html>
 <html lang="@_lang">
@@ -81,10 +79,10 @@
     private readonly string _appVersion = ApplicationContext.GetVersion();
     private string _lang = LanguageSettings.DefaultLanguageId.Value;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var culture = await ValidatorOptions.Global.SetCulture(ServiceProvider);
+        var languageContext = RenderContext.GetLanguageContext();
         
-        _lang = culture.Name;
+        _lang = languageContext.CurrentLanguage.Value;
     }
 }

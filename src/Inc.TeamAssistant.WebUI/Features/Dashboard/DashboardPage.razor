@@ -16,6 +16,7 @@
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
+@inject TeamAssistantRouter TeamAssistantRouter
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Dashboard"
@@ -128,6 +129,6 @@
         _botId = botContext.BotId;
         _teamId = botContext.TeamId;
 
-        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+        await JsRuntime.Execute(TeamAssistantRouter.ChangeUrl(url));
     }
 }

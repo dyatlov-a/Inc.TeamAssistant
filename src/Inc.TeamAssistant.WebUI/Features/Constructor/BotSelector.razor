@@ -1,10 +1,9 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
 
 @inject IBotService BotService
-@inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
-@inject LinkBuilder LinkBuilder
+@inject TeamAssistantRouter TeamAssistantRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
@@ -83,7 +82,7 @@
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavigationManager.NavigateTo(LinkBuilder.Build(link));
+        TeamAssistantRouter.NavigateToRoute(link);
     }
 
     private void MoveToRemove(BotDto bot)
@@ -98,8 +97,8 @@
         var teamId = bot.Teams.FirstOrDefault()?.Id;
         
         return teamId.HasValue
-            ? LinkBuilder.Build($"dashboard/{bot.Id:N}/{teamId.Value:N}")
-            : LinkBuilder.Build($"dashboard/{bot.Id:N}");
+            ? TeamAssistantRouter.CreateRoute($"dashboard/{bot.Id:N}/{teamId.Value:N}")
+            : TeamAssistantRouter.CreateRoute($"dashboard/{bot.Id:N}");
     }
 
     private async Task Remove()
