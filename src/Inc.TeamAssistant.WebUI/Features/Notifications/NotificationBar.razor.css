@@ -1,6 +1,6 @@
 .notification-bar {
     position: fixed;
-    top: 80px;
+    top: 70px;
     right: 0;
     width: 315px;
     z-index: 9999;
@@ -13,6 +13,7 @@
     color: #000;
     overflow: hidden;
     border-radius: 10px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, .5);
 }
 .notification-bar__item_info {
     background-color: #2A9D8F;
