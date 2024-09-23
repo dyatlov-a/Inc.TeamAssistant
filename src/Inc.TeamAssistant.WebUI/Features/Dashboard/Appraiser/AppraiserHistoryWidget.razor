@@ -2,7 +2,7 @@
 
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -90,9 +90,9 @@
             });
     }
 
-    private string GetAssessmentSessionUrl() => TeamAssistantRouter.CreateRoute($"assessment-session/{TeamId:N}");
+    private string GetAssessmentSessionUrl() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
     
-    private string MoveToItem(DateOnly date) => TeamAssistantRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
+    private string MoveToItem(DateOnly date) => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 
     private async Task Changed(DateOnly date)
     {

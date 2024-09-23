@@ -1,6 +1,8 @@
 @using Inc.TeamAssistant.Primitives.Languages
 
-@inject TeamAssistantRouter TeamAssistantRouter
+@implements IDisposable
+
+@inject NavRouter NavRouter
 
 @foreach (var language in _languages)
 {
@@ -15,17 +17,18 @@
 
 @code {
     private IReadOnlyCollection<(string Culture, string Path)> _languages = Array.Empty<(string, string)>();
+    private IDisposable? _routerScope;
     
     protected override void OnParametersSet()
     {
         SetLanguages();
 
-        TeamAssistantRouter.OnRouteChanged(SetLanguages);
+        _routerScope = NavRouter.OnRouteChanged(SetLanguages);
     }
     
     private void SetLanguages()
     {
-        var routeWithoutLanguage = TeamAssistantRouter.GetRouteWithoutLanguage();
+        var routeWithoutLanguage = NavRouter.GetRouteWithoutLanguage();
 
         _languages = LanguageSettings.LanguageIds
             .Select(l => (l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
@@ -34,5 +37,7 @@
         StateHasChanged();
     }
 
-    private void MoveTo(string path) => TeamAssistantRouter.NavigateTo(path, forceLoad: true);
+    private void MoveTo(string path) => NavRouter.NavigateTo(path, forceLoad: true);
+    
+    public void Dispose() => _routerScope?.Dispose();
 }

@@ -15,7 +15,7 @@
 @inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
 
@@ -117,7 +117,7 @@
             _currentState = stage.Value;
             StateHasChanged();
             
-            await JsRuntime.Execute(TeamAssistantRouter.ChangeUrl(url));
+            await JsRuntime.Execute(NavRouter.ChangeUrl(url));
             return;
         }
         
@@ -125,7 +125,7 @@
         
         notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
         
-        TeamAssistantRouter.NavigateToRoute("constructor");
+        NavRouter.NavigateToRoute("constructor");
     }
 
     private string LinkFactory(Stage stage)
@@ -134,6 +134,6 @@
             ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
             : $"constructor/{stage}";
 
-        return TeamAssistantRouter.CreateRoute(link.ToLowerInvariant());
+        return NavRouter.CreateRoute(link.ToLowerInvariant());
     }
 }

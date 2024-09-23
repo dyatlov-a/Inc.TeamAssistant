@@ -6,7 +6,7 @@
 @inject IRenderContext RenderContext
 @inject ResourcesManager ResourcesManager
 @inject IServiceProvider ServiceProvider
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
@@ -32,12 +32,15 @@
 
 @code {
     private EventsProvider? _eventsProvider;
+    private IDisposable? _routerScope;
     
     protected override async Task OnInitializedAsync()
     {
         SetCurrentLanguage();
+        
         await ResourcesManager.Initialize();
-        TeamAssistantRouter.OnRouteChanged(SetCurrentLanguage);
+        
+        _routerScope = NavRouter.OnRouteChanged(SetCurrentLanguage);
         
         _eventsProvider = ServiceProvider.GetService<EventsProvider>();
         if (_eventsProvider is not null)
@@ -55,5 +58,7 @@
     {
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
+        
+        _routerScope?.Dispose();
     }
 }

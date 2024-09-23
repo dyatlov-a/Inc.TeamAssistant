@@ -1,6 +1,6 @@
 @inject ICheckInService CheckInService
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 <DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
@@ -20,7 +20,7 @@
                     </div>
                     @if (_formModel.MapId.HasValue)
                     {
-                        var mapUrl = TeamAssistantRouter.CreateRoute($"map/{_formModel.MapId.Value:N}");
+                        var mapUrl = NavRouter.CreateRoute($"map/{_formModel.MapId.Value:N}");
 
                         <div class="checkin-map">
                             <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>

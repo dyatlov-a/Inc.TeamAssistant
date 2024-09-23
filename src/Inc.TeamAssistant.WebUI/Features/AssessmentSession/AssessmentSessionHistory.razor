@@ -1,6 +1,6 @@
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 @if (_items.Any())
@@ -29,7 +29,7 @@
         if (historyItem is null)
             throw new ArgumentNullException(nameof(historyItem));
 
-        return TeamAssistantRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+        return NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
     }
 
     protected override Task OnParametersSetAsync() => Load();

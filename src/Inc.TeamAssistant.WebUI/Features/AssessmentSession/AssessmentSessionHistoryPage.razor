@@ -7,7 +7,7 @@
 
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
 
@@ -72,8 +72,8 @@
         
         _breadcrumbs =
         [
-            new(Resources[Messages.GUI_AssessmentSession], TeamAssistantRouter.CreateRoute($"assessment-session/{TeamId:N}")),
-            new(Date, TeamAssistantRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}"))
+            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{TeamId:N}")),
+            new(Date, NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}"))
         ];
 
         await Load();
@@ -81,11 +81,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var url = TeamAssistantRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant());
+        var url = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant());
         
         _currentView = assessmentType;
         
-        await JsRuntime.Execute(TeamAssistantRouter.ChangeUrl(url));
+        await JsRuntime.Execute(NavRouter.ChangeUrl(url));
     }
 
     private async Task Load()

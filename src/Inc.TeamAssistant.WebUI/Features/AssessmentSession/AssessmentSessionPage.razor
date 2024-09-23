@@ -10,7 +10,7 @@
 @inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject IJSRuntime JsRuntime
 
@@ -99,8 +99,8 @@
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         _breadcrumbs =
         [
-            new(Resources[Messages.GUI_AssessmentSession], TeamAssistantRouter.CreateRoute($"assessment-session/{Id:N}")),
-            new(date, TeamAssistantRouter.CreateRoute($"assessment-history/{Id:N}/{date}"))
+            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{Id:N}")),
+            new(date, NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}"))
         ];
         
         await Load();
@@ -146,11 +146,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var url = TeamAssistantRouter.CreateRoute($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
+        var url = NavRouter.CreateRoute($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
         
         _currentView = assessmentType;
         
-        await JsRuntime.Execute(TeamAssistantRouter.ChangeUrl(url));
+        await JsRuntime.Execute(NavRouter.ChangeUrl(url));
     }
     
     public async ValueTask DisposeAsync()

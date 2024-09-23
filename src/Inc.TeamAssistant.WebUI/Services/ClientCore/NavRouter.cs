@@ -5,25 +5,25 @@ using Microsoft.AspNetCore.Components.Routing;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-public sealed class TeamAssistantRouter : IDisposable
+public sealed class NavRouter : IDisposable
 {
     private readonly IRenderContext _renderContext;
     private readonly NavigationManager _navigationManager;
-    private Action _onRouteChanged = () => {};
+    private Action? _onRouteChanged;
 
-    public string CurrentRelativeUrl { get; private set; }
+    public string CurrentUrl { get; private set; }
 
-    public TeamAssistantRouter(IRenderContext renderContext, NavigationManager navigationManager)
+    public NavRouter(IRenderContext renderContext, NavigationManager navigationManager)
     {
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
         _navigationManager.LocationChanged += OnLocationChanged;
-        CurrentRelativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+        CurrentUrl = _navigationManager.Uri;
     }
     
     public string GetRouteWithoutLanguage()
     {
-        var routeWithoutLanguage = CurrentRelativeUrl;
+        var routeWithoutLanguage = _navigationManager.ToBaseRelativePath(CurrentUrl);
         
         foreach (var languageId in LanguageSettings.LanguageIds)
             routeWithoutLanguage = routeWithoutLanguage.Replace($"{languageId.Value}/", string.Empty);
@@ -55,25 +55,29 @@ public sealed class TeamAssistantRouter : IDisposable
         _navigationManager.NavigateTo(CreateRoute(uri), forceLoad, replace);
     }
     
-    public void OnRouteChanged(Action onRouteChanged)
+    public IDisposable OnRouteChanged(Action onRouteChanged)
     {
         _onRouteChanged += onRouteChanged;
+
+        return new RouterScope(() => _onRouteChanged -= onRouteChanged);
     }
     
     public void ChangeRoute(string uri)
     {
         ArgumentNullException.ThrowIfNull(uri);
 
-        CurrentRelativeUrl = uri;
-        _onRouteChanged();
+        ChangeRouteCore(_navigationManager.ToAbsoluteUri(uri).ToString());
+    }
+    
+    private void ChangeRouteCore(string uri)
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+
+        CurrentUrl = uri;
+        _onRouteChanged?.Invoke();
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        var relativeUrl = _navigationManager.ToBaseRelativePath(e.Location);
-        
-        ChangeRoute(relativeUrl);
-    }
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => ChangeRouteCore(e.Location);
 
     public void Dispose()
     {

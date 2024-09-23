@@ -3,7 +3,7 @@
 @inject IBotService BotService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
@@ -82,7 +82,7 @@
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        TeamAssistantRouter.NavigateToRoute(link);
+        NavRouter.NavigateToRoute(link);
     }
 
     private void MoveToRemove(BotDto bot)
@@ -97,8 +97,8 @@
         var teamId = bot.Teams.FirstOrDefault()?.Id;
         
         return teamId.HasValue
-            ? TeamAssistantRouter.CreateRoute($"dashboard/{bot.Id:N}/{teamId.Value:N}")
-            : TeamAssistantRouter.CreateRoute($"dashboard/{bot.Id:N}");
+            ? NavRouter.CreateRoute($"dashboard/{bot.Id:N}/{teamId.Value:N}")
+            : NavRouter.CreateRoute($"dashboard/{bot.Id:N}");
     }
 
     private async Task Remove()

@@ -1,6 +1,8 @@
+@implements IDisposable
+
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
-@inject TeamAssistantRouter TeamAssistantRouter
+@inject NavRouter NavRouter
 
 <div class="navbar">
     <div class="navbar-container">
@@ -27,7 +29,7 @@
                 @if (!CurrentUrl.Contains("/login"))
                 {
                     <a
-                        href="@TeamAssistantRouter.CreateRoute($"login?returnUrl={CurrentUrl}")"
+                        href="@NavRouter.CreateRoute($"login?returnUrl={CurrentUrl}")"
                         class="link link_light navbar__item">
                         @Resources[Messages.Navigation_Login]
                     </a>
@@ -38,13 +40,17 @@
 </div>
 
 @code {
-    private string CurrentUrl => TeamAssistantRouter.CurrentRelativeUrl;
+    private IDisposable? _routerScope;
     
-    private string MainUrl => TeamAssistantRouter.CreateRoute(null);
+    private string CurrentUrl => NavRouter.CurrentUrl;
+    
+    private string MainUrl => NavRouter.CreateRoute(null);
     private string LogoutUrl => $"accounts/logout?returnUrl={CurrentUrl}";
 
     protected override void OnInitialized()
     {
-        TeamAssistantRouter.OnRouteChanged(StateHasChanged);
+        _routerScope = NavRouter.OnRouteChanged(StateHasChanged);
     }
+
+    public void Dispose() => _routerScope?.Dispose();
 }
