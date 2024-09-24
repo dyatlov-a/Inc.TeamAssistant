@@ -1,11 +1,7 @@
-.component-container {
-    height: calc(100% - 136px);
-}
 .component-actions {
     display: flex;
     justify-content: right;
-    margin-top: 20px;
-    padding: 0 10px;
+    margin: 10px;
 }
 ::deep .no-data {
     height: 100%;

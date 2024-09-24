@@ -4,8 +4,7 @@
     justify-content: right;
 }
 .widget-settings__body {
-    margin: 20px;
-    height: calc(100% - 90px);
+    margin: 10px;
 }
 .widget-settings__item {
     background-color: #555;
@@ -24,19 +23,13 @@
 .widget-settings__actions {
     display: flex;
     justify-content: right;
-    padding: 0 10px;
-}
-.widget-settings {
-    height: calc(100% - 20px);
+    margin: 0 10px 10px 10px;
 }
 .widget-settings__drag {
     display: flex;
 }
 .widget-settings__button, .widget-settings__label, .widget-settings__drag, ::deep .widget-settings__checkbox {
     margin-right: 10px;
-}
-::deep form {
-    height: 100%;
 }
 @media (max-width: 767.98px) {
     .dashboard-settings {

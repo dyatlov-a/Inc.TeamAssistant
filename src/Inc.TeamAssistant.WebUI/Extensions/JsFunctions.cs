@@ -23,7 +23,7 @@ public static class JsFunctions
     private sealed record JsFunction<TResult> : IJsFunction<TResult>
     {
         public string Identifier { get; }
-        public Action? PostAction { get; }
+        public Action? OnExecuted { get; }
         public object?[]? Args { get; }
 
         internal JsFunction(string identifier, Action? postAction, params object?[]? args)
@@ -31,7 +31,7 @@ public static class JsFunctions
             ArgumentException.ThrowIfNullOrWhiteSpace(identifier);
         
             Identifier = identifier;
-            PostAction = postAction;
+            OnExecuted = postAction;
             Args = args;
         }
     }

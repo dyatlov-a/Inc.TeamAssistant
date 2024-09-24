@@ -6,5 +6,5 @@ public interface IJsFunction<TResult>
     
     object?[]? Args { get; }
     
-    Action? PostAction { get; }
+    Action? OnExecuted { get; }
 }

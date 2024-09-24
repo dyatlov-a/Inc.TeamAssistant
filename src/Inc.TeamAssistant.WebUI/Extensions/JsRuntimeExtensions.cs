@@ -11,7 +11,7 @@ public static class JsRuntimeExtensions
         
         var result = await jsRuntime.InvokeAsync<TValue>(jsFunction.Identifier, jsFunction.Args);
         
-        jsFunction.PostAction?.Invoke();
+        jsFunction.OnExecuted?.Invoke();
         
         return result;
     }
@@ -23,6 +23,6 @@ public static class JsRuntimeExtensions
         
         await jsRuntime.InvokeVoidAsync(jsFunction.Identifier, jsFunction.Args);
         
-        jsFunction.PostAction?.Invoke();
+        jsFunction.OnExecuted?.Invoke();
     }
 }
