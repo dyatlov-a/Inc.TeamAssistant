@@ -12,7 +12,6 @@
 @inject ResourcesManager Resources
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
-@inject IJSRuntime JsRuntime
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
@@ -146,11 +145,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var url = NavRouter.CreateRoute($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
+        var route = NavRouter.CreateRoute($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
         
         _currentView = assessmentType;
-        
-        await JsRuntime.Execute(NavRouter.ChangeUrl(url));
+
+        await NavRouter.ChangeCurrentRoute(route);
     }
     
     public async ValueTask DisposeAsync()

@@ -17,7 +17,6 @@
 @inject ResourcesManager Resources
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
-@inject IJSRuntime JsRuntime
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
@@ -116,8 +115,8 @@
             
             _currentState = stage.Value;
             StateHasChanged();
-            
-            await JsRuntime.Execute(NavRouter.ChangeUrl(route));
+
+            await NavRouter.ChangeCurrentRoute(route);
             return;
         }
         

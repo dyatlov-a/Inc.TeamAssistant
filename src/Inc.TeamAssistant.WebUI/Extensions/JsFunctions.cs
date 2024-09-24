@@ -9,14 +9,14 @@ public static class JsFunctions
         return new JsFunction<int>("window.browserJsFunctions.getTimezone", postAction: null, args: null);
     }
     
-    public static IJsFunction<dynamic> ChangeUrl(this NavRouter navRouter, NavRoute route)
+    public static IJsFunction<dynamic> ChangeUrl(NavRoute route, Action<NavRoute> onChanged)
     {
-        ArgumentNullException.ThrowIfNull(navRouter);
         ArgumentNullException.ThrowIfNull(route);
-        
+        ArgumentNullException.ThrowIfNull(onChanged);
+
         return new JsFunction<dynamic>(
             "window.browserJsFunctions.changeUrl",
-            () => navRouter.ChangeRoute(route),
+            () => onChanged(route),
             route.ToString());
     }
     
