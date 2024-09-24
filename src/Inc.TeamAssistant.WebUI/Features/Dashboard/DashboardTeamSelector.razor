@@ -75,7 +75,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_botId != BotId || _teamId != TeamId)
+        if (_botId != BotId || _teamId != TeamId || (_botId is null && _teamId is null))
         {
             _botId = BotId;
             _teamId = TeamId;
