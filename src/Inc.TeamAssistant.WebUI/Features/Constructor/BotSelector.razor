@@ -24,7 +24,7 @@
             {
                 <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
                     <Content>
-                        <a href="@MoveToDashboardLink(bot)" class="link link_dark">
+                        <a href="@CreateMoveToDashboardLink(bot)" class="link link_dark">
                             @Resources[Messages.Dashboard_MoveToDashboard]
                         </a>
                     </Content>
@@ -78,11 +78,11 @@
     private void MoveToEdit(Guid? botId)
     {
         var stage = Stage.CheckBot.ToString().ToLowerInvariant();
-        var link = botId.HasValue
+        var routeSegment = botId.HasValue
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavRouter.NavigateToRoute(link);
+        NavRouter.NavigateToRouteSegment(routeSegment);
     }
 
     private void MoveToRemove(BotDto bot)
@@ -92,7 +92,7 @@
         _confirmDialog?.Open();
     }
 
-    private string MoveToDashboardLink(BotDto bot)
+    private string CreateMoveToDashboardLink(BotDto bot)
     {
         var teamId = bot.Teams.FirstOrDefault()?.Id;
         

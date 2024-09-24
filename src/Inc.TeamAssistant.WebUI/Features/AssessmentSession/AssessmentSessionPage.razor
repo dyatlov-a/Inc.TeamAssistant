@@ -87,7 +87,7 @@
     };
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
+    private IReadOnlyCollection<SelectItem<NavRoute>> _breadcrumbs = Array.Empty<SelectItem<NavRoute>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private IAsyncDisposable? _eventListener;
     

@@ -37,7 +37,7 @@
         StateHasChanged();
     }
 
-    private void MoveTo(string path) => NavRouter.NavigateTo(path, forceLoad: true);
+    private void MoveTo(string path) => NavRouter.NavigateToPath(path);
     
     public void Dispose() => _routerScope?.Dispose();
 }

@@ -82,7 +82,7 @@
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public Func<Stage, string> LinkFactory { get; set; } = default!;
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public Func<Stage?, Task> MoveToNext { get; set; } = default!;

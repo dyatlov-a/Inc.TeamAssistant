@@ -31,28 +31,36 @@ public sealed class NavRouter : IDisposable
         return routeWithoutLanguage;
     }
 
-    public string CreateRoute(string? relativeUrl)
+    public NavRoute CreateRoute(string? routeSegment)
     {
-        var link = string.IsNullOrWhiteSpace(relativeUrl) ? "/" : $"/{relativeUrl}";
+        var link = string.IsNullOrWhiteSpace(routeSegment) ? "/" : routeSegment;
         var languageContext = _renderContext.GetLanguageContext();
+        var selectedLanguage = languageContext.Selected ? languageContext.CurrentLanguage : null;
 
-        return languageContext.Selected
-            ? $"/{languageContext.CurrentLanguage.Value}{link}"
-            : link;
+        return new NavRoute(selectedLanguage, link);
     }
 
-    public void NavigateTo(string uri, bool forceLoad = false, bool replace = false)
+    public void NavigateToPath(string uri)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(uri);
         
-        _navigationManager.NavigateTo(uri, forceLoad, replace);
+        _navigationManager.NavigateTo(uri, forceLoad: true);
     }
     
-    public void NavigateToRoute(string uri, bool forceLoad = false, bool replace = false)
+    public void NavigateToRouteSegment(string routeSegment)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(uri);
+        ArgumentException.ThrowIfNullOrWhiteSpace(routeSegment);
+
+        var route = CreateRoute(routeSegment);
         
-        _navigationManager.NavigateTo(CreateRoute(uri), forceLoad, replace);
+        NavigateToRoute(route);
+    }
+    
+    public void NavigateToRoute(NavRoute route)
+    {
+        ArgumentNullException.ThrowIfNull(route);
+        
+        _navigationManager.NavigateTo(route);
     }
     
     public IDisposable OnRouteChanged(Action onRouteChanged)
@@ -62,11 +70,11 @@ public sealed class NavRouter : IDisposable
         return new RouterScope(() => _onRouteChanged -= onRouteChanged);
     }
     
-    public void ChangeRoute(string uri)
+    public void ChangeRoute(NavRoute route)
     {
-        ArgumentNullException.ThrowIfNull(uri);
+        ArgumentNullException.ThrowIfNull(route);
 
-        ChangeRouteCore(_navigationManager.ToAbsoluteUri(uri).ToString());
+        ChangeRouteCore(_navigationManager.ToAbsoluteUri(route).ToString());
     }
     
     private void ChangeRouteCore(string uri)
@@ -79,8 +87,5 @@ public sealed class NavRouter : IDisposable
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => ChangeRouteCore(e.Location);
 
-    public void Dispose()
-    {
-        _navigationManager.LocationChanged -= OnLocationChanged;
-    }
+    public void Dispose() => _navigationManager.LocationChanged -= OnLocationChanged;
 }

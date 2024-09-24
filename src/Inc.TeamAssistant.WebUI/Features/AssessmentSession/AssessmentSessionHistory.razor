@@ -10,7 +10,7 @@
         <div class="history__body">
             @foreach (var item in _items)
             {
-                <a href="@MoveToItem(item)" class="link link_dark history__item">
+                <a href="@CreateMoveToHistoryLink(item)" class="link link_dark history__item">
                     @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
                 </a>
             }
@@ -24,13 +24,8 @@
     
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
 
-    private string MoveToItem(AssessmentHistoryDto historyItem)
-    {
-        if (historyItem is null)
-            throw new ArgumentNullException(nameof(historyItem));
-
-        return NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
-    }
+    private string CreateMoveToHistoryLink(AssessmentHistoryDto historyItem)
+        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
 
     protected override Task OnParametersSetAsync() => Load();
 
