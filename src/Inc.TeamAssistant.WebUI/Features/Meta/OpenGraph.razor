@@ -26,7 +26,7 @@
     public WebsiteSection WebsiteSection { get; set; }
 
     private string _languageId = string.Empty;
-    private (string Title, string Description, string Image, string ImageText) _data = default;
+    private (MessageId Title, MessageId Description, string Image, MessageId ImageText) _data = default;
 
     protected override void OnParametersSet() => Load();
 

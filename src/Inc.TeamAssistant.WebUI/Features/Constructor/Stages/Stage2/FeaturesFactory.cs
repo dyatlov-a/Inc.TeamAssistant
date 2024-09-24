@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
@@ -17,7 +18,7 @@ public sealed class FeaturesFactory
 
     private string Create(string featureName, string propertyName)
     {
-        var key = $"Constructor_Feature{featureName}{propertyName}";
+        var key = new MessageId($"Constructor_Feature{featureName}{propertyName}");
 
         return _resources[key];
     }

@@ -1,6 +1,8 @@
+using Inc.TeamAssistant.Primitives.Languages;
+
 namespace Inc.TeamAssistant.Primitives.FeatureProperties;
 
 public sealed record SettingSection(
-    string HeaderMessageId,
-    string HelpMessageId,
+    MessageId HeaderMessageId,
+    MessageId HelpMessageId,
     IReadOnlyCollection<SettingItem> SettingItems);

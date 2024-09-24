@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
@@ -58,18 +59,18 @@ public sealed class ResourcesManager : IDisposable
         _resources = resources;
     }
 
-    public string this[string name]
+    public string this[MessageId messageId]
     {
         get
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNull(messageId);
             
             var languageContext = _renderContext.GetLanguageContext();
             var resources = _resources.TryGetValue(languageContext.CurrentLanguage.Value, out var result)
                 ? result
                 : new Dictionary<string, string>();
             
-            return resources.GetValueOrDefault(name, name);
+            return resources.GetValueOrDefault(messageId.Value, messageId.Value);
         }
     }
 
