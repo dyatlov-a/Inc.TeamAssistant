@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
-
 namespace Inc.TeamAssistant.WebUI.Extensions;
 
 public static class JsFunctions
@@ -9,15 +7,15 @@ public static class JsFunctions
         return new JsFunction<int>("window.browserJsFunctions.getTimezone", postAction: null, args: null);
     }
     
-    public static IJsFunction<dynamic> ChangeUrl(NavRoute route, Action<NavRoute> onChanged)
+    public static IJsFunction<dynamic> ChangeUrl(string url, Action<string> onChanged)
     {
-        ArgumentNullException.ThrowIfNull(route);
+        ArgumentNullException.ThrowIfNull(url);
         ArgumentNullException.ThrowIfNull(onChanged);
 
         return new JsFunction<dynamic>(
             "window.browserJsFunctions.changeUrl",
-            () => onChanged(route),
-            route.ToString());
+            () => onChanged(url),
+            url);
     }
     
     private sealed record JsFunction<TResult> : IJsFunction<TResult>

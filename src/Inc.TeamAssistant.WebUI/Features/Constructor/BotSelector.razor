@@ -73,16 +73,16 @@
             });
     }
 
-    private void MoveToAdd() => MoveToEdit(botId: null);
+    private Task MoveToAdd() => MoveToEdit(botId: null);
 
-    private void MoveToEdit(Guid? botId)
+    private async Task MoveToEdit(Guid? botId)
     {
         var stage = Stage.CheckBot.ToString().ToLowerInvariant();
         var routeSegment = botId.HasValue
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavRouter.NavigateToRouteSegment(routeSegment);
+        await NavRouter.MoveToRoute(routeSegment);
     }
 
     private void MoveToRemove(BotDto bot)

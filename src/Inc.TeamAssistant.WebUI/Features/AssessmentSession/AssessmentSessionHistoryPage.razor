@@ -80,11 +80,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var route = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant());
+        var routeSegment = $"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant();
         
         _currentView = assessmentType;
 
-        await NavRouter.ChangeCurrentRoute(route);
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
     }
 
     private async Task Load()

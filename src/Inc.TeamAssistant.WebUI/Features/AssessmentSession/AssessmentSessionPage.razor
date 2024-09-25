@@ -145,11 +145,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var route = NavRouter.CreateRoute($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
+        var routeSegment = $"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant();
         
         _currentView = assessmentType;
 
-        await NavRouter.ChangeCurrentRoute(route);
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
     }
     
     public async ValueTask DisposeAsync()

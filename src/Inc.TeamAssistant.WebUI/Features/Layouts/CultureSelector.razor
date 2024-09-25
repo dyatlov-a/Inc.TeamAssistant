@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Primitives.Languages
-
 @implements IDisposable
 
 @inject NavRouter NavRouter
@@ -28,7 +26,7 @@
     
     private void SetLanguages()
     {
-        var routeWithoutLanguage = NavRouter.GetRouteWithoutLanguage();
+        var routeWithoutLanguage = NavRouter.GetRouteSegment();
 
         _languages = LanguageSettings.LanguageIds
             .Select(l => (l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
@@ -37,7 +35,7 @@
         StateHasChanged();
     }
 
-    private void MoveTo(string path) => NavRouter.NavigateToPath(path);
+    private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
     
     public void Dispose() => _routerScope?.Dispose();
 }

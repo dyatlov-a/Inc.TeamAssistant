@@ -1,11 +1,12 @@
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
+using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Routing;
 
 public sealed class NavRouter : IDisposable
 {
@@ -28,7 +29,7 @@ public sealed class NavRouter : IDisposable
         CurrentUrl = _navigationManager.Uri;
     }
     
-    public string GetRouteWithoutLanguage()
+    public string GetRouteSegment()
     {
         var routeWithoutLanguage = _navigationManager.ToBaseRelativePath(CurrentUrl);
         
@@ -54,42 +55,38 @@ public sealed class NavRouter : IDisposable
         return new RouterScope(() => _onRouteChanged -= onRouteChanged);
     }
 
-    public void NavigateToPath(string uri)
+    public async Task MoveToRoute(string routeSegment, RoutingType type = RoutingType.Client)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(uri);
-        
-        _navigationManager.NavigateTo(uri, forceLoad: true);
-    }
-    
-    public void NavigateToRouteSegment(string routeSegment)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(routeSegment);
-
         var route = CreateRoute(routeSegment);
         
-        NavigateToRoute(route);
-    }
-    
-    public void NavigateToRoute(NavRoute route)
-    {
-        ArgumentNullException.ThrowIfNull(route);
-        
-        _navigationManager.NavigateTo(route);
+        switch (type)
+        {
+            case RoutingType.Browser:
+                await ChangeBrowserPath(route);
+                break;
+            case RoutingType.Server:
+                _navigationManager.NavigateTo(routeSegment, forceLoad: true);
+                break;
+            case RoutingType.Client:
+            default:
+                _navigationManager.NavigateTo(route);
+                break;
+        }
     }
 
-    public async Task ChangeCurrentRoute(NavRoute route)
+    private async Task ChangeBrowserPath(NavRoute route)
     {
         ArgumentNullException.ThrowIfNull(route);
         
         var jsRuntime = _serviceProvider.GetRequiredService<IJSRuntime>();
         var jsFunction = JsFunctions.ChangeUrl(
             route,
-            r => ChangeRouteCore(_navigationManager.ToAbsoluteUri(r).ToString()));
+            r => ChangeCurrentUrl(_navigationManager.ToAbsoluteUri(r).ToString()));
 
         await jsRuntime.Execute(jsFunction);
     }
     
-    private void ChangeRouteCore(string uri)
+    private void ChangeCurrentUrl(string uri)
     {
         ArgumentNullException.ThrowIfNull(uri);
 
@@ -97,7 +94,7 @@ public sealed class NavRouter : IDisposable
         _onRouteChanged?.Invoke();
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => ChangeRouteCore(e.Location);
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => ChangeCurrentUrl(e.Location);
 
     public void Dispose() => _navigationManager.LocationChanged -= OnLocationChanged;
 }

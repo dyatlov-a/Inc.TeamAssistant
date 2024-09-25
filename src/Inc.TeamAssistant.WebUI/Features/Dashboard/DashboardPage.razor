@@ -116,7 +116,7 @@
 
     private Type ToWidgetType(string type) => _widgetsLookup[type];
     
-    private void ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
+    private async Task ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
     {
         var routeSegment = (botContext.BotId.HasValue, botContext.TeamId.HasValue) switch
         {
@@ -128,6 +128,6 @@
         _botId = botContext.BotId;
         _teamId = botContext.TeamId;
         
-        NavRouter.NavigateToRouteSegment(routeSegment);
+        await NavRouter.MoveToRoute(routeSegment);
     }
 }

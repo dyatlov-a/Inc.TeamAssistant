@@ -111,12 +111,12 @@
     {
         if (stage.HasValue)
         {
-            var route = LinkFactory(stage.Value);
+            var routeSegment = CreateRouteSegment(stage.Value);
             
             _currentState = stage.Value;
             StateHasChanged();
 
-            await NavRouter.ChangeCurrentRoute(route);
+            await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
             return;
         }
         
@@ -124,15 +124,20 @@
         
         notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
         
-        NavRouter.NavigateToRouteSegment("constructor");
+        await NavRouter.MoveToRoute("constructor");
     }
 
     private NavRoute LinkFactory(Stage stage)
     {
-        var routeSegment = _stagesState.Id.HasValue
-            ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
-            : $"constructor/{stage}";
+        var routeSegment = CreateRouteSegment(stage);
 
         return NavRouter.CreateRoute(routeSegment.ToLowerInvariant());
+    }
+
+    private string CreateRouteSegment(Stage stage)
+    {
+        return _stagesState.Id.HasValue
+            ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
+            : $"constructor/{stage}";
     }
 }

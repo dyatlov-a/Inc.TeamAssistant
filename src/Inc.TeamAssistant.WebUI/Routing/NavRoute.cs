@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Languages;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Routing;
 
 public sealed record NavRoute(
     LanguageId? LanguageId,

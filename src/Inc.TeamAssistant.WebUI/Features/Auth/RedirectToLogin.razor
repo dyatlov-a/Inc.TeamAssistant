@@ -1,8 +1,8 @@
 @inject NavRouter NavRouter
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        NavRouter.NavigateToRouteSegment($"login?returnUrl={NavRouter.CurrentUrl}");
+        await NavRouter.MoveToRoute($"login?returnUrl={NavRouter.CurrentUrl}");
     }
 }
