@@ -123,9 +123,9 @@ html {
     color: #dfdfdf;
 }
 .button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
-    background-color: #AAA;
+    background-color: #aaa;
     color: #000;
-    border: .1875rem solid #AAA;
+    border: .1875rem solid #aaa;
     cursor: default;
 }
 .button_small {
@@ -189,7 +189,7 @@ html {
     border: 3px solid #000;
 }
 .form-control_disabled {
-    background-color: #AAA;
+    background-color: #aaa;
     cursor: default;
 }
 .form-control_textarea {

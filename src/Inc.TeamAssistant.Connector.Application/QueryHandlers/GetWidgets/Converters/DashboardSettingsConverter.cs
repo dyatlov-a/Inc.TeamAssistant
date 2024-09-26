@@ -13,7 +13,11 @@ internal static class DashboardSettingsConverter
         ArgumentNullException.ThrowIfNull(features);
         
         return settings.Widgets
-            .Select(w => new WidgetDto(w.Type, w.Position, CanEnabled(w), w.IsEnabled))
+            .Select(w => new WidgetDto(
+                w.Type,
+                w.Feature,
+                w.Position,
+                CanEnabled(w), w.IsEnabled))
             .ToArray();
         
         bool CanEnabled(DashboardWidget widget) =>

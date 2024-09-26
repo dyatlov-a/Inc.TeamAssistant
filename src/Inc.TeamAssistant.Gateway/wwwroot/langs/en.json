@@ -94,7 +94,6 @@
   "Navigation_Logout": "Logout",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
-  "CheckIn_PageTitle": "Our locations",
   "CheckIn_DefaultLayerTitle": "All",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
   "CheckIn_AddLocationHelp": "Add location to the map",
@@ -231,6 +230,7 @@
   "Dashboard_Settings": "Settings",
   "Dashboard_Apply": "Apply",
   "Dashboard_SettingsApplied": "Settings applied",
+  "Dashboard_DisableWidgetHelpTemplate": "To enable the widget, you need to activate the feature \"{0}\"",
   
   "Footer_GroupNavigation": "Navigation",
   "Footer_GroupTech": "Tech",

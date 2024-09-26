@@ -181,6 +181,7 @@ internal static class Messages
     public static readonly MessageId Dashboard_Settings = new(nameof(Dashboard_Settings));
     public static readonly MessageId Dashboard_Apply = new(nameof(Dashboard_Apply));
     public static readonly MessageId Dashboard_SettingsApplied = new(nameof(Dashboard_SettingsApplied));
+    public static readonly MessageId Dashboard_DisableWidgetHelpTemplate = new(nameof(Dashboard_DisableWidgetHelpTemplate));
     public static readonly MessageId ContentDialog_Close = new(nameof(ContentDialog_Close));
     
     public static readonly MessageId Footer_GroupNavigation = new(nameof(Footer_GroupNavigation));
@@ -211,7 +212,6 @@ internal static class Messages
     public static readonly MessageId OgCheckInDescription = new(nameof(OgCheckInDescription));
     public static readonly MessageId OgCheckInImageText = new(nameof(OgCheckInImageText));
     
-    public static readonly MessageId CheckIn_PageTitle = new(nameof(CheckIn_PageTitle));
     public static readonly MessageId CheckIn_DefaultLayerTitle = new(nameof(CheckIn_DefaultLayerTitle));
     public static readonly MessageId CheckIn_RouteShow = new(nameof(CheckIn_RouteShow));
     public static readonly MessageId CheckIn_RouteHide = new(nameof(CheckIn_RouteHide));

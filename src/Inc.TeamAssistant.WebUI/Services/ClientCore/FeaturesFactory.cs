@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
+namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
 public sealed class FeaturesFactory
 {
