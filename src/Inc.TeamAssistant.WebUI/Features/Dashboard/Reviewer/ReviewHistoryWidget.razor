@@ -55,7 +55,7 @@
                                     Title="@Resources[Messages.Dashboard_ReviewStats]"
                                     Sortable="true"
                                     SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
-                                    <span class="task__time hint" title="@Resources[Messages.Dashboard_FirstTouch]">
+                                    <span class="task__time hint" title="@FirstTouchTitle()">
                                         @ConvertToString(context.FirstTouch)FT
                                     </span>
                                     <br/>
@@ -63,7 +63,7 @@
                                         @ConvertToString(context.Correction)C
                                     </span>
                                     <br/>
-                                    <span class="task__time hint" title="@Resources[Messages.Dashboard_Review]">
+                                    <span class="task__time hint" title="@ReviewTitle()">
                                         @ConvertToString(context.Review)R
                                     </span>
                                 </TemplateColumn>
@@ -151,11 +151,36 @@
     }
 
     private string ConvertToString(TimeSpan value) => value.ToString(GlobalSettings.TimeFormat);
+    
+    private string FirstTouchTitle()
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine(Resources[Messages.Dashboard_FirstTouch]);
+        builder.Append(Resources[Messages.Dashboard_FirstTouchHelp]);
+        
+        return builder.ToString();
+    }
 
     private string CorrectionTitle(TaskForReviewDto task)
     {
-        return task.Iterations == 0
+        var builder = new StringBuilder();
+
+        builder.AppendLine(task.Iterations == 0
             ? Resources[Messages.Dashboard_Correction]
-            : $"{Resources[Messages.Dashboard_Correction]} ({task.Iterations})";
+            : $"{Resources[Messages.Dashboard_Correction]} ({task.Iterations})");
+        builder.Append(Resources[Messages.Dashboard_CorrectionHelp]);
+        
+        return builder.ToString();
+    }
+    
+    private string ReviewTitle()
+    {
+        var builder = new StringBuilder();
+
+        builder.AppendLine(Resources[Messages.Dashboard_Review]);
+        builder.Append(Resources[Messages.Dashboard_ReviewHelp]);
+        
+        return builder.ToString();
     }
 }

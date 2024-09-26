@@ -140,8 +140,11 @@ internal static class Messages
     public static readonly MessageId Dashboard_ReviewStateAccept = new(nameof(Dashboard_ReviewStateAccept));
     public static readonly MessageId Dashboard_ReviewStats = new(nameof(Dashboard_ReviewStats));
     public static readonly MessageId Dashboard_FirstTouch = new(nameof(Dashboard_FirstTouch));
+    public static readonly MessageId Dashboard_FirstTouchHelp = new(nameof(Dashboard_FirstTouchHelp));
     public static readonly MessageId Dashboard_Correction = new(nameof(Dashboard_Correction));
+    public static readonly MessageId Dashboard_CorrectionHelp = new(nameof(Dashboard_CorrectionHelp));
     public static readonly MessageId Dashboard_Review = new(nameof(Dashboard_Review));
+    public static readonly MessageId Dashboard_ReviewHelp = new(nameof(Dashboard_ReviewHelp));
     public static readonly MessageId Dashboard_NoData = new(nameof(Dashboard_NoData));
     public static readonly MessageId Dashboard_TeammatesWidgetTitle = new(nameof(Dashboard_TeammatesWidgetTitle));
     public static readonly MessageId Dashboard_BotWidgetTitle = new(nameof(Dashboard_BotWidgetTitle));
