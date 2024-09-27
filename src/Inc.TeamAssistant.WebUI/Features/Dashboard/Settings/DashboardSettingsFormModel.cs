@@ -16,6 +16,7 @@ public sealed class DashboardSettingsFormModel
         _items.AddRange(widgets.Select(w => new DashboardSettingsItem
         {
             Type = w.Type,
+            Feature = w.Feature,
             Position = w.Position,
             CanEnabled = w.CanEnabled,
             IsVisible = w.IsVisible

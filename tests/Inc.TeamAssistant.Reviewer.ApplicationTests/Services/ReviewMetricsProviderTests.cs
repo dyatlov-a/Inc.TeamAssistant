@@ -46,7 +46,7 @@ public sealed class ReviewMetricsProviderTests
             start,
             moveToInProgressInterval,
             acceptDurationInterval,
-            new[] { (declineDurationInterval, moveToNextRoundDurationInterval) });
+            [(declineDurationInterval, moveToNextRoundDurationInterval)]);
         await _target.Add(taskForReview, CancellationToken.None);
         
         var reviewTeamMetrics = _target.Get(teamId);
@@ -79,11 +79,10 @@ public sealed class ReviewMetricsProviderTests
             start,
             moveToInProgressInterval,
             acceptDurationInterval,
-            new[]
-            {
+            [
                 (declineDurationInterval * 2, moveToNextRoundDurationInterval * 2),
                 (declineDurationInterval, moveToNextRoundDurationInterval)
-            });
+            ]);
         await _target.Add(taskForReview, CancellationToken.None);
         
         var reviewTeamMetrics = _target.Get(teamId);
@@ -116,19 +115,19 @@ public sealed class ReviewMetricsProviderTests
             start,
             moveToInProgressInterval,
             acceptDurationInterval,
-            new[] { (declineDurationInterval, moveToNextRoundDurationInterval) });
+            [(declineDurationInterval, moveToNextRoundDurationInterval)]);
         var taskForReviewSecond = CreateAndSetupTaskForReview(
             teamId,
             start,
             moveToInProgressInterval * 2,
             acceptDurationInterval * 2,
-            new[] { (declineDurationInterval * 2, moveToNextRoundDurationInterval * 2) });
+            [(declineDurationInterval * 2, moveToNextRoundDurationInterval * 2)]);
         var taskForReviewFromOtherTeam = CreateAndSetupTaskForReview(
             _fixture.Create<Guid>(),
             start,
             moveToInProgressInterval,
             acceptDurationInterval,
-            new[] { (declineDurationInterval, moveToNextRoundDurationInterval) });
+            [(declineDurationInterval, moveToNextRoundDurationInterval)]);
         await _target.Add(taskForReviewFirst, CancellationToken.None);
         await _target.Add(taskForReviewSecond, CancellationToken.None);
         await _target.Add(taskForReviewFromOtherTeam, CancellationToken.None);
@@ -177,7 +176,7 @@ public sealed class ReviewMetricsProviderTests
             foreach (var reviewDuration in reviewDurations)
             {
                 operationStart = operationStart.Add(reviewDuration.DeclineDuration);
-                taskForReview.Decline(operationStart);
+                taskForReview.Decline(operationStart, _fixture.Create<NotificationIntervals>());
 
                 operationStart = operationStart.Add(reviewDuration.NextRoundDuration);
                 taskForReview.MoveToNextRound(operationStart);

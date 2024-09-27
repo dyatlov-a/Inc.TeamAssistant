@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<RegionLoader>(sp, webRootPath))
-            .AddSingleton<GeoJsonParser>()
+            .AddSingleton<GeoParser>()
             .AddSingleton<IGeoService, GeoService>();
 
         return services;

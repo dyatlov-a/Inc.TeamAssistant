@@ -1,10 +1,9 @@
 @using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
 
 @inject IBotService BotService
-@inject NavigationManager NavigationManager
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
-@inject LinkBuilder LinkBuilder
+@inject NavRouter NavRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
@@ -25,7 +24,7 @@
             {
                 <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
                     <Content>
-                        <a href="@MoveToDashboardLink(bot)" class="link link_dark">
+                        <a href="@CreateMoveToDashboardLink(bot)" class="link link_dark">
                             @Resources[Messages.Dashboard_MoveToDashboard]
                         </a>
                     </Content>
@@ -74,16 +73,16 @@
             });
     }
 
-    private void MoveToAdd() => MoveToEdit(botId: null);
+    private Task MoveToAdd() => MoveToEdit(botId: null);
 
-    private void MoveToEdit(Guid? botId)
+    private async Task MoveToEdit(Guid? botId)
     {
         var stage = Stage.CheckBot.ToString().ToLowerInvariant();
-        var link = botId.HasValue
+        var routeSegment = botId.HasValue
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";
         
-        NavigationManager.NavigateTo(LinkBuilder.Build(link));
+        await NavRouter.MoveToRoute(routeSegment);
     }
 
     private void MoveToRemove(BotDto bot)
@@ -93,13 +92,13 @@
         _confirmDialog?.Open();
     }
 
-    private string MoveToDashboardLink(BotDto bot)
+    private string CreateMoveToDashboardLink(BotDto bot)
     {
         var teamId = bot.Teams.FirstOrDefault()?.Id;
         
         return teamId.HasValue
-            ? LinkBuilder.Build($"dashboard/{bot.Id:N}/{teamId.Value:N}")
-            : LinkBuilder.Build($"dashboard/{bot.Id:N}");
+            ? NavRouter.CreateRoute($"dashboard/{bot.Id:N}/{teamId.Value:N}")
+            : NavRouter.CreateRoute($"dashboard/{bot.Id:N}");
     }
 
     private async Task Remove()

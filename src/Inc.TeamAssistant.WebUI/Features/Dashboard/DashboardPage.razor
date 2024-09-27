@@ -15,7 +15,7 @@
 @inject IBotService BotService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
-@inject IJSRuntime JsRuntime
+@inject NavRouter NavRouter
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Dashboard"
@@ -118,16 +118,16 @@
     
     private async Task ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
     {
-        var url = (botContext.BotId.HasValue, botContext.TeamId.HasValue) switch
+        var routeSegment = (botContext.BotId.HasValue, botContext.TeamId.HasValue) switch
         {
             (true, true) => $"dashboard/{botContext.BotId:N}/{botContext.TeamId:N}",
             (true, false) => $"dashboard/{botContext.BotId:N}",
             _ => "dashboard"
         };
-        
+
         _botId = botContext.BotId;
         _teamId = botContext.TeamId;
-
-        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+        
+        await NavRouter.MoveToRoute(routeSegment);
     }
 }

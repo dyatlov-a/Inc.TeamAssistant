@@ -26,7 +26,7 @@
             ? "nav-stages__item_can-move"
             : string.Empty;
     
-    private string GetStageTitle(Stage stage) => $"Constructor_Stage{stage}";
+    private MessageId GetStageTitle(Stage stage) => new($"Constructor_Stage{stage}");
 
     private void MoveTo(Stage stage)
     {

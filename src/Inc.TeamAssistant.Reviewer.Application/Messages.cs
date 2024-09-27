@@ -32,6 +32,7 @@ internal static class Messages
     public static readonly MessageId Reviewer_PreviewTitle = new(nameof(Reviewer_PreviewTitle));
     public static readonly MessageId Reviewer_PreviewReviewerTemplate = new(nameof(Reviewer_PreviewReviewerTemplate));
     public static readonly MessageId Reviewer_PreviewCheckDescription = new(nameof(Reviewer_PreviewCheckDescription));
+    public static readonly MessageId Reviewer_PreviewCheckTeammate = new(nameof(Reviewer_PreviewCheckTeammate));
     public static readonly MessageId Reviewer_PreviewEditHelp = new(nameof(Reviewer_PreviewEditHelp));
     public static readonly MessageId Reviewer_PreviewMoveToReview = new(nameof(Reviewer_PreviewMoveToReview));
     public static readonly MessageId Reviewer_PreviewRemoveDraft = new(nameof(Reviewer_PreviewRemoveDraft));

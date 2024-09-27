@@ -3,7 +3,6 @@
       <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="GeoTimeZone" Version="5.3.0" />
     </ItemGroup>
 </Project>

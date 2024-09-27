@@ -15,10 +15,8 @@
 @inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
-@inject IJSRuntime JsRuntime
-@inject NavigationManager NavigationManager
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
@@ -113,12 +111,12 @@
     {
         if (stage.HasValue)
         {
-            var url = LinkFactory(stage.Value);
+            var routeSegment = CreateRouteSegment(stage.Value);
             
             _currentState = stage.Value;
             StateHasChanged();
-            
-            await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+
+            await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
             return;
         }
         
@@ -126,15 +124,20 @@
         
         notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
         
-        NavigationManager.NavigateTo(LinkBuilder.Build("constructor"));
+        await NavRouter.MoveToRoute("constructor");
     }
 
-    private string LinkFactory(Stage stage)
+    private NavRoute LinkFactory(Stage stage)
     {
-        var link = _stagesState.Id.HasValue
+        var routeSegment = CreateRouteSegment(stage);
+
+        return NavRouter.CreateRoute(routeSegment.ToLowerInvariant());
+    }
+
+    private string CreateRouteSegment(Stage stage)
+    {
+        return _stagesState.Id.HasValue
             ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
             : $"constructor/{stage}";
-
-        return LinkBuilder.Build(link.ToLowerInvariant());
     }
 }

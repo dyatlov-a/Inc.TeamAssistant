@@ -1,37 +1,41 @@
-@using Inc.TeamAssistant.Primitives.Languages
+@implements IDisposable
 
-@inject NavigationManager NavigationManager
+@inject NavRouter NavRouter
 
-@foreach (var culture in LanguageSettings.LanguageIds)
+@foreach (var language in _languages)
 {
-    var path = $"/{culture.Value}/{_cleanUrl}";
-    
-    <a href="@path" @onclick="() => MoveTo(path)" class="link link_light navbar__item" @onclick:preventDefault="true">
-        @culture.Value
+    <a
+        href="@language.Path"
+        @onclick="() => MoveTo(language.Path)"
+        class="link link_light navbar__item"
+        @onclick:preventDefault="true">
+        @language.Culture
     </a>
 }
 
 @code {
-    private string _cleanUrl = string.Empty;
+    private IReadOnlyCollection<(string Culture, string Path)> _languages = Array.Empty<(string, string)>();
+    private IDisposable? _routerScope;
     
     protected override void OnParametersSet()
     {
-        Load();
+        SetLanguages();
 
-        NavigationManager.LocationChanged += (s, e) => Load();
+        _routerScope = NavRouter.OnRouteChanged(SetLanguages);
     }
     
-    private void Load()
+    private void SetLanguages()
     {
-        var cleanUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        
-        foreach (var languageId in LanguageSettings.LanguageIds)
-            cleanUrl = cleanUrl.TrimStart($"/{languageId.Value}".ToArray());
+        var routeWithoutLanguage = NavRouter.GetRouteSegment();
 
-        _cleanUrl = cleanUrl;
+        _languages = LanguageSettings.LanguageIds
+            .Select(l => (l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
+            .ToArray();
         
         StateHasChanged();
     }
 
-    private void MoveTo(string path) => NavigationManager.NavigateTo(path, forceLoad: true);
+    private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
+    
+    public void Dispose() => _routerScope?.Dispose();
 }

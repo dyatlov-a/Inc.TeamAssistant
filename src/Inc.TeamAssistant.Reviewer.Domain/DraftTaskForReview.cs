@@ -58,6 +58,13 @@ public sealed class DraftTaskForReview
         return this;
     }
     
+    public DraftTaskForReview WithoutTargetPerson()
+    {
+        TargetPersonId = null;
+        
+        return this;
+    }
+    
     public DraftTaskForReview WithPreviewMessage(int messageId)
     {
         PreviewMessageId = messageId;

@@ -1,14 +1,15 @@
 using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
 {
-    private readonly IReadOnlyDictionary<NextReviewerType, string> _storyType = new Dictionary<NextReviewerType, string>
+    private readonly IReadOnlyDictionary<NextReviewerType, MessageId> _storyType = new Dictionary<NextReviewerType, MessageId>
     {
-        [NextReviewerType.RoundRobin] = "Constructor_FormSectionSetSettingsRoundRobinDescription",
-        [NextReviewerType.Random] = "Constructor_FormSectionSetSettingsRandomDescription"
+        [NextReviewerType.RoundRobin] = new("Constructor_FormSectionSetSettingsRoundRobinDescription"),
+        [NextReviewerType.Random] = new("Constructor_FormSectionSetSettingsRandomDescription")
     };
 
     public string FeatureName => "Reviewer";
@@ -18,20 +19,20 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
         return
         [
             new SettingSection(
-                "Constructor_FormSectionSetSettingsReviewerHeader",
-                "Constructor_FormSectionSetSettingsReviewerHelp",
+                new("Constructor_FormSectionSetSettingsReviewerHeader"),
+                new("Constructor_FormSectionSetSettingsReviewerHelp"),
                 [
                     new(
                         ReviewerProperties.NextReviewerTypeKey,
-                        "Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel",
+                        new("Constructor_FormSectionSetSettingsNextReviewerStrategyFieldLabel"),
                         GetValuesForNextReviewerType().ToArray()),
                     new(
                         ReviewerProperties.WaitingNotificationIntervalKey,
-                        "Constructor_FormSectionSetSettingsWaitingNotificationIntervalFieldLabel",
+                        new("Constructor_FormSectionSetSettingsWaitingNotificationIntervalFieldLabel"),
                         GetValuesForNotificationInterval().ToArray()),
                     new(
                         ReviewerProperties.InProgressNotificationIntervalKey,
-                        "Constructor_FormSectionSetSettingsInProgressNotificationIntervalFieldLabel",
+                        new("Constructor_FormSectionSetSettingsInProgressNotificationIntervalFieldLabel"),
                         GetValuesForNotificationInterval().ToArray())
                 ])
         ];
@@ -46,9 +47,9 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
     
     private IEnumerable<SelectValue> GetValuesForNotificationInterval()
     {
-        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval1Description", "00:30:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval2Description", "01:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval3Description", "01:30:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsNotificationInterval4Description", "02:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval1Description"), "00:30:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval2Description"), "01:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval3Description"), "01:30:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval4Description"), "02:00:00");
     }
 }

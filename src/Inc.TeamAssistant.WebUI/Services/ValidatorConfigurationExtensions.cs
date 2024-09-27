@@ -11,11 +11,11 @@ public static class ValidatorConfigurationExtensions
     {
         ArgumentNullException.ThrowIfNull(validatorConfiguration);
         ArgumentNullException.ThrowIfNull(languageId);
-
+        
         validatorConfiguration.LanguageManager.Culture = new(languageId.Value);
         validatorConfiguration.DefaultClassLevelCascadeMode = CascadeMode.Continue;
         validatorConfiguration.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
-        
+
         return validatorConfiguration;
     }
 }

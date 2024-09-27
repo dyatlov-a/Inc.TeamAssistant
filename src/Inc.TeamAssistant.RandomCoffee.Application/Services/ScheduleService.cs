@@ -49,20 +49,20 @@ internal sealed class ScheduleService : BackgroundService
     private async Task Execute(CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow;
-        var randomCoffeeEntries = await _reader.GetByDate(now, token);
+        var entries = await _reader.GetByDate(now, token);
 
-        foreach (var randomCoffeeEntry in randomCoffeeEntries)
+        foreach (var entry in entries)
         {
-            if (!await _holidayService.IsWorkTime(randomCoffeeEntry.BotId, now, token))
+            if (!await _holidayService.IsWorkTime(entry.BotId, now, token))
                 continue;
             
-            var messageContext = MessageContext.CreateFromBackground(randomCoffeeEntry.BotId, randomCoffeeEntry.ChatId);
+            var messageContext = MessageContext.CreateFromBackground(entry.BotId, entry.ChatId);
                 
-            IDialogCommand command = randomCoffeeEntry.State switch
+            IDialogCommand command = entry.State switch
             {
-                RandomCoffeeState.Waiting => new SelectPairsCommand(messageContext, randomCoffeeEntry.Id),
+                RandomCoffeeState.Waiting => new SelectPairsCommand(messageContext, entry.Id),
                 RandomCoffeeState.Idle => new InviteForCoffeeCommand(messageContext, OnDemand: false),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException(nameof(entry.State), entry.State, "State out of range.")
             };
                 
             await _commandExecutor.Execute(command, token);

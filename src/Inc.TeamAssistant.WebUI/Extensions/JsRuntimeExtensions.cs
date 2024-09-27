@@ -9,7 +9,11 @@ public static class JsRuntimeExtensions
         ArgumentNullException.ThrowIfNull(jsRuntime);
         ArgumentNullException.ThrowIfNull(jsFunction);
         
-        return await jsRuntime.InvokeAsync<TValue>(jsFunction.Identifier, jsFunction.Args);
+        var result = await jsRuntime.InvokeAsync<TValue>(jsFunction.Identifier, jsFunction.Args);
+        
+        jsFunction.OnExecuted?.Invoke();
+        
+        return result;
     }
     
     public static async ValueTask Execute(this IJSRuntime jsRuntime, IJsFunction<dynamic> jsFunction)
@@ -18,5 +22,7 @@ public static class JsRuntimeExtensions
         ArgumentNullException.ThrowIfNull(jsFunction);
         
         await jsRuntime.InvokeVoidAsync(jsFunction.Identifier, jsFunction.Args);
+        
+        jsFunction.OnExecuted?.Invoke();
     }
 }

@@ -8,11 +8,22 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 internal sealed class DraftTaskForReviewService
 {
     private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
+    private readonly ITeamAccessor _teamAccessor;
 
-    public DraftTaskForReviewService(IDraftTaskForReviewRepository draftTaskForReviewRepository)
+    public DraftTaskForReviewService(
+        IDraftTaskForReviewRepository draftTaskForReviewRepository,
+        ITeamAccessor teamAccessor)
     {
         _draftTaskForReviewRepository =
             draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+    }
+
+    public async Task<bool> HasTeammate(Guid teamId, long personId, CancellationToken token)
+    {
+        var teammates = await _teamAccessor.GetTeammates(teamId, DateTimeOffset.UtcNow, token);
+        
+        return teammates.Any(t => t.Id == personId);
     }
 
     public bool HasDescriptionAndLinks(string description)

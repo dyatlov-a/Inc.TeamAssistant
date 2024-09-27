@@ -2,7 +2,7 @@
 
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -21,7 +21,7 @@
                                     Title="@Resources[Messages.Dashboard_AssessmentDate]"
                                     Sortable="true"
                                     SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                                    <a href="@MoveToItem(context.AssessmentDate)" class="link link_light">
+                                    <a href="@CreateMoveToHistoryLink(context.AssessmentDate)" class="link link_light">
                                         @context.AssessmentDate.ToString("dd-MM-yyyy")
                                     </a>
                                 </TemplateColumn>
@@ -42,7 +42,7 @@
                         }
                     </div>
                     <div class="component-actions">
-                        <a href="@GetAssessmentSessionUrl()" class="button button_dark">
+                        <a href="@CreateAssessmentSessionLink()" class="button button_dark">
                             @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
                         </a>
                     </div>
@@ -90,13 +90,15 @@
             });
     }
 
-    private string GetAssessmentSessionUrl() => LinkBuilder.Build($"assessment-session/{TeamId:N}");
-    
-    private string MoveToItem(DateOnly date) => LinkBuilder.Build($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
+    private string CreateAssessmentSessionLink() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
+
+    private string CreateMoveToHistoryLink(DateOnly date)
+        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 
     private async Task Changed(DateOnly date)
     {
         _date = date;
+        
         await Load();
     }
 }

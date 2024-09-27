@@ -123,9 +123,9 @@ html {
     color: #dfdfdf;
 }
 .button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
-    background-color: #AAA;
+    background-color: #aaa;
     color: #000;
-    border: .1875rem solid #AAA;
+    border: .1875rem solid #aaa;
     cursor: default;
 }
 .button_small {
@@ -158,7 +158,7 @@ html {
 .marker-btn:hover {
     text-decoration: none;
 }
-.map__navbar .leaflet-top {
+.map_navbar .leaflet-top {
     top: 80px;
 }
 .map-popup {
@@ -189,7 +189,7 @@ html {
     border: 3px solid #000;
 }
 .form-control_disabled {
-    background-color: #AAA;
+    background-color: #aaa;
     cursor: default;
 }
 .form-control_textarea {
@@ -254,6 +254,13 @@ html {
 @keyframes slide-left {
     from { transform: translateX(-150%); }
     to { transform: translateY(0); }
+}
+.animation__fade-in {
+    animation: fade-in .7s;
+}
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 /* ICONS */
 .icon {

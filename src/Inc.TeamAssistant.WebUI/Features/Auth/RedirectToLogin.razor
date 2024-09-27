@@ -1,10 +1,8 @@
-@inject NavigationManager NavigationManager
+@inject NavRouter NavRouter
 
 @code {
-    private string CurrentUrl => NavigationManager.Uri;
-    
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        NavigationManager.NavigateTo($"/login?returnUrl={CurrentUrl}");
+        await NavRouter.MoveToRoute($"login?returnUrl={NavRouter.CurrentUrl}");
     }
 }

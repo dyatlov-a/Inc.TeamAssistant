@@ -4,9 +4,9 @@
 @implements IAsyncDisposable
 
 @inject IRenderContext RenderContext
-@inject NavigationManager NavigationManager
 @inject ResourcesManager ResourcesManager
 @inject IServiceProvider ServiceProvider
+@inject NavRouter NavRouter
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
@@ -32,22 +32,21 @@
 
 @code {
     private EventsProvider? _eventsProvider;
+    private IDisposable? _routerScope;
     
     protected override async Task OnInitializedAsync()
     {
         SetCurrentLanguage();
         
-        NavigationManager.LocationChanged += OnLocationChanged;
-
-        await ResourcesManager.Load();
+        await ResourcesManager.Initialize();
+        
+        _routerScope = NavRouter.OnRouteChanged(SetCurrentLanguage);
         
         _eventsProvider = ServiceProvider.GetService<EventsProvider>();
         if (_eventsProvider is not null)
             await _eventsProvider.Start();
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => SetCurrentLanguage();
-    
     private void SetCurrentLanguage()
     {
         var languageContext = RenderContext.GetLanguageContext();
@@ -57,9 +56,9 @@
 
     public async ValueTask DisposeAsync()
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-        
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
+        
+        _routerScope?.Dispose();
     }
 }

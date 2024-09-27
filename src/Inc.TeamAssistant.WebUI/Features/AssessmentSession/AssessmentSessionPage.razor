@@ -10,9 +10,8 @@
 @inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
-@inject IJSRuntime JsRuntime
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
@@ -87,7 +86,7 @@
     };
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<string>> _breadcrumbs = Array.Empty<SelectItem<string>>();
+    private IReadOnlyCollection<SelectItem<NavRoute>> _breadcrumbs = Array.Empty<SelectItem<NavRoute>>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private IAsyncDisposable? _eventListener;
     
@@ -99,8 +98,8 @@
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         _breadcrumbs =
         [
-            new(Resources[Messages.GUI_AssessmentSession], LinkBuilder.Build($"assessment-session/{Id:N}")),
-            new(date, LinkBuilder.Build($"assessment-history/{Id:N}/{date}"))
+            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{Id:N}")),
+            new(date, NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}"))
         ];
         
         await Load();
@@ -146,11 +145,11 @@
     
     private async Task OnViewChanged(AssessmentType assessmentType)
     {
-        var url = LinkBuilder.Build($"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant());
+        var routeSegment = $"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant();
         
         _currentView = assessmentType;
-        
-        await JsRuntime.Execute(JsFunctions.ChangeUrl(url));
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
     }
     
     public async ValueTask DisposeAsync()

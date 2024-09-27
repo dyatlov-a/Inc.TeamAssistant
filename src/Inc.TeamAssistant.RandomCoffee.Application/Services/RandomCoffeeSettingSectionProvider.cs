@@ -12,16 +12,16 @@ internal sealed class RandomCoffeeSettingSectionProvider : ISettingSectionProvid
         return
         [
             new SettingSection(
-                "Constructor_FormSectionSetSettingsRandomCoffeeHeader",
-                "Constructor_FormSectionSetSettingsRandomCoffeeHelp",
+                new("Constructor_FormSectionSetSettingsRandomCoffeeHeader"),
+                new("Constructor_FormSectionSetSettingsRandomCoffeeHelp"),
                 [
                     new(
                         RandomCoffeeProperties.RoundIntervalKey,
-                        "Constructor_FormSectionSetSettingsRoundIntervalFieldLabel",
+                        new("Constructor_FormSectionSetSettingsRoundIntervalFieldLabel"),
                         GetValuesForRoundInterval().ToArray()),
                     new(
                         RandomCoffeeProperties.VotingIntervalKey,
-                        "Constructor_FormSectionSetSettingsVotingIntervalFieldLabel",
+                        new("Constructor_FormSectionSetSettingsVotingIntervalFieldLabel"),
                         GetValuesForVotingInterval().ToArray())
                 ])
         ];
@@ -29,17 +29,17 @@ internal sealed class RandomCoffeeSettingSectionProvider : ISettingSectionProvid
     
     private IEnumerable<SelectValue> GetValuesForRoundInterval()
     {
-        yield return new SelectValue("Constructor_FormSectionSetSettingsRoundInterval1Description", "7.00:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsRoundInterval2Description", "14.00:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsRoundInterval3Description", "21.00:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsRoundInterval4Description", "28.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsRoundInterval1Description"), "7.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsRoundInterval2Description"), "14.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsRoundInterval3Description"), "21.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsRoundInterval4Description"), "28.00:00:00");
     }
     
     private IEnumerable<SelectValue> GetValuesForVotingInterval()
     {
-        yield return new SelectValue("Constructor_FormSectionSetSettingsVotingInterval1Description", "02:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsVotingInterval2Description", "04:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsVotingInterval3Description", "1.00:00:00");
-        yield return new SelectValue("Constructor_FormSectionSetSettingsVotingInterval4Description", "2.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsVotingInterval1Description"), "02:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsVotingInterval2Description"), "04:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsVotingInterval3Description"), "1.00:00:00");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsVotingInterval4Description"), "2.00:00:00");
     }
 }

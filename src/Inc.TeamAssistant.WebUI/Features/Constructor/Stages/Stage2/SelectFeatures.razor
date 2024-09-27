@@ -17,11 +17,7 @@
                         Value="_formModel.FeatureIds"
                         ValueExpression="@(() => _formModel.FeatureIds)"
                         ValuesChanged="(IEnumerable<Guid> v) => _formModel.SetFeatures(v)"
-                        Features="StagesState.AvailableFeatures"
-                        AddText="@Resources[Messages.Constructor_FeatureAdd]"
-                        RemoveText="@Resources[Messages.Constructor_FeatureRemove]"
-                        FeaturesAvailableEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]"
-                        FeaturesSelectedEmptyText="@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]">
+                        Features="StagesState.AvailableFeatures">
                         <Validation>
                             <ValidationMessage For="@(() => _formModel.FeatureIds)" />
                         </Validation>
@@ -37,7 +33,7 @@
     public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public Func<Stage, string> LinkFactory { get; set; } = default!;
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public Func<Stage?, Task> MoveToNext { get; set; } = default!;

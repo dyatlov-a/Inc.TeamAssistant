@@ -1,10 +1,10 @@
 @inject ResourcesManager Resources
-@inject LinkBuilder LinkBuilder
+@inject NavRouter NavRouter
 
 <DashboardWidget Title="@Resources[Messages.Dashboard_BotWidgetTitle]">
     <Content>
         <p class="bot-not-selected">
-            @Resources[Messages.Dashboard_SelectTeam] <a href="@LinkBuilder.Build("constructor")" class="link link_light">
+            @Resources[Messages.Dashboard_SelectTeam] <a href="@NavRouter.CreateRoute("constructor")" class="link link_light">
                 @Resources[Messages.Dashboard_CreateBot]
             </a>
         </p>

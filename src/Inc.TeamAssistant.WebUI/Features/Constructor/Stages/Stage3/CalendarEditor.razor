@@ -184,7 +184,7 @@
         StateHasChanged();
     }
     
-    private string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"Constructor_DayOfWeek{dayOfWeek}";
+    private MessageId GetDayOfWeekTitle(DayOfWeek dayOfWeek) => new($"Constructor_DayOfWeek{dayOfWeek}");
     
     public async Task SubmitForm()
     {

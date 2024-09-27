@@ -2,6 +2,7 @@
     background: rgba(0, 0, 0, .3);
     position: relative;
     height: 70px;
+    z-index: 999;
 }
 .navbar-container {
     display: flex;

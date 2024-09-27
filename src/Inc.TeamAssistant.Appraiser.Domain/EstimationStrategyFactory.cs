@@ -24,8 +24,6 @@ public static class EstimationStrategyFactory
     {
         return Strategies.TryGetValue(storyType, out var strategy)
             ? strategy
-            : throw new ArgumentOutOfRangeException(nameof(storyType),
-                storyType,
-                $"StoryType is not valid for {nameof(EstimationStrategyFactory)}.");
+            : throw new ArgumentOutOfRangeException(nameof(storyType), storyType, "State out of range.");
     }
 }

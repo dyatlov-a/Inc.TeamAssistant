@@ -5,6 +5,7 @@
 @inject ResourcesManager Resources
 @inject DragAndDropService<DashboardSettingsItem> DragAndDropService
 @inject IServiceProvider ServiceProvider
+@inject FeaturesFactory FeaturesFactory
 
 <ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
     <Content>
@@ -27,6 +28,7 @@
 
                                     <div
                                         class="widget-settings__item draggable"
+                                        title="@FeatureHelp(current)"
                                         draggable="true"
                                         ondragover="event.preventDefault();"
                                         @ondrop="() => HandleDrop(widgets, current)"
@@ -122,7 +124,7 @@
     public EventCallback Changed { get; set; }
     
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = Array.Empty<WidgetDto>();
+    public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = default!;
 
     private ContentDialog? _contentDialog;
 
@@ -152,6 +154,16 @@
     }
     
     private string ToWidgetTitle(string type) => WidgetsLookup.GetValueOrDefault(type, type);
+
+    private string FeatureHelp(DashboardSettingsItem item)
+    {
+        if (item.CanEnabled)
+            return string.Empty;
+        
+        var featureName = FeaturesFactory.CreateName(item.Feature);
+
+        return string.Format(Resources[Messages.Dashboard_DisableWidgetHelpTemplate], featureName);
+    }
     
     private void HandleDrop(DashboardSettingsItem[] items, DashboardSettingsItem target)
     {

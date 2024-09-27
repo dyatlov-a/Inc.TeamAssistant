@@ -1,15 +1,16 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 
 internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
 {
-    private readonly IReadOnlyDictionary<StoryType, string> _storyType = new Dictionary<StoryType, string>
+    private readonly IReadOnlyDictionary<StoryType, MessageId> _storyType = new Dictionary<StoryType, MessageId>
     {
-        [StoryType.Fibonacci] = "Constructor_FormSectionSetSettingsFibonacciDescription",
-        [StoryType.TShirt] = "Constructor_FormSectionSetSettingsTShirtDescription",
-        [StoryType.PowerOfTwo] = "Constructor_FormSectionSetSettingsPowerOfTwoDescription"
+        [StoryType.Fibonacci] = new("Constructor_FormSectionSetSettingsFibonacciDescription"),
+        [StoryType.TShirt] = new("Constructor_FormSectionSetSettingsTShirtDescription"),
+        [StoryType.PowerOfTwo] = new("Constructor_FormSectionSetSettingsPowerOfTwoDescription")
     };
 
     public string FeatureName => "Appraiser";
@@ -19,12 +20,12 @@ internal sealed class AppraiserSettingSectionProvider : ISettingSectionProvider
         return
         [
             new SettingSection(
-                "Constructor_FormSectionSetSettingsAppraiserHeader",
-                "Constructor_FormSectionSetSettingsAppraiserHelp",
+                new("Constructor_FormSectionSetSettingsAppraiserHeader"),
+                new("Constructor_FormSectionSetSettingsAppraiserHelp"),
                 [
                     new(
                         AppraiserProperties.StoryTypeKey,
-                        "Constructor_FormSectionSetSettingsStoryTypeFieldLabel",
+                        new("Constructor_FormSectionSetSettingsStoryTypeFieldLabel"),
                         GetValuesForStoryType().ToArray())
                 ])
         ];
