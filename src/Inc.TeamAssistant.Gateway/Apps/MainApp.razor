@@ -6,6 +6,7 @@
 
 @inject AnalyticsOptions AnalyticsOptions
 @inject IRenderContext RenderContext
+@inject IHostEnvironment HostEnvironment
 
 <!DOCTYPE html>
 <html lang="@_lang">
@@ -60,7 +61,7 @@
     
     <Routes @rendermode="_renderMode"/>
     
-    <script src="_framework/blazor.web.js?v=@_appVersion"></script>
+    <script src="_framework/blazor.web.js?v=@_appVersion" autostart="false"></script>
     <script>
         window.browserJsFunctions = {
             getTimezone: () => {
@@ -70,6 +71,10 @@
                 history.pushState(null, '', url);
             }
         };
+
+        Blazor.start({
+            environment: "@HostEnvironment.EnvironmentName"
+        });
     </script>
 </body>
 </html>
