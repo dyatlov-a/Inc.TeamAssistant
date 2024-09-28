@@ -73,7 +73,9 @@
         };
 
         Blazor.start({
-            environment: "@HostEnvironment.EnvironmentName"
+            webAssembly: {
+                environment: "@HostEnvironment.EnvironmentName"
+            }
         });
     </script>
 </body>
