@@ -14,10 +14,6 @@
     font-size: 1.3rem;
     line-height: 2.6rem;
 }
-.about-bots__item {
-    padding: 4px 10px;
-    border-radius: 4px;
-}
 .about-bots__actions {
     margin-top: 20px;
     text-align: center;
