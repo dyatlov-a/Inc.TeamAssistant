@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Components;
+namespace Inc.TeamAssistant.WebUI.Components;
 
 public sealed class LoadingState
 {

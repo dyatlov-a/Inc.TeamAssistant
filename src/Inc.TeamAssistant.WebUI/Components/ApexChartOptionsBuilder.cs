@@ -1,6 +1,6 @@
 using ApexCharts;
 
-namespace Inc.TeamAssistant.WebUI.Features.Components;
+namespace Inc.TeamAssistant.WebUI.Components;
 
 public static class ApexChartOptionsBuilder
 {
