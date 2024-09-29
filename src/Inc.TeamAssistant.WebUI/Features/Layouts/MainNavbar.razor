@@ -18,7 +18,7 @@
                     <br/>
                     @person.Username
                 </span>
-                <a href="@LogoutUrl" class="link link_light navbar__item">
+                <a href="@_logoutUrl" class="link link_light navbar__item">
                     @Resources[Messages.Navigation_Logout]
                 </a>
             </Authorized>
@@ -43,11 +43,16 @@
     private IDisposable? _routerScope;
     
     private string MainUrl => NavRouter.CreateRoute(null);
-    private string LogoutUrl => $"accounts/logout?returnUrl={NavRouter.CurrentUrl}";
+    private string _logoutUrl = string.Empty;
 
     protected override void OnInitialized()
     {
+        var languageId = NavRouter.GetCurrentLanguage();
+        
         _routerScope = NavRouter.OnRouteChanged(StateHasChanged);
+        _logoutUrl = languageId is null
+            ? "accounts/logout"
+            : $"accounts/logout?languageCode={languageId.Value}";
     }
 
     public void Dispose() => _routerScope?.Dispose();
