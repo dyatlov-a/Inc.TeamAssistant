@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-namespace Inc.TeamAssistant.WebUI.Features.Components;
+namespace Inc.TeamAssistant.WebUI.Components;
 
 internal sealed class DateSelectorFactory
 {

@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives.FeatureProperties;
-using Inc.TeamAssistant.WebUI.Features.Components;
+using Inc.TeamAssistant.WebUI.Components;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
