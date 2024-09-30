@@ -37,47 +37,46 @@
                                         </div>
                                         @if (next is not null)
                                         {
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small widget-settings__button"
-                                                @onclick="() => MoveDown(widgets, current, next)">
-                                                <ArrowDownIcon Size="20px" IsDark="true"/>
-                                            </button>
+                                            <Button
+                                                IsDark="true"
+                                                ButtonMode="ButtonMode.Small"
+                                                OnClick="() => MoveDown(widgets, current, next)">
+                                                <Content>
+                                                    <ArrowDownIcon Size="20px" IsDark="true"/>
+                                                </Content>
+                                            </Button>
                                         }
                                         else
                                         {
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small widget-settings__button"
-                                                disabled="disabled">
-                                                <ArrowDownIcon Size="20px" IsDark="true"/>
-                                            </button>
+                                            <Button IsDark="true" IsDisabled="true" ButtonMode="ButtonMode.Small">
+                                                <Content>
+                                                    <ArrowDownIcon Size="20px" IsDark="true"/>
+                                                </Content>
+                                            </Button>
                                         }
                                         @if (prev is not null)
                                         {
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small widget-settings__button"
-                                                @onclick="() => MoveUp(widgets, current, prev)">
-                                                <ArrowUpIcon Size="20px" IsDark="true"/>
-                                            </button>
+                                            <Button
+                                                IsDark="true"
+                                                ButtonMode="ButtonMode.Small"
+                                                OnClick="() => MoveUp(widgets, current, prev)">
+                                                <Content>
+                                                    <ArrowUpIcon Size="20px" IsDark="true"/>
+                                                </Content>
+                                            </Button>
                                         }
                                         else
                                         {
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small widget-settings__button"
-                                                disabled="disabled">
-                                                <ArrowUpIcon Size="20px" IsDark="true"/>
-                                            </button>
+                                            <Button IsDark="true" IsDisabled="true" ButtonMode="ButtonMode.Small">
+                                                <Content>
+                                                    <ArrowUpIcon Size="20px" IsDark="true"/>
+                                                </Content>
+                                            </Button>
                                         }
                                         @if (current.CanEnabled)
                                         {
-                                            <InputCheckbox
-                                                id="@isVisibleId"
-                                                @bind-Value="current.IsVisible"
-                                                class="widget-settings__checkbox"/>
-                                            <label for="@isVisibleId" class="widget-settings__label">
+                                            <InputCheckbox id="@isVisibleId" @bind-Value="current.IsVisible"/>
+                                            <label for="@isVisibleId">
                                                 @ToWidgetTitle(current.Type)
                                             </label>
                                         }
@@ -86,9 +85,8 @@
                                             <InputCheckbox
                                                 id="@isVisibleId"
                                                 @bind-Value="current.IsVisible"
-                                                class="widget-settings__checkbox"
                                                 disabled="disabled"/>
-                                            <label for="@isVisibleId" class="widget-settings__label">
+                                            <label for="@isVisibleId">
                                                 @ToWidgetTitle(current.Type)
                                             </label>
                                         }
@@ -97,9 +95,8 @@
                             }
                         </div>
                         <div class="widget-settings__actions">
-                            <button type="submit" class="button button_dark">
-                                @Resources[Messages.Dashboard_Apply]
-                            </button>
+                            <Button ButtonType="ButtonType.Submit" IsDark="true" Message="Messages.Dashboard_Apply">
+                            </Button>
                         </div>
                     </Content>
                 </Loading>
@@ -109,9 +106,11 @@
 </ContentDialog>
 
 <div class="dashboard-settings">
-    <button type="button" class="button button_dark button_small" @onclick="Open">
-        <SettingsIcon Size="20px" IsDark="true" />
-    </button>
+    <Button IsDark="true" ButtonMode="ButtonMode.Small" OnClick="() => _contentDialog?.Open()">
+        <Content>
+            <SettingsIcon Size="20px" IsDark="true"/>
+        </Content>
+    </Button>
 </div>
 
 @code {
@@ -175,9 +174,7 @@
     private void HandleDragStart(DashboardSettingsItem source) => DragAndDropService.Start(source);
     
     private void HandleDragEnter() => _isDragStarting = true;
-
-    private void Open() => _contentDialog?.Open();
-
+    
     private void Swap(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
     {
         if (first.Position < second.Position)

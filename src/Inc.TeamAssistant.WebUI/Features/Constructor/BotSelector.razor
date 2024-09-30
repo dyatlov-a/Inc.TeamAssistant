@@ -11,9 +11,7 @@
 <div class="bot-selector">
     <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
         <Buttons>
-            <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
-                @Resources[Messages.Constructor_AddBot]
-            </button>
+            <Button Message="Messages.Constructor_AddBot" OnClick="MoveToAdd"></Button>
         </Buttons>
     </BotCard>
     <Loading State="_state" Retry="Load">
@@ -27,18 +25,8 @@
                         </a>
                     </Content>
                     <Buttons>
-                        <button
-                            type="button"
-                            class="button button_light bot-selector__button"
-                            @onclick="() => MoveToEdit(bot.Id)">
-                            @Resources[Messages.Constructor_Edit]
-                        </button>
-                        <button
-                            type="button"
-                            class="button button_light bot-selector__button"
-                            @onclick="() => MoveToRemove(bot)">
-                            @Resources[Messages.Constructor_Remove]
-                        </button>
+                        <Button Message="Messages.Constructor_Edit" OnClick="() => MoveToEdit(bot.Id)"></Button>
+                        <Button Message="Messages.Constructor_Remove" OnClick="() => MoveToRemove(bot)"></Button>
                     </Buttons>
                 </BotCard>
             }

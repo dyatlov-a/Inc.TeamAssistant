@@ -9,7 +9,7 @@
     justify-content: right;
     margin: 10px;
 }
-.appraiser-integration__button {
+::deep .button {
     margin-left: 10px;
 }
 .appraiser-integration__controls, .appraiser-integration__bg {

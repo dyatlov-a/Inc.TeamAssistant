@@ -5,9 +5,7 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">
-                @Resources[Messages.Constructor_MoveNextTitle]
-            </button>
+            <Button ButtonType="ButtonType.Submit" Message="Messages.Constructor_MoveNextTitle"></Button>
         </Actions>
         <Content>
             @foreach (var feature in StagesState.SelectedFeatures)

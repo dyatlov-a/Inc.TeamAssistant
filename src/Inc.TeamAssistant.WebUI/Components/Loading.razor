@@ -5,13 +5,11 @@
     <div class="loading">
         @if (State.Value == LoadingState.State.Loading)
         {
-            <div class="loader @LoaderCssClass"></div>
+            <div class="loader @CssClass"></div>
         }
         else
         {
-            <button type="button" @onclick="Retry" class="button @ButtonCssClass">
-                @Resources[Messages.LoadingReload]
-            </button>
+            <Button IsDark="IsDark" Message="Messages.LoadingReload" OnClick="Retry"></Button>
         }
     </div>
 }
@@ -33,7 +31,5 @@ else
     [Parameter]
     public bool IsDark { get; set; }
     
-    private string LoaderCssClass => IsDark ? "loader_dark" : "loader_light";
-    
-    private string ButtonCssClass => IsDark ? "button_dark" : "button_light";
+    private string CssClass => IsDark ? "loader_dark" : "loader_light";
 }

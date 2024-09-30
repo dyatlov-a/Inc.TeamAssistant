@@ -9,18 +9,8 @@
                 @Content
             </div>
             <div class="confirm-dialog__actions">
-                <button
-                    type="button"
-                    class="button button_light confirm-dialog__button"
-                    @onclick="() => Close(OnConfirm)">
-                    @Resources[Messages.ConfirmDialog_Yes]
-                </button>
-                <button
-                    type="button"
-                    class="button button_dark confirm-dialog__button"
-                    @onclick="() => Close()">
-                    @Resources[Messages.ConfirmDialog_No]
-                </button>
+                <Button Message="Messages.ConfirmDialog_Yes" OnClick="() => Close(OnConfirm)"></Button>
+                <Button Message="Messages.ConfirmDialog_No" OnClick="() => Close()"></Button>
             </div>
         </div>
     </div>

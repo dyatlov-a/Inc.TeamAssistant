@@ -13,6 +13,7 @@
     display: flex;
     align-items: center;
     transition: border 0.3s;
+    gap: 10px;
 }
 .widget-settings_no-drag .widget-settings__item {
     border: 3px #555 solid;
@@ -27,9 +28,6 @@
 }
 .widget-settings__drag {
     display: flex;
-}
-.widget-settings__button, .widget-settings__label, .widget-settings__drag, ::deep .widget-settings__checkbox {
-    margin-right: 10px;
 }
 @media (max-width: 767.98px) {
     .dashboard-settings {

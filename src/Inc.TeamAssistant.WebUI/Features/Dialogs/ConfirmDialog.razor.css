@@ -29,7 +29,7 @@
     margin-top: 20px;
     text-align: right;
 }
-.confirm-dialog__button {
+::deep .button {
     margin-left: 5px;
     min-width: 75px;
 }

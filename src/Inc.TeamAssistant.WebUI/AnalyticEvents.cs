@@ -2,7 +2,6 @@ namespace Inc.TeamAssistant.WebUI;
 
 internal static class AnalyticEvents
 {
-    public const string ConstructorOpened = "constructor-opened";
     public const string BotChecked = "bot-checked";
     public const string FeatureSelected = "feature-selected";
     public const string SettingsSpecified = "settings-specified";

@@ -4,7 +4,6 @@
 
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
-@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -28,12 +27,7 @@
             <span>@Icons.Start @Resources[Messages.GUI_ToolCheckIn]</span>
         </p>
         <div class="about-bots__actions">
-            <a
-                id="@AnalyticEvents.ConstructorOpened"
-                href="@NavRouter.CreateRoute("constructor")"
-                class="button button_dark">
-                @Resources[Messages.GUI_CreateBotLink]
-            </a>
+            <Button IsDark="true" Message="Messages.GUI_CreateBotLink" Link="constructor"></Button>
         </div>
     </div>
 </section>
