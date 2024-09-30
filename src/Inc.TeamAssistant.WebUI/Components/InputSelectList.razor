@@ -28,7 +28,7 @@ else
         Value="_value"
         ValueExpression="@(() => _value)"
         ValueChanged="@((TValue? v) => SetCurrentValue(v))"
-        class="@($"form-control form-control_enabled {CssClass} {ParentCssClass}")">
+        class="@($"form-control form-control_select-list form-control_enabled {CssClass} {ParentCssClass}")">
         @if (HasEmptyValue)
         {
             <option value=""></option>

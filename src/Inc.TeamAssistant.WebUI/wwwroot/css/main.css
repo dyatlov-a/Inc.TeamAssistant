@@ -141,10 +141,9 @@ html {
     background-color: #dfdfdf;
     transition: border 0.3s;
 }
-.form-control, select {
+.form-control {
     min-height: 45px;
     font-size: 1rem;
-    -webkit-appearance: none;
 }
 .form-control:focus, .form-control_enabled:hover {
     border: 3px solid #000;
@@ -167,6 +166,13 @@ html {
     margin-top: 5px;
     font-size: 1rem;
     color: #dc3545;
+}
+.form-control_select-list {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #dfdfdf url('../imgs/arrow-down.png') calc(100% - 5px) center no-repeat;
+    padding-right: 20px;
 }
 /* ROOT COMPONENTS */
 .title {
