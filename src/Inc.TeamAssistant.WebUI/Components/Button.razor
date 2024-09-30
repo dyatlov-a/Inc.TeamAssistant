@@ -1,0 +1,100 @@
+@inject ResourcesManager Resources
+@inject NavRouter NavRouter
+
+@if (ButtonType == ButtonType.Tab)
+{
+    <a href="@Link" target="_blank" class="button @CssClass() @ModeCssClass">
+        @if (Content is not null)
+        {
+            @Content
+        }
+        @if (Message is not null)
+        {
+            @Resources[Message]
+        }
+    </a>
+}
+else if (IsDisabled)
+{
+    <button type="@ButtonType2" class="button @CssClass() @ModeCssClass" disabled="disabled">
+        @if (Content is not null)
+        {
+            @Content
+        }
+        @if (Message is not null)
+        {
+            @Resources[Message]
+        }
+    </button>
+}
+else
+{
+    <button type="@ButtonType2" @onclick="EmitOnClick" class="button @CssClass() @ModeCssClass">
+        @if (Content is not null)
+        {
+            @Content
+        }
+        @if (Message is not null)
+        {
+            @Resources[Message]
+        }
+    </button>
+}
+
+@code {
+    [Parameter]
+    public MessageId? Message { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    
+    [Parameter]
+    public ButtonMode ButtonMode { get; set; }
+    
+    [Parameter]
+    public bool IsDark { get; set; }
+    
+    [Parameter]
+    public bool IsSelected { get; set; }
+    
+    [Parameter]
+    public bool IsDisabled { get; set; }
+    
+    [Parameter]
+    public ButtonType ButtonType { get; set; }
+    
+    [Parameter]
+    public string? Link { get; set; }
+
+    private string ModeCssClass => ButtonMode switch
+    {
+        ButtonMode.Small => "button_small",
+        ButtonMode.Telegram => "button_telegram",
+        _ => string.Empty
+    };
+
+    private string CssClass()
+    {
+        if (ButtonMode == ButtonMode.Telegram)
+            return string.Empty;
+        
+        return IsDark ? "button_dark" : "button_light";
+    }
+
+    private string ButtonType2 => ButtonType == ButtonType.Submit ? "submit" : "button";
+    
+    private async Task EmitOnClick()
+    {
+        if (!OnClick.Equals(default(EventCallback)))
+        {
+            await OnClick.InvokeAsync();
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Link))
+            await NavRouter.MoveToRoute(Link);
+    }
+}

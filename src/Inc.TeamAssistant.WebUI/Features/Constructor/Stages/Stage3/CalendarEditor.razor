@@ -8,7 +8,7 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+            <Button ButtonType="ButtonType.Submit" Message="Messages.PanelSave"></Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
@@ -110,22 +110,24 @@
                                             </FormFieldSet>
                                         </div>
                                         <div class="holiday-items__item-control">
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small work-schedule__button"
-                                                @onclick="() => _formModel.RemoveHoliday(holiday)">
-                                                <TrashIcon Size="20px" IsDark="true"/>
-                                            </button>
+                                            <Button
+                                                IsDark="true"
+                                                ButtonMode="ButtonMode.Small"
+                                                OnClick="() => _formModel.RemoveHoliday(holiday)">
+                                                <Content>
+                                                    <TrashIcon Size="20px" IsDark="true"/>
+                                                </Content>
+                                            </Button>
                                         </div>
                                     </div>
                                 }
                                 <div class="holiday-items__item">
-                                    <button
-                                        type="button"
-                                        class="button button_dark button_small work-schedule__button"
-                                        @onclick="_formModel.AddHoliday">
-                                        @Resources[Messages.Constructor_AddHolidayLabel]
-                                    </button>
+                                    <Button
+                                        IsDark="true"
+                                        ButtonMode="ButtonMode.Small"
+                                        Message="Messages.Constructor_AddHolidayLabel"
+                                        OnClick="_formModel.AddHoliday">
+                                    </Button>
                                 </div>
                             </div>
                         </Content>

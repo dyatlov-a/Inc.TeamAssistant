@@ -3,7 +3,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.bot-selector__button {
+::deep .button {
     margin: 5px;
     min-width: 166px;
 }

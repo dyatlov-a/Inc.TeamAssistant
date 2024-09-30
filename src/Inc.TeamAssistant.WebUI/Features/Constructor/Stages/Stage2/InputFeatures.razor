@@ -21,9 +21,8 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
-                            @Resources[Messages.Constructor_FeatureAdd]
-                        </button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)" Message="Messages.Constructor_FeatureAdd">
+                        </Button>
                     </Buttons>
                 </FeatureCard>
             }
@@ -49,9 +48,8 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
-                            @Resources[Messages.Constructor_FeatureRemove]
-                        </button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)" Message="Messages.Constructor_FeatureRemove">
+                        </Button>
                     </Buttons>
                 </FeatureCard>
             }

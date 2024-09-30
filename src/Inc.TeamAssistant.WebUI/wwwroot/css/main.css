@@ -92,47 +92,7 @@ html {
 /* MOBILE SMALL */
 @media (max-width: 479.98px) {
 }
-/* BUTTON */
-.button {
-    display: inline-block;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: .75rem;
-    line-height: 1.3rem;
-    letter-spacing: .0625rem;
-    padding: .7rem 1rem;
-    border-radius: 1rem;
-    transition: background-color 0.3s ease 0s;
-    background-color: transparent;
-    cursor: pointer;
-}
-.button_light {
-    border: .1875rem solid #dfdfdf;
-    color: #dfdfdf;
-}
-.button_light:hover {
-    background-color: #dfdfdf;
-    color: #000;
-}
-.button_dark {
-    border: .1875rem solid #000;
-    color: #000;
-}
-.button_dark:hover {
-    background-color: #000;
-    color: #dfdfdf;
-}
-.button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
-    background-color: #aaa;
-    color: #000;
-    border: .1875rem solid #aaa;
-    cursor: default;
-}
-.button_small {
-    padding: 5px;
-    border-radius: 10px;
-    height: 38px;
-}
+/* LINK */
 .link {
     font-size: 1rem;
 }

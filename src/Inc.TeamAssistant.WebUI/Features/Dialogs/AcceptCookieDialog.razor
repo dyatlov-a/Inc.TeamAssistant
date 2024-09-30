@@ -11,9 +11,7 @@
             <p>@Resources[Messages.GUI_AcceptCookieText]</p>
         </div>
         <div class="inline-dialog__actions">
-            <a href="#" @onclick="Accept" @onclick:preventDefault="true" class="button button_light">
-                @Resources[Messages.GUI_AcceptCookieButton]
-            </a>
+            <Button Message="Messages.GUI_AcceptCookieButton" OnClick="Accept"></Button>
         </div>
     </div>
 }

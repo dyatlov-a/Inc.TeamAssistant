@@ -40,9 +40,11 @@
                         }
                     </div>
                     <div class="component-actions">
-                        <a href="@CreateAssessmentSessionLink()" class="button button_dark">
-                            @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
-                        </a>
+                        <Button
+                            IsDark="true"
+                            Message="Messages.Dashboard_GoToCurrentSessionButtonText"
+                            OnClick="MoveToAssessmentSession">
+                        </Button>
                     </div>
                 </Content>
             </Loading>
@@ -88,7 +90,10 @@
             });
     }
 
-    private string CreateAssessmentSessionLink() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
+    private async Task MoveToAssessmentSession()
+    {
+        await NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");
+    }
 
     private string CreateMoveToHistoryLink(DateOnly date)
         => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");

@@ -13,9 +13,12 @@
                     <div class="team-connector__code">
                         @((MarkupString)_team.Code)
                     </div>
-                    <a href="@_team.LinkForConnect" class="button button_dark team-connector__link" target="_blank">
-                        @Resources[Messages.Dashboard_ConnectToTeamButton]
-                    </a>
+                    <Button
+                        IsDark="true"
+                        ButtonType="ButtonType.Tab"
+                        Message="Messages.Dashboard_ConnectToTeamButton"
+                        Link="@_team.LinkForConnect">
+                    </Button>
                 </Content>
             </Loading>
         </Content>

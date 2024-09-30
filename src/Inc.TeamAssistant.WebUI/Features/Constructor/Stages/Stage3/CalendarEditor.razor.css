@@ -14,11 +14,11 @@
     display: flex;
     flex-wrap: wrap;
 }
-.work-schedule__button {
-    margin: 25px 0 15px 0;
-}
 .work-schedule__item {
     flex: 0 1 50%;
+}
+::deep .button {
+    margin: 25px 0 15px 0;
 }
 @media (max-width: 767.98px) {
     .holiday-items__item {
