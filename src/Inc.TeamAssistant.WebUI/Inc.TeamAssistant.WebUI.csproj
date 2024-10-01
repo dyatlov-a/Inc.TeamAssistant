@@ -1,15 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
+        <PackageReference Include="Blazor-ApexCharts" Version="3.4.0" />
         <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
@@ -18,30 +20,5 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Features\Constructor\Stages\Stage4\Calendar.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\DateSelector.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\FormFieldSet.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\FormSection.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\InputDateOnly.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\InputMultiSelectList.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\InputSelectList.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\InputTimeOnly.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\Loading.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\NoData.razor" />
-      <_ContentIncludedByDefault Remove="Features\Components\Panel.razor" />
-    </ItemGroup>
-    <ItemGroup>
-      <AdditionalFiles Include="Components\DateSelector.razor" />
-      <AdditionalFiles Include="Components\FormFieldSet.razor" />
-      <AdditionalFiles Include="Components\FormSection.razor" />
-      <AdditionalFiles Include="Components\InputDateOnly.razor" />
-      <AdditionalFiles Include="Components\InputMultiSelectList.razor" />
-      <AdditionalFiles Include="Components\InputSelectList.razor" />
-      <AdditionalFiles Include="Components\InputTimeOnly.razor" />
-      <AdditionalFiles Include="Components\Loading.razor" />
-      <AdditionalFiles Include="Components\NoData.razor" />
-      <AdditionalFiles Include="Components\Panel.razor" />
     </ItemGroup>
 </Project>

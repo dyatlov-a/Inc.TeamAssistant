@@ -72,15 +72,15 @@
                             @if (_formModel.HasManagerAccess)
                             {
                                 <div class="component-actions">
-                                    <Button
-                                        IsDark="true"
-                                        ButtonType="ButtonType.Submit"
-                                        Message="Messages.Dashboard_AppraiserIntegrationSaveButton">
+                                    <Button IsDark="true" ButtonType="ButtonType.Submit">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
+                                        </Content>
                                     </Button>
-                                    <Button
-                                        IsDark="true"
-                                        Message="Messages.Dashboard_AppraiserIntegrationDisableButton"
-                                        OnClick="BeginDisable">
+                                    <Button IsDark="true" OnClick="BeginDisable">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
+                                        </Content>
                                     </Button>
                                 </div>
                             }
@@ -89,10 +89,10 @@
                                 <div class="appraiser-integration__bg"></div>
                                 <div class="appraiser-integration__controls">
                                     <div class="appraiser-integration__controls-body">
-                                        <Button
-                                            IsDark="true"
-                                            Message="Messages.Dashboard_AppraiserIntegrationEnableButton"
-                                            OnClick="Enable">
+                                        <Button IsDark="true" OnClick="Enable">
+                                            <Content>
+                                                @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
+                                            </Content>
                                         </Button>
                                     </div>
                                 </div>

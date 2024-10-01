@@ -40,10 +40,10 @@
                         }
                     </div>
                     <div class="component-actions">
-                        <Button
-                            IsDark="true"
-                            Message="Messages.Dashboard_GoToCurrentSessionButtonText"
-                            OnClick="MoveToAssessmentSession">
+                        <Button IsDark="true" OnClick="MoveToAssessmentSession">
+                            <Content>
+                                @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
+                            </Content>
                         </Button>
                     </div>
                 </Content>

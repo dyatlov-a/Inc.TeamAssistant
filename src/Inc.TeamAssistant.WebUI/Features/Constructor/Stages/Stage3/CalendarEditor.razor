@@ -8,7 +8,11 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <Button ButtonType="ButtonType.Submit" Message="Messages.PanelSave"></Button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Resources[Messages.PanelSave]
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
@@ -122,11 +126,10 @@
                                     </div>
                                 }
                                 <div class="holiday-items__item">
-                                    <Button
-                                        IsDark="true"
-                                        ButtonMode="ButtonMode.Small"
-                                        Message="Messages.Constructor_AddHolidayLabel"
-                                        OnClick="_formModel.AddHoliday">
+                                    <Button IsDark="true" ButtonMode="ButtonMode.Small" OnClick="_formModel.AddHoliday">
+                                        <Content>
+                                            @Resources[Messages.Constructor_AddHolidayLabel]
+                                        </Content>
                                     </Button>
                                 </div>
                             </div>

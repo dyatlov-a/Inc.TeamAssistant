@@ -8,7 +8,11 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit" Message="ButtonText"></Button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @ButtonText
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="SubmitForm">
@@ -157,9 +161,9 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
 
-    private MessageId ButtonText => StagesState.Id.HasValue
-        ? Messages.Constructor_ButtonUpdateText
-        : Messages.Constructor_ButtonCreateText;
+    private string ButtonText => StagesState.Id.HasValue
+        ? Resources[Messages.Constructor_ButtonUpdateText]
+        : Resources[Messages.Constructor_ButtonCreateText];
     
     private string FormId => StagesState.Id.HasValue
         ? AnalyticEvents.BotUpdated
@@ -167,7 +171,7 @@
     
     private string PanelHeader => string.Format(
         Resources[Messages.Constructor_CheckConfigurationTemplate],
-        Resources[ButtonText].ToLowerInvariant());
+        ButtonText.ToLowerInvariant());
     
     private readonly CompleteFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;

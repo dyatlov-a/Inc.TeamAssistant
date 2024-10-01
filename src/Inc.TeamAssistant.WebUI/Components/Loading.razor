@@ -9,7 +9,11 @@
         }
         else
         {
-            <Button IsDark="IsDark" Message="Messages.LoadingReload" OnClick="Retry"></Button>
+            <Button IsDark="IsDark" OnClick="Retry">
+                <Content>
+                    @Resources[Messages.LoadingReload]
+                </Content>
+            </Button>
         }
     </div>
 }

@@ -1,0 +1,45 @@
+@attribute [Stories("Components/Button")]
+
+<Stories TComponent="Button">
+    <ArgType For="c => c.ButtonMode" Control="ControlType.Select" />
+    <ArgType For="c => c.ButtonType" Control="ControlType.Select" />
+    <Story Name="Default" Layout="typeof(DarkLayout)">
+        <Arguments>
+            <Arg For="c => c.Content" Value='ToRenderFragment("Default")' />
+        </Arguments>
+        <Template>
+            <Button @attributes="context.Args"></Button>
+        </Template>
+    </Story>
+    <Story Name="Small" Layout="typeof(DarkLayout)">
+        <Arguments>
+            <Arg For="c => c.Content" Value='ToRenderFragment("Small")' />
+            <Arg For="c => c.ButtonMode" Value="ButtonMode.Small" />
+        </Arguments>
+        <Template>
+            <Button @attributes="context.Args"></Button>
+        </Template>
+    </Story>
+    <Story Name="Dark" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.Content" Value='ToRenderFragment("Dark")' />
+            <Arg For="c => c.IsDark" Value="true" />
+        </Arguments>
+        <Template>
+            <Button @attributes="context.Args"></Button>
+        </Template>
+    </Story>
+    <Story Name="Disabled" Layout="typeof(DarkLayout)">
+        <Arguments>
+            <Arg For="c => c.Content" Value='ToRenderFragment("Disabled")' />
+            <Arg For="c => c.IsDisabled" Value="true" />
+        </Arguments>
+        <Template>
+            <Button @attributes="context.Args"></Button>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private RenderFragment ToRenderFragment(string value) => b => b.AddContent(0, value);
+}
