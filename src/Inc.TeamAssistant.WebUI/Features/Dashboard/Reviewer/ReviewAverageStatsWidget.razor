@@ -65,7 +65,7 @@
     private DateOnly? _date;
 
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
     private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
 
     protected override async Task OnParametersSetAsync()
