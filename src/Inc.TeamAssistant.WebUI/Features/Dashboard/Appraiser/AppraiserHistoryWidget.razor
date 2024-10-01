@@ -63,7 +63,7 @@
     private readonly PaginationState _pagination = new();
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateMonths();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
     private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
     
