@@ -9,8 +9,16 @@
                 @Content
             </div>
             <div class="confirm-dialog__actions">
-                <Button Message="Messages.ConfirmDialog_Yes" OnClick="() => Close(OnConfirm)"></Button>
-                <Button Message="Messages.ConfirmDialog_No" OnClick="() => Close()"></Button>
+                <Button OnClick="() => Close(OnConfirm)">
+                    <Content>
+                        @Resources[Messages.ConfirmDialog_Yes]
+                    </Content>
+                </Button>
+                <Button OnClick="() => Close()">
+                    <Content>
+                        @Resources[Messages.ConfirmDialog_No]
+                    </Content>
+                </Button>
             </div>
         </div>
     </div>

@@ -13,7 +13,7 @@ namespace Inc.TeamAssistant.WebUI.Services;
 
 public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddServices(this IServiceCollection services)
+    internal static IServiceCollection AddClientServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddIsomorphic(this IServiceCollection services)
+    public static IServiceCollection AddIsomorphicServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 

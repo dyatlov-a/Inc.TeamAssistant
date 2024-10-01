@@ -10,7 +10,11 @@
             }
             else
             {
-                <Button Message="Messages.PanelOpen" OnClick="Open"></Button>
+                <Button OnClick="Open">
+                    <Content>
+                        @Resources[Messages.PanelOpen]
+                    </Content>
+                </Button>
             }
         </div>
     </div>

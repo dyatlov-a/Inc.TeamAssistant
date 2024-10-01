@@ -7,7 +7,11 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <Button ButtonType="ButtonType.Submit" Message="Messages.PanelSave"></Button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Resources[Messages.PanelSave]
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">

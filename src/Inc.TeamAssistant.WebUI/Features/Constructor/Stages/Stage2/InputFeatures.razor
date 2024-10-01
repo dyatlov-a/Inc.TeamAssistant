@@ -21,7 +21,10 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <Button OnClick="() => ToggleFeature(feature.Id)" Message="Messages.Constructor_FeatureAdd">
+                        <Button OnClick="() => ToggleFeature(feature.Id)">
+                            <Content>
+                                @Resources[Messages.Constructor_FeatureAdd]
+                            </Content>
                         </Button>
                     </Buttons>
                 </FeatureCard>
@@ -48,7 +51,10 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <Button OnClick="() => ToggleFeature(feature.Id)" Message="Messages.Constructor_FeatureRemove">
+                        <Button OnClick="() => ToggleFeature(feature.Id)">
+                            <Content>
+                                @Resources[Messages.Constructor_FeatureRemove]
+                            </Content>
                         </Button>
                     </Buttons>
                 </FeatureCard>

@@ -21,12 +21,9 @@
                         <Content>
                             @if (RenderContext.IsDevelopment())
                             {
-                                <Button
-                                    ButtonMode="ButtonMode.Telegram"
-                                    Message="Messages.Login_AsSuperuserText"
-                                    Link=""
-                                    OnClick="LoginAsSuperUser">
-                                </Button>
+                                <button type="button" @onclick="LoginAsSuperUser" class="button_telegram">
+                                    @Resources[Messages.Login_AsSuperuserText]
+                                </button>
                             }
                             else if (!string.IsNullOrWhiteSpace(_botUserName))
                             {

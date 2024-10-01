@@ -6,7 +6,11 @@
     <CheckBotFormTracker OnChange="StateHasChanged" />
     <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit" Message="Messages.Constructor_MoveNextTitle"></Button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Resources[Messages.Constructor_MoveNextTitle]
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">

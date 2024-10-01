@@ -11,7 +11,11 @@
 <div class="bot-selector">
     <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
         <Buttons>
-            <Button Message="Messages.Constructor_AddBot" OnClick="MoveToAdd"></Button>
+            <Button OnClick="MoveToAdd">
+                <Content>
+                    @Resources[Messages.Constructor_AddBot]
+                </Content>
+            </Button>
         </Buttons>
     </BotCard>
     <Loading State="_state" Retry="Load">
@@ -25,8 +29,16 @@
                         </a>
                     </Content>
                     <Buttons>
-                        <Button Message="Messages.Constructor_Edit" OnClick="() => MoveToEdit(bot.Id)"></Button>
-                        <Button Message="Messages.Constructor_Remove" OnClick="() => MoveToRemove(bot)"></Button>
+                        <Button OnClick="() => MoveToEdit(bot.Id)">
+                            <Content>
+                                @Resources[Messages.Constructor_Edit]
+                            </Content>
+                        </Button>
+                        <Button OnClick="() => MoveToRemove(bot)">
+                            <Content>
+                                @Resources[Messages.Constructor_Remove]
+                            </Content>
+                        </Button>
                     </Buttons>
                 </BotCard>
             }

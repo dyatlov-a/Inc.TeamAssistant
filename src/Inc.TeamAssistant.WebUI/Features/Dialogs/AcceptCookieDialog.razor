@@ -11,7 +11,11 @@
             <p>@Resources[Messages.GUI_AcceptCookieText]</p>
         </div>
         <div class="inline-dialog__actions">
-            <Button Message="Messages.GUI_AcceptCookieButton" OnClick="Accept"></Button>
+            <Button OnClick="Accept">
+                <Content>
+                    @Resources[Messages.GUI_AcceptCookieButton]
+                </Content>
+            </Button>
         </div>
     </div>
 }

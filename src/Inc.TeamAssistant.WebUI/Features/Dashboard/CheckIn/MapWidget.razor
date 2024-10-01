@@ -28,11 +28,10 @@
                             <div class="checkin-map__bg"></div>
                             <div class="checkin-map__controls">
                                 <div class="checkin-map__controls-body">
-                                    <Button
-                                        IsDark="true"
-                                        ButtonType="ButtonType.Tab"
-                                        Message="Messages.Dashboard_CheckInMoveToMapTitle"
-                                        Link="@routeSegment">
+                                    <Button IsDark="true" ButtonType="ButtonType.Tab" Link="@routeSegment">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
+                                        </Content>
                                     </Button>
                                 </div>
                             </div>
