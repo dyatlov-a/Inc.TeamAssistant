@@ -4,13 +4,9 @@
 
 @foreach (var language in _languages)
 {
-    <a
-        href="@language.Path"
-        @onclick="() => MoveTo(language.Path)"
-        class="link link_light navbar__item"
-        @onclick:preventDefault="true">
-        @language.Culture
-    </a>
+    <RouterLink OnClick="() => MoveTo(language.Path)">
+        <Content>@language.Culture</Content>
+    </RouterLink>
 }
 
 @code {

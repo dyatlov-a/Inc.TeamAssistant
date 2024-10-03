@@ -8,7 +8,7 @@
 .history__body {
     margin-top: .5rem;
 }
-.history__item {
+::deep .link {
     display: block;
     line-height: 1.5rem;
 }

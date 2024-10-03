@@ -24,9 +24,9 @@
             {
                 <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
                     <Content>
-                        <a href="@CreateMoveToDashboardLink(bot)" class="link link_dark">
-                            @Resources[Messages.Dashboard_MoveToDashboard]
-                        </a>
+                        <RouterLink Href="@CreateMoveToDashboardLink(bot)" IsDark="true">
+                            <Content>@Resources[Messages.Dashboard_MoveToDashboard]</Content>
+                        </RouterLink>
                     </Content>
                     <Buttons>
                         <Button OnClick="() => MoveToEdit(bot.Id)">

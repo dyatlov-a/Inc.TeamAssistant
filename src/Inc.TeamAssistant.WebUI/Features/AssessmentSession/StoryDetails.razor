@@ -6,7 +6,9 @@
             @foreach (var link in Story.Links)
             {
                 <li class="story__item">
-                    <a class="link story__link" href="@link" target="_blank">@link</a>
+                    <RouterLink Href="@link" Target="@RouterTarget.Blank">
+                        <Content>@link</Content>
+                    </RouterLink>
                 </li>
             }
         </ul>

@@ -11,12 +11,9 @@
                     <span class="footer-group__header">@group.Key</span>
                     @foreach (var link in group)
                     {
-                        <a
-                            href="@link.Url"
-                            class="link link_light footer-group__link"
-                            target="@(link.External ? "_blank" : "_self")">
-                            @link.Title
-                        </a>
+                        <RouterLink Href="@link.Url" Target="@(link.External ? RouterTarget.Blank : RouterTarget.Self)">
+                            <Content>@link.Title</Content>
+                        </RouterLink>
                     }
                 </div>
             }

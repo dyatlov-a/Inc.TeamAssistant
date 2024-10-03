@@ -15,9 +15,11 @@
         <Content>
             <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
                 <HelpContent>
-                    @((MarkupString)string.Format(
-                        Resources[Messages.Constructor_FormSectionTokenHelpTemplate],
-                        "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                    @Resources[Messages.Constructor_FormSectionTokenHelpBegin] <RouterLink
+                            Href="https://telegram.me/BotFather" IsDark="true"
+                            Target="@RouterTarget.Blank">
+                        <Content>BotFather</Content>
+                    </RouterLink> @Resources[Messages.Constructor_FormSectionTokenHelpEnd]
                 </HelpContent>
                 <Content>
                     <FormFieldSet

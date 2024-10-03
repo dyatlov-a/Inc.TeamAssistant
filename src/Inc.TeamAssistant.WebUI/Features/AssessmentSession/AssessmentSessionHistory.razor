@@ -10,9 +10,11 @@
         <div class="history__body">
             @foreach (var item in _items)
             {
-                <a href="@CreateMoveToHistoryLink(item)" class="link link_dark history__item">
-                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
-                </a>
+                <RouterLink Href="@CreateMoveToHistoryLink(item)" IsDark="true">
+                    <Content>
+                        @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
+                    </Content>
+                </RouterLink>
             }
         </div>
     </div>

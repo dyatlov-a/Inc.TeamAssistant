@@ -19,9 +19,9 @@
                                     Title="@Resources[Messages.Dashboard_AssessmentDate]"
                                     Sortable="true"
                                     SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                                    <a href="@CreateMoveToHistoryLink(context.AssessmentDate)" class="link link_light">
-                                        @context.AssessmentDate.ToString("dd-MM-yyyy")
-                                    </a>
+                                    <RouterLink Href="@CreateMoveToHistoryLink(context.AssessmentDate)">
+                                        <Content>@context.AssessmentDate.ToString("dd-MM-yyyy")</Content>
+                                    </RouterLink>
                                 </TemplateColumn>
                                 <PropertyColumn
                                     Title="@Resources[Messages.Dashboard_TotalStories]"
