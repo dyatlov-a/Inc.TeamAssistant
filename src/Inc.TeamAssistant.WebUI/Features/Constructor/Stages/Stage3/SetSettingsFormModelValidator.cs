@@ -20,7 +20,7 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
         RuleForEach(e => e.Properties)
             .ChildRules(c =>
             {
-                c.RuleFor(e => e.Title)
+                c.RuleFor(e => e.Key)
                     .NotEmpty();
 
                 c.RuleFor(e => e.Value)

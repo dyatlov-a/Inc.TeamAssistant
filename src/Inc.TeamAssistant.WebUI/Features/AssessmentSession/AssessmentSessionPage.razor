@@ -86,7 +86,7 @@
     };
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<NavRoute>> _breadcrumbs = Array.Empty<SelectItem<NavRoute>>();
+    private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private IAsyncDisposable? _eventListener;
     
@@ -96,11 +96,11 @@
             _currentView = value;
         
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        _breadcrumbs =
-        [
-            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{Id:N}")),
-            new(date, NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}"))
-        ];
+        _breadcrumbs = new Dictionary<string, string>
+        {
+            [Resources[Messages.GUI_AssessmentSession]] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
+            [date] = NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}")
+        };
         
         await Load();
         

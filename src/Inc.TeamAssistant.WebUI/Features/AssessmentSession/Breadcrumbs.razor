@@ -3,7 +3,7 @@
     {
         <li class="breadcrumbs__item">
             <RouterLink Href="@item.Value" IsDark="true">
-                <Content>@item.Title</Content>
+                <Content>@item.Key</Content>
             </RouterLink>
         </li>
     }
@@ -11,5 +11,5 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<SelectItem<NavRoute>> Items { get; set; } = Array.Empty<SelectItem<NavRoute>>();
+    public IReadOnlyDictionary<string, string> Items { get; set; } = new Dictionary<string, string>();
 }
