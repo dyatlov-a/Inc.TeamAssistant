@@ -61,20 +61,20 @@
     };
 
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<NavRoute>> _breadcrumbs = Array.Empty<SelectItem<NavRoute>>();
+    private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
 
     protected override async Task OnParametersSetAsync()
     {
         if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
             _currentView = value;
-        
-        _breadcrumbs =
-        [
-            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{TeamId:N}")),
-            new(Date, NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}"))
-        ];
 
+        _breadcrumbs = new Dictionary<string, string>
+        {
+            [Resources[Messages.GUI_AssessmentSession]] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
+            [Date] = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}")
+        };
+        
         await Load();
     }
     
