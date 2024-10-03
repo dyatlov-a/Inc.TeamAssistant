@@ -1,0 +1,5 @@
+::deep .link {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+}

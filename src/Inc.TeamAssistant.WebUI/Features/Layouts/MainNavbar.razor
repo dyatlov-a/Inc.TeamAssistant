@@ -9,7 +9,11 @@
         <AuthorizeView>
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
-                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
+                <RouterLink Href="@MainUrl">
+                    <Content>
+                        <HomeIcon Size="40px"/>
+                    </Content>
+                </RouterLink>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 <span class="navbar__item navbar__item_avatar">
@@ -18,21 +22,25 @@
                     <br/>
                     @person.Username
                 </span>
-                <a href="@_logoutUrl" class="link link_light navbar__item">
-                    @Resources[Messages.Navigation_Logout]
-                </a>
+                <RouterLink Href="@_logoutUrl">
+                    <Content>@Resources[Messages.Navigation_Logout]</Content>
+                </RouterLink>
             </Authorized>
             <NotAuthorized>
-                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
+                <RouterLink Href="@MainUrl">
+                    <Content>
+                        <HomeIcon Size="40px"/>
+                    </Content>
+                </RouterLink>
                 <CultureSelector/>
                 <div class="navbar__divider"></div>
                 @if (!NavRouter.CurrentUrl.Contains("/login"))
                 {
-                    <a
-                        href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")"
-                        class="link link_light navbar__item">
-                        @Resources[Messages.Navigation_Login]
-                    </a>
+                    <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
+                        <Content>
+                            @Resources[Messages.Navigation_Login]
+                        </Content>
+                    </RouterLink>
                 }
             </NotAuthorized>
         </AuthorizeView>

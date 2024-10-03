@@ -1,0 +1,52 @@
+@if (string.IsNullOrWhiteSpace(Href))
+{
+    <a href="#" class="link @CssClass" @onclick="EmitOnClick" @onclick:preventDefault="true">
+        @Content
+    </a>
+}
+else
+{
+    <a href="@Href" class="link @CssClass" target="@Target">
+        @Content
+    </a>
+}
+
+@code {
+    /// <summary>
+    /// Html or text content of the button.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    /// <summary>
+    /// Target for navigation.
+    /// </summary>
+    [Parameter]
+    public string Target { get; set; } = RouterTarget.Self;
+    
+    /// <summary>
+    /// Link to navigate.
+    /// </summary>
+    [Parameter]
+    public string Href { get; set; } = default!;
+    
+    /// <summary>
+    /// On click event.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    
+    /// <summary>
+    /// Flag for set dark or light theme.
+    /// </summary>
+    [Parameter]
+    public bool IsDark { get; set; }
+    
+    private string CssClass => IsDark ? "link_dark" : "link_light";
+    
+    private async Task EmitOnClick()
+    {
+        if (!OnClick.Equals(default(EventCallback)))
+            await OnClick.InvokeAsync();
+    }
+}

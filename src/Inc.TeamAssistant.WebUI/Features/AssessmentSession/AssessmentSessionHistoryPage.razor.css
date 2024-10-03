@@ -11,7 +11,7 @@
     background-color: #dfdfdf;
     color: #000;
 }
-.assessment-history-content:nth-child(2n) ::deep .story__link {
+.assessment-history-content:nth-child(2n) ::deep .link {
     color: #000;
 }
 .assessment-history-switcher {

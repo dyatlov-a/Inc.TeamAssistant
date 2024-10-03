@@ -1,4 +1,4 @@
-.constructor__edit-link {
+::deep .link {
     display: block;
     text-align: right;
 }

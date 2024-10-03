@@ -1,28 +1,19 @@
 @if (ButtonType == ButtonType.Tab)
 {
     <a href="@Link" target="_blank" class="button @CssClass @ModeCssClass">
-        @if (Content is not null)
-        {
-            @Content
-        }
+        @Content
     </a>
 }
 else if (IsDisabled)
 {
     <button type="@ButtonTypeAsString" class="button @CssClass @ModeCssClass" disabled="disabled">
-        @if (Content is not null)
-        {
-            @Content
-        }
+        @Content
     </button>
 }
 else
 {
     <button type="@ButtonTypeAsString" @onclick="EmitOnClick" class="button @CssClass @ModeCssClass">
-        @if (Content is not null)
-        {
-            @Content
-        }
+        @Content
     </button>
 }
 
@@ -30,8 +21,8 @@ else
     /// <summary>
     /// Html or text content of the button.
     /// </summary>
-    [Parameter]
-    public RenderFragment? Content { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
     
     /// <summary>
     /// On click event.

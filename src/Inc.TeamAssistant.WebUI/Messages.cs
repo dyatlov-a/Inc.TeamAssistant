@@ -46,7 +46,8 @@ internal static class Messages
     public static readonly MessageId Constructor_SelectBotText = new(nameof(Constructor_SelectBotText));
     public static readonly MessageId Constructor_RemoveConfirmationText = new(nameof(Constructor_RemoveConfirmationText));
     public static readonly MessageId Constructor_FormSectionTokenTitle = new(nameof(Constructor_FormSectionTokenTitle));
-    public static readonly MessageId Constructor_FormSectionTokenHelpTemplate = new(nameof(Constructor_FormSectionTokenHelpTemplate));
+    public static readonly MessageId Constructor_FormSectionTokenHelpBegin = new(nameof(Constructor_FormSectionTokenHelpBegin));
+    public static readonly MessageId Constructor_FormSectionTokenHelpEnd = new(nameof(Constructor_FormSectionTokenHelpEnd));
     public static readonly MessageId Constructor_FormSectionTokenFieldTokenLabel = new(nameof(Constructor_FormSectionTokenFieldTokenLabel));
     public static readonly MessageId Constructor_FormSectionTokenFieldUserNameLabel = new(nameof(Constructor_FormSectionTokenFieldUserNameLabel));
     public static readonly MessageId Constructor_MoveNextTitle = new(nameof(Constructor_MoveNextTitle));

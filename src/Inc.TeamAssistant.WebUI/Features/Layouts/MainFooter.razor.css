@@ -14,7 +14,7 @@
     font-size: .8rem;
     padding-bottom: 5px;
 }
-.footer-group__link {
+::deep .link {
     display: block;
     font-size: .9rem;
     line-height: 1.5rem;
@@ -27,7 +27,7 @@
         font-size: 1rem;
         line-height: 1.6rem;
     }
-    .footer-group__link {
+    ::deep .link {
         font-size: 1.1rem;
         line-height: 2.3rem;
     }

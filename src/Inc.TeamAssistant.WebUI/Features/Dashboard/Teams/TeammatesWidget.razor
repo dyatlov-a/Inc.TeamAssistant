@@ -50,37 +50,30 @@
                                         <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
                                         if (_item.HasManagerAccess)
                                         {
-                                            <a
-                                                href="#"
-                                                @onclick="() => ExcludeFromTeam(context, false)"
-                                                class="link link_light" @onclick:preventDefault="true">[X]</a>
+                                            <RouterLink OnClick="() => ExcludeFromTeam(context, false)">
+                                                <Content>
+                                                    [X]
+                                                </Content>
+                                            </RouterLink>
                                         }
                                     }
                                 </TemplateColumn>
                                 <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
                                     @if (_item.HasManagerAccess)
                                     {
-                                        <a
-                                            href="#"
-                                            @onclick="() => ExcludeFromTeam(context, false, 1)"
-                                            class="link link_light"
-                                            @onclick:preventDefault="true">1</a>
-                                        <a
-                                            href="#"
-                                            @onclick="() => ExcludeFromTeam(context, false, 7)"
-                                            class="link link_light"
-                                            @onclick:preventDefault="true">7</a>
-                                        <a
-                                            href="#"
-                                            @onclick="() => ExcludeFromTeam(context, false, 14)"
-                                            class="link link_light"
-                                            @onclick:preventDefault="true">14</a>
+                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">
+                                            <Content>1</Content>
+                                        </RouterLink>
+                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 7)">
+                                            <Content>7</Content>
+                                        </RouterLink>
+                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 14)">
+                                            <Content>14</Content>
+                                        </RouterLink>
                                         <br/>
-                                        <a
-                                            href="#"
-                                            @onclick="() => ExcludeFromTeam(context, true)"
-                                            class="link link_light"
-                                            @onclick:preventDefault="true">@Resources[Messages.Dashboard_Forever]</a>
+                                        <RouterLink OnClick="() => ExcludeFromTeam(context, true)">
+                                            <Content>@Resources[Messages.Dashboard_Forever]</Content>
+                                        </RouterLink>
                                     }
                                     else
                                     {

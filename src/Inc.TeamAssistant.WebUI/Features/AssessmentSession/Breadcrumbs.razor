@@ -2,7 +2,9 @@
     @foreach(var item in Items)
     {
         <li class="breadcrumbs__item">
-            <a href="@item.Value" class="link link_dark">@item.Title</a>
+            <RouterLink Href="@item.Value" IsDark="true">
+                <Content>@item.Title</Content>
+            </RouterLink>
         </li>
     }
 </ol>
