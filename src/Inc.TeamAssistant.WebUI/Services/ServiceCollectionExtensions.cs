@@ -13,7 +13,7 @@ namespace Inc.TeamAssistant.WebUI.Services;
 
 public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddClientServices(this IServiceCollection services)
+    public static IServiceCollection AddClientServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
