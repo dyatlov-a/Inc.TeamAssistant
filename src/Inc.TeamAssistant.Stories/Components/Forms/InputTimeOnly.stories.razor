@@ -1,0 +1,13 @@
+@attribute [Stories("Components/Forms/InputTimeOnly")]
+
+<Stories TComponent="InputTimeOnly" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <InputTimeOnly FieldId="input-time-only" @bind-Value="Time" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    public TimeOnly Time { get; set; }
+}
