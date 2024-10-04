@@ -1,0 +1,17 @@
+@attribute [Stories("Components/Breadcrumbs")]
+
+<Stories TComponent="Breadcrumbs" Layout="typeof(LightLayout)">
+    <Story Name="Default">
+        <Template>
+            <Breadcrumbs Items="_items" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly IReadOnlyDictionary<string, string> _items = new Dictionary<string, string>
+    {
+        ["AssessmentSession"] = string.Empty,
+        [DateTimeOffset.UtcNow.ToString("yyyy.MM.dd")] = string.Empty
+    };
+}
