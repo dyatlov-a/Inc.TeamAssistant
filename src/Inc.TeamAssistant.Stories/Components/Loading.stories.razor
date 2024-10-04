@@ -1,0 +1,55 @@
+@attribute [Stories("Components/Loading")]
+
+<Stories TComponent="Loading">
+    <Story Name="Default" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_done" Retry="Retry" @attributes="context.Args">
+                <Content>@_text</Content>
+            </Loading>
+        </Template>
+    </Story>
+    <Story Name="Loading" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">
+                <Content>@_text</Content>
+            </Loading>
+        </Template>
+    </Story>
+    <Story Name="Loading dark" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.IsDark" Value="true"/>
+        </Arguments>
+        <Template>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">
+                <Content>@_text</Content>
+            </Loading>
+        </Template>
+    </Story>
+    <Story Name="Error" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">
+                <Content>@_text</Content>
+            </Loading>
+        </Template>
+    </Story>
+    <Story Name="Error dark" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.IsDark" Value="true"/>
+        </Arguments>
+        <Template>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">
+                <Content>@_text</Content>
+            </Loading>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _text = "Html content";
+    
+    private readonly LoadingState _done = LoadingState.Done();
+    private readonly LoadingState _loading = LoadingState.Loading();
+    private readonly LoadingState _error = LoadingState.Error();
+    
+    private Task Retry() => Task.CompletedTask;
+}
