@@ -1,0 +1,23 @@
+@attribute [Stories("Components/Forms/InputDateOnly")]
+
+<Stories TComponent="InputDateOnly" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <InputDateOnly FieldId="@_fieldId" @bind-Value="Date" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="HasThousands">
+        <Arguments>
+            <Arg For="c => c.HasThousands" Value="true" />
+        </Arguments>
+        <Template>
+            <InputDateOnly FieldId="@_fieldId" @bind-Value="Date" @attributes="context.Args"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _fieldId = "input-date-only";
+    
+    private DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+}

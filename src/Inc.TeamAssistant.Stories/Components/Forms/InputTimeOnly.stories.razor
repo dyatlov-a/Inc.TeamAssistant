@@ -3,11 +3,13 @@
 <Stories TComponent="InputTimeOnly" Layout="typeof(DarkLayout)">
     <Story Name="Default">
         <Template>
-            <InputTimeOnly FieldId="input-time-only" @bind-Value="Time" @attributes="context.Args" />
+            <InputTimeOnly FieldId="@_fieldId" @bind-Value="Time" @attributes="context.Args" />
         </Template>
     </Story>
 </Stories>
 
 @code {
-    public TimeOnly Time { get; set; }
+    private readonly string _fieldId = "input-time-only";
+    
+    private TimeOnly Time { get; set; } = TimeOnly.FromDateTime(DateTime.UtcNow);
 }
