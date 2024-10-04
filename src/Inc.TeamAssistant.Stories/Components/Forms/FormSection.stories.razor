@@ -1,0 +1,26 @@
+@attribute [Stories("Components/Forms/FormSection")]
+
+<Stories TComponent="FormSection" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <FormSection Title="@_title" HelpText="@_helpText" @attributes="context.Args">
+                <Content>Html content</Content>
+            </FormSection>
+        </Template>
+    </Story>
+    <Story Name="AsRows">
+        <Arguments>
+            <Arg For="c => c.AsRows" Value="true" />
+        </Arguments>
+        <Template>
+            <FormSection Title="@_title" HelpText="@_helpText" @attributes="context.Args">
+                <Content>Html content</Content>
+            </FormSection>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _title = "Title";
+    private readonly string _helpText = "HelpText";
+}
