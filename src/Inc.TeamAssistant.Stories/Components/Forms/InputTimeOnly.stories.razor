@@ -10,6 +10,6 @@
 
 @code {
     private readonly string _fieldId = "input-time-only";
-    
-    private TimeOnly Time { get; set; } = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+    private TimeOnly Time { get; set; } = new(13, 30);
 }

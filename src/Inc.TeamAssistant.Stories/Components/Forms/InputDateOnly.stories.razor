@@ -18,6 +18,6 @@
 
 @code {
     private readonly string _fieldId = "input-date-only";
-    
-    private DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+
+    private DateOnly Date { get; set; } = new(DateTimeOffset.UtcNow.Year, 2, 28);
 }
