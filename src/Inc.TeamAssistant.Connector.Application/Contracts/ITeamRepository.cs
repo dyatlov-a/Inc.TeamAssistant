@@ -9,4 +9,6 @@ public interface ITeamRepository
     Task Upsert(Team team, CancellationToken token);
     
     Task Remove(Guid teamId, CancellationToken token);
+
+    Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token);
 }

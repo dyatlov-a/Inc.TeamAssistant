@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
             .AddHostedService<ReviewMetricsService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
+            .AddSingleton<ICommandCreator, MoveToAcceptWithCommentsCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToInProgressCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToNextRoundCommandCreator>()

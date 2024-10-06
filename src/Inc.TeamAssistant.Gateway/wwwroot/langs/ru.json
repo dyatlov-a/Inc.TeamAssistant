@@ -135,6 +135,8 @@
   "Reviewer_PreviewEditHelp": "Для редактирования черновика необходимо отредактировать исходное сообщение.",
   "Reviewer_PreviewMoveToReview": "Отправить на ревью",
   "Reviewer_PreviewRemoveDraft": "Отменить",
+  "Reviewer_AcceptedWithComments": "Ревью задачи завершено с замечаниями.",
+  "Reviewer_MoveToAcceptWithComments": "Принять с замечаниями.",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

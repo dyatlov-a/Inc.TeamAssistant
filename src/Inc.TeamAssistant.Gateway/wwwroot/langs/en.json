@@ -135,6 +135,8 @@
   "Reviewer_PreviewEditHelp": "To edit a draft, please edit the original post.",
   "Reviewer_PreviewMoveToReview": "Submit",
   "Reviewer_PreviewRemoveDraft": "Cancel",
+  "Reviewer_AcceptedWithComments": "Task review has been completed with comments.",
+  "Reviewer_MoveToAcceptWithComments": "Accept with comments.",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",

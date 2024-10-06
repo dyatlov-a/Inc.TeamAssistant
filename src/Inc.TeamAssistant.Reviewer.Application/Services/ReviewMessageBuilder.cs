@@ -317,6 +317,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         {
             var moveToAcceptButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAccept, languageId);
             notification.WithButton(new Button(moveToAcceptButton, $"{CommandList.Accept}{task.Id:N}"));
+            
+            var moveToAcceptWithCommentsButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAcceptWithComments, languageId);
+            notification.WithButton(new Button(moveToAcceptWithCommentsButton, $"{CommandList.AcceptWithComments}{task.Id:N}"));
         
             var moveToDeclineButton = await _messageBuilder.Build(Messages.Reviewer_MoveToDecline, languageId);
             notification.WithButton(new Button(moveToDeclineButton, $"{CommandList.Decline}{task.Id:N}"));
@@ -376,7 +379,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var totalTime = task.GetTotalTime(DateTimeOffset.UtcNow);
         
         var builder = new StringBuilder();
-        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Accepted, languageId));
+        builder.AppendLine(await _messageBuilder.Build(
+            task.AcceptedWithComments ? Messages.Reviewer_AcceptedWithComments : Messages.Reviewer_Accepted,
+            languageId));
         builder.AppendLine();
         builder.AppendLine(task.Description);
         builder.AppendLine();
