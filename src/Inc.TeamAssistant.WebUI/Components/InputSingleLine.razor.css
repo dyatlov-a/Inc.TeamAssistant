@@ -1,0 +1,16 @@
+::deep .form-control {
+    width: 100%;
+    padding: .625rem .3125rem;
+    border: 3px solid #555;
+    border-radius: 0;
+    color: #000;
+    background-color: #dfdfdf;
+    transition: border 0.3s;
+}
+::deep .form-control:focus, .form-control_enabled:hover {
+    border: 3px solid #000;
+}
+::deep .form-control_disabled {
+    background-color: #aaa;
+    cursor: default;
+}

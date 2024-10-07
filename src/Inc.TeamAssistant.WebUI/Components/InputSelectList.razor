@@ -3,42 +3,44 @@
 
 @inherits InputBase<TValue>
 
-@if (IsDisabled)
-{
-    <InputSelect
-        id="@FieldId"
-        Value="_value"
-        ValueExpression="@(() => _value)"
-        class="form-control form-control_select-list form-control_disabled"
-        disabled="disabled">
-        @if (HasEmptyValue)
-        {
-            <option value=""></option>
-        }
-        @foreach (var item in Items)
-        {
-            <option value="@ValueSelector(item)">@TitleSelector(item)</option>
-        }
-    </InputSelect>
-}
-else
-{
-    <InputSelect
-        id="@FieldId"
-        Value="_value"
-        ValueExpression="@(() => _value)"
-        ValueChanged="@((TValue? v) => SetCurrentValue(v))"
-        class="@($"form-control form-control_select-list form-control_enabled {CssClass} {ParentCssClass}")">
-        @if (HasEmptyValue)
-        {
-            <option value=""></option>
-        }
-        @foreach (var item in Items)
-        {
-            <option value="@ValueSelector(item)">@TitleSelector(item)</option>
-        }
-    </InputSelect>
-}
+<div>
+    @if (IsDisabled)
+    {
+        <InputSelect
+            id="@FieldId"
+            Value="_value"
+            ValueExpression="@(() => _value)"
+            class="form-control form-control_select-list form-control_disabled"
+            disabled="disabled">
+            @if (HasEmptyValue)
+            {
+                <option value=""></option>
+            }
+            @foreach (var item in Items)
+            {
+                <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+            }
+        </InputSelect>
+    }
+    else
+    {
+        <InputSelect
+            id="@FieldId"
+            Value="_value"
+            ValueExpression="@(() => _value)"
+            ValueChanged="@((TValue? v) => SetCurrentValue(v))"
+            class="@($"form-control form-control_select-list form-control_enabled {CssClass} {ParentCssClass}")">
+            @if (HasEmptyValue)
+            {
+                <option value=""></option>
+            }
+            @foreach (var item in Items)
+            {
+                <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+            }
+        </InputSelect>
+    }
+</div>
 
 @code {
     [Parameter, EditorRequired]

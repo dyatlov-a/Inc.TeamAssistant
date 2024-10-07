@@ -30,11 +30,10 @@
                                     FieldId="bot-username"
                                     Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                                     <Content>
-                                        <InputText
+                                        <InputSingleLine
+                                            FieldId="bot-username"
                                             @bind-Value="_formModel.UserName"
-                                            class="form-control form-control_disabled"
-                                            id="bot-username"
-                                            disabled="disabled"/>
+                                            IsDisabled="true" />
                                     </Content>
                                 </FormFieldSet>
                             </Content>
@@ -57,12 +56,10 @@
                                         FieldId="@fieldId"
                                         Label="@FeaturesFactory.CreateName(feature.Name)">
                                         <Content>
-                                            <input
-                                                type="text"
-                                                id="@fieldId"
-                                                value="@selected"
-                                                class="form-control form-control_disabled"
-                                                disabled="disabled"/>
+                                            <InputSingleLine
+                                                FieldId="@fieldId"
+                                                @bind-Value="selected"
+                                                IsDisabled="true" />
                                         </Content>
                                     </FormFieldSet>
                                 }
@@ -87,17 +84,16 @@
                                             var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
                                                 settingItem.PropertyName,
                                                 StringComparison.InvariantCultureIgnoreCase));
+                                            var propertyValueAsString = GetValueAsText(settingItem, property.Value);
 
                                             <FormFieldSet
                                                 FieldId="@settingItem.PropertyName"
                                                 Label="@Resources[settingItem.LabelMessageId]">
                                                 <Content>
-                                                    <input
-                                                        type="text"
-                                                        id="@settingItem.PropertyName"
-                                                        value="@GetValueAsText(settingItem, property.Value)"
-                                                        class="form-control form-control_disabled"
-                                                        disabled="disabled"/>
+                                                    <InputSingleLine
+                                                        FieldId="@settingItem.PropertyName"
+                                                        @bind-Value="propertyValueAsString"
+                                                        IsDisabled="true" />
                                                 </Content>
                                             </FormFieldSet>
                                         }

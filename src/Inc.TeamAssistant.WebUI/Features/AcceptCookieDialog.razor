@@ -34,7 +34,7 @@
         {
             _cookieModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
-                "./Features/Dialogs/AcceptCookieDialog.razor.js");
+                "./Features/AcceptCookieDialog.razor.js");
 
             var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
             if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))

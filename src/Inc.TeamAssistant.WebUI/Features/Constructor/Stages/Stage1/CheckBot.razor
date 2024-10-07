@@ -26,7 +26,7 @@
                         FieldId="bot-token"
                         Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
                         <Content>
-                            <InputText @bind-Value="_formModel.Token" class="form-control form-control_enabled" id="bot-token"/>
+                            <InputSingleLine FieldId="bot-token" @bind-Value="_formModel.Token" />
                             <ValidationMessage For="@(() => _formModel.Token)"/>
                         </Content>
                     </FormFieldSet>
@@ -34,11 +34,10 @@
                         FieldId="bot-username"
                         Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                         <Content>
-                            <InputText
+                            <InputSingleLine
+                                FieldId="bot-username"
                                 @bind-Value="_formModel.UserName"
-                                class="form-control form-control_disabled"
-                                id="bot-username"
-                                disabled="disabled"/>
+                                IsDisabled="true" />
                             <ValidationMessage For="@(() => _formModel.UserName)"/>
                         </Content>
                     </FormFieldSet>
