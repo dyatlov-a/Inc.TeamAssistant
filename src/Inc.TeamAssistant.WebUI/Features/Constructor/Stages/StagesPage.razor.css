@@ -5,6 +5,8 @@
     margin-bottom: 30px;
 }
 .constructor__title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
     padding: 0 10px;
     word-break: break-all;
 }

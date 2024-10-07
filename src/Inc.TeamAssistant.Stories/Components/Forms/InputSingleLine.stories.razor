@@ -1,0 +1,23 @@
+@attribute [Stories("Components/Forms/InputSingleLine")]
+
+<Stories TComponent="InputSingleLine" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <InputSingleLine FieldId="@_fieldId" @bind-Value="Text" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Disabled">
+        <Arguments>
+            <Arg For="c => c.IsDisabled" Value="true" />
+        </Arguments>
+        <Template>
+            <InputSingleLine FieldId="@_fieldId" @bind-Value="Text" @attributes="context.Args"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _fieldId = "input-multilines";
+    
+    public string Text { get; set; } = "Text";
+}

@@ -4,3 +4,7 @@
 .constructor__text {
     margin: 40px 0;
 }
+.constructor__title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+}

@@ -17,6 +17,10 @@
 .assessment-history-switcher {
     padding-top: 20px;
 }
+.assessment-history__title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+}
 ::deep .loading {
     height: calc(100vh - 400px);
 }

@@ -118,31 +118,7 @@ html {
     float: left;
     margin: 0 10px 10px 0;
 }
-/* FORMS */
-.form-control {
-    width: 100%;
-    padding: 10px 5px;
-    border: 3px solid #555;
-    border-radius: 0;
-    color: #000;
-    background-color: #dfdfdf;
-    transition: border 0.3s;
-}
-.form-control {
-    min-height: 45px;
-    font-size: 1rem;
-}
-.form-control:focus, .form-control_enabled:hover {
-    border: 3px solid #000;
-}
-.form-control_disabled {
-    background-color: #aaa;
-    cursor: default;
-}
-.form-control_textarea {
-    resize: none;
-    height: 102px;
-}
+/* VALIDATION */
 .form-control_is-valid {
     border: 3px solid #28a745;
 }
@@ -153,28 +129,6 @@ html {
     margin-top: 5px;
     font-size: 1rem;
     color: #dc3545;
-}
-.form-control_select-list {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background: #dfdfdf url('../imgs/arrow-down.png') calc(100% - 5px) center no-repeat;
-    padding-right: 20px;
-}
-/* ROOT COMPONENTS */
-.title {
-    font-size: 2.4rem;
-    line-height: 3.4rem;
-}
-.text {
-    font-size: 1.2rem;
-    line-height: 1.6rem;
-}
-.draggable {
-    cursor: grab;
-}
-.hint {
-    cursor: context-menu;
 }
 /* GRID */
 .quick-data-grid {

@@ -23,32 +23,20 @@
                                     FieldId="access-token"
                                     Label="@Resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel]">
                                     <Content>
-                                        <InputText
+                                        <InputSingleLine
+                                            FieldId="access-token"
                                             @bind-Value="_formModel.AccessToken"
-                                            class="form-control form-control_disabled"
-                                            id="access-token"
-                                            disabled="disabled"/>
+                                            IsDisabled="true"/>
                                     </Content>
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="project-key"
                                     Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
                                     <Content>
-                                        @if (_formModel.HasManagerAccess)
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_enabled"
-                                                id="project-key"/>
-                                        }
-                                        else
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_disabled"
-                                                id="project-key"
-                                                disabled="disabled"/>
-                                        }
+                                        <InputSingleLine
+                                            FieldId="project-key"
+                                            @bind-Value="_formModel.ProjectKey"
+                                            IsDisabled="!_formModel.HasManagerAccess"/>
                                         <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                                     </Content>
                                 </FormFieldSet>

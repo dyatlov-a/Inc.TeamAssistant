@@ -14,6 +14,7 @@
     align-items: center;
     transition: border 0.3s;
     gap: 10px;
+    cursor: grab;
 }
 .widget-settings_no-drag .widget-settings__item {
     border: 3px #555 solid;

@@ -4,10 +4,7 @@
     FieldId="@BotNameId"
     Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], Item.LanguageId)">
     <Content>
-            <InputText
-                @bind-Value="Item.Name"
-                class="form-control form-control_enabled"
-                id="@BotNameId" />
+        <InputSingleLine FieldId="@BotNameId" @bind-Value="Item.Name" />
         <ValidationMessage For="@(() => Item.Name)"/>
     </Content>
 </FormFieldSet>
@@ -15,10 +12,7 @@
     FieldId="@BotShortDescriptionId"
     Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], Item.LanguageId)">
     <Content>
-            <InputText
-                @bind-Value="Item.ShortDescription"
-                class="form-control form-control_enabled"
-                id="@BotShortDescriptionId" />
+        <InputSingleLine FieldId="@BotShortDescriptionId" @bind-Value="Item.ShortDescription" />
         <ValidationMessage For="@(() => Item.ShortDescription)"/>
     </Content>
 </FormFieldSet>
@@ -26,10 +20,7 @@
     FieldId="@BotDescriptionId"
     Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], Item.LanguageId)">
     <Content>
-        <InputTextArea
-            @bind-Value="Item.Description"
-            class="form-control form-control_enabled form-control_textarea"
-            id="@BotDescriptionId" />
+        <InputMultiLines FieldId="@BotDescriptionId" @bind-Value="Item.Description" />
         <ValidationMessage For="@(() => Item.Description)"/>
     </Content>
 </FormFieldSet>
