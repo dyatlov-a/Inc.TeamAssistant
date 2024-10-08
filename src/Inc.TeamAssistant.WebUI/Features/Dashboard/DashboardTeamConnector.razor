@@ -13,7 +13,10 @@
                     <div class="team-connector__code">
                         @((MarkupString)_team.Code)
                     </div>
-                    <Button IsDark="true" ButtonType="ButtonType.Tab" Link="@_team.LinkForConnect">
+                    <Button
+                        ComponentStyle="ComponentStyle.Secondary"
+                        ButtonType="ButtonType.Tab"
+                        Link="@_team.LinkForConnect">
                         <Content>
                             @Resources[Messages.Dashboard_ConnectToTeamButton]
                         </Content>

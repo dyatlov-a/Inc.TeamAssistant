@@ -33,43 +33,53 @@
                                         @ondragenter="HandleDragEnter"
                                         @ondragstart="@(() => HandleDragStart(current))">
                                         <div class="widget-settings__drag">
-                                            <DragVerticalIcon Size="30px" IsDark="true"/>
+                                            <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary"/>
                                         </div>
                                         @if (next is not null)
                                         {
                                             <Button
-                                                IsDark="true"
+                                                ComponentStyle="ComponentStyle.Secondary"
                                                 ButtonMode="ButtonMode.Small"
                                                 OnClick="() => MoveDown(widgets, current, next)">
                                                 <Content>
-                                                    <ArrowDownIcon Size="20px" IsDark="true"/>
+                                                    <ArrowDownIcon
+                                                        Size="20px"
+                                                        ComponentStyle="ComponentStyle.Secondary"/>
                                                 </Content>
                                             </Button>
                                         }
                                         else
                                         {
-                                            <Button IsDark="true" IsDisabled="true" ButtonMode="ButtonMode.Small">
+                                            <Button
+                                                ComponentStyle="ComponentStyle.Secondary"
+                                                IsDisabled="true"
+                                                ButtonMode="ButtonMode.Small">
                                                 <Content>
-                                                    <ArrowDownIcon Size="20px" IsDark="true"/>
+                                                    <ArrowDownIcon
+                                                        Size="20px"
+                                                        ComponentStyle="ComponentStyle.Secondary"/>
                                                 </Content>
                                             </Button>
                                         }
                                         @if (prev is not null)
                                         {
                                             <Button
-                                                IsDark="true"
+                                                ComponentStyle="ComponentStyle.Secondary"
                                                 ButtonMode="ButtonMode.Small"
                                                 OnClick="() => MoveUp(widgets, current, prev)">
                                                 <Content>
-                                                    <ArrowUpIcon Size="20px" IsDark="true"/>
+                                                    <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
                                                 </Content>
                                             </Button>
                                         }
                                         else
                                         {
-                                            <Button IsDark="true" IsDisabled="true" ButtonMode="ButtonMode.Small">
+                                            <Button
+                                                ComponentStyle="ComponentStyle.Secondary"
+                                                IsDisabled="true"
+                                                ButtonMode="ButtonMode.Small">
                                                 <Content>
-                                                    <ArrowUpIcon Size="20px" IsDark="true"/>
+                                                    <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
                                                 </Content>
                                             </Button>
                                         }
@@ -95,7 +105,7 @@
                             }
                         </div>
                         <div class="widget-settings__actions">
-                            <Button ButtonType="ButtonType.Submit" IsDark="true">
+                            <Button ButtonType="ButtonType.Submit" ComponentStyle="ComponentStyle.Secondary">
                                 <Content>
                                     @Resources[Messages.Dashboard_Apply]
                                 </Content>
@@ -109,9 +119,12 @@
 </ContentDialog>
 
 <div class="dashboard-settings">
-    <Button IsDark="true" ButtonMode="ButtonMode.Small" OnClick="() => _contentDialog?.Open()">
+    <Button
+        ComponentStyle="ComponentStyle.Secondary"
+        ButtonMode="ButtonMode.Small"
+        OnClick="() => _contentDialog?.Open()">
         <Content>
-            <SettingsIcon Size="20px" IsDark="true"/>
+            <SettingsIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
         </Content>
     </Button>
 </div>

@@ -2,7 +2,7 @@
     @foreach(var item in Items)
     {
         <li class="breadcrumbs__item">
-            <RouterLink Href="@item.Value" IsDark="true">
+            <RouterLink Href="@item.Value" ComponentStyle="ComponentStyle.Secondary">
                 <Content>@item.Key</Content>
             </RouterLink>
         </li>

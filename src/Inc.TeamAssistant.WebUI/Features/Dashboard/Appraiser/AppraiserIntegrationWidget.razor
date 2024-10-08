@@ -60,12 +60,12 @@
                             @if (_formModel.HasManagerAccess)
                             {
                                 <div class="component-actions">
-                                    <Button IsDark="true" ButtonType="ButtonType.Submit">
+                                    <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
                                         <Content>
                                             @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
                                         </Content>
                                     </Button>
-                                    <Button IsDark="true" OnClick="BeginDisable">
+                                    <Button ComponentStyle="ComponentStyle.Secondary" OnClick="BeginDisable">
                                         <Content>
                                             @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
                                         </Content>
@@ -77,7 +77,7 @@
                                 <div class="appraiser-integration__bg"></div>
                                 <div class="appraiser-integration__controls">
                                     <div class="appraiser-integration__controls-body">
-                                        <Button IsDark="true" OnClick="Enable">
+                                        <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Enable">
                                             <Content>
                                                 @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
                                             </Content>

@@ -5,8 +5,15 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Style for component.
+    /// </summary>
     [Parameter]
-    public bool IsDark { get; set; }
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
     
-    private string CssClass => IsDark ? "no-data_dark" : "no-data_light";
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "no-data_primary",
+        _ => "no-data_secondary"
+    };
 }

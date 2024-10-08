@@ -30,7 +30,7 @@
                     <p class="assessment-session__text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
                 </div>
                 <div class="assessment-session__link">
-                    <Loading State="_state" IsDark="true" Retry="() => Load()">
+                    <Loading State="_state" ComponentStyle="ComponentStyle.Secondary" Retry="() => Load()">
                         <Content>
                             @((MarkupString)_item.CodeForConnect)
                         </Content>

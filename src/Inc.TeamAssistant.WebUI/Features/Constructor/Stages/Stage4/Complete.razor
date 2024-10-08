@@ -23,7 +23,9 @@
                             Title="@Resources[Messages.Constructor_ConnectingTelegram]"
                             HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
                             <Content>
-                                <RouterLink OnClick="() => MoveToNext(Stage.CheckBot)" IsDark="true">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.CheckBot)"
+                                    ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
                                 <FormFieldSet
@@ -42,7 +44,9 @@
                             Title="@Resources[Messages.Constructor_FeaturesStore]"
                             HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
                             <Content>
-                                <RouterLink OnClick="() => MoveToNext(Stage.SelectFeatures)" IsDark="true">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.SelectFeatures)"
+                                    ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
                                 @foreach (var feature in StagesState.AvailableFeatures)
@@ -76,7 +80,9 @@
                                     Title="@Resources[settingSection.HeaderMessageId]"
                                     HelpText="@Resources[settingSection.HelpMessageId]">
                                     <Content>
-                                        <RouterLink OnClick="() => MoveToNext(Stage.SetSettings)" IsDark="true">
+                                        <RouterLink
+                                            OnClick="() => MoveToNext(Stage.SetSettings)"
+                                            ComponentStyle="ComponentStyle.Secondary">
                                             <Content>@Resources[Messages.Constructor_Edit]</Content>
                                         </RouterLink>
                                         @foreach (var settingItem in settingSection.SettingItems)
@@ -105,7 +111,9 @@
                             Title="@Resources[Messages.Constructor_SupportedLanguages]"
                             HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
                             <Content>
-                                <RouterLink OnClick="() => MoveToNext(Stage.SetSettings)" IsDark="true">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.SetSettings)"
+                                    ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
                                 <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">

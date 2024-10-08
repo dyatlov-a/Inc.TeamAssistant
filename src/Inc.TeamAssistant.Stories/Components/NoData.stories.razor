@@ -1,14 +1,14 @@
 @attribute [Stories("Components/NoData")]
 
 <Stories TComponent="NoData">
-    <Story Name="Default" Layout="typeof(DarkLayout)">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
             <NoData @attributes="context.Args" />
         </Template>
     </Story>
-    <Story Name="Dark" Layout="typeof(LightLayout)">
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
         <Arguments>
-            <Arg For="c => c.IsDark" Value="true" />
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
             <NoData @attributes="context.Args" />
