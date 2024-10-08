@@ -8,7 +8,7 @@
 }
 .confirm-dialog-bg {
     z-index: 1000;
-    background-color: #000;
+    background-color: var(--block-secondary-color);
     opacity: .7;
 }
 .confirm-dialog {
@@ -19,7 +19,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #9d9d9d;
+    background-color: var(--block-primary-color);
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .5);

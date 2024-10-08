@@ -4,7 +4,7 @@
     padding: 70px 0 60px 0;
 }
 .about-bots {
-    color: #000;
+    color: var(--block-secondary-color);
 }
 .about-bots__header {
     font-size: 2.3rem;

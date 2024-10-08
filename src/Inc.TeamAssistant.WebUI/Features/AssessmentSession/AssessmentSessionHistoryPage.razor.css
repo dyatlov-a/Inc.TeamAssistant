@@ -1,18 +1,18 @@
 .assessment-history-header {
     margin-top: -70px;
     padding: 120px 0 40px 0;
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-history-content {
     padding: 20px 0 40px 0;
 }
 .assessment-history-content:nth-child(2n) {
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-history-content:nth-child(2n) ::deep .link {
-    color: #000;
+    color: var(--text-secondary-color);
 }
 .assessment-history-switcher {
     padding-top: 20px;

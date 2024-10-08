@@ -1,4 +1,4 @@
 .dark-layout {
-    background-color: #616161;
+    background-color: var(--bg-primary-color);
     padding: 20px;
 }

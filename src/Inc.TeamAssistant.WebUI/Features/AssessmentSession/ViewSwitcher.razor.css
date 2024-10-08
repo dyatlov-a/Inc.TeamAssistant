@@ -6,7 +6,7 @@
     background-color: transparent;
 }
 .view-switcher__item:hover, .view-switcher__item_selected {
-    background-color: #9d9d9d;
+    background-color: var(--block-primary-color);
 }
 ::deep svg {
     margin-bottom: -4px;

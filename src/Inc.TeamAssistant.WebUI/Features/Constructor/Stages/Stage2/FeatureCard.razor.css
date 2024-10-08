@@ -1,6 +1,6 @@
 .feature-card {
     margin-bottom: 20px;
-    background-color: #555;
+    background-color: var(--bg-secondary-color);
     width: 100%;
     cursor: grab;
 }
@@ -14,7 +14,7 @@
     font-size: .9rem;
 }
 .feature-card__header {
-    background-color: #dfdfdf;
+    background-color: var(--text-primary-color);
     position: relative;
     height: 60px;
     display: flex;
@@ -34,8 +34,8 @@
     left: 50%;
     bottom: 0;
     margin: 0 0 -40px -40px;
-    border: 4px solid #000;
-    background-color: #dfdfdf;
+    border: 4px solid var(--block-secondary-color);
+    background-color: var(--text-primary-color);
     padding: 6px;
 }
 .feature-card__actions {

@@ -20,7 +20,7 @@
 }
 .checkin-map__bg {
     z-index: 100;
-    background-color: #555;
+    background-color: var(--bg-secondary-color);
     opacity: .7;
 }
 .checkin-map__controls {

@@ -4,7 +4,7 @@
     text-align: center;
 }
 .estimate__card__header {
-    background-color: #fff;
+    background-color: var(--block-priority-color);
     position: relative;
     height: 60px;
 }
@@ -19,11 +19,4 @@
     left: 50%;
     bottom: 0;
     margin: 0 0 -40px -40px;
-}
-.estimate__card_dark {
-    color: #dfdfdf;
-    background-color: #616161;
-}
-.estimate__card_dark .estimate__card__header {
-    background-color: #9d9d9d;
 }

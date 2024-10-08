@@ -1,4 +1,4 @@
 .light-layout {
-    background-color: #dfdfdf;
+    background-color: var(--bg-secondary-color);
     padding: 20px;
 }
