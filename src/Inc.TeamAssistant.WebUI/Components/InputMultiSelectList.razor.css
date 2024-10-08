@@ -1,17 +1,17 @@
 .form-control {
     width: 100%;
     padding: .625rem .3125rem;
-    border: 3px solid #555;
+    border: 3px solid var(--bg-secondary-color);
     border-radius: 0;
-    color: #000;
-    background-color: #dfdfdf;
+    color: var(--text-secondary-color);
+    background-color: var(--text-primary-color);
     transition: border 0.3s;
 }
 .form-control:focus, .form-control_enabled:hover {
-    border: 3px solid #000;
+    border: 3px solid var(--block-secondary-color);
 }
 .form-control_disabled {
-    background-color: #aaa;
+    background-color: var(--control-disabled-color);
     cursor: default;
 }
 .multiselect__item {
@@ -20,8 +20,8 @@
     margin-right: 5px;
 }
 .multiselect__item_selected {
-    background-color: #555;
-    color: #dfdfdf;
+    background-color: var(--bg-secondary-color);
+    color: var(--text-primary-color);
 }
 .form-control_enabled .multiselect__item {
     cursor: pointer;

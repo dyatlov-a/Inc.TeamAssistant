@@ -21,7 +21,7 @@
 }
 .appraiser-integration__bg {
     z-index: 100;
-    background-color: #9d9d9d;
+    background-color: var(--block-primary-color);
 }
 .appraiser-integration__controls {
     z-index: 101;

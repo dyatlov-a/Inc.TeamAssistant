@@ -5,8 +5,8 @@
     min-height: 100px;
 }
 .no-data_dark {
-    color: #000;
+    color: var(--text-secondary-color);
 }
 .no-data_light {
-    color: #dfdfdf;
+    color: var(--text-primary-color);
 }

@@ -12,25 +12,25 @@
     cursor: pointer;
 }
 .button_light {
-    border: .1875rem solid #dfdfdf;
-    color: #dfdfdf;
+    border: .1875rem solid var(--button-primary-color);
+    color: var(--button-primary-color);
 }
 .button_light:hover {
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--button-primary-color);
+    color: var(--button-secondary-color);
 }
 .button_dark {
-    border: .1875rem solid #000;
-    color: #000;
+    border: .1875rem solid var(--button-secondary-color);
+    color: var(--button-secondary-color);
 }
 .button_dark:hover {
-    background-color: #000;
-    color: #dfdfdf;
+    background-color: var(--button-secondary-color);
+    color: var(--button-primary-color);
 }
 .button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
-    background-color: #aaa;
-    color: #000;
-    border: .1875rem solid #aaa;
+    background-color: var(--control-disabled-color);
+    color: var(--button-secondary-color);
+    border: .1875rem solid var(--control-disabled-color);
     cursor: default;
 }
 .button_small {

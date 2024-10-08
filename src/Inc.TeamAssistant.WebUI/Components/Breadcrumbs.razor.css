@@ -6,6 +6,6 @@
 }
 .breadcrumbs__item+.breadcrumbs__item:before {
     padding: 8px;
-    color: #000;
+    color: var(--text-secondary-color);
     content: "/\00a0";
 }

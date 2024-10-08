@@ -9,7 +9,7 @@
 }
 .loader_light {
     aspect-ratio: 1;
-    --c: no-repeat linear-gradient(#dfdfdf 0 0);
+    --c: no-repeat linear-gradient(var(--text-primary-color) 0 0);
     background:
             var(--c) 0%   50%,
             var(--c) 50%  50%,
@@ -19,7 +19,7 @@
 }
 .loader_dark {
     aspect-ratio: 1;
-    --c: no-repeat linear-gradient(#000 0 0);
+    --c: no-repeat linear-gradient(var(--text-secondary-color) 0 0);
     background:
             var(--c) 0%   50%,
             var(--c) 50%  50%,

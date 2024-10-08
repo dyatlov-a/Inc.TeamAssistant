@@ -1,8 +1,8 @@
 .dashboard-widgets__widget {
     flex: 0 1 calc(50% - 20px);
-    background-color: #9d9d9d;
+    background-color: var(--block-primary-color);
     margin: 10px;
-    border-top: 5px #555 solid;
+    border-top: 5px var(--bg-secondary-color) solid;
 }
 .dashboard-widgets__title {
     flex: 1;

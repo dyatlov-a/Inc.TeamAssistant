@@ -10,7 +10,7 @@
 }
 .footer-group__header {
     display: block;
-    color: #000;
+    color: var(--block-secondary-color);
     font-size: .8rem;
     padding-bottom: 5px;
 }

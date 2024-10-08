@@ -1,15 +1,15 @@
 .assessment-session-header {
     margin-top: -70px;
     padding: 120px 0 40px 0;
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-session-content {
     padding: 20px 0 40px 0;
 }
 .assessment-session-footer {
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-session__header {
     display: flex;
