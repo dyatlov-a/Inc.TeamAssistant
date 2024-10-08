@@ -8,11 +8,21 @@
 </svg>
 
 @code {
+    /// <summary>
+    /// Size of the icon.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Size { get; set; } = default!;
     
+    /// <summary>
+    /// Style for component.
+    /// </summary>
     [Parameter]
-    public bool IsDark { get; set; }
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
     
-    private string CssClass => IsDark ? "icon_dark" : "icon_light";
+    private string CssClass  => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "icon_primary",
+        _ => "icon_secondary"
+    };
 }

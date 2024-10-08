@@ -37,12 +37,16 @@ else
     public EventCallback OnClick { get; set; }
     
     /// <summary>
-    /// Flag for set dark or light theme.
+    /// Style for component.
     /// </summary>
     [Parameter]
-    public bool IsDark { get; set; }
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
     
-    private string CssClass => IsDark ? "link_dark" : "link_light";
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "link_primary",
+        _ => "link_secondary"
+    };
     
     private async Task EmitOnClick()
     {

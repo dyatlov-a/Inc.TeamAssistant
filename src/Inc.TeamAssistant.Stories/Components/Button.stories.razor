@@ -3,26 +3,16 @@
 <Stories TComponent="Button">
     <ArgType For="c => c.ButtonMode" Control="ControlType.Select" />
     <ArgType For="c => c.ButtonType" Control="ControlType.Select" />
-    <Story Name="Default" Layout="typeof(DarkLayout)">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
             <Button @attributes="context.Args">
                 <Content>@_text</Content>
             </Button>
         </Template>
     </Story>
-    <Story Name="Small" Layout="typeof(DarkLayout)">
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
         <Arguments>
-            <Arg For="c => c.ButtonMode" Value="ButtonMode.Small" />
-        </Arguments>
-        <Template>
-            <Button @attributes="context.Args">
-                <Content>@_text</Content>
-            </Button>
-        </Template>
-    </Story>
-    <Story Name="Dark" Layout="typeof(LightLayout)">
-        <Arguments>
-            <Arg For="c => c.IsDark" Value="true" />
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
             <Button @attributes="context.Args">
@@ -33,6 +23,16 @@
     <Story Name="Disabled" Layout="typeof(DarkLayout)">
         <Arguments>
             <Arg For="c => c.IsDisabled" Value="true" />
+        </Arguments>
+        <Template>
+            <Button @attributes="context.Args">
+                <Content>@_text</Content>
+            </Button>
+        </Template>
+    </Story>
+    <Story Name="Small" Layout="typeof(DarkLayout)">
+        <Arguments>
+            <Arg For="c => c.ButtonMode" Value="ButtonMode.Small" />
         </Arguments>
         <Template>
             <Button @attributes="context.Args">

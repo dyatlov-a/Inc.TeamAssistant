@@ -115,18 +115,21 @@
                                         </div>
                                         <div class="holiday-items__item-control">
                                             <Button
-                                                IsDark="true"
+                                                ComponentStyle="ComponentStyle.Secondary"
                                                 ButtonMode="ButtonMode.Small"
                                                 OnClick="() => _formModel.RemoveHoliday(holiday)">
                                                 <Content>
-                                                    <TrashIcon Size="20px" IsDark="true"/>
+                                                    <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
                                                 </Content>
                                             </Button>
                                         </div>
                                     </div>
                                 }
                                 <div class="holiday-items__item">
-                                    <Button IsDark="true" ButtonMode="ButtonMode.Small" OnClick="_formModel.AddHoliday">
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonMode="ButtonMode.Small"
+                                        OnClick="_formModel.AddHoliday">
                                         <Content>
                                             @Resources[Messages.Constructor_AddHolidayLabel]
                                         </Content>

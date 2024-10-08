@@ -206,21 +206,21 @@ html {
 .icon-star_checked {
     background: var(--icon-primary-color);
 }
-.icon_light {
+.icon_primary {
     stroke: var(--button-primary-color);    
 }
-.icon_dark {
+.icon_secondary {
     stroke: var(--text-secondary-color);
 }
-.button:hover .icon_light, .link:hover .icon_light {
+.button:hover .icon_primary, .link:hover .icon_primary {
     stroke: var(--button-secondary-color);
 }
-.button:hover .icon_dark, .link:hover .icon_dark {
+.button:hover .icon_secondary, .link:hover .icon_secondary {
     stroke: var(--button-primary-color);
 }
-.button:disabled:hover .icon_light, .link:disabled:hover .icon_light {
+.button:disabled:hover .icon_primary, .link:disabled:hover .icon_primary {
     stroke: var(--button-primary-color);
 }
-.button:disabled:hover .icon_dark, .link:disabled:hover .icon_dark {
+.button:disabled:hover .icon_secondary, .link:disabled:hover .icon_secondary {
     stroke: var(--button-secondary-color);
 }

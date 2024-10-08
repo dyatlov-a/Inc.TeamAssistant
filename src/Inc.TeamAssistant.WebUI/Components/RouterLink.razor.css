@@ -4,9 +4,9 @@
 .link:hover {
     text-decoration: underline;
 }
-.link_light {
+.link_primary {
     color: var(--text-primary-color);
 }
-.link_dark {
+.link_secondary {
     color: var(--text-secondary-color);
 }

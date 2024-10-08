@@ -10,7 +10,7 @@
         <div class="history__body">
             @foreach (var item in _items)
             {
-                <RouterLink Href="@CreateMoveToHistoryLink(item)" IsDark="true">
+                <RouterLink Href="@CreateMoveToHistoryLink(item)" ComponentStyle="ComponentStyle.Secondary">
                     <Content>
                         @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
                     </Content>

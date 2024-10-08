@@ -1,16 +1,16 @@
 @attribute [Stories("Components/RouterLink")]
 
 <Stories TComponent="RouterLink">
-    <Story Name="Default" Layout="typeof(DarkLayout)">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
             <RouterLink Href="#" @attributes="context.Args">
                 <Content>@_text</Content>
             </RouterLink>
         </Template>
     </Story>
-    <Story Name="Dark" Layout="typeof(LightLayout)">
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
         <Arguments>
-            <Arg For="c => c.IsDark" Value="true" />
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
             <RouterLink Href="#" @attributes="context.Args">

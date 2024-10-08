@@ -1,23 +1,23 @@
 @attribute [Stories("Components/Loading")]
 
 <Stories TComponent="Loading">
-    <Story Name="Default" Layout="typeof(DarkLayout)">
+    <Story Name="Done" Layout="typeof(DarkLayout)">
         <Template>
             <Loading State="_done" Retry="Retry" @attributes="context.Args">
                 <Content>@_text</Content>
             </Loading>
         </Template>
     </Story>
-    <Story Name="Loading" Layout="typeof(DarkLayout)">
+    <Story Name="Loading Primary" Layout="typeof(DarkLayout)">
         <Template>
             <Loading State="_loading" Retry="Retry" @attributes="context.Args">
                 <Content>@_text</Content>
             </Loading>
         </Template>
     </Story>
-    <Story Name="Loading dark" Layout="typeof(LightLayout)">
+    <Story Name="Loading Secondary" Layout="typeof(LightLayout)">
         <Arguments>
-            <Arg For="c => c.IsDark" Value="true"/>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
         </Arguments>
         <Template>
             <Loading State="_loading" Retry="Retry" @attributes="context.Args">
@@ -25,16 +25,16 @@
             </Loading>
         </Template>
     </Story>
-    <Story Name="Error" Layout="typeof(DarkLayout)">
+    <Story Name="Error Primary" Layout="typeof(DarkLayout)">
         <Template>
             <Loading State="_error" Retry="Retry" @attributes="context.Args">
                 <Content>@_text</Content>
             </Loading>
         </Template>
     </Story>
-    <Story Name="Error dark" Layout="typeof(LightLayout)">
+    <Story Name="Error Secondary" Layout="typeof(LightLayout)">
         <Arguments>
-            <Arg For="c => c.IsDark" Value="true"/>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
         </Arguments>
         <Template>
             <Loading State="_error" Retry="Retry" @attributes="context.Args">

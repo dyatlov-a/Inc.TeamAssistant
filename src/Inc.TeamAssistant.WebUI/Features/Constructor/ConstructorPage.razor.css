@@ -2,6 +2,8 @@
     margin: 50px 0 40px 0;
 }
 .constructor__text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
     margin: 40px 0;
 }
 .constructor__title {

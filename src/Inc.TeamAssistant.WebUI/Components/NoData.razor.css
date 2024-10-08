@@ -4,9 +4,9 @@
     justify-content: space-evenly;
     min-height: 100px;
 }
-.no-data_dark {
-    color: var(--text-secondary-color);
-}
-.no-data_light {
+.no-data_primary {
     color: var(--text-primary-color);
+}
+.no-data_secondary{
+    color: var(--text-secondary-color);
 }
