@@ -5,7 +5,7 @@
     {
         <InputTextArea
             @bind-Value="Value"
-            class="form-control form-control_multilines form-control_disabled"
+            class="input-multilines input-multilines_disabled"
             id="@FieldId"
             disabled="disabled" />
     }
@@ -13,7 +13,7 @@
     {
         <InputTextArea
             @bind-Value="Value"
-            class="form-control form-control_multilines form-control_enabled"
+            class="input-multilines input-multilines_enabled"
             id="@FieldId" />
     }
 </div>
@@ -21,7 +21,7 @@
 @code {
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = string.Empty;
-    
+
     [Parameter]
     public bool IsDisabled { get; set; }
 

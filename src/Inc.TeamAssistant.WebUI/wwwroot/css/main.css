@@ -140,10 +140,10 @@ html {
     margin: 0 10px 10px 0;
 }
 /* VALIDATION */
-.form-control_is-valid {
+.input_valid {
     border: 3px solid var(--message-valid-color);
 }
-.form-control_is-invalid {
+.input_invalid {
     border: 3px solid var(--message-invalid-color);
 }
 .validation-message {

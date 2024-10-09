@@ -1,4 +1,4 @@
-::deep .form-control {
+::deep .input-multilines {
     font-size: 1rem;
     width: 100%;
     padding: .625rem .3125rem;
@@ -7,15 +7,13 @@
     color: var(--text-secondary-color);
     background-color: var(--text-primary-color);
     transition: border 0.3s;
-}
-::deep .form-control_multilines {
     resize: none;
     height: 102px;
 }
-::deep .form-control:focus, .form-control_enabled:hover {
+::deep .input-multilines:focus, ::deep .input-multilines_enabled:hover {
     border: 3px solid var(--block-secondary-color);
 }
-::deep .form-control_disabled {
+::deep .input-multilines_disabled {
     background-color: var(--control-disabled-color);
     cursor: default;
 }

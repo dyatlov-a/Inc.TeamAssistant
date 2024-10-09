@@ -1,24 +1,21 @@
-::deep .form-control {
+::deep .input-select {
     font-size: 1rem;
     width: 100%;
-    padding: .625rem .3125rem;
+    padding: .625rem 1.25rem .625rem .3125rem;
     border: 3px solid var(--bg-secondary-color);
     border-radius: 0;
     color: var(--text-secondary-color);
     background-color: var(--text-primary-color);
+    background: var(--text-primary-color) url('imgs/arrow-down.png') calc(100% - 5px) center no-repeat;
     transition: border 0.3s;
-}
-::deep .form-control:focus, .form-control_enabled:hover {
-    border: 3px solid var(--block-secondary-color);
-}
-::deep .form-control_disabled {
-    background-color: var(--control-disabled-color);
-    cursor: default;
-}
-::deep .form-control_select-list {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background: var(--text-primary-color) url('imgs/arrow-down.png') calc(100% - 5px) center no-repeat;
-    padding-right: 20px;
+}
+::deep .input-select:focus, ::deep .input-select_enabled:hover {
+    border: 3px solid var(--block-secondary-color);
+}
+::deep .input-select_disabled {
+    background-color: var(--control-disabled-color);
+    cursor: default;
 }
