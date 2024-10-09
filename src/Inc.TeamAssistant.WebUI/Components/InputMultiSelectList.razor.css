@@ -1,4 +1,4 @@
-.form-control {
+.input-multiselect {
     font-size: 1rem;
     width: 100%;
     padding: .625rem .3125rem;
@@ -8,22 +8,22 @@
     background-color: var(--text-primary-color);
     transition: border 0.3s;
 }
-.form-control:focus, .form-control_enabled:hover {
+.input-multiselect:focus, .input-multiselect_enabled:hover {
     border: 3px solid var(--block-secondary-color);
 }
-.form-control_disabled {
+.input-multiselect_disabled {
     background-color: var(--control-disabled-color);
     cursor: default;
 }
-.multiselect__item {
+.input-multiselect__item {
     display: inline-block;
     padding: 5px;
     margin-right: 5px;
 }
-.multiselect__item_selected {
+.input-multiselect__item_selected {
     background-color: var(--bg-secondary-color);
     color: var(--text-primary-color);
 }
-.form-control_enabled .multiselect__item {
+.input-multiselect_enabled .input-multiselect__item {
     cursor: pointer;
 }

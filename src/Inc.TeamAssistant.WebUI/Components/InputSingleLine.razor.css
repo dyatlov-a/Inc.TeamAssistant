@@ -1,4 +1,4 @@
-::deep .form-control {
+::deep .input-line {
     font-size: 1rem;
     width: 100%;
     padding: .625rem .3125rem;
@@ -8,10 +8,10 @@
     background-color: var(--text-primary-color);
     transition: border 0.3s;
 }
-::deep .form-control:focus, .form-control_enabled:hover {
+::deep .input-line:focus, ::deep .input-line_enabled:hover {
     border: 3px solid var(--block-secondary-color);
 }
-::deep .form-control_disabled {
+::deep .input-line_disabled {
     background-color: var(--control-disabled-color);
     cursor: default;
 }

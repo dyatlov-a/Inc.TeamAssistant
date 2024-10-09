@@ -10,7 +10,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(AvailableFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control form-control_enabled input-features__items @_availableFeaturesCssClass">
+        class="input-features__items @_availableFeaturesCssClass">
         @if (AvailableFeatures.Any())
         {
             foreach (var feature in AvailableFeatures)
@@ -40,7 +40,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(SelectedFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control form-control_enabled input-features__items @CssClass @_selectedFeaturesCssClass">
+        class="input-features__items @CssClass @_selectedFeaturesCssClass">
         @if (SelectedFeatures.Any())
         {
             foreach (var feature in SelectedFeatures)
@@ -136,7 +136,7 @@
     
     private void HandleDragEnter()
     {
-        var cssClass = "can-drop";
+        var cssClass = "input-features__items_can-drop";
 
         if (AvailableFeatures.Any(f => f.Id == DragAndDropService.Current))
             _selectedFeaturesCssClass = cssClass;

@@ -10,7 +10,7 @@
             id="@FieldId"
             Value="_value"
             ValueExpression="@(() => _value)"
-            class="form-control form-control_select-list form-control_disabled"
+            class="input-select input-select_disabled"
             disabled="disabled">
             @if (HasEmptyValue)
             {
@@ -29,7 +29,7 @@
             Value="_value"
             ValueExpression="@(() => _value)"
             ValueChanged="@((TValue? v) => SetCurrentValue(v))"
-            class="@($"form-control form-control_select-list form-control_enabled {CssClass} {ParentCssClass}")">
+            class="@($"input-select input-select_enabled {CssClass} {ParentCssClass}")">
             @if (HasEmptyValue)
             {
                 <option value=""></option>

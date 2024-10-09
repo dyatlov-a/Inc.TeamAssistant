@@ -3,13 +3,13 @@
 
 @inherits InputBase<IEnumerable<TValue>>
 
-<div class="form-control @CssClass @DisabledCssClass">
+<div class="input-multiselect @CssClass @DisabledCssClass">
     @foreach (var item in Items)
     {
         var value = ValueSelector(item);
 
         <span
-            class="multiselect__item @SelectedCssClass(value)"
+            class="input-multiselect__item @SelectedCssClass(value)"
             @onclick="() => ChangeValue(value)">
             @TitleSelector(item)
         </span>
@@ -43,11 +43,11 @@
             _values.AddRange(CurrentValue);
     }
     
-    private string DisabledCssClass => IsDisabled ? "form-control_disabled" : "form-control_enabled";
+    private string DisabledCssClass => IsDisabled ? "input-multiselect_disabled" : "input-multiselect_enabled";
     private string ValuesAsString => string.Join(',', _values);
     
     private string SelectedCssClass(TValue value) => _values.Contains(value)
-        ? "multiselect__item_selected"
+        ? "input-multiselect__item_selected"
         : string.Empty;
 
     private void ChangeValue(TValue value)
