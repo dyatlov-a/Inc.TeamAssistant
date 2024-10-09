@@ -27,9 +27,7 @@
 }
 .confirm-dialog__actions {
     margin-top: 20px;
-    text-align: right;
-}
-::deep .button {
-    margin-left: 5px;
-    min-width: 75px;
+    display: flex;
+    justify-content: end;
+    gap: 5px;
 }

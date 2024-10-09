@@ -1,11 +1,11 @@
-::deep .button {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
-}
 .team-connector__code {
     width: 100%;
     margin-bottom: 20px;
+}
+.team-connector__buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 ::deep .loading {
     height: 324px;

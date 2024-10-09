@@ -13,14 +13,16 @@
                     <div class="team-connector__code">
                         @((MarkupString)_team.Code)
                     </div>
-                    <Button
-                        ComponentStyle="ComponentStyle.Secondary"
-                        ButtonType="ButtonType.Tab"
-                        Link="@_team.LinkForConnect">
-                        <Content>
-                            @Resources[Messages.Dashboard_ConnectToTeamButton]
-                        </Content>
-                    </Button>
+                    <div class="team-connector__buttons">
+                        <Button
+                            ComponentStyle="ComponentStyle.Secondary"
+                            ButtonType="ButtonType.Tab"
+                            Link="@_team.LinkForConnect">
+                            <Content>
+                                @Resources[Messages.Dashboard_ConnectToTeamButton]
+                            </Content>
+                        </Button>
+                    </div>
                 </Content>
             </Loading>
         </Content>

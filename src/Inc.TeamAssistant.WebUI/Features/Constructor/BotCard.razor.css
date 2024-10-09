@@ -30,8 +30,10 @@
     padding: 6px;
 }
 .bot-card__actions {
-    text-align: center;
     margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 @media (max-width: 991.98px) {
     .bot-card {

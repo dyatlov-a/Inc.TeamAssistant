@@ -8,9 +8,7 @@
     display: flex;
     justify-content: right;
     margin: 10px;
-}
-::deep .button {
-    margin-left: 10px;
+    gap: 10px;
 }
 .appraiser-integration__controls, .appraiser-integration__bg {
     position: absolute;

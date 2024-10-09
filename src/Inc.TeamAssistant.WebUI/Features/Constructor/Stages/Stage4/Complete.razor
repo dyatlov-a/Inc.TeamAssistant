@@ -4,139 +4,145 @@
 @inject RequestProcessor RequestProcessor
 @inject FeaturesFactory FeaturesFactory
 
-<div>
-    <EditForm id="@FormId" EditContext="_editContext" OnSubmit="SubmitForm">
-        <FluentValidationValidator @ref="_fluentValidationValidator" />
-        <Panel Header="@PanelHeader" IsOpen="true">
-            <Actions>
-                <Button ButtonType="ButtonType.Submit">
-                    <Content>
-                        @ButtonText
-                    </Content>
-                </Button>
-            </Actions>
-            <Content>
-                <Loading State="_state" Retry="SubmitForm">
-                    <Content>
-                        <ValidationSummary />
-                        <FormSection
-                            Title="@Resources[Messages.Constructor_ConnectingTelegram]"
-                            HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
-                            <Content>
+<EditForm id="@FormId" EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <Panel Header="@PanelHeader" IsOpen="true">
+        <Actions>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @ButtonText
+                </Content>
+            </Button>
+        </Actions>
+        <Content>
+            <Loading State="_state" Retry="SubmitForm">
+                <Content>
+                    <ValidationSummary />
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_ConnectingTelegram]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
+                        <Content>
+                            <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.CheckBot)"
                                     ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
-                                <FormFieldSet
-                                    FieldId="bot-username"
-                                    Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
-                                    <Content>
-                                        <InputSingleLine
-                                            FieldId="bot-username"
-                                            @bind-Value="_formModel.UserName"
-                                            IsDisabled="true" />
-                                    </Content>
-                                </FormFieldSet>
-                            </Content>
-                        </FormSection>
-                        <FormSection
-                            Title="@Resources[Messages.Constructor_FeaturesStore]"
-                            HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
-                            <Content>
+                            </div>
+                            <FormFieldSet
+                                FieldId="bot-username"
+                                Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                                <Content>
+                                    <InputSingleLine
+                                        FieldId="bot-username"
+                                        @bind-Value="_formModel.UserName"
+                                        IsDisabled="true"/>
+                                </Content>
+                            </FormFieldSet>
+                        </Content>
+                    </FormSection>
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_FeaturesStore]"
+                        HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                        <Content>
+                            <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.SelectFeatures)"
                                     ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
-                                @foreach (var feature in StagesState.AvailableFeatures)
-                                {
-                                    var fieldId = feature.Id.ToString();
-                                    var selected = StagesState.FeatureIds.Contains(feature.Id)
-                                        ? Resources[Messages.Constructor_BooleanTrueText]
-                                        : Resources[Messages.Constructor_BooleanFalseText];
-
-                                    <FormFieldSet
-                                        FieldId="@fieldId"
-                                        Label="@FeaturesFactory.CreateName(feature.Name)">
-                                        <Content>
-                                            <InputSingleLine
-                                                FieldId="@fieldId"
-                                                @bind-Value="selected"
-                                                IsDisabled="true" />
-                                        </Content>
-                                    </FormFieldSet>
-                                }
-                            </Content>
-                        </FormSection>
-                        @foreach (var feature in StagesState.SelectedFeatures)
-                        {
-                            if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
-                                continue;
-
-                            foreach (var settingSection in settingSections)
+                            </div>
+                            @foreach (var feature in StagesState.AvailableFeatures)
                             {
-                                <FormSection
-                                    Title="@Resources[settingSection.HeaderMessageId]"
-                                    HelpText="@Resources[settingSection.HelpMessageId]">
+                                var fieldId = feature.Id.ToString();
+                                var selected = StagesState.FeatureIds.Contains(feature.Id)
+                                    ? Resources[Messages.Constructor_BooleanTrueText]
+                                    : Resources[Messages.Constructor_BooleanFalseText];
+
+                                <FormFieldSet
+                                    FieldId="@fieldId"
+                                    Label="@FeaturesFactory.CreateName(feature.Name)">
                                     <Content>
+                                        <InputSingleLine
+                                            FieldId="@fieldId"
+                                            @bind-Value="selected"
+                                            IsDisabled="true"/>
+                                    </Content>
+                                </FormFieldSet>
+                            }
+                        </Content>
+                    </FormSection>
+                    @foreach (var feature in StagesState.SelectedFeatures)
+                    {
+                        if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                            continue;
+
+                        foreach (var settingSection in settingSections)
+                        {
+                            <FormSection
+                                Title="@Resources[settingSection.HeaderMessageId]"
+                                HelpText="@Resources[settingSection.HelpMessageId]">
+                                <Content>
+                                    <div class="actions">
                                         <RouterLink
                                             OnClick="() => MoveToNext(Stage.SetSettings)"
                                             ComponentStyle="ComponentStyle.Secondary">
                                             <Content>@Resources[Messages.Constructor_Edit]</Content>
                                         </RouterLink>
-                                        @foreach (var settingItem in settingSection.SettingItems)
-                                        {
-                                            var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
-                                                settingItem.PropertyName,
-                                                StringComparison.InvariantCultureIgnoreCase));
-                                            var propertyValueAsString = GetValueAsText(settingItem, property.Value);
+                                    </div>
+                                    @foreach (var settingItem in settingSection.SettingItems)
+                                    {
+                                        var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                            settingItem.PropertyName,
+                                            StringComparison.InvariantCultureIgnoreCase));
+                                        var propertyValueAsString = GetValueAsText(settingItem, property.Value);
 
-                                            <FormFieldSet
-                                                FieldId="@settingItem.PropertyName"
-                                                Label="@Resources[settingItem.LabelMessageId]">
-                                                <Content>
-                                                    <InputSingleLine
-                                                        FieldId="@settingItem.PropertyName"
-                                                        @bind-Value="propertyValueAsString"
-                                                        IsDisabled="true" />
-                                                </Content>
-                                            </FormFieldSet>
-                                        }
-                                    </Content>
-                                </FormSection>
-                            }
+                                        <FormFieldSet
+                                            FieldId="@settingItem.PropertyName"
+                                            Label="@Resources[settingItem.LabelMessageId]">
+                                            <Content>
+                                                <InputSingleLine
+                                                    FieldId="@settingItem.PropertyName"
+                                                    @bind-Value="propertyValueAsString"
+                                                    IsDisabled="true"/>
+                                            </Content>
+                                        </FormFieldSet>
+                                    }
+                                </Content>
+                            </FormSection>
                         }
-                        <FormSection
-                            Title="@Resources[Messages.Constructor_SupportedLanguages]"
-                            HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
-                            <Content>
+                    }
+                    <FormSection
+                        Title="@Resources[Messages.Constructor_SupportedLanguages]"
+                        HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
+                        <Content>
+                            <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.SetSettings)"
                                     ComponentStyle="ComponentStyle.Secondary">
                                     <Content>@Resources[Messages.Constructor_Edit]</Content>
                                 </RouterLink>
-                                <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
-                                    <Content>
-                                        <InputMultiSelectList
-                                            FieldId="supported-languages"
-                                            Value="_formModel.SupportedLanguages"
-                                            ValueExpression="() => _formModel.SupportedLanguages"
-                                            Items="LanguageSettings.LanguageIds"
-                                            TitleSelector="i => i.Value"
-                                            ValueSelector="i => i.Value"
-                                            IsDisabled="true"/>
-                                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
-                                    </Content>
-                                </FormFieldSet>
-                            </Content>
-                        </FormSection>
-                    </Content>
-                </Loading>
-            </Content>
-        </Panel>
-    </EditForm>
-</div>
+                            </div>
+                            <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
+                                <Content>
+                                    <InputMultiSelectList
+                                        FieldId="supported-languages"
+                                        Value="_formModel.SupportedLanguages"
+                                        ValueExpression="() => _formModel.SupportedLanguages"
+                                        Items="LanguageSettings.LanguageIds"
+                                        TitleSelector="i => i.Value"
+                                        ValueSelector="i => i.Value"
+                                        IsDisabled="true"/>
+                                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                                </Content>
+                            </FormFieldSet>
+                        </Content>
+                    </FormSection>
+                </Content>
+            </Loading>
+        </Content>
+    </Panel>
+</EditForm>
 
 @code {
     [Parameter, EditorRequired]
