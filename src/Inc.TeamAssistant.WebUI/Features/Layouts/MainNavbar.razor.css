@@ -9,10 +9,13 @@
     align-items: center;
     padding: 0 20px;
 }
-.navbar__item, ::deep .link {
+.navbar__item {
     display: flex;
     align-items: center;
     padding: 15px 10px;
+}
+.navbar__item_logo {
+    margin-bottom: -4px;
 }
 .navbar__divider {
     flex-grow: 1;

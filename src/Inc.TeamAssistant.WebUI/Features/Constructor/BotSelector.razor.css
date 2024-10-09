@@ -3,10 +3,6 @@
     flex-wrap: wrap;
     justify-content: space-between;
 }
-::deep .button {
-    margin: 5px;
-    min-width: 166px;
-}
 ::deep .loading
 {
     margin-bottom: 40px;

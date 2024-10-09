@@ -114,26 +114,30 @@
                                             </FormFieldSet>
                                         </div>
                                         <div class="holiday-items__item-control">
-                                            <Button
-                                                ComponentStyle="ComponentStyle.Secondary"
-                                                ButtonMode="ButtonMode.Small"
-                                                OnClick="() => _formModel.RemoveHoliday(holiday)">
-                                                <Content>
-                                                    <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
-                                                </Content>
-                                            </Button>
+                                            <div class="holiday-items__buttons">
+                                                <Button
+                                                    ComponentStyle="ComponentStyle.Secondary"
+                                                    ButtonMode="ButtonMode.Small"
+                                                    OnClick="() => _formModel.RemoveHoliday(holiday)">
+                                                    <Content>
+                                                        <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                                    </Content>
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 }
                                 <div class="holiday-items__item">
-                                    <Button
-                                        ComponentStyle="ComponentStyle.Secondary"
-                                        ButtonMode="ButtonMode.Small"
-                                        OnClick="_formModel.AddHoliday">
-                                        <Content>
-                                            @Resources[Messages.Constructor_AddHolidayLabel]
-                                        </Content>
-                                    </Button>
+                                    <div class="holiday-items__buttons">
+                                        <Button
+                                            ComponentStyle="ComponentStyle.Secondary"
+                                            ButtonMode="ButtonMode.Small"
+                                            OnClick="_formModel.AddHoliday">
+                                            <Content>
+                                                @Resources[Messages.Constructor_AddHolidayLabel]
+                                            </Content>
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </Content>

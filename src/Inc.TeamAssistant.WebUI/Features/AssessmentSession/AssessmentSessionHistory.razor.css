@@ -7,8 +7,7 @@
 }
 .history__body {
     margin-top: .5rem;
-}
-::deep .link {
-    display: block;
+    display: flex;
+    flex-direction: column;
     line-height: 1.5rem;
 }

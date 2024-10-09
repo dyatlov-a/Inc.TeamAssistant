@@ -8,6 +8,3 @@
 .view-switcher__item:hover, .view-switcher__item_selected {
     background-color: var(--block-primary-color);
 }
-::deep svg {
-    margin-bottom: -4px;
-}

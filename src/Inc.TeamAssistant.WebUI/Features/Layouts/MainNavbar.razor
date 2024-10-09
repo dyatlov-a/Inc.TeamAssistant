@@ -9,12 +9,21 @@
         <AuthorizeView>
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
-                <RouterLink Href="@MainUrl">
-                    <Content>
-                        <HomeIcon Size="40px"/>
-                    </Content>
-                </RouterLink>
-                <CultureSelector/>
+                <div class="navbar__item navbar__item_logo">
+                    <RouterLink Href="@MainUrl">
+                        <Content>
+                            <HomeIcon Size="40px"/>
+                        </Content>
+                    </RouterLink>
+                </div>
+                @foreach (var language in _languages)
+                {
+                    <div class="navbar__item">
+                        <RouterLink OnClick="() => MoveTo(language.Path)">
+                            <Content>@language.Culture</Content>
+                        </RouterLink>
+                    </div>
+                }
                 <div class="navbar__divider"></div>
                 <span class="navbar__item navbar__item_avatar">
                     <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
@@ -22,25 +31,38 @@
                     <br/>
                     @person.Username
                 </span>
-                <RouterLink Href="@_logoutUrl">
-                    <Content>@Resources[Messages.Navigation_Logout]</Content>
-                </RouterLink>
+                <div class="navbar__item">
+                    <RouterLink Href="@_logoutUrl">
+                        <Content>@Resources[Messages.Navigation_Logout]</Content>
+                    </RouterLink>
+                </div>
             </Authorized>
             <NotAuthorized>
-                <RouterLink Href="@MainUrl">
-                    <Content>
-                        <HomeIcon Size="40px"/>
-                    </Content>
-                </RouterLink>
-                <CultureSelector/>
+                <div class="navbar__item">
+                    <RouterLink Href="@MainUrl">
+                        <Content>
+                            <HomeIcon Size="40px"/>
+                        </Content>
+                    </RouterLink>
+                </div>
+                @foreach (var language in _languages)
+                {
+                    <div class="navbar__item">
+                        <RouterLink OnClick="() => MoveTo(language.Path)">
+                            <Content>@language.Culture</Content>
+                        </RouterLink>
+                    </div>
+                }
                 <div class="navbar__divider"></div>
                 @if (!NavRouter.CurrentUrl.Contains("/login"))
                 {
-                    <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
-                        <Content>
-                            @Resources[Messages.Navigation_Login]
-                        </Content>
-                    </RouterLink>
+                    <div class="navbar__item">
+                        <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
+                            <Content>
+                                @Resources[Messages.Navigation_Login]
+                            </Content>
+                        </RouterLink>
+                    </div>
                 }
             </NotAuthorized>
         </AuthorizeView>
@@ -48,6 +70,7 @@
 </div>
 
 @code {
+    private IReadOnlyCollection<(string Culture, string Path)> _languages = Array.Empty<(string, string)>();
     private IDisposable? _routerScope;
     
     private string MainUrl => NavRouter.CreateRoute(null);
@@ -57,11 +80,26 @@
     {
         var languageId = NavRouter.GetCurrentLanguage();
         
-        _routerScope = NavRouter.OnRouteChanged(StateHasChanged);
+        _routerScope = NavRouter.OnRouteChanged(SetLanguages);
         _logoutUrl = languageId is null
             ? "accounts/logout"
             : $"accounts/logout?languageCode={languageId.Value}";
+        
+        SetLanguages();
     }
+    
+    private void SetLanguages()
+    {
+        var routeWithoutLanguage = NavRouter.GetRouteSegment();
+
+        _languages = LanguageSettings.LanguageIds
+            .Select(l => (l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
+            .ToArray();
+        
+        StateHasChanged();
+    }
+
+    private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
 
     public void Dispose() => _routerScope?.Dispose();
 }

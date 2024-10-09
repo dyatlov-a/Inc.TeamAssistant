@@ -1,6 +1,3 @@
-.link {
-    font-size: 1rem;
-}
 .link:hover {
     text-decoration: underline;
 }
