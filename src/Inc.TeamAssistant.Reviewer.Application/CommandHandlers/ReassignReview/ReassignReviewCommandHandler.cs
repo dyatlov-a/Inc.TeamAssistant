@@ -22,6 +22,7 @@ internal sealed class ReassignReviewCommandHandler : IRequestHandler<ReassignRev
         var notifications = await _reassignReviewService.ReassignReview(
             command.MessageContext.ChatMessage.MessageId,
             command.TaskId,
+            command.MessageContext.Bot,
             token);
         
         return CommandResult.Build(notifications.ToArray());

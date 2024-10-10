@@ -1,6 +1,7 @@
 using System.Text;
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -40,6 +41,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         TaskForReview task,
         Person reviewer,
         Person owner,
+        BotContext botContext,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
@@ -53,7 +55,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notifications = new List<NotificationMessage>
         {
             await MessageForTeam(task, reviewer, owner, metricsByTeam, metricsByTask, token),
-            await MessageForReviewer(task, metricsByTeam, metricsByTask, token)
+            await MessageForReviewer(task, botContext, metricsByTeam, metricsByTask, token)
         };
 
         if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerId.HasValue)
@@ -264,6 +266,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     private async Task<NotificationMessage> MessageForReviewer(
         TaskForReview task,
+        BotContext botContext,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
         CancellationToken token)
@@ -317,10 +320,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         {
             var moveToAcceptButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAccept, languageId);
             notification.WithButton(new Button(moveToAcceptButton, $"{CommandList.Accept}{task.Id:N}"));
+
+            if (botContext.CanAcceptWithComments())
+            {
+                var moveToAcceptWithCommentsButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAcceptWithComments, languageId);
+                notification.WithButton(new Button(moveToAcceptWithCommentsButton, $"{CommandList.AcceptWithComments}{task.Id:N}"));
+            }
             
-            var moveToAcceptWithCommentsButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAcceptWithComments, languageId);
-            notification.WithButton(new Button(moveToAcceptWithCommentsButton, $"{CommandList.AcceptWithComments}{task.Id:N}"));
-        
             var moveToDeclineButton = await _messageBuilder.Build(Messages.Reviewer_MoveToDecline, languageId);
             notification.WithButton(new Button(moveToDeclineButton, $"{CommandList.Decline}{task.Id:N}"));
         }

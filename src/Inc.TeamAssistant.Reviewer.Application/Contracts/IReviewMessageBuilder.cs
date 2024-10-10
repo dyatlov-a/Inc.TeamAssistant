@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -12,6 +13,7 @@ public interface IReviewMessageBuilder
         TaskForReview task,
         Person reviewer,
         Person owner,
+        BotContext botContext,
         CancellationToken token);
 
     Task<NotificationMessage?> Push(TaskForReview task, CancellationToken token);

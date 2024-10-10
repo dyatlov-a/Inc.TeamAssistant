@@ -37,6 +37,7 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
             notifications.AddRange(await _reassignReviewService.ReassignReview(
                 messageContext.ChatMessage.MessageId,
                 task.Id,
+                messageContext.Bot,
                 token));
 
         return notifications;
