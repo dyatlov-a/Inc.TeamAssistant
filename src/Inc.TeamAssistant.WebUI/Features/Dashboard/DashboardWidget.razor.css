@@ -28,12 +28,6 @@
 .dashboard-widgets__content_has-chart ::deep .date-selector {
     margin: 0 -1%;
 }
-.dashboard-widgets__content_has-controls ::deep .loading {
-    height: calc(100% - 66px);
-}
-.dashboard-widgets__content_no-controls ::deep .loading {
-    height: calc(100% - 30px);
-}
 @media (max-width: 1080px) {
     .dashboard-widgets__widget {
         flex: 0 1 100%;

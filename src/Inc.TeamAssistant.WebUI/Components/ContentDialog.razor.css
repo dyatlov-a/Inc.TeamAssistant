@@ -49,9 +49,6 @@
     width: 1152px;
     height: min(90vh, 972px);
 }
-::deep .loading {
-    height: calc(100% - 36px);
-}
 @media (max-width: 1919.98px) {
     .content-dialog__content_grand {
         width: 80vw;

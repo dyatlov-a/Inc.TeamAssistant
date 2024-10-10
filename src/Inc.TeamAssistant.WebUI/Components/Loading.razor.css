@@ -1,11 +1,14 @@
 .loading {
     display: flex;
-    align-items: center;
     justify-content: space-evenly;
+    align-self: center;
+    width: 100%;
     min-height: 100px;
 }
 .loader {
     width: 46px;
+    height: 46px;
+    align-self: center;
 }
 .loader_primary {
     aspect-ratio: 1;

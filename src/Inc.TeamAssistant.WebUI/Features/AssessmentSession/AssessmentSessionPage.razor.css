@@ -35,9 +35,6 @@
     font-size: 2.4rem;
     line-height: 3.4rem;
 }
-::deep .no-data {
-    height: calc(100vh - 640px);
-}
 @media (max-width: 479.98px) {
     .assessment-session__header {
         flex-direction: column;

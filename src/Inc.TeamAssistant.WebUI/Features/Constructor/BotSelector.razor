@@ -9,41 +9,45 @@
     </Content>
 </ConfirmDialog>
 <div class="bot-selector">
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
-        <Buttons>
-            <Button OnClick="MoveToAdd">
-                <Content>
-                    @Resources[Messages.Constructor_AddBot]
-                </Content>
-            </Button>
-        </Buttons>
-    </BotCard>
-    <Loading State="_state" Retry="Load">
-        <Content>
-            @foreach (var bot in _bots)
-            {
-                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+    <div class="bot-selector__item">
+        <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
+            <Buttons>
+                <Button OnClick="MoveToAdd">
                     <Content>
-                        <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
-                            <Content>@Resources[Messages.Dashboard_MoveToDashboard]</Content>
-                        </RouterLink>
+                        @Resources[Messages.Constructor_AddBot]
                     </Content>
-                    <Buttons>
-                        <Button OnClick="() => MoveToEdit(bot.Id)">
-                            <Content>
-                                @Resources[Messages.Constructor_Edit]
-                            </Content>
-                        </Button>
-                        <Button OnClick="() => MoveToRemove(bot)">
-                            <Content>
-                                @Resources[Messages.Constructor_Remove]
-                            </Content>
-                        </Button>
-                    </Buttons>
-                </BotCard>
-            }
-        </Content>
-    </Loading>
+                </Button>
+            </Buttons>
+        </BotCard>
+    </div>
+    <div class="bot-selector__item">
+        <Loading State="_state" Retry="Load">
+            <Content>
+                @foreach (var bot in _bots)
+                {
+                    <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                        <Content>
+                            <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
+                                <Content>@Resources[Messages.Dashboard_MoveToDashboard]</Content>
+                            </RouterLink>
+                        </Content>
+                        <Buttons>
+                            <Button OnClick="() => MoveToEdit(bot.Id)">
+                                <Content>
+                                    @Resources[Messages.Constructor_Edit]
+                                </Content>
+                            </Button>
+                            <Button OnClick="() => MoveToRemove(bot)">
+                                <Content>
+                                    @Resources[Messages.Constructor_Remove]
+                                </Content>
+                            </Button>
+                        </Buttons>
+                    </BotCard>
+                }
+            </Content>
+        </Loading>
+    </div>
 </div>
 
 @code {

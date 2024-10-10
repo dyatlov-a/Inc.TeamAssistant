@@ -7,9 +7,6 @@
     justify-content: center;
     margin-bottom: 10px;
 }
-::deep .loading {
-    height: 324px;
-}
 @media (max-width: 767.98px) {
     .team-connector {
         display: none;

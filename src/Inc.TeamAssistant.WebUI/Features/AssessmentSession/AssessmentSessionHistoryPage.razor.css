@@ -21,6 +21,3 @@
     font-size: 2.4rem;
     line-height: 3.4rem;
 }
-::deep .loading {
-    height: calc(100vh - 400px);
-}
