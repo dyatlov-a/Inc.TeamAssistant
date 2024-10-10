@@ -9,4 +9,5 @@ public interface ITeamAccessor
     Task<Person?> FindPerson(long personId, CancellationToken token);
     Task<Person> GetPerson(long personId, CancellationToken token);
     Task<LanguageId> GetClientLanguage(Guid botId, long personId, CancellationToken token);
+    Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token);
 }

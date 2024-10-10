@@ -9,11 +9,16 @@ internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQue
 {
     private readonly ITeamReader _teamReader;
     private readonly ICurrentPersonResolver _currentPersonProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
-    public GetTeammatesQueryHandler(ITeamReader teamReader, ICurrentPersonResolver currentPersonProvider)
+    public GetTeammatesQueryHandler(
+        ITeamReader teamReader, 
+        ICurrentPersonResolver currentPersonProvider,
+        ITeamAccessor teamAccessor)
     {
         _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
         _currentPersonProvider = currentPersonProvider ?? throw new ArgumentNullException(nameof(currentPersonProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task<GetTeammatesResult> Handle(GetTeammatesQuery query, CancellationToken token)
@@ -21,7 +26,7 @@ internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQue
         ArgumentNullException.ThrowIfNull(query);
 
         var currentPerson = _currentPersonProvider.GetCurrentPerson();
-        var hasManagerAccess = await _teamReader.HasManagerAccess(query.TeamId, currentPerson.Id, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(query.TeamId, currentPerson.Id, token);
         var teammates = await _teamReader.GetTeammates(query.TeamId, token);
 
         return new GetTeammatesResult(hasManagerAccess, teammates);

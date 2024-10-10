@@ -57,4 +57,9 @@ internal sealed class TeamAccessor : ITeamAccessor
     {
         return await _clientLanguageRepository.Get(botId, personId, token);
     }
+
+    public async Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token)
+    {
+        return await _teamRepository.HasManagerAccess(teamId, personId, token);
+    }
 }

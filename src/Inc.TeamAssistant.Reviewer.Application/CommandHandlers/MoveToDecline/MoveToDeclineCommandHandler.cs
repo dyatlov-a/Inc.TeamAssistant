@@ -53,6 +53,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
             taskForReview,
             reviewer,
             owner,
+            command.MessageContext.Bot,
             token);
         
         await _repository.Upsert(taskForReview, token);

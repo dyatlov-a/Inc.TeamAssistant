@@ -81,24 +81,24 @@ public sealed class Story
 		Links.Add(link);
 	}
 
-	public void Reset(long participantId)
+	public void Reset(long participantId, bool hasManagerAccess)
 	{
 		if (Accepted)
 			return;
 		
-		if (ModeratorId != participantId)
+		if (ModeratorId != participantId && !hasManagerAccess)
 			throw new TeamAssistantException("User has not rights for action.");
 	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
 	}
 
-	public void Finish(long participantId)
+	public void Finish(long participantId, bool hasManagerAccess)
 	{
 		if (Accepted)
 			return;
 		
-		if (ModeratorId != participantId)
+		if (ModeratorId != participantId && !hasManagerAccess)
 			throw new TeamAssistantException("User has not rights for action.");
 		
 		foreach (var storyForEstimate in _storyForEstimates)
@@ -109,9 +109,9 @@ public sealed class Story
 	public IEnumerable<Estimation> GetAssessments() => EstimationStrategy.GetValues();
 	public Estimation ToEstimation(int value) => EstimationStrategy.GetValue(value);
 
-	public Estimation Accept(long participantId, int value)
+	public Estimation Accept(long participantId, bool hasManagerAccess, int value)
 	{
-		if (ModeratorId != participantId)
+		if (ModeratorId != participantId && !hasManagerAccess)
 			throw new TeamAssistantException("User has not rights for action.");
 
 		var totalEstimation = ToEstimation(value);

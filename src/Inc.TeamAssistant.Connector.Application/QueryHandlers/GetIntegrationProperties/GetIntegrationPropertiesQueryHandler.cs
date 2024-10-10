@@ -12,17 +12,17 @@ internal sealed class GetIntegrationPropertiesQueryHandler
 {
     private readonly ITeamRepository _teamRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
-    private readonly ITeamReader _teamReader;
+    private readonly ITeamAccessor _teamAccessor;
 
     public GetIntegrationPropertiesQueryHandler(
         ITeamRepository teamRepository,
         ICurrentPersonResolver currentPersonResolver,
-        ITeamReader teamReader)
+        ITeamAccessor teamAccessor)
     {
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
         _currentPersonResolver =
             currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
-        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task<GetIntegrationPropertiesResult> Handle(
@@ -36,7 +36,7 @@ internal sealed class GetIntegrationPropertiesQueryHandler
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, query.TeamId);
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var hasManagerAccess = await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token);
         var scrumMaster = team.Properties.GetPropertyValueOrDefault(ConnectorProperties.ScrumMaster);
         var scrumMasterId = long.TryParse(scrumMaster, out var value)
             ? value

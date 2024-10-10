@@ -8,17 +8,17 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeammate
 internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeammateCommand>
 {
     private readonly IPersonRepository _personRepository;
-    private readonly ITeamReader _teamReader;
     private readonly ICurrentPersonResolver _currentPersonProvider;
+    private readonly ITeamAccessor _teamAccessor;
 
     public RemoveTeammateCommandHandler(
         IPersonRepository personRepository,
-        ITeamReader teamReader,
-        ICurrentPersonResolver currentPersonProvider)
+        ICurrentPersonResolver currentPersonProvider,
+        ITeamAccessor teamAccessor)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
-        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
         _currentPersonProvider = currentPersonProvider ?? throw new ArgumentNullException(nameof(currentPersonProvider));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task Handle(RemoveTeammateCommand command, CancellationToken token)
@@ -26,7 +26,7 @@ internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeamm
         ArgumentNullException.ThrowIfNull(command);
 
         var currentPerson = _currentPersonProvider.GetCurrentPerson();
-        var hasManagerAccess = await _teamReader.HasManagerAccess(command.TeamId, currentPerson.Id, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(command.TeamId, currentPerson.Id, token);
 
         if (!hasManagerAccess)
             throw new ApplicationException(
