@@ -1,3 +1,7 @@
+.estimate__card {
+    background-color: var(--block-primary-color);
+    flex: 0 1 calc(25% - 1.5rem);
+}
 .estimate__card__name {
     font-size: 1.1rem;
     word-break: break-all;
@@ -19,4 +23,21 @@
     left: 50%;
     bottom: 0;
     margin: 0 0 -40px -40px;
+}
+.story__value {
+    text-align: center;
+    display: block;
+    margin: 40px 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+@media (max-width: 991.98px) {
+    .estimate__card {
+        flex: 0 1 calc(50% - 1rem);
+    }
+}
+@media (max-width: 767.98px) {
+    .estimate__card {
+        flex: 0 1 100%;
+    }
 }
