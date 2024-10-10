@@ -98,6 +98,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             taskForReview,
             reviewer,
             owner,
+            command.MessageContext.Bot,
             token));
         
         await _taskForReviewRepository.Upsert(taskForReview, token);

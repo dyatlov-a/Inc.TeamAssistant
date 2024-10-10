@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -30,6 +31,7 @@ internal sealed class ReassignReviewService
     public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
         int messageId,
         Guid taskId,
+        BotContext botContext,
         CancellationToken token)
     {
         var task = await _taskForReviewRepository.GetById(taskId, token);
@@ -62,6 +64,7 @@ internal sealed class ReassignReviewService
             task,
             newReviewer,
             owner,
+            botContext,
             token);
 
         await _taskForReviewRepository.Upsert(task, token);
