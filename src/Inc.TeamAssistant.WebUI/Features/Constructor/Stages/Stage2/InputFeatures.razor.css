@@ -10,13 +10,14 @@
     display: flex;
     flex-flow: column;
     align-items: center;
-    padding: 1.25rem 1.25rem 0 1.25rem;
+    padding: 1rem;
     background-color: var(--block-primary-color);
     font-size: 1rem;
     width: 100%;
     border: 3px solid var(--bg-secondary-color);
     border-radius: 0;
     transition: border 0.3s;
+    gap: 1rem;
 }
 .input-features__items_can-drop {
     border: 3px dashed var(--bg-secondary-color);

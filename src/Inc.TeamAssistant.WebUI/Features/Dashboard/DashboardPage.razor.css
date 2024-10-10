@@ -16,9 +16,6 @@
     display: flex;
     flex-wrap: wrap;
 }
-::deep .loading {
-    height: 100%;
-}
 @media (max-width: 767.98px) {
     .dashboard {
         display: block;
