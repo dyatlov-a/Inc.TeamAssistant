@@ -7,28 +7,25 @@
 }
 .footer-group {
     padding: 10px 0;
+    display: flex;
+    flex-flow: column;
+    font-size: .9rem;
+    line-height: 1.5rem;
 }
 .footer-group__header {
     display: block;
-    color: #000;
-    font-size: .8rem;
-    padding-bottom: 5px;
-}
-.footer-group__link {
-    display: block;
-    font-size: .9rem;
-    line-height: 1.5rem;
+    color: var(--block-secondary-color);
 }
 @media (max-width: 767.98px) {
     .footer__content {
         display: block;
     }
+    .footer-group {
+        font-size: 1.1rem;
+        line-height: 2.3rem;
+    }
     .footer-group__header {
         font-size: 1rem;
         line-height: 1.6rem;
-    }
-    .footer-group__link {
-        font-size: 1.1rem;
-        line-height: 2.3rem;
     }
 }

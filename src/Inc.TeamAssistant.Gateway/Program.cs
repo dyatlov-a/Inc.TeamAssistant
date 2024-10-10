@@ -96,7 +96,7 @@ builder.Services
 builder.Services
 	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
 	.AddServices(authOptions, openGraphOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
-	.AddIsomorphic()
+	.AddIsomorphicServices()
 	.AddAppraiserApplication(linksOptions.ConnectToDashboardLinkTemplate)
 	.AddAppraiserDataAccess()
 	.AddCheckInApplication(linksOptions.ConnectToMapLinkTemplate)

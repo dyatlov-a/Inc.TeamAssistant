@@ -6,6 +6,7 @@
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -20,11 +21,9 @@
                         <Content>
                             @if (RenderContext.IsDevelopment())
                             {
-                                <a
-                                    href="/accounts/login-as-super-user?returnUrl=@ReturnUrl"
-                                    class="button button_telegram">
+                                <button type="button" @onclick="LoginAsSuperUser" class="button_telegram">
                                     @Resources[Messages.Login_AsSuperuserText]
-                                </a>
+                                </button>
                             }
                             else if (!string.IsNullOrWhiteSpace(_botUserName))
                             {
@@ -75,5 +74,12 @@
                 _state = s;
                 StateHasChanged();
             });
+    }
+    
+    private async Task LoginAsSuperUser()
+    {
+        await NavRouter.MoveToRoute(
+            $"/accounts/login-as-super-user?returnUrl={ReturnUrl}",
+            RoutingType.Server);
     }
 }

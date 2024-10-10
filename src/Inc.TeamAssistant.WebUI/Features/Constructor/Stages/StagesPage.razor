@@ -27,7 +27,7 @@
         <div class="constructor__nav">
             <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
         </div>
-        <h1 class="constructor__title title">@Resources[Messages.Constructor_Title] @BotName</h1>
+        <h1 class="constructor__title">@Resources[Messages.Constructor_Title] @BotName</h1>
         @if (RenderContext.IsBrowser)
         {
             <Loading State="_state" Retry="Load">

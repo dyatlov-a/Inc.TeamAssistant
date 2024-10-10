@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration
-
 @inject IIntegrationService IntegrationService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
@@ -25,32 +23,20 @@
                                     FieldId="access-token"
                                     Label="@Resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel]">
                                     <Content>
-                                        <InputText
+                                        <InputSingleLine
+                                            FieldId="access-token"
                                             @bind-Value="_formModel.AccessToken"
-                                            class="form-control form-control_disabled"
-                                            id="access-token"
-                                            disabled="disabled"/>
+                                            IsDisabled="true"/>
                                     </Content>
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="project-key"
                                     Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
                                     <Content>
-                                        @if (_formModel.HasManagerAccess)
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_enabled"
-                                                id="project-key"/>
-                                        }
-                                        else
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_disabled"
-                                                id="project-key"
-                                                disabled="disabled"/>
-                                        }
+                                        <InputSingleLine
+                                            FieldId="project-key"
+                                            @bind-Value="_formModel.ProjectKey"
+                                            IsDisabled="!_formModel.HasManagerAccess"/>
                                         <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                                     </Content>
                                 </FormFieldSet>
@@ -74,17 +60,16 @@
                             @if (_formModel.HasManagerAccess)
                             {
                                 <div class="component-actions">
-                                    <button
-                                        type="submit"
-                                        class="button button_dark appraiser-integration__button">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="button button_dark appraiser-integration__button"
-                                        @onclick="BeginDisable">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
-                                    </button>
+                                    <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
+                                        </Content>
+                                    </Button>
+                                    <Button ComponentStyle="ComponentStyle.Secondary" OnClick="BeginDisable">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
+                                        </Content>
+                                    </Button>
                                 </div>
                             }
                             @if (!_isEnabled)
@@ -92,9 +77,11 @@
                                 <div class="appraiser-integration__bg"></div>
                                 <div class="appraiser-integration__controls">
                                     <div class="appraiser-integration__controls-body">
-                                        <button type="button" class="button button_dark" @onclick="Enable">
-                                            @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
-                                        </button>
+                                        <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Enable">
+                                            <Content>
+                                                @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
+                                            </Content>
+                                        </Button>
                                     </div>
                                 </div>
                             }

@@ -1,0 +1,23 @@
+<svg class="icon @CssClass" width="@Size" height="@Size" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 16H17.8C18.9201 16 19.4802 16 19.908 15.782C20.2843 15.5903 20.5903 15.2843 20.782 14.908C21 14.4802 21 13.9201 21 12.8V6.2C21 5.0799 21 4.51984 20.782 4.09202C20.5903 3.71569 20.2843 3.40973 19.908 3.21799C19.4802 3 18.9201 3 17.8 3H9.2C8.07989 3 7.51984 3 7.09202 3.21799C6.71569 3.40973 6.40973 3.71569 6.21799 4.09202C6.01338 4.49359 6.00082 5.01165 6.00005 6M18 6L13 11L10 8M18 6V9M18 6H15M9 12C9 13.1046 8.10457 14 7 14C5.89543 14 5 13.1046 5 12C5 10.8954 5.89543 10 7 10C8.10457 10 9 10.8954 9 12ZM7 17C7.92997 17 8.39496 17 8.77646 17.1022C9.81173 17.3796 10.6204 18.1883 10.8978 19.2235C11 19.605 11 20.07 11 21H3C3 20.07 3 19.605 3.10222 19.2235C3.37962 18.1883 4.18827 17.3796 5.22354 17.1022C5.60504 17 6.07003 17 7 17Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+@code {
+    /// <summary>
+    /// Size of the icon.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Size { get; set; } = default!;
+    
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass  => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "icon_primary",
+        _ => "icon_secondary"
+    };
+}

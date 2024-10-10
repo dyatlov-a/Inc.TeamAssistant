@@ -9,12 +9,14 @@
         <div class="dashboard-widgets__header">
             <h2 class="dashboard-widgets__title">@Title</h2>
             <div class="dashboard-widgets__actions">
-                <button
-                    type="button"
-                    class="button button_dark dashboard-widgets__button"
-                    @onclick="() => _contentDialog?.Open()">
-                    <MaximizeIcon IsDark="true" Size="20px"/>
-                </button>
+                <Button
+                    ButtonMode="ButtonMode.Small"
+                    ComponentStyle="ComponentStyle.Secondary"
+                    OnClick="() => _contentDialog?.Open()">
+                    <Content>
+                        <MaximizeIcon ComponentStyle="ComponentStyle.Secondary" Size="20px"/>
+                    </Content>
+                </Button>
             </div>
         </div>
         @Content

@@ -4,9 +4,9 @@
 <DashboardWidget Title="@Resources[Messages.Dashboard_BotWidgetTitle]">
     <Content>
         <p class="bot-not-selected">
-            @Resources[Messages.Dashboard_SelectTeam] <a href="@NavRouter.CreateRoute("constructor")" class="link link_light">
-                @Resources[Messages.Dashboard_CreateBot]
-            </a>
+            @Resources[Messages.Dashboard_SelectTeam] <RouterLink Href="@NavRouter.CreateRoute("constructor")">
+                <Content>@Resources[Messages.Dashboard_CreateBot]</Content>
+            </RouterLink>
         </p>
     </Content>
 </DashboardWidget>

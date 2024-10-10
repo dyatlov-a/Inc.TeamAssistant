@@ -10,27 +10,27 @@
 .notification-bar__item {
     padding: 10px;
     margin: 5px;
-    color: #000;
+    color: var(--text-secondary-color);
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 3px 3px 6px rgba(0, 0, 0, .5);
 }
 .notification-bar__item_info {
-    background-color: #2A9D8F;
+    background-color: var(--message-info-color);
 }
 .notification-bar__item_warning {
-    background-color: #E9C46A;
+    background-color: var(--message-warning-color);
 }
 .notification-bar__item_error {
-    background-color: #E76F51;
+    background-color: var(--message-error-color);
 }
 .notification-bar__link {
     float: right;
     text-underline: none;
     padding-left: 5px;
     line-height: 1rem;
-    color: #000;
+    color: var(--block-secondary-color);
 }
 .notification-bar__link:hover {
-    color: #fff;
+    color: var(--block-priority-color);
 }

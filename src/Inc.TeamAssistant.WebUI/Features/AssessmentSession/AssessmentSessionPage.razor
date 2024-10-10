@@ -23,14 +23,14 @@
             <div class="assessment-session__header">
                 <div class="assessment-session__about">
                     <Breadcrumbs Items="_breadcrumbs" />
-                    <h1 class="title">@Resources[Messages.GUI_TaskAssess]</h1>
-                    <p class="assessment-session__text text">
+                    <h1 class="assessment-session__title">@Resources[Messages.GUI_TaskAssess]</h1>
+                    <p class="assessment-session__text">
                         @string.Format(Resources[Messages.GUI_AssessmentSessionAbout], _item.TeamName)
                     </p>
-                    <p class="assessment-session__text text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
+                    <p class="assessment-session__text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
                 </div>
                 <div class="assessment-session__link">
-                    <Loading State="_state" IsDark="true" Retry="() => Load()">
+                    <Loading State="_state" ComponentStyle="ComponentStyle.Secondary" Retry="() => Load()">
                         <Content>
                             @((MarkupString)_item.CodeForConnect)
                         </Content>
@@ -86,7 +86,7 @@
     };
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<NavRoute>> _breadcrumbs = Array.Empty<SelectItem<NavRoute>>();
+    private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
     private IAsyncDisposable? _eventListener;
     
@@ -96,11 +96,11 @@
             _currentView = value;
         
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-        _breadcrumbs =
-        [
-            new(Resources[Messages.GUI_AssessmentSession], NavRouter.CreateRoute($"assessment-session/{Id:N}")),
-            new(date, NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}"))
-        ];
+        _breadcrumbs = new Dictionary<string, string>
+        {
+            [Resources[Messages.GUI_AssessmentSession]] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
+            [date] = NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}")
+        };
         
         await Load();
         
