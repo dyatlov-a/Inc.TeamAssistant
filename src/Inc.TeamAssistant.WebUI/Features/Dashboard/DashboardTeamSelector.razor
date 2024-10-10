@@ -3,45 +3,43 @@
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
-<div class="component-container">
-    <FormSection
-        Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
-        HelpText="@Resources[Messages.Dashboard_SelectTeam]"
-        AsRows="true">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
-                        <Content>
-                            <InputSelectList 
-                                FieldId="bot-selector"
-                                Value="_botId"
-                                ValueExpression="@(() => _botId)"
-                                ValueChanged="@((Guid? v) => ChangeBot(v))"
-                                Items="_bots"
-                                TitleSelector="i => i.Name"
-                                ValueSelector="i => i.Id"
-                                HasEmptyValue="true"/>
-                        </Content>
-                    </FormFieldSet>
-                    <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
-                        <Content>
-                            <InputSelectList
-                                FieldId="team-selector"
-                                Value="_teamId"
-                                ValueExpression="@(() => _teamId)"
-                                ValueChanged="@((Guid? v) => ChangeTeam(v))"
-                                Items="TeamsByBot"
-                                TitleSelector="i => i.Name"
-                                ValueSelector="i => i.Id"
-                                HasEmptyValue="true"/>
-                        </Content>
-                    </FormFieldSet>
-                </Content>
-            </Loading>
-        </Content>
-    </FormSection>
-</div>
+<FormSection
+    Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
+    HelpText="@Resources[Messages.Dashboard_SelectTeam]"
+    AsRows="true">
+    <Content>
+        <Loading State="_state" Retry="Load">
+            <Content>
+                <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
+                    <Content>
+                        <InputSelectList 
+                            FieldId="bot-selector"
+                            Value="_botId"
+                            ValueExpression="@(() => _botId)"
+                            ValueChanged="@((Guid? v) => ChangeBot(v))"
+                            Items="_bots"
+                            TitleSelector="i => i.Name"
+                            ValueSelector="i => i.Id"
+                            HasEmptyValue="true"/>
+                    </Content>
+                </FormFieldSet>
+                <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
+                    <Content>
+                        <InputSelectList
+                            FieldId="team-selector"
+                            Value="_teamId"
+                            ValueExpression="@(() => _teamId)"
+                            ValueChanged="@((Guid? v) => ChangeTeam(v))"
+                            Items="TeamsByBot"
+                            TitleSelector="i => i.Name"
+                            ValueSelector="i => i.Id"
+                            HasEmptyValue="true"/>
+                    </Content>
+                </FormFieldSet>
+            </Content>
+        </Loading>
+    </Content>
+</FormSection>
 
 @code {
     [Parameter, EditorRequired]

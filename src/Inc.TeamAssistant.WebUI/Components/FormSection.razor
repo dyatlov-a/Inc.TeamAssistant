@@ -1,5 +1,5 @@
-<div class="form-section@(CssClass)">
-    <div class="form-section__legend@(CssClass)">
+<div class="form-section @CssClass">
+    <div class="form-section__legend">
         <h4 class="form-section__title">@Title</h4>
         <p class="form-section__help">
             @if (HelpContent is not null)
@@ -12,7 +12,7 @@
             }
         </p>
     </div>
-    <div class="form-section__content@(CssClass)">
+    <div class="form-section__content">
         @Content
     </div>
 </div>
@@ -33,5 +33,5 @@
     [Parameter]
     public RenderFragment? HelpContent { get; set; }
     
-    private string CssClass => AsRows ? "_rows" : string.Empty;
+    private string CssClass => AsRows ? "form-section_rows" : string.Empty;
 }

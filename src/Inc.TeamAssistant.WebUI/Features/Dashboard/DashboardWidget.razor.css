@@ -1,7 +1,6 @@
 .dashboard-widgets__widget {
-    flex: 0 1 calc(50% - 20px);
+    flex: 0 1 calc(50% - .5rem);
     background-color: var(--block-primary-color);
-    margin: 10px;
     border-top: 5px var(--bg-secondary-color) solid;
 }
 .dashboard-widgets__title {

@@ -1,10 +1,10 @@
 .input-features {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    gap: 2rem;
 }
 .input-features__items {
-    flex: 0 1 48%;
+    flex: 0 1 calc(50% - 1rem);
     min-height: 220px;
     color: var(--text-primary-color);
     display: flex;
@@ -37,6 +37,5 @@
 @media (max-width: 991.98px) {
     .input-features__items {
         flex: 0 1 100%;
-        margin-bottom: 20px;
     }
 }
