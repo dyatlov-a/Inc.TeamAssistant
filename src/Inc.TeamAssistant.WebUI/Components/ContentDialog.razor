@@ -5,19 +5,18 @@
     <div class="content-dialog-bg"></div>
     <div class="content-dialog">
         <div class="content-dialog__content @CssClass">
-            <div class="content-dialog__header">
-                <h2 class="content-dialog__header-text">@Title</h2>
-                <div class="content-dialog__actions">
+            <Panel Header="@Title" IsOpen="true">
+                <Content>
+                    @Content
+                </Content>
+                <Actions>
                     <Button OnClick="Close">
                         <Content>
                             @Resources[Messages.ContentDialog_Close]
                         </Content>
                     </Button>
-                </div>
-            </div>
-            <div class="content-dialog__body">
-                @Content
-            </div>
+                </Actions>
+            </Panel>
         </div>
     </div>
 }

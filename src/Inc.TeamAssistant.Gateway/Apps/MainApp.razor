@@ -63,6 +63,9 @@
             },
             changeUrl: url => {
                 history.pushState(null, '', url);
+            },
+            scrollToTop: () => {
+                document.documentElement.scrollTop = 0;
             }
         };
 

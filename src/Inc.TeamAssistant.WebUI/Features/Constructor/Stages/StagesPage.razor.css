@@ -1,12 +1,9 @@
 .constructor {
-    margin: 50px 0 40px 0;
-}
-.constructor__nav {
-    margin-bottom: 30px;
+    margin: 3.125rem 0 2.5rem 0;
 }
 .constructor__title {
     font-size: 2.4rem;
     line-height: 3.4rem;
-    padding: 0 10px;
+    padding: 1.875rem .625rem;
     word-break: break-all;
 }

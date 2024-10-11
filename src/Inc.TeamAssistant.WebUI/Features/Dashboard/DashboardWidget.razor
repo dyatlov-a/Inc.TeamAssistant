@@ -1,3 +1,5 @@
+@inject IJSRuntime JsRuntime
+
 <ContentDialog Title="@Title" IsGrand="!HasChart" @ref="_contentDialog">
     <Content>
         @Content
@@ -12,7 +14,7 @@
                 <Button
                     ButtonMode="ButtonMode.Small"
                     ComponentStyle="ComponentStyle.Secondary"
-                    OnClick="() => _contentDialog?.Open()">
+                    OnClick="OpenInContentDialog">
                     <Content>
                         <MaximizeIcon ComponentStyle="ComponentStyle.Secondary" Size="20px"/>
                     </Content>
@@ -37,6 +39,13 @@
     public bool HasChart { get; set; }
     
     private ContentDialog? _contentDialog;
+    
+    private async Task OpenInContentDialog()
+    {
+        _contentDialog?.Open();
+
+        await JsRuntime.Execute(JsFunctions.ScrollToTop());
+    }
     
     private string ControlsCssClass => HasControls
         ? "dashboard-widgets__content_has-controls"
