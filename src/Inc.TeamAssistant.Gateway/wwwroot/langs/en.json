@@ -135,6 +135,8 @@
   "Reviewer_PreviewEditHelp": "To edit a draft, please edit the original post.",
   "Reviewer_PreviewMoveToReview": "Submit",
   "Reviewer_PreviewRemoveDraft": "Cancel",
+  "Reviewer_AcceptedWithComments": "Task review has been completed with comments.",
+  "Reviewer_MoveToAcceptWithComments": "Accept with comments.",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",
@@ -300,6 +302,9 @@
   "Constructor_FormSectionSetSettingsNotificationInterval2Description": "01:00:00",
   "Constructor_FormSectionSetSettingsNotificationInterval3Description": "01:30:00",
   "Constructor_FormSectionSetSettingsNotificationInterval4Description": "02:00:00",
+  "Constructor_FormSectionSetSettingsAcceptWithCommentsFieldLabel": "Accept review with comments",
+  "Constructor_FormSectionSetSettingsAcceptWithCommentsTrueDescription": "Yes",
+  "Constructor_FormSectionSetSettingsAcceptWithCommentsFalseDescription": "No",
   "Constructor_FormSectionSetSettingsRandomCoffeeHeader": "Random coffee",
   "Constructor_FormSectionSetSettingsRandomCoffeeHelp": "Specify the parameters within which the random coffee will be conducted",
   "Constructor_FormSectionSetSettingsRoundIntervalFieldLabel": "Random coffee round interval",

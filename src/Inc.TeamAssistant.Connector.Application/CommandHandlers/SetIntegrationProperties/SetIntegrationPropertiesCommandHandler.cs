@@ -11,17 +11,17 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
 {
     private readonly ITeamRepository _teamRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
-    private readonly ITeamReader _teamReader;
+    private readonly ITeamAccessor _teamAccessor;
 
     public SetIntegrationPropertiesCommandHandler(
         ITeamRepository teamRepository,
         ICurrentPersonResolver currentPersonResolver,
-        ITeamReader teamReader)
+        ITeamAccessor teamAccessor)
     {
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
         _currentPersonResolver =
             currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
-        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
     public async Task Handle(SetIntegrationPropertiesCommand command, CancellationToken token)
@@ -33,7 +33,7 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        if (!await _teamReader.HasManagerAccess(team.Id, currentPerson.Id, token))
+        if (!await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token))
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
         

@@ -33,7 +33,11 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
                     new(
                         ReviewerProperties.InProgressNotificationIntervalKey,
                         new("Constructor_FormSectionSetSettingsInProgressNotificationIntervalFieldLabel"),
-                        GetValuesForNotificationInterval().ToArray())
+                        GetValuesForNotificationInterval().ToArray()),
+                    new(
+                        ReviewerProperties.AcceptWithCommentsKey,
+                        new("Constructor_FormSectionSetSettingsAcceptWithCommentsFieldLabel"),
+                        GetValuesForAcceptWithComments().ToArray())
                 ])
         ];
     }
@@ -51,5 +55,11 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
         yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval2Description"), "01:00:00");
         yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval3Description"), "01:30:00");
         yield return new SelectValue(new("Constructor_FormSectionSetSettingsNotificationInterval4Description"), "02:00:00");
+    }
+    
+    private IEnumerable<SelectValue> GetValuesForAcceptWithComments()
+    {
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsAcceptWithCommentsTrueDescription"), "true");
+        yield return new SelectValue(new("Constructor_FormSectionSetSettingsAcceptWithCommentsFalseDescription"), "false");
     }
 }

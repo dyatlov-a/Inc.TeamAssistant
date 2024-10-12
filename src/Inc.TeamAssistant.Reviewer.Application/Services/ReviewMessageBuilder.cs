@@ -1,6 +1,7 @@
 using System.Text;
 using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -40,11 +41,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         TaskForReview task,
         Person reviewer,
         Person owner,
+        BotContext botContext,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(reviewer);
         ArgumentNullException.ThrowIfNull(owner);
+        ArgumentNullException.ThrowIfNull(botContext);
 
         var metricsByTeam = _metricsProvider.Get(task.TeamId);
         var metricsByTask = await _metricsFactory.Create(task, token);
@@ -53,7 +56,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notifications = new List<NotificationMessage>
         {
             await MessageForTeam(task, reviewer, owner, metricsByTeam, metricsByTask, token),
-            await MessageForReviewer(task, metricsByTeam, metricsByTask, token)
+            await MessageForReviewer(task, botContext, metricsByTeam, metricsByTask, token)
         };
 
         if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerId.HasValue)
@@ -264,11 +267,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     private async Task<NotificationMessage> MessageForReviewer(
         TaskForReview task,
+        BotContext botContext,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
+        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
         
@@ -317,7 +322,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         {
             var moveToAcceptButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAccept, languageId);
             notification.WithButton(new Button(moveToAcceptButton, $"{CommandList.Accept}{task.Id:N}"));
-        
+
+            if (botContext.CanAcceptWithComments())
+            {
+                var moveToAcceptWithCommentsButton = await _messageBuilder.Build(Messages.Reviewer_MoveToAcceptWithComments, languageId);
+                notification.WithButton(new Button(moveToAcceptWithCommentsButton, $"{CommandList.AcceptWithComments}{task.Id:N}"));
+            }
+            
             var moveToDeclineButton = await _messageBuilder.Build(Messages.Reviewer_MoveToDecline, languageId);
             notification.WithButton(new Button(moveToDeclineButton, $"{CommandList.Decline}{task.Id:N}"));
         }
@@ -376,7 +387,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var totalTime = task.GetTotalTime(DateTimeOffset.UtcNow);
         
         var builder = new StringBuilder();
-        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Accepted, languageId));
+        builder.AppendLine(await _messageBuilder.Build(
+            task.AcceptedWithComments ? Messages.Reviewer_AcceptedWithComments : Messages.Reviewer_Accepted,
+            languageId));
         builder.AppendLine();
         builder.AppendLine(task.Description);
         builder.AppendLine();
