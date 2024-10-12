@@ -1,0 +1,22 @@
+@attribute [Stories("Icons/ReviewerIcon")]
+
+<Stories TComponent="ReviewerIcon">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <ReviewerIcon Size="80px" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
+        </Arguments>
+        <Template>
+            <ReviewerIcon Size="80px" @attributes="context.Args"/>
+        </Template>
+    </Story>
+    <Story Name="Small" Layout="typeof(DarkLayout)">
+        <Template>
+            <ReviewerIcon Size="40px" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>

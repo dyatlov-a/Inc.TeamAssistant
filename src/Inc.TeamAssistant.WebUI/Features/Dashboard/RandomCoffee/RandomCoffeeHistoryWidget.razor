@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory
-
 @inject IRandomCoffeeService RandomCoffeeService
 @inject ResourcesManager Resources
 @inject RequestProcessor RequestProcessor
@@ -43,7 +41,7 @@
                     }
                     else
                     {
-                        <NoData IsDark="true"/>
+                        <NoData ComponentStyle="ComponentStyle.Secondary"/>
                     }
                 </div>
             </Content>
@@ -60,9 +58,9 @@
     
     private LoadingState _state = LoadingState.Done();
     private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
-        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yy-MM-dd"), i.Created))
-        .ToArray();
+
+    private IReadOnlyDictionary<string, DateOnly> DateItems
+        => _formModel.HistoryItems.ToDictionary(i => i.Created.ToString("yy-MM-dd"), i => i.Created);
 
     protected override Task OnParametersSetAsync() => Load();
 

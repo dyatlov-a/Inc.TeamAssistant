@@ -67,11 +67,15 @@ public sealed class AccountsController : ControllerBase
     }
 
     [HttpGet("logout")]
-    public async Task<IActionResult> Logout(string? returnUrl)
+    public async Task<IActionResult> Logout(string? languageCode)
     {
         await HttpContext.SignOutAsync(ApplicationContext.AuthenticationScheme);
 
-        return Redirect(DetectTargetUrl(returnUrl));
+        var path = string.IsNullOrWhiteSpace(languageCode)
+            ? "/"
+            : $"/{languageCode}/";
+        
+        return Redirect(path);
     }
 
     private string DetectTargetUrl(string? returnUrl)

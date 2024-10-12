@@ -1,8 +1,7 @@
 using Blazored.LocalStorage;
 using FluentValidation;
+using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Components;
-using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Inc.TeamAssistant.WebUI.Routing;
@@ -14,7 +13,7 @@ namespace Inc.TeamAssistant.WebUI.Services;
 
 public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddClientServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -34,14 +33,14 @@ public static class ServiceCollectionExtensions
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddSingleton<IMessageProvider, MessageProviderClient>()
+            .AddScoped<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
             .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
 
         return services;
     }
 
-    public static IServiceCollection AddIsomorphic(this IServiceCollection services)
+    public static IServiceCollection AddIsomorphicServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 

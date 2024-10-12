@@ -4,7 +4,7 @@
     padding: 70px 0 60px 0;
 }
 .about-bots {
-    color: #000;
+    color: var(--block-secondary-color);
 }
 .about-bots__header {
     font-size: 2.3rem;
@@ -13,10 +13,6 @@
 .about-bots__description {
     font-size: 1.3rem;
     line-height: 2.6rem;
-}
-.about-bots__item {
-    padding: 4px 10px;
-    border-radius: 4px;
 }
 .about-bots__actions {
     margin-top: 20px;

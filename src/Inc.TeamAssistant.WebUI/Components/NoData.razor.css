@@ -1,0 +1,12 @@
+.no-data {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    min-height: 100px;
+}
+.no-data_primary {
+    color: var(--text-primary-color);
+}
+.no-data_secondary{
+    color: var(--text-secondary-color);
+}

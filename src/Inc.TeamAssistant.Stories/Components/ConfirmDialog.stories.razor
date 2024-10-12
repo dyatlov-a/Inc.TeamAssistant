@@ -1,0 +1,27 @@
+@attribute [Stories("Components/Dialogs/Confirm")]
+
+<Stories TComponent="ConfirmDialog" Layout="typeof(StubLayout)">
+    <Story Name="Default">
+        <Template>
+            <ConfirmDialog OnConfirm="Confirm" @attributes="context.Args" @ref="_dialog">
+                <Content>
+                    Html content
+                </Content>
+            </ConfirmDialog>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private ConfirmDialog? _dialog;
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            _dialog?.Open();
+    }
+
+    private void Confirm()
+    {
+    }
+}

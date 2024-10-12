@@ -5,9 +5,11 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">
-                @Resources[Messages.Constructor_MoveNextTitle]
-            </button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Resources[Messages.Constructor_MoveNextTitle]
+                </Content>
+            </Button>
         </Actions>
         <Content>
             @foreach (var feature in StagesState.SelectedFeatures)
@@ -23,27 +25,24 @@
                         <Content>
                             @foreach (var settingItem in settingSection.SettingItems)
                             {
-                                var property = _formModel.Properties.SingleOrDefault(p => p.Title.Equals(
-                                    settingItem.PropertyName,
-                                    StringComparison.InvariantCultureIgnoreCase));
-                                if (property is null)
-                                    continue;
-
-                                <FormFieldSet
-                                    FieldId="@settingItem.PropertyName"
-                                    Label="@Resources[settingItem.LabelMessageId]">
-                                    <Content>
-                                        <InputSelectList
-                                            FieldId="@settingItem.PropertyName"
-                                            Value="property.Value"
-                                            ValueExpression="@(() => property.Value)"
-                                            ValueChanged="@((string v) => property.Value = v)"
-                                            Items="settingItem.Values"
-                                            TitleSelector="i => Resources[i.MessageId]"
-                                            ValueSelector="i => i.Value" />
-                                        <ValidationMessage For="@(() => property.Value)"/>
-                                    </Content>
-                                </FormFieldSet>
+                                if (_formModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
+                                {
+                                    <FormFieldSet
+                                        FieldId="@settingItem.PropertyName"
+                                        Label="@Resources[settingItem.LabelMessageId]">
+                                        <Content>
+                                            <InputSelectList
+                                                FieldId="@settingItem.PropertyName"
+                                                Value="value"
+                                                ValueExpression="@(() => value)"
+                                                ValueChanged="@((string v) => _formModel.ChangeProperty(settingItem.PropertyName, v))"
+                                                Items="settingItem.Values"
+                                                TitleSelector="i => Resources[i.MessageId]"
+                                                ValueSelector="i => i.Value" />
+                                            <ValidationMessage For="@(() => value)"/>
+                                        </Content>
+                                    </FormFieldSet>
+                                }
                             }
                         </Content>
                     </FormSection>
@@ -72,8 +71,12 @@
     </Panel>
     <ValidationMessage For="@(() => _formModel.CalendarId)"/>
 </EditForm>
-<CalendarEditor IsOpen="!_formModel.CalendarId.HasValue" Selected="SelectedCalendar" />
-<BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
+<div class="optional-settings">
+    <CalendarEditor IsOpen="!_formModel.CalendarId.HasValue" Selected="SelectedCalendar" />
+</div>
+<div class="optional-settings">
+    <BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
+</div>
 
 @code {
     [Parameter, EditorRequired]
