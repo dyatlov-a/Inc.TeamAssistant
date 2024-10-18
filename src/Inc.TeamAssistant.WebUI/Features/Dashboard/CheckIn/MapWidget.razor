@@ -20,23 +20,29 @@
                     </div>
                     @if (_formModel.MapId.HasValue)
                     {
-                        var mapUrl = NavRouter.CreateRoute($"map/{_formModel.MapId.Value:N}");
+                        var routeSegment = $"map/{_formModel.MapId.Value:N}";
+                        var mapUrl = NavRouter.CreateRoute(routeSegment);
 
                         <div class="checkin-map">
                             <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
                             <div class="checkin-map__bg"></div>
                             <div class="checkin-map__controls">
                                 <div class="checkin-map__controls-body">
-                                    <a href="@mapUrl" target="_blank" class="button button_dark">
-                                        @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
-                                    </a>
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonType="ButtonType.Tab"
+                                        Link="@routeSegment">
+                                        <Content>
+                                            @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
+                                        </Content>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
                     }
                     else
                     {
-                        <NoData IsDark="true"/>
+                        <NoData ComponentStyle="ComponentStyle.Secondary"/>
                     }
                 </div>
             </Content>

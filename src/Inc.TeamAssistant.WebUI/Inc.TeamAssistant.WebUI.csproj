@@ -1,15 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
+        <PackageReference Include="Blazor-ApexCharts" Version="3.4.0" />
         <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
@@ -20,6 +23,43 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Features\Constructor\Stages\Stage4\Calendar.razor" />
+      <AdditionalFiles Include="Icons\AddBotIcon.razor" />
+      <AdditionalFiles Include="Icons\AppraiserIcon.razor" />
+      <AdditionalFiles Include="Icons\ArrowDownIcon.razor" />
+      <AdditionalFiles Include="Icons\ArrowUpIcon.razor" />
+      <AdditionalFiles Include="Icons\BotIcon.razor" />
+      <AdditionalFiles Include="Icons\CheckInIcon.razor" />
+      <AdditionalFiles Include="Icons\DragVerticalIcon.razor" />
+      <AdditionalFiles Include="Icons\GridGroupIcon.razor" />
+      <AdditionalFiles Include="Icons\GridIndividualIcon.razor" />
+      <AdditionalFiles Include="Icons\HomeIcon.razor" />
+      <AdditionalFiles Include="Icons\MaximizeIcon.razor" />
+      <AdditionalFiles Include="Icons\RandomCoffeeIcon.razor" />
+      <AdditionalFiles Include="Icons\ReviewerIcon.razor" />
+      <AdditionalFiles Include="Icons\SettingsIcon.razor" />
+      <AdditionalFiles Include="Icons\TrashIcon.razor" />
+      <AdditionalFiles Include="Icons\UnknownIcon.razor" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Features\Layouts\LayoutResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LayoutResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Layouts\LayoutResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LayoutResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LayoutResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Layouts\LayoutResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LayoutResources.ru.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

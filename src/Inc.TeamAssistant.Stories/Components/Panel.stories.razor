@@ -1,0 +1,27 @@
+@attribute [Stories("Components/Panel")]
+
+<Stories TComponent="Panel" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <Panel Header="@_text" @attributes="context.Args">
+                <Actions>Button</Actions>
+                <Content>Html content</Content>
+            </Panel>
+        </Template>
+    </Story>
+    <Story Name="Open">
+        <Arguments>
+            <Arg For="c => c.IsOpen" Value="true" />
+        </Arguments>
+        <Template>
+            <Panel Header="@_text" @attributes="context.Args">
+                <Actions>Button</Actions>
+                <Content>Html content</Content>
+            </Panel>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _text = "Header";
+}

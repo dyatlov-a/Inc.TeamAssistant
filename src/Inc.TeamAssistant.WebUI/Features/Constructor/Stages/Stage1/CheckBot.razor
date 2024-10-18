@@ -6,21 +6,27 @@
     <CheckBotFormTracker OnChange="StateHasChanged" />
     <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Resources[Messages.Constructor_MoveNextTitle]
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
                 <HelpContent>
-                    @((MarkupString)string.Format(
-                        Resources[Messages.Constructor_FormSectionTokenHelpTemplate],
-                        "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                    @Resources[Messages.Constructor_FormSectionTokenHelpBegin] <RouterLink
+                            Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
+                            Target="@RouterTarget.Blank">
+                        <Content>BotFather</Content>
+                    </RouterLink> @Resources[Messages.Constructor_FormSectionTokenHelpEnd]
                 </HelpContent>
                 <Content>
                     <FormFieldSet
                         FieldId="bot-token"
                         Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
                         <Content>
-                            <InputText @bind-Value="_formModel.Token" class="form-control form-control_enabled" id="bot-token"/>
+                            <InputSingleLine FieldId="bot-token" @bind-Value="_formModel.Token" />
                             <ValidationMessage For="@(() => _formModel.Token)"/>
                         </Content>
                     </FormFieldSet>
@@ -28,11 +34,10 @@
                         FieldId="bot-username"
                         Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                         <Content>
-                            <InputText
+                            <InputSingleLine
+                                FieldId="bot-username"
                                 @bind-Value="_formModel.UserName"
-                                class="form-control form-control_disabled"
-                                id="bot-username"
-                                disabled="disabled"/>
+                                IsDisabled="true" />
                             <ValidationMessage For="@(() => _formModel.UserName)"/>
                         </Content>
                     </FormFieldSet>

@@ -89,8 +89,7 @@
   "GUI_CreateBotLink": "Создать бота",
   "GUI_VideoNotSupported": "Ваш браузер не поддерживает видео в формате HTML5.",
   "GUI_DataRefreshed": "Успешно обновлено",
-
-  "Navigation_Login": "Войти",
+  
   "Navigation_Logout": "Выйти",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
@@ -273,7 +272,8 @@
   "Constructor_StageSetSettings": "Настройка",
   "Constructor_StageComplete": "Подтверждение",
   "Constructor_FormSectionTokenTitle": "Укажите токен бота",
-  "Constructor_FormSectionTokenHelpTemplate": "Перейдите к {0} и создайте бота",
+  "Constructor_FormSectionTokenHelpBegin": "Перейдите к",
+  "Constructor_FormSectionTokenHelpEnd": "и создайте бота",
   "Constructor_FormSectionTokenFieldTokenLabel": "Токен доступа для бота",
   "Constructor_FormSectionTokenFieldUserNameLabel": "Имя бота",
   "Constructor_MoveNextTitle": "Далее",

@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Primitives.FeatureProperties
-
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
@@ -10,7 +8,11 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" />
     <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">@ButtonText</button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @ButtonText
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="SubmitForm">
@@ -20,22 +22,21 @@
                         Title="@Resources[Messages.Constructor_ConnectingTelegram]"
                         HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
                         <Content>
-                            <a
-                                href="@LinkFactory(Stage.CheckBot)"
-                                class="link link_dark constructor__edit-link"
-                                @onclick="() => MoveToNext(Stage.CheckBot)"
-                                @onclick:preventDefault="true">
-                                @Resources[Messages.Constructor_Edit]
-                            </a>
+                            <div class="actions">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.CheckBot)"
+                                    ComponentStyle="ComponentStyle.Secondary">
+                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                </RouterLink>
+                            </div>
                             <FormFieldSet
                                 FieldId="bot-username"
                                 Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
                                 <Content>
-                                    <InputText
+                                    <InputSingleLine
+                                        FieldId="bot-username"
                                         @bind-Value="_formModel.UserName"
-                                        class="form-control form-control_disabled"
-                                        id="bot-username"
-                                        disabled="disabled"/>
+                                        IsDisabled="true"/>
                                 </Content>
                             </FormFieldSet>
                         </Content>
@@ -44,13 +45,13 @@
                         Title="@Resources[Messages.Constructor_FeaturesStore]"
                         HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
                         <Content>
-                            <a
-                                href="@LinkFactory(Stage.SelectFeatures)"
-                                class="link link_dark constructor__edit-link"
-                                @onclick="() => MoveToNext(Stage.SelectFeatures)"
-                                @onclick:preventDefault="true">
-                                @Resources[Messages.Constructor_Edit]
-                            </a>
+                            <div class="actions">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.SelectFeatures)"
+                                    ComponentStyle="ComponentStyle.Secondary">
+                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                </RouterLink>
+                            </div>
                             @foreach (var feature in StagesState.AvailableFeatures)
                             {
                                 var fieldId = feature.Id.ToString();
@@ -62,12 +63,10 @@
                                     FieldId="@fieldId"
                                     Label="@FeaturesFactory.CreateName(feature.Name)">
                                     <Content>
-                                        <input
-                                            type="text"
-                                            id="@fieldId"
-                                            value="@selected"
-                                            class="form-control form-control_disabled"
-                                            disabled="disabled" />
+                                        <InputSingleLine
+                                            FieldId="@fieldId"
+                                            @bind-Value="selected"
+                                            IsDisabled="true"/>
                                     </Content>
                                 </FormFieldSet>
                             }
@@ -84,29 +83,28 @@
                                 Title="@Resources[settingSection.HeaderMessageId]"
                                 HelpText="@Resources[settingSection.HelpMessageId]">
                                 <Content>
-                                    <a
-                                        href="@LinkFactory(Stage.SetSettings)"
-                                        class="link link_dark constructor__edit-link"
-                                        @onclick="() => MoveToNext(Stage.SetSettings)"
-                                        @onclick:preventDefault="true">
-                                        @Resources[Messages.Constructor_Edit]
-                                    </a>
+                                    <div class="actions">
+                                        <RouterLink
+                                            OnClick="() => MoveToNext(Stage.SetSettings)"
+                                            ComponentStyle="ComponentStyle.Secondary">
+                                            <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                        </RouterLink>
+                                    </div>
                                     @foreach (var settingItem in settingSection.SettingItems)
                                     {
                                         var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
                                             settingItem.PropertyName,
                                             StringComparison.InvariantCultureIgnoreCase));
+                                        var propertyValueAsString = GetValueAsText(settingItem, property.Value);
 
                                         <FormFieldSet
                                             FieldId="@settingItem.PropertyName"
                                             Label="@Resources[settingItem.LabelMessageId]">
                                             <Content>
-                                                <input
-                                                    type="text"
-                                                    id="@settingItem.PropertyName"
-                                                    value="@GetValueAsText(settingItem, property.Value)"
-                                                    class="form-control form-control_disabled"
-                                                    disabled="disabled"/>
+                                                <InputSingleLine
+                                                    FieldId="@settingItem.PropertyName"
+                                                    @bind-Value="propertyValueAsString"
+                                                    IsDisabled="true"/>
                                             </Content>
                                         </FormFieldSet>
                                     }
@@ -118,13 +116,13 @@
                         Title="@Resources[Messages.Constructor_SupportedLanguages]"
                         HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
                         <Content>
-                            <a
-                                href="@LinkFactory(Stage.SetSettings)"
-                                class="link link_dark constructor__edit-link"
-                                @onclick="() => MoveToNext(Stage.SetSettings)"
-                                @onclick:preventDefault="true">
-                                @Resources[Messages.Constructor_Edit]
-                            </a>
+                            <div class="actions">
+                                <RouterLink
+                                    OnClick="() => MoveToNext(Stage.SetSettings)"
+                                    ComponentStyle="ComponentStyle.Secondary">
+                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                </RouterLink>
+                            </div>
                             <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
                                 <Content>
                                     <InputMultiSelectList
@@ -159,9 +157,9 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
 
-    private string ButtonText => Resources[StagesState.Id.HasValue
-        ? Messages.Constructor_ButtonUpdateText
-        : Messages.Constructor_ButtonCreateText];
+    private string ButtonText => StagesState.Id.HasValue
+        ? Resources[Messages.Constructor_ButtonUpdateText]
+        : Resources[Messages.Constructor_ButtonCreateText];
     
     private string FormId => StagesState.Id.HasValue
         ? AnalyticEvents.BotUpdated

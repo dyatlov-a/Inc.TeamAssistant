@@ -90,7 +90,6 @@
   "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
   "GUI_DataRefreshed": "Successfully updated",
   
-  "Navigation_Login": "Login",
   "Navigation_Logout": "Logout",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
@@ -273,7 +272,8 @@
   "Constructor_StageSetSettings": "Settings",
   "Constructor_StageComplete": "Confirmation",
   "Constructor_FormSectionTokenTitle": "Set bot token",
-  "Constructor_FormSectionTokenHelpTemplate": "Please move to {0} and create bot",
+  "Constructor_FormSectionTokenHelpBegin": "Please move to",
+  "Constructor_FormSectionTokenHelpEnd": "and create bot",
   "Constructor_FormSectionTokenFieldTokenLabel": "Bot token",
   "Constructor_FormSectionTokenFieldUserNameLabel": "Bot username",
   "Constructor_MoveNextTitle": "Next",

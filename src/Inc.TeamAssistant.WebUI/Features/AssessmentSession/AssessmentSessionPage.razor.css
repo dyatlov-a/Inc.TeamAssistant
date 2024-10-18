@@ -1,15 +1,15 @@
 .assessment-session-header {
     margin-top: -70px;
     padding: 120px 0 40px 0;
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-session-content {
     padding: 20px 0 40px 0;
 }
 .assessment-session-footer {
-    background-color: #dfdfdf;
-    color: #000;
+    background-color: var(--text-primary-color);
+    color: var(--text-secondary-color);
 }
 .assessment-session__header {
     display: flex;
@@ -24,13 +24,16 @@
     margin: 0 0 0 40px;
 }
 .assessment-session__text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
     margin-top: 10px;
 }
 .assessment-session-switcher {
     padding-top: 20px;
 }
-::deep .no-data {
-    height: calc(100vh - 640px);
+.assessment-session__title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
 }
 @media (max-width: 479.98px) {
     .assessment-session__header {

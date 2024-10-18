@@ -1,0 +1,51 @@
+@inject ResourcesManager Resources
+
+@if (_isOpen)
+{
+    <div class="content-dialog-bg"></div>
+    <div class="content-dialog">
+        <div class="content-dialog__content @CssClass">
+            <Panel Header="@Title" IsOpen="true">
+                <Content>
+                    @Content
+                </Content>
+                <Actions>
+                    <Button OnClick="Close">
+                        <Content>
+                            @Resources[Messages.ContentDialog_Close]
+                        </Content>
+                    </Button>
+                </Actions>
+            </Panel>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    [Parameter]
+    public bool IsGrand { get; set; }
+    
+    private bool _isOpen;
+
+    public void Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+    }
+    
+    public void Close()
+    {
+        _isOpen = false;
+        
+        StateHasChanged();
+    }
+
+    private string CssClass => IsGrand ? "content-dialog__content_grand" : "content-dialog__content_small";
+}

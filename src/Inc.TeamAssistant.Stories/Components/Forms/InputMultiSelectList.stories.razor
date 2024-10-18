@@ -1,0 +1,36 @@
+@attribute [Stories("Components/Forms/InputMultiSelectList")]
+
+<Stories TComponent="InputMultiSelectList<DayOfWeek, DayOfWeek>" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <InputMultiSelectList
+                FieldId="@_fieldId"
+                @bind-Value="_weekends"
+                Items="Enum.GetValues<DayOfWeek>()"
+                TitleSelector="i => GetTitle(i)"
+                ValueSelector="i => i"
+                @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Disabled">
+        <Arguments>
+            <Arg For="c => c.IsDisabled" Value="true" />
+        </Arguments>
+        <Template>
+            <InputMultiSelectList
+                FieldId="@_fieldId"
+                @bind-Value="_weekends"
+                Items="Enum.GetValues<DayOfWeek>()"
+                TitleSelector="i => GetTitle(i)"
+                ValueSelector="i => i"
+                @attributes="context.Args"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _fieldId = "input-multi-select-list";
+    private IEnumerable<DayOfWeek> _weekends = new List<DayOfWeek>();
+
+    private string GetTitle(DayOfWeek value) => value.ToString().Substring(0, 2).ToUpperInvariant();
+}

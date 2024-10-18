@@ -1,0 +1,19 @@
+@inject ResourcesManager Resources
+
+<div class="no-data @CssClass">
+    <p>@Resources[Messages.Dashboard_NoData]</p>
+</div>
+
+@code {
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "no-data_primary",
+        _ => "no-data_secondary"
+    };
+}

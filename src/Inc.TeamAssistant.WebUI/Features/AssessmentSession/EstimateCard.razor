@@ -4,7 +4,10 @@
     </div>
     <div class="estimate__card__content">
         <h3 class="estimate__card__name">@Name</h3>
-        @Content
+        @if (!string.IsNullOrWhiteSpace(Value))
+        {
+            <span class="story__value">@Value</span>
+        }
     </div>
 </div>
 
@@ -16,5 +19,5 @@
     public string Name { get; set; } = default!;
     
     [Parameter]
-    public RenderFragment? Content { get; set; }
+    public string? Value { get; set; }
 }

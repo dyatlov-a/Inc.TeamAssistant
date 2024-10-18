@@ -1,5 +1,3 @@
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
-
 @inject IAppraiserService AppraiserService
 @inject ResourcesManager Resources
 @inject NavRouter NavRouter
@@ -21,9 +19,9 @@
                                     Title="@Resources[Messages.Dashboard_AssessmentDate]"
                                     Sortable="true"
                                     SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                                    <a href="@CreateMoveToHistoryLink(context.AssessmentDate)" class="link link_light">
-                                        @context.AssessmentDate.ToString("dd-MM-yyyy")
-                                    </a>
+                                    <RouterLink Href="@CreateMoveToHistoryLink(context.AssessmentDate)">
+                                        <Content>@context.AssessmentDate.ToString("dd-MM-yyyy")</Content>
+                                    </RouterLink>
                                 </TemplateColumn>
                                 <PropertyColumn
                                     Title="@Resources[Messages.Dashboard_TotalStories]"
@@ -38,13 +36,15 @@
                         }
                         else
                         {
-                            <NoData IsDark="true"/>
+                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
                         }
                     </div>
                     <div class="component-actions">
-                        <a href="@CreateAssessmentSessionLink()" class="button button_dark">
-                            @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
-                        </a>
+                        <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToAssessmentSession">
+                            <Content>
+                                @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
+                            </Content>
+                        </Button>
                     </div>
                 </Content>
             </Loading>
@@ -63,7 +63,7 @@
     private readonly PaginationState _pagination = new();
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateMonths();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
     private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
     
@@ -90,7 +90,10 @@
             });
     }
 
-    private string CreateAssessmentSessionLink() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
+    private async Task MoveToAssessmentSession()
+    {
+        await NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");
+    }
 
     private string CreateMoveToHistoryLink(DateOnly date)
         => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
