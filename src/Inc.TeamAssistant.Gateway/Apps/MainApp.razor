@@ -71,7 +71,8 @@
 
         Blazor.start({
             webAssembly: {
-                environment: "@HostEnvironment.EnvironmentName"
+                environment: "@HostEnvironment.EnvironmentName",
+                applicationCulture: "@_lang"
             }
         });
     </script>
@@ -86,7 +87,10 @@
     protected override void OnInitialized()
     {
         var languageContext = RenderContext.GetLanguageContext();
+        var culture = new CultureInfo(languageContext.CurrentLanguage.Value);
         
-        _lang = languageContext.CurrentLanguage.Value;
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+        _lang = culture.Name;
     }
 }

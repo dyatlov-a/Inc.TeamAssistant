@@ -34,8 +34,7 @@ internal static class Messages
     public static readonly MessageId GUI_CreateBotLink = new(nameof(GUI_CreateBotLink));
     public static readonly MessageId GUI_VideoNotSupported = new(nameof(GUI_VideoNotSupported));
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
-
-    public static readonly MessageId Navigation_Login = new(nameof(Navigation_Login));
+    
     public static readonly MessageId Navigation_Logout = new(nameof(Navigation_Logout));
 
     public static readonly MessageId Constructor_NewBot = new(nameof(Constructor_NewBot));

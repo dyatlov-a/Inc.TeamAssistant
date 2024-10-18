@@ -3,6 +3,7 @@
 @inject IRenderContext RenderContext
 @inject ResourcesManager Resources
 @inject NavRouter NavRouter
+@inject IStringLocalizer<LayoutResources> Localizer
 
 <div class="navbar">
     <div class="navbar-container">
@@ -59,7 +60,7 @@
                     <div class="navbar__item">
                         <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
                             <Content>
-                                @Resources[Messages.Navigation_Login]
+                                @Localizer["Login"].Value
                             </Content>
                         </RouterLink>
                     </div>

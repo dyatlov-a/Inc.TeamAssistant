@@ -90,7 +90,6 @@
   "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
   "GUI_DataRefreshed": "Successfully updated",
   
-  "Navigation_Login": "Login",
   "Navigation_Logout": "Logout",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
