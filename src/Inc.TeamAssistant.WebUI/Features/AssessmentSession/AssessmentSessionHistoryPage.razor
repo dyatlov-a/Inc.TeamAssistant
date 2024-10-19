@@ -6,19 +6,19 @@
 @page "/ru/assessment-history/{teamId:guid}/{date}/{View}"
 
 @inject IAppraiserService AppraiserService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
-    MetaOverrideTitle="@Resources[Messages.GUI_StoryList]" />
+    MetaOverrideTitle="@Title" />
 
 <main class="main">
     <div class="assessment-history-header">
         <div class="assessment-history-header__container">
             <Breadcrumbs Items="_breadcrumbs" />
-            <h1 class="assessment-history__title">@Resources[Messages.GUI_StoryList]</h1>
+            <h1 class="assessment-history__title">@Title</h1>
         </div>
     </div>
     <div class="assessment-history-switcher">
@@ -60,6 +60,8 @@
         _ => typeof(AssessmentGroup)
     };
 
+    private string Title => Localizer["StoryList"].Value;
+
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
@@ -71,7 +73,7 @@
 
         _breadcrumbs = new Dictionary<string, string>
         {
-            [Resources[Messages.GUI_AssessmentSession]] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
+            [Localizer["AssessmentSession"].Value] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
             [Date] = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}")
         };
         

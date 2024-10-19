@@ -1,20 +1,20 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
 
 <div class="story-total">
     <table class="story-total__items">
         <tr>
             <td><span class="story-total__item"><b>@Story.Mean</b></span></td>
-            <td><span class="story-total__item">@Resources[Messages.GUI_MeanRating]</span></td>
+            <td><span class="story-total__item">@Localizer["MeanRating"].Value</span></td>
         </tr>
         <tr>
             <td><span class="story-total__item"><b>@Story.Median</b></span></td>
-            <td><span class="story-total__item">@Resources[Messages.GUI_MedianRating]</span></td>
+            <td><span class="story-total__item">@Localizer["MedianRating"].Value</span></td>
         </tr>
         @if (HasAcceptedValue)
         {
             <tr>
                 <td><span class="story-total__item"><b>@Story.AcceptedValue</b></span></td>
-                <td><span class="story-total__item">@Resources[Messages.GUI_AcceptedValue]</span></td>
+                <td><span class="story-total__item">@Localizer["AcceptedValue"].Value</span></td>
             </tr>
         }
     </table>

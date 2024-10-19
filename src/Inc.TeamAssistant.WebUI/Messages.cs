@@ -7,21 +7,8 @@ internal static class Messages
     public static readonly MessageId GUI_Error404 = new(nameof(GUI_Error404));
     public static readonly MessageId GUI_PageNotFound = new(nameof(GUI_PageNotFound));
 
-    public static readonly MessageId GUI_TaskAssess = new(nameof(GUI_TaskAssess));
-    public static readonly MessageId GUI_MeanRating = new(nameof(GUI_MeanRating));
-    public static readonly MessageId GUI_MedianRating = new(nameof(GUI_MedianRating));
-    public static readonly MessageId GUI_AcceptedValue = new(nameof(GUI_AcceptedValue));
-    public static readonly MessageId GUI_AssessmentSessionAbout = new(nameof(GUI_AssessmentSessionAbout));
-    public static readonly MessageId GUI_AssessmentSessionConnect = new(nameof(GUI_AssessmentSessionConnect));
-    public static readonly MessageId GUI_EstimationAcceptedTemplate = new(nameof(GUI_EstimationAcceptedTemplate));
-
     public static readonly MessageId GUI_AcceptCookieButton = new(nameof(GUI_AcceptCookieButton));
     public static readonly MessageId GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
-
-    public static readonly MessageId GUI_History = new(nameof(GUI_History));
-    public static readonly MessageId GUI_Tasks = new(nameof(GUI_Tasks));
-    public static readonly MessageId GUI_StoryList = new(nameof(GUI_StoryList));
-    public static readonly MessageId GUI_AssessmentSession = new(nameof(GUI_AssessmentSession));
     
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
 

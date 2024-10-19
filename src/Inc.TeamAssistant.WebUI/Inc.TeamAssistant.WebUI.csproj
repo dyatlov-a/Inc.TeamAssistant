@@ -71,6 +71,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>MetaResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AssessmentSessionResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AssessmentSessionResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -132,6 +140,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>MetaResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\AssessmentSession\AssessmentSessionResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AssessmentSessionResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\AssessmentSession\AssessmentSessionResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AssessmentSessionResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

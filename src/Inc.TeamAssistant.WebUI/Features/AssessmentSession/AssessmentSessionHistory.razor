@@ -1,18 +1,18 @@
 @inject IAppraiserService AppraiserService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 @if (_items.Any())
 {
     <div class="history">
-        <div class="history__title">@Resources[Messages.GUI_History]</div>
+        <div class="history__title">@Localizer["History"].Value</div>
         <div class="history__body">
             @foreach (var item in _items)
             {
                 <RouterLink Href="@CreateMoveToHistoryLink(item)" ComponentStyle="ComponentStyle.Secondary">
                     <Content>
-                        @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Resources[Messages.GUI_Tasks]
+                        @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Localizer["Tasks"].Value
                     </Content>
                 </RouterLink>
             }

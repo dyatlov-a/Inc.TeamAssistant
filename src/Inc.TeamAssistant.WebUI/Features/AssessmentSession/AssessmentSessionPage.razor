@@ -9,13 +9,13 @@
 
 @inject IAppraiserService AppraiserService
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
-    MetaOverrideTitle="@Resources[Messages.GUI_TaskAssess]" />
+    MetaOverrideTitle="@Title" />
 
 <main class="main">
     <div class="assessment-session-header">
@@ -23,11 +23,11 @@
             <div class="assessment-session__header">
                 <div class="assessment-session__about">
                     <Breadcrumbs Items="_breadcrumbs" />
-                    <h1 class="assessment-session__title">@Resources[Messages.GUI_TaskAssess]</h1>
+                    <h1 class="assessment-session__title">@Title</h1>
                     <p class="assessment-session__text">
-                        @string.Format(Resources[Messages.GUI_AssessmentSessionAbout], _item.TeamName)
+                        @string.Format(Localizer["AssessmentSessionAboutTemplate"].Value, _item.TeamName)
                     </p>
-                    <p class="assessment-session__text">@Resources[Messages.GUI_AssessmentSessionConnect]</p>
+                    <p class="assessment-session__text">@Localizer["AssessmentSessionConnect"].Value</p>
                 </div>
                 <div class="assessment-session__link">
                     <Loading State="_state" ComponentStyle="ComponentStyle.Secondary" Retry="() => Load()">
@@ -84,6 +84,8 @@
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
     };
+
+    private string Title => Localizer["TaskAssess"].Value;
     
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
@@ -98,7 +100,7 @@
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         _breadcrumbs = new Dictionary<string, string>
         {
-            [Resources[Messages.GUI_AssessmentSession]] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
+            [Localizer["AssessmentSession"].Value] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
             [date] = NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}")
         };
         
@@ -119,7 +121,7 @@
                 b => b.OnStoryAccepted(async v =>
                 {
                     var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-                    var message = string.Format(Resources[Messages.GUI_EstimationAcceptedTemplate], v);
+                    var message = string.Format(Localizer["EstimationAcceptedTemplate"].Value, v);
 
                     notificationsService.Publish(Notification.Info(message));
 
