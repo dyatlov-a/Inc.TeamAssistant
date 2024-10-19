@@ -2,7 +2,7 @@
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.BotChecked" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
     <Panel Header="@Localizer["ConnectingTelegram"].Value" IsOpen="true">
         <Actions>

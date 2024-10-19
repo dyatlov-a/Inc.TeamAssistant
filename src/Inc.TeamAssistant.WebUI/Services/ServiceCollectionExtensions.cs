@@ -3,7 +3,11 @@ using FluentValidation;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
@@ -32,7 +36,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
-            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddScoped<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
@@ -55,7 +58,17 @@ public static class ServiceCollectionExtensions
             .AddScoped<DateSelectorFactory>()
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()
-            .AddScoped(typeof(DragAndDropService<>));
+            .AddScoped(typeof(DragAndDropService<>))
+            
+            .AddScoped<IValidator<CheckBotFormModel>, CheckBotFormModelValidator>()
+            .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()
+            .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
+            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
+            .AddScoped<IValidator<CalendarFromModel>, CalendarFromModelValidator>()
+            .AddScoped<IValidator<SetSettingsFormModel>, SetSettingsFormModelValidator>()
+            .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
+            .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
+            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>();
 
         return services;
     }

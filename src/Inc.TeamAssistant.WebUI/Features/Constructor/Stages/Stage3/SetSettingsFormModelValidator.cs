@@ -4,17 +4,15 @@ using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
+internal sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
 {
-    public SetSettingsFormModelValidator(IServiceProvider serviceProvider)
+    public SetSettingsFormModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        
-        var stringLocalizer = serviceProvider.GetRequiredService<IStringLocalizer<ConstructorResources>>();
+        ArgumentNullException.ThrowIfNull(localizer);
         
         RuleFor(e => e.CalendarId)
             .NotEmpty()
-            .WithMessage(stringLocalizer["RequiredCalendar"].Value);
+            .WithMessage(localizer["RequiredCalendar"].Value);
         
         RuleFor(e => e.Properties)
             .NotNull();

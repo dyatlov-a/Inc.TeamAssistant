@@ -9,7 +9,7 @@
     <Content>
         <div class="widget-settings @CssClass">
             <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-                <FluentValidationValidator @ref="_fluentValidationValidator"/>
+                <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
                 <Loading State="_state" Retry="SubmitForm">
                     <Content>
                         <div class="widget-settings__body">

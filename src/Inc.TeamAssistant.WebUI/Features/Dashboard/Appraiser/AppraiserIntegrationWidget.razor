@@ -17,7 +17,7 @@
                 <Content>
                     <div class="component-container">
                         <EditForm id="@AnalyticEvents.AppraiserIntegrationEnabled" EditContext="_editContext" OnSubmit="SubmitForm">
-                            <FluentValidationValidator @ref="_fluentValidationValidator"/>
+                            <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
                             <div class="appraiser-integration__body">
                                 <FormFieldSet
                                     FieldId="access-token"

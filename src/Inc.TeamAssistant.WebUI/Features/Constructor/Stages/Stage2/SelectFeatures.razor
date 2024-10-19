@@ -2,7 +2,7 @@
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.FeatureSelected" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <Panel Header="@Localizer["FeaturesStore"].Value" IsOpen="true">
         <Actions>
             <Button ButtonType="ButtonType.Submit">

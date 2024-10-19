@@ -3,15 +3,13 @@ using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromModel>
+internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromModel>
 {
     private readonly HashSet<DateOnly> _dates = new();
     
-    public CalendarFromModelValidator(IServiceProvider serviceProvider)
+    public CalendarFromModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-
-        var stringLocalizer = serviceProvider.GetRequiredService<IStringLocalizer<ConstructorResources>>();
+        ArgumentNullException.ThrowIfNull(localizer);
         
         RuleFor(e => e.SelectedWeekends)
             .NotNull()
@@ -20,7 +18,7 @@ public sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromM
         RuleFor(e => e.Holidays)
             .NotNull()
             .Must(e => e.Select(i => i.Date).Distinct().Count() == e.Count)
-            .WithMessage(stringLocalizer["DuplicateHolidays"].Value);
+            .WithMessage(localizer["DuplicateHolidays"].Value);
 
         _dates.Clear();
         RuleForEach(e => e.Holidays)

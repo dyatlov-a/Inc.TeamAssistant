@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 
-public sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormModel>
+internal sealed class CompleteFormModelValidator : AbstractValidator<CompleteFormModel>
 {
     public CompleteFormModelValidator()
     {

@@ -4,7 +4,7 @@
 @inject IRenderContext RenderContext
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <Panel Header="@Localizer["BotDetailsTelegram"].Value" Opened="Load" IsOpen="_isOpen">
         <Actions>
             <Button ButtonType="ButtonType.Submit">

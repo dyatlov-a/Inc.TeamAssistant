@@ -5,17 +5,15 @@ using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 
-public sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormModel>
+internal sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormModel>
 {
     private readonly IBotService _botService;
     private readonly IStringLocalizer<ConstructorResources> _localizer;
     
-    public CheckBotFormModelValidator(IBotService botService, IServiceProvider serviceProvider)
+    public CheckBotFormModelValidator(IBotService botService, IStringLocalizer<ConstructorResources> localizer)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        
         _botService = botService ?? throw new ArgumentNullException(nameof(botService));
-        _localizer = serviceProvider.GetRequiredService<IStringLocalizer<ConstructorResources>>();
+        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 
         RuleFor(e => e.Token)
             .NotEmpty();
