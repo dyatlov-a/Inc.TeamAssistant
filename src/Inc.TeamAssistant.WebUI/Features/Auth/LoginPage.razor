@@ -4,7 +4,7 @@
 
 @inject IUserService UserService
 @inject IRenderContext RenderContext
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AuthResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
@@ -14,15 +14,15 @@
     <div class="login-container">
         <div class="login-action">
             <div class="login-action-container">
-                <h1 class="telegram-login__header">@Resources[Messages.Login_Title]</h1>
-                <p class="telegram-login__text">@Resources[Messages.Login_TelegramText]</p>
+                <h1 class="telegram-login__header">@Localizer["LoginTitle"].Value</h1>
+                <p class="telegram-login__text">@Localizer["LoginHelp"].Value</p>
                 <div class="telegram-login__actions">
                     <Loading State="_state" Retry="Load">
                         <Content>
                             @if (RenderContext.IsDevelopment())
                             {
                                 <button type="button" @onclick="LoginAsSuperUser" class="button_telegram">
-                                    @Resources[Messages.Login_AsSuperuserText]
+                                    @Localizer["LoginAsSuperuser"].Value
                                 </button>
                             }
                             else if (!string.IsNullOrWhiteSpace(_botUserName))
@@ -44,7 +44,7 @@
         </div>
         <div class="login-motivation">
             <div class="login-motivation-container">
-                <h2 class="login-motivation__header">@Resources[Messages.Login_CreateBot]</h2>
+                <h2 class="login-motivation__header">@Localizer["CreateBot"].Value</h2>
             </div>
         </div>
     </div>

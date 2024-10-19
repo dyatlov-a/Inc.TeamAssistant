@@ -48,7 +48,6 @@
   "GUI_AssessmentSessionAbout": "На этой странице показан текущий процесс оценки заданий команды «{0}». Оценка происходит с помощью бота в чате Telegram.",
   "GUI_AssessmentSessionConnect": "Отсканируйте QR-код, чтобы присоединиться к команде",
   "GUI_EstimationAcceptedTemplate": "Оценка {0} принята",
-  "GUI_Authorizing": "Авторизация...",
   "GUI_Error404": "Ошибка 404",
   "GUI_PageNotFound": "страница не найдена",
   
@@ -231,11 +230,6 @@
   "Dashboard_Apply": "Применить",
   "Dashboard_SettingsApplied": "Настройки применены",
   "Dashboard_DisableWidgetHelpTemplate": "Для включения виджета необходимо активировать функцию «{0}»",
-
-  "Login_AsSuperuserText": "Войти как суперпользователь",
-  "Login_Title": "Войти",
-  "Login_CreateBot": "Создай бота для своей команды",
-  "Login_TelegramText": "Чтобы начать работу, войдите в Telegram.",
 
   "Validation_TokenInvalid": "Токен недействителен.",
   

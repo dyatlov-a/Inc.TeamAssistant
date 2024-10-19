@@ -1,7 +1,7 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<AuthResources> Localizer
 
 <div class="authorizing">
     <div class="authorizing__container">
-        <p class="authorizing__text">@Resources[Messages.GUI_Authorizing]</p>
+        <p class="authorizing__text">@Localizer["Authorizing"].Value</p>
     </div>
 </div>

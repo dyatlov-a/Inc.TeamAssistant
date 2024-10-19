@@ -4,7 +4,6 @@ namespace Inc.TeamAssistant.WebUI;
 
 internal static class Messages
 {
-    public static readonly MessageId GUI_Authorizing = new(nameof(GUI_Authorizing));
     public static readonly MessageId GUI_Error404 = new(nameof(GUI_Error404));
     public static readonly MessageId GUI_PageNotFound = new(nameof(GUI_PageNotFound));
 
@@ -169,11 +168,6 @@ internal static class Messages
     public static readonly MessageId Dashboard_Apply = new(nameof(Dashboard_Apply));
     public static readonly MessageId Dashboard_SettingsApplied = new(nameof(Dashboard_SettingsApplied));
     public static readonly MessageId Dashboard_DisableWidgetHelpTemplate = new(nameof(Dashboard_DisableWidgetHelpTemplate));
-    
-    public static readonly MessageId Login_AsSuperuserText = new(nameof(Login_AsSuperuserText));
-    public static readonly MessageId Login_Title = new(nameof(Login_Title));
-    public static readonly MessageId Login_CreateBot = new(nameof(Login_CreateBot));
-    public static readonly MessageId Login_TelegramText = new(nameof(Login_TelegramText));
 
     public static readonly MessageId Validation_TokenInvalid = new(nameof(Validation_TokenInvalid));
     
