@@ -1,4 +1,4 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ComponentResources> Localizer
 
 @if (State.Value != LoadingState.State.Done)
 {
@@ -9,9 +9,9 @@
         }
         else
         {
-            <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Retry">
+            <Button ComponentStyle="ComponentStyle" OnClick="Retry">
                 <Content>
-                    @Resources[Messages.LoadingReload]
+                    @Localizer["Reload"].Value
                 </Content>
             </Button>
         }
@@ -30,7 +30,7 @@ else
     public LoadingState State { get; set; } = LoadingState.Done();
     
     /// <summary>
-    /// Html or text content of the component.
+    /// HTML component.
     /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;

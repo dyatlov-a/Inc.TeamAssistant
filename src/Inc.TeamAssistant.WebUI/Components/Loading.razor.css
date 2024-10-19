@@ -4,6 +4,7 @@
     align-self: center;
     width: 100%;
     min-height: 100px;
+    align-items: center;
 }
 .loader {
     width: 46px;

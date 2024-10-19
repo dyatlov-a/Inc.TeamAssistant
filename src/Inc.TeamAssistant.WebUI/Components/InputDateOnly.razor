@@ -35,15 +35,27 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Field ID for the label.
+    /// </summary>
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
 
+    /// <summary>
+    /// Start year.
+    /// </summary>
     [Parameter]
     public int YearsStart { get; set; } = DateTimeOffset.UtcNow.Year;
 
+    /// <summary>
+    /// Count of years.
+    /// </summary>
     [Parameter]
     public int YearsCount { get; set; } = 10;
     
+    /// <summary>
+    /// Display the year with thousands.
+    /// </summary>
     [Parameter]
     public bool HasThousands { get; set; }
     

@@ -19,18 +19,33 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Field for the input element.
+    /// </summary>
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
     
+    /// <summary>
+    /// Select list items.
+    /// </summary>
     [Parameter, EditorRequired]
     public IEnumerable<TItem> Items { get; set; } = default!;
     
+    /// <summary>
+    /// Title selector for the select list items.
+    /// </summary>
     [Parameter, EditorRequired]
     public Func<TItem, string> TitleSelector { get; set; } = default!;
     
+    /// <summary>
+    /// Value selector for the select list items.
+    /// </summary>
     [Parameter, EditorRequired]
     public Func<TItem, TValue> ValueSelector { get; set; } = default!;
     
+    /// <summary>
+    /// Is disabled state of the input.
+    /// </summary>
     [Parameter]
     public bool IsDisabled { get; set; }
 

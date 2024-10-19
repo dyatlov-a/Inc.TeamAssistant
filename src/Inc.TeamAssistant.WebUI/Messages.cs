@@ -130,7 +130,6 @@ internal static class Messages
     public static readonly MessageId Dashboard_CorrectionHelp = new(nameof(Dashboard_CorrectionHelp));
     public static readonly MessageId Dashboard_Review = new(nameof(Dashboard_Review));
     public static readonly MessageId Dashboard_ReviewHelp = new(nameof(Dashboard_ReviewHelp));
-    public static readonly MessageId Dashboard_NoData = new(nameof(Dashboard_NoData));
     public static readonly MessageId Dashboard_TeammatesWidgetTitle = new(nameof(Dashboard_TeammatesWidgetTitle));
     public static readonly MessageId Dashboard_BotWidgetTitle = new(nameof(Dashboard_BotWidgetTitle));
     public static readonly MessageId Dashboard_ReviewTotalStatsWidgetTitle = new(nameof(Dashboard_ReviewTotalStatsWidgetTitle));
@@ -170,15 +169,11 @@ internal static class Messages
     public static readonly MessageId Dashboard_Apply = new(nameof(Dashboard_Apply));
     public static readonly MessageId Dashboard_SettingsApplied = new(nameof(Dashboard_SettingsApplied));
     public static readonly MessageId Dashboard_DisableWidgetHelpTemplate = new(nameof(Dashboard_DisableWidgetHelpTemplate));
-    public static readonly MessageId ContentDialog_Close = new(nameof(ContentDialog_Close));
     
     public static readonly MessageId Login_AsSuperuserText = new(nameof(Login_AsSuperuserText));
     public static readonly MessageId Login_Title = new(nameof(Login_Title));
     public static readonly MessageId Login_CreateBot = new(nameof(Login_CreateBot));
     public static readonly MessageId Login_TelegramText = new(nameof(Login_TelegramText));
-    
-    public static readonly MessageId ConfirmDialog_Yes = new(nameof(ConfirmDialog_Yes));
-    public static readonly MessageId ConfirmDialog_No = new(nameof(ConfirmDialog_No));
 
     public static readonly MessageId Validation_TokenInvalid = new(nameof(Validation_TokenInvalid));
     
@@ -207,7 +202,5 @@ internal static class Messages
     public static readonly MessageId MetaCheckInDescription = new(nameof(MetaCheckInDescription));
     public static readonly MessageId MetaCheckInKeywords = new(nameof(MetaCheckInKeywords));
     
-    public static readonly MessageId PanelOpen = new(nameof(PanelOpen));
     public static readonly MessageId PanelSave = new(nameof(PanelSave));
-    public static readonly MessageId LoadingReload = new(nameof(LoadingReload));
 }

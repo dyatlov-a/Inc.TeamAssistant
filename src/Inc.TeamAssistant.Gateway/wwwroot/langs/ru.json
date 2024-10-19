@@ -192,7 +192,6 @@
   "Dashboard_CorrectionHelp": "Время, затраченное на корректировку",
   "Dashboard_Review": "Время ревью",
   "Dashboard_ReviewHelp": "Время, затраченное на проверку",
-  "Dashboard_NoData": "Нет данных",
   "Dashboard_TeammatesWidgetTitle": "Товарищи по команде",
   "Dashboard_BotWidgetTitle": "Бот не выбран",
   "Dashboard_ReviewTotalStatsWidgetTitle": "Общая статистика по ревью",
@@ -355,12 +354,6 @@
   "Constructor_CheckConfigurationTemplate": "Проверить настройки и {0}",
   "Constructor_RequiredCalendar": "Пожалуйста, установите и сохраните рабочий календарь",
   "Constructor_DuplicateHolidays": "Несколько праздников имеют одну и ту же дату",
-
-  "PanelOpen": "Заполнить",
-  "PanelSave": "Сохранить",
-  "LoadingReload": "Перезагрузить",
   
-  "ConfirmDialog_Yes": "Да",
-  "ConfirmDialog_No": "Нет",
-  "ContentDialog_Close": "Закрыть"
+  "PanelSave": "Сохранить"
 }

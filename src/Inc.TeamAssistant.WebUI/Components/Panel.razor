@@ -1,4 +1,4 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ComponentResources> Localizer
 
 <div class="panel">
     <div class="panel__header">
@@ -12,7 +12,7 @@
             {
                 <Button OnClick="Open">
                     <Content>
-                        @Resources[Messages.PanelOpen]
+                        @Localizer["Open"].Value
                     </Content>
                 </Button>
             }
@@ -27,18 +27,33 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Title of the panel.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Header { get; set; } = default!;
     
+    /// <summary>
+    /// Actions to be displayed in the header.
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Actions { get; set; } = default!;
     
+    /// <summary>
+    /// HTML content.
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
+    /// <summary>
+    /// Is open state.
+    /// </summary>
     [Parameter]
     public bool IsOpen { get; set; }
     
+    /// <summary>
+    /// Opened event.
+    /// </summary>
     [Parameter]
     public EventCallback Opened { get; set; }
 

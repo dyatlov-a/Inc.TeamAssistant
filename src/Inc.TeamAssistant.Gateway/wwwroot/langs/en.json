@@ -192,7 +192,6 @@
   "Dashboard_CorrectionHelp": "Time spent on adjustments",
   "Dashboard_Review": "Review",
   "Dashboard_ReviewHelp": "Time spent on the review",
-  "Dashboard_NoData": "No data",
   "Dashboard_TeammatesWidgetTitle": "Teammates",
   "Dashboard_BotWidgetTitle": "Bot has not selected",
   "Dashboard_ReviewTotalStatsWidgetTitle": "Review total stats",
@@ -356,11 +355,5 @@
   "Constructor_RequiredCalendar": "Please set and save the work calendar",
   "Constructor_DuplicateHolidays": "Multiple holidays have the same date",
   
-  "PanelOpen": "Open",
-  "PanelSave": "Save",
-  "LoadingReload": "Try again",
-
-  "ConfirmDialog_Yes": "Yes",
-  "ConfirmDialog_No": "No",
-  "ContentDialog_Close": "Close"
+  "PanelSave": "Save"
 }

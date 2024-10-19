@@ -19,9 +19,15 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Field for the input element.
+    /// </summary>
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Is disabled state of the input.
+    /// </summary>
     [Parameter]
     public bool IsDisabled { get; set; }
     

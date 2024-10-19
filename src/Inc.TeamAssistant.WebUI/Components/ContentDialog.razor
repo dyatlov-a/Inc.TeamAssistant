@@ -1,4 +1,4 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ComponentResources> Localizer
 
 @if (_isOpen)
 {
@@ -12,7 +12,7 @@
                 <Actions>
                     <Button OnClick="Close">
                         <Content>
-                            @Resources[Messages.ContentDialog_Close]
+                            @Localizer["Close"].Value
                         </Content>
                     </Button>
                 </Actions>
@@ -22,12 +22,21 @@
 }
 
 @code {
+    /// <summary>
+    /// Title of the dialog.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = default!;
     
+    /// <summary>
+    /// HTML content
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
+    /// <summary>
+    /// Is grand window
+    /// </summary>
     [Parameter]
     public bool IsGrand { get; set; }
     

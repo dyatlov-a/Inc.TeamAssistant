@@ -18,18 +18,33 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Title of the form section.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = default!;
     
+    /// <summary>
+    /// HTML content.
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
+    /// <summary>
+    /// render as rows
+    /// </summary>
     [Parameter]
     public bool AsRows { get; set; }
     
+    /// <summary>
+    /// Help plain text.
+    /// </summary>
     [Parameter]
     public string? HelpText { get; set; }
     
+    /// <summary>
+    /// Help HTML content.
+    /// </summary>
     [Parameter]
     public RenderFragment? HelpContent { get; set; }
     

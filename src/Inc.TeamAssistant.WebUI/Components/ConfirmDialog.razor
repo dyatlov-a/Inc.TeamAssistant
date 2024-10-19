@@ -1,4 +1,4 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ComponentResources> Localizer
 
 @if (_isOpen)
 {
@@ -11,12 +11,12 @@
             <div class="confirm-dialog__actions">
                 <Button OnClick="() => Close(OnConfirm)">
                     <Content>
-                        @Resources[Messages.ConfirmDialog_Yes]
+                        @Localizer["Yes"].Value
                     </Content>
                 </Button>
                 <Button OnClick="() => Close()" ComponentStyle="ComponentStyle.Secondary">
                     <Content>
-                        @Resources[Messages.ConfirmDialog_No]
+                        @Localizer["No"].Value
                     </Content>
                 </Button>
             </div>
@@ -25,9 +25,15 @@
 }
 
 @code {
+    /// <summary>
+    /// HTML content
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
     
+    /// <summary>
+    /// On confirm event
+    /// </summary>
     [Parameter, EditorRequired]
     public EventCallback OnConfirm { get; set; }
     

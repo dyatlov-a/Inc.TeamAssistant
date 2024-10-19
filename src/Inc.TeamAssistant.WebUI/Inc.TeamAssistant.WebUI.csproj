@@ -49,6 +49,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>LayoutResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Components\ComponentResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ComponentResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Components\ComponentResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ComponentResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -60,6 +68,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>LayoutResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Components\ComponentResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ComponentResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Components\ComponentResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ComponentResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

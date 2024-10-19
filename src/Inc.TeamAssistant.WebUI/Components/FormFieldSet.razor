@@ -4,12 +4,21 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Field ID for the label.
+    /// </summary>
     [Parameter, EditorRequired]
     public string FieldId { get; set; } = default!;
     
+    /// <summary>
+    /// Label for the field.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Label { get; set; } = default!;
     
+    /// <summary>
+    /// HTML content
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
 }

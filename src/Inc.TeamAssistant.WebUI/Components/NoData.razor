@@ -1,7 +1,7 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ComponentResources> Localizer
 
 <div class="no-data @CssClass">
-    <p>@Resources[Messages.Dashboard_NoData]</p>
+    <p>@Localizer["NoData"].Value</p>
 </div>
 
 @code {
