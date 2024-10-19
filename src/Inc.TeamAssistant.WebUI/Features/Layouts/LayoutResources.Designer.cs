@@ -98,5 +98,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Layouts {
                 return ResourceManager.GetString("Logout", resourceCulture);
             }
         }
+        
+        internal static string AcceptCookieText {
+            get {
+                return ResourceManager.GetString("AcceptCookieText", resourceCulture);
+            }
+        }
+        
+        internal static string AcceptCookieButton {
+            get {
+                return ResourceManager.GetString("AcceptCookieButton", resourceCulture);
+            }
+        }
     }
 }

@@ -6,9 +6,6 @@ internal static class Messages
 {
     public static readonly MessageId GUI_Error404 = new(nameof(GUI_Error404));
     public static readonly MessageId GUI_PageNotFound = new(nameof(GUI_PageNotFound));
-
-    public static readonly MessageId GUI_AcceptCookieButton = new(nameof(GUI_AcceptCookieButton));
-    public static readonly MessageId GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
     
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
     

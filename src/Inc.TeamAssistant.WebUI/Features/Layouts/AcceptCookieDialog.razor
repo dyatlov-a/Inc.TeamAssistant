@@ -2,18 +2,18 @@
 
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
-@inject ResourcesManager Resources
+@inject IStringLocalizer<LayoutResources> Localizer
 
 @if (_isShow)
 {
     <div class="inline-dialog">
         <div class="inline-dialog__content">
-            <p>@Resources[Messages.GUI_AcceptCookieText]</p>
+            <p>@Localizer["AcceptCookieText"].Value</p>
         </div>
         <div class="inline-dialog__actions">
             <Button OnClick="Accept">
                 <Content>
-                    @Resources[Messages.GUI_AcceptCookieButton]
+                    @Localizer["AcceptCookieButton"].Value
                 </Content>
             </Button>
         </div>
@@ -34,7 +34,7 @@
         {
             _cookieModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
-                "./Features/AcceptCookieDialog.razor.js");
+                "./Features/Layouts/AcceptCookieDialog.razor.js");
 
             var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
             if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))

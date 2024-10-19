@@ -45,4 +45,10 @@
     <data name="Logout" xml:space="preserve">
         <value>Выйти</value>
     </data>
+    <data name="AcceptCookieText" xml:space="preserve">
+        <value>Мы используем файлы cookies, чтобы сделать работу нашего сайта наиболее удобной для Вас. Продолжая пользоваться нашим сайтом, Вы соглашаетесь с использованием файлов cookies</value>
+    </data>
+    <data name="AcceptCookieButton" xml:space="preserve">
+        <value>Принять</value>
+    </data>
 </root>
