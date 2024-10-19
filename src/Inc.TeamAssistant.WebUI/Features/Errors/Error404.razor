@@ -1,17 +1,17 @@
 @page "/error404"
 
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ErrorResources> Localizer
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Error404"
-    MetaOverrideTitle="@Resources[Messages.GUI_Error404]" />
+    MetaOverrideTitle="@Localizer["Error404"].Value" />
 
 <div class="error-404">
     <div class="error-404__container">
         <p class="error-404__text">
             <span class="error-404__title">
-                @Resources[Messages.GUI_Error404]
-            </span> @Resources[Messages.GUI_PageNotFound]
+                @Localizer["Error404"].Value
+            </span> @Localizer["PageNotFound"].Value
         </p>
     </div>
 </div>

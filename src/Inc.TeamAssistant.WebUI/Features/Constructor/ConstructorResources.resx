@@ -339,4 +339,7 @@
     <data name="FeatureReviewerName" xml:space="preserve">
         <value>Tasks review</value>
     </data>
+    <data name="DataRefreshed" xml:space="preserve">
+        <value>Successfully updated</value>
+    </data>
 </root>

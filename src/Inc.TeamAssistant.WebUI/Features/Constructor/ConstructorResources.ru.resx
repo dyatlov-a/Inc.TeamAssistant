@@ -339,4 +339,7 @@
     <data name="FeatureCheckInName" xml:space="preserve">
         <value>Отметки на карте</value>
     </data>
+    <data name="DataRefreshed" xml:space="preserve">
+        <value>Успешно обновлено</value>
+    </data>
 </root>

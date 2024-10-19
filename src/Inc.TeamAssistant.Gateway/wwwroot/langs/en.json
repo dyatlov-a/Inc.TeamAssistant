@@ -40,11 +40,6 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
-  
-  "GUI_Error404": "Error 404",
-  "GUI_PageNotFound": "Page not found",
-  
-  "GUI_DataRefreshed": "Successfully updated",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",

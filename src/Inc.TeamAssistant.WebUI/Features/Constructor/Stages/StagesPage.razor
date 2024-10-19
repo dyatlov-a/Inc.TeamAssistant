@@ -14,7 +14,6 @@
 @inject IBotService BotService
 @inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
 @inject IStringLocalizer<ConstructorResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
@@ -122,7 +121,7 @@
         
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
         
-        notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
+        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"].Value));
         
         await NavRouter.MoveToRoute("constructor");
     }
