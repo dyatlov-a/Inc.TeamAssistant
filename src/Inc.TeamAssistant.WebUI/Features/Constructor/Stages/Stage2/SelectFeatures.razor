@@ -1,20 +1,20 @@
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.FeatureSelected" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_FeaturesStore]" IsOpen="true">
+    <Panel Header="@Localizer["FeaturesStore"].Value" IsOpen="true">
         <Actions>
             <Button ButtonType="ButtonType.Submit">
                 <Content>
-                    @Resources[Messages.Constructor_MoveNextTitle]
+                    @Localizer["MoveNextTitle"].Value
                 </Content>
             </Button>
         </Actions>
         <Content>
             <FormSection
-                Title="@Resources[Messages.Constructor_FormSectionFeaturesTitle]"
-                HelpText="@Resources[Messages.Constructor_FormSectionFeaturesHelp]"
+                Title="@Localizer["FormSectionFeaturesTitle"].Value"
+                HelpText="@Localizer["FormSectionFeaturesHelp"].Value"
                 AsRows="true">
                 <Content>
                     <InputFeatures

@@ -1,13 +1,13 @@
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_Configuration]" IsOpen="true">
+    <Panel Header="@Localizer["Configuration"].Value" IsOpen="true">
         <Actions>
             <Button ButtonType="ButtonType.Submit">
                 <Content>
-                    @Resources[Messages.Constructor_MoveNextTitle]
+                    @Localizer["MoveNextTitle"].Value
                 </Content>
             </Button>
         </Actions>
@@ -20,8 +20,8 @@
                 foreach (var settingSection in settingSections)
                 {
                     <FormSection
-                        Title="@Resources[settingSection.HeaderMessageId]"
-                        HelpText="@Resources[settingSection.HelpMessageId]">
+                        Title="@Localizer[settingSection.HeaderMessageId].Value"
+                        HelpText="@Localizer[settingSection.HelpMessageId].Value">
                         <Content>
                             @foreach (var settingItem in settingSection.SettingItems)
                             {
@@ -29,7 +29,7 @@
                                 {
                                     <FormFieldSet
                                         FieldId="@settingItem.PropertyName"
-                                        Label="@Resources[settingItem.LabelMessageId]">
+                                        Label="@Localizer[settingItem.LabelMessageId].Value">
                                         <Content>
                                             <InputSelectList
                                                 FieldId="@settingItem.PropertyName"
@@ -37,7 +37,7 @@
                                                 ValueExpression="@(() => value)"
                                                 ValueChanged="@((string v) => _formModel.ChangeProperty(settingItem.PropertyName, v))"
                                                 Items="settingItem.Values"
-                                                TitleSelector="i => Resources[i.MessageId]"
+                                                TitleSelector="i => Localizer[i.MessageId].Value"
                                                 ValueSelector="i => i.Value" />
                                             <ValidationMessage For="@(() => value)"/>
                                         </Content>
@@ -49,10 +49,10 @@
                 }
             }
             <FormSection
-                Title="@Resources[Messages.Constructor_SupportedLanguages]"
-                HelpText="@Resources[Messages.Constructor_SupportedLanguagesHelp]">
+                Title="@Localizer["SupportedLanguages"].Value"
+                HelpText="@Localizer["SupportedLanguagesHelp"].Value">
                 <Content>
-                    <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
+                    <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"].Value">
                         <Content>
                             <InputMultiSelectList
                                 FieldId="supported-languages"

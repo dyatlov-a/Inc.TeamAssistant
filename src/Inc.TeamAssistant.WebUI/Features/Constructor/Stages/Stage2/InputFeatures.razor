@@ -1,7 +1,7 @@
 @inherits InputBase<IEnumerable<Guid>>
 
 @inject DragAndDropService<Guid> DragAndDropService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject FeaturesFactory FeaturesFactory
 
 <div class="input-features">
@@ -23,7 +23,7 @@
                     <Buttons>
                         <Button OnClick="() => ToggleFeature(feature.Id)">
                             <Content>
-                                @Resources[Messages.Constructor_FeatureAdd]
+                                @Localizer["FeatureAdd"].Value
                             </Content>
                         </Button>
                     </Buttons>
@@ -32,7 +32,7 @@
         }
         else
         {
-            <p class="input-features__text">@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesAvailableEmptyText"].Value</p>
         }
     </div>
     <div
@@ -53,7 +53,7 @@
                     <Buttons>
                         <Button OnClick="() => ToggleFeature(feature.Id)">
                             <Content>
-                                @Resources[Messages.Constructor_FeatureRemove]
+                                @Localizer["FeatureRemove"].Value
                             </Content>
                         </Button>
                     </Buttons>
@@ -62,7 +62,7 @@
         }
         else
         {
-            <p class="input-features__text">@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesSelectedEmptyText"].Value</p>
         }
         @if (Validation is not null)
         {

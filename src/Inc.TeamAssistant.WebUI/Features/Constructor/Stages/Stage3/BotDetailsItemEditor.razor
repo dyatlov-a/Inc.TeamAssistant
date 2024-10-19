@@ -1,8 +1,8 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <FormFieldSet
     FieldId="@BotNameId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], Item.LanguageId)">
+    Label="@MessageWithLanguage(Localizer["BotName"].Value, Item.LanguageId)">
     <Content>
         <InputSingleLine FieldId="@BotNameId" @bind-Value="Item.Name" />
         <ValidationMessage For="@(() => Item.Name)"/>
@@ -10,7 +10,7 @@
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotShortDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], Item.LanguageId)">
+    Label="@MessageWithLanguage(Localizer["BotShortDescription"].Value, Item.LanguageId)">
     <Content>
         <InputSingleLine FieldId="@BotShortDescriptionId" @bind-Value="Item.ShortDescription" />
         <ValidationMessage For="@(() => Item.ShortDescription)"/>
@@ -18,7 +18,7 @@
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], Item.LanguageId)">
+    Label="@MessageWithLanguage(Localizer["BotDescription"].Value, Item.LanguageId)">
     <Content>
         <InputMultiLines FieldId="@BotDescriptionId" @bind-Value="Item.Description" />
         <ValidationMessage For="@(() => Item.Description)"/>

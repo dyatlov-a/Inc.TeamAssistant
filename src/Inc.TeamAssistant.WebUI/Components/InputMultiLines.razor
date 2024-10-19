@@ -4,7 +4,7 @@
     @if (IsDisabled)
     {
         <InputTextArea
-            @bind-Value="Value"
+            @bind-Value="CurrentValue"
             class="input-multilines input-multilines_disabled"
             id="@FieldId"
             disabled="disabled" />
@@ -12,7 +12,7 @@
     else
     {
         <InputTextArea
-            @bind-Value="Value"
+            @bind-Value="CurrentValue"
             class="input-multilines input-multilines_enabled"
             id="@FieldId" />
     }

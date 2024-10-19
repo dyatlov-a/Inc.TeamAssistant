@@ -1,10 +1,10 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <div class="nav-stages">
     @foreach (var stage in _stages)
     {
         <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
-            @Resources[GetStageTitle(stage)]
+            @Localizer[GetStageTitle(stage)].Value
         </div>
     }
 </div>
@@ -26,7 +26,7 @@
             ? "nav-stages__item_can-move"
             : string.Empty;
     
-    private MessageId GetStageTitle(Stage stage) => new($"Constructor_Stage{stage}");
+    private string GetStageTitle(Stage stage) => $"Stage{stage}";
 
     private void MoveTo(Stage stage)
     {

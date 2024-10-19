@@ -11,64 +11,7 @@ internal static class Messages
     public static readonly MessageId GUI_AcceptCookieText = new(nameof(GUI_AcceptCookieText));
     
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
-
-    public static readonly MessageId Constructor_NewBot = new(nameof(Constructor_NewBot));
-    public static readonly MessageId Constructor_AddBot = new(nameof(Constructor_AddBot));
-    public static readonly MessageId Constructor_Edit = new(nameof(Constructor_Edit));
-    public static readonly MessageId Constructor_Remove = new(nameof(Constructor_Remove));
-    public static readonly MessageId Constructor_Title = new(nameof(Constructor_Title));
-    public static readonly MessageId Constructor_SelectBotText = new(nameof(Constructor_SelectBotText));
-    public static readonly MessageId Constructor_RemoveConfirmationText = new(nameof(Constructor_RemoveConfirmationText));
-    public static readonly MessageId Constructor_FormSectionTokenTitle = new(nameof(Constructor_FormSectionTokenTitle));
-    public static readonly MessageId Constructor_FormSectionTokenHelpBegin = new(nameof(Constructor_FormSectionTokenHelpBegin));
-    public static readonly MessageId Constructor_FormSectionTokenHelpEnd = new(nameof(Constructor_FormSectionTokenHelpEnd));
-    public static readonly MessageId Constructor_FormSectionTokenFieldTokenLabel = new(nameof(Constructor_FormSectionTokenFieldTokenLabel));
-    public static readonly MessageId Constructor_FormSectionTokenFieldUserNameLabel = new(nameof(Constructor_FormSectionTokenFieldUserNameLabel));
-    public static readonly MessageId Constructor_MoveNextTitle = new(nameof(Constructor_MoveNextTitle));
-    public static readonly MessageId Constructor_FormSectionFeaturesTitle = new(nameof(Constructor_FormSectionFeaturesTitle));
-    public static readonly MessageId Constructor_FormSectionFeaturesHelp = new(nameof(Constructor_FormSectionFeaturesHelp));
-    public static readonly MessageId Constructor_FeatureAdd = new(nameof(Constructor_FeatureAdd));
-    public static readonly MessageId Constructor_FeatureRemove = new(nameof(Constructor_FeatureRemove));
-    public static readonly MessageId Constructor_FormSectionFeaturesAvailableEmptyText = new(nameof(Constructor_FormSectionFeaturesAvailableEmptyText));
-    public static readonly MessageId Constructor_FormSectionFeaturesSelectedEmptyText = new(nameof(Constructor_FormSectionFeaturesSelectedEmptyText));
-    public static readonly MessageId Constructor_FormSectionTokenCheckHelp = new(nameof(Constructor_FormSectionTokenCheckHelp));
-    public static readonly MessageId Constructor_FormSectionFeaturesCheckHelp = new(nameof(Constructor_FormSectionFeaturesCheckHelp));
-    public static readonly MessageId Constructor_ButtonCreateText = new(nameof(Constructor_ButtonCreateText));
-    public static readonly MessageId Constructor_ButtonUpdateText = new(nameof(Constructor_ButtonUpdateText));
-    public static readonly MessageId Constructor_BooleanTrueText = new(nameof(Constructor_BooleanTrueText));
-    public static readonly MessageId Constructor_BooleanFalseText = new(nameof(Constructor_BooleanFalseText));
-    public static readonly MessageId Constructor_SupportedLanguages = new(nameof(Constructor_SupportedLanguages));
-    public static readonly MessageId Constructor_SupportedLanguagesHelp = new(nameof(Constructor_SupportedLanguagesHelp));
-    public static readonly MessageId Constructor_SupportedLanguagesCheck = new(nameof(Constructor_SupportedLanguagesCheck));
-    public static readonly MessageId Constructor_Languages = new(nameof(Constructor_Languages));
-    public static readonly MessageId Constructor_BotName = new(nameof(Constructor_BotName));
-    public static readonly MessageId Constructor_BotShortDescription = new(nameof(Constructor_BotShortDescription));
-    public static readonly MessageId Constructor_BotDescription = new(nameof(Constructor_BotDescription));
-    public static readonly MessageId Constructor_WorkTimeTitle = new(nameof(Constructor_WorkTimeTitle));
-    public static readonly MessageId Constructor_WorkTimeHelp = new(nameof(Constructor_WorkTimeHelp));
-    public static readonly MessageId Constructor_WorkAllDayLabel = new(nameof(Constructor_WorkAllDayLabel));
-    public static readonly MessageId Constructor_WorkTimeStartLabel = new(nameof(Constructor_WorkTimeStartLabel));
-    public static readonly MessageId Constructor_WorkTimeEndLabel = new(nameof(Constructor_WorkTimeEndLabel));
-    public static readonly MessageId Constructor_WeekendsTitle = new(nameof(Constructor_WeekendsTitle));
-    public static readonly MessageId Constructor_WeekendsHelp = new(nameof(Constructor_WeekendsHelp));
-    public static readonly MessageId Constructor_WeekendsLabel = new(nameof(Constructor_WeekendsLabel));
-    public static readonly MessageId Constructor_HolidaysTitle = new(nameof(Constructor_HolidaysTitle));
-    public static readonly MessageId Constructor_HolidaysHelp = new(nameof(Constructor_HolidaysHelp));
-    public static readonly MessageId Constructor_DateLabel = new(nameof(Constructor_DateLabel));
-    public static readonly MessageId Constructor_WorkdayLabel = new(nameof(Constructor_WorkdayLabel));
-    public static readonly MessageId Constructor_AddHolidayLabel = new(nameof(Constructor_AddHolidayLabel));
-    public static readonly MessageId Constructor_ConnectingTelegram = new(nameof(Constructor_ConnectingTelegram));
-    public static readonly MessageId Constructor_WorkCalendar = new(nameof(Constructor_WorkCalendar));
-    public static readonly MessageId Constructor_BotDetailsTelegram = new(nameof(Constructor_BotDetailsTelegram));
-    public static readonly MessageId Constructor_BotDetails = new(nameof(Constructor_BotDetails));
-    public static readonly MessageId Constructor_BotDetailsHelp = new(nameof(Constructor_BotDetailsHelp));
-    public static readonly MessageId Constructor_FeaturesStore = new(nameof(Constructor_FeaturesStore));
-    public static readonly MessageId Constructor_Configuration = new(nameof(Constructor_Configuration));
-    public static readonly MessageId Constructor_CheckConfigurationTemplate = new(nameof(Constructor_CheckConfigurationTemplate));
-    public static readonly MessageId Constructor_RequiredCalendar = new(nameof(Constructor_RequiredCalendar));
-    public static readonly MessageId Constructor_DuplicateHolidays = new(nameof(Constructor_DuplicateHolidays));
-
-    public static readonly MessageId Dashboard_MoveToDashboard = new(nameof(Dashboard_MoveToDashboard));
+    
     public static readonly MessageId Dashboard_Title = new(nameof(Dashboard_Title));
     public static readonly MessageId Dashboard_SelectTeam = new(nameof(Dashboard_SelectTeam));
     public static readonly MessageId Dashboard_CreateBot = new(nameof(Dashboard_CreateBot));
@@ -143,8 +86,4 @@ internal static class Messages
     public static readonly MessageId Dashboard_Apply = new(nameof(Dashboard_Apply));
     public static readonly MessageId Dashboard_SettingsApplied = new(nameof(Dashboard_SettingsApplied));
     public static readonly MessageId Dashboard_DisableWidgetHelpTemplate = new(nameof(Dashboard_DisableWidgetHelpTemplate));
-
-    public static readonly MessageId Validation_TokenInvalid = new(nameof(Validation_TokenInvalid));
-    
-    public static readonly MessageId PanelSave = new(nameof(PanelSave));
 }

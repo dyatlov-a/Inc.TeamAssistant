@@ -79,6 +79,22 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>AssessmentSessionResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Features\Constructor\ConstructorResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ConstructorResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Constructor\ConstructorResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ConstructorResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Dashboard\DashboardResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>DashboardResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Dashboard\DashboardResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>DashboardResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -150,6 +166,26 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>AssessmentSessionResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Constructor\ConstructorResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ConstructorResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Constructor\ConstructorResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ConstructorResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Dashboard\DashboardResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>DashboardResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Dashboard\DashboardResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>DashboardResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

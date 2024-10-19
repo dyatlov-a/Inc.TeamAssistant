@@ -1,5 +1,6 @@
 @inject IReviewService ReviewService
 @inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -133,11 +134,11 @@
     private string GetReviewerTitle(TaskForReviewDto task)
     {
         var hasConcreteReviewer = task.HasConcreteReviewer
-            ? Resources[Messages.Constructor_BooleanTrueText]
-            : Resources[Messages.Constructor_BooleanFalseText];
+            ? Localizer["BooleanTrueText"].Value
+            : Localizer["BooleanFalseText"].Value;
         var isOriginalReviewer = task.IsOriginalReviewer
-            ? Resources[Messages.Constructor_BooleanFalseText]
-            : Resources[Messages.Constructor_BooleanTrueText];
+            ? Localizer["BooleanFalseText"].Value
+            : Localizer["BooleanTrueText"].Value;
         var builder = new StringBuilder();
         
         builder.AppendLine($"{Resources[Messages.Dashboard_HasConcreteReviewer]} - {hasConcreteReviewer}");

@@ -15,17 +15,18 @@
 @inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
 @inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
-    MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
+    MetaOverrideTitle="@Title" />
 
 <div class="constructor">
     <div class="constructor__container">
         <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
-        <h1 class="constructor__title">@Resources[Messages.Constructor_Title] @BotName</h1>
+        <h1 class="constructor__title">@Title @BotName</h1>
         @if (RenderContext.IsBrowser)
         {
             <Loading State="_state" Retry="Load">
@@ -67,6 +68,7 @@
         ["MoveToNext"] = (object)MoveToNext,
         ["BotStorageKey"] = BotStorageKey
     };
+    private string Title => Localizer["Title"].Value;
     
     protected override async Task OnParametersSetAsync()
     {

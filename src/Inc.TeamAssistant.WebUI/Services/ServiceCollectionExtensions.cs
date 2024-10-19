@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using FluentValidation;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Inc.TeamAssistant.WebUI.Routing;

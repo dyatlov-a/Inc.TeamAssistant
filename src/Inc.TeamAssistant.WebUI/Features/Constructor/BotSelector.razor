@@ -1,20 +1,20 @@
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
-        <p>@string.Format(Resources[Messages.Constructor_RemoveConfirmationText], _selectedBot?.Name)</p>
+        <p>@string.Format(Localizer["RemoveConfirmationText"].Value, _selectedBot?.Name)</p>
     </Content>
 </ConfirmDialog>
 <div class="bot-selector">
     <div class="bot-selector__item">
-        <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
+        <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"].Value">
             <Buttons>
                 <Button OnClick="MoveToAdd">
                     <Content>
-                        @Resources[Messages.Constructor_AddBot]
+                        @Localizer["AddBot"].Value
                     </Content>
                 </Button>
             </Buttons>
@@ -28,18 +28,18 @@
                     <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
                         <Content>
                             <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
-                                <Content>@Resources[Messages.Dashboard_MoveToDashboard]</Content>
+                                <Content>@Localizer["MoveToDashboard"].Value</Content>
                             </RouterLink>
                         </Content>
                         <Buttons>
                             <Button OnClick="() => MoveToEdit(bot.Id)">
                                 <Content>
-                                    @Resources[Messages.Constructor_Edit]
+                                    @Localizer["Edit"].Value
                                 </Content>
                             </Button>
                             <Button OnClick="() => MoveToRemove(bot)">
                                 <Content>
-                                    @Resources[Messages.Constructor_Remove]
+                                    @Localizer["Remove"].Value
                                 </Content>
                             </Button>
                         </Buttons>

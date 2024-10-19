@@ -1,16 +1,16 @@
 @inject ICalendarService CalendarService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 
 <EditForm id="@AnalyticEvents.CalendarChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load" IsOpen="_isOpen">
+    <Panel Header="@Localizer["WorkCalendar"].Value" Opened="Load" IsOpen="_isOpen">
         <Actions>
             <Button ButtonType="ButtonType.Submit">
                 <Content>
-                    @Resources[Messages.PanelSave]
+                    @Localizer["Save"].Value
                 </Content>
             </Button>
         </Actions>
@@ -18,12 +18,12 @@
             <Loading State="_state" Retry="Load">
                 <Content>
                     <FormSection
-                        Title="@Resources[Messages.Constructor_WorkTimeTitle]"
-                        HelpText="@Resources[Messages.Constructor_WorkTimeHelp]">
+                        Title="@Localizer["WorkTimeTitle"].Value"
+                        HelpText="@Localizer["WorkTimeHelp"].Value">
                         <Content>
                             <FormFieldSet
                                 FieldId="work-all-day"
-                                Label="@Resources[Messages.Constructor_WorkAllDayLabel]">
+                                Label="@Localizer["WorkAllDayLabel"].Value">
                                 <Content>
                                     <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
                                 </Content>
@@ -34,7 +34,7 @@
                                     <div class="work-schedule__item">
                                         <FormFieldSet
                                             FieldId="work-schedule-start"
-                                            Label="@Resources[Messages.Constructor_WorkTimeStartLabel]">
+                                            Label="@Localizer["WorkTimeStartLabel"].Value">
                                             <Content>
                                                 <InputTimeOnly
                                                     FieldId="work-schedule-start"
@@ -47,7 +47,7 @@
                                     <div class="work-schedule__item">
                                         <FormFieldSet
                                             FieldId="work-schedule-end"
-                                            Label="@Resources[Messages.Constructor_WorkTimeEndLabel]">
+                                            Label="@Localizer["WorkTimeEndLabel"].Value">
                                             <Content>
                                                 <InputTimeOnly
                                                     FieldId="work-schedule-end"
@@ -61,10 +61,10 @@
                         </Content>
                     </FormSection>
                     <FormSection
-                        Title="@Resources[Messages.Constructor_WeekendsTitle]"
-                        HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
+                        Title="@Localizer["WeekendsTitle"].Value"
+                        HelpText="@Localizer["WeekendsHelp"].Value">
                         <Content>
-                            <FormFieldSet FieldId="weekends" Label="@Resources[Messages.Constructor_WeekendsLabel]">
+                            <FormFieldSet FieldId="weekends" Label="@Localizer["WeekendsLabel"].Value">
                                 <Content>
                                     <InputMultiSelectList
                                         FieldId="weekends"
@@ -72,7 +72,7 @@
                                         ValueExpression="@(() => _formModel.SelectedWeekends)"
                                         ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
                                         Items="Enum.GetValues<DayOfWeek>()"
-                                        TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
+                                        TitleSelector="i => Localizer[GetDayOfWeekTitle(i)].Value"
                                         ValueSelector="i => i" />
                                     <ValidationMessage For="@(() => _formModel.SelectedWeekends)"/>
                                 </Content>
@@ -80,10 +80,10 @@
                         </Content>
                     </FormSection>
                     <FormSection
-                        Title="@Resources[Messages.Constructor_HolidaysTitle]"
+                        Title="@Localizer["HolidaysTitle"].Value"
                         AsRows="true">
                         <HelpContent>
-                            @Resources[Messages.Constructor_HolidaysHelp]
+                            @Localizer["HolidaysHelp"].Value
                             <ValidationMessage For="@(() => _formModel.Holidays)"/>
                         </HelpContent>
                         <Content>
@@ -94,7 +94,7 @@
                                         <div class="holiday-items__item-control">
                                             <FormFieldSet
                                                 FieldId="@holiday.DateFieldId"
-                                                Label="@Resources[Messages.Constructor_DateLabel]">
+                                                Label="@Localizer["DateLabel"].Value">
                                                 <Content>
                                                     <InputDateOnly
                                                         FieldId="@holiday.DateFieldId"
@@ -105,7 +105,7 @@
                                         <div class="holiday-items__item-control">
                                             <FormFieldSet
                                                 FieldId="@holiday.WorkdayFieldId"
-                                                Label="@Resources[Messages.Constructor_WorkdayLabel]">
+                                                Label="@Localizer["WorkdayLabel"].Value">
                                                 <Content>
                                                     <InputCheckbox
                                                         id="@holiday.WorkdayFieldId"
@@ -134,7 +134,7 @@
                                             ButtonMode="ButtonMode.Small"
                                             OnClick="_formModel.AddHoliday">
                                             <Content>
-                                                @Resources[Messages.Constructor_AddHolidayLabel]
+                                                @Localizer["AddHolidayLabel"].Value
                                             </Content>
                                         </Button>
                                     </div>
@@ -196,7 +196,7 @@
         StateHasChanged();
     }
     
-    private MessageId GetDayOfWeekTitle(DayOfWeek dayOfWeek) => new($"Constructor_DayOfWeek{dayOfWeek}");
+    private string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"DayOfWeek{dayOfWeek}";
     
     public async Task SubmitForm()
     {

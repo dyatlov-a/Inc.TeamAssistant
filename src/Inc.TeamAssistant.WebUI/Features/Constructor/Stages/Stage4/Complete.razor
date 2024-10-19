@@ -1,6 +1,6 @@
 @inject IBotService BotService
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject FeaturesFactory FeaturesFactory
 
@@ -19,19 +19,19 @@
                 <Content>
                     <ValidationSummary />
                     <FormSection
-                        Title="@Resources[Messages.Constructor_ConnectingTelegram]"
-                        HelpText="@Resources[Messages.Constructor_FormSectionTokenCheckHelp]">
+                        Title="@Localizer["ConnectingTelegram"].Value"
+                        HelpText="@Localizer["FormSectionTokenCheckHelp"].Value">
                         <Content>
                             <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.CheckBot)"
                                     ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                    <Content>@Localizer["Edit"].Value</Content>
                                 </RouterLink>
                             </div>
                             <FormFieldSet
                                 FieldId="bot-username"
-                                Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
+                                Label="@Localizer["FormSectionTokenFieldUserNameLabel"].Value">
                                 <Content>
                                     <InputSingleLine
                                         FieldId="bot-username"
@@ -42,22 +42,22 @@
                         </Content>
                     </FormSection>
                     <FormSection
-                        Title="@Resources[Messages.Constructor_FeaturesStore]"
-                        HelpText="@Resources[Messages.Constructor_FormSectionFeaturesCheckHelp]">
+                        Title="@Localizer["FeaturesStore"].Value"
+                        HelpText="@Localizer["FormSectionFeaturesCheckHelp"].Value">
                         <Content>
                             <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.SelectFeatures)"
                                     ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                    <Content>@Localizer["Edit"].Value</Content>
                                 </RouterLink>
                             </div>
                             @foreach (var feature in StagesState.AvailableFeatures)
                             {
                                 var fieldId = feature.Id.ToString();
                                 var selected = StagesState.FeatureIds.Contains(feature.Id)
-                                    ? Resources[Messages.Constructor_BooleanTrueText]
-                                    : Resources[Messages.Constructor_BooleanFalseText];
+                                    ? Localizer["BooleanTrueText"].Value
+                                    : Localizer["BooleanFalseText"].Value;
 
                                 <FormFieldSet
                                     FieldId="@fieldId"
@@ -80,14 +80,14 @@
                         foreach (var settingSection in settingSections)
                         {
                             <FormSection
-                                Title="@Resources[settingSection.HeaderMessageId]"
-                                HelpText="@Resources[settingSection.HelpMessageId]">
+                                Title="@Localizer[settingSection.HeaderMessageId].Value"
+                                HelpText="@Localizer[settingSection.HelpMessageId].Value">
                                 <Content>
                                     <div class="actions">
                                         <RouterLink
                                             OnClick="() => MoveToNext(Stage.SetSettings)"
                                             ComponentStyle="ComponentStyle.Secondary">
-                                            <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                            <Content>@Localizer["Edit"].Value</Content>
                                         </RouterLink>
                                     </div>
                                     @foreach (var settingItem in settingSection.SettingItems)
@@ -99,7 +99,7 @@
 
                                         <FormFieldSet
                                             FieldId="@settingItem.PropertyName"
-                                            Label="@Resources[settingItem.LabelMessageId]">
+                                            Label="@Localizer[settingItem.LabelMessageId].Value">
                                             <Content>
                                                 <InputSingleLine
                                                     FieldId="@settingItem.PropertyName"
@@ -113,17 +113,17 @@
                         }
                     }
                     <FormSection
-                        Title="@Resources[Messages.Constructor_SupportedLanguages]"
-                        HelpText="@Resources[Messages.Constructor_SupportedLanguagesCheck]">
+                        Title="@Localizer["SupportedLanguages"].Value"
+                        HelpText="@Localizer["SupportedLanguagesCheck"].Value">
                         <Content>
                             <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.SetSettings)"
                                     ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Resources[Messages.Constructor_Edit]</Content>
+                                    <Content>@Localizer["Edit"].Value</Content>
                                 </RouterLink>
                             </div>
-                            <FormFieldSet FieldId="supported-languages" Label="@Resources[Messages.Constructor_Languages]">
+                            <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"].Value">
                                 <Content>
                                     <InputMultiSelectList
                                         FieldId="supported-languages"
@@ -158,15 +158,15 @@
     public string BotStorageKey { get; set; } = default!;
 
     private string ButtonText => StagesState.Id.HasValue
-        ? Resources[Messages.Constructor_ButtonUpdateText]
-        : Resources[Messages.Constructor_ButtonCreateText];
+        ? Localizer["ButtonUpdateText"].Value
+        : Localizer["ButtonCreateText"].Value;
     
     private string FormId => StagesState.Id.HasValue
         ? AnalyticEvents.BotUpdated
         : AnalyticEvents.BotCreated;
     
     private string PanelHeader => string.Format(
-        Resources[Messages.Constructor_CheckConfigurationTemplate],
+        Localizer["CheckConfigurationTemplate"].Value,
         ButtonText.ToLowerInvariant());
     
     private readonly CompleteFormModel _formModel = new();
@@ -185,7 +185,7 @@
             value,
             StringComparison.InvariantCultureIgnoreCase));
         
-        return item is null ? string.Empty : Resources[item.MessageId];
+        return item is null ? string.Empty : Localizer[item.MessageId].Value;
     }
     
     private async Task SubmitForm()

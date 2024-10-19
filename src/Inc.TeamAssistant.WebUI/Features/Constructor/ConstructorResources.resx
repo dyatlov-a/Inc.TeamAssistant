@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RemoveConfirmationText" xml:space="preserve">
+        <value>You confirm the removal of the bot named "{0}"?</value>
+    </data>
+    <data name="NewBot" xml:space="preserve">
+        <value>New bot</value>
+    </data>
+    <data name="AddBot" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="MoveToDashboard" xml:space="preserve">
+        <value>dashboard</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Remove" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Build your bot</value>
+    </data>
+    <data name="SelectBotText" xml:space="preserve">
+        <value>In the constructor, you can create a new bot or modify the settings of an existing one. You can select an existing bot or create a new one by clicking the "Add" button.</value>
+    </data>
+    <data name="ConnectingTelegram" xml:space="preserve">
+        <value>Connecting to telegram</value>
+    </data>
+    <data name="MoveNextTitle" xml:space="preserve">
+        <value>Next</value>
+    </data>
+    <data name="FormSectionTokenTitle" xml:space="preserve">
+        <value>Set bot token</value>
+    </data>
+    <data name="FormSectionTokenHelpBegin" xml:space="preserve">
+        <value>Please move to</value>
+    </data>
+    <data name="FormSectionTokenHelpEnd" xml:space="preserve">
+        <value>and create bot</value>
+    </data>
+    <data name="FormSectionTokenFieldTokenLabel" xml:space="preserve">
+        <value>Bot token</value>
+    </data>
+    <data name="FormSectionTokenFieldUserNameLabel" xml:space="preserve">
+        <value>Bot username</value>
+    </data>
+    <data name="TokenInvalid" xml:space="preserve">
+        <value>The token is invalid.</value>
+    </data>
+    <data name="FeatureAdd" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="FormSectionFeaturesAvailableEmptyText" xml:space="preserve">
+        <value>No available features</value>
+    </data>
+    <data name="FeatureRemove" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+    <data name="FormSectionFeaturesSelectedEmptyText" xml:space="preserve">
+        <value>No selected features</value>
+    </data>
+    <data name="BotDetailsTelegram" xml:space="preserve">
+        <value>Bot details (telegram)</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="BotDetails" xml:space="preserve">
+        <value>Bot details</value>
+    </data>
+    <data name="BotDetailsHelp" xml:space="preserve">
+        <value>Please set bot details for telegram</value>
+    </data>
+    <data name="BotName" xml:space="preserve">
+        <value>Bot name (will be available on Telegram)</value>
+    </data>
+    <data name="BotShortDescription" xml:space="preserve">
+        <value>Bot short description (will be available on Telegram)</value>
+    </data>
+    <data name="BotDescription" xml:space="preserve">
+        <value>Bot description (will be available on Telegram)</value>
+    </data>
+    <data name="DuplicateHolidays" xml:space="preserve">
+        <value>Multiple holidays have the same date</value>
+    </data>
+    <data name="RequiredCalendar" xml:space="preserve">
+        <value>Please set and save the work calendar</value>
+    </data>
+    <data name="Configuration" xml:space="preserve">
+        <value>Bot settings</value>
+    </data>
+    <data name="SupportedLanguages" xml:space="preserve">
+        <value>Supported languages</value>
+    </data>
+    <data name="SupportedLanguagesHelp" xml:space="preserve">
+        <value>Please select the languages that the bot will support</value>
+    </data>
+    <data name="Languages" xml:space="preserve">
+        <value>Languages</value>
+    </data>
+    <data name="FormSectionTokenCheckHelp" xml:space="preserve">
+        <value>Please check and confirm the bot's properties</value>
+    </data>
+    <data name="FeaturesStore" xml:space="preserve">
+        <value>Features store</value>
+    </data>
+    <data name="FormSectionFeaturesCheckHelp" xml:space="preserve">
+        <value>Please check and confirm the selected features</value>
+    </data>
+    <data name="BooleanTrueText" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="BooleanFalseText" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="SupportedLanguagesCheck" xml:space="preserve">
+        <value>Please check the selected languages</value>
+    </data>
+    <data name="ButtonUpdateText" xml:space="preserve">
+        <value>Update</value>
+    </data>
+    <data name="ButtonCreateText" xml:space="preserve">
+        <value>Create</value>
+    </data>
+    <data name="CheckConfigurationTemplate" xml:space="preserve">
+        <value>Check settings and {0}</value>
+    </data>
+    <data name="FormSectionFeaturesTitle" xml:space="preserve">
+        <value>Features</value>
+    </data>
+    <data name="FormSectionFeaturesHelp" xml:space="preserve">
+        <value>Please add features for your bot</value>
+    </data>
+    <data name="FormSectionSetSettingsFibonacciDescription" xml:space="preserve">
+        <value>Fibonacci numbers (1, 2, 3, 5, 8, 13, 21)</value>
+    </data>
+    <data name="FormSectionSetSettingsTShirtDescription" xml:space="preserve">
+        <value>T-shirts (XS, X, M, L, XL, XXL)</value>
+    </data>
+    <data name="FormSectionSetSettingsPowerOfTwoDescription" xml:space="preserve">
+        <value>Power of two (1, 2, 4, 8, 16, 32, 64)</value>
+    </data>
+    <data name="FormSectionSetSettingsAppraiserHeader" xml:space="preserve">
+        <value>Tasks estimate</value>
+    </data>
+    <data name="FormSectionSetSettingsAppraiserHelp" xml:space="preserve">
+        <value>Please specify the parameters within which the tasks will be evaluated</value>
+    </data>
+    <data name="FormSectionSetSettingsStoryTypeFieldLabel" xml:space="preserve">
+        <value>Methodology (default for teams)</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundRobinDescription" xml:space="preserve">
+        <value>Round robin</value>
+    </data>
+    <data name="FormSectionSetSettingsRandomDescription" xml:space="preserve">
+        <value>Random</value>
+    </data>
+    <data name="FormSectionSetSettingsReviewerHeader" xml:space="preserve">
+        <value>Code review</value>
+    </data>
+    <data name="FormSectionSetSettingsReviewerHelp" xml:space="preserve">
+        <value>Specify the parameters within which the code review will be conducted</value>
+    </data>
+    <data name="FormSectionSetSettingsNextReviewerStrategyFieldLabel" xml:space="preserve">
+        <value>Strategy for selecting a reviewer (default for teams)</value>
+    </data>
+    <data name="FormSectionSetSettingsWaitingNotificationIntervalFieldLabel" xml:space="preserve">
+        <value>Notification interval for waiting review</value>
+    </data>
+    <data name="FormSectionSetSettingsInProgressNotificationIntervalFieldLabel" xml:space="preserve">
+        <value>Notification interval for in progress review</value>
+    </data>
+    <data name="FormSectionSetSettingsAcceptWithCommentsFieldLabel" xml:space="preserve">
+        <value>Accept review with comments</value>
+    </data>
+    <data name="FormSectionSetSettingsNotificationInterval1Description" xml:space="preserve">
+        <value>00:30:00</value>
+    </data>
+    <data name="FormSectionSetSettingsNotificationInterval2Description" xml:space="preserve">
+        <value>01:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsNotificationInterval3Description" xml:space="preserve">
+        <value>01:30:00</value>
+    </data>
+    <data name="FormSectionSetSettingsNotificationInterval4Description" xml:space="preserve">
+        <value>02:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsRandomCoffeeHeader" xml:space="preserve">
+        <value>Random coffee</value>
+    </data>
+    <data name="FormSectionSetSettingsRandomCoffeeHelp" xml:space="preserve">
+        <value>Specify the parameters within which the random coffee will be conducted</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundIntervalFieldLabel" xml:space="preserve">
+        <value>Random coffee round interval</value>
+    </data>
+    <data name="FormSectionSetSettingsVotingIntervalFieldLabel" xml:space="preserve">
+        <value>Random coffee voting interval</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundInterval1Description" xml:space="preserve">
+        <value>7.00:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundInterval2Description" xml:space="preserve">
+        <value>14.00:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundInterval3Description" xml:space="preserve">
+        <value>21.00:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsRoundInterval4Description" xml:space="preserve">
+        <value>28.00:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsVotingInterval1Description" xml:space="preserve">
+        <value>02:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsVotingInterval2Description" xml:space="preserve">
+        <value>04:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsVotingInterval3Description" xml:space="preserve">
+        <value>1.00:00:00</value>
+    </data>
+    <data name="FormSectionSetSettingsVotingInterval4Description" xml:space="preserve">
+        <value>2.00:00:00</value>
+    </data>
+    <data name="WorkCalendar" xml:space="preserve">
+        <value>Work calendar</value>
+    </data>
+    <data name="WorkTimeTitle" xml:space="preserve">
+        <value>Work time (UTC)</value>
+    </data>
+    <data name="WorkTimeHelp" xml:space="preserve">
+        <value>Please select work time</value>
+    </data>
+    <data name="WorkAllDayLabel" xml:space="preserve">
+        <value>Work all day (24h)</value>
+    </data>
+    <data name="WorkTimeStartLabel" xml:space="preserve">
+        <value>Start time (UTC)</value>
+    </data>
+    <data name="WorkTimeEndLabel" xml:space="preserve">
+        <value>End time (UTC)</value>
+    </data>
+    <data name="WeekendsTitle" xml:space="preserve">
+        <value>Weekends</value>
+    </data>
+    <data name="WeekendsHelp" xml:space="preserve">
+        <value>Please select standard weekends</value>
+    </data>
+    <data name="WeekendsLabel" xml:space="preserve">
+        <value>Weekends</value>
+    </data>
+    <data name="HolidaysTitle" xml:space="preserve">
+        <value>Holidays</value>
+    </data>
+    <data name="HolidaysHelp" xml:space="preserve">
+        <value>Please select calendar holidays</value>
+    </data>
+    <data name="DateLabel" xml:space="preserve">
+        <value>Date</value>
+    </data>
+    <data name="WorkdayLabel" xml:space="preserve">
+        <value>Workday</value>
+    </data>
+    <data name="AddHolidayLabel" xml:space="preserve">
+        <value>Add holiday</value>
+    </data>
+    <data name="DayOfWeekSunday" xml:space="preserve">
+        <value>SU</value>
+    </data>
+    <data name="DayOfWeekMonday" xml:space="preserve">
+        <value>MO</value>
+    </data>
+    <data name="DayOfWeekTuesday" xml:space="preserve">
+        <value>TU</value>
+    </data>
+    <data name="DayOfWeekWednesday" xml:space="preserve">
+        <value>WE</value>
+    </data>
+    <data name="DayOfWeekThursday" xml:space="preserve">
+        <value>TH</value>
+    </data>
+    <data name="DayOfWeekFriday" xml:space="preserve">
+        <value>FR</value>
+    </data>
+    <data name="DayOfWeekSaturday" xml:space="preserve">
+        <value>SA</value>
+    </data>
+    <data name="StageCheckBot" xml:space="preserve">
+        <value>Connecting</value>
+    </data>
+    <data name="StageSelectFeatures" xml:space="preserve">
+        <value>Features</value>
+    </data>
+    <data name="StageSetSettings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="StageComplete" xml:space="preserve">
+        <value>Confirmation</value>
+    </data>
+    <data name="FeatureAppraiserDescription" xml:space="preserve">
+        <value>Evaluate tasks using the planning poker method. Fibonacci numbers and degrees of two, as well as T-shirt sizes, are available for evaluation.</value>
+    </data>
+    <data name="FeatureReviewerDescription" xml:space="preserve">
+        <value>Organization of the code review process: passing tasks for review, notifying participants, and reviewing statistics.</value>
+    </data>
+    <data name="FeatureRandomCoffeeDescription" xml:space="preserve">
+        <value>Holding informal meetings over a cup of coffee, with random pairing of participants selected at intervals.</value>
+    </data>
+    <data name="FeatureCheckInDescription" xml:space="preserve">
+        <value>Manage a distributed development team by marking your location on the map and finding the locations of your colleagues.</value>
+    </data>
+    <data name="FeatureAppraiserName" xml:space="preserve">
+        <value>Tasks estimate</value>
+    </data>
+    <data name="FeatureCheckInName" xml:space="preserve">
+        <value>Check in on map</value>
+    </data>
+    <data name="FeatureRandomCoffeeName" xml:space="preserve">
+        <value>Random coffee</value>
+    </data>
+    <data name="FeatureReviewerName" xml:space="preserve">
+        <value>Tasks review</value>
+    </data>
+</root>
