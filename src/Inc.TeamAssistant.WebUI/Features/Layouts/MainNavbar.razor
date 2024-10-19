@@ -1,7 +1,6 @@
 @implements IDisposable
 
 @inject IRenderContext RenderContext
-@inject ResourcesManager Resources
 @inject NavRouter NavRouter
 @inject IStringLocalizer<LayoutResources> Localizer
 
@@ -34,7 +33,7 @@
                 </span>
                 <div class="navbar__item">
                     <RouterLink Href="@_logoutUrl">
-                        <Content>@Resources[Messages.Navigation_Logout]</Content>
+                        <Content>@Localizer["Logout"].Value</Content>
                     </RouterLink>
                 </div>
             </Authorized>

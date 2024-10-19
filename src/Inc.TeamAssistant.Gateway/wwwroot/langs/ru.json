@@ -79,7 +79,6 @@
   "GUI_Tasks": "задач",
   "GUI_StoryList": "Список историй",
   "GUI_AssessmentSession": "Оценка задач",
-  "GUI_MainTitle": "Team assistant | ассистент для команд",
   "GUI_MainHeader": "Чат-боты для оптимизации",
   "GUI_MainSubHeader": "процессов в командах",
   "GUI_ToolAppraiser": "легкая оценка задач",
@@ -89,8 +88,6 @@
   "GUI_CreateBotLink": "Создать бота",
   "GUI_VideoNotSupported": "Ваш браузер не поддерживает видео в формате HTML5.",
   "GUI_DataRefreshed": "Успешно обновлено",
-  
-  "Navigation_Logout": "Выйти",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_DefaultLayerTitle": "Все",
@@ -235,14 +232,6 @@
   "Dashboard_Apply": "Применить",
   "Dashboard_SettingsApplied": "Настройки применены",
   "Dashboard_DisableWidgetHelpTemplate": "Для включения виджета необходимо активировать функцию «{0}»",
-  
-  "Footer_GroupNavigation": "Навигация",
-  "Footer_GroupTech": "Технологии",
-  "Footer_GroupStorage": "Хранилище",
-  "Footer_GroupTools": "Инструменты",
-  "Footer_LinkMain": "Главная",
-  "Footer_LinkConstructor": "Конструктор",
-  "Footer_LinkDashboard": "Дашборд",
 
   "Login_AsSuperuserText": "Войти как суперпользователь",
   "Login_Title": "Войти",

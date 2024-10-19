@@ -21,4 +21,28 @@
     <data name="Login" xml:space="preserve">
         <value>Войти</value>
     </data>
+    <data name="LinkMain" xml:space="preserve">
+        <value>Главная</value>
+    </data>
+    <data name="GroupNavigation" xml:space="preserve">
+        <value>Навигация</value>
+    </data>
+    <data name="LinkConstructor" xml:space="preserve">
+        <value>Конструктор</value>
+    </data>
+    <data name="LinkDashboard" xml:space="preserve">
+        <value>Дашборд</value>
+    </data>
+    <data name="GroupTech" xml:space="preserve">
+        <value>Технологии</value>
+    </data>
+    <data name="GroupStorage" xml:space="preserve">
+        <value>Хранилище</value>
+    </data>
+    <data name="GroupTools" xml:space="preserve">
+        <value>Инструменты</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
 </root>

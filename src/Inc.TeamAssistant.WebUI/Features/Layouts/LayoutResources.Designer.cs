@@ -50,5 +50,53 @@ namespace Inc.TeamAssistant.WebUI.Features.Layouts {
                 return ResourceManager.GetString("Login", resourceCulture);
             }
         }
+        
+        internal static string LinkMain {
+            get {
+                return ResourceManager.GetString("LinkMain", resourceCulture);
+            }
+        }
+        
+        internal static string GroupNavigation {
+            get {
+                return ResourceManager.GetString("GroupNavigation", resourceCulture);
+            }
+        }
+        
+        internal static string LinkConstructor {
+            get {
+                return ResourceManager.GetString("LinkConstructor", resourceCulture);
+            }
+        }
+        
+        internal static string LinkDashboard {
+            get {
+                return ResourceManager.GetString("LinkDashboard", resourceCulture);
+            }
+        }
+        
+        internal static string GroupTech {
+            get {
+                return ResourceManager.GetString("GroupTech", resourceCulture);
+            }
+        }
+        
+        internal static string GroupStorage {
+            get {
+                return ResourceManager.GetString("GroupStorage", resourceCulture);
+            }
+        }
+        
+        internal static string GroupTools {
+            get {
+                return ResourceManager.GetString("GroupTools", resourceCulture);
+            }
+        }
+        
+        internal static string Logout {
+            get {
+                return ResourceManager.GetString("Logout", resourceCulture);
+            }
+        }
     }
 }

@@ -21,4 +21,28 @@
     <data name="Login" xml:space="preserve">
         <value>Login</value>
     </data>
+    <data name="LinkMain" xml:space="preserve">
+        <value>Main</value>
+    </data>
+    <data name="GroupNavigation" xml:space="preserve">
+        <value>Navigation</value>
+    </data>
+    <data name="LinkConstructor" xml:space="preserve">
+        <value>Constructor</value>
+    </data>
+    <data name="LinkDashboard" xml:space="preserve">
+        <value>Dashboard</value>
+    </data>
+    <data name="GroupTech" xml:space="preserve">
+        <value>Tech</value>
+    </data>
+    <data name="GroupStorage" xml:space="preserve">
+        <value>Storage</value>
+    </data>
+    <data name="GroupTools" xml:space="preserve">
+        <value>Tools</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Logout</value>
+    </data>
 </root>

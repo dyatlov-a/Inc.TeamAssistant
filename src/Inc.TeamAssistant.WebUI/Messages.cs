@@ -24,7 +24,6 @@ internal static class Messages
     public static readonly MessageId GUI_StoryList = new(nameof(GUI_StoryList));
     public static readonly MessageId GUI_AssessmentSession = new(nameof(GUI_AssessmentSession));
     
-    public static readonly MessageId GUI_MainTitle = new(nameof(GUI_MainTitle));
     public static readonly MessageId GUI_MainHeader = new(nameof(GUI_MainHeader));
     public static readonly MessageId GUI_MainSubHeader = new(nameof(GUI_MainSubHeader));
     public static readonly MessageId GUI_ToolAppraiser = new(nameof(GUI_ToolAppraiser));
@@ -34,8 +33,6 @@ internal static class Messages
     public static readonly MessageId GUI_CreateBotLink = new(nameof(GUI_CreateBotLink));
     public static readonly MessageId GUI_VideoNotSupported = new(nameof(GUI_VideoNotSupported));
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
-    
-    public static readonly MessageId Navigation_Logout = new(nameof(Navigation_Logout));
 
     public static readonly MessageId Constructor_NewBot = new(nameof(Constructor_NewBot));
     public static readonly MessageId Constructor_AddBot = new(nameof(Constructor_AddBot));
@@ -174,14 +171,6 @@ internal static class Messages
     public static readonly MessageId Dashboard_SettingsApplied = new(nameof(Dashboard_SettingsApplied));
     public static readonly MessageId Dashboard_DisableWidgetHelpTemplate = new(nameof(Dashboard_DisableWidgetHelpTemplate));
     public static readonly MessageId ContentDialog_Close = new(nameof(ContentDialog_Close));
-    
-    public static readonly MessageId Footer_GroupNavigation = new(nameof(Footer_GroupNavigation));
-    public static readonly MessageId Footer_GroupTech = new(nameof(Footer_GroupTech));
-    public static readonly MessageId Footer_GroupStorage = new(nameof(Footer_GroupStorage));
-    public static readonly MessageId Footer_GroupTools = new(nameof(Footer_GroupTools));
-    public static readonly MessageId Footer_LinkMain = new(nameof(Footer_LinkMain));
-    public static readonly MessageId Footer_LinkConstructor = new(nameof(Footer_LinkConstructor));
-    public static readonly MessageId Footer_LinkDashboard = new(nameof(Footer_LinkDashboard));
     
     public static readonly MessageId Login_AsSuperuserText = new(nameof(Login_AsSuperuserText));
     public static readonly MessageId Login_Title = new(nameof(Login_Title));

@@ -79,7 +79,6 @@
   "GUI_Tasks": "tasks",
   "GUI_StoryList": "Tasks list",
   "GUI_AssessmentSession": "Assessment Session",
-  "GUI_MainTitle": "Team assistant",
   "GUI_MainHeader": "Chatbots for optimization",
   "GUI_MainSubHeader": "processes in teams",
   "GUI_ToolAppraiser": "easy task estimation",
@@ -89,8 +88,6 @@
   "GUI_CreateBotLink": "Create your bot",
   "GUI_VideoNotSupported": "Your browser does not support HTML5 video.",
   "GUI_DataRefreshed": "Successfully updated",
-  
-  "Navigation_Logout": "Logout",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
   "CheckIn_DefaultLayerTitle": "All",
@@ -235,14 +232,6 @@
   "Dashboard_Apply": "Apply",
   "Dashboard_SettingsApplied": "Settings applied",
   "Dashboard_DisableWidgetHelpTemplate": "To enable the widget, you need to activate the feature \"{0}\"",
-  
-  "Footer_GroupNavigation": "Navigation",
-  "Footer_GroupTech": "Tech",
-  "Footer_GroupStorage": "Storage",
-  "Footer_GroupTools": "Tools",
-  "Footer_LinkMain": "Main",
-  "Footer_LinkConstructor": "Constructor",
-  "Footer_LinkDashboard": "Dashboard",
 
   "Login_AsSuperuserText": "Log in as superuser",
   "Login_Title": "Login",
