@@ -3,7 +3,7 @@
 @page "/ru"
 
 @inject IRenderContext RenderContext
-@inject ResourcesManager Resources
+@inject IStringLocalizer<MainResources> Localizer
 @inject NavRouter NavRouter
 
 <MetaDataModule />
@@ -13,24 +13,24 @@
 <section id="about-bots" class="about-bots">
     <div class="about-bots__container @(RenderContext.IsBrowser ? "animation__slide-left" : "hidden")">
         <h1 class="about-bots__header">
-            <span>@Resources[Messages.GUI_MainHeader]</span>
+            <span>@Localizer["MainHeader"].Value</span>
             <br/>
-            <span>@Resources[Messages.GUI_MainSubHeader]</span>
+            <span>@Localizer["MainSubHeader"]</span>
         </h1>
         <br/>
         <p class="about-bots__description">
-            <span>@Icons.Ok @Resources[Messages.GUI_ToolAppraiser]</span>
+            <span>@Icons.Ok @Localizer["ToolAppraiser"].Value</span>
             <br/>
-            <span>@Icons.Accept @Resources[Messages.GUI_ToolReviewer]</span>
+            <span>@Icons.Accept @Localizer["ToolReviewer"].Value</span>
             <br/>
-            <span>@Icons.Comment @Resources[Messages.GUI_ToolRandomCoffee]</span>
+            <span>@Icons.Comment @Localizer["ToolRandomCoffee"].Value</span>
             <br/>
-            <span>@Icons.Start @Resources[Messages.GUI_ToolCheckIn]</span>
+            <span>@Icons.Start @Localizer["ToolCheckIn"].Value</span>
         </p>
         <div class="about-bots__actions">
             <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToConstructor">
                 <Content>
-                    @Resources[Messages.GUI_CreateBotLink]
+                    @Localizer["CreateBotLink"].Value
                 </Content>
             </Button>
         </div>

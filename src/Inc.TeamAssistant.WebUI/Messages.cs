@@ -23,14 +23,6 @@ internal static class Messages
     public static readonly MessageId GUI_StoryList = new(nameof(GUI_StoryList));
     public static readonly MessageId GUI_AssessmentSession = new(nameof(GUI_AssessmentSession));
     
-    public static readonly MessageId GUI_MainHeader = new(nameof(GUI_MainHeader));
-    public static readonly MessageId GUI_MainSubHeader = new(nameof(GUI_MainSubHeader));
-    public static readonly MessageId GUI_ToolAppraiser = new(nameof(GUI_ToolAppraiser));
-    public static readonly MessageId GUI_ToolReviewer = new(nameof(GUI_ToolReviewer));
-    public static readonly MessageId GUI_ToolRandomCoffee = new(nameof(GUI_ToolRandomCoffee));
-    public static readonly MessageId GUI_ToolCheckIn = new(nameof(GUI_ToolCheckIn));
-    public static readonly MessageId GUI_CreateBotLink = new(nameof(GUI_CreateBotLink));
-    public static readonly MessageId GUI_VideoNotSupported = new(nameof(GUI_VideoNotSupported));
     public static readonly MessageId GUI_DataRefreshed = new(nameof(GUI_DataRefreshed));
 
     public static readonly MessageId Constructor_NewBot = new(nameof(Constructor_NewBot));

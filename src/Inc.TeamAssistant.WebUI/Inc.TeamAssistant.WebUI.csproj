@@ -23,24 +23,6 @@
       <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <AdditionalFiles Include="Icons\AddBotIcon.razor" />
-      <AdditionalFiles Include="Icons\AppraiserIcon.razor" />
-      <AdditionalFiles Include="Icons\ArrowDownIcon.razor" />
-      <AdditionalFiles Include="Icons\ArrowUpIcon.razor" />
-      <AdditionalFiles Include="Icons\BotIcon.razor" />
-      <AdditionalFiles Include="Icons\CheckInIcon.razor" />
-      <AdditionalFiles Include="Icons\DragVerticalIcon.razor" />
-      <AdditionalFiles Include="Icons\GridGroupIcon.razor" />
-      <AdditionalFiles Include="Icons\GridIndividualIcon.razor" />
-      <AdditionalFiles Include="Icons\HomeIcon.razor" />
-      <AdditionalFiles Include="Icons\MaximizeIcon.razor" />
-      <AdditionalFiles Include="Icons\RandomCoffeeIcon.razor" />
-      <AdditionalFiles Include="Icons\ReviewerIcon.razor" />
-      <AdditionalFiles Include="Icons\SettingsIcon.razor" />
-      <AdditionalFiles Include="Icons\TrashIcon.razor" />
-      <AdditionalFiles Include="Icons\UnknownIcon.razor" />
-    </ItemGroup>
-    <ItemGroup>
       <EmbeddedResource Update="Features\Layouts\LayoutResources.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>LayoutResources.Designer.cs</LastGenOutput>
@@ -64,6 +46,14 @@
       <EmbeddedResource Update="Features\Auth\AuthResources.ru.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>AuthResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Main\MainResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MainResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Main\MainResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MainResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
@@ -96,6 +86,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>AuthResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Main\MainResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MainResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Main\MainResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MainResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>
