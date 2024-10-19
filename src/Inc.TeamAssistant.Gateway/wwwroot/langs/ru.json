@@ -81,12 +81,9 @@
   "GUI_DataRefreshed": "Успешно обновлено",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
-  "CheckIn_DefaultLayerTitle": "Все",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",
   "CheckIn_AddLocationHelp": "Добавить мою геолокацию на карту",
   "CheckIn_AddLocation": "В ответ на это сообщение необходимо отправить вашу геолокацию",
-  "CheckIn_RouteShow": "Показать маршрут",
-  "CheckIn_RouteHide": "Скрыть маршрут",
   
   "Reviewer_MoveToReviewHelp": "Передать задачу на ревью",
   "Reviewer_EnterRequestForReview": "В ответ на это сообщение введите ссылку на MR и описание",
@@ -253,10 +250,6 @@
   "Constructor_MoveNextTitle": "Далее",
   "Constructor_FormSectionFeaturesTitle": "Выбор функционала",
   "Constructor_FormSectionFeaturesHelp": "Пожалуйста, выберите функционал, который вы хотите добавить в бота",
-  "Constructor_FeatureAppraiserName": "Оценка задач",
-  "Constructor_FeatureReviewerName": "Код ревью",
-  "Constructor_FeatureRandomCoffeeName": "Проведение кофейных перерывов",
-  "Constructor_FeatureCheckInName": "Отметки на карте",
   "Constructor_FeatureAppraiserDescription": "Проведение оценки задач при помощи planning poker. Для оценки доступны числа Фибоначчи, майки, степени двойки.",
   "Constructor_FeatureReviewerDescription": "Организация процесса code review. Передача задачи на ревью, оповещения участников, статистика по ревью.",
   "Constructor_FeatureRandomCoffeeDescription": "Проведение неформальных встреч за чашкой кофе. Случайное формирование пар участников с выбранной периодичностью.",

@@ -10,7 +10,7 @@
 @inject ICheckInService CheckInService
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
-@inject ResourcesManager Resources
+@inject IStringLocalizer<MapResources> Localizer
 
 <MetaDataModule WebsiteSection="WebsiteSection.Map" />
 
@@ -37,10 +37,10 @@
     private string CssClass => DisableLayout ? string.Empty : "map_navbar";
     private IReadOnlyDictionary<string, string> FeatureNamesLookup => new Dictionary<string, string>
     {
-        ["Review"] = Resources[Messages.Constructor_FeatureReviewerName],
-        ["RandomCoffee"] = Resources[Messages.Constructor_FeatureRandomCoffeeName],
-        ["Estimates"] = Resources[Messages.Constructor_FeatureAppraiserName],
-        ["CheckIn"] = Resources[Messages.Constructor_FeatureCheckInName]
+        ["Review"] = Localizer["FeatureReviewer"].Value,
+        ["RandomCoffee"] = Localizer["FeatureRandomCoffee"].Value,
+        ["Estimates"] = Localizer["FeatureAppraiser"].Value,
+        ["CheckIn"] = Localizer["FeatureCheckIn"].Value
     };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,9 +58,9 @@
                     _map,
                     getLocations.Locations,
                     FeatureNamesLookup,
-                    Resources[Messages.CheckIn_RouteShow],
-                    Resources[Messages.CheckIn_RouteHide],
-                    Resources[Messages.CheckIn_DefaultLayerTitle]);
+                    Localizer["RouteShow"].Value,
+                    Localizer["RouteHide"].Value,
+                    Localizer["DefaultLayerTitle"].Value);
         }
     }
 

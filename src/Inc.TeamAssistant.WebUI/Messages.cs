@@ -40,10 +40,6 @@ internal static class Messages
     public static readonly MessageId Constructor_MoveNextTitle = new(nameof(Constructor_MoveNextTitle));
     public static readonly MessageId Constructor_FormSectionFeaturesTitle = new(nameof(Constructor_FormSectionFeaturesTitle));
     public static readonly MessageId Constructor_FormSectionFeaturesHelp = new(nameof(Constructor_FormSectionFeaturesHelp));
-    public static readonly MessageId Constructor_FeatureAppraiserName = new(nameof(Constructor_FeatureAppraiserName));
-    public static readonly MessageId Constructor_FeatureReviewerName = new(nameof(Constructor_FeatureReviewerName));
-    public static readonly MessageId Constructor_FeatureRandomCoffeeName = new(nameof(Constructor_FeatureRandomCoffeeName));
-    public static readonly MessageId Constructor_FeatureCheckInName = new(nameof(Constructor_FeatureCheckInName));
     public static readonly MessageId Constructor_FeatureAdd = new(nameof(Constructor_FeatureAdd));
     public static readonly MessageId Constructor_FeatureRemove = new(nameof(Constructor_FeatureRemove));
     public static readonly MessageId Constructor_FormSectionFeaturesAvailableEmptyText = new(nameof(Constructor_FormSectionFeaturesAvailableEmptyText));

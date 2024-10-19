@@ -55,6 +55,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>MainResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Features\Map\MapResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MapResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Map\MapResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MapResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -96,6 +104,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>MainResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Map\MapResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MapResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Map\MapResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MapResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

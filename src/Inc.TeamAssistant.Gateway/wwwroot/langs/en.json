@@ -81,12 +81,9 @@
   "GUI_DataRefreshed": "Successfully updated",
 
   "CheckIn_GetStarted": "To get started, please add the bot to your chat room",
-  "CheckIn_DefaultLayerTitle": "All",
   "CheckIn_ConnectLinkText": "Use {0} to see our locations",
   "CheckIn_AddLocationHelp": "Add location to the map",
   "CheckIn_AddLocation": "Please reply to this message with a your current location",
-  "CheckIn_RouteShow": "Show route",
-  "CheckIn_RouteHide": "Hide route",
   
   "Reviewer_MoveToReviewHelp": "Add task for review",
   "Reviewer_EnterRequestForReview": "Please reply to this message with a link to the MR and a description",
@@ -253,10 +250,6 @@
   "Constructor_MoveNextTitle": "Next",
   "Constructor_FormSectionFeaturesTitle": "Features",
   "Constructor_FormSectionFeaturesHelp": "Please add features for your bot",
-  "Constructor_FeatureAppraiserName": "Tasks estimate",
-  "Constructor_FeatureReviewerName": "Tasks review",
-  "Constructor_FeatureRandomCoffeeName": "Random coffee",
-  "Constructor_FeatureCheckInName": "Check in on map",
   "Constructor_FeatureAppraiserDescription": "Evaluate tasks using the planning poker method. Fibonacci numbers and degrees of two, as well as T-shirt sizes, are available for evaluation.",
   "Constructor_FeatureReviewerDescription": "Organization of the code review process: passing tasks for review, notifying participants, and reviewing statistics.",
   "Constructor_FeatureRandomCoffeeDescription": "Holding informal meetings over a cup of coffee, with random pairing of participants selected at intervals.",
