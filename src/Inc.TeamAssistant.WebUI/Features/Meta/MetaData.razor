@@ -1,8 +1,8 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<MetaResources> Localizer
 
-<meta name="description" content="@Resources[_data.Description]">
-<meta name="keywords" content="@Resources[_data.Keywords]">
-<meta name="author" content="@Resources[Messages.MetaAuthor]">
+<meta name="description" content="@Localizer[_data.Description].Value">
+<meta name="keywords" content="@Localizer[_data.Keywords].Value">
+<meta name="author" content="@Localizer["Author"].Value">
 
 <meta name="robots" content="@(_data.Indexed ? "index" : "noindex")" />
 
@@ -12,7 +12,7 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
 
-    private (MessageId Description, MessageId Keywords, bool Indexed) _data = default!;
+    private (string Description, string Keywords, bool Indexed) _data = default!;
 
     protected override void OnParametersSet() => Load();
 
@@ -20,10 +20,9 @@
     {
         _data = WebsiteSection switch
         {
-            WebsiteSection.Error404 => (Messages.MetaMainDescription, Messages.MetaMainKeywords, false),
-            WebsiteSection.Assessment => (Messages.MetaAppraiserDescription, Messages.MetaAppraiserKeywords, false),
-            WebsiteSection.Map => (Messages.MetaCheckInDescription, Messages.MetaCheckInKeywords, false),
-            _ => (Messages.MetaMainDescription, Messages.MetaMainKeywords, true)
+            WebsiteSection.Assessment => ("AppraiserDescription", "AppraiserKeywords", false),
+            WebsiteSection.Map => ("CheckInDescription", "CheckInKeywords", false),
+            _ => ("MainDescription", "MainKeywords", true)
         };
     }
 }

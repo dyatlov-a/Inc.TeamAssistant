@@ -159,30 +159,5 @@ internal static class Messages
 
     public static readonly MessageId Validation_TokenInvalid = new(nameof(Validation_TokenInvalid));
     
-    public static readonly MessageId OgMainTitle = new(nameof(OgMainTitle));
-    public static readonly MessageId OgMainDescription = new(nameof(OgMainDescription));
-    public static readonly MessageId OgMainImageText = new(nameof(OgMainImageText));
-    public static readonly MessageId OgAppraiserTitle = new(nameof(OgAppraiserTitle));
-    public static readonly MessageId OgAppraiserDescription = new(nameof(OgAppraiserDescription));
-    public static readonly MessageId OgAppraiserImageText = new(nameof(OgAppraiserImageText));
-    public static readonly MessageId OgCheckInTitle = new(nameof(OgCheckInTitle));
-    public static readonly MessageId OgCheckInDescription = new(nameof(OgCheckInDescription));
-    public static readonly MessageId OgCheckInImageText = new(nameof(OgCheckInImageText));
-    
-    public static readonly MessageId CheckIn_DefaultLayerTitle = new(nameof(CheckIn_DefaultLayerTitle));
-    public static readonly MessageId CheckIn_RouteShow = new(nameof(CheckIn_RouteShow));
-    public static readonly MessageId CheckIn_RouteHide = new(nameof(CheckIn_RouteHide));
-    
-    public static readonly MessageId MetaAuthor = new(nameof(MetaAuthor));
-    public static readonly MessageId MetaMainTitle = new(nameof(MetaMainTitle));
-    public static readonly MessageId MetaMainDescription = new(nameof(MetaMainDescription));
-    public static readonly MessageId MetaMainKeywords = new(nameof(MetaMainKeywords));
-    public static readonly MessageId MetaAppraiserTitle = new(nameof(MetaAppraiserTitle));
-    public static readonly MessageId MetaAppraiserDescription = new(nameof(MetaAppraiserDescription));
-    public static readonly MessageId MetaAppraiserKeywords = new(nameof(MetaAppraiserKeywords));
-    public static readonly MessageId MetaCheckInTitle = new(nameof(MetaCheckInTitle));
-    public static readonly MessageId MetaCheckInDescription = new(nameof(MetaCheckInDescription));
-    public static readonly MessageId MetaCheckInKeywords = new(nameof(MetaCheckInKeywords));
-    
     public static readonly MessageId PanelSave = new(nameof(PanelSave));
 }

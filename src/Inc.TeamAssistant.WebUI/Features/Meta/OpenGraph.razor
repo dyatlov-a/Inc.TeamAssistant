@@ -1,9 +1,9 @@
 @inject IRenderContext RenderContext
-@inject ResourcesManager Resources
+@inject IStringLocalizer<MetaResources> Localizer
 
 <meta property="og:locale" content="@_languageId">
-<meta property="og:title" content="@Resources[_data.Title]">
-<meta property="og:description" content="@Resources[_data.Description]">
+<meta property="og:title" content="@Localizer[_data.Title].Value">
+<meta property="og:description" content="@Localizer[_data.Description].Value">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
 <meta property="og:site_name" content="@GlobalSettings.CanonicalName">
@@ -13,8 +13,8 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
-<meta name="twitter:title" content="@Resources[_data.Title]">
-<meta name="twitter:description" content="@Resources[_data.Description]">
+<meta name="twitter:title" content="@Localizer[_data.Title].Value">
+<meta name="twitter:description" content="@Localizer[_data.Description].Value">
 <meta name="twitter:image" content="@ImageUrl">
 
 <meta property="vk:image" content="@ImageUrl">
@@ -24,7 +24,7 @@
     public WebsiteSection WebsiteSection { get; set; }
 
     private string _languageId = string.Empty;
-    private (MessageId Title, MessageId Description, string Image, MessageId ImageText) _data = default;
+    private (string Title, string Description, string Image, string ImageText) _data = default;
 
     protected override void OnParametersSet() => Load();
 
@@ -35,11 +35,11 @@
         _languageId = $"{languageContext.CurrentLanguage.Value.ToLowerInvariant()}_{languageContext.CurrentLanguage.Value.ToUpperInvariant()}";
         _data = WebsiteSection switch
         {
-            WebsiteSection.Assessment => (Messages.OgAppraiserTitle, Messages.OgAppraiserDescription, "main.jpg", Messages.OgAppraiserImageText),
-            WebsiteSection.Map => (Messages.OgCheckInTitle, Messages.OgCheckInDescription, "map.jpg", Messages.OgCheckInImageText),
-            _ => (Messages.OgMainTitle, Messages.OgMainDescription, "main.jpg", Messages.OgMainImageText)
+            WebsiteSection.Assessment => ("OgAppraiserTitle", "OgAppraiserDescription", "main.jpg", "OgAppraiserImageText"),
+            WebsiteSection.Map => ("OgCheckInTitle", "OgCheckInDescription", "map.jpg", "OgCheckInImageText"),
+            _ => ("OgMainTitle", "OgMainDescription", "main.jpg", "OgMainImageText")
         };
     }
 
-    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Resources[_data.ImageText]}";
+    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Localizer[_data.ImageText].Value}";
 }

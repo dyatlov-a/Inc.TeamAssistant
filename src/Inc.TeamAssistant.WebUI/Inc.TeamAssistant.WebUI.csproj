@@ -63,6 +63,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>MapResources.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Features\Meta\MetaResources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MetaResources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Features\Meta\MetaResources.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MetaResources.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -114,6 +122,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>MapResources.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Meta\MetaResources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MetaResources.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Meta\MetaResources.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MetaResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>
