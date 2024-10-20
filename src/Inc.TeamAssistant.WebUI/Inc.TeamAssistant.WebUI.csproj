@@ -3,6 +3,7 @@
         <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Blazor-ApexCharts" Version="3.4.0" />

@@ -23,10 +23,10 @@ using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Inc.TeamAssistant.Gateway.Apps;
 using Inc.TeamAssistant.Gateway.Configs;
+using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives.DataAccess;
-using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
@@ -40,8 +40,6 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Serilog;
-
-ValidatorOptions.Global.Configure(LanguageSettings.DefaultLanguageId);
 
 var builder = WebApplication
 	.CreateBuilder(args)
@@ -151,6 +149,7 @@ if (builder.Environment.IsDevelopment())
 
 app
 	.UseSerilogRequestLogging()
+	.UseRequestCulture()
 	.UseStatusCodePagesWithReExecute("/error404")
 	.UseExceptionHandler()
 	.UseStaticFiles()

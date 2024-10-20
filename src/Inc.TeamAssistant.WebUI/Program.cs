@@ -1,3 +1,5 @@
+using FluentValidation;
+using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Inc.TeamAssistant.WebUI.Services;
 
@@ -8,4 +10,10 @@ builder.Services
        .AddClientServices()
        .AddIsomorphicServices();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+var renderContext = host.Services.GetRequiredService<IRenderContext>();
+var languageContext = renderContext.GetLanguageContext();
+
+ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
+       
+await host.RunAsync();

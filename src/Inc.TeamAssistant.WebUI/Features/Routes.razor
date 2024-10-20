@@ -28,31 +28,17 @@
 
 @code {
     private EventsProvider? _eventsProvider;
-    private IDisposable? _routerScope;
     
     protected override async Task OnInitializedAsync()
     {
-        SetCurrentLanguage();
-        
-        _routerScope = NavRouter.OnRouteChanged(SetCurrentLanguage);
-        
         _eventsProvider = ServiceProvider.GetService<EventsProvider>();
         if (_eventsProvider is not null)
             await _eventsProvider.Start();
-    }
-
-    private void SetCurrentLanguage()
-    {
-        var languageContext = RenderContext.GetLanguageContext();
-        
-        ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
     }
 
     public async ValueTask DisposeAsync()
     {
         if (_eventsProvider is not null)
             await _eventsProvider.DisposeAsync();
-        
-        _routerScope?.Dispose();
     }
 }
