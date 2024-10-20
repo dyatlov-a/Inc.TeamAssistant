@@ -80,5 +80,41 @@ namespace Inc.TeamAssistant.WebUI.Components {
                 return ResourceManager.GetString("Open", resourceCulture);
             }
         }
+        
+        internal static string TwoWeeks {
+            get {
+                return ResourceManager.GetString("TwoWeeks", resourceCulture);
+            }
+        }
+        
+        internal static string FourWeeks {
+            get {
+                return ResourceManager.GetString("FourWeeks", resourceCulture);
+            }
+        }
+        
+        internal static string TwelveWeeks {
+            get {
+                return ResourceManager.GetString("TwelveWeeks", resourceCulture);
+            }
+        }
+        
+        internal static string OneMonth {
+            get {
+                return ResourceManager.GetString("OneMonth", resourceCulture);
+            }
+        }
+        
+        internal static string ThreeMonths {
+            get {
+                return ResourceManager.GetString("ThreeMonths", resourceCulture);
+            }
+        }
+        
+        internal static string SixMonths {
+            get {
+                return ResourceManager.GetString("SixMonths", resourceCulture);
+            }
+        }
     }
 }

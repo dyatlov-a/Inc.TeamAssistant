@@ -1,9 +1,9 @@
 @inject ICheckInService CheckInService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
-<DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
+<DashboardWidget Title="@Localizer["CheckInMapWidgetTitle"].Value">
     <Content>
         <Loading State="_state" Retry="Load">
             <Content>
@@ -33,7 +33,7 @@
                                         ButtonType="ButtonType.Tab"
                                         Link="@routeSegment">
                                         <Content>
-                                            @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
+                                            @Localizer["CheckInMoveToMapTitle"].Value
                                         </Content>
                                     </Button>
                                 </div>

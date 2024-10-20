@@ -36,4 +36,22 @@
     <data name="Open" xml:space="preserve">
         <value>Open</value>
     </data>
+    <data name="TwoWeeks" xml:space="preserve">
+        <value>2 weeks</value>
+    </data>
+    <data name="FourWeeks" xml:space="preserve">
+        <value>4 weeks</value>
+    </data>
+    <data name="TwelveWeeks" xml:space="preserve">
+        <value>12 weeks</value>
+    </data>
+    <data name="OneMonth" xml:space="preserve">
+        <value>1 month</value>
+    </data>
+    <data name="ThreeMonths" xml:space="preserve">
+        <value>3 months</value>
+    </data>
+    <data name="SixMonths" xml:space="preserve">
+        <value>6 months</value>
+    </data>
 </root>

@@ -1,31 +1,31 @@
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
 <ConfirmDialog OnConfirm="RemoveTeammate" @ref="_confirmDialog">
     <Content>
         @if (_exclude || _leaveUntil.HasValue)
         {
-            <p>@Resources[Messages.Dashboard_LeaveTeammate] @_selectedTeammate?.Name</p>
+            <p>@Localizer["LeaveTeammate"].Value @_selectedTeammate?.Name</p>
             @if (_leaveUntil.HasValue)
             {
-                <p>@_leaveUntil.Value @Resources[Messages.Dashboard_Days]</p>
+                <p>@_leaveUntil.Value @Localizer["Days"].Value</p>
             }
             else
             {
-                <p>@Resources[Messages.Dashboard_Forever]</p>
+                <p>@Localizer["Forever"].Value</p>
             }
         }
         else
         {
-            <p>@Resources[Messages.Dashboard_RecoveryTeammate] @_selectedTeammate?.Name</p>
+            <p>@Localizer["RecoveryTeammate"].Value @_selectedTeammate?.Name</p>
         }
     </Content>
 </ConfirmDialog>
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget Title="@Resources[Messages.Dashboard_TeammatesWidgetTitle]">
+    <DashboardWidget Title="@Localizer["TeammatesWidgetTitle"].Value">
         <Content>
             <Loading State="_state" Retry="() => Load()">
                 <Content>
@@ -34,7 +34,7 @@
                         {
                             <QuickGrid Items="Teammates" class="quick-data-grid">
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_PersonName]"
+                                    Title="@Localizer["PersonName"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
                                     @context.Name
@@ -42,7 +42,7 @@
                                     @context.UserName
                                 </TemplateColumn>
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_LeaveUntil]"
+                                    Title="@Localizer["LeaveUntil"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
                                     @if (context.LeaveUntil.HasValue)
@@ -58,7 +58,7 @@
                                         }
                                     }
                                 </TemplateColumn>
-                                <TemplateColumn Title="@Resources[Messages.Dashboard_ExcludeFromTeam]" Sortable="false">
+                                <TemplateColumn Title="@Localizer["ExcludeFromTeam"].Value" Sortable="false">
                                     @if (_item.HasManagerAccess)
                                     {
                                         <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">
@@ -72,7 +72,7 @@
                                         </RouterLink>
                                         <br/>
                                         <RouterLink OnClick="() => ExcludeFromTeam(context, true)">
-                                            <Content>@Resources[Messages.Dashboard_Forever]</Content>
+                                            <Content>@Localizer["Forever"].Value</Content>
                                         </RouterLink>
                                     }
                                     else

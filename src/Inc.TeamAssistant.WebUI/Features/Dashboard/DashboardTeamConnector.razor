@@ -1,11 +1,11 @@
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
 <div class="team-connector">
     <FormSection
         Title="@_team.TeamName"
-        HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
+        HelpText="@Localizer["ConnectToTeamHelp"].Value"
         AsRows="true">
         <Content>
             <Loading State="_state" Retry="Load">
@@ -19,7 +19,7 @@
                             ButtonType="ButtonType.Tab"
                             Link="@_team.LinkForConnect">
                             <Content>
-                                @Resources[Messages.Dashboard_ConnectToTeamButton]
+                                @Localizer["ConnectToTeamButton"].Value
                             </Content>
                         </Button>
                     </div>

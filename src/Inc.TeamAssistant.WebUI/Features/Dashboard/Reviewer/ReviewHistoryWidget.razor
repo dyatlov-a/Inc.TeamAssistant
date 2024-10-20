@@ -1,5 +1,4 @@
 @inject IReviewService ReviewService
-@inject ResourcesManager Resources
 @inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
@@ -8,7 +7,7 @@
 {
     <DashboardWidget
         HasControls="true"
-        Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
+        Title="@Localizer["LastTasksWidgetTitle"].Value">
         <Content>
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
             <Loading State="_state" Retry="Load">
@@ -18,20 +17,20 @@
                         {
                             <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewOwnerNameTitle]"
+                                    Title="@Localizer["ReviewOwnerNameTitle"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
                                     @context.OwnerName
                                     <br/>
                                     @context.OwnerUserName
                                 </TemplateColumn>
-                                <TemplateColumn Title="@Resources[Messages.Dashboard_ReviewDescriptionTitle]" Sortable="false">
+                                <TemplateColumn Title="@Localizer["ReviewDescriptionTitle"].Value" Sortable="false">
                                     <span title="@context.Description" class="hint">
                                         @context.Description.ToShort()
                                     </span>
                                 </TemplateColumn>
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewReviewerNameTitle]"
+                                    Title="@Localizer["ReviewReviewerNameTitle"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
                                     <span title="@GetReviewerTitle(context)" class="hint">
@@ -41,7 +40,7 @@
                                     </span>
                                 </TemplateColumn>
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewStateTitle]"
+                                    Title="@Localizer["ReviewStateTitle"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
                                     @context.Created.ToString("yyyy.MM.dd HH:mm")
@@ -49,7 +48,7 @@
                                     @StateLookup[context.State]
                                 </TemplateColumn>
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewStats]"
+                                    Title="@Localizer["ReviewStats"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
                                     <span class="task__time hint" title="@FirstTouchTitle()">
@@ -87,11 +86,11 @@
     
     private IReadOnlyDictionary<string, string> StateLookup => new Dictionary<string, string>
     {
-        ["None"] = Resources[Messages.Dashboard_ReviewStateNone],
-        ["New"] = Resources[Messages.Dashboard_ReviewStateNew],
-        ["InProgress"] = Resources[Messages.Dashboard_ReviewStateInProgress],
-        ["OnCorrection"] = Resources[Messages.Dashboard_ReviewStateOnCorrection],
-        ["Accept"] = Resources[Messages.Dashboard_ReviewStateAccept]
+        ["None"] = Localizer["ReviewStateNone"].Value,
+        ["New"] = Localizer["ReviewStateNew"].Value,
+        ["InProgress"] = Localizer["ReviewStateInProgress"].Value,
+        ["OnCorrection"] = Localizer["ReviewStateOnCorrection"].Value,
+        ["Accept"] = Localizer["ReviewStateAccept"].Value
     };
 
     private DateOnly? _date;
@@ -141,8 +140,8 @@
             : Localizer["BooleanTrueText"].Value;
         var builder = new StringBuilder();
         
-        builder.AppendLine($"{Resources[Messages.Dashboard_HasConcreteReviewer]} - {hasConcreteReviewer}");
-        builder.Append($"{Resources[Messages.Dashboard_IsOriginalReviewer]} - {isOriginalReviewer}");
+        builder.AppendLine($"{Localizer["HasConcreteReviewer"].Value} - {hasConcreteReviewer}");
+        builder.Append($"{Localizer["IsOriginalReviewer"].Value} - {isOriginalReviewer}");
         
         return builder.ToString();
     }
@@ -153,8 +152,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Resources[Messages.Dashboard_FirstTouch]);
-        builder.Append(Resources[Messages.Dashboard_FirstTouchHelp]);
+        builder.AppendLine(Localizer["FirstTouch"].Value);
+        builder.Append(Localizer["FirstTouchHelp"].Value);
         
         return builder.ToString();
     }
@@ -164,9 +163,9 @@
         var builder = new StringBuilder();
 
         builder.AppendLine(task.Iterations == 0
-            ? Resources[Messages.Dashboard_Correction]
-            : $"{Resources[Messages.Dashboard_Correction]} ({task.Iterations})");
-        builder.Append(Resources[Messages.Dashboard_CorrectionHelp]);
+            ? Localizer["Correction"].Value
+            : $"{Localizer["Correction"].Value} ({task.Iterations})");
+        builder.Append(Localizer["CorrectionHelp"].Value);
         
         return builder.ToString();
     }
@@ -175,8 +174,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Resources[Messages.Dashboard_Review]);
-        builder.Append(Resources[Messages.Dashboard_ReviewHelp]);
+        builder.AppendLine(Localizer["Review"].Value);
+        builder.Append(Localizer["ReviewHelp"].Value);
         
         return builder.ToString();
     }

@@ -1,8 +1,8 @@
 @inject IRandomCoffeeService RandomCoffeeService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
-<DashboardWidget Title="@Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]">
+<DashboardWidget Title="@Localizer["RandomCoffeeHistoryWidgetTitle"].Value">
     <Content>
         <Loading State="_state" Retry="Load">
             <Content>
@@ -22,7 +22,7 @@
                     {
                         <QuickGrid Items="@Pairs" class="quick-data-grid">
                             <TemplateColumn
-                                Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
+                                Title="@Localizer["RandomCoffeeFirstTitle"].Value"
                                 Sortable="true"
                                 SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
                                 @context.FirstName
@@ -30,7 +30,7 @@
                                 @context.FirstUserName
                             </TemplateColumn>
                             <TemplateColumn
-                                Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
+                                Title="@Localizer["RandomCoffeeSecondTitle"].Value"
                                 Sortable="true"
                                 SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
                                 @context.SecondName
@@ -102,7 +102,7 @@
                 pairs.Add(new PairDto(
                     historyItems.ExcludedPersonName,
                     historyItems.ExcludedPersonUserName,
-                    Resources[Messages.Dashboard_RandomCoffeeNoPair],
+                    Localizer["RandomCoffeeNoPair"].Value,
                     SecondUserName: null));
 
             return pairs.AsQueryable();

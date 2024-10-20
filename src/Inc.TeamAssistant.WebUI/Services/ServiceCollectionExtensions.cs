@@ -53,7 +53,6 @@ public static class ServiceCollectionExtensions
             .AddAuthorizationCore()
             .AddLocalization()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<ResourcesManager>()
             .AddScoped<FeaturesFactory>()
             .AddScoped<DateSelectorFactory>()
             .AddScoped<RequestProcessor>()

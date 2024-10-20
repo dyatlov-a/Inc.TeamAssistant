@@ -1,5 +1,5 @@
 @inject IReviewService ReviewService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -8,7 +8,7 @@
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]">
+        Title="@Localizer["ReviewAverageStatsWidgetTitle"].Value">
         <Content>
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
             <Loading State="_state" Retry="Load">
@@ -18,28 +18,28 @@
                         {
                             <ApexChart
                                 TItem="ReviewAverageStatsDto"
-                                Title="@Resources[Messages.Dashboard_ReviewAverageStatsTitle]"
+                                Title="@Localizer["ReviewAverageStatsTitle"].Value"
                                 Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
                                 FormatYAxisLabel="@(y => y.ToString("N1"))">
                                 <ApexPointSeries
                                     TItem="ReviewAverageStatsDto"
                                     Items="_items"
                                     SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageFirstTouch]"
+                                    Name="@Localizer["ReviewAverageFirstTouch"].Value"
                                     XValue="@(e => e.Created)"
                                     YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
                                 <ApexPointSeries
                                     TItem="ReviewAverageStatsDto"
                                     Items="_items"
                                     SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageReview]"
+                                    Name="@Localizer["ReviewAverageReview"].Value"
                                     XValue="@(e => e.Created)"
                                     YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
                                 <ApexPointSeries
                                     TItem="ReviewAverageStatsDto"
                                     Items="_items"
                                     SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageCorrection]"
+                                    Name="@Localizer["ReviewAverageCorrection"].Value"
                                     XValue="@(e => e.Created)"
                                     YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
                             </ApexChart>

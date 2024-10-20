@@ -11,13 +11,13 @@
 @attribute [Authorize]
 
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Dashboard"
-    MetaOverrideTitle="@Resources[Messages.Dashboard_Title]" />
+    MetaOverrideTitle="@Localizer["Title"].Value" />
 
 <div class="dashboard__fluent-container">
     <DashboardSettings BotId="BotId" Widgets="_widgets" Changed="Load" />

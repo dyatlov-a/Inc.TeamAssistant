@@ -1,16 +1,16 @@
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
 <FormSection
-    Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
-    HelpText="@Resources[Messages.Dashboard_SelectTeam]"
+    Title="@Localizer["SelectTeamTitle"].Value"
+    HelpText="@Localizer["SelectTeam"].Value"
     AsRows="true">
     <Content>
         <Loading State="_state" Retry="Load">
             <Content>
-                <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
+                <FormFieldSet Label="@Localizer["BotField"].Value" FieldId="bot-selector">
                     <Content>
                         <InputSelectList 
                             FieldId="bot-selector"
@@ -23,7 +23,7 @@
                             HasEmptyValue="true"/>
                     </Content>
                 </FormFieldSet>
-                <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
+                <FormFieldSet Label="@Localizer["TeamField"].Value" FieldId="team-selector">
                     <Content>
                         <InputSelectList
                             FieldId="team-selector"

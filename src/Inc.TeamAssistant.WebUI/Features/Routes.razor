@@ -1,7 +1,6 @@
 ﻿@implements IAsyncDisposable
 
 @inject IRenderContext RenderContext
-@inject ResourcesManager ResourcesManager
 @inject IServiceProvider ServiceProvider
 @inject NavRouter NavRouter
 
@@ -34,8 +33,6 @@
     protected override async Task OnInitializedAsync()
     {
         SetCurrentLanguage();
-        
-        await ResourcesManager.Initialize();
         
         _routerScope = NavRouter.OnRouteChanged(SetCurrentLanguage);
         

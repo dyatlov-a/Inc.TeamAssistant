@@ -1,17 +1,17 @@
 @inject IIntegrationService IntegrationService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
 
 <ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
     <Content>
-        <p>@Resources[Messages.Dashboard_AppraiserIntegrationConfirmText]</p>
+        <p>@Localizer["AppraiserIntegrationConfirmText"].Value</p>
     </Content>
 </ConfirmDialog>
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget Title="@Resources[Messages.Dashboard_AppraiserIntegrationTitle]">
+    <DashboardWidget Title="@Localizer["AppraiserIntegrationTitle"].Value">
         <Content>
             <Loading State="_state" Retry="Load">
                 <Content>
@@ -21,7 +21,7 @@
                             <div class="appraiser-integration__body">
                                 <FormFieldSet
                                     FieldId="access-token"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel]">
+                                    Label="@Localizer["AppraiserIntegrationAccessTokenLabel"].Value">
                                     <Content>
                                         <InputSingleLine
                                             FieldId="access-token"
@@ -31,7 +31,7 @@
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="project-key"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
+                                    Label="@Localizer["AppraiserIntegrationProjectKeyLabel"].Value">
                                     <Content>
                                         <InputSingleLine
                                             FieldId="project-key"
@@ -42,7 +42,7 @@
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="scrum-master"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationScrumMasterLabel]">
+                                    Label="@Localizer["AppraiserIntegrationScrumMasterLabel"].Value">
                                     <Content>
                                         <InputSelectList
                                             FieldId="scrum-master"
@@ -62,12 +62,12 @@
                                 <div class="component-actions">
                                     <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
                                         <Content>
-                                            @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
+                                            @Localizer["AppraiserIntegrationSaveButton"].Value
                                         </Content>
                                     </Button>
                                     <Button ComponentStyle="ComponentStyle.Secondary" OnClick="BeginDisable">
                                         <Content>
-                                            @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
+                                            @Localizer["AppraiserIntegrationDisableButton"].Value
                                         </Content>
                                     </Button>
                                 </div>
@@ -79,7 +79,7 @@
                                     <div class="appraiser-integration__controls-body">
                                         <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Enable">
                                             <Content>
-                                                @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
+                                                @Localizer["AppraiserIntegrationEnableButton"].Value
                                             </Content>
                                         </Button>
                                     </div>
@@ -180,7 +180,7 @@
             {
                 await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId.Value));
 
-                await Load(Notification.Info(Resources[Messages.Dashboard_AppraiserIntegrationEnableSuccess]));
+                await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"].Value));
             },
             () => {},
             _ => StateHasChanged());

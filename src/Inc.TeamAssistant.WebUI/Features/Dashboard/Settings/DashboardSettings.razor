@@ -1,11 +1,11 @@
 @inject IBotService BotService
 @inject RequestProcessor RequestProcessor
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject DragAndDropService<DashboardSettingsItem> DragAndDropService
 @inject IServiceProvider ServiceProvider
 @inject FeaturesFactory FeaturesFactory
 
-<ContentDialog Title="@Resources[Messages.Dashboard_Settings]" @ref="_contentDialog">
+<ContentDialog Title="@Localizer["Settings"].Value" @ref="_contentDialog">
     <Content>
         <div class="widget-settings @CssClass">
             <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
@@ -107,7 +107,7 @@
                         <div class="widget-settings__actions">
                             <Button ButtonType="ButtonType.Submit" ComponentStyle="ComponentStyle.Secondary">
                                 <Content>
-                                    @Resources[Messages.Dashboard_Apply]
+                                    @Localizer["Apply"].Value
                                 </Content>
                             </Button>
                         </div>
@@ -149,14 +149,14 @@
     
     private Dictionary<string, string> WidgetsLookup => new()
     {
-        [nameof(TeammatesWidget)] = Resources[Messages.Dashboard_TeammatesWidgetTitle],
-        [nameof(ReviewAverageStatsWidget)] = Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle],
-        [nameof(ReviewHistoryWidget)] = Resources[Messages.Dashboard_LastTasksWidgetTitle],
-        [nameof(ReviewTotalStatsWidget)] = Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle],
-        [nameof(AppraiserHistoryWidget)] = Resources[Messages.Dashboard_AppraiserHistoryTitle],
-        [nameof(AppraiserIntegrationWidget)] = Resources[Messages.Dashboard_AppraiserIntegrationTitle],
-        [nameof(RandomCoffeeHistoryWidget)] = Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle],
-        [nameof(MapWidget)] = Resources[Messages.Dashboard_CheckInMapWidgetTitle]
+        [nameof(TeammatesWidget)] = Localizer["TeammatesWidgetTitle"].Value,
+        [nameof(ReviewAverageStatsWidget)] = Localizer["ReviewAverageStatsWidgetTitle"].Value,
+        [nameof(ReviewHistoryWidget)] = Localizer["LastTasksWidgetTitle"].Value,
+        [nameof(ReviewTotalStatsWidget)] = Localizer["ReviewTotalStatsWidgetTitle"].Value,
+        [nameof(AppraiserHistoryWidget)] = Localizer["AppraiserHistoryTitle"].Value,
+        [nameof(AppraiserIntegrationWidget)] = Localizer["AppraiserIntegrationTitle"].Value,
+        [nameof(RandomCoffeeHistoryWidget)] = Localizer["RandomCoffeeHistoryWidgetTitle"].Value,
+        [nameof(MapWidget)] = Localizer["CheckInMapWidgetTitle"].Value
     };
     
     private string CssClass => _isDragStarting ? "widget-settings_on-drag" : "widget-settings_no-drag";
@@ -175,7 +175,7 @@
         
         var featureName = FeaturesFactory.CreateName(item.Feature);
 
-        return string.Format(Resources[Messages.Dashboard_DisableWidgetHelpTemplate], featureName);
+        return string.Format(Localizer["DisableWidgetHelpTemplate"].Value, featureName);
     }
     
     private void HandleDrop(DashboardSettingsItem[] items, DashboardSettingsItem target)
@@ -225,7 +225,7 @@
             return;
 
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-        var notification = Notification.Info(Resources[Messages.Dashboard_SettingsApplied]);
+        var notification = Notification.Info(Localizer["SettingsApplied"].Value);
 
         await RequestProcessor.Process(
             async () =>
