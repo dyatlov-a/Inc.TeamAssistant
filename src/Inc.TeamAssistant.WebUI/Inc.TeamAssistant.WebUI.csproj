@@ -207,4 +207,10 @@
         <DependentUpon>ErrorResources.ru.resx</DependentUpon>
       </Compile>
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Features\Notifications\NotificationBar.razor" />
+    </ItemGroup>
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Notifications\NotificationBar.razor" />
+    </ItemGroup>
 </Project>

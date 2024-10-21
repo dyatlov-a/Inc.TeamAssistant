@@ -1,4 +1,6 @@
-﻿using Inc.TeamAssistant.Stories;
+﻿using FluentValidation;
+using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Stories;
 using Inc.TeamAssistant.WebUI.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -12,4 +14,9 @@ builder.Services
     .AddClientServices()
     .AddIsomorphicServices();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+var hostEnvironment = host.Services.GetRequiredService<IWebAssemblyHostEnvironment>();
+
+ValidatorOptions.Global.Configure(new LanguageId(hostEnvironment.Environment));
+       
+await host.RunAsync();

@@ -1,6 +1,6 @@
 using System.Timers;
 
-namespace Inc.TeamAssistant.WebUI.Features.Notifications;
+namespace Inc.TeamAssistant.WebUI.Components.Notifications;
 
 internal sealed class TimerScope : IDisposable
 {

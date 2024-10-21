@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Notifications;
+namespace Inc.TeamAssistant.WebUI.Components.Notifications;
 
 internal sealed class NotificationsService : INotificationsSource, INotificationsService
 {
