@@ -7,14 +7,10 @@
         <div class="content-dialog__content @CssClass">
             <Panel Header="@Title" IsOpen="true">
                 <Content>
-                    @Content
+                    @ChildContent
                 </Content>
                 <Actions>
-                    <Button OnClick="Close">
-                        <Content>
-                            @Localizer["Close"].Value
-                        </Content>
-                    </Button>
+                    <Button OnClick="Close">@Localizer["Close"]</Button>
                 </Actions>
             </Panel>
         </div>
@@ -29,13 +25,13 @@
     public string Title { get; set; } = default!;
     
     /// <summary>
-    /// HTML content
+    /// HTML content.
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
-    /// Is grand window
+    /// Is grand window.
     /// </summary>
     [Parameter]
     public bool IsGrand { get; set; }

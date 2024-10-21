@@ -5,9 +5,7 @@
     <ArgType For="c => c.ButtonType" Control="ControlType.Select" />
     <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <Button @attributes="context.Args">
-                <Content>@_text</Content>
-            </Button>
+            <Button @attributes="context.Args">@_text</Button>
         </Template>
     </Story>
     <Story Name="Secondary" Layout="typeof(LightLayout)">
@@ -15,9 +13,7 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
-            <Button @attributes="context.Args">
-                <Content>@_text</Content>
-            </Button>
+            <Button @attributes="context.Args">@_text</Button>
         </Template>
     </Story>
     <Story Name="Disabled" Layout="typeof(DarkLayout)">
@@ -25,9 +21,7 @@
             <Arg For="c => c.IsDisabled" Value="true" />
         </Arguments>
         <Template>
-            <Button @attributes="context.Args">
-                <Content>@_text</Content>
-            </Button>
+            <Button @attributes="context.Args">@_text</Button>
         </Template>
     </Story>
     <Story Name="Small" Layout="typeof(DarkLayout)">
@@ -35,9 +29,7 @@
             <Arg For="c => c.ButtonMode" Value="ButtonMode.Small" />
         </Arguments>
         <Template>
-            <Button @attributes="context.Args">
-                <Content>@_text</Content>
-            </Button>
+            <Button @attributes="context.Args">@_text</Button>
         </Template>
     </Story>
 </Stories>

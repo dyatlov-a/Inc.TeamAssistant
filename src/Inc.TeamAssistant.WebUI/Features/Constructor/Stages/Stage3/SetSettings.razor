@@ -3,13 +3,9 @@
 
 <EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <Panel Header="@Localizer["Configuration"].Value" IsOpen="true">
+    <Panel Header="@Localizer["Configuration"]" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @Localizer["MoveNextTitle"].Value
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
         </Actions>
         <Content>
             @foreach (var feature in StagesState.SelectedFeatures)
@@ -20,52 +16,44 @@
                 foreach (var settingSection in settingSections)
                 {
                     <FormSection
-                        Title="@Localizer[settingSection.HeaderMessageId].Value"
-                        HelpText="@Localizer[settingSection.HelpMessageId].Value">
-                        <Content>
-                            @foreach (var settingItem in settingSection.SettingItems)
+                        Title="@Localizer[settingSection.HeaderMessageId]"
+                        HelpText="@Localizer[settingSection.HelpMessageId]">
+                        @foreach (var settingItem in settingSection.SettingItems)
+                        {
+                            if (_formModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
                             {
-                                if (_formModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
-                                {
-                                    <FormFieldSet
+                                <FormFieldSet
+                                    FieldId="@settingItem.PropertyName"
+                                    Label="@Localizer[settingItem.LabelMessageId]">
+                                    <InputSelectList
                                         FieldId="@settingItem.PropertyName"
-                                        Label="@Localizer[settingItem.LabelMessageId].Value">
-                                        <Content>
-                                            <InputSelectList
-                                                FieldId="@settingItem.PropertyName"
-                                                Value="value"
-                                                ValueExpression="@(() => value)"
-                                                ValueChanged="@((string v) => _formModel.ChangeProperty(settingItem.PropertyName, v))"
-                                                Items="settingItem.Values"
-                                                TitleSelector="i => Localizer[i.MessageId].Value"
-                                                ValueSelector="i => i.Value" />
-                                            <ValidationMessage For="@(() => value)"/>
-                                        </Content>
-                                    </FormFieldSet>
-                                }
+                                        Value="value"
+                                        ValueExpression="@(() => value)"
+                                        ValueChanged="@((string v) => _formModel.ChangeProperty(settingItem.PropertyName, v))"
+                                        Items="settingItem.Values"
+                                        TitleSelector="i => Localizer[i.MessageId]"
+                                        ValueSelector="i => i.Value" />
+                                    <ValidationMessage For="@(() => value)"/>
+                                </FormFieldSet>
                             }
-                        </Content>
+                        }
                     </FormSection>
                 }
             }
             <FormSection
-                Title="@Localizer["SupportedLanguages"].Value"
-                HelpText="@Localizer["SupportedLanguagesHelp"].Value">
-                <Content>
-                    <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"].Value">
-                        <Content>
-                            <InputMultiSelectList
-                                FieldId="supported-languages"
-                                Value="_formModel.SupportedLanguages"
-                                ValueExpression="() => _formModel.SupportedLanguages"
-                                ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
-                                Items="LanguageSettings.LanguageIds"
-                                TitleSelector="i => i.Value"
-                                ValueSelector="i => i.Value" />
-                            <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
-                        </Content>
-                    </FormFieldSet>
-                </Content>
+                Title="@Localizer["SupportedLanguages"]"
+                HelpText="@Localizer["SupportedLanguagesHelp"]">
+                <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"]">
+                    <InputMultiSelectList
+                        FieldId="supported-languages"
+                        Value="_formModel.SupportedLanguages"
+                        ValueExpression="() => _formModel.SupportedLanguages"
+                        ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
+                        Items="LanguageSettings.LanguageIds"
+                        TitleSelector="i => i.Value"
+                        ValueSelector="i => i.Value" />
+                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                </FormFieldSet>
             </FormSection>
         </Content>
     </Panel>

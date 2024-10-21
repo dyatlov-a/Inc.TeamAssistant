@@ -1,22 +1,22 @@
 @if (string.IsNullOrWhiteSpace(Href))
 {
     <a href="#" class="link @CssClass" @onclick="EmitOnClick" @onclick:preventDefault="true">
-        @Content
+        @ChildContent
     </a>
 }
 else
 {
     <a href="@Href" class="link @CssClass" target="@Target">
-        @Content
+        @ChildContent
     </a>
 }
 
 @code {
     /// <summary>
-    /// Html or text content of the button.
+    /// Html content.
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
     /// Target for navigation.

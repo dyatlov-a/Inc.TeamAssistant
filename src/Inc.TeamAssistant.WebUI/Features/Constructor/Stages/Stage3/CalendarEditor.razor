@@ -6,143 +6,114 @@
 
 <EditForm id="@AnalyticEvents.CalendarChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <Panel Header="@Localizer["WorkCalendar"].Value" Opened="Load" IsOpen="_isOpen">
+    <Panel Header="@Localizer["WorkCalendar"]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @Localizer["Save"].Value
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormSection
-                        Title="@Localizer["WorkTimeTitle"].Value"
-                        HelpText="@Localizer["WorkTimeHelp"].Value">
-                        <Content>
-                            <FormFieldSet
-                                FieldId="work-all-day"
-                                Label="@Localizer["WorkAllDayLabel"].Value">
-                                <Content>
-                                    <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
-                                </Content>
-                            </FormFieldSet>
-                            @if (!_formModel.WorkAllDay)
+                <FormSection
+                    Title="@Localizer["WorkTimeTitle"]"
+                    HelpText="@Localizer["WorkTimeHelp"]">
+                    <FormFieldSet
+                        FieldId="work-all-day"
+                        Label="@Localizer["WorkAllDayLabel"]">
+                        <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
+                    </FormFieldSet>
+                    @if (!_formModel.WorkAllDay)
+                    {
+                        <div class="work-schedule__items">
+                            <div class="work-schedule__item">
+                                <FormFieldSet
+                                    FieldId="work-schedule-start"
+                                    Label="@Localizer["WorkTimeStartLabel"]">
+                                    <InputTimeOnly
+                                        FieldId="work-schedule-start"
+                                        @bind-Value="_formModel.Start"/>
+                                    <ValidationMessage For="@(() => _formModel.Start)"/>
+                                </FormFieldSet>
+                            </div>
+                            <div class="work-schedule__item">
+                                <FormFieldSet
+                                    FieldId="work-schedule-end"
+                                    Label="@Localizer["WorkTimeEndLabel"]">
+                                    <InputTimeOnly
+                                        FieldId="work-schedule-end"
+                                        @bind-Value="_formModel.End"/>
+                                    <ValidationMessage For="@(() => _formModel.End)"/>
+                                </FormFieldSet>
+                            </div>
+                        </div>
+                    }
+                </FormSection>
+                <FormSection
+                    Title="@Localizer["WeekendsTitle"]"
+                    HelpText="@Localizer["WeekendsHelp"]">
+                    <FormFieldSet FieldId="weekends" Label="@Localizer["WeekendsLabel"]">
+                        <InputMultiSelectList
+                            FieldId="weekends"
+                            Value="_formModel.SelectedWeekends"
+                            ValueExpression="@(() => _formModel.SelectedWeekends)"
+                            ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
+                            Items="Enum.GetValues<DayOfWeek>()"
+                            TitleSelector="i => Localizer[GetDayOfWeekTitle(i)]"
+                            ValueSelector="i => i" />
+                        <ValidationMessage For="@(() => _formModel.SelectedWeekends)"/>
+                    </FormFieldSet>
+                </FormSection>
+                <FormSection
+                    Title="@Localizer["HolidaysTitle"]"
+                    AsRows="true">
+                    <HelpContent>
+                        @Localizer["HolidaysHelp"]
+                        <ValidationMessage For="@(() => _formModel.Holidays)"/>
+                    </HelpContent>
+                    <ChildContent>
+                        <div class="holiday-items">
+                            @foreach (var holiday in _formModel.Holidays)
                             {
-                                <div class="work-schedule__items">
-                                    <div class="work-schedule__item">
+                                <div class="holiday-items__item">
+                                    <div class="holiday-items__item-control">
                                         <FormFieldSet
-                                            FieldId="work-schedule-start"
-                                            Label="@Localizer["WorkTimeStartLabel"].Value">
-                                            <Content>
-                                                <InputTimeOnly
-                                                    FieldId="work-schedule-start"
-                                                    @bind-Value="_formModel.Start"/>
-                                                <ValidationMessage For="@(() => _formModel.Start)"/>
-                                            </Content>
+                                            FieldId="@holiday.DateFieldId"
+                                            Label="@Localizer["DateLabel"]">
+                                            <InputDateOnly
+                                                FieldId="@holiday.DateFieldId"
+                                                @bind-Value="holiday.Date"/>
                                         </FormFieldSet>
-                                        
                                     </div>
-                                    <div class="work-schedule__item">
+                                    <div class="holiday-items__item-control">
                                         <FormFieldSet
-                                            FieldId="work-schedule-end"
-                                            Label="@Localizer["WorkTimeEndLabel"].Value">
-                                            <Content>
-                                                <InputTimeOnly
-                                                    FieldId="work-schedule-end"
-                                                    @bind-Value="_formModel.End"/>
-                                                <ValidationMessage For="@(() => _formModel.End)"/>
-                                            </Content>
+                                            FieldId="@holiday.WorkdayFieldId"
+                                            Label="@Localizer["WorkdayLabel"]">
+                                            <InputCheckbox
+                                                id="@holiday.WorkdayFieldId"
+                                                @bind-Value="holiday.IsWorkday"/>
                                         </FormFieldSet>
+                                    </div>
+                                    <div class="holiday-items__item-control">
+                                        <div class="holiday-items__buttons">
+                                            <Button
+                                                ComponentStyle="ComponentStyle.Secondary"
+                                                ButtonMode="ButtonMode.Small"
+                                                OnClick="() => _formModel.RemoveHoliday(holiday)">
+                                                <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             }
-                        </Content>
-                    </FormSection>
-                    <FormSection
-                        Title="@Localizer["WeekendsTitle"].Value"
-                        HelpText="@Localizer["WeekendsHelp"].Value">
-                        <Content>
-                            <FormFieldSet FieldId="weekends" Label="@Localizer["WeekendsLabel"].Value">
-                                <Content>
-                                    <InputMultiSelectList
-                                        FieldId="weekends"
-                                        Value="_formModel.SelectedWeekends"
-                                        ValueExpression="@(() => _formModel.SelectedWeekends)"
-                                        ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
-                                        Items="Enum.GetValues<DayOfWeek>()"
-                                        TitleSelector="i => Localizer[GetDayOfWeekTitle(i)].Value"
-                                        ValueSelector="i => i" />
-                                    <ValidationMessage For="@(() => _formModel.SelectedWeekends)"/>
-                                </Content>
-                            </FormFieldSet>
-                        </Content>
-                    </FormSection>
-                    <FormSection
-                        Title="@Localizer["HolidaysTitle"].Value"
-                        AsRows="true">
-                        <HelpContent>
-                            @Localizer["HolidaysHelp"].Value
-                            <ValidationMessage For="@(() => _formModel.Holidays)"/>
-                        </HelpContent>
-                        <Content>
-                            <div class="holiday-items">
-                                @foreach (var holiday in _formModel.Holidays)
-                                {
-                                    <div class="holiday-items__item">
-                                        <div class="holiday-items__item-control">
-                                            <FormFieldSet
-                                                FieldId="@holiday.DateFieldId"
-                                                Label="@Localizer["DateLabel"].Value">
-                                                <Content>
-                                                    <InputDateOnly
-                                                        FieldId="@holiday.DateFieldId"
-                                                        @bind-Value="holiday.Date"/>
-                                                </Content>
-                                            </FormFieldSet>
-                                        </div>
-                                        <div class="holiday-items__item-control">
-                                            <FormFieldSet
-                                                FieldId="@holiday.WorkdayFieldId"
-                                                Label="@Localizer["WorkdayLabel"].Value">
-                                                <Content>
-                                                    <InputCheckbox
-                                                        id="@holiday.WorkdayFieldId"
-                                                        @bind-Value="holiday.IsWorkday"/>
-                                                </Content>
-                                            </FormFieldSet>
-                                        </div>
-                                        <div class="holiday-items__item-control">
-                                            <div class="holiday-items__buttons">
-                                                <Button
-                                                    ComponentStyle="ComponentStyle.Secondary"
-                                                    ButtonMode="ButtonMode.Small"
-                                                    OnClick="() => _formModel.RemoveHoliday(holiday)">
-                                                    <Content>
-                                                        <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
-                                                    </Content>
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                <div class="holiday-items__item">
-                                    <div class="holiday-items__buttons">
-                                        <Button
-                                            ComponentStyle="ComponentStyle.Secondary"
-                                            ButtonMode="ButtonMode.Small"
-                                            OnClick="_formModel.AddHoliday">
-                                            <Content>
-                                                @Localizer["AddHolidayLabel"].Value
-                                            </Content>
-                                        </Button>
-                                    </div>
+                            <div class="holiday-items__item">
+                                <div class="holiday-items__buttons">
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonMode="ButtonMode.Small"
+                                        OnClick="_formModel.AddHoliday">@Localizer["AddHolidayLabel"]</Button>
                                 </div>
                             </div>
-                        </Content>
-                    </FormSection>
-                </Content>
+                        </div>
+                    </ChildContent>
+                </FormSection>
             </Loading>
         </Content>
     </Panel>

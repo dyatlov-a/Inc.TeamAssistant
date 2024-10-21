@@ -8,55 +8,51 @@
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Localizer["ReviewTotalStatsWidgetTitle"].Value">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (_formModel.Review.Any())
-                        {
-                            <div class="review-total-stats">
-                                <div class="review-total-stats__item">
-                                    <ApexChart
-                                        TItem="HistoryByTeamItemDto"
-                                        Title="@string.Format(
-                                                   Localizer["ReviewByReviewerTemplate"].Value,
-                                                   _formModel.IntervalInDays)"
-                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
-                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                                         Items="_formModel.Review"
-                                                         SeriesType="SeriesType.Donut"
-                                                         XValue="@(e => e.PersonName)"
-                                                         YValue="@(e => e.Count)"
-                                                         OrderByDescending="e => e.Y!"/>
-                                    </ApexChart>
-                                </div>
-                                <div class="review-total-stats__item">
-                                    <ApexChart
-                                        TItem="HistoryByTeamItemDto"
-                                        Title="@string.Format(
-                                                   Localizer["ReviewByOwnerTemplate"].Value,
-                                                   _formModel.IntervalInDays)"
-                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
-                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                                         Items="_formModel.Requests"
-                                                         SeriesType="SeriesType.Donut"
-                                                         XValue="@(e => e.PersonName)"
-                                                         YValue="@(e => e.Count)"
-                                                         OrderByDescending="e => e.Y!"/>
-                                    </ApexChart>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                        }
+        Title="@Localizer["ReviewTotalStatsWidgetTitle"]">
+        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
+        <Loading State="_state" Retry="Load">
+            <div class="component-container">
+                @if (_formModel.Review.Any())
+                {
+                    <div class="review-total-stats">
+                        <div class="review-total-stats__item">
+                            <ApexChart
+                                TItem="HistoryByTeamItemDto"
+                                Title="@string.Format(
+                                           Localizer["ReviewByReviewerTemplate"],
+                                           _formModel.IntervalInDays)"
+                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                 Items="_formModel.Review"
+                                                 SeriesType="SeriesType.Donut"
+                                                 XValue="@(e => e.PersonName)"
+                                                 YValue="@(e => e.Count)"
+                                                 OrderByDescending="e => e.Y!"/>
+                            </ApexChart>
+                        </div>
+                        <div class="review-total-stats__item">
+                            <ApexChart
+                                TItem="HistoryByTeamItemDto"
+                                Title="@string.Format(
+                                           Localizer["ReviewByOwnerTemplate"],
+                                           _formModel.IntervalInDays)"
+                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                 Items="_formModel.Requests"
+                                                 SeriesType="SeriesType.Donut"
+                                                 XValue="@(e => e.PersonName)"
+                                                 YValue="@(e => e.Count)"
+                                                 OrderByDescending="e => e.Y!"/>
+                            </ApexChart>
+                        </div>
                     </div>
-                </Content>
-            </Loading>
-        </Content>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 

@@ -2,51 +2,47 @@
 @inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
-<DashboardWidget Title="@Localizer["RandomCoffeeHistoryWidgetTitle"].Value">
-    <Content>
-        <Loading State="_state" Retry="Load">
-            <Content>
-                <div class="component-container">
-                    <div class="chat-selector">
-                        <InputSelectList
-                            FieldId="chat-selector"
-                            Value="_formModel.ChatId"
-                            ValueExpression="@(() => _formModel.ChatId)"
-                            ValueChanged="@((long? v) => Load(v))"
-                            Items="_formModel.Chats"
-                            TitleSelector="i => i.Name"
-                            ValueSelector="i => i.Id"/>
-                    </div>
-                    <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
-                    @if (Pairs.Any())
-                    {
-                        <QuickGrid Items="@Pairs" class="quick-data-grid">
-                            <TemplateColumn
-                                Title="@Localizer["RandomCoffeeFirstTitle"].Value"
-                                Sortable="true"
-                                SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-                                @context.FirstName
-                                <br/>
-                                @context.FirstUserName
-                            </TemplateColumn>
-                            <TemplateColumn
-                                Title="@Localizer["RandomCoffeeSecondTitle"].Value"
-                                Sortable="true"
-                                SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-                                @context.SecondName
-                                <br/>
-                                @context.SecondUserName
-                            </TemplateColumn>
-                        </QuickGrid>
-                    }
-                    else
-                    {
-                        <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                    }
-                </div>
-            </Content>
-        </Loading>
-    </Content>
+<DashboardWidget Title="@Localizer["RandomCoffeeHistoryWidgetTitle"]">
+    <Loading State="_state" Retry="Load">
+        <div class="component-container">
+            <div class="chat-selector">
+                <InputSelectList
+                    FieldId="chat-selector"
+                    Value="_formModel.ChatId"
+                    ValueExpression="@(() => _formModel.ChatId)"
+                    ValueChanged="@((long? v) => Load(v))"
+                    Items="_formModel.Chats"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+            @if (Pairs.Any())
+            {
+                <QuickGrid Items="@Pairs" class="quick-data-grid">
+                    <TemplateColumn
+                        Title="@Localizer["RandomCoffeeFirstTitle"]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                        @context.FirstName
+                        <br/>
+                        @context.FirstUserName
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Localizer["RandomCoffeeSecondTitle"]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                        @context.SecondName
+                        <br/>
+                        @context.SecondUserName
+                    </TemplateColumn>
+                </QuickGrid>
+            }
+            else
+            {
+                <NoData ComponentStyle="ComponentStyle.Secondary"/>
+            }
+        </div>
+    </Loading>
 </DashboardWidget>
 
 @code {
@@ -102,7 +98,7 @@
                 pairs.Add(new PairDto(
                     historyItems.ExcludedPersonName,
                     historyItems.ExcludedPersonUserName,
-                    Localizer["RandomCoffeeNoPair"].Value,
+                    Localizer["RandomCoffeeNoPair"],
                     SecondUserName: null));
 
             return pairs.AsQueryable();

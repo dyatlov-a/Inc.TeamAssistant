@@ -4,7 +4,7 @@
     @foreach (var stage in _stages)
     {
         <div class="nav-stages__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
-            @Localizer[GetStageTitle(stage)].Value
+            @Localizer[GetStageTitle(stage)]
         </div>
     }
 </div>

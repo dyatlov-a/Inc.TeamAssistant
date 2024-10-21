@@ -3,9 +3,7 @@
 <Stories TComponent="RouterLink">
     <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <RouterLink Href="#" @attributes="context.Args">
-                <Content>@_text</Content>
-            </RouterLink>
+            <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
         </Template>
     </Story>
     <Story Name="Secondary" Layout="typeof(LightLayout)">
@@ -13,9 +11,7 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
-            <RouterLink Href="#" @attributes="context.Args">
-                <Content>@_text</Content>
-            </RouterLink>
+            <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
         </Template>
     </Story>
 </Stories>

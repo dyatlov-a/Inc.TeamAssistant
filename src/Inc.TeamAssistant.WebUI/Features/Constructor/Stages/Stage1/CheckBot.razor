@@ -4,44 +4,34 @@
 <EditForm id="@AnalyticEvents.BotChecked" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
-    <Panel Header="@Localizer["ConnectingTelegram"].Value" IsOpen="true">
+    <Panel Header="@Localizer["ConnectingTelegram"]" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @Localizer["MoveNextTitle"].Value
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
         </Actions>
         <Content>
-            <FormSection Title="@Localizer["FormSectionTokenTitle"].Value">
+            <FormSection Title="@Localizer["FormSectionTokenTitle"]">
                 <HelpContent>
-                    @Localizer["FormSectionTokenHelpBegin"].Value <RouterLink
-                            Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
-                            Target="@RouterTarget.Blank">
-                        <Content>BotFather</Content>
-                    </RouterLink> @Localizer["FormSectionTokenHelpEnd"].Value
+                    @Localizer["FormSectionTokenHelpBegin"] <RouterLink
+                        Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
+                        Target="@RouterTarget.Blank">BotFather</RouterLink> @Localizer["FormSectionTokenHelpEnd"]
                 </HelpContent>
-                <Content>
+                <ChildContent>
                     <FormFieldSet
                         FieldId="bot-token"
-                        Label="@Localizer["FormSectionTokenFieldTokenLabel"].Value">
-                        <Content>
-                            <InputSingleLine FieldId="bot-token" @bind-Value="_formModel.Token" />
-                            <ValidationMessage For="@(() => _formModel.Token)"/>
-                        </Content>
+                        Label="@Localizer["FormSectionTokenFieldTokenLabel"]">
+                        <InputSingleLine FieldId="bot-token" @bind-Value="_formModel.Token" />
+                        <ValidationMessage For="@(() => _formModel.Token)"/>
                     </FormFieldSet>
                     <FormFieldSet
                         FieldId="bot-username"
-                        Label="@Localizer["FormSectionTokenFieldUserNameLabel"].Value">
-                        <Content>
-                            <InputSingleLine
-                                FieldId="bot-username"
-                                @bind-Value="_formModel.UserName"
-                                IsDisabled="true" />
-                            <ValidationMessage For="@(() => _formModel.UserName)"/>
-                        </Content>
+                        Label="@Localizer["FormSectionTokenFieldUserNameLabel"]">
+                        <InputSingleLine
+                            FieldId="bot-username"
+                            @bind-Value="_formModel.UserName"
+                            IsDisabled="true" />
+                        <ValidationMessage For="@(() => _formModel.UserName)"/>
                     </FormFieldSet>
-                </Content>
+                </ChildContent>
             </FormSection>
         </Content>
     </Panel>

@@ -6,19 +6,11 @@
     <div class="confirm-dialog">
         <div class="confirm-dialog__body">
             <div class="confirm-dialog__content">
-                @Content
+                @ChildContent
             </div>
             <div class="confirm-dialog__actions">
-                <Button OnClick="() => Close(OnConfirm)">
-                    <Content>
-                        @Localizer["Yes"].Value
-                    </Content>
-                </Button>
-                <Button OnClick="() => Close()" ComponentStyle="ComponentStyle.Secondary">
-                    <Content>
-                        @Localizer["No"].Value
-                    </Content>
-                </Button>
+                <Button OnClick="() => Close(OnConfirm)">@Localizer["Yes"]</Button>
+                <Button OnClick="() => Close()" ComponentStyle="ComponentStyle.Secondary">@Localizer["No"]</Button>
             </div>
         </div>
     </div>
@@ -29,7 +21,7 @@
     /// HTML content
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
     /// On confirm event

@@ -3,30 +3,24 @@
 
 <EditForm id="@AnalyticEvents.FeatureSelected" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <Panel Header="@Localizer["FeaturesStore"].Value" IsOpen="true">
+    <Panel Header="@Localizer["FeaturesStore"]" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @Localizer["MoveNextTitle"].Value
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
         </Actions>
         <Content>
             <FormSection
-                Title="@Localizer["FormSectionFeaturesTitle"].Value"
-                HelpText="@Localizer["FormSectionFeaturesHelp"].Value"
+                Title="@Localizer["FormSectionFeaturesTitle"]"
+                HelpText="@Localizer["FormSectionFeaturesHelp"]"
                 AsRows="true">
-                <Content>
-                    <InputFeatures
-                        Value="_formModel.FeatureIds"
-                        ValueExpression="@(() => _formModel.FeatureIds)"
-                        ValuesChanged="(IEnumerable<Guid> v) => _formModel.SetFeatures(v)"
-                        Features="StagesState.AvailableFeatures">
-                        <Validation>
-                            <ValidationMessage For="@(() => _formModel.FeatureIds)" />
-                        </Validation>
-                    </InputFeatures>
-                </Content>
+                <InputFeatures
+                    Value="_formModel.FeatureIds"
+                    ValueExpression="@(() => _formModel.FeatureIds)"
+                    ValuesChanged="(IEnumerable<Guid> v) => _formModel.SetFeatures(v)"
+                    Features="StagesState.AvailableFeatures">
+                    <Validation>
+                        <ValidationMessage For="@(() => _formModel.FeatureIds)" />
+                    </Validation>
+                </InputFeatures>
             </FormSection>
         </Content>
     </Panel>

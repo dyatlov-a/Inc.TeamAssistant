@@ -3,16 +3,12 @@
 <Stories TComponent="Loading">
     <Story Name="Done" Layout="typeof(DarkLayout)">
         <Template>
-            <Loading State="_done" Retry="Retry" @attributes="context.Args">
-                <Content>@_text</Content>
-            </Loading>
+            <Loading State="_done" Retry="Retry" @attributes="context.Args">@_text</Loading>
         </Template>
     </Story>
     <Story Name="Loading Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <Loading State="_loading" Retry="Retry" @attributes="context.Args">
-                <Content>@_text</Content>
-            </Loading>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">@_text</Loading>
         </Template>
     </Story>
     <Story Name="Loading Secondary" Layout="typeof(LightLayout)">
@@ -20,16 +16,12 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
         </Arguments>
         <Template>
-            <Loading State="_loading" Retry="Retry" @attributes="context.Args">
-                <Content>@_text</Content>
-            </Loading>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">@_text</Loading>
         </Template>
     </Story>
     <Story Name="Error Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <Loading State="_error" Retry="Retry" @attributes="context.Args">
-                <Content>@_text</Content>
-            </Loading>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">@_text</Loading>
         </Template>
     </Story>
     <Story Name="Error Secondary" Layout="typeof(LightLayout)">
@@ -37,9 +29,7 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
         </Arguments>
         <Template>
-            <Loading State="_error" Retry="Retry" @attributes="context.Args">
-                <Content>@_text</Content>
-            </Loading>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">@_text</Loading>
         </Template>
     </Story>
 </Stories>

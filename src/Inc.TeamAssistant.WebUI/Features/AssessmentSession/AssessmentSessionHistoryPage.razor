@@ -12,13 +12,13 @@
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
-    MetaOverrideTitle="@Title" />
+    MetaOverrideTitle="@Localizer["StoryList"]" />
 
 <main class="main">
     <div class="assessment-history-header">
         <div class="assessment-history-header__container">
             <Breadcrumbs Items="_breadcrumbs" />
-            <h1 class="assessment-history__title">@Title</h1>
+            <h1 class="assessment-history__title">@Localizer["StoryList"]</h1>
         </div>
     </div>
     <div class="assessment-history-switcher">
@@ -27,18 +27,16 @@
         </div>
     </div>
     <Loading State="_state" Retry="Load">
-        <Content>
-            @foreach (var item in _items)
-            {
-                <div class="assessment-history-content">
-                    <div class="assessment-history-content__container">
-                        <DynamicComponent
-                            Type="CurrentViewType"
-                            Parameters="@(new Dictionary<string, object> { ["Story"] = item, ["HasAcceptedValue"] = true })"/>
-                    </div>
+        @foreach (var item in _items)
+        {
+            <div class="assessment-history-content">
+                <div class="assessment-history-content__container">
+                    <DynamicComponent
+                        Type="CurrentViewType"
+                        Parameters="@(new Dictionary<string, object> { ["Story"] = item, ["HasAcceptedValue"] = true })"/>
                 </div>
-            }
-        </Content>
+            </div>
+        }
     </Loading>
 </main>
 <MainFooter />
@@ -60,8 +58,6 @@
         _ => typeof(AssessmentGroup)
     };
 
-    private string Title => Localizer["StoryList"].Value;
-
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
@@ -73,7 +69,7 @@
 
         _breadcrumbs = new Dictionary<string, string>
         {
-            [Localizer["AssessmentSession"].Value] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
+            [Localizer["AssessmentSession"]] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
             [Date] = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}")
         };
         

@@ -8,50 +8,46 @@
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Localizer["ReviewAverageStatsWidgetTitle"].Value">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (_items.Any())
-                        {
-                            <ApexChart
-                                TItem="ReviewAverageStatsDto"
-                                Title="@Localizer["ReviewAverageStatsTitle"].Value"
-                                Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
-                                FormatYAxisLabel="@(y => y.ToString("N1"))">
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Localizer["ReviewAverageFirstTouch"].Value"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Localizer["ReviewAverageReview"].Value"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Localizer["ReviewAverageCorrection"].Value"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
-                            </ApexChart>
-                        }
-                        else
-                        {
-                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                        }
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+        Title="@Localizer["ReviewAverageStatsWidgetTitle"]">
+        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+        <Loading State="_state" Retry="Load">
+            <div class="component-container">
+                @if (_items.Any())
+                {
+                    <ApexChart
+                        TItem="ReviewAverageStatsDto"
+                        Title="@Localizer["ReviewAverageStatsTitle"]"
+                        Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
+                        FormatYAxisLabel="@(y => y.ToString("N1"))">
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="_items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageFirstTouch"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="_items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageReview"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="_items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageCorrection"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
+                    </ApexChart>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 

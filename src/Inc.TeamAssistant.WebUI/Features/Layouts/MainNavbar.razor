@@ -10,18 +10,12 @@
             <Authorized>
                 @{ var person = context.User.ToPerson(); }
                 <div class="navbar__item navbar__item_logo">
-                    <RouterLink Href="@MainUrl">
-                        <Content>
-                            <HomeIcon Size="40px"/>
-                        </Content>
-                    </RouterLink>
+                    <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
                 </div>
                 @foreach (var language in _languages)
                 {
                     <div class="navbar__item">
-                        <RouterLink OnClick="() => MoveTo(language.Path)">
-                            <Content>@language.Culture</Content>
-                        </RouterLink>
+                        <RouterLink OnClick="() => MoveTo(language.Path)">@language.Culture</RouterLink>
                     </div>
                 }
                 <div class="navbar__divider"></div>
@@ -32,25 +26,17 @@
                     @person.Username
                 </span>
                 <div class="navbar__item">
-                    <RouterLink Href="@_logoutUrl">
-                        <Content>@Localizer["Logout"].Value</Content>
-                    </RouterLink>
+                    <RouterLink Href="@_logoutUrl">@Localizer["Logout"]</RouterLink>
                 </div>
             </Authorized>
             <NotAuthorized>
                 <div class="navbar__item">
-                    <RouterLink Href="@MainUrl">
-                        <Content>
-                            <HomeIcon Size="40px"/>
-                        </Content>
-                    </RouterLink>
+                    <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
                 </div>
                 @foreach (var language in _languages)
                 {
                     <div class="navbar__item">
-                        <RouterLink OnClick="() => MoveTo(language.Path)">
-                            <Content>@language.Culture</Content>
-                        </RouterLink>
+                        <RouterLink OnClick="() => MoveTo(language.Path)">@language.Culture</RouterLink>
                     </div>
                 }
                 <div class="navbar__divider"></div>
@@ -58,9 +44,7 @@
                 {
                     <div class="navbar__item">
                         <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
-                            <Content>
-                                @Localizer["Login"].Value
-                            </Content>
+                            @Localizer["Login"]
                         </RouterLink>
                     </div>
                 }

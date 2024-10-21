@@ -2,27 +2,21 @@
 
 <FormFieldSet
     FieldId="@BotNameId"
-    Label="@MessageWithLanguage(Localizer["BotName"].Value, Item.LanguageId)">
-    <Content>
-        <InputSingleLine FieldId="@BotNameId" @bind-Value="Item.Name" />
-        <ValidationMessage For="@(() => Item.Name)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotName"], Item.LanguageId)">
+    <InputSingleLine FieldId="@BotNameId" @bind-Value="Item.Name" />
+    <ValidationMessage For="@(() => Item.Name)"/>
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotShortDescriptionId"
-    Label="@MessageWithLanguage(Localizer["BotShortDescription"].Value, Item.LanguageId)">
-    <Content>
-        <InputSingleLine FieldId="@BotShortDescriptionId" @bind-Value="Item.ShortDescription" />
-        <ValidationMessage For="@(() => Item.ShortDescription)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotShortDescription"], Item.LanguageId)">
+    <InputSingleLine FieldId="@BotShortDescriptionId" @bind-Value="Item.ShortDescription" />
+    <ValidationMessage For="@(() => Item.ShortDescription)"/>
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotDescriptionId"
-    Label="@MessageWithLanguage(Localizer["BotDescription"].Value, Item.LanguageId)">
-    <Content>
-        <InputMultiLines FieldId="@BotDescriptionId" @bind-Value="Item.Description" />
-        <ValidationMessage For="@(() => Item.Description)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotDescription"], Item.LanguageId)">
+    <InputMultiLines FieldId="@BotDescriptionId" @bind-Value="Item.Description" />
+    <ValidationMessage For="@(() => Item.Description)"/>
 </FormFieldSet>
 
 @code {

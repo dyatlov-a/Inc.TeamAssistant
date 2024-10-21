@@ -7,73 +7,69 @@
 {
     <DashboardWidget
         HasControls="true"
-        Title="@Localizer["LastTasksWidgetTitle"].Value">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (Tasks.Any())
-                        {
-                            <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
-                                <TemplateColumn
-                                    Title="@Localizer["ReviewOwnerNameTitle"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
-                                    @context.OwnerName
-                                    <br/>
-                                    @context.OwnerUserName
-                                </TemplateColumn>
-                                <TemplateColumn Title="@Localizer["ReviewDescriptionTitle"].Value" Sortable="false">
-                                    <span title="@context.Description" class="hint">
-                                        @context.Description.ToShort()
-                                    </span>
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Localizer["ReviewReviewerNameTitle"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-                                    <span title="@GetReviewerTitle(context)" class="hint">
-                                        @context.ReviewerName
-                                        <br/>
-                                        @context.ReviewerUserName
-                                    </span>
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Localizer["ReviewStateTitle"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
-                                    @context.Created.ToString("yyyy.MM.dd HH:mm")
-                                    <br/>
-                                    @StateLookup[context.State]
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Localizer["ReviewStats"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
-                                    <span class="task__time hint" title="@FirstTouchTitle()">
-                                        @ConvertToString(context.FirstTouch)FT
-                                    </span>
-                                    <br/>
-                                    <span class="task__time hint" title="@CorrectionTitle(context)">
-                                        @ConvertToString(context.Correction)C
-                                    </span>
-                                    <br/>
-                                    <span class="task__time hint" title="@ReviewTitle()">
-                                        @ConvertToString(context.Review)R
-                                    </span>
-                                </TemplateColumn>
-                            </QuickGrid>
-                            <Pagination State="_pagination"/>
-                        }
-                        else
-                        {
-                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                        }
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+        Title="@Localizer["LastTasksWidgetTitle"]">
+        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+        <Loading State="_state" Retry="Load">
+            <div class="component-container">
+                @if (Tasks.Any())
+                {
+                    <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
+                        <TemplateColumn
+                            Title="@Localizer["ReviewOwnerNameTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
+                            @context.OwnerName
+                            <br/>
+                            @context.OwnerUserName
+                        </TemplateColumn>
+                        <TemplateColumn Title="@Localizer["ReviewDescriptionTitle"]" Sortable="false">
+                            <span title="@context.Description" class="hint">
+                                @context.Description.ToShort()
+                            </span>
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewReviewerNameTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
+                            <span title="@GetReviewerTitle(context)" class="hint">
+                                @context.ReviewerName
+                                <br/>
+                                @context.ReviewerUserName
+                            </span>
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewStateTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
+                            @context.Created.ToString("yyyy.MM.dd HH:mm")
+                            <br/>
+                            @StateLookup[context.State]
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewStats"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
+                            <span class="task__time hint" title="@FirstTouchTitle()">
+                                @ConvertToString(context.FirstTouch)FT
+                            </span>
+                            <br/>
+                            <span class="task__time hint" title="@CorrectionTitle(context)">
+                                @ConvertToString(context.Correction)C
+                            </span>
+                            <br/>
+                            <span class="task__time hint" title="@ReviewTitle()">
+                                @ConvertToString(context.Review)R
+                            </span>
+                        </TemplateColumn>
+                    </QuickGrid>
+                    <Pagination State="_pagination"/>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
@@ -86,11 +82,11 @@
     
     private IReadOnlyDictionary<string, string> StateLookup => new Dictionary<string, string>
     {
-        ["None"] = Localizer["ReviewStateNone"].Value,
-        ["New"] = Localizer["ReviewStateNew"].Value,
-        ["InProgress"] = Localizer["ReviewStateInProgress"].Value,
-        ["OnCorrection"] = Localizer["ReviewStateOnCorrection"].Value,
-        ["Accept"] = Localizer["ReviewStateAccept"].Value
+        ["None"] = Localizer["ReviewStateNone"],
+        ["New"] = Localizer["ReviewStateNew"],
+        ["InProgress"] = Localizer["ReviewStateInProgress"],
+        ["OnCorrection"] = Localizer["ReviewStateOnCorrection"],
+        ["Accept"] = Localizer["ReviewStateAccept"]
     };
 
     private DateOnly? _date;
@@ -133,15 +129,15 @@
     private string GetReviewerTitle(TaskForReviewDto task)
     {
         var hasConcreteReviewer = task.HasConcreteReviewer
-            ? Localizer["BooleanTrueText"].Value
-            : Localizer["BooleanFalseText"].Value;
+            ? Localizer["BooleanTrueText"]
+            : Localizer["BooleanFalseText"];
         var isOriginalReviewer = task.IsOriginalReviewer
-            ? Localizer["BooleanFalseText"].Value
-            : Localizer["BooleanTrueText"].Value;
+            ? Localizer["BooleanFalseText"]
+            : Localizer["BooleanTrueText"];
         var builder = new StringBuilder();
         
-        builder.AppendLine($"{Localizer["HasConcreteReviewer"].Value} - {hasConcreteReviewer}");
-        builder.Append($"{Localizer["IsOriginalReviewer"].Value} - {isOriginalReviewer}");
+        builder.AppendLine($"{Localizer["HasConcreteReviewer"]} - {hasConcreteReviewer}");
+        builder.Append($"{Localizer["IsOriginalReviewer"]} - {isOriginalReviewer}");
         
         return builder.ToString();
     }
@@ -152,8 +148,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Localizer["FirstTouch"].Value);
-        builder.Append(Localizer["FirstTouchHelp"].Value);
+        builder.AppendLine(Localizer["FirstTouch"]);
+        builder.Append(Localizer["FirstTouchHelp"]);
         
         return builder.ToString();
     }
@@ -163,9 +159,9 @@
         var builder = new StringBuilder();
 
         builder.AppendLine(task.Iterations == 0
-            ? Localizer["Correction"].Value
-            : $"{Localizer["Correction"].Value} ({task.Iterations})");
-        builder.Append(Localizer["CorrectionHelp"].Value);
+            ? Localizer["Correction"]
+            : $"{Localizer["Correction"]} ({task.Iterations})");
+        builder.Append(Localizer["CorrectionHelp"]);
         
         return builder.ToString();
     }
@@ -174,8 +170,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Localizer["Review"].Value);
-        builder.Append(Localizer["ReviewHelp"].Value);
+        builder.AppendLine(Localizer["Review"]);
+        builder.Append(Localizer["ReviewHelp"]);
         
         return builder.ToString();
     }

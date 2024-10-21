@@ -1,12 +1,10 @@
 @inject IStringLocalizer<DashboardResources> Localizer
 @inject NavRouter NavRouter
 
-<DashboardWidget Title="@Localizer["BotWidgetTitle"].Value">
-    <Content>
-        <p class="bot-not-selected">
-            @Localizer["SelectTeam"].Value <RouterLink Href="@NavRouter.CreateRoute("constructor")">
-                <Content>@Localizer["CreateBot"].Value</Content>
-            </RouterLink>
-        </p>
-    </Content>
+<DashboardWidget Title="@Localizer["BotWidgetTitle"]">
+    <p class="bot-not-selected">
+        @Localizer["SelectTeam"] <RouterLink Href="@NavRouter.CreateRoute("constructor")">
+            @Localizer["CreateBot"]
+        </RouterLink>
+    </p>
 </DashboardWidget>

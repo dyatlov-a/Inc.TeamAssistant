@@ -13,7 +13,7 @@
         </p>
     </div>
     <div class="form-section__content">
-        @Content
+        @ChildContent
     </div>
 </div>
 
@@ -28,7 +28,7 @@
     /// HTML content.
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
     /// render as rows

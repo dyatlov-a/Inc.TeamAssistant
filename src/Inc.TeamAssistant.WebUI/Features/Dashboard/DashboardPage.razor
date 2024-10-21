@@ -17,7 +17,7 @@
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Dashboard"
-    MetaOverrideTitle="@Localizer["Title"].Value" />
+    MetaOverrideTitle="@Localizer["Title"]" />
 
 <div class="dashboard__fluent-container">
     <DashboardSettings BotId="BotId" Widgets="_widgets" Changed="Load" />
@@ -34,21 +34,19 @@
         </div>
         <div class="dashboard-content">
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="dashboard-widgets">
-                        @if (_botId.HasValue)
+                <div class="dashboard-widgets">
+                    @if (_botId.HasValue)
+                    {
+                        foreach (var widget in _widgets.Where(w => w.IsVisible).OrderBy(w => w.Position))
                         {
-                            foreach (var widget in _widgets.Where(w => w.IsVisible).OrderBy(w => w.Position))
-                            {
-                                <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
-                            }
+                            <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
                         }
-                        else
-                        {
-                            <BotNotSelected/>
-                        }
-                    </div>
-                </Content>
+                    }
+                    else
+                    {
+                        <BotNotSelected/>
+                    }
+                </div>
             </Loading>
         </div>
     </div>

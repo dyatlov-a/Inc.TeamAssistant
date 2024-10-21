@@ -15,7 +15,7 @@
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Assessment"
-    MetaOverrideTitle="@Title" />
+    MetaOverrideTitle="@Localizer["TaskAssess"]" />
 
 <main class="main">
     <div class="assessment-session-header">
@@ -23,17 +23,15 @@
             <div class="assessment-session__header">
                 <div class="assessment-session__about">
                     <Breadcrumbs Items="_breadcrumbs" />
-                    <h1 class="assessment-session__title">@Title</h1>
+                    <h1 class="assessment-session__title">@Localizer["TaskAssess"]</h1>
                     <p class="assessment-session__text">
-                        @string.Format(Localizer["AssessmentSessionAboutTemplate"].Value, _item.TeamName)
+                        @string.Format(Localizer["AssessmentSessionAboutTemplate"], _item.TeamName)
                     </p>
-                    <p class="assessment-session__text">@Localizer["AssessmentSessionConnect"].Value</p>
+                    <p class="assessment-session__text">@Localizer["AssessmentSessionConnect"]</p>
                 </div>
                 <div class="assessment-session__link">
                     <Loading State="_state" ComponentStyle="ComponentStyle.Secondary" Retry="() => Load()">
-                        <Content>
-                            @((MarkupString)_item.CodeForConnect)
-                        </Content>
+                        @((MarkupString)_item.CodeForConnect)
                     </Loading>
                 </div>
             </div>
@@ -48,18 +46,16 @@
         <div class="assessment-session-content__container">
             <div>
                 <Loading State="_state" Retry="() => Load()">
-                    <Content>
-                        @if (_item.Story is not null)
-                        {
-                            <DynamicComponent
-                                Type="CurrentViewType"
-                                Parameters="@(new Dictionary<string, object>{["Story"] = _item.Story})"/>
-                        }
-                        else
-                        {
-                            <NoData/>
-                        }
-                    </Content>
+                    @if (_item.Story is not null)
+                    {
+                        <DynamicComponent
+                            Type="CurrentViewType"
+                            Parameters="@(new Dictionary<string, object>{["Story"] = _item.Story})"/>
+                    }
+                    else
+                    {
+                        <NoData/>
+                    }
                 </Loading>
             </div>
         </div>
@@ -84,8 +80,6 @@
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
     };
-
-    private string Title => Localizer["TaskAssess"].Value;
     
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
@@ -100,7 +94,7 @@
         var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         _breadcrumbs = new Dictionary<string, string>
         {
-            [Localizer["AssessmentSession"].Value] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
+            [Localizer["AssessmentSession"]] = NavRouter.CreateRoute($"assessment-session/{Id:N}"),
             [date] = NavRouter.CreateRoute($"assessment-history/{Id:N}/{date}")
         };
         
@@ -121,7 +115,7 @@
                 b => b.OnStoryAccepted(async v =>
                 {
                     var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-                    var message = string.Format(Localizer["EstimationAcceptedTemplate"].Value, v);
+                    var message = string.Format(Localizer["EstimationAcceptedTemplate"], v);
 
                     notificationsService.Publish(Notification.Info(message));
 

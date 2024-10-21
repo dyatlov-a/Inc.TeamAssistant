@@ -9,17 +9,13 @@
         }
         else
         {
-            <Button ComponentStyle="ComponentStyle" OnClick="Retry">
-                <Content>
-                    @Localizer["Reload"].Value
-                </Content>
-            </Button>
+            <Button ComponentStyle="ComponentStyle" OnClick="Retry">@Localizer["Reload"]</Button>
         }
     </div>
 }
 else
 {
-    @Content
+    @ChildContent
 }
 
 @code {
@@ -30,10 +26,10 @@ else
     public LoadingState State { get; set; } = LoadingState.Done();
     
     /// <summary>
-    /// HTML component.
+    /// HTML content.
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
     /// Action for retry

@@ -1,9 +1,7 @@
 @inject IJSRuntime JsRuntime
 
 <ContentDialog Title="@Title" IsGrand="!HasChart" @ref="_contentDialog">
-    <Content>
-        @Content
-    </Content>
+    @ChildContent
 </ContentDialog>
 
 <div class="dashboard-widgets__widget">
@@ -15,13 +13,11 @@
                     ButtonMode="ButtonMode.Small"
                     ComponentStyle="ComponentStyle.Secondary"
                     OnClick="OpenInContentDialog">
-                    <Content>
-                        <MaximizeIcon ComponentStyle="ComponentStyle.Secondary" Size="20px"/>
-                    </Content>
+                    <MaximizeIcon ComponentStyle="ComponentStyle.Secondary" Size="20px"/>
                 </Button>
             </div>
         </div>
-        @Content
+        @ChildContent
     </div>
 </div>
 
@@ -30,7 +26,7 @@
     public string Title { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     [Parameter]
     public bool HasControls { get; set; }

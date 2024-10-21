@@ -12,7 +12,7 @@ internal sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetti
         
         RuleFor(e => e.CalendarId)
             .NotEmpty()
-            .WithMessage(localizer["RequiredCalendar"].Value);
+            .WithMessage(localizer["RequiredCalendar"]);
         
         RuleFor(e => e.Properties)
             .NotNull();

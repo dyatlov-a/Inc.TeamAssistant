@@ -14,37 +14,35 @@
     <div class="login-container">
         <div class="login-action">
             <div class="login-action-container">
-                <h1 class="telegram-login__header">@Localizer["LoginTitle"].Value</h1>
-                <p class="telegram-login__text">@Localizer["LoginHelp"].Value</p>
+                <h1 class="telegram-login__header">@Localizer["LoginTitle"]</h1>
+                <p class="telegram-login__text">@Localizer["LoginHelp"]</p>
                 <div class="telegram-login__actions">
                     <Loading State="_state" Retry="Load">
-                        <Content>
-                            @if (RenderContext.IsDevelopment())
-                            {
-                                <button type="button" @onclick="LoginAsSuperUser" class="button_telegram">
-                                    @Localizer["LoginAsSuperuser"].Value
-                                </button>
-                            }
-                            else if (!string.IsNullOrWhiteSpace(_botUserName))
-                            {
-                                <script
-                                    async
-                                    src="https://telegram.org/js/telegram-widget.js?22"
-                                    data-telegram-login="@_botUserName"
-                                    data-size="large"
-                                    data-userpic="false"
-                                    data-auth-url="accounts/login-tg?return_url=@ReturnUrl"
-                                    data-request-access="write">
+                        @if (RenderContext.IsDevelopment())
+                        {
+                            <button type="button" @onclick="LoginAsSuperUser" class="button_telegram">
+                                @Localizer["LoginAsSuperuser"]
+                            </button>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(_botUserName))
+                        {
+                            <script
+                                async
+                                src="https://telegram.org/js/telegram-widget.js?22"
+                                data-telegram-login="@_botUserName"
+                                data-size="large"
+                                data-userpic="false"
+                                data-auth-url="accounts/login-tg?return_url=@ReturnUrl"
+                                data-request-access="write">
                                 </script>
-                            }
-                        </Content>
+                        }
                     </Loading>
                 </div>
             </div>
         </div>
         <div class="login-motivation">
             <div class="login-motivation-container">
-                <h2 class="login-motivation__header">@Localizer["CreateBot"].Value</h2>
+                <h2 class="login-motivation__header">@Localizer["CreateBot"]</h2>
             </div>
         </div>
     </div>

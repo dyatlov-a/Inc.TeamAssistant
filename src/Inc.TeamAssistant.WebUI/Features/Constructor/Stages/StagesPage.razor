@@ -20,18 +20,16 @@
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
-    MetaOverrideTitle="@Title" />
+    MetaOverrideTitle="@Localizer["Title"]" />
 
 <div class="constructor">
     <div class="constructor__container">
         <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
-        <h1 class="constructor__title">@Title @BotName</h1>
+        <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
         @if (RenderContext.IsBrowser)
         {
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <DynamicComponent Type="StageType" Parameters="StageParameters"/>
-                </Content>
+                <DynamicComponent Type="StageType" Parameters="StageParameters"/>
             </Loading>
         }
     </div>
@@ -67,7 +65,6 @@
         ["MoveToNext"] = (object)MoveToNext,
         ["BotStorageKey"] = BotStorageKey
     };
-    private string Title => Localizer["Title"].Value;
     
     protected override async Task OnParametersSetAsync()
     {
@@ -121,7 +118,7 @@
         
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
         
-        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"].Value));
+        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"]));
         
         await NavRouter.MoveToRoute("constructor");
     }

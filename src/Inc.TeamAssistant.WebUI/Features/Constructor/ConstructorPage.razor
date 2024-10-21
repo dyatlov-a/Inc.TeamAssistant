@@ -8,20 +8,16 @@
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
-    MetaOverrideTitle="@Title" />
+    MetaOverrideTitle="@Localizer["Title"]" />
 
 <div class="constructor">
     <div class="constructor__container">
-        <h1 class="constructor__title">@Title</h1>
+        <h1 class="constructor__title">@Localizer["Title"]</h1>
         <AuthorizeView>
             <Authorized>
-                <p class="constructor__text">@Localizer["SelectBotText"].Value</p>
+                <p class="constructor__text">@Localizer["SelectBotText"]</p>
                 <BotSelector OwnerId="@context.User.ToPerson().Id" />
             </Authorized>
         </AuthorizeView>
     </div>
 </div>
-
-@code {
-    private string Title => Localizer["Title"].Value;
-}

@@ -4,48 +4,32 @@
 @inject NavRouter NavRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
-    <Content>
-        <p>@string.Format(Localizer["RemoveConfirmationText"].Value, _selectedBot?.Name)</p>
-    </Content>
+    <p>@string.Format(Localizer["RemoveConfirmationText"], _selectedBot?.Name)</p>
 </ConfirmDialog>
 <div class="bot-selector">
     <div class="bot-selector__item">
-        <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"].Value">
+        <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"]">
             <Buttons>
-                <Button OnClick="MoveToAdd">
-                    <Content>
-                        @Localizer["AddBot"].Value
-                    </Content>
-                </Button>
+                <Button OnClick="MoveToAdd">@Localizer["AddBot"]</Button>
             </Buttons>
         </BotCard>
     </div>
     <div class="bot-selector__item">
         <Loading State="_state" Retry="Load">
-            <Content>
-                @foreach (var bot in _bots)
-                {
-                    <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
-                        <Content>
-                            <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
-                                <Content>@Localizer["MoveToDashboard"].Value</Content>
-                            </RouterLink>
-                        </Content>
-                        <Buttons>
-                            <Button OnClick="() => MoveToEdit(bot.Id)">
-                                <Content>
-                                    @Localizer["Edit"].Value
-                                </Content>
-                            </Button>
-                            <Button OnClick="() => MoveToRemove(bot)">
-                                <Content>
-                                    @Localizer["Remove"].Value
-                                </Content>
-                            </Button>
-                        </Buttons>
-                    </BotCard>
-                }
-            </Content>
+            @foreach (var bot in _bots)
+            {
+                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                    <Content>
+                        <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
+                            @Localizer["MoveToDashboard"]
+                        </RouterLink>
+                    </Content>
+                    <Buttons>
+                        <Button OnClick="() => MoveToEdit(bot.Id)">@Localizer["Edit"]</Button>
+                        <Button OnClick="() => MoveToRemove(bot)">@Localizer["Remove"]</Button>
+                    </Buttons>
+                </BotCard>
+            }
         </Loading>
     </div>
 </div>

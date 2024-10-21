@@ -6,14 +6,12 @@
 @if (_items.Any())
 {
     <div class="history">
-        <div class="history__title">@Localizer["History"].Value</div>
+        <div class="history__title">@Localizer["History"]</div>
         <div class="history__body">
             @foreach (var item in _items)
             {
                 <RouterLink Href="@CreateMoveToHistoryLink(item)" ComponentStyle="ComponentStyle.Secondary">
-                    <Content>
-                        @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Localizer["Tasks"].Value
-                    </Content>
+                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Localizer["Tasks"]
                 </RouterLink>
             }
         </div>

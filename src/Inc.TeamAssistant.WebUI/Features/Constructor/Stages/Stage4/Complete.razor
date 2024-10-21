@@ -8,137 +8,107 @@
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <Panel Header="@PanelHeader" IsOpen="true">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @ButtonText
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@ButtonText</Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="SubmitForm">
-                <Content>
-                    <ValidationSummary />
-                    <FormSection
-                        Title="@Localizer["ConnectingTelegram"].Value"
-                        HelpText="@Localizer["FormSectionTokenCheckHelp"].Value">
-                        <Content>
-                            <div class="actions">
-                                <RouterLink
-                                    OnClick="() => MoveToNext(Stage.CheckBot)"
-                                    ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Localizer["Edit"].Value</Content>
-                                </RouterLink>
-                            </div>
-                            <FormFieldSet
-                                FieldId="bot-username"
-                                Label="@Localizer["FormSectionTokenFieldUserNameLabel"].Value">
-                                <Content>
-                                    <InputSingleLine
-                                        FieldId="bot-username"
-                                        @bind-Value="_formModel.UserName"
-                                        IsDisabled="true"/>
-                                </Content>
-                            </FormFieldSet>
-                        </Content>
-                    </FormSection>
-                    <FormSection
-                        Title="@Localizer["FeaturesStore"].Value"
-                        HelpText="@Localizer["FormSectionFeaturesCheckHelp"].Value">
-                        <Content>
-                            <div class="actions">
-                                <RouterLink
-                                    OnClick="() => MoveToNext(Stage.SelectFeatures)"
-                                    ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Localizer["Edit"].Value</Content>
-                                </RouterLink>
-                            </div>
-                            @foreach (var feature in StagesState.AvailableFeatures)
-                            {
-                                var fieldId = feature.Id.ToString();
-                                var selected = StagesState.FeatureIds.Contains(feature.Id)
-                                    ? Localizer["BooleanTrueText"].Value
-                                    : Localizer["BooleanFalseText"].Value;
-
-                                <FormFieldSet
-                                    FieldId="@fieldId"
-                                    Label="@FeaturesFactory.CreateName(feature.Name)">
-                                    <Content>
-                                        <InputSingleLine
-                                            FieldId="@fieldId"
-                                            @bind-Value="selected"
-                                            IsDisabled="true"/>
-                                    </Content>
-                                </FormFieldSet>
-                            }
-                        </Content>
-                    </FormSection>
-                    @foreach (var feature in StagesState.SelectedFeatures)
+                <ValidationSummary />
+                <FormSection
+                    Title="@Localizer["ConnectingTelegram"]"
+                    HelpText="@Localizer["FormSectionTokenCheckHelp"]">
+                    <div class="actions">
+                        <RouterLink
+                            OnClick="() => MoveToNext(Stage.CheckBot)"
+                            ComponentStyle="ComponentStyle.Secondary">@Localizer["Edit"]</RouterLink>
+                    </div>
+                    <FormFieldSet
+                        FieldId="bot-username"
+                        Label="@Localizer["FormSectionTokenFieldUserNameLabel"]">
+                        <InputSingleLine
+                            FieldId="bot-username"
+                            @bind-Value="_formModel.UserName"
+                            IsDisabled="true"/>
+                    </FormFieldSet>
+                </FormSection>
+                <FormSection
+                    Title="@Localizer["FeaturesStore"]"
+                    HelpText="@Localizer["FormSectionFeaturesCheckHelp"]">
+                    <div class="actions">
+                        <RouterLink
+                            OnClick="() => MoveToNext(Stage.SelectFeatures)"
+                            ComponentStyle="ComponentStyle.Secondary">@Localizer["Edit"]</RouterLink>
+                    </div>
+                    @foreach (var feature in StagesState.AvailableFeatures)
                     {
-                        if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
-                            continue;
+                        var fieldId = feature.Id.ToString();
+                        var selected = StagesState.FeatureIds.Contains(feature.Id)
+                            ? Localizer["BooleanTrueText"].Value
+                            : Localizer["BooleanFalseText"].Value;
 
-                        foreach (var settingSection in settingSections)
-                        {
-                            <FormSection
-                                Title="@Localizer[settingSection.HeaderMessageId].Value"
-                                HelpText="@Localizer[settingSection.HelpMessageId].Value">
-                                <Content>
-                                    <div class="actions">
-                                        <RouterLink
-                                            OnClick="() => MoveToNext(Stage.SetSettings)"
-                                            ComponentStyle="ComponentStyle.Secondary">
-                                            <Content>@Localizer["Edit"].Value</Content>
-                                        </RouterLink>
-                                    </div>
-                                    @foreach (var settingItem in settingSection.SettingItems)
-                                    {
-                                        var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
-                                            settingItem.PropertyName,
-                                            StringComparison.InvariantCultureIgnoreCase));
-                                        var propertyValueAsString = GetValueAsText(settingItem, property.Value);
-
-                                        <FormFieldSet
-                                            FieldId="@settingItem.PropertyName"
-                                            Label="@Localizer[settingItem.LabelMessageId].Value">
-                                            <Content>
-                                                <InputSingleLine
-                                                    FieldId="@settingItem.PropertyName"
-                                                    @bind-Value="propertyValueAsString"
-                                                    IsDisabled="true"/>
-                                            </Content>
-                                        </FormFieldSet>
-                                    }
-                                </Content>
-                            </FormSection>
-                        }
+                        <FormFieldSet
+                            FieldId="@fieldId"
+                            Label="@FeaturesFactory.CreateName(feature.Name)">
+                            <InputSingleLine
+                                FieldId="@fieldId"
+                                @bind-Value="selected"
+                                IsDisabled="true"/>
+                        </FormFieldSet>
                     }
-                    <FormSection
-                        Title="@Localizer["SupportedLanguages"].Value"
-                        HelpText="@Localizer["SupportedLanguagesCheck"].Value">
-                        <Content>
+                </FormSection>
+                @foreach (var feature in StagesState.SelectedFeatures)
+                {
+                    if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                        continue;
+
+                    foreach (var settingSection in settingSections)
+                    {
+                        <FormSection
+                            Title="@Localizer[settingSection.HeaderMessageId]"
+                            HelpText="@Localizer[settingSection.HelpMessageId]">
                             <div class="actions">
                                 <RouterLink
                                     OnClick="() => MoveToNext(Stage.SetSettings)"
-                                    ComponentStyle="ComponentStyle.Secondary">
-                                    <Content>@Localizer["Edit"].Value</Content>
-                                </RouterLink>
+                                    ComponentStyle="ComponentStyle.Secondary">@Localizer["Edit"]</RouterLink>
                             </div>
-                            <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"].Value">
-                                <Content>
-                                    <InputMultiSelectList
-                                        FieldId="supported-languages"
-                                        Value="_formModel.SupportedLanguages"
-                                        ValueExpression="() => _formModel.SupportedLanguages"
-                                        Items="LanguageSettings.LanguageIds"
-                                        TitleSelector="i => i.Value"
-                                        ValueSelector="i => i.Value"
+                            @foreach (var settingItem in settingSection.SettingItems)
+                            {
+                                var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                    settingItem.PropertyName,
+                                    StringComparison.InvariantCultureIgnoreCase));
+                                var propertyValueAsString = GetValueAsText(settingItem, property.Value);
+
+                                <FormFieldSet
+                                    FieldId="@settingItem.PropertyName"
+                                    Label="@Localizer[settingItem.LabelMessageId]">
+                                    <InputSingleLine
+                                        FieldId="@settingItem.PropertyName"
+                                        @bind-Value="propertyValueAsString"
                                         IsDisabled="true"/>
-                                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
-                                </Content>
-                            </FormFieldSet>
-                        </Content>
-                    </FormSection>
-                </Content>
+                                </FormFieldSet>
+                            }
+                        </FormSection>
+                    }
+                }
+                <FormSection
+                    Title="@Localizer["SupportedLanguages"]"
+                    HelpText="@Localizer["SupportedLanguagesCheck"]">
+                    <div class="actions">
+                        <RouterLink
+                            OnClick="() => MoveToNext(Stage.SetSettings)"
+                            ComponentStyle="ComponentStyle.Secondary">@Localizer["Edit"]</RouterLink>
+                    </div>
+                    <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"]">
+                        <InputMultiSelectList
+                            FieldId="supported-languages"
+                            Value="_formModel.SupportedLanguages"
+                            ValueExpression="() => _formModel.SupportedLanguages"
+                            Items="LanguageSettings.LanguageIds"
+                            TitleSelector="i => i.Value"
+                            ValueSelector="i => i.Value"
+                            IsDisabled="true"/>
+                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                    </FormFieldSet>
+                </FormSection>
             </Loading>
         </Content>
     </Panel>
@@ -158,16 +128,14 @@
     public string BotStorageKey { get; set; } = default!;
 
     private string ButtonText => StagesState.Id.HasValue
-        ? Localizer["ButtonUpdateText"].Value
-        : Localizer["ButtonCreateText"].Value;
+        ? Localizer["ButtonUpdateText"]
+        : Localizer["ButtonCreateText"];
     
     private string FormId => StagesState.Id.HasValue
         ? AnalyticEvents.BotUpdated
         : AnalyticEvents.BotCreated;
     
-    private string PanelHeader => string.Format(
-        Localizer["CheckConfigurationTemplate"].Value,
-        ButtonText.ToLowerInvariant());
+    private string PanelHeader => string.Format(Localizer["CheckConfigurationTemplate"], ButtonText.ToLowerInvariant());
     
     private readonly CompleteFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
@@ -185,7 +153,7 @@
             value,
             StringComparison.InvariantCultureIgnoreCase));
         
-        return item is null ? string.Empty : Localizer[item.MessageId].Value;
+        return item is null ? string.Empty : Localizer[item.MessageId];
     }
     
     private async Task SubmitForm()

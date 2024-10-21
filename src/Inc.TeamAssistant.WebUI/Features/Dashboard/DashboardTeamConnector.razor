@@ -5,27 +5,21 @@
 <div class="team-connector">
     <FormSection
         Title="@_team.TeamName"
-        HelpText="@Localizer["ConnectToTeamHelp"].Value"
+        HelpText="@Localizer["ConnectToTeamHelp"]"
         AsRows="true">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="team-connector__code">
-                        @((MarkupString)_team.Code)
-                    </div>
-                    <div class="team-connector__buttons">
-                        <Button
-                            ComponentStyle="ComponentStyle.Secondary"
-                            ButtonType="ButtonType.Tab"
-                            Link="@_team.LinkForConnect">
-                            <Content>
-                                @Localizer["ConnectToTeamButton"].Value
-                            </Content>
-                        </Button>
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+        <Loading State="_state" Retry="Load">
+            <div class="team-connector__code">
+                @((MarkupString)_team.Code)
+            </div>
+            <div class="team-connector__buttons">
+                <Button
+                    ComponentStyle="ComponentStyle.Secondary"
+                    ButtonType="ButtonType.Tab"
+                    Link="@_team.LinkForConnect">
+                    @Localizer["ConnectToTeamButton"]
+                </Button>
+            </div>
+        </Loading>
     </FormSection>
 </div>
 

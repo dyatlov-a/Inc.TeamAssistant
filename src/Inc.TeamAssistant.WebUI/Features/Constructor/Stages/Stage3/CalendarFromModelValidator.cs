@@ -18,7 +18,7 @@ internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFro
         RuleFor(e => e.Holidays)
             .NotNull()
             .Must(e => e.Select(i => i.Date).Distinct().Count() == e.Count)
-            .WithMessage(localizer["DuplicateHolidays"].Value);
+            .WithMessage(localizer["DuplicateHolidays"]);
 
         _dates.Clear();
         RuleForEach(e => e.Holidays)

@@ -13,25 +13,23 @@
 <section id="about-bots" class="about-bots">
     <div class="about-bots__container @(RenderContext.IsBrowser ? "animation__slide-left" : "hidden")">
         <h1 class="about-bots__header">
-            <span>@Localizer["MainHeader"].Value</span>
+            <span>@Localizer["MainHeader"]</span>
             <br/>
             <span>@Localizer["MainSubHeader"]</span>
         </h1>
         <br/>
         <p class="about-bots__description">
-            <span>@Icons.Ok @Localizer["ToolAppraiser"].Value</span>
+            <span>@Icons.Ok @Localizer["ToolAppraiser"]</span>
             <br/>
-            <span>@Icons.Accept @Localizer["ToolReviewer"].Value</span>
+            <span>@Icons.Accept @Localizer["ToolReviewer"]</span>
             <br/>
-            <span>@Icons.Comment @Localizer["ToolRandomCoffee"].Value</span>
+            <span>@Icons.Comment @Localizer["ToolRandomCoffee"]</span>
             <br/>
-            <span>@Icons.Start @Localizer["ToolCheckIn"].Value</span>
+            <span>@Icons.Start @Localizer["ToolCheckIn"]</span>
         </p>
         <div class="about-bots__actions">
             <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToConstructor">
-                <Content>
-                    @Localizer["CreateBotLink"].Value
-                </Content>
+                @Localizer["CreateBotLink"]
             </Button>
         </div>
     </div>

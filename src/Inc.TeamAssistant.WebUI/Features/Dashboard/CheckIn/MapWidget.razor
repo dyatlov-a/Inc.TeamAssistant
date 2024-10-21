@@ -3,51 +3,43 @@
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
-<DashboardWidget Title="@Localizer["CheckInMapWidgetTitle"].Value">
-    <Content>
-        <Loading State="_state" Retry="Load">
-            <Content>
-                <div class="component-container">
-                    <div class="map-selector">
-                        <InputSelectList
-                            FieldId="map-selector"
-                            Value="_formModel.MapId"
-                            ValueExpression="@(() => _formModel.MapId)"
-                            ValueChanged="@((Guid? v) => _formModel.MapId = v)"
-                            Items="_formModel.Maps"
-                            TitleSelector="i => i.Name"
-                            ValueSelector="i => i.Id"/>
-                    </div>
-                    @if (_formModel.MapId.HasValue)
-                    {
-                        var routeSegment = $"map/{_formModel.MapId.Value:N}";
-                        var mapUrl = NavRouter.CreateRoute(routeSegment);
+<DashboardWidget Title="@Localizer["CheckInMapWidgetTitle"]">
+    <Loading State="_state" Retry="Load">
+        <div class="component-container">
+            <div class="map-selector">
+                <InputSelectList
+                    FieldId="map-selector"
+                    Value="_formModel.MapId"
+                    ValueExpression="@(() => _formModel.MapId)"
+                    ValueChanged="@((Guid? v) => _formModel.MapId = v)"
+                    Items="_formModel.Maps"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            @if (_formModel.MapId.HasValue)
+            {
+                var routeSegment = $"map/{_formModel.MapId.Value:N}";
+                var mapUrl = NavRouter.CreateRoute(routeSegment);
 
-                        <div class="checkin-map">
-                            <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
-                            <div class="checkin-map__bg"></div>
-                            <div class="checkin-map__controls">
-                                <div class="checkin-map__controls-body">
-                                    <Button
-                                        ComponentStyle="ComponentStyle.Secondary"
-                                        ButtonType="ButtonType.Tab"
-                                        Link="@routeSegment">
-                                        <Content>
-                                            @Localizer["CheckInMoveToMapTitle"].Value
-                                        </Content>
-                                    </Button>
-                                </div>
-                            </div>
+                <div class="checkin-map">
+                    <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
+                    <div class="checkin-map__bg"></div>
+                    <div class="checkin-map__controls">
+                        <div class="checkin-map__controls-body">
+                            <Button
+                                ComponentStyle="ComponentStyle.Secondary"
+                                ButtonType="ButtonType.Tab"
+                                Link="@routeSegment">@Localizer["CheckInMoveToMapTitle"]</Button>
                         </div>
-                    }
-                    else
-                    {
-                        <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                    }
+                    </div>
                 </div>
-            </Content>
-        </Loading>
-    </Content>
+            }
+            else
+            {
+                <NoData ComponentStyle="ComponentStyle.Secondary"/>
+            }
+        </div>
+    </Loading>
 </DashboardWidget>
 
 @code {

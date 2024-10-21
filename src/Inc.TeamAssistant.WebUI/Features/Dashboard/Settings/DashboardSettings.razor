@@ -5,127 +5,106 @@
 @inject IServiceProvider ServiceProvider
 @inject FeaturesFactory FeaturesFactory
 
-<ContentDialog Title="@Localizer["Settings"].Value" @ref="_contentDialog">
-    <Content>
-        <div class="widget-settings @CssClass">
-            <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
-                <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-                <Loading State="_state" Retry="SubmitForm">
-                    <Content>
-                        <div class="widget-settings__body">
-                            <ValidationSummary/>
-                            @{
-                                var widgets = _formModel.Items.OrderBy(w => w.Position).ToArray();
+<ContentDialog Title="@Localizer["Settings"]" @ref="_contentDialog">
+    <div class="widget-settings @CssClass">
+        <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+            <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+            <Loading State="_state" Retry="SubmitForm">
+                <div class="widget-settings__body">
+                    <ValidationSummary/>
+                    @{
+                        var widgets = _formModel.Items.OrderBy(w => w.Position).ToArray();
 
-                                for (var i = 0; i < widgets.Length; i++)
+                        for (var i = 0; i < widgets.Length; i++)
+                        {
+                            var current = widgets[i];
+                            var next = i < widgets.Length - 1 ? widgets[i + 1] : null;
+                            var prev = i > 0 ? widgets[i - 1] : null;
+                            var isVisibleId = "is-visible-" + current.Type;
+
+                            <div
+                                class="widget-settings__item"
+                                title="@FeatureHelp(current)"
+                                draggable="true"
+                                ondragover="event.preventDefault();"
+                                @ondrop="() => HandleDrop(widgets, current)"
+                                @ondragenter="HandleDragEnter"
+                                @ondragstart="@(() => HandleDragStart(current))">
+                                <div class="widget-settings__drag">
+                                    <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary"/>
+                                </div>
+                                @if (next is not null)
                                 {
-                                    var current = widgets[i];
-                                    var next = i < widgets.Length - 1 ? widgets[i + 1] : null;
-                                    var prev = i > 0 ? widgets[i - 1] : null;
-                                    var isVisibleId = "is-visible-" + current.Type;
-
-                                    <div
-                                        class="widget-settings__item"
-                                        title="@FeatureHelp(current)"
-                                        draggable="true"
-                                        ondragover="event.preventDefault();"
-                                        @ondrop="() => HandleDrop(widgets, current)"
-                                        @ondragenter="HandleDragEnter"
-                                        @ondragstart="@(() => HandleDragStart(current))">
-                                        <div class="widget-settings__drag">
-                                            <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary"/>
-                                        </div>
-                                        @if (next is not null)
-                                        {
-                                            <Button
-                                                ComponentStyle="ComponentStyle.Secondary"
-                                                ButtonMode="ButtonMode.Small"
-                                                OnClick="() => MoveDown(widgets, current, next)">
-                                                <Content>
-                                                    <ArrowDownIcon
-                                                        Size="20px"
-                                                        ComponentStyle="ComponentStyle.Secondary"/>
-                                                </Content>
-                                            </Button>
-                                        }
-                                        else
-                                        {
-                                            <Button
-                                                ComponentStyle="ComponentStyle.Secondary"
-                                                IsDisabled="true"
-                                                ButtonMode="ButtonMode.Small">
-                                                <Content>
-                                                    <ArrowDownIcon
-                                                        Size="20px"
-                                                        ComponentStyle="ComponentStyle.Secondary"/>
-                                                </Content>
-                                            </Button>
-                                        }
-                                        @if (prev is not null)
-                                        {
-                                            <Button
-                                                ComponentStyle="ComponentStyle.Secondary"
-                                                ButtonMode="ButtonMode.Small"
-                                                OnClick="() => MoveUp(widgets, current, prev)">
-                                                <Content>
-                                                    <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
-                                                </Content>
-                                            </Button>
-                                        }
-                                        else
-                                        {
-                                            <Button
-                                                ComponentStyle="ComponentStyle.Secondary"
-                                                IsDisabled="true"
-                                                ButtonMode="ButtonMode.Small">
-                                                <Content>
-                                                    <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
-                                                </Content>
-                                            </Button>
-                                        }
-                                        @if (current.CanEnabled)
-                                        {
-                                            <InputCheckbox id="@isVisibleId" @bind-Value="current.IsVisible"/>
-                                            <label for="@isVisibleId">
-                                                @ToWidgetTitle(current.Type)
-                                            </label>
-                                        }
-                                        else
-                                        {
-                                            <InputCheckbox
-                                                id="@isVisibleId"
-                                                @bind-Value="current.IsVisible"
-                                                disabled="disabled"/>
-                                            <label for="@isVisibleId">
-                                                @ToWidgetTitle(current.Type)
-                                            </label>
-                                        }
-                                    </div>
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonMode="ButtonMode.Small"
+                                        OnClick="() => MoveDown(widgets, current, next)">
+                                        <ArrowDownIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                    </Button>
                                 }
-                            }
-                        </div>
-                        <div class="widget-settings__actions">
-                            <Button ButtonType="ButtonType.Submit" ComponentStyle="ComponentStyle.Secondary">
-                                <Content>
-                                    @Localizer["Apply"].Value
-                                </Content>
-                            </Button>
-                        </div>
-                    </Content>
-                </Loading>
-            </EditForm>
-        </div>
-    </Content>
+                                else
+                                {
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        IsDisabled="true"
+                                        ButtonMode="ButtonMode.Small">
+                                        <ArrowDownIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                    </Button>
+                                }
+                                @if (prev is not null)
+                                {
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonMode="ButtonMode.Small"
+                                        OnClick="() => MoveUp(widgets, current, prev)">
+                                        <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                    </Button>
+                                }
+                                else
+                                {
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        IsDisabled="true"
+                                        ButtonMode="ButtonMode.Small">
+                                        <ArrowUpIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                    </Button>
+                                }
+                                @if (current.CanEnabled)
+                                {
+                                    <InputCheckbox id="@isVisibleId" @bind-Value="current.IsVisible"/>
+                                    <label for="@isVisibleId">
+                                        @ToWidgetTitle(current.Type)
+                                    </label>
+                                }
+                                else
+                                {
+                                    <InputCheckbox
+                                        id="@isVisibleId"
+                                        @bind-Value="current.IsVisible"
+                                        disabled="disabled"/>
+                                    <label for="@isVisibleId">
+                                        @ToWidgetTitle(current.Type)
+                                    </label>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="widget-settings__actions">
+                    <Button ButtonType="ButtonType.Submit" ComponentStyle="ComponentStyle.Secondary">
+                        @Localizer["Apply"]
+                    </Button>
+                </div>
+            </Loading>
+        </EditForm>
+    </div>
 </ContentDialog>
-
 <div class="dashboard-settings">
     <Button
         ComponentStyle="ComponentStyle.Secondary"
         ButtonMode="ButtonMode.Small"
         OnClick="() => _contentDialog?.Open()">
-        <Content>
-            <SettingsIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
-        </Content>
+        <SettingsIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
     </Button>
 </div>
 
@@ -149,14 +128,14 @@
     
     private Dictionary<string, string> WidgetsLookup => new()
     {
-        [nameof(TeammatesWidget)] = Localizer["TeammatesWidgetTitle"].Value,
-        [nameof(ReviewAverageStatsWidget)] = Localizer["ReviewAverageStatsWidgetTitle"].Value,
-        [nameof(ReviewHistoryWidget)] = Localizer["LastTasksWidgetTitle"].Value,
-        [nameof(ReviewTotalStatsWidget)] = Localizer["ReviewTotalStatsWidgetTitle"].Value,
-        [nameof(AppraiserHistoryWidget)] = Localizer["AppraiserHistoryTitle"].Value,
-        [nameof(AppraiserIntegrationWidget)] = Localizer["AppraiserIntegrationTitle"].Value,
-        [nameof(RandomCoffeeHistoryWidget)] = Localizer["RandomCoffeeHistoryWidgetTitle"].Value,
-        [nameof(MapWidget)] = Localizer["CheckInMapWidgetTitle"].Value
+        [nameof(TeammatesWidget)] = Localizer["TeammatesWidgetTitle"],
+        [nameof(ReviewAverageStatsWidget)] = Localizer["ReviewAverageStatsWidgetTitle"],
+        [nameof(ReviewHistoryWidget)] = Localizer["LastTasksWidgetTitle"],
+        [nameof(ReviewTotalStatsWidget)] = Localizer["ReviewTotalStatsWidgetTitle"],
+        [nameof(AppraiserHistoryWidget)] = Localizer["AppraiserHistoryTitle"],
+        [nameof(AppraiserIntegrationWidget)] = Localizer["AppraiserIntegrationTitle"],
+        [nameof(RandomCoffeeHistoryWidget)] = Localizer["RandomCoffeeHistoryWidgetTitle"],
+        [nameof(MapWidget)] = Localizer["CheckInMapWidgetTitle"]
     };
     
     private string CssClass => _isDragStarting ? "widget-settings_on-drag" : "widget-settings_no-drag";
@@ -175,7 +154,7 @@
         
         var featureName = FeaturesFactory.CreateName(item.Feature);
 
-        return string.Format(Localizer["DisableWidgetHelpTemplate"].Value, featureName);
+        return string.Format(Localizer["DisableWidgetHelpTemplate"], featureName);
     }
     
     private void HandleDrop(DashboardSettingsItem[] items, DashboardSettingsItem target)
@@ -225,7 +204,7 @@
             return;
 
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-        var notification = Notification.Info(Localizer["SettingsApplied"].Value);
+        var notification = Notification.Info(Localizer["SettingsApplied"]);
 
         await RequestProcessor.Process(
             async () =>

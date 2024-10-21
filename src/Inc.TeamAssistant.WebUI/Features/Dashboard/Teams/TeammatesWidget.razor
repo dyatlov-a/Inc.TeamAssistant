@@ -3,93 +3,77 @@
 @inject RequestProcessor RequestProcessor
 
 <ConfirmDialog OnConfirm="RemoveTeammate" @ref="_confirmDialog">
-    <Content>
-        @if (_exclude || _leaveUntil.HasValue)
+    @if (_exclude || _leaveUntil.HasValue)
+    {
+        <p>@Localizer["LeaveTeammate"] @_selectedTeammate?.Name</p>
+        @if (_leaveUntil.HasValue)
         {
-            <p>@Localizer["LeaveTeammate"].Value @_selectedTeammate?.Name</p>
-            @if (_leaveUntil.HasValue)
-            {
-                <p>@_leaveUntil.Value @Localizer["Days"].Value</p>
-            }
-            else
-            {
-                <p>@Localizer["Forever"].Value</p>
-            }
+            <p>@_leaveUntil.Value @Localizer["Days"]</p>
         }
         else
         {
-            <p>@Localizer["RecoveryTeammate"].Value @_selectedTeammate?.Name</p>
+            <p>@Localizer["Forever"]</p>
         }
-    </Content>
+    }
+    else
+    {
+        <p>@Localizer["RecoveryTeammate"] @_selectedTeammate?.Name</p>
+    }
 </ConfirmDialog>
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget Title="@Localizer["TeammatesWidgetTitle"].Value">
-        <Content>
-            <Loading State="_state" Retry="() => Load()">
-                <Content>
-                    <div class="component-container">
-                        @if (Teammates.Any())
-                        {
-                            <QuickGrid Items="Teammates" class="quick-data-grid">
-                                <TemplateColumn
-                                    Title="@Localizer["PersonName"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
-                                    @context.Name
-                                    <br/>
-                                    @context.UserName
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Localizer["LeaveUntil"].Value"
-                                    Sortable="true"
-                                    SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
-                                    @if (context.LeaveUntil.HasValue)
-                                    {
-                                        <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-                                        if (_item.HasManagerAccess)
-                                        {
-                                            <RouterLink OnClick="() => ExcludeFromTeam(context, false)">
-                                                <Content>
-                                                    [X]
-                                                </Content>
-                                            </RouterLink>
-                                        }
-                                    }
-                                </TemplateColumn>
-                                <TemplateColumn Title="@Localizer["ExcludeFromTeam"].Value" Sortable="false">
-                                    @if (_item.HasManagerAccess)
-                                    {
-                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">
-                                            <Content>1</Content>
-                                        </RouterLink>
-                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 7)">
-                                            <Content>7</Content>
-                                        </RouterLink>
-                                        <RouterLink OnClick="() => ExcludeFromTeam(context, false, 14)">
-                                            <Content>14</Content>
-                                        </RouterLink>
-                                        <br/>
-                                        <RouterLink OnClick="() => ExcludeFromTeam(context, true)">
-                                            <Content>@Localizer["Forever"].Value</Content>
-                                        </RouterLink>
-                                    }
-                                    else
-                                    {
-                                        <p>-</p>
-                                    }
-                                </TemplateColumn>
-                            </QuickGrid>
-                        }
-                        else
-                        {
-                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
-                        }
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+    <DashboardWidget Title="@Localizer["TeammatesWidgetTitle"]">
+        <Loading State="_state" Retry="() => Load()">
+            <div class="component-container">
+                @if (Teammates.Any())
+                {
+                    <QuickGrid Items="Teammates" class="quick-data-grid">
+                        <TemplateColumn
+                            Title="@Localizer["PersonName"]"
+                            Sortable="true"
+                            SortBy="GridSort<TeammateDto>.ByAscending(e => e.Name).ThenAscending(e => e.UserName)">
+                            @context.Name
+                            <br/>
+                            @context.UserName
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["LeaveUntil"]"
+                            Sortable="true"
+                            SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
+                            @if (context.LeaveUntil.HasValue)
+                            {
+                                <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
+                                if (_item.HasManagerAccess)
+                                {
+                                    <RouterLink OnClick="() => ExcludeFromTeam(context, false)">[X]</RouterLink>
+                                }
+                            }
+                        </TemplateColumn>
+                        <TemplateColumn Title="@Localizer["ExcludeFromTeam"]" Sortable="false">
+                            @if (_item.HasManagerAccess)
+                            {
+                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">1</RouterLink>
+                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 7)">7</RouterLink>
+                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 14)">14</RouterLink>
+                                <br/>
+                                <RouterLink OnClick="() => ExcludeFromTeam(context, true)">
+                                    @Localizer["Forever"]
+                                </RouterLink>
+                            }
+                            else
+                            {
+                                <p>-</p>
+                            }
+                        </TemplateColumn>
+                    </QuickGrid>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 

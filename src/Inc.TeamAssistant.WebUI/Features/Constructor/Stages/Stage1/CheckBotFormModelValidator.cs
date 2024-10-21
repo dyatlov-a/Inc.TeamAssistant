@@ -36,6 +36,6 @@ internal sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFor
         var result = await _botService.Check(new GetBotUserNameQuery(botToken), token);
 
         if (!result.HasAccess)
-            context.AddFailure(nameof(CheckBotFormModel.Token), _localizer["TokenInvalid"].Value);
+            context.AddFailure(nameof(CheckBotFormModel.Token), _localizer["TokenInvalid"]);
     }
 }

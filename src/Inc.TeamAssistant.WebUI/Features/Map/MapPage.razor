@@ -37,10 +37,10 @@
     private string CssClass => DisableLayout ? string.Empty : "map_navbar";
     private IReadOnlyDictionary<string, string> FeatureNamesLookup => new Dictionary<string, string>
     {
-        ["Review"] = Localizer["FeatureReviewer"].Value,
-        ["RandomCoffee"] = Localizer["FeatureRandomCoffee"].Value,
-        ["Estimates"] = Localizer["FeatureAppraiser"].Value,
-        ["CheckIn"] = Localizer["FeatureCheckIn"].Value
+        ["Review"] = Localizer["FeatureReviewer"],
+        ["RandomCoffee"] = Localizer["FeatureRandomCoffee"],
+        ["Estimates"] = Localizer["FeatureAppraiser"],
+        ["CheckIn"] = Localizer["FeatureCheckIn"]
     };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,9 +58,9 @@
                     _map,
                     getLocations.Locations,
                     FeatureNamesLookup,
-                    Localizer["RouteShow"].Value,
-                    Localizer["RouteHide"].Value,
-                    Localizer["DefaultLayerTitle"].Value);
+                    Localizer["RouteShow"],
+                    Localizer["RouteHide"],
+                    Localizer["DefaultLayerTitle"]);
         }
     }
 

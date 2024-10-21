@@ -15,9 +15,9 @@ internal sealed class DateSelectorFactory
     {
         return new Dictionary<string, DateOnly>
         {
-            [_localizer["TwoWeeks"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-14).Date),
-            [_localizer["FourWeeks"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-28).Date),
-            [_localizer["TwelveWeeks"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-84).Date)
+            [_localizer["TwoWeeks"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-14).Date),
+            [_localizer["FourWeeks"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-28).Date),
+            [_localizer["TwelveWeeks"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-84).Date)
         };
     }
     
@@ -25,9 +25,9 @@ internal sealed class DateSelectorFactory
     {
         return new Dictionary<string, DateOnly>
         {
-            [_localizer["OneMonth"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-1).Date),
-            [_localizer["ThreeMonths"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-3).Date),
-            [_localizer["SixMonths"].Value] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-6).Date)
+            [_localizer["OneMonth"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-1).Date),
+            [_localizer["ThreeMonths"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-3).Date),
+            [_localizer["SixMonths"]] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-6).Date)
         };
     }
 }

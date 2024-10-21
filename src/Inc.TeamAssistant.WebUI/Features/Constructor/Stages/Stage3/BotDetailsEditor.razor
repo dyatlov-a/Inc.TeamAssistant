@@ -5,28 +5,20 @@
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <Panel Header="@Localizer["BotDetailsTelegram"].Value" Opened="Load" IsOpen="_isOpen">
+    <Panel Header="@Localizer["BotDetailsTelegram"]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <Button ButtonType="ButtonType.Submit">
-                <Content>
-                    @Localizer["Save"].Value
-                </Content>
-            </Button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormSection
-                        Title="@Localizer["BotDetails"].Value"
-                        HelpText="@Localizer["BotDetailsHelp"].Value">
-                        <Content>
-                            @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
-                            {
-                                <BotDetailsItemEditor Item="item"/>
-                            }
-                        </Content>
-                    </FormSection>
-                </Content>
+                <FormSection
+                    Title="@Localizer["BotDetails"]"
+                    HelpText="@Localizer["BotDetailsHelp"]">
+                    @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
+                    {
+                        <BotDetailsItemEditor Item="item"/>
+                    }
+                </FormSection>
             </Loading>
         </Content>
     </Panel>

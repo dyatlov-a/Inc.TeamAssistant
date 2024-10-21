@@ -21,18 +21,14 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <Button OnClick="() => ToggleFeature(feature.Id)">
-                            <Content>
-                                @Localizer["FeatureAdd"].Value
-                            </Content>
-                        </Button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)">@Localizer["FeatureAdd"]</Button>
                     </Buttons>
                 </FeatureCard>
             }
         }
         else
         {
-            <p class="input-features__text">@Localizer["FormSectionFeaturesAvailableEmptyText"].Value</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesAvailableEmptyText"]</p>
         }
     </div>
     <div
@@ -51,18 +47,14 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <Button OnClick="() => ToggleFeature(feature.Id)">
-                            <Content>
-                                @Localizer["FeatureRemove"].Value
-                            </Content>
-                        </Button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)">@Localizer["FeatureRemove"]</Button>
                     </Buttons>
                 </FeatureCard>
             }
         }
         else
         {
-            <p class="input-features__text">@Localizer["FormSectionFeaturesSelectedEmptyText"].Value</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesSelectedEmptyText"]</p>
         }
         @if (Validation is not null)
         {
