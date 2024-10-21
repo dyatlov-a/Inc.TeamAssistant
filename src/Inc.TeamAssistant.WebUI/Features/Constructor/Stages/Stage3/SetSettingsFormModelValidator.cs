@@ -1,18 +1,18 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
+using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
+internal sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
 {
-    public SetSettingsFormModelValidator(ResourcesManager resources)
+    public SetSettingsFormModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
-        ArgumentNullException.ThrowIfNull(resources);
+        ArgumentNullException.ThrowIfNull(localizer);
         
         RuleFor(e => e.CalendarId)
             .NotEmpty()
-            .WithMessage(resources[Messages.Constructor_RequiredCalendar]);
+            .WithMessage(localizer["RequiredCalendar"].Value);
         
         RuleFor(e => e.Properties)
             .NotNull();
@@ -20,7 +20,7 @@ public sealed class SetSettingsFormModelValidator : AbstractValidator<SetSetting
         RuleForEach(e => e.Properties)
             .ChildRules(c =>
             {
-                c.RuleFor(e => e.Title)
+                c.RuleFor(e => e.Key)
                     .NotEmpty();
 
                 c.RuleFor(e => e.Value)

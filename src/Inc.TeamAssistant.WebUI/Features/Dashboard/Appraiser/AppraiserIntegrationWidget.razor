@@ -1,62 +1,48 @@
-@using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration
-
 @inject IIntegrationService IntegrationService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
 
 <ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
     <Content>
-        <p>@Resources[Messages.Dashboard_AppraiserIntegrationConfirmText]</p>
+        <p>@Localizer["AppraiserIntegrationConfirmText"].Value</p>
     </Content>
 </ConfirmDialog>
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget Title="@Resources[Messages.Dashboard_AppraiserIntegrationTitle]">
+    <DashboardWidget Title="@Localizer["AppraiserIntegrationTitle"].Value">
         <Content>
             <Loading State="_state" Retry="Load">
                 <Content>
                     <div class="component-container">
                         <EditForm id="@AnalyticEvents.AppraiserIntegrationEnabled" EditContext="_editContext" OnSubmit="SubmitForm">
-                            <FluentValidationValidator @ref="_fluentValidationValidator"/>
+                            <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
                             <div class="appraiser-integration__body">
                                 <FormFieldSet
                                     FieldId="access-token"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel]">
+                                    Label="@Localizer["AppraiserIntegrationAccessTokenLabel"].Value">
                                     <Content>
-                                        <InputText
+                                        <InputSingleLine
+                                            FieldId="access-token"
                                             @bind-Value="_formModel.AccessToken"
-                                            class="form-control form-control_disabled"
-                                            id="access-token"
-                                            disabled="disabled"/>
+                                            IsDisabled="true"/>
                                     </Content>
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="project-key"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
+                                    Label="@Localizer["AppraiserIntegrationProjectKeyLabel"].Value">
                                     <Content>
-                                        @if (_formModel.HasManagerAccess)
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_enabled"
-                                                id="project-key"/>
-                                        }
-                                        else
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_disabled"
-                                                id="project-key"
-                                                disabled="disabled"/>
-                                        }
+                                        <InputSingleLine
+                                            FieldId="project-key"
+                                            @bind-Value="_formModel.ProjectKey"
+                                            IsDisabled="!_formModel.HasManagerAccess"/>
                                         <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
                                     </Content>
                                 </FormFieldSet>
                                 <FormFieldSet
                                     FieldId="scrum-master"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationScrumMasterLabel]">
+                                    Label="@Localizer["AppraiserIntegrationScrumMasterLabel"].Value">
                                     <Content>
                                         <InputSelectList
                                             FieldId="scrum-master"
@@ -74,17 +60,16 @@
                             @if (_formModel.HasManagerAccess)
                             {
                                 <div class="component-actions">
-                                    <button
-                                        type="submit"
-                                        class="button button_dark appraiser-integration__button">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="button button_dark appraiser-integration__button"
-                                        @onclick="BeginDisable">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
-                                    </button>
+                                    <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
+                                        <Content>
+                                            @Localizer["AppraiserIntegrationSaveButton"].Value
+                                        </Content>
+                                    </Button>
+                                    <Button ComponentStyle="ComponentStyle.Secondary" OnClick="BeginDisable">
+                                        <Content>
+                                            @Localizer["AppraiserIntegrationDisableButton"].Value
+                                        </Content>
+                                    </Button>
                                 </div>
                             }
                             @if (!_isEnabled)
@@ -92,9 +77,11 @@
                                 <div class="appraiser-integration__bg"></div>
                                 <div class="appraiser-integration__controls">
                                     <div class="appraiser-integration__controls-body">
-                                        <button type="button" class="button button_dark" @onclick="Enable">
-                                            @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
-                                        </button>
+                                        <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Enable">
+                                            <Content>
+                                                @Localizer["AppraiserIntegrationEnableButton"].Value
+                                            </Content>
+                                        </Button>
                                     </div>
                                 </div>
                             }
@@ -193,7 +180,7 @@
             {
                 await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId.Value));
 
-                await Load(Notification.Info(Resources[Messages.Dashboard_AppraiserIntegrationEnableSuccess]));
+                await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"].Value));
             },
             () => {},
             _ => StateHasChanged());

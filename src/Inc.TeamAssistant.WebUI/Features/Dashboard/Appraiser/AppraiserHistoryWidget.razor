@@ -1,14 +1,12 @@
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
-
 @inject IAppraiserService AppraiserService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_AppraiserHistoryTitle]">
+    <DashboardWidget HasControls="true" Title="@Localizer["AppraiserHistoryTitle"].Value">
         <Content>
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
             <Loading State="_state" Retry="Load">
@@ -18,19 +16,19 @@
                         {
                             <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
                                 <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_AssessmentDate]"
+                                    Title="@Localizer["AssessmentDate"].Value"
                                     Sortable="true"
                                     SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                                    <a href="@CreateMoveToHistoryLink(context.AssessmentDate)" class="link link_light">
-                                        @context.AssessmentDate.ToString("dd-MM-yyyy")
-                                    </a>
+                                    <RouterLink Href="@CreateMoveToHistoryLink(context.AssessmentDate)">
+                                        <Content>@context.AssessmentDate.ToString("dd-MM-yyyy")</Content>
+                                    </RouterLink>
                                 </TemplateColumn>
                                 <PropertyColumn
-                                    Title="@Resources[Messages.Dashboard_TotalStories]"
+                                    Title="@Localizer["TotalStories"].Value"
                                     Property="@(t => t.StoriesCount)"
                                     Sortable="true"/>
                                 <PropertyColumn
-                                    Title="@Resources[Messages.Dashboard_AssessmentSum]"
+                                    Title="@Localizer["AssessmentSum"].Value"
                                     Property="@(t => t.AssessmentSum)"
                                     Sortable="true"/>
                             </QuickGrid>
@@ -38,13 +36,15 @@
                         }
                         else
                         {
-                            <NoData IsDark="true"/>
+                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
                         }
                     </div>
                     <div class="component-actions">
-                        <a href="@CreateAssessmentSessionLink()" class="button button_dark">
-                            @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
-                        </a>
+                        <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToAssessmentSession">
+                            <Content>
+                                @Localizer["GoToCurrentSessionButtonText"].Value
+                            </Content>
+                        </Button>
                     </div>
                 </Content>
             </Loading>
@@ -63,7 +63,7 @@
     private readonly PaginationState _pagination = new();
     
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateMonths();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
     private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
     
@@ -90,7 +90,10 @@
             });
     }
 
-    private string CreateAssessmentSessionLink() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
+    private async Task MoveToAssessmentSession()
+    {
+        await NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");
+    }
 
     private string CreateMoveToHistoryLink(DateOnly date)
         => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");

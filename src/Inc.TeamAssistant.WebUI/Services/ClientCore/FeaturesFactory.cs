@@ -1,14 +1,15 @@
-using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.WebUI.Features.Constructor;
+using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
 
-public sealed class FeaturesFactory
+internal sealed class FeaturesFactory
 {
-    private readonly ResourcesManager _resources;
+    private readonly IStringLocalizer<ConstructorResources> _localizer;
 
-    public FeaturesFactory(ResourcesManager resources)
+    public FeaturesFactory(IStringLocalizer<ConstructorResources> localizer)
     {
-        _resources = resources ?? throw new ArgumentNullException(nameof(resources));
+        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
     }
 
     public string CreateName(string featureName) => Create(featureName, "Name");
@@ -17,8 +18,6 @@ public sealed class FeaturesFactory
 
     private string Create(string featureName, string propertyName)
     {
-        var key = new MessageId($"Constructor_Feature{featureName}{propertyName}");
-
-        return _resources[key];
+        return _localizer[$"Feature{featureName}{propertyName}"];
     }
 }

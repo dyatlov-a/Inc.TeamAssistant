@@ -4,6 +4,6 @@
 .task__time {
     word-break: keep-all;
 }
-::deep .no-data {
-    height: 100%;
+.hint {
+    cursor: context-menu;
 }

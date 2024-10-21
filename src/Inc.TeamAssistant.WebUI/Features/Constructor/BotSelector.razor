@@ -1,51 +1,53 @@
-@using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
-
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <Content>
-        <p>@string.Format(Resources[Messages.Constructor_RemoveConfirmationText], _selectedBot?.Name)</p>
+        <p>@string.Format(Localizer["RemoveConfirmationText"].Value, _selectedBot?.Name)</p>
     </Content>
 </ConfirmDialog>
 <div class="bot-selector">
-    <BotCard Icon="@typeof(AddBotIcon)" Name="@Resources[Messages.Constructor_NewBot]">
-        <Buttons>
-            <button type="button" class="button button_light bot-selector__button" @onclick="MoveToAdd">
-                @Resources[Messages.Constructor_AddBot]
-            </button>
-        </Buttons>
-    </BotCard>
-    <Loading State="_state" Retry="Load">
-        <Content>
-            @foreach (var bot in _bots)
-            {
-                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+    <div class="bot-selector__item">
+        <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"].Value">
+            <Buttons>
+                <Button OnClick="MoveToAdd">
                     <Content>
-                        <a href="@CreateMoveToDashboardLink(bot)" class="link link_dark">
-                            @Resources[Messages.Dashboard_MoveToDashboard]
-                        </a>
+                        @Localizer["AddBot"].Value
                     </Content>
-                    <Buttons>
-                        <button
-                            type="button"
-                            class="button button_light bot-selector__button"
-                            @onclick="() => MoveToEdit(bot.Id)">
-                            @Resources[Messages.Constructor_Edit]
-                        </button>
-                        <button
-                            type="button"
-                            class="button button_light bot-selector__button"
-                            @onclick="() => MoveToRemove(bot)">
-                            @Resources[Messages.Constructor_Remove]
-                        </button>
-                    </Buttons>
-                </BotCard>
-            }
-        </Content>
-    </Loading>
+                </Button>
+            </Buttons>
+        </BotCard>
+    </div>
+    <div class="bot-selector__item">
+        <Loading State="_state" Retry="Load">
+            <Content>
+                @foreach (var bot in _bots)
+                {
+                    <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                        <Content>
+                            <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
+                                <Content>@Localizer["MoveToDashboard"].Value</Content>
+                            </RouterLink>
+                        </Content>
+                        <Buttons>
+                            <Button OnClick="() => MoveToEdit(bot.Id)">
+                                <Content>
+                                    @Localizer["Edit"].Value
+                                </Content>
+                            </Button>
+                            <Button OnClick="() => MoveToRemove(bot)">
+                                <Content>
+                                    @Localizer["Remove"].Value
+                                </Content>
+                            </Button>
+                        </Buttons>
+                    </BotCard>
+                }
+            </Content>
+        </Loading>
+    </div>
 </div>
 
 @code {

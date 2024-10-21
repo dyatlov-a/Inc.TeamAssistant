@@ -1,0 +1,40 @@
+@attribute [Stories("Components/Dialogs/Content")]
+
+<Stories TComponent="ContentDialog" Layout="typeof(StubLayout)">
+    <Story Name="Default">
+        <Template>
+            <ContentDialog Title="@_title" @attributes="context.Args" @ref="_defaultDialog">
+                <Content>
+                    Html content
+                </Content>
+            </ContentDialog>
+        </Template>
+    </Story>
+    <Story Name="Grand">
+        <Arguments>
+            <Arg For="c => c.IsGrand" Value="true" />
+        </Arguments>
+        <Template>
+            <ContentDialog Title="@_title" @attributes="context.Args" @ref="_grandDialog">
+                <Content>
+                    Html content
+                </Content>
+            </ContentDialog>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _title = "Title";
+    private ContentDialog? _defaultDialog;
+    private ContentDialog? _grandDialog;
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _defaultDialog?.Open();
+            _grandDialog?.Open();
+        }
+    }
+}

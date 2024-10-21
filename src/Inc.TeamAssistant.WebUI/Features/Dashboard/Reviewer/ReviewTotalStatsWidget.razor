@@ -1,7 +1,5 @@
-@using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
-
 @inject IReviewService ReviewService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -10,7 +8,7 @@
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
+        Title="@Localizer["ReviewTotalStatsWidgetTitle"].Value">
         <Content>
             <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
             <Loading State="_state" Retry="Load">
@@ -23,7 +21,7 @@
                                     <ApexChart
                                         TItem="HistoryByTeamItemDto"
                                         Title="@string.Format(
-                                                   Resources[Messages.Dashboard_ReviewByReviewerTemplate],
+                                                   Localizer["ReviewByReviewerTemplate"].Value,
                                                    _formModel.IntervalInDays)"
                                         Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
                                         <ApexPointSeries TItem="HistoryByTeamItemDto"
@@ -38,7 +36,7 @@
                                     <ApexChart
                                         TItem="HistoryByTeamItemDto"
                                         Title="@string.Format(
-                                                   Resources[Messages.Dashboard_ReviewByOwnerTemplate],
+                                                   Localizer["ReviewByOwnerTemplate"].Value,
                                                    _formModel.IntervalInDays)"
                                         Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
                                         <ApexPointSeries TItem="HistoryByTeamItemDto"
@@ -53,7 +51,7 @@
                         }
                         else
                         {
-                            <NoData IsDark="true"/>
+                            <NoData ComponentStyle="ComponentStyle.Secondary"/>
                         }
                     </div>
                 </Content>
@@ -72,7 +70,7 @@
     private DateOnly? _date;
 
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
     private readonly ReviewTotalStatsWidgetFormModel _formModel = new();
 
     protected override async Task OnParametersSetAsync()

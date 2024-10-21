@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 
-public sealed class AppraiserIntegrationFromModelValidator : AbstractValidator<AppraiserIntegrationFromModel>
+internal sealed class AppraiserIntegrationFromModelValidator : AbstractValidator<AppraiserIntegrationFromModel>
 {
     public AppraiserIntegrationFromModelValidator()
     {

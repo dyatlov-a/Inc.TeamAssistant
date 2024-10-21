@@ -1,22 +1,24 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
-
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject IRenderContext RenderContext
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <Panel Header="@Localizer["BotDetailsTelegram"].Value" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+            <Button ButtonType="ButtonType.Submit">
+                <Content>
+                    @Localizer["Save"].Value
+                </Content>
+            </Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
                 <Content>
                     <FormSection
-                        Title="@Resources[Messages.Constructor_BotDetails]"
-                        HelpText="@Resources[Messages.Constructor_BotDetailsHelp]">
+                        Title="@Localizer["BotDetails"].Value"
+                        HelpText="@Localizer["BotDetailsHelp"].Value">
                         <Content>
                             @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
                             {

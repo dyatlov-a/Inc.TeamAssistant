@@ -1,5 +1,26 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+:root {
+    --bg-primary-color: #616161;
+    --bg-secondary-color: #555;
+    --block-priority-color: #fff;
+    --block-primary-color: #9d9d9d;
+    --block-secondary-color: #000;
+    --text-primary-color: #dfdfdf;
+    --text-secondary-color: #000;
+    --text-telegram-color: #fff;
+    --button-primary-color: #dfdfdf;
+    --button-secondary-color: #000;
+    --button-telegram-color: #54a9eb;
+    --control-disabled-color: #aaa;
+    --icon-primary-color: #F8CA00;
+    --message-valid-color: #28a745;
+    --message-invalid-color: #dc3545;
+    --message-info-color: #2A9D8F;
+    --message-warning-color: #E9C46A;
+    --message-error-color: #E76F51;
+}
+
 *,
 *::before,
 *::after {
@@ -38,8 +59,8 @@ body {
 body {
 	font-family: 'Roboto', sans-serif;
 	font-size: 16px;
-	color: #dfdfdf;
-	background-color: #616161;
+	color: var(--text-primary-color);
+	background-color: var(--bg-primary-color);
 	min-width: 370px;
     line-height: 1.25rem;
     font-weight: 400;
@@ -92,63 +113,10 @@ html {
 /* MOBILE SMALL */
 @media (max-width: 479.98px) {
 }
-/* BUTTON */
-.button {
-    display: inline-block;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: .75rem;
-    line-height: 1.3rem;
-    letter-spacing: .0625rem;
-    padding: .7rem 1rem;
-    border-radius: 1rem;
-    transition: background-color 0.3s ease 0s;
-    background-color: transparent;
-    cursor: pointer;
-}
-.button_light {
-    border: .1875rem solid #dfdfdf;
-    color: #dfdfdf;
-}
-.button_light:hover {
-    background-color: #dfdfdf;
-    color: #000;
-}
-.button_dark {
-    border: .1875rem solid #000;
-    color: #000;
-}
-.button_dark:hover {
-    background-color: #000;
-    color: #dfdfdf;
-}
-.button_dark:disabled, .button_light:disabled, .button_dark:disabled:hover, .button_light:disabled:hover {
-    background-color: #aaa;
-    color: #000;
-    border: .1875rem solid #aaa;
-    cursor: default;
-}
-.button_small {
-    padding: 5px;
-    border-radius: 10px;
-    height: 38px;
-}
-.link {
-    font-size: 1rem;
-}
-.link:hover {
-    text-decoration: underline;
-}
-.link_light {
-    color: #dfdfdf;
-}
-.link_dark {
-    color: #000;
-}
 /* MAP */
 .marker-btn {
-    background-color: #fff;
-    color: #000;
+    background-color: transparent;
+    color: var(--text-secondary-color);
     font-weight: bold;
     cursor: pointer;
     text-decoration: underline;
@@ -171,56 +139,17 @@ html {
     float: left;
     margin: 0 10px 10px 0;
 }
-/* FORMS */
-.form-control {
-    width: 100%;
-    padding: 10px 5px;
-    border: 3px solid #555;
-    border-radius: 0;
-    color: #000;
-    background-color: #dfdfdf;
-    transition: border 0.3s;
+/* VALIDATION */
+.input_valid {
+    border: 3px solid var(--message-valid-color);
 }
-.form-control, select {
-    min-height: 45px;
-    font-size: 1rem;
-}
-.form-control:focus, .form-control_enabled:hover {
-    border: 3px solid #000;
-}
-.form-control_disabled {
-    background-color: #aaa;
-    cursor: default;
-}
-.form-control_textarea {
-    resize: none;
-    height: 102px;
-}
-.form-control_is-valid {
-    border: 3px solid #28a745;
-}
-.form-control_is-invalid {
-    border: 3px solid #dc3545;
+.input_invalid {
+    border: 3px solid var(--message-invalid-color);
 }
 .validation-message {
     margin-top: 5px;
     font-size: 1rem;
-    color: #dc3545;
-}
-/* ROOT COMPONENTS */
-.title {
-    font-size: 2.4rem;
-    line-height: 3.4rem;
-}
-.text {
-    font-size: 1.2rem;
-    line-height: 1.6rem;
-}
-.draggable {
-    cursor: grab;
-}
-.hint {
-    cursor: context-menu;
+    color: var(--message-invalid-color);
 }
 /* GRID */
 .quick-data-grid {
@@ -236,11 +165,11 @@ html {
     font-size: 13px;
 }
 .quick-data-grid .col-title {
-    color: #000;
+    color: var(--text-secondary-color);
     font-size: 14px;
 }
 .quick-data-grid tbody tr:nth-child(2n - 1){
-    background-color: #555;
+    background-color: var(--bg-secondary-color);
 }
 /* ANIMATIONS */
 .hidden {
@@ -269,29 +198,29 @@ html {
 .icon-star {
     width: 14px;
     aspect-ratio: 1;
-    background: #000;
+    background: var(--text-secondary-color);
     display: inline-block;
     vertical-align: middle;
     clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
 }
 .icon-star_checked {
-    background: #F8CA00;
+    background: var(--icon-primary-color);
 }
-.icon_light {
-    stroke: #dfdfdf;    
+.icon_primary {
+    stroke: var(--button-primary-color);    
 }
-.icon_dark {
-    stroke: #000;
+.icon_secondary {
+    stroke: var(--text-secondary-color);
 }
-.button:hover .icon_light, .link:hover .icon_light {
-    stroke: #000;
+.button:hover .icon_primary, .link:hover .icon_primary {
+    stroke: var(--button-secondary-color);
 }
-.button:hover .icon_dark, .link:hover .icon_dark {
-    stroke: #dfdfdf;
+.button:hover .icon_secondary, .link:hover .icon_secondary {
+    stroke: var(--button-primary-color);
 }
-.button:disabled:hover .icon_light, .link:disabled:hover .icon_light {
-    stroke: #dfdfdf;
+.button:disabled:hover .icon_primary, .link:disabled:hover .icon_primary {
+    stroke: var(--button-primary-color);
 }
-.button:disabled:hover .icon_dark, .link:disabled:hover .icon_dark {
-    stroke: #000;
+.button:disabled:hover .icon_secondary, .link:disabled:hover .icon_secondary {
+    stroke: var(--button-secondary-color);
 }

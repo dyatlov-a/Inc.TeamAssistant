@@ -1,0 +1,36 @@
+.notification-bar {
+    position: fixed;
+    top: 70px;
+    right: 0;
+    width: 315px;
+    z-index: 9999;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+.notification-bar__item {
+    padding: 10px;
+    margin: 5px;
+    color: var(--text-secondary-color);
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, .5);
+}
+.notification-bar__item_info {
+    background-color: var(--message-info-color);
+}
+.notification-bar__item_warning {
+    background-color: var(--message-warning-color);
+}
+.notification-bar__item_error {
+    background-color: var(--message-error-color);
+}
+.notification-bar__link {
+    float: right;
+    text-underline: none;
+    padding-left: 5px;
+    line-height: 1rem;
+    color: var(--block-secondary-color);
+}
+.notification-bar__link:hover {
+    color: var(--block-priority-color);
+}

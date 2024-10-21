@@ -1,8 +1,6 @@
-using Inc.TeamAssistant.Primitives.Languages;
-
 namespace Inc.TeamAssistant.Primitives.FeatureProperties;
 
 public sealed record SettingItem(
     string PropertyName,
-    MessageId LabelMessageId,
+    string LabelMessageId,
     IReadOnlyCollection<SelectValue> Values);

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="MeanRating" xml:space="preserve">
+        <value>mean</value>
+    </data>
+    <data name="MedianRating" xml:space="preserve">
+        <value>median</value>
+    </data>
+    <data name="AcceptedValue" xml:space="preserve">
+        <value>accepted</value>
+    </data>
+    <data name="History" xml:space="preserve">
+        <value>History</value>
+    </data>
+    <data name="Tasks" xml:space="preserve">
+        <value>tasks</value>
+    </data>
+    <data name="StoryList" xml:space="preserve">
+        <value>Tasks list</value>
+    </data>
+    <data name="AssessmentSession" xml:space="preserve">
+        <value>Assessment Session</value>
+    </data>
+    <data name="TaskAssess" xml:space="preserve">
+        <value>Task assessment</value>
+    </data>
+    <data name="AssessmentSessionAboutTemplate" xml:space="preserve">
+        <value>This page shows the current evaluation process for the "{0}" team's tasks. The evaluation takes place using a bot in a Telegram chat.</value>
+    </data>
+    <data name="AssessmentSessionConnect" xml:space="preserve">
+        <value>Scan the QR code to join the team</value>
+    </data>
+    <data name="EstimationAcceptedTemplate" xml:space="preserve">
+        <value>Estimation {0} accepted</value>
+    </data>
+</root>

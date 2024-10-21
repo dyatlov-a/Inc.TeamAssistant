@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class BotDetailsFormModelValidator : AbstractValidator<BotDetailsFormModel>
+internal sealed class BotDetailsFormModelValidator : AbstractValidator<BotDetailsFormModel>
 {
     public BotDetailsFormModelValidator(IValidator<BotDetailsItemFormModel> botDetailsFormModelValidator)
     {
