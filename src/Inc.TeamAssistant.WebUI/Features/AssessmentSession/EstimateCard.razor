@@ -1,6 +1,6 @@
 <div class="estimate__card">
     <div class="estimate__card__header">
-        <img src="/photos/@PersonId" alt="user avatar" class="estimate__card__avatar" />
+        <img src="@AvatarUrl" alt="user avatar" class="estimate__card__avatar" />
     </div>
     <div class="estimate__card__content">
         <h3 class="estimate__card__name">@Name</h3>
@@ -13,7 +13,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public long PersonId { get; set; }
+    public string AvatarUrl { get; set; } = default!;
     
     [Parameter, EditorRequired]
     public string Name { get; set; } = default!;

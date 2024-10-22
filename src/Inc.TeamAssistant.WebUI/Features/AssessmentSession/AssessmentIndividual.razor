@@ -5,7 +5,7 @@
             @foreach (var storyForEstimate in Story.StoryForEstimates)
             {
                 <EstimateCard
-                    PersonId="storyForEstimate.ParticipantId"
+                    AvatarUrl="@storyForEstimate.AvatarUrl"
                     Name="@storyForEstimate.ParticipantName"
                     Value="@storyForEstimate.DisplayValue">
                 </EstimateCard>

@@ -34,7 +34,7 @@
     {
         await RequestProcessor.Process(
             () => UserService.GetAuthBotContext(),
-            nameof(LoginPage),
+            nameof(LoginContainer),
             r => _botUserName = r.UserName,
             s =>
             {

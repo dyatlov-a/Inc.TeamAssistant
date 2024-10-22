@@ -14,31 +14,16 @@
     WebsiteSection="WebsiteSection.Assessment"
     MetaOverrideTitle="@Localizer["StoryList"]" />
 
-<main class="main">
-    <div class="assessment-history-header">
-        <div class="assessment-history-header__container">
-            <Breadcrumbs Items="_breadcrumbs" />
-            <h1 class="assessment-history__title">@Localizer["StoryList"]</h1>
-        </div>
-    </div>
-    <div class="assessment-history-switcher">
-        <div class="assessment-history-switcher__container">
-            <ViewSwitcher View="_currentView" ViewChanged="OnViewChanged"/>
-        </div>
-    </div>
-    <Loading State="_state" Retry="Load">
-        @foreach (var item in _items)
-        {
-            <div class="assessment-history-content">
-                <div class="assessment-history-content__container">
-                    <DynamicComponent
-                        Type="CurrentViewType"
-                        Parameters="@(new Dictionary<string, object> { ["Story"] = item, ["HasAcceptedValue"] = true })"/>
-                </div>
-            </div>
-        }
-    </Loading>
-</main>
+<AssessmentSessionHistory
+    TeamId="TeamId"
+    Date="@Date"
+    Retry="Load"
+    LinkFactory="s => NavRouter.CreateRoute(s).ToString()"
+    ViewChanged="OnViewChanged"
+    CurrentView="_currentView"
+    State="_state"
+    Items="_items" />
+
 <MainFooter />
         
 @code {
@@ -52,26 +37,14 @@
     public string View { get; set; } = string.Empty;
     
     private AssessmentType _currentView = Enum.GetValues<AssessmentType>().Last();
-    private Type CurrentViewType => _currentView switch
-    {
-        AssessmentType.Individual => typeof(AssessmentIndividual),
-        _ => typeof(AssessmentGroup)
-    };
 
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyDictionary<string, string> _breadcrumbs = new Dictionary<string, string>();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
 
     protected override async Task OnParametersSetAsync()
     {
         if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
             _currentView = value;
-
-        _breadcrumbs = new Dictionary<string, string>
-        {
-            [Localizer["AssessmentSession"]] = NavRouter.CreateRoute($"assessment-session/{TeamId:N}"),
-            [Date] = NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{Date}")
-        };
         
         await Load();
     }
@@ -89,7 +62,7 @@
     {
         await RequestProcessor.Process(
             () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
-            nameof(AssessmentSessionHistory),
+            nameof(AssessmentSessionHistoryContainer),
             r => _items = r.Items,
             s =>
             {

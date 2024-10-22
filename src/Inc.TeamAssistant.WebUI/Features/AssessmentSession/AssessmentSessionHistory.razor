@@ -1,40 +1,89 @@
-@inject IAppraiserService AppraiserService
 @inject IStringLocalizer<AssessmentSessionResources> Localizer
-@inject NavRouter NavRouter
-@inject RequestProcessor RequestProcessor
 
-@if (_items.Any())
-{
-    <div class="history">
-        <div class="history__title">@Localizer["History"]</div>
-        <div class="history__body">
-            @foreach (var item in _items)
-            {
-                <RouterLink Href="@CreateMoveToHistoryLink(item)" ComponentStyle="ComponentStyle.Secondary">
-                    @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Localizer["Tasks"]
-                </RouterLink>
-            }
+<main class="main">
+    <div class="assessment-history-header">
+        <div class="assessment-history-header__container">
+            <Breadcrumbs Items="Breadcrumbs" />
+            <h1 class="assessment-history__title">@Localizer["StoryList"]</h1>
         </div>
     </div>
-}
-
+    <div class="assessment-history-switcher">
+        <div class="assessment-history-switcher__container">
+            <ViewSwitcher View="CurrentView" ViewChanged="ViewChanged"/>
+        </div>
+    </div>
+    <Loading State="State" Retry="Retry">
+        @foreach (var item in Items)
+        {
+            <div class="assessment-history-content">
+                <div class="assessment-history-content__container">
+                    <DynamicComponent
+                        Type="CurrentViewType"
+                        Parameters="@(new Dictionary<string, object> { ["Story"] = item, ["HasAcceptedValue"] = true })"/>
+                </div>
+            </div>
+        }
+    </Loading>
+</main>
+        
 @code {
+    /// <summary>
+    /// Current TeamId.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
+
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Date { get; set; } = string.Empty;
     
-    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Factory for create link for breadcrumbs.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// ViewChanged event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<AssessmentType> ViewChanged { get; set; }
+    
+    /// <summary>
+    /// Selected view.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AssessmentType CurrentView { get; set; }
 
-    private string CreateMoveToHistoryLink(AssessmentHistoryDto historyItem)
-        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
-
-    protected override Task OnParametersSetAsync() => Load();
-
-    private async Task Load()
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Estimated stories.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<StoryDto> Items { get; set; } = default!;
+    
+    private Type CurrentViewType => CurrentView switch
     {
-        await RequestProcessor.Process(
-            () => AppraiserService.GetAssessmentHistory(TeamId, limit: 3),
-            nameof(AssessmentSessionHistory),
-            r => _items = r.Items,
-            _ => StateHasChanged());
-    }
+        AssessmentType.Individual => typeof(AssessmentIndividual),
+        _ => typeof(AssessmentGroup)
+    };
+    
+    private IReadOnlyDictionary<string, string> Breadcrumbs => new Dictionary<string, string>
+    {
+        [Localizer["AssessmentSession"]] = LinkFactory($"assessment-session/{TeamId:N}"),
+        [Date] = LinkFactory($"assessment-history/{TeamId:N}/{Date}")
+    };
 }
