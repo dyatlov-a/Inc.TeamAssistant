@@ -45,7 +45,7 @@
 @code {
     private AssessmentType _currentView = AssessmentType.Individual;
 
-    private IReadOnlyCollection<StoryDto> _items =
+    private readonly IReadOnlyCollection<StoryDto> _items =
     [
         new(
             Id: Guid.NewGuid(),

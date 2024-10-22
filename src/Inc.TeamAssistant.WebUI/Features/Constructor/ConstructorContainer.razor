@@ -1,43 +1,37 @@
+@page "/constructor"
+@page "/en/constructor"
+@page "/ru/constructor"
+
+@attribute [Authorize]
+
 @inject IBotService BotService
 @inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject NavRouter NavRouter
 
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Constructor"
+    MetaOverrideTitle="@Localizer["Title"]" />
+
 <ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
     <p>@string.Format(Localizer["RemoveConfirmationText"], _selectedBot?.Name)</p>
 </ConfirmDialog>
-<div class="bot-selector">
-    <div class="bot-selector__item">
-        <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"]">
-            <Buttons>
-                <Button OnClick="MoveToAdd">@Localizer["AddBot"]</Button>
-            </Buttons>
-        </BotCard>
-    </div>
-    <div class="bot-selector__item">
-        <Loading State="_state" Retry="Load">
-            @foreach (var bot in _bots)
-            {
-                <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
-                    <Content>
-                        <RouterLink Href="@CreateMoveToDashboardLink(bot)" ComponentStyle="ComponentStyle.Secondary">
-                            @Localizer["MoveToDashboard"]
-                        </RouterLink>
-                    </Content>
-                    <Buttons>
-                        <Button OnClick="() => MoveToEdit(bot.Id)">@Localizer["Edit"]</Button>
-                        <Button OnClick="() => MoveToRemove(bot)">@Localizer["Remove"]</Button>
-                    </Buttons>
-                </BotCard>
-            }
-        </Loading>
-    </div>
-</div>
+
+<AuthorizeView>
+    <Authorized>
+        <Constructor
+            OwnerId="@context.User.ToPerson().Id"
+            Bots="_bots"
+            State="_state"
+            Retry="Load"
+            LinkFactory="CreateMoveToDashboardLink"
+            MoveToAdd="MoveToAdd"
+            MoveToEdit="i => MoveToEdit(i)"
+            MoveToRemove="b => MoveToRemove(b)" />
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    [Parameter, EditorRequired]
-    public long OwnerId { get; set; }
-
     private LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
@@ -50,8 +44,8 @@
     {
         await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
-            nameof(BotSelector),
-            r => _bots = r.Bots.Where(b => b.OwnerId == OwnerId).ToArray(),
+            nameof(ConstructorContainer),
+            r => _bots = r.Bots.ToArray(),
             s =>
             {
                 _state = s;
