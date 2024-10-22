@@ -3,7 +3,7 @@
 <Stories TComponent="ConfirmDialog" Layout="typeof(StubLayout)">
     <Story Name="Default">
         <Template>
-            <ConfirmDialog OnConfirm="Confirm" @attributes="context.Args" @ref="_dialog">
+            <ConfirmDialog OnConfirm="() => { }" @attributes="context.Args" @ref="_dialog">
                 Html content
             </ConfirmDialog>
         </Template>
@@ -17,9 +17,5 @@
     {
         if (firstRender)
             _dialog?.Open();
-    }
-
-    private void Confirm()
-    {
     }
 }

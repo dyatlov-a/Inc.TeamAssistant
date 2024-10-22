@@ -10,6 +10,7 @@
 .login-action {
     display: flex;
     align-items: center;
+    background-color: var(--bg-primary-color);
 }
 .login-action-container {
     padding: 0 60px;
