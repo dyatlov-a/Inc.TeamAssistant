@@ -8,10 +8,10 @@ namespace Inc.TeamAssistant.CheckIn.Application.QueryHandlers.GetLocations.Conve
 
 internal sealed class LocationConverter
 {
-    private readonly ILogger<GetLocationsQueryHandler> _logger;
+    private readonly ILogger<LocationConverter> _logger;
     private readonly IGeoService _geoService;
 
-    public LocationConverter(ILogger<GetLocationsQueryHandler> logger, IGeoService geoService)
+    public LocationConverter(ILogger<LocationConverter> logger, IGeoService geoService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _geoService = geoService ?? throw new ArgumentNullException(nameof(geoService));
@@ -64,6 +64,7 @@ internal sealed class LocationConverter
             return new(
                 location.UserId,
                 location.DisplayName,
+                $"/photos/{location.UserId}",
                 location.Longitude,
                 location.Latitude,
                 $"{(timeZone.BaseUtcOffset < TimeSpan.Zero ? "-" : "+")}{timeZone.BaseUtcOffset:hh\\:mm}",
@@ -84,6 +85,7 @@ internal sealed class LocationConverter
             return new(
                 location.UserId,
                 location.DisplayName,
+                $"/photos/{location.UserId}",
                 location.Longitude,
                 location.Latitude,
                 DisplayTimeOffset: unknown,

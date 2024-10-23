@@ -9,7 +9,7 @@ function createMarker(
     showRouteText,
     hideRouteText){
     let popupContent = "<p><div class=\"map-popup\">";
-    popupContent += "<img src=\"/photos/" + location.personId + "\" alt=\"" + location.personDisplayName + "\" class=\"map-popup__user-avatar\" />";
+    popupContent += "<img src=\"" + location.avatarUrl + "\" alt=\"" + location.personDisplayName + "\" class=\"map-popup__user-avatar\" />";
     popupContent += "<b>" + location.personDisplayName + "</b><br>";
     popupContent += location.countryName + "<br>";
     popupContent += location.workSchedule + " " + location.displayTimeOffset + "<br><br>";
@@ -23,7 +23,7 @@ function createMarker(
         }
         popupContent += "<br>";
     });
-    
+
     if (hasHistory) {
         popupContent += "<br><button type='button' onclick='locations.markerClickHandler("
             + index + ")' class='marker-btn'>" + (index === 0 ? hideRouteText : showRouteText)
@@ -39,7 +39,7 @@ function createLayers(data, featureNamesLookup, layerTitle, showRouteText, hideR
     let layers = {};
     let markers = [];
     let index = 0;
-    
+
     for (let [key, value] of Object.entries(data)) {
         index++;
         markers[markers.length] = createMarker(
@@ -57,7 +57,7 @@ function createLayers(data, featureNamesLookup, layerTitle, showRouteText, hideR
 
 function createRoutes(data, featureNamesLookup, showRouteText, hideRouteText) {
     let routes = {};
-    
+
     for (let [key, values] of Object.entries(data)) {
         let hasHistory = values.length > 1;
         let isActual = true;
@@ -88,7 +88,7 @@ function createRoutes(data, featureNamesLookup, showRouteText, hideRouteText) {
         routes[key] = layerGroup;
         polyline.addTo(layerGroup);
     }
-    
+
     return routes;
 }
 
@@ -101,7 +101,7 @@ export function initialize(hostElement, data, featureNamesLookup, showRouteText,
     let layers = createLayers(data, featureNamesLookup, layerTitle, showRouteText, hideRouteText);
     let routes = createRoutes(data, featureNamesLookup, showRouteText, hideRouteText);
     let defaultLayers = [osm];
-    
+
     Object.keys(layers).forEach(function (key) {
         defaultLayers[defaultLayers.length] = layers[key];
     });

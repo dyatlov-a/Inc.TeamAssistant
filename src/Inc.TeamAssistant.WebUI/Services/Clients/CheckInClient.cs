@@ -24,9 +24,9 @@ internal sealed class CheckInClient : ICheckInService
         return result;
     }
 
-    public async Task<GetLocationsResult?> GetLocations(Guid mapId, CancellationToken token)
+    public async Task<GetLocationsResult> GetLocations(Guid mapId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetLocationsResult?>($"check-in/locations/{mapId:N}", token);
+        var result = await _client.GetFromJsonAsync<GetLocationsResult>($"check-in/locations/{mapId:N}", token);
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 

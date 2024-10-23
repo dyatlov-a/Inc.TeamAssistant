@@ -40,7 +40,6 @@ internal sealed class GetLocationsQueryHandler : IRequestHandler<GetLocationsQue
         var locationsByUser = locations
             .GroupBy(l => l.DisplayName)
             .ToDictionary(l => l.Key, l => _locationConverter.Convert(l, personStatsLookup, calendar));
-        
 
         return new(locationsByUser);
     }

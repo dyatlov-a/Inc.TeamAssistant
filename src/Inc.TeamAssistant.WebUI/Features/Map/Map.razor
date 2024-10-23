@@ -1,35 +1,16 @@
-@page "/map/{id:guid}"
-@page "/en/map/{id:guid}"
-@page "/ru/map/{id:guid}"
-@page "/map/{id:guid}/{DisableLayout:bool}"
-@page "/en/map/{id:guid}/{DisableLayout:bool}"
-@page "/ru/map/{id:guid}/{DisableLayout:bool}"
-
 @implements IAsyncDisposable
 
-@inject ICheckInService CheckInService
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 @inject IStringLocalizer<MapResources> Localizer
 
-<MetaDataModule WebsiteSection="WebsiteSection.Map" />
-
-@if (!DisableLayout)
-{
-    <MainNavbar/>
-}
 <div @ref="_map" class="map @CssClass"></div>
 
-@if (!DisableLayout)
-{
-    <AcceptCookieDialog />
-}
-
 @code {
-    [Parameter]
-    public Guid Id { get; set; }
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, IReadOnlyCollection<LocationDto>> Locations { get; set; } = default!;
     
-    [Parameter]
+    [Parameter, EditorRequired]
     public bool DisableLayout { get; set; }
 
     private ElementReference _map;
@@ -49,18 +30,16 @@
         {
             _mapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
-                "./Features/Map/MapPage.razor.js");
-            
-            var getLocations = await CheckInService.GetLocations(Id);
-            if (getLocations is not null)
-                await _mapModule.InvokeVoidAsync(
-                    "initialize",
-                    _map,
-                    getLocations.Locations,
-                    FeatureNamesLookup,
-                    Localizer["RouteShow"],
-                    Localizer["RouteHide"],
-                    Localizer["DefaultLayerTitle"]);
+                "./Features/Map/Map.razor.js");
+
+            await _mapModule.InvokeVoidAsync(
+                "initialize",
+                _map,
+                Locations,
+                FeatureNamesLookup,
+                Localizer["RouteShow"].Value,
+                Localizer["RouteHide"].Value,
+                Localizer["DefaultLayerTitle"].Value);
         }
     }
 
