@@ -1,11 +1,10 @@
-@inject IRenderContext RenderContext
-@inject NavRouter NavRouter
 @inject IStringLocalizer<LayoutResources> Localizer
+@inject MainFooterLinksFactory MainFooterLinksFactory
 
 <div class="footer">
     <div class="footer__container">
         <div class="footer__content">
-            @foreach (var group in _links)
+            @foreach (var group in MainFooterLinksFactory.Create())
             {
                 <div class="footer-group">
                     <span class="footer-group__header">@Localizer[group.Key]</span>
@@ -20,78 +19,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private IReadOnlyDictionary<string, IReadOnlyCollection<FooterLink>> _links = new Dictionary<string, IReadOnlyCollection<FooterLink>>();
-
-    protected override void OnInitialized() => Load();
-
-    private void Load()
-    {
-        const bool external = true;
-
-        _links = new Dictionary<string, IReadOnlyCollection<FooterLink>>
-        {
-            ["GroupNavigation"] =
-            [
-                new FooterLink(
-                    Localizer["LinkMain"],
-                    NavRouter.CreateRoute(null),
-                    !external),
-                new FooterLink(
-                    Localizer["LinkConstructor"],
-                    NavRouter.CreateRoute("constructor"),
-                    !external),
-                new FooterLink(
-                    Localizer["LinkDashboard"],
-                    NavRouter.CreateRoute("dashboard"),
-                    !external)
-            ],
-            ["GroupTech"] =
-            [
-                new FooterLink(
-                    "DotNet",
-                    "https://dotnet.microsoft.com/",
-                    external),
-                new FooterLink(
-                    "Blazor",
-                    "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
-                    external),
-                new FooterLink(
-                    "Nuke",
-                    "https://nuke.build/",
-                    external)
-            ],
-            ["GroupStorage"] =
-            [
-                new FooterLink(
-                    "Postgres",
-                    "https://www.postgresql.org/",
-                    external),
-                new FooterLink(
-                    "Npgsql",
-                    "https://www.npgsql.org/",
-                    external),
-                new FooterLink(
-                    "FluentMigrator",
-                    "https://fluentmigrator.github.io/",
-                    external)
-            ],
-            ["GroupTools"] =
-            [
-                new FooterLink(
-                    "Telegram.Bot",
-                    "https://github.com/TelegramBots/Telegram.Bot",
-                    external),
-                new FooterLink(
-                    "FluentValidator",
-                    "https://docs.fluentvalidation.net/",
-                    external),
-                new FooterLink(
-                    "GitHub",
-                    "https://github.com/dyatlov-a/Inc.TeamAssistant",
-                    external)
-            ]
-        };
-    }
-}

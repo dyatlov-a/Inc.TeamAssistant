@@ -9,6 +9,7 @@ using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
+using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
@@ -55,6 +56,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<FeaturesFactory>()
             .AddScoped<DateSelectorFactory>()
+            .AddScoped<MainFooterLinksFactory>()
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()
             .AddScoped(typeof(DragAndDropService<>))
