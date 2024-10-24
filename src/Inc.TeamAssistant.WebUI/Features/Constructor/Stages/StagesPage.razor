@@ -29,7 +29,12 @@
         @if (RenderContext.IsBrowser)
         {
             <Loading State="_state" Retry="Load">
-                <DynamicComponent Type="StageType" Parameters="StageParameters"/>
+                @foreach (var widget in StageWidgets)
+                {
+                    <div class="constructor__widget">
+                        <DynamicComponent Type="widget" Parameters="StageParameters"/>
+                    </div>
+                }
             </Loading>
         }
     </div>
@@ -51,12 +56,12 @@
         : $"@{_stagesState.UserName}";
 
     private Stage _currentState = Enum.GetValues<Stage>().First();
-    private Type StageType => _currentState switch
+    private IReadOnlyCollection<Type> StageWidgets => _currentState switch
     {
-        Stage.SelectFeatures => typeof(SelectFeatures),
-        Stage.SetSettings => typeof(SetSettings),
-        Stage.Complete => typeof(Complete),
-        _ => typeof(CheckBot)
+        Stage.SelectFeatures => [typeof(SelectFeatures)],
+        Stage.SetSettings => [typeof(SetSettings), typeof(CalendarEditor), typeof(BotDetailsEditor)],
+        Stage.Complete => [typeof(Complete)],
+        _ => [typeof(CheckBot)]
     };
     private Dictionary<string, object> StageParameters => new()
     {

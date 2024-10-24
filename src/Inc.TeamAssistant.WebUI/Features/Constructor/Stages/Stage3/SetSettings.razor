@@ -59,12 +59,6 @@
     </Panel>
     <ValidationMessage For="@(() => _formModel.CalendarId)"/>
 </EditForm>
-<div class="optional-settings">
-    <CalendarEditor IsOpen="!_formModel.CalendarId.HasValue" Selected="SelectedCalendar" />
-</div>
-<div class="optional-settings">
-    <BotDetailsEditor SupportedLanguages="_formModel.SupportedLanguages" Token="@_formModel.Token" />
-</div>
 
 @code {
     [Parameter, EditorRequired]
@@ -86,15 +80,6 @@
     protected override void OnParametersSet()
     {
         _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-    }
-
-    private async Task SelectedCalendar(Guid calendarId)
-    {
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        
-        _formModel.CalendarId = calendarId;
-        
-        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
 
     private async Task SubmitForm()

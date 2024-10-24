@@ -1,7 +1,7 @@
 @inject ICalendarService CalendarService
 @inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
-@inject IRenderContext RenderContext
+@inject IServiceProvider ServiceProvider
 @inject IJSRuntime JsRuntime
 
 <EditForm id="@AnalyticEvents.CalendarChanged" EditContext="_editContext" OnSubmit="SubmitForm">
@@ -121,10 +121,16 @@
 
 @code {
     [Parameter, EditorRequired]
-    public EventCallback<Guid> Selected { get; set; }
+    public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public bool IsOpen { get; set; }
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
 
     private bool _isOpen;
     private readonly CalendarFromModel _formModel = new();
@@ -139,7 +145,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && IsOpen)
+        if (firstRender && !StagesState.CalendarId.HasValue)
             await Load();
     }
 
@@ -178,7 +184,7 @@
             async () =>
             {
                 var calendarId = await CalendarService.Update(_formModel.ToCommand());
-                await Selected.InvokeAsync(calendarId);
+                await SelectedCalendar(calendarId);
             },
             () => {},
             s =>
@@ -186,5 +192,12 @@
                 _state = s;
                 StateHasChanged();
             });
+    }
+    
+    private async Task SelectedCalendar(Guid calendarId)
+    {
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+        
+        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
 }

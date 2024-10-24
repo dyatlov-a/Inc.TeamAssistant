@@ -5,7 +5,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 public sealed class SetSettingsFormModel
 {
     public Guid? CalendarId { get; set; }
-    public string Token { get; set; } = string.Empty;
 
     private readonly List<string> _supportedLanguages = new();
     public IReadOnlyCollection<string> SupportedLanguages => _supportedLanguages;
@@ -31,7 +30,6 @@ public sealed class SetSettingsFormModel
         ArgumentNullException.ThrowIfNull(stagesState);
 
         CalendarId = stagesState.CalendarId;
-        Token = stagesState.Token;
         
         _supportedLanguages.Clear();
         _supportedLanguages.AddRange(stagesState.SupportedLanguages);

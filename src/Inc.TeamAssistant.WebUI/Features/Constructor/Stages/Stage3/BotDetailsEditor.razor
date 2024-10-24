@@ -1,7 +1,6 @@
 @inject IBotService BotService
 @inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
-@inject IRenderContext RenderContext
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
@@ -14,7 +13,7 @@
                 <FormSection
                     Title="@Localizer["BotDetails"]"
                     HelpText="@Localizer["BotDetailsHelp"]">
-                    @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
+                    @foreach (var item in _formModel.BotDetails.Where(b => StagesState.SupportedLanguages.Contains(b.LanguageId)))
                     {
                         <BotDetailsItemEditor Item="item"/>
                     }
@@ -26,10 +25,16 @@
 
 @code {
     [Parameter, EditorRequired]
-    public string Token { get; set; } = string.Empty;
+    public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<string> SupportedLanguages { get; set; } = Array.Empty<string>();
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
     
     private bool _isOpen;
     private readonly BotDetailsFormModel _formModel = new();
@@ -49,7 +54,7 @@
         await RequestProcessor.Process(
             async () =>
             {
-                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
+                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
                 return botDetails;
             },
             nameof(BotDetailsEditor),
@@ -69,7 +74,7 @@
             return;
         
         await RequestProcessor.Process(
-            () => BotService.SetDetails(_formModel.ToCommand(Token)),
+            () => BotService.SetDetails(_formModel.ToCommand(StagesState.Token)),
             () => { },
             s =>
             {
