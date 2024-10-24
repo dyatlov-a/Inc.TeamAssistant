@@ -1,89 +1,59 @@
-@implements IDisposable
-
-@inject IRenderContext RenderContext
-@inject NavRouter NavRouter
 @inject IStringLocalizer<LayoutResources> Localizer
 
 <div class="navbar">
     <div class="navbar-container">
-        <AuthorizeView>
-            <Authorized>
-                @{ var person = context.User.ToPerson(); }
-                <div class="navbar__item navbar__item_logo">
-                    <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
-                </div>
-                @foreach (var language in _languages)
-                {
-                    <div class="navbar__item">
-                        <RouterLink OnClick="() => MoveTo(language.Path)">@language.Culture</RouterLink>
-                    </div>
-                }
-                <div class="navbar__divider"></div>
-                <span class="navbar__item navbar__item_avatar">
-                    <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
-                    @person.Name
-                    <br/>
-                    @person.Username
-                </span>
-                <div class="navbar__item">
-                    <RouterLink Href="@_logoutUrl">@Localizer["Logout"]</RouterLink>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="navbar__item">
-                    <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
-                </div>
-                @foreach (var language in _languages)
-                {
-                    <div class="navbar__item">
-                        <RouterLink OnClick="() => MoveTo(language.Path)">@language.Culture</RouterLink>
-                    </div>
-                }
-                <div class="navbar__divider"></div>
-                @if (!NavRouter.CurrentUrl.Contains("/login"))
-                {
-                    <div class="navbar__item">
-                        <RouterLink Href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")">
-                            @Localizer["Login"]
-                        </RouterLink>
-                    </div>
-                }
-            </NotAuthorized>
-        </AuthorizeView>
+        <div class="navbar__item navbar__item_logo">
+            <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
+        </div>
+        @foreach (var language in Languages)
+        {
+            <div class="navbar__item">
+                <RouterLink OnClick="() => Moved.InvokeAsync(language.Url)">@language.Title</RouterLink>
+            </div>
+        }
+        <div class="navbar__divider"></div>
+        @if (CurrentPerson is not null)
+        {
+            <span class="navbar__item navbar__item_avatar">
+                <img src="@CurrentPerson.AvatarUrl" alt="user avatar" class="user-avatar"/>
+                @CurrentPerson.Name
+                <br/>
+                @CurrentPerson.Username
+            </span>
+            <div class="navbar__item">
+                <RouterLink Href="@LogoutUrl">@Localizer["Logout"]</RouterLink>
+            </div>
+        }
+        else if (HasLogin)
+        {
+            <div class="navbar__item">
+                <RouterLink Href="@LoginUrl">
+                    @Localizer["Login"]
+                </RouterLink>
+            </div>
+        }
     </div>
 </div>
 
 @code {
-    private IReadOnlyCollection<(string Culture, string Path)> _languages = Array.Empty<(string, string)>();
-    private IDisposable? _routerScope;
+    [Parameter, EditorRequired]
+    public bool HasLogin { get; set; }
     
-    private string MainUrl => NavRouter.CreateRoute(null);
-    private string _logoutUrl = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        var languageId = NavRouter.GetCurrentLanguage();
-        
-        _routerScope = NavRouter.OnRouteChanged(SetLanguages);
-        _logoutUrl = languageId is null
-            ? "accounts/logout"
-            : $"accounts/logout?languageCode={languageId.Value}";
-        
-        SetLanguages();
-    }
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<LinkModel> Languages { get; set; } = default!;
     
-    private void SetLanguages()
-    {
-        var routeWithoutLanguage = NavRouter.GetRouteSegment();
-
-        _languages = LanguageSettings.LanguageIds
-            .Select(l => (l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
-            .ToArray();
-        
-        StateHasChanged();
-    }
-
-    private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
-
-    public void Dispose() => _routerScope?.Dispose();
+    [Parameter, EditorRequired]
+    public string MainUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string LoginUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string LogoutUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public EventCallback<string> Moved { get; set; }
+    
+    [Parameter]
+    public Person? CurrentPerson { get; set; }
 }

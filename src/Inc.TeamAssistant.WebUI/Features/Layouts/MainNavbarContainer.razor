@@ -1,0 +1,62 @@
+@implements IDisposable
+
+@inject NavRouter NavRouter
+
+<AuthorizeView>
+    <Authorized>
+        <MainNavbar
+            HasLogin="HasLogin"
+            Languages="_languages"
+            MainUrl="@MainUrl"
+            LoginUrl="@LoginUrl"
+            LogoutUrl="@_logoutUrl"
+            Moved="p => MoveTo(p)"
+            CurrentPerson="context.User.ToPerson()" />
+    </Authorized>
+    <NotAuthorized>
+        <MainNavbar
+            HasLogin="HasLogin"
+            Languages="_languages"
+            LoginUrl="@LoginUrl"
+            LogoutUrl="@_logoutUrl"
+            MainUrl="@MainUrl"
+            Moved="p => MoveTo(p)" />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private IDisposable? _routerScope;
+    private IReadOnlyCollection<LinkModel> _languages = Array.Empty<LinkModel>();
+    private string _logoutUrl = string.Empty;
+    
+    private bool HasLogin => !NavRouter.CurrentUrl.Contains("/login");
+    private string MainUrl => NavRouter.CreateRoute(null);
+    private string LoginUrl => NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}");
+
+    protected override void OnInitialized()
+    {
+        var languageId = NavRouter.GetCurrentLanguage();
+        
+        _routerScope = NavRouter.OnRouteChanged(SetLanguages);
+        _logoutUrl = languageId is null
+            ? "accounts/logout"
+            : $"accounts/logout?languageCode={languageId.Value}";
+        
+        SetLanguages();
+    }
+    
+    private void SetLanguages()
+    {
+        var routeWithoutLanguage = NavRouter.GetRouteSegment();
+
+        _languages = LanguageSettings.LanguageIds
+            .Select(l => new LinkModel(l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
+            .ToArray();
+        
+        StateHasChanged();
+    }
+
+    private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
+
+    public void Dispose() => _routerScope?.Dispose();
+}

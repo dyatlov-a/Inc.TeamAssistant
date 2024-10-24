@@ -5,14 +5,13 @@
 @page "/en/map/{id:guid}/{DisableLayout:bool}"
 @page "/ru/map/{id:guid}/{DisableLayout:bool}"
 
-@inject IRenderContext RenderContext
 @inject ICheckInService CheckInService
 
 <MetaDataModule WebsiteSection="WebsiteSection.Map" />
 
 @if (!DisableLayout)
 {
-    <MainNavbar/>
+    <MainNavbarContainer />
 }
 
 @if (_locations.Any())

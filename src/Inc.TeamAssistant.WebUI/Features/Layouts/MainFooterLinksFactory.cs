@@ -14,66 +14,66 @@ internal sealed class MainFooterLinksFactory
         _navRouter = navRouter ?? throw new ArgumentNullException(nameof(navRouter));
     }
 
-    public IReadOnlyDictionary<string, IReadOnlyCollection<FooterLink>> Create()
+    public IReadOnlyDictionary<string, IReadOnlyCollection<LinkModel>> Create()
     {
-        return new Dictionary<string, IReadOnlyCollection<FooterLink>>
+        return new Dictionary<string, IReadOnlyCollection<LinkModel>>
         {
             ["GroupNavigation"] =
             [
-                new FooterLink(
+                new LinkModel(
                     _localizer["LinkMain"],
                     _navRouter.CreateRoute(null),
                     External: false),
-                new FooterLink(
+                new LinkModel(
                     _localizer["LinkConstructor"],
                     _navRouter.CreateRoute("constructor"),
                     External: false),
-                new FooterLink(
+                new LinkModel(
                     _localizer["LinkDashboard"],
                     _navRouter.CreateRoute("dashboard"),
                     External: false)
             ],
             ["GroupTech"] =
             [
-                new FooterLink(
+                new LinkModel(
                     "DotNet",
                     "https://dotnet.microsoft.com/",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "Blazor",
                     "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "Nuke",
                     "https://nuke.build/",
                     External: true)
             ],
             ["GroupStorage"] =
             [
-                new FooterLink(
+                new LinkModel(
                     "Postgres",
                     "https://www.postgresql.org/",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "Npgsql",
                     "https://www.npgsql.org/",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "FluentMigrator",
                     "https://fluentmigrator.github.io/",
                     External: true)
             ],
             ["GroupTools"] =
             [
-                new FooterLink(
+                new LinkModel(
                     "Telegram.Bot",
                     "https://github.com/TelegramBots/Telegram.Bot",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "FluentValidator",
                     "https://docs.fluentvalidation.net/",
                     External: true),
-                new FooterLink(
+                new LinkModel(
                     "GitHub",
                     "https://github.com/dyatlov-a/Inc.TeamAssistant",
                     External: true)
