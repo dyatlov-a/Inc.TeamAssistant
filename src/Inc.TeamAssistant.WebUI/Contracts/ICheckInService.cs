@@ -7,5 +7,5 @@ public interface ICheckInService
 {
     Task<GetMapsResult> GetMaps(Guid botId, CancellationToken token = default);
     
-    Task<GetLocationsResult?> GetLocations(Guid mapId, CancellationToken token = default);
+    Task<GetLocationsResult> GetLocations(Guid mapId, CancellationToken token = default);
 }

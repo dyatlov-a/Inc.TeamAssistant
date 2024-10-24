@@ -19,7 +19,7 @@ internal sealed class CheckInService : ICheckInService
         return await _mediator.Send(new GetMapsQuery(botId), token);
     }
 
-    public async Task<GetLocationsResult?> GetLocations(Guid mapId, CancellationToken token)
+    public async Task<GetLocationsResult> GetLocations(Guid mapId, CancellationToken token)
     {
         return await _mediator.Send(new GetLocationsQuery(mapId), token);
     }

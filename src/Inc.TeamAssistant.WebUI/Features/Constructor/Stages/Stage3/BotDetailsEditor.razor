@@ -1,30 +1,23 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails
-
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
-@inject IRenderContext RenderContext
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_BotDetailsTelegram]" Opened="Load" IsOpen="_isOpen">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <Panel Header="@Localizer["BotDetailsTelegram"]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormSection
-                        Title="@Resources[Messages.Constructor_BotDetails]"
-                        HelpText="@Resources[Messages.Constructor_BotDetailsHelp]">
-                        <Content>
-                            @foreach (var item in _formModel.BotDetails.Where(b => SupportedLanguages.Contains(b.LanguageId)))
-                            {
-                                <BotDetailsItemEditor Item="item"/>
-                            }
-                        </Content>
-                    </FormSection>
-                </Content>
+                <FormSection
+                    Title="@Localizer["BotDetails"]"
+                    HelpText="@Localizer["BotDetailsHelp"]">
+                    @foreach (var item in _formModel.BotDetails.Where(b => StagesState.SupportedLanguages.Contains(b.LanguageId)))
+                    {
+                        <BotDetailsItemEditor Item="item"/>
+                    }
+                </FormSection>
             </Loading>
         </Content>
     </Panel>
@@ -32,10 +25,16 @@
 
 @code {
     [Parameter, EditorRequired]
-    public string Token { get; set; } = string.Empty;
+    public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<string> SupportedLanguages { get; set; } = Array.Empty<string>();
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
     
     private bool _isOpen;
     private readonly BotDetailsFormModel _formModel = new();
@@ -55,7 +54,7 @@
         await RequestProcessor.Process(
             async () =>
             {
-                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(Token));
+                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
                 return botDetails;
             },
             nameof(BotDetailsEditor),
@@ -75,7 +74,7 @@
             return;
         
         await RequestProcessor.Process(
-            () => BotService.SetDetails(_formModel.ToCommand(Token)),
+            () => BotService.SetDetails(_formModel.ToCommand(StagesState.Token)),
             () => { },
             s =>
             {

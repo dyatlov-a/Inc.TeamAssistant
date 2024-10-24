@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Author" xml:space="preserve">
+        <value>Александр Дятлов</value>
+    </data>
+    <data name="AppraiserDescription" xml:space="preserve">
+        <value>Инструмент для организации командной оценки задач с использованием planning poker online</value>
+    </data>
+    <data name="AppraiserKeywords" xml:space="preserve">
+        <value>Телеграм бот, оценка задач, оценка, planning poker, planning poker online</value>
+    </data>
+    <data name="CheckInDescription" xml:space="preserve">
+        <value>Карта с указанием наших геолокаций</value>
+    </data>
+    <data name="CheckInKeywords" xml:space="preserve">
+        <value>Карта, геолокация, регистрация геолокации, бот для регистрации геолокации, бот для регистрации геолокации в telegram</value>
+    </data>
+    <data name="MainDescription" xml:space="preserve">
+        <value>Чат-боты для оптимизации процессов в командах</value>
+    </data>
+    <data name="MainKeywords" xml:space="preserve">
+        <value>легкая оценка задач, оперативное проведение ревью кода, нетворкинг, бот для регистрации геолокации, бот для регистрации геолокации в telegram</value>
+    </data>
+    <data name="AppraiserTitle" xml:space="preserve">
+        <value>Телеграм бот для оценки задач через planning poker</value>
+    </data>
+    <data name="CheckInTitle" xml:space="preserve">
+        <value>Наше местоположение</value>
+    </data>
+    <data name="MainTitle" xml:space="preserve">
+        <value>Team assistant | ассистент для команд</value>
+    </data>
+    <data name="OgAppraiserTitle" xml:space="preserve">
+        <value>Оценщик</value>
+    </data>
+    <data name="OgAppraiserDescription" xml:space="preserve">
+        <value>Телеграм бот для оценки задач через planning poker</value>
+    </data>
+    <data name="OgAppraiserImageText" xml:space="preserve">
+        <value>Оценщик - телеграм бот для оценки задач через planning poker</value>
+    </data>
+    <data name="OgCheckInTitle" xml:space="preserve">
+        <value>Наше местоположение</value>
+    </data>
+    <data name="OgCheckInDescription" xml:space="preserve">
+        <value>Телеграм бот для регистрации перемещений</value>
+    </data>
+    <data name="OgCheckInImageText" xml:space="preserve">
+        <value>CheckIn - телеграм бот для регистрации перемещений</value>
+    </data>
+    <data name="OgMainTitle" xml:space="preserve">
+        <value>Team assistant | ассистент для команд</value>
+    </data>
+    <data name="OgMainDescription" xml:space="preserve">
+        <value>Чат-боты для оптимизации процессов в командах</value>
+    </data>
+    <data name="OgMainImageText" xml:space="preserve">
+        <value>Team assistant - чат боты для оптимизации процессов в командах</value>
+    </data>
+</root>

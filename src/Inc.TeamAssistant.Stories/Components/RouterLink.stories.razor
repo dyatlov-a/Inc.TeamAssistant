@@ -1,0 +1,21 @@
+@attribute [Stories("Components/RouterLink")]
+
+<Stories TComponent="RouterLink">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
+        </Template>
+    </Story>
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
+        </Arguments>
+        <Template>
+            <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _text = "Link";
+}

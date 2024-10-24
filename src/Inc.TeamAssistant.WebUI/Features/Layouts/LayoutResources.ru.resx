@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Login" xml:space="preserve">
+        <value>Войти</value>
+    </data>
+    <data name="LinkMain" xml:space="preserve">
+        <value>Главная</value>
+    </data>
+    <data name="GroupNavigation" xml:space="preserve">
+        <value>Навигация</value>
+    </data>
+    <data name="LinkConstructor" xml:space="preserve">
+        <value>Конструктор</value>
+    </data>
+    <data name="LinkDashboard" xml:space="preserve">
+        <value>Дашборд</value>
+    </data>
+    <data name="GroupTech" xml:space="preserve">
+        <value>Технологии</value>
+    </data>
+    <data name="GroupStorage" xml:space="preserve">
+        <value>Хранилище</value>
+    </data>
+    <data name="GroupTools" xml:space="preserve">
+        <value>Инструменты</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
+    <data name="AcceptCookieText" xml:space="preserve">
+        <value>Мы используем файлы cookies, чтобы сделать работу нашего сайта наиболее удобной для Вас. Продолжая пользоваться нашим сайтом, Вы соглашаетесь с использованием файлов cookies</value>
+    </data>
+    <data name="AcceptCookieButton" xml:space="preserve">
+        <value>Принять</value>
+    </data>
+</root>

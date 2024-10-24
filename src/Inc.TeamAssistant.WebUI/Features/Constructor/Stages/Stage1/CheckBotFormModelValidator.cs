@@ -1,19 +1,19 @@
 using FluentValidation;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
+using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 
-public sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormModel>
+internal sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormModel>
 {
     private readonly IBotService _botService;
-    private readonly ResourcesManager _resourcesManager;
+    private readonly IStringLocalizer<ConstructorResources> _localizer;
     
-    public CheckBotFormModelValidator(IBotService botService, ResourcesManager resourcesManager)
+    public CheckBotFormModelValidator(IBotService botService, IStringLocalizer<ConstructorResources> localizer)
     {
         _botService = botService ?? throw new ArgumentNullException(nameof(botService));
-        _resourcesManager = resourcesManager ?? throw new ArgumentNullException(nameof(resourcesManager));
+        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
 
         RuleFor(e => e.Token)
             .NotEmpty();
@@ -36,6 +36,6 @@ public sealed class CheckBotFormModelValidator : AbstractValidator<CheckBotFormM
         var result = await _botService.Check(new GetBotUserNameQuery(botToken), token);
 
         if (!result.HasAccess)
-            context.AddFailure(nameof(CheckBotFormModel.Token), _resourcesManager[Messages.Validation_TokenInvalid]);
+            context.AddFailure(nameof(CheckBotFormModel.Token), _localizer["TokenInvalid"]);
     }
 }

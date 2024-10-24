@@ -1,0 +1,38 @@
+@attribute [Stories("Features/MainNavbar")]
+
+<Stories TComponent="MainNavbar" Layout="typeof(DarkLayout)">
+    <Story Name="Authorized">
+        <Template>
+            <MainNavbar
+                HasLogin="true"
+                Languages="_languages"
+                MainUrl="#"
+                LoginUrl="#"
+                LogoutUrl="#"
+                Moved="_ => { }"
+                CurrentPerson="_currentPerson" />
+        </Template>
+    </Story>
+    <Story Name="NotAuthorized">
+        <Template>
+            <MainNavbar
+                HasLogin="true"
+                Languages="_languages"
+                MainUrl="#"
+                LoginUrl="#"
+                LogoutUrl="#"
+                Moved="_ => { }" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Person _currentPerson = new StubPerson(
+        Id: 1,
+        Name: "Aleksandr",
+        Username: "adiatlov");
+    
+    private readonly IReadOnlyCollection<LinkModel> _languages = LanguageSettings.LanguageIds
+        .Select(l => new LinkModel(l.Value, $"/{l.Value}"))
+        .ToArray();
+}

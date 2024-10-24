@@ -17,6 +17,11 @@ public static class JsFunctions
             () => onChanged(url),
             url);
     }
+
+    public static IJsFunction<dynamic> ScrollToTop()
+    {
+        return new JsFunction<dynamic>("window.browserJsFunctions.scrollToTop", postAction: null);
+    }
     
     private sealed record JsFunction<TResult> : IJsFunction<TResult>
     {

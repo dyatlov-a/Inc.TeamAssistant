@@ -1,0 +1,50 @@
+@inject IStringLocalizer<ComponentResources> Localizer
+
+@if (_isOpen)
+{
+    <div class="confirm-dialog-bg"></div>
+    <div class="confirm-dialog">
+        <div class="confirm-dialog__body">
+            <div class="confirm-dialog__content">
+                @ChildContent
+            </div>
+            <div class="confirm-dialog__actions">
+                <Button OnClick="() => Close(OnConfirm)">@Localizer["Yes"]</Button>
+                <Button OnClick="() => Close()" ComponentStyle="ComponentStyle.Secondary">@Localizer["No"]</Button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// HTML content
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// On confirm event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnConfirm { get; set; }
+    
+    private bool _isOpen;
+
+    public void Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+    }
+
+    private async Task Close(EventCallback? confirm = null)
+    {
+        _isOpen = false;
+        
+        if (confirm.HasValue)
+            await confirm.Value.InvokeAsync();
+        else
+            StateHasChanged();
+    }
+}

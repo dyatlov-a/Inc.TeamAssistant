@@ -5,11 +5,9 @@
             @foreach (var storyForEstimate in Story.StoryForEstimates)
             {
                 <EstimateCard
-                    PersonId="storyForEstimate.ParticipantId"
-                    Name="@storyForEstimate.ParticipantName">
-                    <Content>
-                        <span class="story__value">@storyForEstimate.DisplayValue</span>
-                    </Content>
+                    AvatarUrl="@storyForEstimate.AvatarUrl"
+                    Name="@storyForEstimate.ParticipantName"
+                    Value="@storyForEstimate.DisplayValue">
                 </EstimateCard>
             }
         </div>

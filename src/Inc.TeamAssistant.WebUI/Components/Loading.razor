@@ -1,0 +1,51 @@
+@inject IStringLocalizer<ComponentResources> Localizer
+
+@if (State.Value != LoadingState.State.Done)
+{
+    <div class="loading">
+        @if (State.Value == LoadingState.State.Loading)
+        {
+            <div class="loader @CssClass"></div>
+        }
+        else
+        {
+            <Button ComponentStyle="ComponentStyle" OnClick="Retry">@Localizer["Reload"]</Button>
+        }
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    /// <summary>
+    /// Loading state of the component.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = LoadingState.Done();
+    
+    /// <summary>
+    /// HTML content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "loader_primary",
+        _ => "loader_secondary"
+    };
+}

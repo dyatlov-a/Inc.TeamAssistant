@@ -1,0 +1,51 @@
+@implements IAsyncDisposable
+
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+@inject IStringLocalizer<MapResources> Localizer
+
+<div @ref="_map" class="map @CssClass"></div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, IReadOnlyCollection<LocationDto>> Locations { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public bool DisableLayout { get; set; }
+
+    private ElementReference _map;
+    private IJSObjectReference? _mapModule;
+    private string CssClass => DisableLayout ? string.Empty : "map_navbar";
+    private IReadOnlyDictionary<string, string> FeatureNamesLookup => new Dictionary<string, string>
+    {
+        ["Review"] = Localizer["FeatureReviewer"],
+        ["RandomCoffee"] = Localizer["FeatureRandomCoffee"],
+        ["Estimates"] = Localizer["FeatureAppraiser"],
+        ["CheckIn"] = Localizer["FeatureCheckIn"]
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+        {
+            _mapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Map/Map.razor.js");
+
+            await _mapModule.InvokeVoidAsync(
+                "initialize",
+                _map,
+                Locations,
+                FeatureNamesLookup,
+                Localizer["RouteShow"].Value,
+                Localizer["RouteHide"].Value,
+                Localizer["DefaultLayerTitle"].Value);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_mapModule is not null)
+            await _mapModule.DisposeAsync();
+    }
+}

@@ -1,0 +1,61 @@
+@attribute [Stories("Features/Constructor/BotSelector")]
+
+<Stories TComponent="Constructor" Layout="typeof(DarkLayout)">
+    <Story Name="Done">
+        <Template>
+            <Constructor
+                OwnerId="_ownerId"
+                Bots="Bots"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                MoveToAdd="() => { }"
+                MoveToEdit="_ => { }"
+                MoveToRemove="_ => { }"/>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Constructor
+                OwnerId="_ownerId"
+                Bots="Bots"
+                State="LoadingState.Loading()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                MoveToAdd="() => { }"
+                MoveToEdit="_ => { }"
+                MoveToRemove="_ => { }"/>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Constructor
+                OwnerId="_ownerId"
+                Bots="Bots"
+                State="LoadingState.Error()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                MoveToAdd="() => { }"
+                MoveToEdit="_ => { }"
+                MoveToRemove="_ => { }"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly long _ownerId = 1;
+    
+    private IReadOnlyCollection<BotDto> Bots =>
+    [
+        new(
+            Id: Guid.NewGuid(),
+            Name: "inc_teamassistant_appraiser_bot",
+            OwnerId: _ownerId,
+            Teams: Array.Empty<TeamDto>()),
+        new(
+            Id: Guid.NewGuid(),
+            Name: "inc_teamassistant_reviewer_bot",
+            OwnerId: _ownerId,
+            Teams: Array.Empty<TeamDto>())
+    ];
+}

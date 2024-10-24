@@ -1,0 +1,13 @@
+﻿@page "/"
+@page "/en"
+@page "/ru"
+
+@inject NavRouter NavRouter
+
+<MetaDataModule />
+
+<Main MoveToConstructor="MoveToConstructor"></Main>
+
+@code {
+    private Task MoveToConstructor() => NavRouter.MoveToRoute("constructor");
+}

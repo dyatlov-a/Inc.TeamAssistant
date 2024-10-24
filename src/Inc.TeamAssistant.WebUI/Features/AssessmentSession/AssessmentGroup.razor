@@ -18,7 +18,7 @@
                             @foreach (var storyForEstimate in group.OrderBy(i => i.ParticipantName))
                             {
                                 <EstimateCard
-                                    PersonId="storyForEstimate.ParticipantId"
+                                    AvatarUrl="@storyForEstimate.AvatarUrl"
                                     Name="@storyForEstimate.ParticipantName"/>
                             }
                         </div>
@@ -42,7 +42,7 @@
                         @foreach (var storyForEstimate in Estimates.OrderBy(i => i.ParticipantName))
                         {
                             <EstimateCard
-                                PersonId="storyForEstimate.ParticipantId"
+                                AvatarUrl="@storyForEstimate.AvatarUrl"
                                 Name="@storyForEstimate.ParticipantName"/>
                         }
                     </div>

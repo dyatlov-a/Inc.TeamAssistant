@@ -1,26 +1,25 @@
-@using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector
-
 @inject IBotService BotService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
 <div class="team-connector">
     <FormSection
         Title="@_team.TeamName"
-        HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
+        HelpText="@Localizer["ConnectToTeamHelp"]"
         AsRows="true">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="team-connector__code">
-                        @((MarkupString)_team.Code)
-                    </div>
-                    <a href="@_team.LinkForConnect" class="button button_dark team-connector__link" target="_blank">
-                        @Resources[Messages.Dashboard_ConnectToTeamButton]
-                    </a>
-                </Content>
-            </Loading>
-        </Content>
+        <Loading State="_state" Retry="Load">
+            <div class="team-connector__code">
+                @((MarkupString)_team.Code)
+            </div>
+            <div class="team-connector__buttons">
+                <Button
+                    ComponentStyle="ComponentStyle.Secondary"
+                    ButtonType="ButtonType.Tab"
+                    Link="@_team.LinkForConnect">
+                    @Localizer["ConnectToTeamButton"]
+                </Button>
+            </div>
+        </Loading>
     </FormSection>
 </div>
 

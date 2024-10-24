@@ -1,0 +1,32 @@
+@inject IAppraiserService AppraiserService
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+
+<AssessmentSessionHistorySummary Items="_items" LinkFactory="CreateMoveToHistoryLink" State="_state" Retry="Load" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    private LoadingState _state = LoadingState.Done();
+    
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
+
+    private string CreateMoveToHistoryLink(AssessmentHistoryDto historyItem)
+        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{historyItem.AssessmentDate:yyyy-MM-dd}");
+
+    protected override Task OnParametersSetAsync() => Load();
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetAssessmentHistory(TeamId, limit: 3),
+            nameof(AssessmentSessionHistorySummary),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

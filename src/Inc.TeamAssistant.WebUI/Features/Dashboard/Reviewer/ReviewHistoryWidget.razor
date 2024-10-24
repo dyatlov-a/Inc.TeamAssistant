@@ -1,9 +1,5 @@
-@using System.Text
-@using Inc.TeamAssistant.Primitives
-@using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks
-
 @inject IReviewService ReviewService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 @inject DateSelectorFactory DateSelectorFactory
 
@@ -11,73 +7,69 @@
 {
     <DashboardWidget
         HasControls="true"
-        Title="@Resources[Messages.Dashboard_LastTasksWidgetTitle]">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (Tasks.Any())
-                        {
-                            <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
-                                <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewOwnerNameTitle]"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
-                                    @context.OwnerName
-                                    <br/>
-                                    @context.OwnerUserName
-                                </TemplateColumn>
-                                <TemplateColumn Title="@Resources[Messages.Dashboard_ReviewDescriptionTitle]" Sortable="false">
-                                    <span title="@context.Description" class="hint">
-                                        @context.Description.ToShort()
-                                    </span>
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewReviewerNameTitle]"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-                                    <span title="@GetReviewerTitle(context)" class="hint">
-                                        @context.ReviewerName
-                                        <br/>
-                                        @context.ReviewerUserName
-                                    </span>
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewStateTitle]"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
-                                    @context.Created.ToString("yyyy.MM.dd HH:mm")
-                                    <br/>
-                                    @StateLookup[context.State]
-                                </TemplateColumn>
-                                <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_ReviewStats]"
-                                    Sortable="true"
-                                    SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
-                                    <span class="task__time hint" title="@FirstTouchTitle()">
-                                        @ConvertToString(context.FirstTouch)FT
-                                    </span>
-                                    <br/>
-                                    <span class="task__time hint" title="@CorrectionTitle(context)">
-                                        @ConvertToString(context.Correction)C
-                                    </span>
-                                    <br/>
-                                    <span class="task__time hint" title="@ReviewTitle()">
-                                        @ConvertToString(context.Review)R
-                                    </span>
-                                </TemplateColumn>
-                            </QuickGrid>
-                            <Pagination State="_pagination"/>
-                        }
-                        else
-                        {
-                            <NoData IsDark="true"/>
-                        }
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+        Title="@Localizer["LastTasksWidgetTitle"]">
+        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
+        <Loading State="_state" Retry="Load">
+            <div class="component-container">
+                @if (Tasks.Any())
+                {
+                    <QuickGrid Items="Tasks" class="quick-data-grid" Pagination="_pagination">
+                        <TemplateColumn
+                            Title="@Localizer["ReviewOwnerNameTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.OwnerName).ThenAscending(e => e.OwnerUserName)">
+                            @context.OwnerName
+                            <br/>
+                            @context.OwnerUserName
+                        </TemplateColumn>
+                        <TemplateColumn Title="@Localizer["ReviewDescriptionTitle"]" Sortable="false">
+                            <span title="@context.Description" class="hint">
+                                @context.Description.ToShort()
+                            </span>
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewReviewerNameTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
+                            <span title="@GetReviewerTitle(context)" class="hint">
+                                @context.ReviewerName
+                                <br/>
+                                @context.ReviewerUserName
+                            </span>
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewStateTitle"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => StateLookup[e.State]).ThenAscending(e => e.Created)">
+                            @context.Created.ToString("yyyy.MM.dd HH:mm")
+                            <br/>
+                            @StateLookup[context.State]
+                        </TemplateColumn>
+                        <TemplateColumn
+                            Title="@Localizer["ReviewStats"]"
+                            Sortable="true"
+                            SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.TotalTime)">
+                            <span class="task__time hint" title="@FirstTouchTitle()">
+                                @ConvertToString(context.FirstTouch)FT
+                            </span>
+                            <br/>
+                            <span class="task__time hint" title="@CorrectionTitle(context)">
+                                @ConvertToString(context.Correction)C
+                            </span>
+                            <br/>
+                            <span class="task__time hint" title="@ReviewTitle()">
+                                @ConvertToString(context.Review)R
+                            </span>
+                        </TemplateColumn>
+                    </QuickGrid>
+                    <Pagination State="_pagination"/>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
@@ -90,17 +82,17 @@
     
     private IReadOnlyDictionary<string, string> StateLookup => new Dictionary<string, string>
     {
-        ["None"] = Resources[Messages.Dashboard_ReviewStateNone],
-        ["New"] = Resources[Messages.Dashboard_ReviewStateNew],
-        ["InProgress"] = Resources[Messages.Dashboard_ReviewStateInProgress],
-        ["OnCorrection"] = Resources[Messages.Dashboard_ReviewStateOnCorrection],
-        ["Accept"] = Resources[Messages.Dashboard_ReviewStateAccept]
+        ["None"] = Localizer["ReviewStateNone"],
+        ["New"] = Localizer["ReviewStateNew"],
+        ["InProgress"] = Localizer["ReviewStateInProgress"],
+        ["OnCorrection"] = Localizer["ReviewStateOnCorrection"],
+        ["Accept"] = Localizer["ReviewStateAccept"]
     };
 
     private DateOnly? _date;
     private readonly PaginationState _pagination = new() { ItemsPerPage = 8 };
     private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
     private IReadOnlyCollection<TaskForReviewDto> _tasks = Array.Empty<TaskForReviewDto>();
     private IQueryable<TaskForReviewDto> Tasks => _tasks.AsQueryable();
     
@@ -137,15 +129,15 @@
     private string GetReviewerTitle(TaskForReviewDto task)
     {
         var hasConcreteReviewer = task.HasConcreteReviewer
-            ? Resources[Messages.Constructor_BooleanTrueText]
-            : Resources[Messages.Constructor_BooleanFalseText];
+            ? Localizer["BooleanTrueText"]
+            : Localizer["BooleanFalseText"];
         var isOriginalReviewer = task.IsOriginalReviewer
-            ? Resources[Messages.Constructor_BooleanFalseText]
-            : Resources[Messages.Constructor_BooleanTrueText];
+            ? Localizer["BooleanFalseText"]
+            : Localizer["BooleanTrueText"];
         var builder = new StringBuilder();
         
-        builder.AppendLine($"{Resources[Messages.Dashboard_HasConcreteReviewer]} - {hasConcreteReviewer}");
-        builder.Append($"{Resources[Messages.Dashboard_IsOriginalReviewer]} - {isOriginalReviewer}");
+        builder.AppendLine($"{Localizer["HasConcreteReviewer"]} - {hasConcreteReviewer}");
+        builder.Append($"{Localizer["IsOriginalReviewer"]} - {isOriginalReviewer}");
         
         return builder.ToString();
     }
@@ -156,8 +148,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Resources[Messages.Dashboard_FirstTouch]);
-        builder.Append(Resources[Messages.Dashboard_FirstTouchHelp]);
+        builder.AppendLine(Localizer["FirstTouch"]);
+        builder.Append(Localizer["FirstTouchHelp"]);
         
         return builder.ToString();
     }
@@ -167,9 +159,9 @@
         var builder = new StringBuilder();
 
         builder.AppendLine(task.Iterations == 0
-            ? Resources[Messages.Dashboard_Correction]
-            : $"{Resources[Messages.Dashboard_Correction]} ({task.Iterations})");
-        builder.Append(Resources[Messages.Dashboard_CorrectionHelp]);
+            ? Localizer["Correction"]
+            : $"{Localizer["Correction"]} ({task.Iterations})");
+        builder.Append(Localizer["CorrectionHelp"]);
         
         return builder.ToString();
     }
@@ -178,8 +170,8 @@
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(Resources[Messages.Dashboard_Review]);
-        builder.Append(Resources[Messages.Dashboard_ReviewHelp]);
+        builder.AppendLine(Localizer["Review"]);
+        builder.Append(Localizer["ReviewHelp"]);
         
         return builder.ToString();
     }

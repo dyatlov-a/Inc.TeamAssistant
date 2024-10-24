@@ -1,54 +1,48 @@
-@using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory
-
 @inject IRandomCoffeeService RandomCoffeeService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject RequestProcessor RequestProcessor
 
-<DashboardWidget Title="@Resources[Messages.Dashboard_RandomCoffeeHistoryWidgetTitle]">
-    <Content>
-        <Loading State="_state" Retry="Load">
-            <Content>
-                <div class="component-container">
-                    <div class="chat-selector">
-                        <InputSelectList
-                            FieldId="chat-selector"
-                            Value="_formModel.ChatId"
-                            ValueExpression="@(() => _formModel.ChatId)"
-                            ValueChanged="@((long? v) => Load(v))"
-                            Items="_formModel.Chats"
-                            TitleSelector="i => i.Name"
-                            ValueSelector="i => i.Id"/>
-                    </div>
-                    <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
-                    @if (Pairs.Any())
-                    {
-                        <QuickGrid Items="@Pairs" class="quick-data-grid">
-                            <TemplateColumn
-                                Title="@Resources[Messages.Dashboard_RandomCoffeeFirstTitle]"
-                                Sortable="true"
-                                SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
-                                @context.FirstName
-                                <br/>
-                                @context.FirstUserName
-                            </TemplateColumn>
-                            <TemplateColumn
-                                Title="@Resources[Messages.Dashboard_RandomCoffeeSecondTitle]"
-                                Sortable="true"
-                                SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
-                                @context.SecondName
-                                <br/>
-                                @context.SecondUserName
-                            </TemplateColumn>
-                        </QuickGrid>
-                    }
-                    else
-                    {
-                        <NoData IsDark="true"/>
-                    }
-                </div>
-            </Content>
-        </Loading>
-    </Content>
+<DashboardWidget Title="@Localizer["RandomCoffeeHistoryWidgetTitle"]">
+    <Loading State="_state" Retry="Load">
+        <div class="component-container">
+            <div class="chat-selector">
+                <InputSelectList
+                    FieldId="chat-selector"
+                    Value="_formModel.ChatId"
+                    ValueExpression="@(() => _formModel.ChatId)"
+                    ValueChanged="@((long? v) => Load(v))"
+                    Items="_formModel.Chats"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+            @if (Pairs.Any())
+            {
+                <QuickGrid Items="@Pairs" class="quick-data-grid">
+                    <TemplateColumn
+                        Title="@Localizer["RandomCoffeeFirstTitle"]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.FirstName).ThenAscending(e => e.FirstUserName)">
+                        @context.FirstName
+                        <br/>
+                        @context.FirstUserName
+                    </TemplateColumn>
+                    <TemplateColumn
+                        Title="@Localizer["RandomCoffeeSecondTitle"]"
+                        Sortable="true"
+                        SortBy="GridSort<PairDto>.ByAscending(e => e.SecondName).ThenAscending(e => e.SecondUserName)">
+                        @context.SecondName
+                        <br/>
+                        @context.SecondUserName
+                    </TemplateColumn>
+                </QuickGrid>
+            }
+            else
+            {
+                <NoData ComponentStyle="ComponentStyle.Secondary"/>
+            }
+        </div>
+    </Loading>
 </DashboardWidget>
 
 @code {
@@ -60,9 +54,9 @@
     
     private LoadingState _state = LoadingState.Done();
     private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => _formModel.HistoryItems
-        .Select(i => new SelectItem<DateOnly>(i.Created.ToString("yy-MM-dd"), i.Created))
-        .ToArray();
+
+    private IReadOnlyDictionary<string, DateOnly> DateItems
+        => _formModel.HistoryItems.ToDictionary(i => i.Created.ToString("yy-MM-dd"), i => i.Created);
 
     protected override Task OnParametersSetAsync() => Load();
 
@@ -104,7 +98,7 @@
                 pairs.Add(new PairDto(
                     historyItems.ExcludedPersonName,
                     historyItems.ExcludedPersonUserName,
-                    Resources[Messages.Dashboard_RandomCoffeeNoPair],
+                    Localizer["RandomCoffeeNoPair"],
                     SecondUserName: null));
 
             return pairs.AsQueryable();

@@ -1,0 +1,66 @@
+@attribute [Stories("Features/Map")]
+
+<Stories TComponent="Map" Layout="typeof(StubLayout)">
+    <Story Name="Default">
+        <Template>
+            <Map Locations="_locations" DisableLayout="true"></Map>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly IReadOnlyDictionary<string, IReadOnlyCollection<LocationDto>> _locations = new Dictionary<string, IReadOnlyCollection<LocationDto>>
+    {
+        ["Aleksandr (adiatlov)"] =
+        [
+            new(
+                PersonId: 1,
+                PersonDisplayName: "Aleksandr (adiatlov)",
+                AvatarUrl: "/imgs/user_stub.jpg",
+                Longitude: 100.467693,
+                Latitude: 13.73044,
+                DisplayTimeOffset: "+07:00",
+                CountryName: "Thailand",
+                WorkSchedule: "14:00-23:00",
+                Stats: [
+                    new PersonStats(FeatureName: "Estimates", StarCount: 5),
+                    new PersonStats(FeatureName: "CheckIn", StarCount: 5),
+                    new PersonStats(FeatureName: "Review", StarCount: 5),
+                    new PersonStats(FeatureName: "RandomCoffee", StarCount: 5)
+                ]),
+            new(
+                PersonId: 1,
+                PersonDisplayName: "Aleksandr (adiatlov)",
+                AvatarUrl: "/imgs/user_stub.jpg",
+                Longitude: 33.385095,
+                Latitude: 35.132399,
+                DisplayTimeOffset: "+02:00",
+                CountryName: "Cyprus",
+                WorkSchedule: "09:00-18:00",
+                Stats: [
+                    new PersonStats(FeatureName: "Estimates", StarCount: 5),
+                    new PersonStats(FeatureName: "CheckIn", StarCount: 5),
+                    new PersonStats(FeatureName: "Review", StarCount: 5),
+                    new PersonStats(FeatureName: "RandomCoffee", StarCount: 5)
+                ])
+        ],
+        ["Alex"] =
+        [
+            new(
+                PersonId: 2,
+                PersonDisplayName: "Alex",
+                AvatarUrl: "/imgs/user_stub.jpg",
+                Longitude: 55.369875,
+                Latitude: 25.174956,
+                DisplayTimeOffset: "+04:00",
+                CountryName: "United Arab Emirates",
+                WorkSchedule: "11:00-20:00",
+                Stats: [
+                    new PersonStats(FeatureName: "Estimates", StarCount: 0),
+                    new PersonStats(FeatureName: "CheckIn", StarCount: 2),
+                    new PersonStats(FeatureName: "Review", StarCount: 0),
+                    new PersonStats(FeatureName: "RandomCoffee", StarCount: 5)
+                ])
+        ]
+    };
+}

@@ -14,26 +14,27 @@
 @inject IBotService BotService
 @inject ICalendarService CalendarService
 @inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject NavRouter NavRouter
 @inject RequestProcessor RequestProcessor
 
 <MetaDataModule
     WebsiteSection="WebsiteSection.Constructor"
-    MetaOverrideTitle="@Resources[Messages.Constructor_Title]" />
+    MetaOverrideTitle="@Localizer["Title"]" />
 
 <div class="constructor">
     <div class="constructor__container">
-        <div class="constructor__nav">
-            <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
-        </div>
-        <h1 class="constructor__title title">@Resources[Messages.Constructor_Title] @BotName</h1>
+        <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
+        <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
         @if (RenderContext.IsBrowser)
         {
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <DynamicComponent Type="StageType" Parameters="StageParameters"/>
-                </Content>
+                @foreach (var widget in StageWidgets)
+                {
+                    <div class="constructor__widget">
+                        <DynamicComponent Type="widget" Parameters="StageParameters"/>
+                    </div>
+                }
             </Loading>
         }
     </div>
@@ -55,12 +56,12 @@
         : $"@{_stagesState.UserName}";
 
     private Stage _currentState = Enum.GetValues<Stage>().First();
-    private Type StageType => _currentState switch
+    private IReadOnlyCollection<Type> StageWidgets => _currentState switch
     {
-        Stage.SelectFeatures => typeof(SelectFeatures),
-        Stage.SetSettings => typeof(SetSettings),
-        Stage.Complete => typeof(Complete),
-        _ => typeof(CheckBot)
+        Stage.SelectFeatures => [typeof(SelectFeatures)],
+        Stage.SetSettings => [typeof(SetSettings), typeof(CalendarEditor), typeof(BotDetailsEditor)],
+        Stage.Complete => [typeof(Complete)],
+        _ => [typeof(CheckBot)]
     };
     private Dictionary<string, object> StageParameters => new()
     {
@@ -122,7 +123,7 @@
         
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
         
-        notificationsService.Publish(Notification.Info(Resources[Messages.GUI_DataRefreshed]));
+        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"]));
         
         await NavRouter.MoveToRoute("constructor");
     }

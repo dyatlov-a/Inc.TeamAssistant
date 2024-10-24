@@ -1,0 +1,121 @@
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
+
+<main class="main">
+    <div class="assessment-session-header">
+        <div class="assessment-session-header__container">
+            <div class="assessment-session__header">
+                <div class="assessment-session__about">
+                    <Breadcrumbs Items="Breadcrumbs" />
+                    <h1 class="assessment-session__title">@Localizer["TaskAssess"]</h1>
+                    <p class="assessment-session__text">
+                        @string.Format(Localizer["AssessmentSessionAboutTemplate"], Item.TeamName)
+                    </p>
+                    <p class="assessment-session__text">@Localizer["AssessmentSessionConnect"]</p>
+                </div>
+                <div class="assessment-session__link">
+                    <Loading State="State" ComponentStyle="ComponentStyle.Secondary" Retry="Retry">
+                        @((MarkupString)Item.CodeForConnect)
+                    </Loading>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="assessment-session-switcher">
+        <div class="assessment-session-switcher__container">
+            <ViewSwitcher View="CurrentView" ViewChanged="ViewChanged"/>
+        </div>
+    </div>
+    <div class="assessment-session-content">
+        <div class="assessment-session-content__container">
+            <div>
+                <Loading State="State" Retry="Retry">
+                    @if (Item.Story is not null)
+                    {
+                        <DynamicComponent
+                            Type="CurrentViewType"
+                            Parameters="@(new Dictionary<string, object>{["Story"] = Item.Story})"/>
+                    }
+                    else
+                    {
+                        <NoData/>
+                    }
+                </Loading>
+            </div>
+        </div>
+    </div>
+</main>
+<div class="assessment-session-footer">
+    <div class="assessment-session-footer__container">
+        @Footer
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Current TeamId.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    /// <summary>
+    /// Current item for estimation.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public GetActiveStoryResult Item { get; set; } = default!;
+    
+    /// <summary>
+    /// Page footer.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Footer { get; set; } = default!;
+    
+    /// <summary>
+    /// Selected view.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AssessmentType CurrentView { get; set; }
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+
+    /// <summary>
+    /// Factory for create link for breadcrumbs.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// ViewChanged event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<AssessmentType> ViewChanged { get; set; }
+    
+    private Type CurrentViewType => CurrentView switch
+    {
+        AssessmentType.Individual => typeof(AssessmentIndividual),
+        _ => typeof(AssessmentGroup)
+    };
+    
+    private IReadOnlyDictionary<string, string> Breadcrumbs
+    {
+        get
+        {
+            var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
+            
+            return new Dictionary<string, string>
+            {
+                [Localizer["AssessmentSession"]] = LinkFactory($"assessment-session/{TeamId:N}"),
+                [date] = LinkFactory($"assessment-history/{TeamId:N}/{date}")
+            };
+        }
+    }
+}

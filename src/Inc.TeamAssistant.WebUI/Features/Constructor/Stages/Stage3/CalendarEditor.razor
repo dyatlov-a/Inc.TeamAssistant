@@ -1,136 +1,119 @@
 @inject ICalendarService CalendarService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject RequestProcessor RequestProcessor
-@inject IRenderContext RenderContext
+@inject IServiceProvider ServiceProvider
 @inject IJSRuntime JsRuntime
 
 <EditForm id="@AnalyticEvents.CalendarChanged" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <Panel Header="@Resources[Messages.Constructor_WorkCalendar]" Opened="Load" IsOpen="_isOpen">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <Panel Header="@Localizer["WorkCalendar"]" Opened="Load" IsOpen="_isOpen">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.PanelSave]</button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
         </Actions>
         <Content>
             <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormSection
-                        Title="@Resources[Messages.Constructor_WorkTimeTitle]"
-                        HelpText="@Resources[Messages.Constructor_WorkTimeHelp]">
-                        <Content>
-                            <FormFieldSet
-                                FieldId="work-all-day"
-                                Label="@Resources[Messages.Constructor_WorkAllDayLabel]">
-                                <Content>
-                                    <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
-                                </Content>
-                            </FormFieldSet>
-                            @if (!_formModel.WorkAllDay)
+                <FormSection
+                    Title="@Localizer["WorkTimeTitle"]"
+                    HelpText="@Localizer["WorkTimeHelp"]">
+                    <FormFieldSet
+                        FieldId="work-all-day"
+                        Label="@Localizer["WorkAllDayLabel"]">
+                        <InputCheckbox id="work-all-day" @bind-Value="_formModel.WorkAllDay"/>
+                    </FormFieldSet>
+                    @if (!_formModel.WorkAllDay)
+                    {
+                        <div class="work-schedule__items">
+                            <div class="work-schedule__item">
+                                <FormFieldSet
+                                    FieldId="work-schedule-start"
+                                    Label="@Localizer["WorkTimeStartLabel"]">
+                                    <InputTimeOnly
+                                        FieldId="work-schedule-start"
+                                        @bind-Value="_formModel.Start"/>
+                                    <ValidationMessage For="@(() => _formModel.Start)"/>
+                                </FormFieldSet>
+                            </div>
+                            <div class="work-schedule__item">
+                                <FormFieldSet
+                                    FieldId="work-schedule-end"
+                                    Label="@Localizer["WorkTimeEndLabel"]">
+                                    <InputTimeOnly
+                                        FieldId="work-schedule-end"
+                                        @bind-Value="_formModel.End"/>
+                                    <ValidationMessage For="@(() => _formModel.End)"/>
+                                </FormFieldSet>
+                            </div>
+                        </div>
+                    }
+                </FormSection>
+                <FormSection
+                    Title="@Localizer["WeekendsTitle"]"
+                    HelpText="@Localizer["WeekendsHelp"]">
+                    <FormFieldSet FieldId="weekends" Label="@Localizer["WeekendsLabel"]">
+                        <InputMultiSelectList
+                            FieldId="weekends"
+                            Value="_formModel.SelectedWeekends"
+                            ValueExpression="@(() => _formModel.SelectedWeekends)"
+                            ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
+                            Items="Enum.GetValues<DayOfWeek>()"
+                            TitleSelector="i => Localizer[GetDayOfWeekTitle(i)]"
+                            ValueSelector="i => i" />
+                        <ValidationMessage For="@(() => _formModel.SelectedWeekends)"/>
+                    </FormFieldSet>
+                </FormSection>
+                <FormSection
+                    Title="@Localizer["HolidaysTitle"]"
+                    AsRows="true">
+                    <HelpContent>
+                        @Localizer["HolidaysHelp"]
+                        <ValidationMessage For="@(() => _formModel.Holidays)"/>
+                    </HelpContent>
+                    <ChildContent>
+                        <div class="holiday-items">
+                            @foreach (var holiday in _formModel.Holidays)
                             {
-                                <div class="work-schedule__items">
-                                    <div class="work-schedule__item">
+                                <div class="holiday-items__item">
+                                    <div class="holiday-items__item-control">
                                         <FormFieldSet
-                                            FieldId="work-schedule-start"
-                                            Label="@Resources[Messages.Constructor_WorkTimeStartLabel]">
-                                            <Content>
-                                                <InputTimeOnly
-                                                    FieldId="work-schedule-start"
-                                                    @bind-Value="_formModel.Start"/>
-                                                <ValidationMessage For="@(() => _formModel.Start)"/>
-                                            </Content>
+                                            FieldId="@holiday.DateFieldId"
+                                            Label="@Localizer["DateLabel"]">
+                                            <InputDateOnly
+                                                FieldId="@holiday.DateFieldId"
+                                                @bind-Value="holiday.Date"/>
                                         </FormFieldSet>
-                                        
                                     </div>
-                                    <div class="work-schedule__item">
+                                    <div class="holiday-items__item-control">
                                         <FormFieldSet
-                                            FieldId="work-schedule-end"
-                                            Label="@Resources[Messages.Constructor_WorkTimeEndLabel]">
-                                            <Content>
-                                                <InputTimeOnly
-                                                    FieldId="work-schedule-end"
-                                                    @bind-Value="_formModel.End"/>
-                                                <ValidationMessage For="@(() => _formModel.End)"/>
-                                            </Content>
+                                            FieldId="@holiday.WorkdayFieldId"
+                                            Label="@Localizer["WorkdayLabel"]">
+                                            <InputCheckbox
+                                                id="@holiday.WorkdayFieldId"
+                                                @bind-Value="holiday.IsWorkday"/>
                                         </FormFieldSet>
+                                    </div>
+                                    <div class="holiday-items__item-control">
+                                        <div class="holiday-items__buttons">
+                                            <Button
+                                                ComponentStyle="ComponentStyle.Secondary"
+                                                ButtonMode="ButtonMode.Small"
+                                                OnClick="() => _formModel.RemoveHoliday(holiday)">
+                                                <TrashIcon Size="20px" ComponentStyle="ComponentStyle.Secondary"/>
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             }
-                        </Content>
-                    </FormSection>
-                    <FormSection
-                        Title="@Resources[Messages.Constructor_WeekendsTitle]"
-                        HelpText="@Resources[Messages.Constructor_WeekendsHelp]">
-                        <Content>
-                            <FormFieldSet FieldId="weekends" Label="@Resources[Messages.Constructor_WeekendsLabel]">
-                                <Content>
-                                    <InputMultiSelectList
-                                        FieldId="weekends"
-                                        Value="_formModel.SelectedWeekends"
-                                        ValueExpression="@(() => _formModel.SelectedWeekends)"
-                                        ValueChanged="(IEnumerable<DayOfWeek> v) => _formModel.SetWeekends(v)"
-                                        Items="Enum.GetValues<DayOfWeek>()"
-                                        TitleSelector="i => Resources[GetDayOfWeekTitle(i)]"
-                                        ValueSelector="i => i" />
-                                    <ValidationMessage For="@(() => _formModel.SelectedWeekends)"/>
-                                </Content>
-                            </FormFieldSet>
-                        </Content>
-                    </FormSection>
-                    <FormSection
-                        Title="@Resources[Messages.Constructor_HolidaysTitle]"
-                        AsRows="true">
-                        <HelpContent>
-                            @Resources[Messages.Constructor_HolidaysHelp]
-                            <ValidationMessage For="@(() => _formModel.Holidays)"/>
-                        </HelpContent>
-                        <Content>
-                            <div class="holiday-items">
-                                @foreach (var holiday in _formModel.Holidays)
-                                {
-                                    <div class="holiday-items__item">
-                                        <div class="holiday-items__item-control">
-                                            <FormFieldSet
-                                                FieldId="@holiday.DateFieldId"
-                                                Label="@Resources[Messages.Constructor_DateLabel]">
-                                                <Content>
-                                                    <InputDateOnly
-                                                        FieldId="@holiday.DateFieldId"
-                                                        @bind-Value="holiday.Date"/>
-                                                </Content>
-                                            </FormFieldSet>
-                                        </div>
-                                        <div class="holiday-items__item-control">
-                                            <FormFieldSet
-                                                FieldId="@holiday.WorkdayFieldId"
-                                                Label="@Resources[Messages.Constructor_WorkdayLabel]">
-                                                <Content>
-                                                    <InputCheckbox
-                                                        id="@holiday.WorkdayFieldId"
-                                                        @bind-Value="holiday.IsWorkday"/>
-                                                </Content>
-                                            </FormFieldSet>
-                                        </div>
-                                        <div class="holiday-items__item-control">
-                                            <button
-                                                type="button"
-                                                class="button button_dark button_small work-schedule__button"
-                                                @onclick="() => _formModel.RemoveHoliday(holiday)">
-                                                <TrashIcon Size="20px" IsDark="true"/>
-                                            </button>
-                                        </div>
-                                    </div>
-                                }
-                                <div class="holiday-items__item">
-                                    <button
-                                        type="button"
-                                        class="button button_dark button_small work-schedule__button"
-                                        @onclick="_formModel.AddHoliday">
-                                        @Resources[Messages.Constructor_AddHolidayLabel]
-                                    </button>
+                            <div class="holiday-items__item">
+                                <div class="holiday-items__buttons">
+                                    <Button
+                                        ComponentStyle="ComponentStyle.Secondary"
+                                        ButtonMode="ButtonMode.Small"
+                                        OnClick="_formModel.AddHoliday">@Localizer["AddHolidayLabel"]</Button>
                                 </div>
                             </div>
-                        </Content>
-                    </FormSection>
-                </Content>
+                        </div>
+                    </ChildContent>
+                </FormSection>
             </Loading>
         </Content>
     </Panel>
@@ -138,10 +121,16 @@
 
 @code {
     [Parameter, EditorRequired]
-    public EventCallback<Guid> Selected { get; set; }
+    public StagesState StagesState { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public bool IsOpen { get; set; }
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
 
     private bool _isOpen;
     private readonly CalendarFromModel _formModel = new();
@@ -156,7 +145,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && IsOpen)
+        if (firstRender && !StagesState.CalendarId.HasValue)
             await Load();
     }
 
@@ -184,7 +173,7 @@
         StateHasChanged();
     }
     
-    private MessageId GetDayOfWeekTitle(DayOfWeek dayOfWeek) => new($"Constructor_DayOfWeek{dayOfWeek}");
+    private string GetDayOfWeekTitle(DayOfWeek dayOfWeek) => $"DayOfWeek{dayOfWeek}";
     
     public async Task SubmitForm()
     {
@@ -195,7 +184,7 @@
             async () =>
             {
                 var calendarId = await CalendarService.Update(_formModel.ToCommand());
-                await Selected.InvokeAsync(calendarId);
+                await SelectedCalendar(calendarId);
             },
             () => {},
             s =>
@@ -203,5 +192,12 @@
                 _state = s;
                 StateHasChanged();
             });
+    }
+    
+    private async Task SelectedCalendar(Guid calendarId)
+    {
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+        
+        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(calendarId));
     }
 }

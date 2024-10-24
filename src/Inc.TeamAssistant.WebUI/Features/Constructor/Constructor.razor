@@ -1,0 +1,89 @@
+@inject IStringLocalizer<ConstructorResources> Localizer
+
+<div class="constructor">
+    <div class="constructor__container">
+        <h1 class="constructor__title">@Localizer["Title"]</h1>
+        <p class="constructor__text">@Localizer["SelectBotText"]</p>
+        <div class="bot-selector">
+            <div class="bot-selector__item">
+                <BotCard Icon="@typeof(AddBotIcon)" Name="@Localizer["NewBot"]">
+                    <Buttons>
+                        <Button OnClick="MoveToAdd">@Localizer["AddBot"]</Button>
+                    </Buttons>
+                </BotCard>
+            </div>
+            <Loading State="State" Retry="Retry">
+                @foreach (var bot in Bots.Where(b => b.OwnerId == OwnerId))
+                {
+                    <div class="bot-selector__item">
+                        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                            <Content>
+                                <RouterLink Href="@LinkFactory(bot)" ComponentStyle="ComponentStyle.Secondary">
+                                    @Localizer["MoveToDashboard"]
+                                </RouterLink>
+                            </Content>
+                            <Buttons>
+                                <Button OnClick="@(() => MoveToEdit.InvokeAsync(bot.Id))">
+                                    @Localizer["Edit"]
+                                </Button>
+                                <Button OnClick="@(() => MoveToRemove.InvokeAsync(bot))">
+                                    @Localizer["Remove"]
+                                </Button>
+                            </Buttons>
+                        </BotCard>
+                    </div>
+                }
+            </Loading>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// OwnerId.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long OwnerId { get; set; }
+    
+    /// <summary>
+    /// Bot list.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Factory for create link to history.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<BotDto, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// MoveToAdd event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveToAdd { get; set; }
+    
+    /// <summary>
+    /// MoveToEdit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> MoveToEdit { get; set; }
+    
+    /// <summary>
+    /// MoveToRemove event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<BotDto> MoveToRemove { get; set; }
+}

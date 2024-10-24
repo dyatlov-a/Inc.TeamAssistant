@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="BooleanTrueText" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="BooleanFalseText" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="AppraiserHistoryTitle" xml:space="preserve">
+        <value>Estimates history</value>
+    </data>
+    <data name="AssessmentDate" xml:space="preserve">
+        <value>Assessment date</value>
+    </data>
+    <data name="TotalStories" xml:space="preserve">
+        <value>Total stories</value>
+    </data>
+    <data name="AssessmentSum" xml:space="preserve">
+        <value>Total assessment</value>
+    </data>
+    <data name="GoToCurrentSessionButtonText" xml:space="preserve">
+        <value>Go to current session</value>
+    </data>
+    <data name="AppraiserIntegrationConfirmText" xml:space="preserve">
+        <value>After disabling the integration, the automatic creation of tasks for estimates will be disabled. Would you like to confirm this action?</value>
+    </data>
+    <data name="AppraiserIntegrationTitle" xml:space="preserve">
+        <value>Integration with external sources (Jira/Trello)</value>
+    </data>
+    <data name="AppraiserIntegrationAccessTokenLabel" xml:space="preserve">
+        <value>Access token</value>
+    </data>
+    <data name="AppraiserIntegrationProjectKeyLabel" xml:space="preserve">
+        <value>Project key</value>
+    </data>
+    <data name="AppraiserIntegrationScrumMasterLabel" xml:space="preserve">
+        <value>Scrum master</value>
+    </data>
+    <data name="AppraiserIntegrationSaveButton" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="AppraiserIntegrationDisableButton" xml:space="preserve">
+        <value>Disable</value>
+    </data>
+    <data name="AppraiserIntegrationEnableButton" xml:space="preserve">
+        <value>Enable</value>
+    </data>
+    <data name="AppraiserIntegrationEnableSuccess" xml:space="preserve">
+        <value>Integration is configured</value>
+    </data>
+    <data name="CheckInMapWidgetTitle" xml:space="preserve">
+        <value>Checkin maps by chats</value>
+    </data>
+    <data name="CheckInMoveToMapTitle" xml:space="preserve">
+        <value>Move to map</value>
+    </data>
+    <data name="RandomCoffeeHistoryWidgetTitle" xml:space="preserve">
+        <value>Random coffee history</value>
+    </data>
+    <data name="RandomCoffeeFirstTitle" xml:space="preserve">
+        <value>First participant</value>
+    </data>
+    <data name="RandomCoffeeSecondTitle" xml:space="preserve">
+        <value>Second participant</value>
+    </data>
+    <data name="RandomCoffeeNoPair" xml:space="preserve">
+        <value>No match found</value>
+    </data>
+    <data name="ReviewAverageStatsWidgetTitle" xml:space="preserve">
+        <value>Review average stats</value>
+    </data>
+    <data name="ReviewAverageStatsTitle" xml:space="preserve">
+        <value>Average daily stats (in minutes)</value>
+    </data>
+    <data name="ReviewAverageFirstTouch" xml:space="preserve">
+        <value>First touch</value>
+    </data>
+    <data name="ReviewAverageReview" xml:space="preserve">
+        <value>Review</value>
+    </data>
+    <data name="ReviewAverageCorrection" xml:space="preserve">
+        <value>Correction</value>
+    </data>
+    <data name="LastTasksWidgetTitle" xml:space="preserve">
+        <value>Last tasks for review</value>
+    </data>
+    <data name="ReviewOwnerNameTitle" xml:space="preserve">
+        <value>Owner</value>
+    </data>
+    <data name="ReviewDescriptionTitle" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="ReviewReviewerNameTitle" xml:space="preserve">
+        <value>Reviewer</value>
+    </data>
+    <data name="ReviewStateTitle" xml:space="preserve">
+        <value>State</value>
+    </data>
+    <data name="ReviewStats" xml:space="preserve">
+        <value>Stats</value>
+    </data>
+    <data name="ReviewStateNone" xml:space="preserve">
+        <value>None</value>
+    </data>
+    <data name="ReviewStateNew" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="ReviewStateInProgress" xml:space="preserve">
+        <value>InProgress</value>
+    </data>
+    <data name="ReviewStateOnCorrection" xml:space="preserve">
+        <value>OnCorrection</value>
+    </data>
+    <data name="ReviewStateAccept" xml:space="preserve">
+        <value>Accept</value>
+    </data>
+    <data name="HasConcreteReviewer" xml:space="preserve">
+        <value>Assigned to a concrete reviewer</value>
+    </data>
+    <data name="IsOriginalReviewer" xml:space="preserve">
+        <value>Has been reassigned</value>
+    </data>
+    <data name="FirstTouch" xml:space="preserve">
+        <value>First touch</value>
+    </data>
+    <data name="FirstTouchHelp" xml:space="preserve">
+        <value>Time spent before the review begins</value>
+    </data>
+    <data name="Correction" xml:space="preserve">
+        <value>Correction</value>
+    </data>
+    <data name="CorrectionHelp" xml:space="preserve">
+        <value>Time spent on adjustments</value>
+    </data>
+    <data name="Review" xml:space="preserve">
+        <value>Review</value>
+    </data>
+    <data name="ReviewHelp" xml:space="preserve">
+        <value>Time spent on the review</value>
+    </data>
+    <data name="ReviewTotalStatsWidgetTitle" xml:space="preserve">
+        <value>Review total stats</value>
+    </data>
+    <data name="ReviewByReviewerTemplate" xml:space="preserve">
+        <value>Reviewed ({0} days)</value>
+    </data>
+    <data name="ReviewByOwnerTemplate" xml:space="preserve">
+        <value>Submitted ({0} days)</value>
+    </data>
+    <data name="LeaveTeammate" xml:space="preserve">
+        <value>Leave teammate</value>
+    </data>
+    <data name="Days" xml:space="preserve">
+        <value>days</value>
+    </data>
+    <data name="Forever" xml:space="preserve">
+        <value>forever</value>
+    </data>
+    <data name="RecoveryTeammate" xml:space="preserve">
+        <value>Recovery teammate</value>
+    </data>
+    <data name="TeammatesWidgetTitle" xml:space="preserve">
+        <value>Teammates</value>
+    </data>
+    <data name="PersonName" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="LeaveUntil" xml:space="preserve">
+        <value>Leave until</value>
+    </data>
+    <data name="ExcludeFromTeam" xml:space="preserve">
+        <value>Exclude (days)</value>
+    </data>
+    <data name="Settings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="Apply" xml:space="preserve">
+        <value>Apply</value>
+    </data>
+    <data name="DisableWidgetHelpTemplate" xml:space="preserve">
+        <value>To enable the widget, you need to activate the feature "{0}"</value>
+    </data>
+    <data name="SettingsApplied" xml:space="preserve">
+        <value>Settings applied</value>
+    </data>
+    <data name="BotWidgetTitle" xml:space="preserve">
+        <value>Bot has not selected</value>
+    </data>
+    <data name="SelectTeam" xml:space="preserve">
+        <value>Please select the team from the bot</value>
+    </data>
+    <data name="CreateBot" xml:space="preserve">
+        <value>or create new bot for your team</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Dashboard</value>
+    </data>
+    <data name="ConnectToTeamHelp" xml:space="preserve">
+        <value>Follow the link or scan the QR code to join the team.</value>
+    </data>
+    <data name="ConnectToTeamButton" xml:space="preserve">
+        <value>Connect to the team</value>
+    </data>
+    <data name="SelectTeamTitle" xml:space="preserve">
+        <value>Select team</value>
+    </data>
+    <data name="BotField" xml:space="preserve">
+        <value>Bot</value>
+    </data>
+    <data name="TeamField" xml:space="preserve">
+        <value>Team</value>
+    </data>
+</root>

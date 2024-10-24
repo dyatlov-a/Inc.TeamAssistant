@@ -1,0 +1,37 @@
+@inject IRenderContext RenderContext
+@inject IStringLocalizer<MainResources> Localizer
+
+<MainVideo FileName="source-tree-02" />
+
+<section id="about-bots" class="about-bots">
+    <div class="about-bots__container @(RenderContext.IsBrowser ? "animation__slide-left" : "hidden")">
+        <h1 class="about-bots__header">
+            <span>@Localizer["MainHeader"]</span>
+            <br/>
+            <span>@Localizer["MainSubHeader"]</span>
+        </h1>
+        <br/>
+        <p class="about-bots__description">
+            <span>@Icons.Ok @Localizer["ToolAppraiser"]</span>
+            <br/>
+            <span>@Icons.Accept @Localizer["ToolReviewer"]</span>
+            <br/>
+            <span>@Icons.Comment @Localizer["ToolRandomCoffee"]</span>
+            <br/>
+            <span>@Icons.Start @Localizer["ToolCheckIn"]</span>
+        </p>
+        <div class="about-bots__actions">
+            <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToConstructor">
+                @Localizer["CreateBotLink"]
+            </Button>
+        </div>
+    </div>
+</section>
+
+@code {
+    /// <summary>
+    /// MoveToConstructor event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveToConstructor { get; set; }
+}

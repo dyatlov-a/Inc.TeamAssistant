@@ -1,90 +1,21 @@
-@inject IRenderContext RenderContext
-@inject ResourcesManager Resources
-@inject NavRouter NavRouter
+@inject IStringLocalizer<LayoutResources> Localizer
+@inject MainFooterLinksFactory MainFooterLinksFactory
 
 <div class="footer">
     <div class="footer__container">
         <div class="footer__content">
-            @foreach (var group in _links)
+            @foreach (var group in MainFooterLinksFactory.Create())
             {
                 <div class="footer-group">
-                    <span class="footer-group__header">@group.Key</span>
-                    @foreach (var link in group)
+                    <span class="footer-group__header">@Localizer[group.Key]</span>
+                    @foreach (var link in group.Value)
                     {
-                        <a
-                            href="@link.Url"
-                            class="link link_light footer-group__link"
-                            target="@(link.External ? "_blank" : "_self")">
+                        <RouterLink Href="@link.Url" Target="@(link.External ? RouterTarget.Blank : RouterTarget.Self)">
                             @link.Title
-                        </a>
+                        </RouterLink>
                     }
                 </div>
             }
         </div>
     </div>
 </div>
-
-@code {
-    private ILookup<string, FooterLink> _links = Enumerable.Empty<FooterLink>().ToLookup(_ => string.Empty);
-
-    protected override void OnInitialized() => Load();
-
-    private void Load()
-    {
-        const bool external = true;
-
-        var links = new (MessageId Key, FooterLink Value)[]
-        {
-            (Messages.Footer_GroupNavigation, new FooterLink(
-                Resources[Messages.Footer_LinkMain],
-                NavRouter.CreateRoute(null),
-                !external)),
-            (Messages.Footer_GroupNavigation, new FooterLink(
-                Resources[Messages.Footer_LinkConstructor],
-                NavRouter.CreateRoute("constructor"),
-                !external)),
-            (Messages.Footer_GroupNavigation, new FooterLink(
-                Resources[Messages.Footer_LinkDashboard],
-                NavRouter.CreateRoute("dashboard"),
-                !external)),
-            (Messages.Footer_GroupTech, new FooterLink(
-                "DotNet",
-                "https://dotnet.microsoft.com/",
-                external)),
-            (Messages.Footer_GroupTech, new FooterLink(
-                "Blazor",
-                "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
-                external)),
-            (Messages.Footer_GroupTech, new FooterLink(
-                "Nuke",
-                "https://nuke.build/",
-                external)),
-            (Messages.Footer_GroupStorage, new FooterLink(
-                "Postgres",
-                "https://www.postgresql.org/",
-                external)),
-            (Messages.Footer_GroupStorage, new FooterLink(
-                "Npgsql",
-                "https://www.npgsql.org/",
-                external)),
-            (Messages.Footer_GroupStorage, new FooterLink(
-                "FluentMigrator",
-                "https://fluentmigrator.github.io/",
-                external)),
-            (Messages.Footer_GroupTools, new FooterLink(
-                "Telegram.Bot",
-                "https://github.com/TelegramBots/Telegram.Bot",
-                external)),
-            (Messages.Footer_GroupTools, new FooterLink(
-                "FluentValidator",
-                "https://docs.fluentvalidation.net/",
-                external)),
-            (Messages.Footer_GroupTools, new FooterLink(
-                "GitHub",
-                "https://github.com/dyatlov-a/Inc.TeamAssistant",
-                external))
-        };
-
-        _links = links.ToLookup(i => Resources[i.Key], i => i.Value);
-    }
-}

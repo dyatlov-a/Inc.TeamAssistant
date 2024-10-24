@@ -1,9 +1,7 @@
-@using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures
-
 @inherits InputBase<IEnumerable<Guid>>
 
 @inject DragAndDropService<Guid> DragAndDropService
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 @inject FeaturesFactory FeaturesFactory
 
 <div class="input-features">
@@ -12,7 +10,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(AvailableFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control form-control_enabled input-features__items @_availableFeaturesCssClass">
+        class="input-features__items @_availableFeaturesCssClass">
         @if (AvailableFeatures.Any())
         {
             foreach (var feature in AvailableFeatures)
@@ -23,16 +21,14 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
-                            @Resources[Messages.Constructor_FeatureAdd]
-                        </button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)">@Localizer["FeatureAdd"]</Button>
                     </Buttons>
                 </FeatureCard>
             }
         }
         else
         {
-            <p class="input-features__text">@Resources[Messages.Constructor_FormSectionFeaturesAvailableEmptyText]</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesAvailableEmptyText"]</p>
         }
     </div>
     <div
@@ -40,7 +36,7 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="() => HandleDrop(SelectedFeatures)"
         @ondragenter="HandleDragEnter"
-        class="form-control form-control_enabled input-features__items @CssClass @_selectedFeaturesCssClass">
+        class="input-features__items @CssClass @_selectedFeaturesCssClass">
         @if (SelectedFeatures.Any())
         {
             foreach (var feature in SelectedFeatures)
@@ -51,16 +47,14 @@
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
                     <Buttons>
-                        <button type="button" class="button button_light" @onclick="() => ToggleFeature(feature.Id)">
-                            @Resources[Messages.Constructor_FeatureRemove]
-                        </button>
+                        <Button OnClick="() => ToggleFeature(feature.Id)">@Localizer["FeatureRemove"]</Button>
                     </Buttons>
                 </FeatureCard>
             }
         }
         else
         {
-            <p class="input-features__text">@Resources[Messages.Constructor_FormSectionFeaturesSelectedEmptyText]</p>
+            <p class="input-features__text">@Localizer["FormSectionFeaturesSelectedEmptyText"]</p>
         }
         @if (Validation is not null)
         {
@@ -134,7 +128,7 @@
     
     private void HandleDragEnter()
     {
-        var cssClass = "can-drop";
+        var cssClass = "input-features__items_can-drop";
 
         if (AvailableFeatures.Any(f => f.Id == DragAndDropService.Current))
             _selectedFeaturesCssClass = cssClass;

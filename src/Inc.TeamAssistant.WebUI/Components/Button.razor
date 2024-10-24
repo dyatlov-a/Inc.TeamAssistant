@@ -1,0 +1,82 @@
+@if (ButtonType == ButtonType.Tab)
+{
+    <a href="@Link" target="_blank" class="button @CssClass @ModeCssClass">
+        @ChildContent
+    </a>
+}
+else if (IsDisabled)
+{
+    <button type="@ButtonTypeAsString" class="button @CssClass @ModeCssClass" disabled="disabled">
+        @ChildContent
+    </button>
+}
+else
+{
+    <button type="@ButtonTypeAsString" @onclick="EmitOnClick" class="button @CssClass @ModeCssClass">
+        @ChildContent
+    </button>
+}
+
+@code {
+    /// <summary>
+    /// Html or text content of the button.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// On click event.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    
+    /// <summary>
+    /// Button mode: Default or Small.
+    /// </summary>
+    [Parameter]
+    public ButtonMode ButtonMode { get; set; } = ButtonMode.Default;
+
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    /// <summary>
+    /// Flag for set disabled state.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+    
+    /// <summary>
+    /// Button type: Submit or Button.
+    /// </summary>
+    [Parameter]
+    public ButtonType ButtonType { get; set; }
+    
+    /// <summary>
+    /// Link for button (supported for ButtonType=Tab).
+    /// </summary>
+    [Parameter]
+    public string? Link { get; set; }
+
+    private string ModeCssClass => ButtonMode switch
+    {
+        ButtonMode.Small => "button_small",
+        _ => string.Empty
+    };
+
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "button_primary",
+        _ => "button_secondary"
+    };
+
+    private string ButtonTypeAsString => ButtonType == ButtonType.Submit ? "submit" : "button";
+    
+    private async Task EmitOnClick()
+    {
+        if (!OnClick.Equals(default(EventCallback)))
+            await OnClick.InvokeAsync();
+    }
+}

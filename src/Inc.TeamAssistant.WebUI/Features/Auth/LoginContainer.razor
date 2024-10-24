@@ -1,0 +1,52 @@
+@page "/login"
+@page "/ru/login"
+@page "/en/login"
+
+@inject IUserService UserService
+@inject IRenderContext RenderContext
+@inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
+
+<MetaDataModule />
+
+<Login
+    State="_state"
+    ReturnUrl="@ReturnUrl"
+    BotUserName="@_botUserName"
+    HasSuperUser="RenderContext.IsDevelopment()"
+    Retry="Load"
+    LoginAsSuperUser="LoginAsSuperUser" />
+
+@code {
+    [Parameter, SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+    
+    private LoadingState _state = LoadingState.Done();
+    private string _botUserName = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!RenderContext.IsDevelopment())
+            await Load();
+    }
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => UserService.GetAuthBotContext(),
+            nameof(LoginContainer),
+            r => _botUserName = r.UserName,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+    
+    private async Task LoginAsSuperUser()
+    {
+        await NavRouter.MoveToRoute(
+            $"/accounts/login-as-super-user?returnUrl={ReturnUrl}",
+            RoutingType.Server);
+    }
+}

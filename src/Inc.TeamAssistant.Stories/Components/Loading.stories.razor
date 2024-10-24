@@ -1,0 +1,45 @@
+@attribute [Stories("Components/Loading")]
+
+<Stories TComponent="Loading">
+    <Story Name="Done" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_done" Retry="Retry" @attributes="context.Args">@_text</Loading>
+        </Template>
+    </Story>
+    <Story Name="Loading Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">@_text</Loading>
+        </Template>
+    </Story>
+    <Story Name="Loading Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
+        </Arguments>
+        <Template>
+            <Loading State="_loading" Retry="Retry" @attributes="context.Args">@_text</Loading>
+        </Template>
+    </Story>
+    <Story Name="Error Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">@_text</Loading>
+        </Template>
+    </Story>
+    <Story Name="Error Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary"/>
+        </Arguments>
+        <Template>
+            <Loading State="_error" Retry="Retry" @attributes="context.Args">@_text</Loading>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _text = "Html content";
+    
+    private readonly LoadingState _done = LoadingState.Done();
+    private readonly LoadingState _loading = LoadingState.Loading();
+    private readonly LoadingState _error = LoadingState.Error();
+    
+    private Task Retry() => Task.CompletedTask;
+}

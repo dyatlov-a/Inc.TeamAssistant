@@ -1,6 +1,4 @@
-@using Inc.TeamAssistant.Primitives
-
-@inject ResourcesManager ResourcesManager
+@inject IStringLocalizer<MetaResources> Localizer
 
 <PageTitle>@_title</PageTitle>
 
@@ -18,10 +16,8 @@
 
     private string _title = GlobalSettings.CanonicalName;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        await ResourcesManager.Initialize();
-        
         _title = CreateTitle();
     }
 
@@ -32,11 +28,11 @@
         
         var messageId = WebsiteSection switch
         {
-            WebsiteSection.Assessment => Messages.MetaAppraiserTitle,
-            WebsiteSection.Map => Messages.MetaCheckInTitle,
-            _ => Messages.MetaMainTitle
+            WebsiteSection.Assessment => "AppraiserTitle",
+            WebsiteSection.Map => "CheckInTitle",
+            _ => "MainTitle"
         };
 
-        return ResourcesManager[messageId];
+        return Localizer[messageId];
     }
 }
