@@ -74,6 +74,16 @@
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
+/* CUSTOM */
+.link_change-culture {
+    float: right;
+    padding-right: 5px;
+}
+.link_change-culture:hover {
+    text-decoration: underline !important;
+}
+/* END CUSTOM */
+
 @media (prefers-color-scheme: dark) {
     .loading-progress {
         background-color: #222425;

@@ -1,6 +1,47 @@
-﻿<BlazingStoryApp
+﻿@implements IAsyncDisposable
+
+@inject IJSRuntime JsRuntime
+
+<BlazingStoryApp
     EnableHotReloading="true"
-    Title="TeamAssistUI docs"
     Assemblies="[typeof(App).Assembly]"
     DefaultLayout="typeof(DefaultLayout)"
-    AvailableColorSchemes="AvailableColorSchemes.Dark"/>
+    AvailableColorSchemes="AvailableColorSchemes.Dark">
+    <BrandLogoArea>
+        UI docs <a href="#" @onclick="ChangeCulture" @onclick:preventDefault="true" class="link_change-culture">
+            @_targetLanguage
+        </a>
+    </BrandLogoArea>
+</BlazingStoryApp>
+    
+@code {
+    private string _targetLanguage = LanguageSettings.DefaultLanguageId.Value;
+    
+    private IJSObjectReference? _appModule;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _appModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./App.razor.js");
+            
+            var currentCulture = await _appModule.InvokeAsync<string?>("currentCulture");
+
+            _targetLanguage = currentCulture == "en" ? "ru" : "en";
+        }
+    }
+
+    private async Task ChangeCulture()
+    {
+        if (_appModule is not null)
+            await _appModule.InvokeVoidAsync("changeCulture", _targetLanguage);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_appModule is not null)
+            await _appModule.DisposeAsync();
+    }
+}

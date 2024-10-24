@@ -35,10 +35,8 @@
     <script src="leaflet/leaflet.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
-        let env = window.location.port === '5102' || window.location.hostname.includes("ru") ? "ru" : "en";
-
         Blazor.start({
-            environment: env
+            environment: window.localStorage.getItem("current_culture")
         });
     </script>
 </body>
