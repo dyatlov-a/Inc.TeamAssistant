@@ -1,62 +1,27 @@
-@implements IAsyncDisposable
-
-@inject IRenderContext RenderContext
-@inject IJSRuntime JsRuntime
 @inject IStringLocalizer<LayoutResources> Localizer
 
-@if (_isShow)
+@if (IsShow)
 {
     <div class="inline-dialog">
         <div class="inline-dialog__content">
             <p>@Localizer["AcceptCookieText"]</p>
         </div>
         <div class="inline-dialog__actions">
-            <Button OnClick="Accept">@Localizer["AcceptCookieButton"]</Button>
+            <Button OnClick="Accepted">@Localizer["AcceptCookieButton"]</Button>
         </div>
     </div>
 }
 
 @code {
-    private IJSObjectReference? _cookieModule;
+    /// <summary>
+    /// Visualizes the dialog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsShow { get; set; }
     
-    private bool _isShow;
-    private readonly string _rightsCookieName = "rights";
-    private readonly string _rightsCookieValue = "accept";
-    private readonly int _rightsCookieLifetime = 365;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && RenderContext.IsBrowser)
-        {
-            _cookieModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
-                "import",
-                "./Features/Layouts/AcceptCookieDialog.razor.js");
-
-            var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
-            if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
-                _isShow = true;
-
-            StateHasChanged();
-        }
-    }
-
-    private async Task Accept()
-    {
-        if (_cookieModule is null)
-            return;
-        
-        await _cookieModule.InvokeVoidAsync(
-            "writeCookie",
-            _rightsCookieName,
-            _rightsCookieValue,
-            _rightsCookieLifetime);
-
-        _isShow = false;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_cookieModule is not null)
-            await _cookieModule.DisposeAsync();
-    }
+    /// <summary>
+    /// Accepted event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback Accepted { get; set; }
 }
