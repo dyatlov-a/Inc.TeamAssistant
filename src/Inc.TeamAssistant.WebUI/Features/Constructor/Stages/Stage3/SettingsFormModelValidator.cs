@@ -4,9 +4,9 @@ using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-internal sealed class SetSettingsFormModelValidator : AbstractValidator<SetSettingsFormModel>
+internal sealed class SettingsFormModelValidator : AbstractValidator<SettingsFormModel>
 {
-    public SetSettingsFormModelValidator(IStringLocalizer<ConstructorResources> localizer)
+    public SettingsFormModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
         ArgumentNullException.ThrowIfNull(localizer);
         

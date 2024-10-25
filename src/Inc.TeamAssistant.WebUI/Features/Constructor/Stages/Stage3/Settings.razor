@@ -3,6 +3,7 @@
 
 <EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <SettingsFormModelTracker StagesState="StagesState" OnChange="EmitStateChanged" />
     <Panel Header="@Localizer["Configuration"]" IsOpen="true">
         <Actions>
             <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
@@ -73,7 +74,10 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
     
-    private readonly SetSettingsFormModel _formModel = new();
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
+    private readonly SettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
 

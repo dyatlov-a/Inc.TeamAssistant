@@ -50,6 +50,9 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
     private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;

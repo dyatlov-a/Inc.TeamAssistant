@@ -126,6 +126,9 @@
     
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
 
     private string ButtonText => StagesState.Id.HasValue
         ? Localizer["ButtonUpdateText"]

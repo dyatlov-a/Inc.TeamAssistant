@@ -131,6 +131,9 @@
 
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
 
     private bool _isOpen;
     private readonly CalendarFromModel _formModel = new();
@@ -199,5 +202,7 @@
         var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
         
         await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(calendarId));
+
+        EmitStateChanged();
     }
 }

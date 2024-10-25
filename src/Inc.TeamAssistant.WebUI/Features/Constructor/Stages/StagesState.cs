@@ -155,7 +155,7 @@ public sealed class StagesState
         return this;
     }
 
-    public StagesState Apply(SetSettingsFormModel formModel)
+    public StagesState Apply(SettingsFormModel formModel)
     {
         ArgumentNullException.ThrowIfNull(formModel);
         

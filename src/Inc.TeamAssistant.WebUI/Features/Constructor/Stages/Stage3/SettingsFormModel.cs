@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives.FeatureProperties;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class SetSettingsFormModel
+public sealed class SettingsFormModel
 {
     public Guid? CalendarId { get; set; }
 
@@ -15,7 +15,7 @@ public sealed class SetSettingsFormModel
     private readonly Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
     public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties => _availableProperties;
 
-    public SetSettingsFormModel ChangeProperty(string key, string value)
+    public SettingsFormModel ChangeProperty(string key, string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
@@ -25,7 +25,7 @@ public sealed class SetSettingsFormModel
         return this;
     }
     
-    public SetSettingsFormModel Apply(StagesState stagesState)
+    public SettingsFormModel Apply(StagesState stagesState)
     {
         ArgumentNullException.ThrowIfNull(stagesState);
 

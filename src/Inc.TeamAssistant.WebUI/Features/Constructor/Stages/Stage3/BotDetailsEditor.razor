@@ -36,6 +36,9 @@
     [Parameter, EditorRequired]
     public string BotStorageKey { get; set; } = default!;
     
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
     private bool _isOpen;
     private readonly BotDetailsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;

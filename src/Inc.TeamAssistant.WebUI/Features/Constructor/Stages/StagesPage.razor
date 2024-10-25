@@ -59,7 +59,7 @@
     private IReadOnlyCollection<Type> StageWidgets => _currentState switch
     {
         Stage.SelectFeatures => [typeof(SelectFeatures)],
-        Stage.SetSettings => [typeof(SetSettings), typeof(CalendarEditor), typeof(BotDetailsEditor)],
+        Stage.SetSettings => [typeof(Settings), typeof(CalendarEditor), typeof(BotDetailsEditor)],
         Stage.Complete => [typeof(Complete)],
         _ => [typeof(CheckBot)]
     };
@@ -68,7 +68,8 @@
         ["StagesState"] = _stagesState,
         ["LinkFactory"] = (object)LinkFactory,
         ["MoveToNext"] = (object)MoveToNext,
-        ["BotStorageKey"] = BotStorageKey
+        ["BotStorageKey"] = BotStorageKey,
+        ["EmitStateChanged"] = (object)StateHasChanged
     };
     
     protected override async Task OnParametersSetAsync()
