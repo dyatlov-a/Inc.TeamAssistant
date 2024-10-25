@@ -1,7 +1,4 @@
-@inject IBotService BotService
-@inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<ConstructorResources> Localizer
-@inject RequestProcessor RequestProcessor
 @inject FeaturesFactory FeaturesFactory
 
 <EditForm id="@FormId" EditContext="_editContext" OnSubmit="SubmitForm">
@@ -11,7 +8,7 @@
             <Button ButtonType="ButtonType.Submit">@ButtonText</Button>
         </Actions>
         <Content>
-            <Loading State="_state" Retry="SubmitForm">
+            <Loading State="State" Retry="Retry">
                 <ValidationSummary />
                 <FormSection
                     Title="@Localizer["ConnectingTelegram"]"
@@ -26,7 +23,7 @@
                         Label="@Localizer["FormSectionTokenFieldUserNameLabel"]">
                         <InputSingleLine
                             FieldId="bot-username"
-                            @bind-Value="_formModel.UserName"
+                            @bind-Value="FormModel.UserName"
                             IsDisabled="true"/>
                     </FormFieldSet>
                 </FormSection>
@@ -57,7 +54,7 @@
                 </FormSection>
                 @foreach (var feature in StagesState.SelectedFeatures)
                 {
-                    if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                    if (!FormModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
                         continue;
 
                     foreach (var settingSection in settingSections)
@@ -72,7 +69,7 @@
                             </div>
                             @foreach (var settingItem in settingSection.SettingItems)
                             {
-                                var property = _formModel.Properties.SingleOrDefault(p => p.Key.Equals(
+                                var property = FormModel.Properties.SingleOrDefault(p => p.Key.Equals(
                                     settingItem.PropertyName,
                                     StringComparison.InvariantCultureIgnoreCase));
                                 var propertyValueAsString = GetValueAsText(settingItem, property.Value);
@@ -100,13 +97,13 @@
                     <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"]">
                         <InputMultiSelectList
                             FieldId="supported-languages"
-                            Value="_formModel.SupportedLanguages"
-                            ValueExpression="() => _formModel.SupportedLanguages"
+                            Value="FormModel.SupportedLanguages"
+                            ValueExpression="() => FormModel.SupportedLanguages"
                             Items="LanguageSettings.LanguageIds"
                             TitleSelector="i => i.Value"
                             ValueSelector="i => i.Value"
                             IsDisabled="true"/>
-                        <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                        <ValidationMessage For="@(() => FormModel.SupportedLanguages)"/>
                     </FormFieldSet>
                 </FormSection>
             </Loading>
@@ -115,48 +112,58 @@
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public CompleteFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// State of the stages.
+    /// </summary>
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
+    /// <summary>
+    /// Component state.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+    public LoadingState State { get; set; } = default!;
     
+    /// <summary>
+    /// MoveToNext action.
+    /// </summary>
     [Parameter, EditorRequired]
     public Func<Stage?, Task> MoveToNext { get; set; } = default!;
     
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
     [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
+    public Func<Task> Retry { get; set; } = default!;
     
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Action EmitStateChanged { get; set; } = default!;
+    public EventCallback OnValidSubmit { get; set; }
+    
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    
+    private string FormId => StagesState.Id.HasValue
+        ? AnalyticEvents.BotUpdated
+        : AnalyticEvents.BotCreated;
 
     private string ButtonText => StagesState.Id.HasValue
         ? Localizer["ButtonUpdateText"]
         : Localizer["ButtonCreateText"];
     
-    private string FormId => StagesState.Id.HasValue
-        ? AnalyticEvents.BotUpdated
-        : AnalyticEvents.BotCreated;
-    
     private string PanelHeader => string.Format(Localizer["CheckConfigurationTemplate"], ButtonText.ToLowerInvariant());
-    
-    private readonly CompleteFormModel _formModel = new();
-    private FluentValidationValidator? _fluentValidationValidator;
-    private EditContext? _editContext;
-    private LoadingState _state = LoadingState.Done();
     
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
-    }
-
-    private string GetValueAsText(SettingItem settingItem, string value)
-    {
-        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(
-            value,
-            StringComparison.InvariantCultureIgnoreCase));
-        
-        return item is null ? string.Empty : Localizer[item.MessageId];
+        _editContext = EditContextFactory.Create(FormModel);
     }
     
     private async Task SubmitForm()
@@ -164,19 +171,15 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-
-        await RequestProcessor.Process(
-            async () =>
-            {
-                if (StagesState.Id.HasValue)
-                    await BotService.Update(_formModel.ToUpdateBotCommand(StagesState.Id.Value));
-                else
-                    await BotService.Create(_formModel.ToCreateBotCommand());
-
-                await appLocalStorage.Detach<StagesState>(BotStorageKey);
-            },
-            () => MoveToNext(null),
-            s => _state = s);
+        await OnValidSubmit.InvokeAsync();
+    }
+    
+    private string GetValueAsText(SettingItem settingItem, string value)
+    {
+        var item = settingItem.Values.SingleOrDefault(s => s.Value.Equals(
+            value,
+            StringComparison.InvariantCultureIgnoreCase));
+        
+        return item is null ? string.Empty : Localizer[item.MessageId];
     }
 }

@@ -1,0 +1,52 @@
+@attribute [Stories("Features/Constructor/Stage2SelectFeatures")]
+
+<Stories TComponent="Stages" Layout="typeof(DarkLayout)">
+    <Story Name="Done">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Loading()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Error()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Stage _currentStage = Stage.SelectFeatures;
+    private readonly string _botName = "inc_teamassistant_bot";
+    private readonly IReadOnlyCollection<Type> _stageWidgets = [typeof(SelectFeatures)];
+    
+    private readonly Func<Type, Dictionary<string, object>> _stageParametersFactory = _ => new()
+    {
+        ["FormModel"] = new SelectFeaturesFormModel(),
+        ["StagesState"] = StagesStateFactory.Create()
+    };
+}

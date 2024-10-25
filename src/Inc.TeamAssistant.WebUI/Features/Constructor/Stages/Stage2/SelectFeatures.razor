@@ -1,4 +1,3 @@
-@inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.FeatureSelected" EditContext="_editContext" OnSubmit="SubmitForm">
@@ -13,12 +12,12 @@
                 HelpText="@Localizer["FormSectionFeaturesHelp"]"
                 AsRows="true">
                 <InputFeatures
-                    Value="_formModel.FeatureIds"
-                    ValueExpression="@(() => _formModel.FeatureIds)"
-                    ValuesChanged="(IEnumerable<Guid> v) => _formModel.SetFeatures(v)"
+                    Value="FormModel.FeatureIds"
+                    ValueExpression="@(() => FormModel.FeatureIds)"
+                    ValuesChanged="(IEnumerable<Guid> v) => FormModel.SetFeatures(v)"
                     Features="StagesState.AvailableFeatures">
                     <Validation>
-                        <ValidationMessage For="@(() => _formModel.FeatureIds)" />
+                        <ValidationMessage For="@(() => FormModel.FeatureIds)" />
                     </Validation>
                 </InputFeatures>
             </FormSection>
@@ -27,38 +26,37 @@
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public SelectFeaturesFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// State of the stages.
+    /// </summary>
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+    public EventCallback OnValidSubmit { get; set; }
     
-    [Parameter, EditorRequired]
-    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public Action EmitStateChanged { get; set; } = default!;
-
-    private readonly SelectFeaturesFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
     
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        _editContext = EditContextFactory.Create(FormModel);
     }
 
     private async Task SubmitForm()
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
-        
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
-        
-        await MoveToNext(Stage.SetSettings);
+
+        await OnValidSubmit.InvokeAsync();
     }
 }

@@ -23,21 +23,14 @@
     MetaOverrideTitle="@Localizer["Title"]" />
 
 <div class="constructor">
-    <div class="constructor__container">
-        <NavigationStages Current="_currentState" MoveToNext="MoveToNext" />
-        <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
-        @if (RenderContext.IsBrowser)
-        {
-            <Loading State="_state" Retry="Load">
-                @foreach (var widget in StageWidgets)
-                {
-                    <div class="constructor__widget">
-                        <DynamicComponent Type="widget" Parameters="StageParameters"/>
-                    </div>
-                }
-            </Loading>
-        }
-    </div>
+    <Stages
+        CurrentStage="_currentStage"
+        StageWidgets="StageWidgets"
+        BotName="@BotName"
+        StageParametersFactory="StageParametersFactory"
+        MoveToNext="MoveToNext"
+        State="_state"
+        Retry="Load" />
 </div>
 
 @code {
@@ -51,19 +44,25 @@
     private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
+
+    private Stage _currentStage = Enum.GetValues<Stage>().First();
+    private IReadOnlyCollection<Type> StageWidgets => _currentStage switch
+    {
+        Stage.SelectFeatures => [typeof(SelectFeaturesContainer)],
+        Stage.SetSettings => [
+            typeof(SettingsContainer),
+            typeof(CalendarEditorContainer),
+            typeof(BotDetailsEditorContainer)
+        ],
+        Stage.Complete => [typeof(CompleteContainer)],
+        _ => [typeof(CheckBotContainer)]
+    };
+    
     private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
         ? string.Empty
         : $"@{_stagesState.UserName}";
-
-    private Stage _currentState = Enum.GetValues<Stage>().First();
-    private IReadOnlyCollection<Type> StageWidgets => _currentState switch
-    {
-        Stage.SelectFeatures => [typeof(SelectFeatures)],
-        Stage.SetSettings => [typeof(Settings), typeof(CalendarEditor), typeof(BotDetailsEditor)],
-        Stage.Complete => [typeof(Complete)],
-        _ => [typeof(CheckBot)]
-    };
-    private Dictionary<string, object> StageParameters => new()
+    
+    private Func<Type, Dictionary<string, object>> StageParametersFactory => _ => new()
     {
         ["StagesState"] = _stagesState,
         ["LinkFactory"] = (object)LinkFactory,
@@ -75,7 +74,7 @@
     protected override async Task OnParametersSetAsync()
     {
         if (Enum.TryParse<Stage>(SelectedStage, ignoreCase: true, out var value))
-            _currentState = value;
+            _currentStage = value;
         
         if (RenderContext.IsBrowser)
             await Load();
@@ -100,7 +99,7 @@
                         : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
                 });
             },
-            nameof(StagesPage),
+            nameof(StagesContainer),
             r => _stagesState = r,
             s =>
             {
@@ -115,7 +114,7 @@
         {
             var routeSegment = CreateRouteSegment(stage.Value);
             
-            _currentState = stage.Value;
+            _currentStage = stage.Value;
             StateHasChanged();
 
             await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);

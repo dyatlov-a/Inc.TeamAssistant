@@ -1,19 +1,17 @@
-@inject IBotService BotService
 @inject IStringLocalizer<ConstructorResources> Localizer
-@inject RequestProcessor RequestProcessor
 
 <EditForm id="@AnalyticEvents.BotDetailsChanged" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <Panel Header="@Localizer["BotDetailsTelegram"]" Opened="Load" IsOpen="_isOpen">
+    <Panel Header="@Localizer["BotDetailsTelegram"]" Opened="Retry" IsOpen="IsOpen">
         <Actions>
             <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
         </Actions>
         <Content>
-            <Loading State="_state" Retry="Load">
+            <Loading State="State" Retry="Retry">
                 <FormSection
                     Title="@Localizer["BotDetails"]"
                     HelpText="@Localizer["BotDetailsHelp"]">
-                    @foreach (var item in _formModel.BotDetails.Where(b => StagesState.SupportedLanguages.Contains(b.LanguageId)))
+                    @foreach (var item in FormModel.BotDetails.Where(b => StagesState.SupportedLanguages.Contains(b.LanguageId)))
                     {
                         <BotDetailsItemEditor Item="item"/>
                     }
@@ -24,65 +22,55 @@
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public BotDetailsFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// State of the stages.
+    /// </summary>
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
+    /// <summary>
+    /// Is open flag.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
+    public bool IsOpen { get; set; }
     
+    /// <summary>
+    /// Component state.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Action EmitStateChanged { get; set; } = default!;
+    public LoadingState State { get; set; } = default!;
     
-    private bool _isOpen;
-    private readonly BotDetailsFormModel _formModel = new();
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+    
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    private LoadingState _state = LoadingState.Done();
     
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel);
-    }
-
-    private async Task Load()
-    {
-        _isOpen = true;
-        
-        await RequestProcessor.Process(
-            async () =>
-            {
-                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
-                return botDetails;
-            },
-            nameof(BotDetailsEditor),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-        
-        StateHasChanged();
+        _editContext = EditContextFactory.Create(FormModel);
     }
     
     public async Task SubmitForm()
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-        
-        await RequestProcessor.Process(
-            () => BotService.SetDetails(_formModel.ToCommand(StagesState.Token)),
-            () => { },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+
+        await OnValidSubmit.InvokeAsync();
     }
 }

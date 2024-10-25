@@ -1,9 +1,7 @@
-@inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-    <SettingsFormModelTracker StagesState="StagesState" OnChange="EmitStateChanged" />
     <Panel Header="@Localizer["Configuration"]" IsOpen="true">
         <Actions>
             <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
@@ -11,7 +9,7 @@
         <Content>
             @foreach (var feature in StagesState.SelectedFeatures)
             {
-                if (!_formModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                if (!FormModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
                     continue;
 
                 foreach (var settingSection in settingSections)
@@ -21,7 +19,7 @@
                         HelpText="@Localizer[settingSection.HelpMessageId]">
                         @foreach (var settingItem in settingSection.SettingItems)
                         {
-                            if (_formModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
+                            if (FormModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
                             {
                                 <FormFieldSet
                                     FieldId="@settingItem.PropertyName"
@@ -30,7 +28,7 @@
                                         FieldId="@settingItem.PropertyName"
                                         Value="value"
                                         ValueExpression="@(() => value)"
-                                        ValueChanged="@((string v) => _formModel.ChangeProperty(settingItem.PropertyName, v))"
+                                        ValueChanged="@((string v) => FormModel.ChangeProperty(settingItem.PropertyName, v))"
                                         Items="settingItem.Values"
                                         TitleSelector="i => Localizer[i.MessageId]"
                                         ValueSelector="i => i.Value" />
@@ -47,43 +45,60 @@
                 <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"]">
                     <InputMultiSelectList
                         FieldId="supported-languages"
-                        Value="_formModel.SupportedLanguages"
-                        ValueExpression="() => _formModel.SupportedLanguages"
-                        ValueChanged="(IEnumerable<string> v) => _formModel.SetLanguages(v)"
+                        Value="FormModel.SupportedLanguages"
+                        ValueExpression="() => FormModel.SupportedLanguages"
+                        ValueChanged="(IEnumerable<string> v) => SetLanguages(v)"
                         Items="LanguageSettings.LanguageIds"
                         TitleSelector="i => i.Value"
                         ValueSelector="i => i.Value" />
-                    <ValidationMessage For="@(() => _formModel.SupportedLanguages)"/>
+                    <ValidationMessage For="@(() => FormModel.SupportedLanguages)"/>
                 </FormFieldSet>
             </FormSection>
         </Content>
     </Panel>
-    <ValidationMessage For="@(() => _formModel.CalendarId)"/>
+    <ValidationMessage For="@(() => FormModel.CalendarId)"/>
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public SettingsFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// State of the stages.
+    /// </summary>
     [Parameter, EditorRequired]
     public StagesState StagesState { get; set; } = default!;
     
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
-
-    [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
+    public EventCallback OnValidSubmit { get; set; }
     
+    /// <summary>
+    /// EmitStateChanged action.
+    /// </summary>
     [Parameter, EditorRequired]
     public Action EmitStateChanged { get; set; } = default!;
     
-    private readonly SettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
 
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        _editContext = EditContextFactory.Create(FormModel);
+    }
+
+    private void SetLanguages(IEnumerable<string> value)
+    {
+        FormModel.SetLanguages(value);
+        
+        StagesState.Apply(FormModel);
+        
+        EmitStateChanged();
     }
 
     private async Task SubmitForm()
@@ -91,9 +106,6 @@
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
-
-        await MoveToNext(Stage.Complete);
+        await OnValidSubmit.InvokeAsync();
     }
 }

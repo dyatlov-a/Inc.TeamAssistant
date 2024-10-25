@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromModel>
+internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFormModel>
 {
     private readonly HashSet<DateOnly> _dates = new();
     

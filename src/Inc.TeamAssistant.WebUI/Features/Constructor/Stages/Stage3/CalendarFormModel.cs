@@ -4,7 +4,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class CalendarFromModel
+public sealed class CalendarFormModel
 {
     public bool WorkAllDay { get; set; }
     public TimeOnly Start { get; set; }
@@ -16,7 +16,7 @@ public sealed class CalendarFromModel
     private readonly List<HolidayFromModel> _holidays = new();
     public IReadOnlyCollection<HolidayFromModel> Holidays => _holidays;
     
-    public CalendarFromModel Apply(GetCalendarByOwnerResult calendar, int clientTimezoneOffset)
+    public CalendarFormModel Apply(GetCalendarByOwnerResult calendar, int clientTimezoneOffset)
     {
         ArgumentNullException.ThrowIfNull(calendar);
 
@@ -35,7 +35,7 @@ public sealed class CalendarFromModel
         return this;
     }
     
-    public CalendarFromModel Apply(int clientTimezoneOffset)
+    public CalendarFormModel Apply(int clientTimezoneOffset)
     {
         WorkAllDay = false;
         (Start, End) = CreateDefaultTime(clientTimezoneOffset);

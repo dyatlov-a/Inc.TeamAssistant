@@ -1,4 +1,3 @@
-@inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.BotChecked" EditContext="_editContext" OnSubmit="SubmitForm">
@@ -12,24 +11,24 @@
             <FormSection Title="@Localizer["FormSectionTokenTitle"]">
                 <HelpContent>
                     @Localizer["FormSectionTokenHelpBegin"] <RouterLink
-                        Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
-                        Target="@RouterTarget.Blank">BotFather</RouterLink> @Localizer["FormSectionTokenHelpEnd"]
+                                                                Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
+                                                                Target="@RouterTarget.Blank">BotFather</RouterLink> @Localizer["FormSectionTokenHelpEnd"]
                 </HelpContent>
                 <ChildContent>
                     <FormFieldSet
                         FieldId="bot-token"
                         Label="@Localizer["FormSectionTokenFieldTokenLabel"]">
-                        <InputSingleLine FieldId="bot-token" @bind-Value="_formModel.Token" />
-                        <ValidationMessage For="@(() => _formModel.Token)"/>
+                        <InputSingleLine FieldId="bot-token" @bind-Value="FormModel.Token" />
+                        <ValidationMessage For="@(() => FormModel.Token)"/>
                     </FormFieldSet>
                     <FormFieldSet
                         FieldId="bot-username"
                         Label="@Localizer["FormSectionTokenFieldUserNameLabel"]">
                         <InputSingleLine
                             FieldId="bot-username"
-                            @bind-Value="_formModel.UserName"
+                            @bind-Value="FormModel.UserName"
                             IsDisabled="true" />
-                        <ValidationMessage For="@(() => _formModel.UserName)"/>
+                        <ValidationMessage For="@(() => FormModel.UserName)"/>
                     </FormFieldSet>
                 </ChildContent>
             </FormSection>
@@ -38,38 +37,31 @@
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
     [Parameter, EditorRequired]
-    public StagesState StagesState { get; set; } = default!;
+    public CheckBotFormModel FormModel { get; set; } = default!;
     
-    [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
     
-    [Parameter, EditorRequired]
-    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public Action EmitStateChanged { get; set; } = default!;
-    
-    private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
 
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        _editContext = EditContextFactory.Create(FormModel);
     }
-
+    
     private async Task SubmitForm()
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
-
-        await MoveToNext(Stage.SelectFeatures);
+        
+        await OnValidSubmit.InvokeAsync();
     }
 }

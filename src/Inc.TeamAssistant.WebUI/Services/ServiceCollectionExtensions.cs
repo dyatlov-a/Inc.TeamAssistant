@@ -65,7 +65,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()
             .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
             .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
-            .AddScoped<IValidator<CalendarFromModel>, CalendarFromModelValidator>()
+            .AddScoped<IValidator<CalendarFormModel>, CalendarFromModelValidator>()
             .AddScoped<IValidator<SettingsFormModel>, SettingsFormModelValidator>()
             .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
             .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()

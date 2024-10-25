@@ -1,0 +1,172 @@
+@attribute [Stories("Features/Constructor/Stage3SetSettings")]
+
+<Stories TComponent="Stages" Layout="typeof(DarkLayout)">
+    <Story Name="With all features">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithAllFeatures)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="With Appraiser features">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithAppraiser)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="With Reviewer features">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithReviewer)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="With RandomCoffee features">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithRandomCoffee)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Without features">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithoutFeatures)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithAllFeatures)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Loading()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="CreateStageParametersFactory(StagesStateWithAllFeatures)"
+                BotName="@_botName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Error()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Stage _currentStage = Stage.SetSettings;
+    private readonly string _botName = "inc_teamassistant_bot";
+    private readonly IReadOnlyCollection<Type> _stageWidgets = [
+        typeof(Settings),
+        typeof(CalendarEditor),
+        typeof(BotDetailsEditor)
+    ];
+    
+    private static readonly StagesState StagesStateWithAllFeatures = StagesStateFactory.Create();
+    private static readonly StagesState StagesStateWithAppraiser = StagesStateFactory.Create(["Appraiser"]);
+    private static readonly StagesState StagesStateWithReviewer = StagesStateFactory.Create(["Reviewer"]);
+    private static readonly StagesState StagesStateWithRandomCoffee = StagesStateFactory.Create(["RandomCoffee"]);
+    private static readonly StagesState StagesStateWithoutFeatures = StagesStateFactory.Create([]);
+    private bool _calendarIsOpen;
+    private bool _botDetailsIsOpen;
+
+    private Func<Type, Dictionary<string, object>> CreateStageParametersFactory(StagesState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        return t => StageParametersFactory(state, t);
+    }
+    
+    private Dictionary<string, object> StageParametersFactory(StagesState state, Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+        
+        if (type == typeof(Settings))
+            return new Dictionary<string, object>
+            {
+                ["FormModel"] = new SettingsFormModel().Apply(state),
+                ["StagesState"] = state,
+                ["EmitStateChanged"] = (object)StateHasChanged
+            };
+        
+        if (type == typeof(CalendarEditor))
+            return new Dictionary<string, object>
+            {
+                ["FormModel"] = new CalendarFormModel().Apply(new GetCalendarByOwnerResult(
+                    Id: Guid.NewGuid(),
+                    OwnerId: 1,
+                    Schedule: new WorkScheduleUtcDto(Start: new TimeOnly(10, 0, 0), End: new TimeOnly(19, 0, 0)),
+                    Weekends: [DayOfWeek.Saturday, DayOfWeek.Sunday],
+                    Holidays: new Dictionary<DateOnly, string>()),
+                    clientTimezoneOffset: 180),
+                ["IsOpen"] = _calendarIsOpen,
+                ["State"] = LoadingState.Done(),
+                ["Retry"] = () =>
+                {
+                    _calendarIsOpen = true;
+                    return Task.CompletedTask;
+                }
+            };
+        
+        if (type == typeof(BotDetailsEditor))
+            return new Dictionary<string, object>
+            {
+                ["FormModel"] = new BotDetailsFormModel().Apply(new GetBotDetailsResult([
+                    new BotDetails(
+                        LanguageId: "en",
+                        Name: "TeamAssistant (dev)",
+                        ShortDescription: "Chatbots for optimization processes in teams",
+                        Description: "Chatbots for optimization processes in teams"),
+                    new BotDetails(
+                        LanguageId: "ru",
+                        Name: "TeamAssistant (dev)",
+                        ShortDescription: "Чат-боты для оптимизации процессов в командах",
+                        Description: "Чат-боты для оптимизации процессов в командах")
+                ])),
+                ["StagesState"] = state,
+                ["IsOpen"] = _botDetailsIsOpen,
+                ["State"] = LoadingState.Done(),
+                ["Retry"] = () =>
+                {
+                    _botDetailsIsOpen = true;
+                    return Task.CompletedTask;
+                }
+            };
+        
+        throw new NotSupportedException($"{type.Name} is not supported.");
+    }
+}
