@@ -35,9 +35,10 @@
     /// </summary>
     [Parameter]
     public bool IsGrand { get; set; }
-    
-    private bool _isOpen;
 
+    /// <summary>
+    /// Open action.
+    /// </summary>
     public void Open()
     {
         _isOpen = true;
@@ -45,12 +46,17 @@
         StateHasChanged();
     }
     
+    /// <summary>
+    /// Close action.
+    /// </summary>
     public void Close()
     {
         _isOpen = false;
         
         StateHasChanged();
     }
+    
+    private bool _isOpen;
 
     private string CssClass => IsGrand ? "content-dialog__content_grand" : "content-dialog__content_small";
 }

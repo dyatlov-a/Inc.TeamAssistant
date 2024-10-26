@@ -1,15 +1,12 @@
-@inject IBotService BotService
-@inject RequestProcessor RequestProcessor
 @inject IStringLocalizer<DashboardResources> Localizer
 @inject DragAndDropService<DashboardSettingsItem> DragAndDropService
-@inject IServiceProvider ServiceProvider
 @inject FeaturesFactory FeaturesFactory
 
 <ContentDialog Title="@Localizer["Settings"]" @ref="_contentDialog">
     <div class="widget-settings @CssClass">
         <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
             <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
-            <Loading State="_state" Retry="SubmitForm">
+            <Loading State="State" Retry="SubmitForm">
                 <div class="widget-settings__body">
                     <ValidationSummary/>
                     @{
@@ -109,19 +106,37 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Bot identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? BotId { get; set; }
     
-    [Parameter, EditorRequired]
-    public EventCallback Changed { get; set; }
-    
+    /// <summary>
+    /// Widgets.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<UpdateWidgetsCommand> OnValidSubmit { get; set; }
+    
+    /// <summary>
+    /// Close action.
+    /// </summary>
+    public void Close() => _contentDialog?.Close();
 
     private ContentDialog? _contentDialog;
-
     private bool _isDragStarting;
-    private LoadingState _state = LoadingState.Done();
     private readonly DashboardSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
@@ -203,21 +218,6 @@
         if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-        var notification = Notification.Info(Localizer["SettingsApplied"]);
-
-        await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.UpdateWidgets(_formModel.ToCommand(BotId.Value));
-
-                await Changed.InvokeAsync();
-            },
-            () =>
-            {
-                _contentDialog?.Close();
-                notificationsService.Publish(notification);
-            },
-            s => _state = s);
+        await OnValidSubmit.InvokeAsync(_formModel.ToCommand(BotId!.Value));
     }
 }

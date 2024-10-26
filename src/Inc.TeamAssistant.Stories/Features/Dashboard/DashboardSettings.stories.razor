@@ -1,0 +1,130 @@
+@attribute [Stories("Features/Dashboard/Settings")]
+
+<Stories TComponent="DashboardSettings" Layout="typeof(StubLayout)">
+    <Story Name="With all widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets(true, true, true, true)"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With Reviewer widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets(hasReviewer: true)"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With Appraiser widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets(hasAppraiser: true)"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With RandomCoffee widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets(hasRandomCoffee: true)"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With CheckIn widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets(hasCheckIn: true)"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets()"
+                State="LoadingState.Loading()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="CreateWidgets()"
+                State="LoadingState.Error()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Guid _botId = Guid.NewGuid();
+
+    private IReadOnlyCollection<WidgetDto> CreateWidgets(
+        bool hasReviewer = false,
+        bool hasAppraiser = false,
+        bool hasRandomCoffee = false,
+        bool hasCheckIn = false)
+    {
+        return
+        [
+            new(
+                Type: "TeammatesWidget",
+                Feature: string.Empty,
+                Position: 1,
+                CanEnabled: true,
+                IsEnabled: true),
+            new(
+                Type: "ReviewTotalStatsWidget",
+                Feature: "Reviewer",
+                Position: 2,
+                CanEnabled: hasReviewer,
+                IsEnabled: hasReviewer),
+            new(
+                Type: "ReviewHistoryWidget",
+                Feature: "Reviewer",
+                Position: 3,
+                CanEnabled: hasReviewer,
+                IsEnabled: hasReviewer),
+            new(
+                Type: "ReviewAverageStatsWidget",
+                Feature: "Reviewer",
+                Position: 4,
+                CanEnabled: hasReviewer,
+                IsEnabled: hasReviewer),
+            new(
+                Type: "AppraiserHistoryWidget",
+                Feature: "Appraiser",
+                Position: 5,
+                CanEnabled: hasAppraiser,
+                IsEnabled: hasAppraiser),
+            new(
+                Type: "AppraiserIntegrationWidget",
+                Feature: "Appraiser",
+                Position: 6,
+                CanEnabled: hasAppraiser,
+                IsEnabled: hasAppraiser),
+            new(
+                Type: "RandomCoffeeHistoryWidget",
+                Feature: "RandomCoffee",
+                Position: 7,
+                CanEnabled: hasRandomCoffee,
+                IsEnabled: hasRandomCoffee),
+            new(
+                Type: "MapWidget",
+                Feature: "CheckIn",
+                Position: 8,
+                CanEnabled: hasCheckIn,
+                IsEnabled: hasCheckIn)
+        ];
+    }
+}
