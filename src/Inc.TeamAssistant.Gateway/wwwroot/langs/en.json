@@ -91,6 +91,8 @@
   "RandomCoffee_MeetingDescription": "Please arrange a meeting via private messaging",
   "RandomCoffee_NotEnoughParticipants": "There are not enough participants to form pairs",
   "RandomCoffee_InviteHelp": "Start random coffee meetings",
+  "RandomCoffee_RefuseHelp": "Refuse random coffee meetings",
+  "RandomCoffee_RefusedForCoffee": "Random coffee meetings are refused",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",
@@ -112,5 +114,6 @@
   "Connector_RemoveTeamHelp": "Remove the team",
   "Connector_HasNotRightsForRemoveTeam": "You do not have permission to remove the command \"{0}\"",
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
-  "Connector_Help": "Display the list of available commands"
+  "Connector_Help": "Display the list of available commands",
+  "Connector_HasNoRights": "User has no rights to perform this action"
 }

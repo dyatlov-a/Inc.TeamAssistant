@@ -87,7 +87,7 @@ public sealed class Story
 			return;
 		
 		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantException("User has not rights for action.");
+			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
 	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
@@ -99,7 +99,7 @@ public sealed class Story
 			return;
 		
 		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantException("User has not rights for action.");
+			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
 		
 		foreach (var storyForEstimate in _storyForEstimates)
 			if (storyForEstimate.Value == Estimation.None.Value)
@@ -112,7 +112,7 @@ public sealed class Story
 	public Estimation Accept(long participantId, bool hasManagerAccess, int value)
 	{
 		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantException("User has not rights for action.");
+			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
 
 		var totalEstimation = ToEstimation(value);
 		

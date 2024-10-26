@@ -42,6 +42,9 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (randomCoffeeEntry is null)
             throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
         
+        if (randomCoffeeEntry.Refused is true)
+            return CommandResult.Empty;
+        
         var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
         var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
         if (owner is null)

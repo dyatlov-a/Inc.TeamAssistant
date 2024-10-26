@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.FeatureProperties;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnswer.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCoffee.Services;
+using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.RefuseForCoffee.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<ICommandCreator, InviteForCoffeeCommandCreator>()
             .AddSingleton<ICommandCreator, AddPollAnswerCommandCreator>()
+            .AddSingleton<ICommandCreator, RefuseForCoffeeCommandCreator>()
             
             .AddHostedService<ScheduleService>();
 
