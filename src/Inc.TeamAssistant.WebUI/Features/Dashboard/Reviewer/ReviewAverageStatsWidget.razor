@@ -1,7 +1,4 @@
-@inject IReviewService ReviewService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
 
 @if (TeamId.HasValue)
 {
@@ -9,10 +6,10 @@
         HasControls="true"
         HasChart="true"
         Title="@Localizer["ReviewAverageStatsWidgetTitle"]">
-        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-        <Loading State="_state" Retry="Load">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected"/>
+        <Loading State="State" Retry="Retry">
             <div class="component-container">
-                @if (_items.Any())
+                @if (Items.Any())
                 {
                     <ApexChart
                         TItem="ReviewAverageStatsDto"
@@ -21,21 +18,21 @@
                         FormatYAxisLabel="@(y => y.ToString("N1"))">
                         <ApexPointSeries
                             TItem="ReviewAverageStatsDto"
-                            Items="_items"
+                            Items="Items"
                             SeriesType="@SeriesType.Area"
                             Name="@Localizer["ReviewAverageFirstTouch"]"
                             XValue="@(e => e.Created)"
                             YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
                         <ApexPointSeries
                             TItem="ReviewAverageStatsDto"
-                            Items="_items"
+                            Items="Items"
                             SeriesType="@SeriesType.Area"
                             Name="@Localizer["ReviewAverageReview"]"
                             XValue="@(e => e.Created)"
                             YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
                         <ApexPointSeries
                             TItem="ReviewAverageStatsDto"
-                            Items="_items"
+                            Items="Items"
                             SeriesType="@SeriesType.Area"
                             Name="@Localizer["ReviewAverageCorrection"]"
                             XValue="@(e => e.Created)"
@@ -52,45 +49,45 @@
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid? BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private DateOnly? _date;
-
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
-    private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
     
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        await RequestProcessor.Process(
-            () => ReviewService.GetAverage(TeamId.Value, _date!.Value),
-            nameof(ReviewAverageStatsWidget),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
 
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ReviewAverageStatsDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
 }

@@ -1,0 +1,82 @@
+@inject IIntegrationService IntegrationService
+@inject IStringLocalizer<DashboardResources> Localizer
+@inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
+
+<AppraiserIntegrationWidget
+    TeamId="TeamId"
+    FormModel="_formModel"
+    State="_state"
+    OnDisabled="Disable"
+    OnValidSubmit="SubmitForm"
+    Retry="Load" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    private readonly AppraiserIntegrationFromModel _formModel = new();
+    private LoadingState _state = LoadingState.Done();
+    
+    protected override Task OnParametersSetAsync() => Load();
+
+    private Task Load() => Load(notification: null);
+    
+    private async Task Load(Notification? notification)
+    {
+        if (!TeamId.HasValue)
+            return;
+        
+        var notificationsService = ServiceProvider.GetService<INotificationsService>();
+        
+        await RequestProcessor.Process(
+            () => IntegrationService.GetTeamProperties(TeamId.Value),
+            nameof(AppraiserIntegrationWidgetContainer),
+            r =>
+            {
+                _formModel.Apply(r);
+                
+                if (notificationsService is not null && notification is not null)
+                    notificationsService.Publish(notification);
+            },
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
+    private async Task Disable()
+    {
+        if (!TeamId.HasValue)
+            return;
+        
+        await RequestProcessor.Process(
+            () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId.Value)),
+            () =>
+            {
+                _formModel.Clear();
+            },
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+    
+    private async Task SubmitForm(SetIntegrationPropertiesCommand command)
+    {
+        await RequestProcessor.Process(
+            async () =>
+            {
+                await IntegrationService.SetTeamProperties(command);
+
+                await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"]));
+            },
+            () => {},
+            _ => StateHasChanged());
+    }
+}

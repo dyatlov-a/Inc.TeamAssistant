@@ -19,38 +19,25 @@
     WebsiteSection="WebsiteSection.Dashboard"
     MetaOverrideTitle="@Localizer["Title"]" />
 
-<div class="dashboard__fluent-container">
-    <DashboardSettingsContainer BotId="BotId" Widgets="_widgets" Changed="Load" />
-    <div class="dashboard">
-        <div class="dashboard-toolbar">
-            <div class="dashboard-toolbar__content">
-                <DashboardTeamSelector BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext"/>
+<Dashboard
+    BotId="_botId"
+    TeamId="_teamId"
+    State="_state"
+    Widgets="_widgetTypes"
+    Load="Load"
+    WidgetParametersFactory="WidgetParametersFactory">
+    <Settings>
+        <DashboardSettingsContainer BotId="BotId" Widgets="_widgets" Changed="Load" />
+    </Settings>
+    <Toolbar>
+        <DashboardTeamSelectorContainer BotId="BotId" TeamId="TeamId" TeamContextChanged="ChangeTeamContext" />
 
-                @if (_teamId.HasValue)
-                {
-                    <DashboardTeamConnector TeamId="_teamId.Value"/>
-                }
-            </div>
-        </div>
-        <div class="dashboard-content">
-            <Loading State="_state" Retry="Load">
-                <div class="dashboard-widgets">
-                    @if (_botId.HasValue)
-                    {
-                        foreach (var widget in _widgets.Where(w => w.IsVisible).OrderBy(w => w.Position))
-                        {
-                            <DynamicComponent Type="ToWidgetType(widget.Type)" Parameters="WidgetParameters"/>
-                        }
-                    }
-                    else
-                    {
-                        <BotNotSelected/>
-                    }
-                </div>
-            </Loading>
-        </div>
-    </div>
-</div>
+        @if (TeamId.HasValue)
+        {
+            <DashboardTeamConnectorContainer TeamId="TeamId.Value" />
+        }
+    </Toolbar>
+</Dashboard>
 
 @code {
     [Parameter]
@@ -63,24 +50,19 @@
     private Guid? _teamId;
     
     private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<Type> _widgetTypes = Array.Empty<Type>();
     private IReadOnlyCollection<WidgetDto> _widgets = Array.Empty<WidgetDto>();
-    
-    private Dictionary<string, object?> WidgetParameters => new()
-    {
-        ["BotId"] = _botId!.Value,
-        ["TeamId"] = _teamId
-    };
     
     private readonly Dictionary<string, Type> _widgetsLookup = new()
     {
-        [nameof(TeammatesWidget)] = typeof(TeammatesWidget),
-        [nameof(ReviewAverageStatsWidget)] = typeof(ReviewAverageStatsWidget),
-        [nameof(ReviewHistoryWidget)] = typeof(ReviewHistoryWidget),
-        [nameof(ReviewTotalStatsWidget)] = typeof(ReviewTotalStatsWidget),
-        [nameof(AppraiserHistoryWidget)] = typeof(AppraiserHistoryWidget),
-        [nameof(AppraiserIntegrationWidget)] = typeof(AppraiserIntegrationWidget),
-        [nameof(RandomCoffeeHistoryWidget)] = typeof(RandomCoffeeHistoryWidget),
-        [nameof(MapWidget)] = typeof(MapWidget)
+        [nameof(TeammatesWidget)] = typeof(TeammatesWidgetContainer),
+        [nameof(ReviewAverageStatsWidget)] = typeof(ReviewAverageStatsWidgetContainer),
+        [nameof(ReviewHistoryWidget)] = typeof(ReviewHistoryWidgetContainer),
+        [nameof(ReviewTotalStatsWidget)] = typeof(ReviewTotalStatsWidgetContainer),
+        [nameof(AppraiserHistoryWidget)] = typeof(AppraiserHistoryWidgetContainer),
+        [nameof(AppraiserIntegrationWidget)] = typeof(AppraiserIntegrationWidgetContainer),
+        [nameof(RandomCoffeeHistoryWidget)] = typeof(RandomCoffeeHistoryWidgetContainer),
+        [nameof(MapWidget)] = typeof(MapWidgetContainer)
     };
 
     protected override async Task OnParametersSetAsync()
@@ -96,20 +78,38 @@
         if (_botId.HasValue)
             await RequestProcessor.Process(
                 () => BotService.GetWidgetsForCurrentUser(_botId.Value),
-                nameof(DashboardPage),
-                r => _widgets = r.Widgets,
+                nameof(DashboardContainer),
+                r =>
+                {
+                    _widgets = r.Widgets;
+                    _widgetTypes = _widgets
+                        .Where(w => w.IsVisible)
+                        .OrderBy(w => w.Position)
+                        .Select(w => _widgetsLookup[w.Type])
+                        .ToArray();
+                },
                 s =>
                 {
                     _state = s;
                     StateHasChanged();
                 });
         else
+        {
             _widgets = Array.Empty<WidgetDto>();
+            _widgetTypes = Array.Empty<Type>();
+        }
         
         StateHasChanged();
     }
 
-    private Type ToWidgetType(string type) => _widgetsLookup[type];
+    private Dictionary<string, object?> WidgetParametersFactory(Type type)
+    {
+        return new Dictionary<string, object?>
+        {
+            ["BotId"] = BotId!.Value,
+            ["TeamId"] = TeamId
+        };
+    }
     
     private async Task ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
     {

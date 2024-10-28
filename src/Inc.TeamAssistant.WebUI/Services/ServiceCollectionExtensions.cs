@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
             .AddLocalization()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<FeaturesFactory>()
-            .AddScoped<DateSelectorFactory>()
+            .AddScoped<IDateSelectorFactory, DateSelectorFactory>()
             .AddScoped<MainFooterLinksFactory>()
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()

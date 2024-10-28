@@ -1,15 +1,12 @@
-@inject IReviewService ReviewService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
 
 @if (TeamId.HasValue)
 {
     <DashboardWidget
         HasControls="true"
         Title="@Localizer["LastTasksWidgetTitle"]">
-        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-        <Loading State="_state" Retry="Load">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected"/>
+        <Loading State="State" Retry="Retry">
             <div class="component-container">
                 @if (Tasks.Any())
                 {
@@ -74,12 +71,49 @@
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
+    
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<TaskForReviewDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+    
+    private readonly PaginationState _pagination = new() { ItemsPerPage = 8 };
     private IReadOnlyDictionary<string, string> StateLookup => new Dictionary<string, string>
     {
         ["None"] = Localizer["ReviewStateNone"],
@@ -88,43 +122,7 @@
         ["OnCorrection"] = Localizer["ReviewStateOnCorrection"],
         ["Accept"] = Localizer["ReviewStateAccept"]
     };
-
-    private DateOnly? _date;
-    private readonly PaginationState _pagination = new() { ItemsPerPage = 8 };
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
-    private IReadOnlyCollection<TaskForReviewDto> _tasks = Array.Empty<TaskForReviewDto>();
-    private IQueryable<TaskForReviewDto> Tasks => _tasks.AsQueryable();
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
-    
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        await RequestProcessor.Process(
-            () => ReviewService.GetLast(TeamId.Value, _date!.Value),
-            nameof(ReviewHistoryWidget),
-            r => _tasks = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
-    
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+    private IQueryable<TaskForReviewDto> Tasks => Items.AsQueryable();
 
     private string GetReviewerTitle(TaskForReviewDto task)
     {

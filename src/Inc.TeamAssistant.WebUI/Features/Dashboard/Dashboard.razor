@@ -1,0 +1,77 @@
+<div class="dashboard__fluent-container">
+    @Settings
+    <div class="dashboard">
+        <div class="dashboard-toolbar">
+            <div class="dashboard-toolbar__content">
+                @Toolbar
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <Loading State="State" Retry="Load">
+                <div class="dashboard-widgets">
+                    @if (BotId.HasValue)
+                    {
+                        foreach (var widget in Widgets)
+                        {
+                            <DynamicComponent Type="widget" Parameters="WidgetParametersFactory(widget)"/>
+                        }
+                    }
+                    else
+                    {
+                        <BotNotSelected/>
+                    }
+                </div>
+            </Loading>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// BotId.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    /// <summary>
+    /// TeamId.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Widgets.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<Type> Widgets { get; set; } = default!;
+    
+    /// <summary>
+    /// Settings.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Settings { get; set; }
+    
+    /// <summary>
+    /// Toolbar.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Toolbar { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for load.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Load { get; set; } = default!;
+    
+    /// <summary>
+    /// ParametersFactory for widget by type.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Type, Dictionary<string, object?>> WidgetParametersFactory { get; set; } = default!;
+}

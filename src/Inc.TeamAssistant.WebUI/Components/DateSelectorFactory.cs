@@ -1,8 +1,9 @@
+using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Components;
 
-internal sealed class DateSelectorFactory
+internal sealed class DateSelectorFactory : IDateSelectorFactory
 {
     private readonly IStringLocalizer<ComponentResources> _localizer;
 

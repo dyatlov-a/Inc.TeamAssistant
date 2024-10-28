@@ -1,0 +1,39 @@
+@inject IRandomCoffeeService RandomCoffeeService
+@inject RequestProcessor RequestProcessor
+
+<RandomCoffeeHistoryWidget State="_state" FormModel="_formModel" OnLoad="Load" />
+
+@code {
+    [Parameter, EditorRequired] 
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired] 
+    public Guid? TeamId { get; set; }
+    
+    private LoadingState _state = LoadingState.Done();
+    private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
+
+    protected override Task OnParametersSetAsync() => Load(null);
+    
+    private async Task Load(long? chatId)
+    {
+        await RequestProcessor.Process(
+            async () =>
+            {
+                var chats = await RandomCoffeeService.GetChatsByBot(BotId);
+                var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
+                var getHistoryResult = targetChatId.HasValue
+                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, depth: 3)
+                    : null;
+
+                return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
+            },
+            nameof(RandomCoffeeHistoryWidgetContainer),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

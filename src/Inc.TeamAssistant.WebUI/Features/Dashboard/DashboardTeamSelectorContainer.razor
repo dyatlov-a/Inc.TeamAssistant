@@ -1,0 +1,82 @@
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+
+<DashboardTeamSelector
+    BotId="_botId"
+    TeamId="_teamId"
+    State="_state"
+    Bots="_bots"
+    Retry="Load"
+    BotChanged="ChangeBot"
+    TeamChanged="ChangeTeam" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid? BotId, Guid? TeamId)> TeamContextChanged { get; set; }
+    
+    private Guid? _botId;
+    private Guid? _teamId;
+    
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_botId != BotId || _teamId != TeamId || (_botId is null && _teamId is null))
+        {
+            _botId = BotId;
+            _teamId = TeamId;
+            
+            await Load();
+        }
+    }
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => BotService.GetFromCurrentUser(),
+            nameof(DashboardTeamSelector),
+            r => _bots = r.Bots,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+    
+    private async Task ChangeTeam(Guid? value)
+    {
+        _teamId = value;
+        
+        await ChangeTeamContext(_botId, _teamId);
+    }
+    
+    private async Task ChangeBot(Guid? value)
+    {
+        _botId = value;
+
+        if (_botId.HasValue)
+        {
+            var bot = _bots.SingleOrDefault(b => b.Id == _botId.Value);
+            var team = bot?.Teams.FirstOrDefault();
+
+            await ChangeTeamContext(_botId.Value, team?.Id);
+        }
+        else
+            await ChangeTeamContext(null, null);
+    }
+
+    private async Task ChangeTeamContext(Guid? botId, Guid? teamId)
+    {
+        _botId = botId;
+        _teamId = teamId;
+        
+        await TeamContextChanged.InvokeAsync((botId, teamId));
+    }
+}

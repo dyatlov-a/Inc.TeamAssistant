@@ -1,21 +1,19 @@
-@inject IRandomCoffeeService RandomCoffeeService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject RequestProcessor RequestProcessor
 
 <DashboardWidget Title="@Localizer["RandomCoffeeHistoryWidgetTitle"]">
-    <Loading State="_state" Retry="Load">
+    <Loading State="State" Retry="() => OnLoad.InvokeAsync((long?)null)">
         <div class="component-container">
             <div class="chat-selector">
                 <InputSelectList
                     FieldId="chat-selector"
-                    Value="_formModel.ChatId"
-                    ValueExpression="@(() => _formModel.ChatId)"
-                    ValueChanged="@((long? v) => Load(v))"
-                    Items="_formModel.Chats"
+                    Value="FormModel.ChatId"
+                    ValueExpression="@(() => FormModel.ChatId)"
+                    ValueChanged="@((long? v) => OnLoad.InvokeAsync(v))"
+                    Items="FormModel.Chats"
                     TitleSelector="i => i.Name"
                     ValueSelector="i => i.Id"/>
             </div>
-            <DateSelector Date="_formModel.Date" Items="DateItems" OnSelected="d => _formModel.Date = d"/>
+            <DateSelector Date="FormModel.Date" Items="DateItems" OnSelected="d => FormModel.Date = d"/>
             @if (Pairs.Any())
             {
                 <QuickGrid Items="@Pairs" class="quick-data-grid">
@@ -47,49 +45,23 @@
 
 @code {
     [Parameter, EditorRequired] 
-    public Guid BotId { get; set; }
+    public LoadingState State { get; set; } = default!;
     
     [Parameter, EditorRequired] 
-    public Guid? TeamId { get; set; }
+    public RandomCoffeeHistoryWidgetFormModel FormModel { get; set; } = default!;
     
-    private LoadingState _state = LoadingState.Done();
-    private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
+    [Parameter, EditorRequired] 
+    public EventCallback<long?> OnLoad { get; set; }
 
     private IReadOnlyDictionary<string, DateOnly> DateItems
-        => _formModel.HistoryItems.ToDictionary(i => i.Created.ToString("yy-MM-dd"), i => i.Created);
-
-    protected override Task OnParametersSetAsync() => Load();
-
-    private Task Load() => Load(chatId: null);
-    
-    private async Task Load(long? chatId)
-    {
-        await RequestProcessor.Process(
-            async () =>
-            {
-                var chats = await RandomCoffeeService.GetChatsByBot(BotId);
-                var targetChatId = chatId ?? chats.Items.FirstOrDefault()?.Id;
-                var getHistoryResult = targetChatId.HasValue
-                    ? await RandomCoffeeService.GetHistory(BotId, targetChatId.Value, depth: 3)
-                    : null;
-
-                return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
-            },
-            nameof(RandomCoffeeHistoryWidget),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
+        => FormModel.HistoryItems.ToDictionary(i => i.Created.ToString("yy-MM-dd"), i => i.Created);
 
     private IQueryable<PairDto> Pairs
     {
         get
         {
-            var historyItems = _formModel.HistoryItems
-                .FirstOrDefault(i => !_formModel.Date.HasValue || i.Created == _formModel.Date.Value);
+            var historyItems = FormModel.HistoryItems
+                .FirstOrDefault(i => !FormModel.Date.HasValue || i.Created == FormModel.Date.Value);
 
             var pairs = new List<PairDto>();
             if (historyItems?.Pairs is not null)

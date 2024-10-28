@@ -47,6 +47,13 @@ public sealed class AppraiserIntegrationFromModel
             ScrumMasterId);
     }
 
+    public AppraiserIntegrationFromModel Enable()
+    {
+        IsEnabled = true;
+        
+        return this;
+    }
+
     private AppraiserIntegrationFromModel Apply(IntegrationProperties properties)
     {
         ArgumentNullException.ThrowIfNull(properties);

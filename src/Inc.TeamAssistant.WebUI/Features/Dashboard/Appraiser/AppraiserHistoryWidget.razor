@@ -1,14 +1,10 @@
-@inject IAppraiserService AppraiserService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject NavRouter NavRouter
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
 
 @if (TeamId.HasValue)
 {
     <DashboardWidget HasControls="true" Title="@Localizer["AppraiserHistoryTitle"]">
-        <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-        <Loading State="_state" Retry="Load">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected"/>
+        <Loading State="State" Retry="Retry">
             <div class="component-container">
                 @if (HistoryItems.Any())
                 {
@@ -38,7 +34,7 @@
                 }
             </div>
             <div class="component-actions">
-                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MoveToAssessmentSession">
+                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MovedToAssessmentSession">
                     @Localizer["GoToCurrentSessionButtonText"]
                 </Button>
             </div>
@@ -47,55 +43,63 @@
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private DateOnly? _date;
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
+    
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<AssessmentHistoryDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, NavRoute> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// On click event.
+    /// </summary>
+    [Parameter]
+    public EventCallback MovedToAssessmentSession { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+    
     private readonly PaginationState _pagination = new();
+    private IQueryable<AssessmentHistoryDto> HistoryItems => Items.AsQueryable();
     
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
-    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
-    private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
-    
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-
-        await RequestProcessor.Process(
-            () => AppraiserService.GetAssessmentHistory(TeamId.Value, from: _date!.Value),
-            nameof(AppraiserHistoryWidget),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
-
-    private async Task MoveToAssessmentSession()
-    {
-        await NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");
-    }
-
     private string CreateMoveToHistoryLink(DateOnly date)
-        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
-
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+        => LinkFactory($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 }

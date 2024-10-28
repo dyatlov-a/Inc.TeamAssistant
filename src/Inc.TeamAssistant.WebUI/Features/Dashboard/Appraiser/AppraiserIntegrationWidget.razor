@@ -1,7 +1,4 @@
-@inject IIntegrationService IntegrationService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject RequestProcessor RequestProcessor
-@inject IServiceProvider ServiceProvider
 
 <ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
     <p>@Localizer["AppraiserIntegrationConfirmText"]</p>
@@ -10,7 +7,7 @@
 @if (TeamId.HasValue)
 {
     <DashboardWidget Title="@Localizer["AppraiserIntegrationTitle"]">
-        <Loading State="_state" Retry="Load">
+        <Loading State="State" Retry="Retry">
             <div class="component-container">
                 <EditForm id="@AnalyticEvents.AppraiserIntegrationEnabled" EditContext="_editContext" OnSubmit="SubmitForm">
                     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
@@ -20,7 +17,7 @@
                             Label="@Localizer["AppraiserIntegrationAccessTokenLabel"]">
                             <InputSingleLine
                                 FieldId="access-token"
-                                @bind-Value="_formModel.AccessToken"
+                                @bind-Value="FormModel.AccessToken"
                                 IsDisabled="true"/>
                         </FormFieldSet>
                         <FormFieldSet
@@ -28,26 +25,26 @@
                             Label="@Localizer["AppraiserIntegrationProjectKeyLabel"]">
                             <InputSingleLine
                                 FieldId="project-key"
-                                @bind-Value="_formModel.ProjectKey"
-                                IsDisabled="!_formModel.HasManagerAccess"/>
-                            <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
+                                @bind-Value="FormModel.ProjectKey"
+                                IsDisabled="!FormModel.HasManagerAccess"/>
+                            <ValidationMessage For="@(() => FormModel.ProjectKey)"/>
                         </FormFieldSet>
                         <FormFieldSet
                             FieldId="scrum-master"
                             Label="@Localizer["AppraiserIntegrationScrumMasterLabel"]">
                             <InputSelectList
                                 FieldId="scrum-master"
-                                Value="_formModel.ScrumMasterId"
-                                ValueExpression="@(() => _formModel.ScrumMasterId)"
-                                ValueChanged="@((long v) => _formModel.ScrumMasterId = v)"
-                                Items="_formModel.Teammates"
+                                Value="FormModel.ScrumMasterId"
+                                ValueExpression="@(() => FormModel.ScrumMasterId)"
+                                ValueChanged="@((long v) => FormModel.ScrumMasterId = v)"
+                                Items="FormModel.Teammates"
                                 TitleSelector="i => i.DisplayName"
                                 ValueSelector="i => i.Id"
-                                IsDisabled="!_formModel.HasManagerAccess" />
-                            <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
+                                IsDisabled="!FormModel.HasManagerAccess" />
+                            <ValidationMessage For="@(() => FormModel.ScrumMasterId)"/>
                         </FormFieldSet>
                     </div>
-                    @if (_formModel.HasManagerAccess)
+                    @if (FormModel.HasManagerAccess)
                     {
                         <div class="component-actions">
                             <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
@@ -58,12 +55,12 @@
                             </Button>
                         </div>
                     }
-                    @if (!_isEnabled)
+                    @if (!FormModel.IsEnabled)
                     {
                         <div class="appraiser-integration__bg"></div>
                         <div class="appraiser-integration__controls">
                             <div class="appraiser-integration__controls-body">
-                                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="Enable">
+                                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="() => FormModel.Enable()">
                                     @Localizer["AppraiserIntegrationEnableButton"]
                                 </Button>
                             </div>
@@ -76,95 +73,72 @@
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private bool _isEnabled;
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AppraiserIntegrationFromModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// On disabled event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnDisabled { get; set; }
+    
+    /// <summary>
+    /// On valid submit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<SetIntegrationPropertiesCommand> OnValidSubmit { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
     private ConfirmDialog? _confirmDialog;
-    private readonly AppraiserIntegrationFromModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    private LoadingState _state = LoadingState.Done();
 
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel);
-    }
-
-    protected override Task OnParametersSetAsync() => Load();
-
-    private Task Load() => Load(notification: null);
-    
-    private async Task Load(Notification? notification)
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        var notificationsService = ServiceProvider.GetService<INotificationsService>();
-        
-        await RequestProcessor.Process(
-            () => IntegrationService.GetTeamProperties(TeamId.Value),
-            nameof(AppraiserIntegrationWidget),
-            r =>
-            {
-                _formModel.Apply(r);
-                _isEnabled = _formModel.IsEnabled;
-                
-                if (notificationsService is not null && notification is not null)
-                    notificationsService.Publish(notification);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        _editContext = EditContextFactory.Create(FormModel);
     }
 
     private void BeginDisable()
     {
-        if (_formModel.IsEnabled)
+        if (FormModel.IsEnabled)
             _confirmDialog?.Open();
-        else
-            _isEnabled = false;
     }
-
-    private void Enable() => _isEnabled = true;
 
     private async Task Disable()
     {
         if (!TeamId.HasValue)
             return;
-        
-        await RequestProcessor.Process(
-            () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId.Value)),
-            () =>
-            {
-                _formModel.Clear();
-                _isEnabled = false;
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+
+        await OnDisabled.InvokeAsync();
     }
     
     private async Task SubmitForm()
     {
         if (!TeamId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-        
-        await RequestProcessor.Process(
-            async () =>
-            {
-                await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId.Value));
 
-                await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"]));
-            },
-            () => {},
-            _ => StateHasChanged());
+        var command = FormModel.ToCommand(TeamId.Value);
+        
+        await OnValidSubmit.InvokeAsync(command);
     }
 }

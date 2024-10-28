@@ -1,0 +1,58 @@
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+
+<TeammatesWidget
+    TeamId="TeamId"
+    State="_state"
+    Item="_item"
+    Retry="() => Load()"
+    TeammateRemoved="e => RemoveTeammate(e.Teammate, e.Exclude, e.LeaveUntil)" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    private LoadingState _state = LoadingState.Done();
+    private GetTeammatesResult _item = new(false, Array.Empty<TeammateDto>());
+
+    protected override Task OnParametersSetAsync() => Load();
+
+    private async Task Load(bool showLoading = true)
+    {
+        if (!TeamId.HasValue)
+            return;
+
+        await RequestProcessor.Process(
+            () => BotService.GetTeammates(TeamId.Value),
+            nameof(TeammatesWidgetContainer),
+            r => _item = r,
+            s =>
+            {
+                if (showLoading || !s.IsLoading)
+                {
+                    _state = s;
+                    StateHasChanged();
+                }
+            });
+    }
+
+    private async Task RemoveTeammate(TeammateDto teammate, bool exclude, int? leaveUntil)
+    {
+        await RequestProcessor.Process(
+            async () =>
+            {
+                await BotService.RemoveTeammate(new RemoveTeammateCommand(
+                    teammate.TeamId,
+                    teammate.PersonId,
+                    leaveUntil.HasValue ? DateTimeOffset.UtcNow.AddDays(leaveUntil.Value) : null,
+                    exclude));
+                
+                await Load(showLoading: false);
+            },
+            () => { },
+            _ => StateHasChanged());
+    }
+}

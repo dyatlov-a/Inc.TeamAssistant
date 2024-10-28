@@ -1,8 +1,6 @@
-@inject IBotService BotService
 @inject IStringLocalizer<DashboardResources> Localizer
-@inject RequestProcessor RequestProcessor
 
-<ConfirmDialog OnConfirm="RemoveTeammate" @ref="_confirmDialog">
+<ConfirmDialog OnConfirm="EmitTeammateRemoved" @ref="_confirmDialog">
     @if (_exclude || _leaveUntil.HasValue)
     {
         <p>@Localizer["LeaveTeammate"] @_selectedTeammate?.Name</p>
@@ -24,7 +22,7 @@
 @if (TeamId.HasValue)
 {
     <DashboardWidget Title="@Localizer["TeammatesWidgetTitle"]">
-        <Loading State="_state" Retry="() => Load()">
+        <Loading State="State" Retry="Retry">
             <div class="component-container">
                 @if (Teammates.Any())
                 {
@@ -44,14 +42,14 @@
                             @if (context.LeaveUntil.HasValue)
                             {
                                 <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
-                                if (_item.HasManagerAccess)
+                                if (Item.HasManagerAccess)
                                 {
                                     <RouterLink OnClick="() => ExcludeFromTeam(context, false)">[X]</RouterLink>
                                 }
                             }
                         </TemplateColumn>
                         <TemplateColumn Title="@Localizer["ExcludeFromTeam"]" Sortable="false">
-                            @if (_item.HasManagerAccess)
+                            @if (Item.HasManagerAccess)
                             {
                                 <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">1</RouterLink>
                                 <RouterLink OnClick="() => ExcludeFromTeam(context, false, 7)">7</RouterLink>
@@ -78,42 +76,42 @@
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
 
-    private ConfirmDialog? _confirmDialog;
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Teammates data.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public GetTeammatesResult Item { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On confirm event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(TeammateDto Teammate, bool Exclude, int? LeaveUntil)> TeammateRemoved { get; set; }
 
+    private ConfirmDialog? _confirmDialog;
     private TeammateDto? _selectedTeammate;
     private bool _exclude;
     private int? _leaveUntil;
     
-    private LoadingState _state = LoadingState.Done();
-    private GetTeammatesResult _item = new(false, Array.Empty<TeammateDto>());
-    private IQueryable<TeammateDto> Teammates => _item.Teammates.AsQueryable();
-
-    protected override Task OnParametersSetAsync() => Load();
-
-    private async Task Load(bool showLoading = true)
-    {
-        if (!TeamId.HasValue)
-            return;
-
-        await RequestProcessor.Process(
-            () => BotService.GetTeammates(TeamId.Value),
-            nameof(TeammatesWidget),
-            r => _item = r,
-            s =>
-            {
-                if (showLoading || !s.IsLoading)
-                {
-                    _state = s;
-                    StateHasChanged();
-                }
-            });
-    }
+    private IQueryable<TeammateDto> Teammates => Item.Teammates.AsQueryable();
 
     private void ExcludeFromTeam(TeammateDto teammate, bool exclude, int? leaveUntil = null)
     {
@@ -124,26 +122,13 @@
         _confirmDialog?.Open();
     }
 
-    private async Task RemoveTeammate()
+    private async Task EmitTeammateRemoved()
     {
-        if (_selectedTeammate is null)
-            return;
+        if (_selectedTeammate is not null)
+            await TeammateRemoved.InvokeAsync((_selectedTeammate, _exclude, _leaveUntil));
 
-        await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.RemoveTeammate(new RemoveTeammateCommand(
-                    _selectedTeammate.TeamId,
-                    _selectedTeammate.PersonId,
-                    _leaveUntil.HasValue ? DateTimeOffset.UtcNow.AddDays(_leaveUntil.Value) : null,
-                    _exclude));
-
-                _leaveUntil = null;
-                _selectedTeammate = null;
-                
-                await Load(showLoading: false);
-            },
-            () => { },
-            _ => StateHasChanged());
+        _selectedTeammate = null;
+        _exclude = false;
+        _leaveUntil = null;
     }
 }
