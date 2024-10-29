@@ -9,7 +9,7 @@
                 BotId="BotId"
                 TeamId="TeamId"
                 State="LoadingState.Done()"
-                Widgets="_widgets"
+                Widgets="_allWidgets"
                 Load="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
@@ -30,13 +30,175 @@
             </Dashboard>
         </Template>
     </Story>
+    <Story Name="With Reviewer widgets">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Done()"
+                Widgets="_reviewerWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Done()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Done()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
+    <Story Name="With Appraiser widgets">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Done()"
+                Widgets="_appraiserWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Done()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Done()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
+    <Story Name="With RandomCoffee widgets">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Done()"
+                Widgets="_randomCoffeeWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Done()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Done()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
+    <Story Name="With CheckIn widgets">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Done()"
+                Widgets="_mapWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Done()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Done()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Loading()"
+                Widgets="_allWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Loading()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Loading()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Dashboard
+                BotId="BotId"
+                TeamId="TeamId"
+                State="LoadingState.Error()"
+                Widgets="_allWidgets"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="BotId"
+                        TeamId="TeamId"
+                        State="LoadingState.Error()"
+                        Bots="_bots"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+
+                    <DashboardTeamConnector
+                        Team="_team"
+                        State="LoadingState.Error()"
+                        Retry="() => Task.CompletedTask" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
 </Stories>
 
 @code {
     private static readonly Guid BotId = Guid.NewGuid();
     private static readonly Guid TeamId = Guid.NewGuid();
 
-    private readonly IReadOnlyCollection<Type> _widgets =
+    private readonly IReadOnlyCollection<Type> _allWidgets =
     [
         typeof(TeammatesWidget),
         typeof(ReviewAverageStatsWidget),
@@ -45,6 +207,33 @@
         typeof(AppraiserHistoryWidget),
         typeof(AppraiserIntegrationWidget),
         typeof(RandomCoffeeHistoryWidget),
+        typeof(MapWidget)
+    ];
+    
+    private readonly IReadOnlyCollection<Type> _reviewerWidgets =
+    [
+        typeof(TeammatesWidget),
+        typeof(ReviewAverageStatsWidget),
+        typeof(ReviewHistoryWidget),
+        typeof(ReviewTotalStatsWidget)
+    ];
+    
+    private readonly IReadOnlyCollection<Type> _appraiserWidgets =
+    [
+        typeof(TeammatesWidget),
+        typeof(AppraiserHistoryWidget),
+        typeof(AppraiserIntegrationWidget)
+    ];
+    
+    private readonly IReadOnlyCollection<Type> _randomCoffeeWidgets =
+    [
+        typeof(TeammatesWidget),
+        typeof(RandomCoffeeHistoryWidget)
+    ];
+    
+    private readonly IReadOnlyCollection<Type> _mapWidgets =
+    [
+        typeof(TeammatesWidget),
         typeof(MapWidget)
     ];
 
@@ -240,7 +429,7 @@
                     new MapDto(Id: Guid.NewGuid(), Name: "Chat 1")
                 ])),
                 ["Retry"] = () => Task.CompletedTask,
-                ["LinkFactory"] = (string _) => string.Empty
+                ["LinkFactory"] = (string _) => "/imgs/map.png"
             };
         
         throw new NotSupportedException($"{type.Name} is not supported.");

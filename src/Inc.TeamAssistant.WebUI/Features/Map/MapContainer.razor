@@ -1,9 +1,6 @@
 @page "/map/{id:guid}"
 @page "/en/map/{id:guid}"
 @page "/ru/map/{id:guid}"
-@page "/map/{id:guid}/{DisableLayout:bool}"
-@page "/en/map/{id:guid}/{DisableLayout:bool}"
-@page "/ru/map/{id:guid}/{DisableLayout:bool}"
 
 @inject ICheckInService CheckInService
 
@@ -28,7 +25,7 @@
     [Parameter]
     public Guid Id { get; set; }
     
-    [Parameter]
+    [Parameter, SupplyParameterFromQuery]
     public bool DisableLayout { get; set; }
 
     private IReadOnlyDictionary<string, IReadOnlyCollection<LocationDto>> _locations
