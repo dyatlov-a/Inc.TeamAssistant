@@ -75,7 +75,7 @@
 
     private readonly GetActiveStoryResult _item = new(
         TeamName: "Dev team",
-        CodeForConnect: CodeForConnectFactory.Create(),
+        CodeForConnect: CodeForConnectFactory.CreateLight(),
         new StoryDto(
             Id: Guid.NewGuid(),
             Title: "Create order from user card",

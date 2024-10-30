@@ -41,7 +41,7 @@
     {
         await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
-            nameof(DashboardTeamSelector),
+            nameof(DashboardTeamSelectorContainer),
             r => _bots = r.Bots,
             s =>
             {

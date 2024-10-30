@@ -10,6 +10,7 @@
 .checkin-map__body {
     width: 100%;
     height: 100%;
+    position: absolute;
 }
 .checkin-map__controls, .checkin-map__bg {
     position: absolute;

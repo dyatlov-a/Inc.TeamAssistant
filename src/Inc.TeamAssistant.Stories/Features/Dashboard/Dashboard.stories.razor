@@ -1,8 +1,30 @@
-@attribute [Stories("Features/Dashboard/Dashboard")]
+@attribute [Stories("Features/Dashboard/Widgets")]
 
 @inject IDateSelectorFactory DateSelectorFactory
 
 <Stories TComponent="Dashboard" Layout="typeof(DarkLayout)">
+    <Story Name="Without bots">
+        <Template>
+            <Dashboard
+                BotId="null"
+                TeamId="null"
+                State="LoadingState.Done()"
+                Widgets="Array.Empty<Type>()"
+                Load="() => Task.CompletedTask"
+                WidgetParametersFactory="CreateWidgetParameters">
+                <Toolbar>
+                    <DashboardTeamSelector
+                        BotId="null"
+                        TeamId="null"
+                        State="LoadingState.Done()"
+                        Bots="Array.Empty<BotDto>()"
+                        Retry="() => Task.CompletedTask"
+                        BotChanged="_ => { }"
+                        TeamChanged="_ => { }" />
+                </Toolbar>
+            </Dashboard>
+        </Template>
+    </Story>
     <Story Name="With all widgets">
         <Template>
             <Dashboard
@@ -20,12 +42,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-                    
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Done()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -47,12 +68,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Done()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -74,12 +94,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Done()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -101,12 +120,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Done()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -128,12 +146,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Done()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -155,12 +172,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Loading()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -182,12 +198,11 @@
                         Bots="_bots"
                         Retry="() => Task.CompletedTask"
                         BotChanged="_ => { }"
-                        TeamChanged="_ => { }" />
-
+                        TeamChanged="_ => { }"/>
                     <DashboardTeamConnector
                         Team="_team"
                         State="LoadingState.Error()"
-                        Retry="() => Task.CompletedTask" />
+                        Retry="() => Task.CompletedTask"/>
                 </Toolbar>
             </Dashboard>
         </Template>
@@ -264,7 +279,7 @@
     private readonly GetTeamConnectorResult _team = new(
         TeamName: "Team 1",
         LinkForConnect: "#",
-        Code: CodeForConnectFactory.Create());
+        Code: CodeForConnectFactory.CreateDark());
 
     private Dictionary<string, object?> CreateWidgetParameters(Type type)
     {

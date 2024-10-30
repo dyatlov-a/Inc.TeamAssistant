@@ -27,14 +27,14 @@
     Load="Load"
     WidgetParametersFactory="WidgetParametersFactory">
     <Settings>
-        <DashboardSettingsContainer BotId="BotId" Widgets="_widgets" Changed="Load" />
+        <DashboardSettingsContainer BotId="_botId" Widgets="_widgets" Changed="Load" />
     </Settings>
     <Toolbar>
-        <DashboardTeamSelectorContainer BotId="BotId" TeamId="TeamId" TeamContextChanged="ChangeTeamContext" />
+        <DashboardTeamSelectorContainer BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext" />
 
-        @if (TeamId.HasValue)
+        @if (_teamId.HasValue)
         {
-            <DashboardTeamConnectorContainer TeamId="TeamId.Value" />
+            <DashboardTeamConnectorContainer TeamId="_teamId.Value" />
         }
     </Toolbar>
 </Dashboard>
@@ -106,8 +106,8 @@
     {
         return new Dictionary<string, object?>
         {
-            ["BotId"] = BotId!.Value,
-            ["TeamId"] = TeamId
+            ["BotId"] = _botId!.Value,
+            ["TeamId"] = _teamId
         };
     }
     
