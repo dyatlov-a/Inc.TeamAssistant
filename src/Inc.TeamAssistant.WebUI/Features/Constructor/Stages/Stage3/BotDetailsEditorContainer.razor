@@ -1,0 +1,64 @@
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+
+<BotDetailsEditor
+    FormModel="_formModel"
+    StagesState="StagesState"
+    IsOpen="_isOpen"
+    State="_state"
+    Retry="Load"
+    OnValidSubmit="SubmitForm" />
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
+    private bool _isOpen;
+    private readonly BotDetailsFormModel _formModel = new();
+    private LoadingState _state = LoadingState.Done();
+
+    private async Task Load()
+    {
+        _isOpen = true;
+        
+        await RequestProcessor.Process(
+            async () =>
+            {
+                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
+                return botDetails;
+            },
+            nameof(BotDetailsEditor),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+        
+        StateHasChanged();
+    }
+    
+    public async Task SubmitForm()
+    {
+        await RequestProcessor.Process(
+            () => BotService.SetDetails(_formModel.ToCommand(StagesState.Token)),
+            () => { },
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

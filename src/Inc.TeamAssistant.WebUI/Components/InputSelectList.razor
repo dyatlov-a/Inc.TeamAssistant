@@ -1,0 +1,104 @@
+@typeparam TValue
+@typeparam TItem
+
+@inherits InputBase<TValue>
+
+<div>
+    @if (IsDisabled)
+    {
+        <InputSelect
+            id="@FieldId"
+            Value="_value"
+            ValueExpression="@(() => _value)"
+            class="input-select input-select_disabled"
+            disabled="disabled">
+            @if (HasEmptyValue)
+            {
+                <option value=""></option>
+            }
+            @foreach (var item in Items)
+            {
+                <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+            }
+        </InputSelect>
+    }
+    else
+    {
+        <InputSelect
+            id="@FieldId"
+            Value="_value"
+            ValueExpression="@(() => _value)"
+            ValueChanged="@((TValue? v) => SetCurrentValue(v))"
+            class="@($"input-select input-select_enabled {CssClass} {ParentCssClass}")">
+            @if (HasEmptyValue)
+            {
+                <option value=""></option>
+            }
+            @foreach (var item in Items)
+            {
+                <option value="@ValueSelector(item)">@TitleSelector(item)</option>
+            }
+        </InputSelect>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Field for the input element.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+
+    /// <summary>
+    /// Select list items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = default!;
+
+    /// <summary>
+    /// Title selector for the select list items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<TItem, string> TitleSelector { get; set; } = default!;
+
+    /// <summary>
+    /// Value selector for the select list items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<TItem, TValue> ValueSelector { get; set; } = default!;
+    
+    /// <summary>
+    /// Css class of the parent element.
+    /// </summary>
+    [Parameter]
+    public string ParentCssClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Is disabled state of the input.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    /// <summary>
+    /// Need additional empty value.
+    /// </summary>
+    [Parameter]
+    public bool HasEmptyValue { get; set; }
+
+    private TValue? _value = default!;
+
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue;
+    }
+
+    private void SetCurrentValue(TValue? value) => CurrentValue = value;
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out TValue result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

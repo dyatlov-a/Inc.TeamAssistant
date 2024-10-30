@@ -1,0 +1,51 @@
+@implements IAsyncDisposable
+
+@inject IRenderContext RenderContext
+@inject IJSRuntime JsRuntime
+
+<AcceptCookieDialog IsShow="_isShow" Accepted="Accept" />
+
+@code {
+    private IJSObjectReference? _cookieModule;
+    
+    private bool _isShow;
+    private readonly string _rightsCookieName = "rights";
+    private readonly string _rightsCookieValue = "accept";
+    private readonly int _rightsCookieLifetime = 365;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+        {
+            _cookieModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./Features/Layouts/AcceptCookieDialogContainer.razor.js");
+
+            var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
+            if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
+                _isShow = true;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task Accept()
+    {
+        if (_cookieModule is null)
+            return;
+        
+        await _cookieModule.InvokeVoidAsync(
+            "writeCookie",
+            _rightsCookieName,
+            _rightsCookieValue,
+            _rightsCookieLifetime);
+
+        _isShow = false;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_cookieModule is not null)
+            await _cookieModule.DisposeAsync();
+    }
+}

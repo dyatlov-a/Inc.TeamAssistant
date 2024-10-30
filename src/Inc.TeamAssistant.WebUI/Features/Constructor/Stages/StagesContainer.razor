@@ -1,0 +1,144 @@
+@page "/constructor/{BotId:guid}"
+@page "/en/constructor/{BotId:guid}"
+@page "/ru/constructor/{BotId:guid}"
+@page "/constructor/{SelectedStage}"
+@page "/en/constructor/{SelectedStage}"
+@page "/ru/constructor/{SelectedStage}"
+@page "/constructor/{BotId:guid}/{SelectedStage}"
+@page "/en/constructor/{BotId:guid}/{SelectedStage}"
+@page "/ru/constructor/{BotId:guid}/{SelectedStage}"
+
+@attribute [Authorize]
+
+@inject IRenderContext RenderContext
+@inject IBotService BotService
+@inject ICalendarService CalendarService
+@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<ConstructorResources> Localizer
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Constructor"
+    MetaOverrideTitle="@Localizer["Title"]" />
+
+<div class="constructor">
+    <Stages
+        CurrentStage="_currentStage"
+        StageWidgets="StageWidgets"
+        BotName="@BotName"
+        StageParametersFactory="StageParametersFactory"
+        MoveToNext="MoveToNext"
+        State="_state"
+        Retry="Load" />
+</div>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+
+    [Parameter]
+    public string SelectedStage { get; set; } = default!;
+    
+    private LoadingState _state = LoadingState.Loading();
+    private StagesState _stagesState = StagesState.Empty;
+
+    private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
+
+    private Stage _currentStage = Enum.GetValues<Stage>().First();
+    private IReadOnlyCollection<Type> StageWidgets => _currentStage switch
+    {
+        Stage.SelectFeatures => [typeof(SelectFeaturesContainer)],
+        Stage.SetSettings => [
+            typeof(SettingsContainer),
+            typeof(CalendarEditorContainer),
+            typeof(BotDetailsEditorContainer)
+        ],
+        Stage.Complete => [typeof(CompleteContainer)],
+        _ => [typeof(CheckBotContainer)]
+    };
+    
+    private string BotName => string.IsNullOrWhiteSpace(_stagesState.UserName)
+        ? string.Empty
+        : $"@{_stagesState.UserName}";
+    
+    private Func<Type, Dictionary<string, object>> StageParametersFactory => _ => new()
+    {
+        ["StagesState"] = _stagesState,
+        ["LinkFactory"] = (object)LinkFactory,
+        ["MoveToNext"] = (object)MoveToNext,
+        ["BotStorageKey"] = BotStorageKey,
+        ["EmitStateChanged"] = (object)StateHasChanged
+    };
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Enum.TryParse<Stage>(SelectedStage, ignoreCase: true, out var value))
+            _currentStage = value;
+        
+        if (RenderContext.IsBrowser)
+            await Load();
+    }
+    
+    private async Task Load()
+    {
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+        
+        await RequestProcessor.Process(
+            () =>
+            {
+                return appLocalStorage.GetValueOrDefault(BotStorageKey, async t =>
+                {
+                    var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
+                    var getFeaturesResult = await BotService.GetFeatures(t);
+                    var getPropertiesResult = await BotService.GetProperties(t);
+                    var getCalendarResult = await CalendarService.GetCalendarByOwner(t);
+
+                    return getBotResult is null
+                        ? StagesState.Create(getFeaturesResult, getPropertiesResult, getCalendarResult)
+                        : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
+                });
+            },
+            nameof(StagesContainer),
+            r => _stagesState = r,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
+    private async Task MoveToNext(Stage? stage)
+    {
+        if (stage.HasValue)
+        {
+            var routeSegment = CreateRouteSegment(stage.Value);
+            
+            _currentStage = stage.Value;
+            StateHasChanged();
+
+            await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+            return;
+        }
+        
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        
+        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"]));
+        
+        await NavRouter.MoveToRoute("constructor");
+    }
+
+    private NavRoute LinkFactory(Stage stage)
+    {
+        var routeSegment = CreateRouteSegment(stage);
+
+        return NavRouter.CreateRoute(routeSegment.ToLowerInvariant());
+    }
+
+    private string CreateRouteSegment(Stage stage)
+    {
+        return _stagesState.Id.HasValue
+            ? $"constructor/{_stagesState.Id.Value:N}/{stage}"
+            : $"constructor/{stage}";
+    }
+}

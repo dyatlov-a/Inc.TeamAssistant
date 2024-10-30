@@ -1,0 +1,27 @@
+@inject IStringLocalizer<LayoutResources> Localizer
+
+@if (IsShow)
+{
+    <div class="inline-dialog">
+        <div class="inline-dialog__content">
+            <p>@Localizer["AcceptCookieText"]</p>
+        </div>
+        <div class="inline-dialog__actions">
+            <Button OnClick="Accepted">@Localizer["AcceptCookieButton"]</Button>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Visualizes the dialog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsShow { get; set; }
+    
+    /// <summary>
+    /// Accepted event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback Accepted { get; set; }
+}

@@ -1,104 +1,105 @@
-@using Inc.TeamAssistant.Appraiser.Model.Queries.GetAssessmentHistory
-
-@inject IAppraiserService AppraiserService
-@inject ResourcesManager Resources
-@inject NavRouter NavRouter
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
+@inject IStringLocalizer<DashboardResources> Localizer
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget HasControls="true" Title="@Resources[Messages.Dashboard_AppraiserHistoryTitle]">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (HistoryItems.Any())
-                        {
-                            <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
-                                <TemplateColumn
-                                    Title="@Resources[Messages.Dashboard_AssessmentDate]"
-                                    Sortable="true"
-                                    SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
-                                    <a href="@CreateMoveToHistoryLink(context.AssessmentDate)" class="link link_light">
-                                        @context.AssessmentDate.ToString("dd-MM-yyyy")
-                                    </a>
-                                </TemplateColumn>
-                                <PropertyColumn
-                                    Title="@Resources[Messages.Dashboard_TotalStories]"
-                                    Property="@(t => t.StoriesCount)"
-                                    Sortable="true"/>
-                                <PropertyColumn
-                                    Title="@Resources[Messages.Dashboard_AssessmentSum]"
-                                    Property="@(t => t.AssessmentSum)"
-                                    Sortable="true"/>
-                            </QuickGrid>
-                            <Pagination State="_pagination"/>
-                        }
-                        else
-                        {
-                            <NoData IsDark="true"/>
-                        }
-                    </div>
-                    <div class="component-actions">
-                        <a href="@CreateAssessmentSessionLink()" class="button button_dark">
-                            @Resources[Messages.Dashboard_GoToCurrentSessionButtonText]
-                        </a>
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+    <DashboardWidget HasControls="true" Title="@Localizer["AppraiserHistoryTitle"]">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected"/>
+        <Loading State="State" Retry="Retry">
+            <div class="component-container">
+                @if (HistoryItems.Any())
+                {
+                    <QuickGrid Items="HistoryItems" class="quick-data-grid" Pagination="_pagination">
+                        <TemplateColumn
+                            Title="@Localizer["AssessmentDate"]"
+                            Sortable="true"
+                            SortBy="GridSort<AssessmentHistoryDto>.ByAscending(t => t.AssessmentDate)">
+                            <RouterLink Href="@CreateMoveToHistoryLink(context.AssessmentDate)">
+                                @context.AssessmentDate.ToString("dd-MM-yyyy")
+                            </RouterLink>
+                        </TemplateColumn>
+                        <PropertyColumn
+                            Title="@Localizer["TotalStories"]"
+                            Property="@(t => t.StoriesCount)"
+                            Sortable="true"/>
+                        <PropertyColumn
+                            Title="@Localizer["AssessmentSum"]"
+                            Property="@(t => t.AssessmentSum)"
+                            Sortable="true"/>
+                    </QuickGrid>
+                    <Pagination State="_pagination"/>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+            <div class="component-actions">
+                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="MovedToAssessmentSession">
+                    @Localizer["GoToCurrentSessionButtonText"]
+                </Button>
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private DateOnly? _date;
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
+    
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<AssessmentHistoryDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, NavRoute> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// On click event.
+    /// </summary>
+    [Parameter]
+    public EventCallback MovedToAssessmentSession { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+    
     private readonly PaginationState _pagination = new();
+    private IQueryable<AssessmentHistoryDto> HistoryItems => Items.AsQueryable();
     
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateMonths();
-    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
-    private IQueryable<AssessmentHistoryDto> HistoryItems => _items.AsQueryable();
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
-    
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-
-        await RequestProcessor.Process(
-            () => AppraiserService.GetAssessmentHistory(TeamId.Value, from: _date!.Value),
-            nameof(AppraiserHistoryWidget),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
-
-    private string CreateAssessmentSessionLink() => NavRouter.CreateRoute($"assessment-session/{TeamId:N}");
-
     private string CreateMoveToHistoryLink(DateOnly date)
-        => NavRouter.CreateRoute($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
-
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+        => LinkFactory($"assessment-history/{TeamId:N}/{date:yyyy-MM-dd}");
 }

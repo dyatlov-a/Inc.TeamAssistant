@@ -1,0 +1,61 @@
+@inject IAppraiserService AppraiserService
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+@inject IDateSelectorFactory DateSelectorFactory
+
+<AppraiserHistoryWidget
+    TeamId="TeamId"
+    Date="_date"
+    DateItems="DateItems"
+    State="_state"
+    Items="_items"
+    LinkFactory="NavRouter.CreateRoute"
+    MovedToAssessmentSession="MoveToAssessmentSession"
+    Retry="Load"
+    OnSelected="Changed" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    private DateOnly? _date;
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
+    
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _date ??= DateItems.First().Value;
+
+        await Load();
+    }
+    
+    private async Task Load()
+    {
+        if (!TeamId.HasValue)
+            return;
+
+        await RequestProcessor.Process(
+            () => AppraiserService.GetAssessmentHistory(TeamId.Value, from: _date!.Value),
+            nameof(AppraiserHistoryWidgetContainer),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
+    private Task MoveToAssessmentSession() => NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");
+
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        
+        await Load();
+    }
+}

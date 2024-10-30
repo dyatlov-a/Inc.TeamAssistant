@@ -1,0 +1,45 @@
+@inject IBotService BotService
+@inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<DashboardResources> Localizer
+@inject IServiceProvider ServiceProvider
+
+<DashboardSettings
+    BotId="BotId"
+    Widgets="Widgets"
+    State="_state"
+    OnValidSubmit="SubmitForm"
+    @ref="_settings" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback Changed { get; set; }
+    
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = default!;
+    
+    private DashboardSettings? _settings;
+    private LoadingState _state = LoadingState.Done();
+    
+    private async Task SubmitForm(UpdateWidgetsCommand command)
+    {
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        var notification = Notification.Info(Localizer["SettingsApplied"]);
+
+        await RequestProcessor.Process(
+            async () =>
+            {
+                await BotService.UpdateWidgets(command);
+
+                await Changed.InvokeAsync();
+            },
+            () =>
+            {
+                _settings?.Close();
+                notificationsService.Publish(notification);
+            },
+            s => _state = s);
+    }
+}

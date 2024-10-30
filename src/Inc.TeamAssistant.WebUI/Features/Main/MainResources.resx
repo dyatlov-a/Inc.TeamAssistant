@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="VideoNotSupported" xml:space="preserve">
+        <value>Your browser does not support HTML5 video.</value>
+    </data>
+    <data name="MainHeader" xml:space="preserve">
+        <value>Chatbots for optimization</value>
+    </data>
+    <data name="MainSubHeader" xml:space="preserve">
+        <value>processes in teams</value>
+    </data>
+    <data name="ToolAppraiser" xml:space="preserve">
+        <value>easy task estimation</value>
+    </data>
+    <data name="ToolReviewer" xml:space="preserve">
+        <value>fast code review</value>
+    </data>
+    <data name="ToolRandomCoffee" xml:space="preserve">
+        <value>networking</value>
+    </data>
+    <data name="ToolCheckIn" xml:space="preserve">
+        <value>team stats</value>
+    </data>
+    <data name="CreateBotLink" xml:space="preserve">
+        <value>Create your bot</value>
+    </data>
+</root>

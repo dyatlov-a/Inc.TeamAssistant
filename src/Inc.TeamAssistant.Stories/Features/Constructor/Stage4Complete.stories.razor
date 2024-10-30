@@ -1,0 +1,57 @@
+@attribute [Stories("Features/Constructor/Stage4Complete")]
+
+<Stories TComponent="Complete" Layout="typeof(DarkLayout)">
+    <Story Name="Done">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@BotName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@BotName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Loading()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Stages
+                CurrentStage="_currentStage"
+                StageWidgets="_stageWidgets"
+                StageParametersFactory="_stageParametersFactory"
+                BotName="@BotName"
+                MoveToNext="_ => Task.CompletedTask"
+                State="LoadingState.Error()"
+                Retry="() => Task.CompletedTask"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Stage _currentStage = Stage.Complete;
+    private static readonly string BotName = "inc_teamassistant_bot";
+    private readonly IReadOnlyCollection<Type> _stageWidgets = [typeof(Complete)];
+
+    private static readonly StagesState StagesState = StagesStateFactory.Create();
+    
+    private readonly Func<Type, Dictionary<string, object>> _stageParametersFactory = _ => new()
+    {
+        ["FormModel"] = new CompleteFormModel().Apply(StagesState),
+        ["StagesState"] = StagesState,
+        ["State"] = LoadingState.Done(),
+        ["MoveToNext"] = (Stage? _) => Task.CompletedTask,
+        ["Retry"] = () => Task.CompletedTask
+    };
+}

@@ -1,5 +1,5 @@
 .dashboard-settings {
-    margin: 10px 10px 0;
+    margin: 1rem 1rem 0;
     display: flex;
     justify-content: right;
 }
@@ -7,18 +7,20 @@
     margin: 10px;
 }
 .widget-settings__item {
-    background-color: #555;
+    background-color: var(--bg-secondary-color);
     padding: 5px;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
     transition: border 0.3s;
+    gap: 10px;
+    cursor: grab;
 }
 .widget-settings_no-drag .widget-settings__item {
-    border: 3px #555 solid;
+    border: 3px var(--bg-secondary-color) solid;
 }
 .widget-settings_on-drag .widget-settings__item {
-    border: 3px #aaa dashed;
+    border: 3px var(--control-disabled-color) dashed;
 }
 .widget-settings__actions {
     display: flex;
@@ -27,9 +29,6 @@
 }
 .widget-settings__drag {
     display: flex;
-}
-.widget-settings__button, .widget-settings__label, .widget-settings__drag, ::deep .widget-settings__checkbox {
-    margin-right: 10px;
 }
 @media (max-width: 767.98px) {
     .dashboard-settings {

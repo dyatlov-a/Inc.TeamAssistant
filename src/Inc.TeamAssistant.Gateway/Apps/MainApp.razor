@@ -1,11 +1,6 @@
-@using Inc.TeamAssistant.Gateway.Configs
-@using Inc.TeamAssistant.Primitives.Languages
-@using Inc.TeamAssistant.WebUI.Contracts
-@using Microsoft.AspNetCore.Components.Web
-@using Inc.TeamAssistant.WebUI.Features
-
 @inject AnalyticsOptions AnalyticsOptions
 @inject IRenderContext RenderContext
+@inject IHostEnvironment HostEnvironment
 
 <!DOCTYPE html>
 <html lang="@_lang">
@@ -60,7 +55,7 @@
     
     <Routes @rendermode="_renderMode"/>
     
-    <script src="_framework/blazor.web.js?v=@_appVersion"></script>
+    <script src="_framework/blazor.web.js?v=@_appVersion" autostart="false"></script>
     <script>
         window.browserJsFunctions = {
             getTimezone: () => {
@@ -68,8 +63,17 @@
             },
             changeUrl: url => {
                 history.pushState(null, '', url);
+            },
+            scrollToTop: () => {
+                document.documentElement.scrollTop = 0;
             }
         };
+
+        Blazor.start({
+            webAssembly: {
+                environment: "@HostEnvironment.EnvironmentName"
+            }
+        });
     </script>
 </body>
 </html>

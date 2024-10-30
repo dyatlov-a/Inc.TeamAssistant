@@ -1,201 +1,144 @@
-@using Inc.TeamAssistant.Connector.Model.Commands.DisableIntegration
-
-@inject IIntegrationService IntegrationService
-@inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
-@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<DashboardResources> Localizer
 
 <ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
-    <Content>
-        <p>@Resources[Messages.Dashboard_AppraiserIntegrationConfirmText]</p>
-    </Content>
+    <p>@Localizer["AppraiserIntegrationConfirmText"]</p>
 </ConfirmDialog>
 
 @if (TeamId.HasValue)
 {
-    <DashboardWidget Title="@Resources[Messages.Dashboard_AppraiserIntegrationTitle]">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        <EditForm id="@AnalyticEvents.AppraiserIntegrationEnabled" EditContext="_editContext" OnSubmit="SubmitForm">
-                            <FluentValidationValidator @ref="_fluentValidationValidator"/>
-                            <div class="appraiser-integration__body">
-                                <FormFieldSet
-                                    FieldId="access-token"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationAccessTokenLabel]">
-                                    <Content>
-                                        <InputText
-                                            @bind-Value="_formModel.AccessToken"
-                                            class="form-control form-control_disabled"
-                                            id="access-token"
-                                            disabled="disabled"/>
-                                    </Content>
-                                </FormFieldSet>
-                                <FormFieldSet
-                                    FieldId="project-key"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationProjectKeyLabel]">
-                                    <Content>
-                                        @if (_formModel.HasManagerAccess)
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_enabled"
-                                                id="project-key"/>
-                                        }
-                                        else
-                                        {
-                                            <InputText
-                                                @bind-Value="_formModel.ProjectKey"
-                                                class="form-control form-control_disabled"
-                                                id="project-key"
-                                                disabled="disabled"/>
-                                        }
-                                        <ValidationMessage For="@(() => _formModel.ProjectKey)"/>
-                                    </Content>
-                                </FormFieldSet>
-                                <FormFieldSet
-                                    FieldId="scrum-master"
-                                    Label="@Resources[Messages.Dashboard_AppraiserIntegrationScrumMasterLabel]">
-                                    <Content>
-                                        <InputSelectList
-                                            FieldId="scrum-master"
-                                            Value="_formModel.ScrumMasterId"
-                                            ValueExpression="@(() => _formModel.ScrumMasterId)"
-                                            ValueChanged="@((long v) => _formModel.ScrumMasterId = v)"
-                                            Items="_formModel.Teammates"
-                                            TitleSelector="i => i.DisplayName"
-                                            ValueSelector="i => i.Id"
-                                            IsDisabled="!_formModel.HasManagerAccess" />
-                                        <ValidationMessage For="@(() => _formModel.ScrumMasterId)"/>
-                                    </Content>
-                                </FormFieldSet>
-                            </div>
-                            @if (_formModel.HasManagerAccess)
-                            {
-                                <div class="component-actions">
-                                    <button
-                                        type="submit"
-                                        class="button button_dark appraiser-integration__button">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationSaveButton]
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="button button_dark appraiser-integration__button"
-                                        @onclick="BeginDisable">
-                                        @Resources[Messages.Dashboard_AppraiserIntegrationDisableButton]
-                                    </button>
-                                </div>
-                            }
-                            @if (!_isEnabled)
-                            {
-                                <div class="appraiser-integration__bg"></div>
-                                <div class="appraiser-integration__controls">
-                                    <div class="appraiser-integration__controls-body">
-                                        <button type="button" class="button button_dark" @onclick="Enable">
-                                            @Resources[Messages.Dashboard_AppraiserIntegrationEnableButton]
-                                        </button>
-                                    </div>
-                                </div>
-                            }
-                        </EditForm>
+    <DashboardWidget Title="@Localizer["AppraiserIntegrationTitle"]">
+        <Loading State="State" Retry="Retry">
+            <div class="component-container">
+                <EditForm id="@AnalyticEvents.AppraiserIntegrationEnabled" EditContext="_editContext" OnSubmit="SubmitForm">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+                    <div class="appraiser-integration__body">
+                        <FormFieldSet
+                            FieldId="access-token"
+                            Label="@Localizer["AppraiserIntegrationAccessTokenLabel"]">
+                            <InputSingleLine
+                                FieldId="access-token"
+                                @bind-Value="FormModel.AccessToken"
+                                IsDisabled="true"/>
+                        </FormFieldSet>
+                        <FormFieldSet
+                            FieldId="project-key"
+                            Label="@Localizer["AppraiserIntegrationProjectKeyLabel"]">
+                            <InputSingleLine
+                                FieldId="project-key"
+                                @bind-Value="FormModel.ProjectKey"
+                                IsDisabled="!FormModel.HasManagerAccess"/>
+                            <ValidationMessage For="@(() => FormModel.ProjectKey)"/>
+                        </FormFieldSet>
+                        <FormFieldSet
+                            FieldId="scrum-master"
+                            Label="@Localizer["AppraiserIntegrationScrumMasterLabel"]">
+                            <InputSelectList
+                                FieldId="scrum-master"
+                                Value="FormModel.ScrumMasterId"
+                                ValueExpression="@(() => FormModel.ScrumMasterId)"
+                                ValueChanged="@((long v) => FormModel.ScrumMasterId = v)"
+                                Items="FormModel.Teammates"
+                                TitleSelector="i => i.DisplayName"
+                                ValueSelector="i => i.Id"
+                                IsDisabled="!FormModel.HasManagerAccess" />
+                            <ValidationMessage For="@(() => FormModel.ScrumMasterId)"/>
+                        </FormFieldSet>
                     </div>
-                </Content>
-            </Loading>
-        </Content>
+                    @if (FormModel.HasManagerAccess)
+                    {
+                        <div class="component-actions">
+                            <Button ComponentStyle="ComponentStyle.Secondary" ButtonType="ButtonType.Submit">
+                                @Localizer["AppraiserIntegrationSaveButton"]
+                            </Button>
+                            <Button ComponentStyle="ComponentStyle.Secondary" OnClick="BeginDisable">
+                                @Localizer["AppraiserIntegrationDisableButton"]
+                            </Button>
+                        </div>
+                    }
+                    @if (!FormModel.IsEnabled)
+                    {
+                        <div class="appraiser-integration__bg"></div>
+                        <div class="appraiser-integration__controls">
+                            <div class="appraiser-integration__controls-body">
+                                <Button ComponentStyle="ComponentStyle.Secondary" OnClick="() => FormModel.Enable()">
+                                    @Localizer["AppraiserIntegrationEnableButton"]
+                                </Button>
+                            </div>
+                        </div>
+                    }
+                </EditForm>
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private bool _isEnabled;
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AppraiserIntegrationFromModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// On disabled event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnDisabled { get; set; }
+    
+    /// <summary>
+    /// On valid submit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<SetIntegrationPropertiesCommand> OnValidSubmit { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
     private ConfirmDialog? _confirmDialog;
-    private readonly AppraiserIntegrationFromModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
-    private LoadingState _state = LoadingState.Done();
 
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel);
-    }
-
-    protected override Task OnParametersSetAsync() => Load();
-
-    private Task Load() => Load(notification: null);
-    
-    private async Task Load(Notification? notification)
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        var notificationsService = ServiceProvider.GetService<INotificationsService>();
-        
-        await RequestProcessor.Process(
-            () => IntegrationService.GetTeamProperties(TeamId.Value),
-            nameof(AppraiserIntegrationWidget),
-            r =>
-            {
-                _formModel.Apply(r);
-                _isEnabled = _formModel.IsEnabled;
-                
-                if (notificationsService is not null && notification is not null)
-                    notificationsService.Publish(notification);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        _editContext = EditContextFactory.Create(FormModel);
     }
 
     private void BeginDisable()
     {
-        if (_formModel.IsEnabled)
+        if (FormModel.IsEnabled)
             _confirmDialog?.Open();
-        else
-            _isEnabled = false;
     }
-
-    private void Enable() => _isEnabled = true;
 
     private async Task Disable()
     {
         if (!TeamId.HasValue)
             return;
-        
-        await RequestProcessor.Process(
-            () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId.Value)),
-            () =>
-            {
-                _formModel.Clear();
-                _isEnabled = false;
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+
+        await OnDisabled.InvokeAsync();
     }
     
     private async Task SubmitForm()
     {
         if (!TeamId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-        
-        await RequestProcessor.Process(
-            async () =>
-            {
-                await IntegrationService.SetTeamProperties(_formModel.ToCommand(TeamId.Value));
 
-                await Load(Notification.Info(Resources[Messages.Dashboard_AppraiserIntegrationEnableSuccess]));
-            },
-            () => {},
-            _ => StateHasChanged());
+        var command = FormModel.ToCommand(TeamId.Value);
+        
+        await OnValidSubmit.InvokeAsync(command);
     }
 }

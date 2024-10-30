@@ -1,37 +1,22 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <FormFieldSet
     FieldId="@BotNameId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotName], Item.LanguageId)">
-    <Content>
-            <InputText
-                @bind-Value="Item.Name"
-                class="form-control form-control_enabled"
-                id="@BotNameId" />
-        <ValidationMessage For="@(() => Item.Name)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotName"], Item.LanguageId)">
+    <InputSingleLine FieldId="@BotNameId" @bind-Value="Item.Name" />
+    <ValidationMessage For="@(() => Item.Name)"/>
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotShortDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotShortDescription], Item.LanguageId)">
-    <Content>
-            <InputText
-                @bind-Value="Item.ShortDescription"
-                class="form-control form-control_enabled"
-                id="@BotShortDescriptionId" />
-        <ValidationMessage For="@(() => Item.ShortDescription)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotShortDescription"], Item.LanguageId)">
+    <InputSingleLine FieldId="@BotShortDescriptionId" @bind-Value="Item.ShortDescription" />
+    <ValidationMessage For="@(() => Item.ShortDescription)"/>
 </FormFieldSet>
 <FormFieldSet
     FieldId="@BotDescriptionId"
-    Label="@MessageWithLanguage(Resources[Messages.Constructor_BotDescription], Item.LanguageId)">
-    <Content>
-        <InputTextArea
-            @bind-Value="Item.Description"
-            class="form-control form-control_enabled form-control_textarea"
-            id="@BotDescriptionId" />
-        <ValidationMessage For="@(() => Item.Description)"/>
-    </Content>
+    Label="@MessageWithLanguage(Localizer["BotDescription"], Item.LanguageId)">
+    <InputMultiLines FieldId="@BotDescriptionId" @bind-Value="Item.Description" />
+    <ValidationMessage For="@(() => Item.Description)"/>
 </FormFieldSet>
 
 @code {

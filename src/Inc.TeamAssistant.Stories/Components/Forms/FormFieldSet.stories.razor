@@ -1,0 +1,11 @@
+@attribute [Stories("Components/Forms/FormFieldSet")]
+
+<Stories TComponent="FormFieldSet" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <FormFieldSet FieldId="form-field-set" Label="FormFieldSet" @attributes="context.Args">
+                Html content
+            </FormFieldSet>
+        </Template>
+    </Story>
+</Stories>

@@ -1,0 +1,34 @@
+@attribute [Stories("Features/Auth/Login")]
+
+<Stories TComponent="Login" Layout="typeof(StubLayout)">
+    <Story Name="Done">
+        <Template>
+            <Login
+                State="LoadingState.Done()"
+                BotUserName="string.Empty"
+                HasSuperUser="true"
+                Retry="() => Task.CompletedTask"
+                LoginAsSuperUser="() => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <Login
+                State="LoadingState.Loading()"
+                BotUserName="string.Empty"
+                HasSuperUser="true"
+                Retry="() => Task.CompletedTask"
+                LoginAsSuperUser="() => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <Login
+                State="LoadingState.Error()"
+                BotUserName="string.Empty"
+                HasSuperUser="true"
+                Retry="() => Task.CompletedTask"
+                LoginAsSuperUser="() => Task.CompletedTask" />
+        </Template>
+    </Story>
+</Stories>

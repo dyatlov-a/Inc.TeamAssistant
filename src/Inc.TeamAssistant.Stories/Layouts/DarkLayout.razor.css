@@ -1,0 +1,4 @@
+.dark-layout {
+    background-color: var(--bg-primary-color);
+    overflow: hidden;
+}

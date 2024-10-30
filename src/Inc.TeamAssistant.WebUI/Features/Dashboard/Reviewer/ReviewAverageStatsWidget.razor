@@ -1,102 +1,93 @@
-@using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam
-
-@inject IReviewService ReviewService
-@inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
+@inject IStringLocalizer<DashboardResources> Localizer
 
 @if (TeamId.HasValue)
 {
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Resources[Messages.Dashboard_ReviewAverageStatsWidgetTitle]">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed"/>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (_items.Any())
-                        {
-                            <ApexChart
-                                TItem="ReviewAverageStatsDto"
-                                Title="@Resources[Messages.Dashboard_ReviewAverageStatsTitle]"
-                                Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
-                                FormatYAxisLabel="@(y => y.ToString("N1"))">
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageFirstTouch]"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageReview]"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
-                                <ApexPointSeries
-                                    TItem="ReviewAverageStatsDto"
-                                    Items="_items"
-                                    SeriesType="@SeriesType.Area"
-                                    Name="@Resources[Messages.Dashboard_ReviewAverageCorrection]"
-                                    XValue="@(e => e.Created)"
-                                    YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
-                            </ApexChart>
-                        }
-                        else
-                        {
-                            <NoData IsDark="true"/>
-                        }
-                    </div>
-                </Content>
-            </Loading>
-        </Content>
+        Title="@Localizer["ReviewAverageStatsWidgetTitle"]">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected"/>
+        <Loading State="State" Retry="Retry">
+            <div class="component-container">
+                @if (Items.Any())
+                {
+                    <ApexChart
+                        TItem="ReviewAverageStatsDto"
+                        Title="@Localizer["ReviewAverageStatsTitle"]"
+                        Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
+                        FormatYAxisLabel="@(y => y.ToString("N1"))">
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="Items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageFirstTouch"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.FirstTouch.TotalMinutes)"/>
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="Items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageReview"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.Review.TotalMinutes)"/>
+                        <ApexPointSeries
+                            TItem="ReviewAverageStatsDto"
+                            Items="Items"
+                            SeriesType="@SeriesType.Area"
+                            Name="@Localizer["ReviewAverageCorrection"]"
+                            XValue="@(e => e.Created)"
+                            YValue="@(e => (decimal)e.Correction.TotalMinutes)"/>
+                    </ApexChart>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid? BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private DateOnly? _date;
-
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
-    private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
     
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        await RequestProcessor.Process(
-            () => ReviewService.GetAverage(TeamId.Value, _date!.Value),
-            nameof(ReviewAverageStatsWidget),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
 
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ReviewAverageStatsDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
 }

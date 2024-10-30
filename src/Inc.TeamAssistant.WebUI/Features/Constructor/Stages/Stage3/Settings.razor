@@ -1,0 +1,111 @@
+@inject IStringLocalizer<ConstructorResources> Localizer
+
+<EditForm id="@AnalyticEvents.SettingsSpecified" EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <Panel Header="@Localizer["Configuration"]" IsOpen="true">
+        <Actions>
+            <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
+        </Actions>
+        <Content>
+            @foreach (var feature in StagesState.SelectedFeatures)
+            {
+                if (!FormModel.AvailableProperties.TryGetValue(feature.Name, out var settingSections))
+                    continue;
+
+                foreach (var settingSection in settingSections)
+                {
+                    <FormSection
+                        Title="@Localizer[settingSection.HeaderMessageId]"
+                        HelpText="@Localizer[settingSection.HelpMessageId]">
+                        @foreach (var settingItem in settingSection.SettingItems)
+                        {
+                            if (FormModel.Properties.TryGetValue(settingItem.PropertyName, out var value))
+                            {
+                                <FormFieldSet
+                                    FieldId="@settingItem.PropertyName"
+                                    Label="@Localizer[settingItem.LabelMessageId]">
+                                    <InputSelectList
+                                        FieldId="@settingItem.PropertyName"
+                                        Value="value"
+                                        ValueExpression="@(() => value)"
+                                        ValueChanged="@((string v) => FormModel.ChangeProperty(settingItem.PropertyName, v))"
+                                        Items="settingItem.Values"
+                                        TitleSelector="i => Localizer[i.MessageId]"
+                                        ValueSelector="i => i.Value" />
+                                    <ValidationMessage For="@(() => value)"/>
+                                </FormFieldSet>
+                            }
+                        }
+                    </FormSection>
+                }
+            }
+            <FormSection
+                Title="@Localizer["SupportedLanguages"]"
+                HelpText="@Localizer["SupportedLanguagesHelp"]">
+                <FormFieldSet FieldId="supported-languages" Label="@Localizer["Languages"]">
+                    <InputMultiSelectList
+                        FieldId="supported-languages"
+                        Value="FormModel.SupportedLanguages"
+                        ValueExpression="() => FormModel.SupportedLanguages"
+                        ValueChanged="(IEnumerable<string> v) => SetLanguages(v)"
+                        Items="LanguageSettings.LanguageIds"
+                        TitleSelector="i => i.Value"
+                        ValueSelector="i => i.Value" />
+                    <ValidationMessage For="@(() => FormModel.SupportedLanguages)"/>
+                </FormFieldSet>
+            </FormSection>
+        </Content>
+    </Panel>
+    <ValidationMessage For="@(() => FormModel.CalendarId)"/>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public SettingsFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// State of the stages.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+    
+    /// <summary>
+    /// EmitStateChanged action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(FormModel);
+    }
+
+    private void SetLanguages(IEnumerable<string> value)
+    {
+        FormModel.SetLanguages(value);
+        
+        StagesState.Apply(FormModel);
+        
+        EmitStateChanged();
+    }
+
+    private async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+
+        await OnValidSubmit.InvokeAsync();
+    }
+}

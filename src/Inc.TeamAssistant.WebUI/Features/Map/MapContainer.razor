@@ -1,0 +1,40 @@
+@page "/map/{id:guid}"
+@page "/en/map/{id:guid}"
+@page "/ru/map/{id:guid}"
+
+@inject ICheckInService CheckInService
+
+<MetaDataModule WebsiteSection="WebsiteSection.Map" />
+
+@if (!DisableLayout)
+{
+    <MainNavbarContainer />
+}
+
+@if (_locations.Any())
+{
+    <Map Locations="_locations" DisableLayout="DisableLayout"></Map>
+}
+
+@if (!DisableLayout)
+{
+    <AcceptCookieDialogContainer />
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    
+    [Parameter, SupplyParameterFromQuery]
+    public bool DisableLayout { get; set; }
+
+    private IReadOnlyDictionary<string, IReadOnlyCollection<LocationDto>> _locations
+        = new Dictionary<string, IReadOnlyCollection<LocationDto>>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var getLocations = await CheckInService.GetLocations(Id);
+            
+        _locations = getLocations.Locations;
+    }
+}

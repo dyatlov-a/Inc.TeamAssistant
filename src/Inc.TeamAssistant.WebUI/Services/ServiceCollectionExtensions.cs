@@ -1,10 +1,15 @@
 using Blazored.LocalStorage;
 using FluentValidation;
+using Inc.TeamAssistant.WebUI.Components;
+using Inc.TeamAssistant.WebUI.Components.Notifications;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Components;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
-using Inc.TeamAssistant.WebUI.Features.Notifications;
+using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
+using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
+using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Inc.TeamAssistant.WebUI.Services.Clients;
@@ -14,7 +19,7 @@ namespace Inc.TeamAssistant.WebUI.Services;
 
 public static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddClientServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -32,29 +37,39 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
-            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddSingleton<IMessageProvider, MessageProviderClient>()
+            .AddScoped<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
             .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
 
         return services;
     }
 
-    public static IServiceCollection AddIsomorphic(this IServiceCollection services)
+    public static IServiceCollection AddIsomorphicServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddOptions()
             .AddAuthorizationCore()
+            .AddLocalization()
             .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
-            .AddScoped<ResourcesManager>()
             .AddScoped<FeaturesFactory>()
-            .AddScoped<DateSelectorFactory>()
+            .AddScoped<IDateSelectorFactory, DateSelectorFactory>()
+            .AddScoped<MainFooterLinksFactory>()
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()
-            .AddScoped(typeof(DragAndDropService<>));
+            .AddScoped(typeof(DragAndDropService<>))
+            
+            .AddScoped<IValidator<CheckBotFormModel>, CheckBotFormModelValidator>()
+            .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()
+            .AddScoped<IValidator<BotDetailsFormModel>, BotDetailsFormModelValidator>()
+            .AddScoped<IValidator<BotDetailsItemFormModel>, BotDetailsItemFormModelValidator>()
+            .AddScoped<IValidator<CalendarFormModel>, CalendarFromModelValidator>()
+            .AddScoped<IValidator<SettingsFormModel>, SettingsFormModelValidator>()
+            .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
+            .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
+            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>();
 
         return services;
     }

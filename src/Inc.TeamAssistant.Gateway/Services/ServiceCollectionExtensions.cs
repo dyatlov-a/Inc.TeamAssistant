@@ -6,6 +6,8 @@ using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Inc.TeamAssistant.Gateway.Services;
 
@@ -22,6 +24,9 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(authOptions);
         ArgumentNullException.ThrowIfNull(openGraphOptions);
         ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);
+        
+        services
+            .TryAddScoped<IWebAssemblyHostEnvironment, ServerHostEnvironment>();
 
         services
             .AddSingleton(authOptions)

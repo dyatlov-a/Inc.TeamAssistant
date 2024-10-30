@@ -1,0 +1,71 @@
+@attribute [Stories("Features/Dashboard/Settings")]
+
+<Stories TComponent="DashboardSettings" Layout="typeof(StubLayout)">
+    <Story Name="With all widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateAllWidgets()"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With Reviewer widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateReviewerWidgets()"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With Appraiser widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateAppraiserWidgets()"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With RandomCoffee widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateRandomCoffeeWidgets()"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="With CheckIn widgets">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateCheckInWidgets()"
+                State="LoadingState.Done()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateAllWidgets()"
+                State="LoadingState.Loading()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <DashboardSettings
+                BotId="_botId"
+                Widgets="WidgetsFactory.CreateAllWidgets()"
+                State="LoadingState.Error()"
+                OnValidSubmit="_ => Task.CompletedTask" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Guid _botId = Guid.NewGuid();
+}

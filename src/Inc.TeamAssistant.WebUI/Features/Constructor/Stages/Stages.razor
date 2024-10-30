@@ -1,0 +1,62 @@
+@inject IRenderContext RenderContext
+@inject IStringLocalizer<ConstructorResources> Localizer
+
+<div class="constructor__container">
+    <NavigationStages Current="CurrentStage" MoveToNext="MoveToNext" />
+    <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
+    @if (RenderContext.IsBrowser)
+    {
+        <Loading State="State" Retry="Retry">
+            @foreach (var widget in StageWidgets)
+            {
+                <div class="constructor__widget">
+                    <DynamicComponent Type="widget" Parameters="StageParametersFactory(widget)"/>
+                </div>
+            }
+        </Loading>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Current stage.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Stage CurrentStage { get; set; }
+    
+    /// <summary>
+    /// Widgets for the stage.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<Type> StageWidgets { get; set; } = default!;
+    
+    /// <summary>
+    /// ParametersFactory for widget by type.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Type, Dictionary<string, object>> StageParametersFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// Bot name.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string BotName { get; set; } = default!;
+    
+    /// <summary>
+    /// Move to the next stage action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+    
+    /// <summary>
+    /// Loading state of the component.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = LoadingState.Done();
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+}

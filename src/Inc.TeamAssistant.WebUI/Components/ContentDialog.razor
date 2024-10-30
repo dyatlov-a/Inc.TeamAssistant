@@ -1,0 +1,62 @@
+@inject IStringLocalizer<ComponentResources> Localizer
+
+@if (_isOpen)
+{
+    <div class="content-dialog-bg"></div>
+    <div class="content-dialog">
+        <div class="content-dialog__content @CssClass">
+            <Panel Header="@Title" IsOpen="true">
+                <Content>
+                    @ChildContent
+                </Content>
+                <Actions>
+                    <Button OnClick="Close">@Localizer["Close"]</Button>
+                </Actions>
+            </Panel>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Title of the dialog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    /// <summary>
+    /// HTML content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// Is grand window.
+    /// </summary>
+    [Parameter]
+    public bool IsGrand { get; set; }
+
+    /// <summary>
+    /// Open action.
+    /// </summary>
+    public void Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Close action.
+    /// </summary>
+    public void Close()
+    {
+        _isOpen = false;
+        
+        StateHasChanged();
+    }
+    
+    private bool _isOpen;
+
+    private string CssClass => IsGrand ? "content-dialog__content_grand" : "content-dialog__content_small";
+}

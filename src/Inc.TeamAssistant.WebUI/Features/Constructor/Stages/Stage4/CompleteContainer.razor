@@ -1,0 +1,54 @@
+@inject IBotService BotService
+@inject IServiceProvider ServiceProvider
+@inject RequestProcessor RequestProcessor
+
+<Complete
+    FormModel="_formModel"
+    StagesState="StagesState"
+    State="_state"
+    MoveToNext="MoveToNext"
+    Retry="SubmitForm"
+    OnValidSubmit="SubmitForm" />
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
+    private readonly CompleteFormModel _formModel = new();
+    private LoadingState _state = LoadingState.Done();
+    
+    protected override void OnParametersSet()
+    {
+        _formModel.Apply(StagesState);
+    }
+    
+    private async Task SubmitForm()
+    {
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+
+        await RequestProcessor.Process(
+            async () =>
+            {
+                if (StagesState.Id.HasValue)
+                    await BotService.Update(_formModel.ToUpdateBotCommand(StagesState.Id.Value));
+                else
+                    await BotService.Create(_formModel.ToCreateBotCommand());
+
+                await appLocalStorage.Detach<StagesState>(BotStorageKey);
+            },
+            () => MoveToNext(null),
+            s => _state = s);
+    }
+}

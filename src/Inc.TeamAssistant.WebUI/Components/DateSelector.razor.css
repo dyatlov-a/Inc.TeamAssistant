@@ -1,0 +1,15 @@
+.date-selector {
+    padding: 0 5px;
+}
+.date-selector__item {
+    display: inline-block;
+    background-color: var(--bg-secondary-color);
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease 0s;
+}
+.date-selector__item:hover, .date-selector__item_selected {
+    background-color: var(--block-secondary-color);
+}

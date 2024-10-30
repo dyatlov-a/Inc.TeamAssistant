@@ -1,54 +1,59 @@
-@implements IDisposable
-
-@inject IRenderContext RenderContext
-@inject ResourcesManager Resources
-@inject NavRouter NavRouter
+@inject IStringLocalizer<LayoutResources> Localizer
 
 <div class="navbar">
     <div class="navbar-container">
-        <AuthorizeView>
-            <Authorized>
-                @{ var person = context.User.ToPerson(); }
-                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
-                <CultureSelector/>
-                <div class="navbar__divider"></div>
-                <span class="navbar__item navbar__item_avatar">
-                    <img src="/photos/@person.Id" alt="user avatar" class="user-avatar"/>
-                    @person.Name
-                    <br/>
-                    @person.Username
-                </span>
-                <a href="@LogoutUrl" class="link link_light navbar__item">
-                    @Resources[Messages.Navigation_Logout]
-                </a>
-            </Authorized>
-            <NotAuthorized>
-                <a href="@MainUrl" class="link navbar__item"><HomeIcon Size="40px" /></a>
-                <CultureSelector/>
-                <div class="navbar__divider"></div>
-                @if (!NavRouter.CurrentUrl.Contains("/login"))
-                {
-                    <a
-                        href="@NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}")"
-                        class="link link_light navbar__item">
-                        @Resources[Messages.Navigation_Login]
-                    </a>
-                }
-            </NotAuthorized>
-        </AuthorizeView>
+        <div class="navbar__item navbar__item_logo">
+            <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
+        </div>
+        @foreach (var language in Languages)
+        {
+            <div class="navbar__item">
+                <RouterLink OnClick="() => Moved.InvokeAsync(language.Url)">@language.Title</RouterLink>
+            </div>
+        }
+        <div class="navbar__divider"></div>
+        @if (CurrentPerson is not null)
+        {
+            <span class="navbar__item navbar__item_avatar">
+                <img src="@CurrentPerson.AvatarUrl" alt="user avatar" class="user-avatar"/>
+                @CurrentPerson.Name
+                <br/>
+                @CurrentPerson.Username
+            </span>
+            <div class="navbar__item">
+                <RouterLink Href="@LogoutUrl">@Localizer["Logout"]</RouterLink>
+            </div>
+        }
+        else if (HasLogin)
+        {
+            <div class="navbar__item">
+                <RouterLink Href="@LoginUrl">
+                    @Localizer["Login"]
+                </RouterLink>
+            </div>
+        }
     </div>
 </div>
 
 @code {
-    private IDisposable? _routerScope;
+    [Parameter, EditorRequired]
+    public bool HasLogin { get; set; }
     
-    private string MainUrl => NavRouter.CreateRoute(null);
-    private string LogoutUrl => $"accounts/logout?returnUrl={NavRouter.CurrentUrl}";
-
-    protected override void OnInitialized()
-    {
-        _routerScope = NavRouter.OnRouteChanged(StateHasChanged);
-    }
-
-    public void Dispose() => _routerScope?.Dispose();
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<LinkModel> Languages { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string MainUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string LoginUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public string LogoutUrl { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public EventCallback<string> Moved { get; set; }
+    
+    [Parameter]
+    public Person? CurrentPerson { get; set; }
 }

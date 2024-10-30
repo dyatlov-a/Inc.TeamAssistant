@@ -1,0 +1,17 @@
+::deep .input-line {
+    font-size: 1rem;
+    width: 100%;
+    padding: .625rem .3125rem;
+    border: 3px solid var(--bg-secondary-color);
+    border-radius: 0;
+    color: var(--text-secondary-color);
+    background-color: var(--text-primary-color);
+    transition: border 0.3s;
+}
+::deep .input-line:focus, ::deep .input-line_enabled:hover {
+    border: 3px solid var(--block-secondary-color);
+}
+::deep .input-line_disabled {
+    background-color: var(--control-disabled-color);
+    cursor: default;
+}

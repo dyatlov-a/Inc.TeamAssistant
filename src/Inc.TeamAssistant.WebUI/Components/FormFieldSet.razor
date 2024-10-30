@@ -1,0 +1,24 @@
+<div class="form-section__field-set">
+    <label for="@FieldId" class="form-section__label">@Label</label>
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// Field ID for the label.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = default!;
+    
+    /// <summary>
+    /// Label for the field.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = default!;
+    
+    /// <summary>
+    /// HTML content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+}

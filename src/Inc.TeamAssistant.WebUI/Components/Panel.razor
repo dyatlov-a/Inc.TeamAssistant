@@ -1,0 +1,62 @@
+@inject IStringLocalizer<ComponentResources> Localizer
+
+<div class="panel">
+    <div class="panel__header">
+        <h2 class="panel__header-text">@Header</h2>
+        <div class="panel__actions">
+            @if (IsOpen)
+            {
+                @Actions
+            }
+            else
+            {
+                <Button OnClick="Open">@Localizer["Open"]</Button>
+            }
+        </div>
+    </div>
+    @if (IsOpen)
+    {
+        <div class="panel__body">
+            @Content
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Title of the panel.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Header { get; set; } = default!;
+    
+    /// <summary>
+    /// Actions to be displayed in the header.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Actions { get; set; } = default!;
+    
+    /// <summary>
+    /// HTML content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    /// <summary>
+    /// Is open state.
+    /// </summary>
+    [Parameter]
+    public bool IsOpen { get; set; }
+    
+    /// <summary>
+    /// Opened event.
+    /// </summary>
+    [Parameter]
+    public EventCallback Opened { get; set; }
+
+    private async Task Open()
+    {
+        IsOpen = true;
+        StateHasChanged();
+        await Opened.InvokeAsync();
+    }
+}

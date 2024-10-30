@@ -155,13 +155,13 @@ public sealed class StagesState
         return this;
     }
 
-    public StagesState Apply(SetSettingsFormModel formModel)
+    public StagesState Apply(SettingsFormModel formModel)
     {
         ArgumentNullException.ThrowIfNull(formModel);
         
         _properties.Clear();
         foreach (var property in formModel.Properties)
-            _properties.Add(property.Title, property.Value);
+            _properties.Add(property.Key, property.Value);
 
         _supportedLanguages.Clear();
         _supportedLanguages.AddRange(formModel.SupportedLanguages);

@@ -1,15 +1,15 @@
 using FluentValidation;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
+using Microsoft.Extensions.Localization;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
-public sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromModel>
+internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFormModel>
 {
     private readonly HashSet<DateOnly> _dates = new();
     
-    public CalendarFromModelValidator(ResourcesManager resources)
+    public CalendarFromModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
-        ArgumentNullException.ThrowIfNull(resources);
+        ArgumentNullException.ThrowIfNull(localizer);
         
         RuleFor(e => e.SelectedWeekends)
             .NotNull()
@@ -18,7 +18,7 @@ public sealed class CalendarFromModelValidator : AbstractValidator<CalendarFromM
         RuleFor(e => e.Holidays)
             .NotNull()
             .Must(e => e.Select(i => i.Date).Distinct().Count() == e.Count)
-            .WithMessage(resources[Messages.Constructor_DuplicateHolidays]);
+            .WithMessage(localizer["DuplicateHolidays"]);
 
         _dates.Clear();
         RuleForEach(e => e.Holidays)

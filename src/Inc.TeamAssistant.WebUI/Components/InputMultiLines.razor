@@ -1,0 +1,38 @@
+@inherits InputBase<string>
+
+<div>
+    @if (IsDisabled)
+    {
+        <InputTextArea
+            @bind-Value="CurrentValue"
+            class="input-multilines input-multilines_disabled"
+            id="@FieldId"
+            disabled="disabled" />
+    }
+    else
+    {
+        <InputTextArea
+            @bind-Value="CurrentValue"
+            class="input-multilines input-multilines_enabled"
+            id="@FieldId" />
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Field ID for the input.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string FieldId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Disabled state of the input.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

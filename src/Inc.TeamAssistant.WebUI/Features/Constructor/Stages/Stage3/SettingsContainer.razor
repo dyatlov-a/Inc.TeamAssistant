@@ -1,0 +1,39 @@
+@inject IServiceProvider ServiceProvider
+
+<Settings
+    FormModel="_formModel"
+    StagesState="StagesState"
+    EmitStateChanged="EmitStateChanged"
+    OnValidSubmit="SubmitForm" />
+
+@code {
+    [Parameter, EditorRequired]
+    public StagesState StagesState { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string BotStorageKey { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
+    public Action EmitStateChanged { get; set; } = default!;
+    
+    private readonly SettingsFormModel _formModel = new();
+
+    protected override void OnParametersSet()
+    {
+        _formModel.Apply(StagesState);
+    }
+
+    private async Task SubmitForm()
+    {
+        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
+        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
+
+        await MoveToNext(Stage.Complete);
+    }
+}

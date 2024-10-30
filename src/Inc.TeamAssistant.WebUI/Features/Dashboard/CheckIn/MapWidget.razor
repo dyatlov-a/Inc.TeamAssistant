@@ -1,71 +1,66 @@
-@inject ICheckInService CheckInService
-@inject ResourcesManager Resources
-@inject NavRouter NavRouter
-@inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<DashboardResources> Localizer
 
-<DashboardWidget Title="@Resources[Messages.Dashboard_CheckInMapWidgetTitle]">
-    <Content>
-        <Loading State="_state" Retry="Load">
-            <Content>
-                <div class="component-container">
-                    <div class="map-selector">
-                        <InputSelectList
-                            FieldId="map-selector"
-                            Value="_formModel.MapId"
-                            ValueExpression="@(() => _formModel.MapId)"
-                            ValueChanged="@((Guid? v) => _formModel.MapId = v)"
-                            Items="_formModel.Maps"
-                            TitleSelector="i => i.Name"
-                            ValueSelector="i => i.Id"/>
-                    </div>
-                    @if (_formModel.MapId.HasValue)
-                    {
-                        var mapUrl = NavRouter.CreateRoute($"map/{_formModel.MapId.Value:N}");
+<DashboardWidget Title="@Localizer["CheckInMapWidgetTitle"]">
+    <Loading State="State" Retry="Retry">
+        <div class="component-container">
+            <div class="map-selector">
+                <InputSelectList
+                    FieldId="map-selector"
+                    Value="FormModel.MapId"
+                    ValueExpression="@(() => FormModel.MapId)"
+                    ValueChanged="@((Guid? v) => FormModel.MapId = v)"
+                    Items="FormModel.Maps"
+                    TitleSelector="i => i.Name"
+                    ValueSelector="i => i.Id"/>
+            </div>
+            @if (FormModel.MapId.HasValue)
+            {
+                var routeSegment = $"map/{FormModel.MapId.Value:N}";
+                var mapUrl = LinkFactory(routeSegment);
 
-                        <div class="checkin-map">
-                            <iframe src="@mapUrl/true" class="checkin-map__body"></iframe>
-                            <div class="checkin-map__bg"></div>
-                            <div class="checkin-map__controls">
-                                <div class="checkin-map__controls-body">
-                                    <a href="@mapUrl" target="_blank" class="button button_dark">
-                                        @Resources[Messages.Dashboard_CheckInMoveToMapTitle]
-                                    </a>
-                                </div>
-                            </div>
+                <div class="checkin-map">
+                    <iframe src="@mapUrl?DisableLayout=true" class="checkin-map__body"></iframe>
+                    <div class="checkin-map__bg"></div>
+                    <div class="checkin-map__controls">
+                        <div class="checkin-map__controls-body">
+                            <Button
+                                ComponentStyle="ComponentStyle.Secondary"
+                                ButtonType="ButtonType.Tab"
+                                Link="@routeSegment">@Localizer["CheckInMoveToMapTitle"]</Button>
                         </div>
-                    }
-                    else
-                    {
-                        <NoData IsDark="true"/>
-                    }
+                    </div>
                 </div>
-            </Content>
-        </Loading>
-    </Content>
+            }
+            else
+            {
+                <NoData ComponentStyle="ComponentStyle.Secondary"/>
+            }
+        </div>
+    </Loading>
 </DashboardWidget>
 
 @code {
+    /// <summary>
+    /// Component state.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
+    public LoadingState State { get; set; } = default!;
     
+    /// <summary>
+    /// Form model.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Guid? TeamId { get; set; }
+    public MapWidgetFormModel FormModel { get; set; } = default!;
     
-    private LoadingState _state = LoadingState.Done();
-    private readonly MapWidgetFormModel _formModel = new();
-
-    protected override Task OnParametersSetAsync() => Load();
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
     
-    private async Task Load()
-    {
-        await RequestProcessor.Process(
-            () => CheckInService.GetMaps(BotId),
-            nameof(MapWidget),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
 }

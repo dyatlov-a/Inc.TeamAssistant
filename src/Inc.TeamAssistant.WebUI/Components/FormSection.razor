@@ -1,0 +1,52 @@
+<div class="form-section @CssClass">
+    <div class="form-section__legend">
+        <h4 class="form-section__title">@Title</h4>
+        <p class="form-section__help">
+            @if (HelpContent is not null)
+            {
+                @HelpContent
+            }
+            else
+            {
+                @HelpText
+            }
+        </p>
+    </div>
+    <div class="form-section__content">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Title of the form section.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    /// <summary>
+    /// HTML content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// render as rows
+    /// </summary>
+    [Parameter]
+    public bool AsRows { get; set; }
+    
+    /// <summary>
+    /// Help plain text.
+    /// </summary>
+    [Parameter]
+    public string? HelpText { get; set; }
+    
+    /// <summary>
+    /// Help HTML content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? HelpContent { get; set; }
+    
+    private string CssClass => AsRows ? "form-section_rows" : string.Empty;
+}

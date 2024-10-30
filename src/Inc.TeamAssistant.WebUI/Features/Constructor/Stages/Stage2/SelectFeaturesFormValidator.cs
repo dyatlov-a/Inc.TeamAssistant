@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 
-public sealed class SelectFeaturesFormValidator : AbstractValidator<SelectFeaturesFormModel>
+internal sealed class SelectFeaturesFormValidator : AbstractValidator<SelectFeaturesFormModel>
 {
     public SelectFeaturesFormValidator()
     {

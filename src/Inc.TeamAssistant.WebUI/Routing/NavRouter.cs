@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
@@ -39,13 +38,20 @@ public sealed class NavRouter : IDisposable
         return routeWithoutLanguage;
     }
 
+    public LanguageId? GetCurrentLanguage()
+    {
+        var languageContext = _renderContext.GetLanguageContext();
+        
+        return languageContext.Selected
+            ? languageContext.CurrentLanguage
+            : null;
+    }
+
     public NavRoute CreateRoute(string? routeSegment)
     {
         var link = string.IsNullOrWhiteSpace(routeSegment) ? "/" : routeSegment;
-        var languageContext = _renderContext.GetLanguageContext();
-        var selectedLanguage = languageContext.Selected ? languageContext.CurrentLanguage : null;
 
-        return new NavRoute(selectedLanguage, link);
+        return new NavRoute(GetCurrentLanguage(), link);
     }
     
     public IDisposable OnRouteChanged(Action onRouteChanged)

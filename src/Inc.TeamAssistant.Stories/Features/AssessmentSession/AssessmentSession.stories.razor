@@ -1,0 +1,112 @@
+@attribute [Stories("Features/AssessmentSession/Current")]
+
+<Stories TComponent="AssessmentSession" Layout="typeof(DarkLayout)">
+    <Story Name="Done">
+        <Template>
+            <AssessmentSession
+                TeamId="Guid.NewGuid()"
+                Item="_item"
+                CurrentView="_currentView"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged">
+                <Footer>
+                    <AssessmentSessionHistorySummary
+                        Items="_historyItems"
+                        LinkFactory="@(_ => string.Empty)"
+                        State="LoadingState.Done()"
+                        Retry="() => Task.CompletedTask"/>
+                </Footer>
+            </AssessmentSession>
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <AssessmentSession
+                TeamId="Guid.NewGuid()"
+                Item="_item"
+                CurrentView="_currentView"
+                State="LoadingState.Loading()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged">
+                <Footer>
+                    <AssessmentSessionHistorySummary
+                        Items="_historyItems"
+                        LinkFactory="@(_ => string.Empty)"
+                        State="LoadingState.Loading()"
+                        Retry="() => Task.CompletedTask"/>
+                </Footer>
+            </AssessmentSession>
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <AssessmentSession
+                TeamId="Guid.NewGuid()"
+                Item="_item"
+                CurrentView="_currentView"
+                State="LoadingState.Error()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged">
+                <Footer>
+                    <AssessmentSessionHistorySummary
+                        Items="_historyItems"
+                        LinkFactory="@(_ => string.Empty)"
+                        State="LoadingState.Error()"
+                        Retry="() => Task.CompletedTask"/>
+                </Footer>
+            </AssessmentSession>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private AssessmentType _currentView = AssessmentType.Group;
+    
+    private readonly IReadOnlyCollection<AssessmentHistoryDto> _historyItems =
+    [
+        new(new DateOnly(2024, 10, 7), 10, 80),
+        new(new DateOnly(2024, 10, 21), 6, 78),
+        new(new DateOnly(2024, 11, 4), 3, 42)
+    ];
+
+    private readonly GetActiveStoryResult _item = new(
+        TeamName: "Dev team",
+        CodeForConnect: CodeForConnectFactory.CreateLight(),
+        new StoryDto(
+            Id: Guid.NewGuid(),
+            Title: "Create order from user card",
+            Links: ["https://amazon.com", "https://ozon.ru"],
+            StoryForEstimates: [
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Aleksandr (adiatlov)",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Ivan",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "13",
+                    ValueGroup: 13),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Petr",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8)
+            ],
+            EstimateEnded: true,
+            Mean: "9.6",
+            Median: "8",
+            AcceptedValue: string.Empty));
+
+    private void OnViewChanged(AssessmentType view)
+    {
+        _currentView = view;
+    }
+}

@@ -1,0 +1,50 @@
+@attribute [Stories("Components/DateSelector")]
+
+<Stories TComponent="DateSelector" Layout="typeof(LightLayout)">
+    <Story Name="Dates">
+        <Template>
+            <DateSelector Date="_date" Items="_dates" OnSelected="SelectDate"/>
+        </Template>
+    </Story>
+    <Story Name="Weeks">
+        <Template>
+            <DateSelector Date="_week" Items="_weeks" OnSelected="SelectWeek"/>
+        </Template>
+    </Story>
+    <Story Name="Months">
+        <Template>
+            <DateSelector Date="_month" Items="_months" OnSelected="SelectMonth"/>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private DateOnly? _date = new(2024, 09, 25);
+    private DateOnly? _week = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-28).Date);
+    private DateOnly? _month = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-6).Date);
+    
+    private readonly IReadOnlyDictionary<string, DateOnly> _dates = new Dictionary<string, DateOnly>
+    {
+        ["24-09-25"] = new(2024, 09, 25),
+        ["24-09-11"] = new(2024, 09, 11),
+        ["24-08-28"] = new(2024, 08, 28)
+    };
+    
+    private readonly IReadOnlyDictionary<string, DateOnly> _weeks = new Dictionary<string, DateOnly>
+    {
+        ["2 week"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-14).Date),
+        ["4 weeks"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-28).Date),
+        ["12 weeks"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddDays(-84).Date)
+    };
+    
+    private readonly IReadOnlyDictionary<string, DateOnly> _months = new Dictionary<string, DateOnly>
+    {
+        ["1 month"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-1).Date),
+        ["3 month"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-3).Date),
+        ["6 month"] = DateOnly.FromDateTime(DateTimeOffset.UtcNow.AddMonths(-6).Date)
+    };
+
+    private void SelectDate(DateOnly date) => _date = date;
+    private void SelectWeek(DateOnly date) => _week = date;
+    private void SelectMonth(DateOnly date) => _month = date;
+}

@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 
-public sealed class DashboardSettingsFormModelValidator : AbstractValidator<DashboardSettingsFormModel>
+internal sealed class DashboardSettingsFormModelValidator : AbstractValidator<DashboardSettingsFormModel>
 {
     public DashboardSettingsFormModelValidator()
     {

@@ -1,12 +1,10 @@
-@inject ResourcesManager Resources
+@inject IStringLocalizer<DashboardResources> Localizer
 @inject NavRouter NavRouter
 
-<DashboardWidget Title="@Resources[Messages.Dashboard_BotWidgetTitle]">
-    <Content>
-        <p class="bot-not-selected">
-            @Resources[Messages.Dashboard_SelectTeam] <a href="@NavRouter.CreateRoute("constructor")" class="link link_light">
-                @Resources[Messages.Dashboard_CreateBot]
-            </a>
-        </p>
-    </Content>
+<DashboardWidget Title="@Localizer["BotWidgetTitle"]">
+    <p class="bot-not-selected">
+        @Localizer["SelectTeam"] <RouterLink Href="@NavRouter.CreateRoute("constructor")">
+            @Localizer["CreateBot"]
+        </RouterLink>
+    </p>
 </DashboardWidget>

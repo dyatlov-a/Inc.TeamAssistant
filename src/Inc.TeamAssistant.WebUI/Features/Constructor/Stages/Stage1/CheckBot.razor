@@ -1,77 +1,67 @@
-@inject IServiceProvider ServiceProvider
-@inject ResourcesManager Resources
+@inject IStringLocalizer<ConstructorResources> Localizer
 
 <EditForm id="@AnalyticEvents.BotChecked" EditContext="_editContext" OnSubmit="SubmitForm">
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <CheckBotFormTracker OnChange="StateHasChanged" />
-    <Panel Header="@Resources[Messages.Constructor_ConnectingTelegram]" IsOpen="true">
+    <Panel Header="@Localizer["ConnectingTelegram"]" IsOpen="true">
         <Actions>
-            <button type="submit" class="button button_light">@Resources[Messages.Constructor_MoveNextTitle]</button>
+            <Button ButtonType="ButtonType.Submit">@Localizer["MoveNextTitle"]</Button>
         </Actions>
         <Content>
-            <FormSection Title="@Resources[Messages.Constructor_FormSectionTokenTitle]">
+            <FormSection Title="@Localizer["FormSectionTokenTitle"]">
                 <HelpContent>
-                    @((MarkupString)string.Format(
-                        Resources[Messages.Constructor_FormSectionTokenHelpTemplate],
-                        "<a href=\"https://telegram.me/BotFather\" target=\"_blank\" class=\"link link_dark\">BotFather</a>"))
+                    @Localizer["FormSectionTokenHelpBegin"] <RouterLink
+                                                                Href="https://telegram.me/BotFather" ComponentStyle="ComponentStyle.Secondary"
+                                                                Target="@RouterTarget.Blank">BotFather</RouterLink> @Localizer["FormSectionTokenHelpEnd"]
                 </HelpContent>
-                <Content>
+                <ChildContent>
                     <FormFieldSet
                         FieldId="bot-token"
-                        Label="@Resources[Messages.Constructor_FormSectionTokenFieldTokenLabel]">
-                        <Content>
-                            <InputText @bind-Value="_formModel.Token" class="form-control form-control_enabled" id="bot-token"/>
-                            <ValidationMessage For="@(() => _formModel.Token)"/>
-                        </Content>
+                        Label="@Localizer["FormSectionTokenFieldTokenLabel"]">
+                        <InputSingleLine FieldId="bot-token" @bind-Value="FormModel.Token" />
+                        <ValidationMessage For="@(() => FormModel.Token)"/>
                     </FormFieldSet>
                     <FormFieldSet
                         FieldId="bot-username"
-                        Label="@Resources[Messages.Constructor_FormSectionTokenFieldUserNameLabel]">
-                        <Content>
-                            <InputText
-                                @bind-Value="_formModel.UserName"
-                                class="form-control form-control_disabled"
-                                id="bot-username"
-                                disabled="disabled"/>
-                            <ValidationMessage For="@(() => _formModel.UserName)"/>
-                        </Content>
+                        Label="@Localizer["FormSectionTokenFieldUserNameLabel"]">
+                        <InputSingleLine
+                            FieldId="bot-username"
+                            @bind-Value="FormModel.UserName"
+                            IsDisabled="true" />
+                        <ValidationMessage For="@(() => FormModel.UserName)"/>
                     </FormFieldSet>
-                </Content>
+                </ChildContent>
             </FormSection>
         </Content>
     </Panel>
 </EditForm>
 
 @code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
     [Parameter, EditorRequired]
-    public StagesState StagesState { get; set; } = default!;
+    public CheckBotFormModel FormModel { get; set; } = default!;
     
-    [Parameter, EditorRequired]
-    public Func<Stage, NavRoute> LinkFactory { get; set; } = default!;
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
     
-    [Parameter, EditorRequired]
-    public Func<Stage?, Task> MoveToNext { get; set; } = default!;
-    
-    [Parameter, EditorRequired]
-    public string BotStorageKey { get; set; } = default!;
-    
-    private readonly CheckBotFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
 
     protected override void OnParametersSet()
     {
-        _editContext = EditContextFactory.Create(_formModel.Apply(StagesState));
+        _editContext = EditContextFactory.Create(FormModel);
     }
-
+    
     private async Task SubmitForm()
     {
         if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
-
-        var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        await appLocalStorage.Attach(BotStorageKey, StagesState.Apply(_formModel));
-
-        await MoveToNext(Stage.SelectFeatures);
+        
+        await OnValidSubmit.InvokeAsync();
     }
 }

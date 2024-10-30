@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.WebUI.Components;
+using Inc.TeamAssistant.WebUI.Components.Notifications;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Features.Components;
-using Inc.TeamAssistant.WebUI.Features.Notifications;
 using Microsoft.AspNetCore.Components;
 
 namespace Inc.TeamAssistant.WebUI.Services.ClientCore;

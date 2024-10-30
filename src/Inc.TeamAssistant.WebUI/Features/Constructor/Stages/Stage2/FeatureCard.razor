@@ -3,7 +3,7 @@
 <div draggable="true" @ondragstart="@(() => HandleDragStart(FeatureId))" class="feature-card draggable">
     <div class="feature-card__header">
         <div class="feature-card__drag">
-            <DragVerticalIcon Size="30px" IsDark="true" />
+            <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary" />
         </div>
         <div class="feature-card__avatar">
             <DynamicComponent Type="Icon" Parameters="IconParameters"/>
@@ -37,7 +37,7 @@
     private Dictionary<string, object> IconParameters => new()
     {
         ["Size"] = "60px",
-        ["IsDark"] = true
+        ["ComponentStyle"] = ComponentStyle.Secondary
     };
     
     private void HandleDragStart(Guid id) => DragAndDropService.Start(id);

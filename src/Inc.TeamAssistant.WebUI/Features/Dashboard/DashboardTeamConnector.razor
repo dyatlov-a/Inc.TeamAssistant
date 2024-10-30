@@ -1,48 +1,42 @@
-@using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector
-
-@inject IBotService BotService
-@inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<DashboardResources> Localizer
 
 <div class="team-connector">
     <FormSection
-        Title="@_team.TeamName"
-        HelpText="@Resources[Messages.Dashboard_ConnectToTeamHelp]"
+        Title="@Team.TeamName"
+        HelpText="@Localizer["ConnectToTeamHelp"]"
         AsRows="true">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="team-connector__code">
-                        @((MarkupString)_team.Code)
-                    </div>
-                    <a href="@_team.LinkForConnect" class="button button_dark team-connector__link" target="_blank">
-                        @Resources[Messages.Dashboard_ConnectToTeamButton]
-                    </a>
-                </Content>
-            </Loading>
-        </Content>
+        <Loading State="State" Retry="Retry">
+            <div class="team-connector__code">
+                @((MarkupString)Team.Code)
+            </div>
+            <div class="team-connector__buttons">
+                <Button
+                    ComponentStyle="ComponentStyle.Secondary"
+                    ButtonType="ButtonType.Tab"
+                    Link="@Team.LinkForConnect">
+                    @Localizer["ConnectToTeamButton"]
+                </Button>
+            </div>
+        </Loading>
     </FormSection>
 </div>
 
 @code {
+    /// <summary>
+    /// Selected team.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Guid TeamId { get; set; }
+    public GetTeamConnectorResult Team { get; set; } = default!;
 
-    private LoadingState _state = LoadingState.Done();
-    private GetTeamConnectorResult _team = new(string.Empty, string.Empty, string.Empty);
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
     
-    protected override Task OnParametersSetAsync() => Load();
-    
-    private async Task Load()
-    {
-        await RequestProcessor.Process(
-            () => BotService.GetConnector(TeamId, "000", "9d9d9d"),
-            nameof(DashboardTeamConnector),
-            r => _team = r,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
 }

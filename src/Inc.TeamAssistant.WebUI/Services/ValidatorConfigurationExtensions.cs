@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentValidation;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -11,8 +12,13 @@ public static class ValidatorConfigurationExtensions
     {
         ArgumentNullException.ThrowIfNull(validatorConfiguration);
         ArgumentNullException.ThrowIfNull(languageId);
+
+        var culture = new CultureInfo(languageId.Value);
         
-        validatorConfiguration.LanguageManager.Culture = new(languageId.Value);
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+        
+        validatorConfiguration.LanguageManager.Culture = culture;
         validatorConfiguration.DefaultClassLevelCascadeMode = CascadeMode.Continue;
         validatorConfiguration.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 

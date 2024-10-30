@@ -1,0 +1,22 @@
+@attribute [Stories("Icons/ArrowDownIcon")]
+
+<Stories TComponent="ArrowDownIcon">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <ArrowDownIcon Size="80px" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
+        </Arguments>
+        <Template>
+            <ArrowDownIcon Size="80px" @attributes="context.Args"/>
+        </Template>
+    </Story>
+    <Story Name="Small" Layout="typeof(DarkLayout)">
+        <Template>
+            <ArrowDownIcon Size="40px" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>

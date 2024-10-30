@@ -1,7 +1,7 @@
+@inject IJSRuntime JsRuntime
+
 <ContentDialog Title="@Title" IsGrand="!HasChart" @ref="_contentDialog">
-    <Content>
-        @Content
-    </Content>
+    @ChildContent
 </ContentDialog>
 
 <div class="dashboard-widgets__widget">
@@ -9,15 +9,15 @@
         <div class="dashboard-widgets__header">
             <h2 class="dashboard-widgets__title">@Title</h2>
             <div class="dashboard-widgets__actions">
-                <button
-                    type="button"
-                    class="button button_dark dashboard-widgets__button"
-                    @onclick="() => _contentDialog?.Open()">
-                    <MaximizeIcon IsDark="true" Size="20px"/>
-                </button>
+                <Button
+                    ButtonMode="ButtonMode.Small"
+                    ComponentStyle="ComponentStyle.Secondary"
+                    OnClick="OpenInContentDialog">
+                    <MaximizeIcon ComponentStyle="ComponentStyle.Secondary" Size="20px"/>
+                </Button>
             </div>
         </div>
-        @Content
+        @ChildContent
     </div>
 </div>
 
@@ -26,7 +26,7 @@
     public string Title { get; set; } = default!;
     
     [Parameter, EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     [Parameter]
     public bool HasControls { get; set; }
@@ -35,6 +35,13 @@
     public bool HasChart { get; set; }
     
     private ContentDialog? _contentDialog;
+    
+    private async Task OpenInContentDialog()
+    {
+        _contentDialog?.Open();
+
+        await JsRuntime.Execute(JsFunctions.ScrollToTop());
+    }
     
     private string ControlsCssClass => HasControls
         ? "dashboard-widgets__content_has-controls"

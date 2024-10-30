@@ -1,0 +1,73 @@
+@page "/assessment-history/{teamId:guid}/{date}"
+@page "/en/assessment-history/{teamId:guid}/{date}"
+@page "/ru/assessment-history/{teamId:guid}/{date}"
+@page "/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/en/assessment-history/{teamId:guid}/{date}/{View}"
+@page "/ru/assessment-history/{teamId:guid}/{date}/{View}"
+
+@inject IAppraiserService AppraiserService
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Assessment"
+    MetaOverrideTitle="@Localizer["StoryList"]" />
+
+<AssessmentSessionHistory
+    TeamId="TeamId"
+    Date="@Date"
+    Retry="Load"
+    LinkFactory="s => NavRouter.CreateRoute(s).ToString()"
+    ViewChanged="OnViewChanged"
+    CurrentView="_currentView"
+    State="_state"
+    Items="_items" />
+
+<MainFooter />
+        
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Date { get; set; } = string.Empty;
+    
+    [Parameter]
+    public string View { get; set; } = string.Empty;
+    
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().Last();
+
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
+        
+        await Load();
+    }
+    
+    private async Task OnViewChanged(AssessmentType assessmentType)
+    {
+        var routeSegment = $"assessment-history/{TeamId:N}/{Date}/{assessmentType}".ToLowerInvariant();
+        
+        _currentView = assessmentType;
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+    }
+
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
+            nameof(AssessmentSessionHistoryContainer),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

@@ -1,129 +1,87 @@
-@using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser
+@inject IStringLocalizer<DashboardResources> Localizer
 
-@inject IBotService BotService
-@inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
-@inject NavRouter NavRouter
-
-<div class="component-container">
-    <FormSection
-        Title="@Resources[Messages.Dashboard_SelectTeamTitle]"
-        HelpText="@Resources[Messages.Dashboard_SelectTeam]"
-        AsRows="true">
-        <Content>
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <FormFieldSet Label="@Resources[Messages.Dashboard_BotField]" FieldId="bot-selector">
-                        <Content>
-                            <InputSelectList 
-                                FieldId="bot-selector"
-                                Value="_botId"
-                                ValueExpression="@(() => _botId)"
-                                ValueChanged="@((Guid? v) => ChangeBot(v))"
-                                Items="_bots"
-                                TitleSelector="i => i.Name"
-                                ValueSelector="i => i.Id"
-                                HasEmptyValue="true"/>
-                        </Content>
-                    </FormFieldSet>
-                    <FormFieldSet Label="@Resources[Messages.Dashboard_TeamField]" FieldId="team-selector">
-                        <Content>
-                            <InputSelectList
-                                FieldId="team-selector"
-                                Value="_teamId"
-                                ValueExpression="@(() => _teamId)"
-                                ValueChanged="@((Guid? v) => ChangeTeam(v))"
-                                Items="TeamsByBot"
-                                TitleSelector="i => i.Name"
-                                ValueSelector="i => i.Id"
-                                HasEmptyValue="true"/>
-                        </Content>
-                    </FormFieldSet>
-                </Content>
-            </Loading>
-        </Content>
-    </FormSection>
-</div>
+<FormSection
+    Title="@Localizer["SelectTeamTitle"]"
+    HelpText="@Localizer["SelectTeam"]"
+    AsRows="true">
+    <Loading State="State" Retry="Retry">
+        <FormFieldSet Label="@Localizer["BotField"]" FieldId="bot-selector">
+            <InputSelectList 
+                FieldId="bot-selector"
+                Value="BotId"
+                ValueExpression="@(() => BotId)"
+                ValueChanged="@((Guid? v) => BotChanged.InvokeAsync(v))"
+                Items="Bots"
+                TitleSelector="i => i.Name"
+                ValueSelector="i => i.Id"
+                HasEmptyValue="true"/>
+        </FormFieldSet>
+        <FormFieldSet Label="@Localizer["TeamField"]" FieldId="team-selector">
+            <InputSelectList
+                FieldId="team-selector"
+                Value="TeamId"
+                ValueExpression="@(() => TeamId)"
+                ValueChanged="@((Guid? v) => TeamChanged.InvokeAsync(v))"
+                Items="TeamsByBot"
+                TitleSelector="i => i.Name"
+                ValueSelector="i => i.Id"
+                HasEmptyValue="true"/>
+        </FormFieldSet>
+    </Loading>
+</FormSection>
 
 @code {
+    /// <summary>
+    /// Bot identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? BotId { get; set; }
     
+    /// <summary>
+    /// Team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
+    /// <summary>
+    /// Component state.
+    /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<(Guid? BotId, Guid? TeamId)> TeamContextChanged { get; set; }
+    public LoadingState State { get; set; } = default!;
     
-    private Guid? _botId;
-    private Guid? _teamId;
+    /// <summary>
+    /// Bot list.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<BotDto> Bots { get; set; } = default!;
     
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+
+    /// <summary>
+    /// Bot changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid?> BotChanged { get; set; }
+    
+    /// <summary>
+    /// Team changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid?> TeamChanged { get; set; }
 
     private IEnumerable<TeamDto> TeamsByBot
     {
         get
         {
-            var bot = _bots.SingleOrDefault(b => b.Id == _botId);
+            var bot = Bots.SingleOrDefault(b => b.Id == BotId);
 
             return bot is not null
                 ? bot.Teams
                 : Array.Empty<TeamDto>();
         }
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (_botId != BotId || _teamId != TeamId || (_botId is null && _teamId is null))
-        {
-            _botId = BotId;
-            _teamId = TeamId;
-            
-            await Load();
-        }
-    }
-
-    private async Task Load()
-    {
-        await RequestProcessor.Process(
-            () => BotService.GetFromCurrentUser(),
-            nameof(DashboardTeamSelector),
-            r => _bots = r.Bots,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
-    
-    private async Task ChangeTeam(Guid? value)
-    {
-        _teamId = value;
-        
-        await ChangeTeamContext(_botId, _teamId);
-    }
-    
-    private async Task ChangeBot(Guid? value)
-    {
-        _botId = value;
-
-        if (_botId.HasValue)
-        {
-            var bot = _bots.SingleOrDefault(b => b.Id == _botId.Value);
-            var team = bot?.Teams.FirstOrDefault();
-
-            await ChangeTeamContext(_botId.Value, team?.Id);
-        }
-        else
-            await ChangeTeamContext(null, null);
-    }
-
-    private async Task ChangeTeamContext(Guid? botId, Guid? teamId)
-    {
-        _botId = botId;
-        _teamId = teamId;
-        
-        await TeamContextChanged.InvokeAsync((botId, teamId));
     }
 }

@@ -1,0 +1,4 @@
+.light-layout {
+    background-color: var(--text-primary-color);
+    overflow: hidden;
+}

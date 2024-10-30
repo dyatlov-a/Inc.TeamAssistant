@@ -1,0 +1,34 @@
+<div class="date-selector">
+    @foreach (var item in Items)
+    {
+        <span class="date-selector__item @CssClass(item.Value)" @onclick="() => Selected(item.Value)">
+            @item.Key
+        </span>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Available for select dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> Items { get; set; } = new Dictionary<string, DateOnly>();
+    
+    /// <summary>
+    /// Selected date
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+    
+    private string CssClass(DateOnly value) => Date == value
+        ? "date-selector__item_selected"
+        : string.Empty;
+
+    private void Selected(DateOnly value) => OnSelected.InvokeAsync(value);
+}

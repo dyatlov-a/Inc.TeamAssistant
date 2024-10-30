@@ -1,0 +1,24 @@
+.dashboard {
+    display: flex;
+    margin: 1rem;
+    gap: 1rem;
+}
+.dashboard-toolbar__content {
+    width: 260px;
+}
+.dashboard-content {
+    flex-grow: 1;
+}
+.dashboard-widgets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+@media (max-width: 767.98px) {
+    .dashboard {
+        display: block;
+    }
+    .dashboard-toolbar__content {
+        width: 100%;
+    }
+}

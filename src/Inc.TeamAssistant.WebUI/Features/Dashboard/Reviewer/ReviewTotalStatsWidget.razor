@@ -1,112 +1,98 @@
-@using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam
-
-@inject IReviewService ReviewService
-@inject ResourcesManager Resources
-@inject RequestProcessor RequestProcessor
-@inject DateSelectorFactory DateSelectorFactory
+@inject IStringLocalizer<DashboardResources> Localizer
 
 @if (TeamId.HasValue)
 {
     <DashboardWidget
         HasControls="true"
         HasChart="true"
-        Title="@Resources[Messages.Dashboard_ReviewTotalStatsWidgetTitle]">
-        <Content>
-            <DateSelector Date="_date" Items="DateItems" OnSelected="Changed" />
-            <Loading State="_state" Retry="Load">
-                <Content>
-                    <div class="component-container">
-                        @if (_formModel.Review.Any())
-                        {
-                            <div class="review-total-stats">
-                                <div class="review-total-stats__item">
-                                    <ApexChart
-                                        TItem="HistoryByTeamItemDto"
-                                        Title="@string.Format(
-                                                   Resources[Messages.Dashboard_ReviewByReviewerTemplate],
-                                                   _formModel.IntervalInDays)"
-                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
-                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                                         Items="_formModel.Review"
-                                                         SeriesType="SeriesType.Donut"
-                                                         XValue="@(e => e.PersonName)"
-                                                         YValue="@(e => e.Count)"
-                                                         OrderByDescending="e => e.Y!"/>
-                                    </ApexChart>
-                                </div>
-                                <div class="review-total-stats__item">
-                                    <ApexChart
-                                        TItem="HistoryByTeamItemDto"
-                                        Title="@string.Format(
-                                                   Resources[Messages.Dashboard_ReviewByOwnerTemplate],
-                                                   _formModel.IntervalInDays)"
-                                        Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
-                                        <ApexPointSeries TItem="HistoryByTeamItemDto"
-                                                         Items="_formModel.Requests"
-                                                         SeriesType="SeriesType.Donut"
-                                                         XValue="@(e => e.PersonName)"
-                                                         YValue="@(e => e.Count)"
-                                                         OrderByDescending="e => e.Y!"/>
-                                    </ApexChart>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <NoData IsDark="true"/>
-                        }
+        Title="@Localizer["ReviewTotalStatsWidgetTitle"]">
+        <DateSelector Date="Date" Items="DateItems" OnSelected="OnSelected" />
+        <Loading State="State" Retry="Retry">
+            <div class="component-container">
+                @if (FormModel.Review.Any())
+                {
+                    <div class="review-total-stats">
+                        <div class="review-total-stats__item">
+                            <ApexChart
+                                TItem="HistoryByTeamItemDto"
+                                Title="@string.Format(
+                                           Localizer["ReviewByReviewerTemplate"],
+                                           FormModel.IntervalInDays)"
+                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                 Items="FormModel.Review"
+                                                 SeriesType="SeriesType.Donut"
+                                                 XValue="@(e => e.PersonName)"
+                                                 YValue="@(e => e.Count)"
+                                                 OrderByDescending="e => e.Y!"/>
+                            </ApexChart>
+                        </div>
+                        <div class="review-total-stats__item">
+                            <ApexChart
+                                TItem="HistoryByTeamItemDto"
+                                Title="@string.Format(
+                                           Localizer["ReviewByOwnerTemplate"],
+                                           FormModel.IntervalInDays)"
+                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                <ApexPointSeries TItem="HistoryByTeamItemDto"
+                                                 Items="FormModel.Requests"
+                                                 SeriesType="SeriesType.Donut"
+                                                 XValue="@(e => e.PersonName)"
+                                                 YValue="@(e => e.Count)"
+                                                 OrderByDescending="e => e.Y!"/>
+                            </ApexChart>
+                        </div>
                     </div>
-                </Content>
-            </Loading>
-        </Content>
+                }
+                else
+                {
+                    <NoData ComponentStyle="ComponentStyle.Secondary"/>
+                }
+            </div>
+        </Loading>
     </DashboardWidget>
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public Guid BotId { get; set; }
-    
+    /// <summary>
+    /// Selected team identifier.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private DateOnly? _date;
-
-    private LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<SelectItem<DateOnly>> DateItems => DateSelectorFactory.CreateWeeks();
-    private readonly ReviewTotalStatsWidgetFormModel _formModel = new();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _date ??= DateItems.First().Value;
-
-        await Load();
-    }
+    /// <summary>
+    /// Selected date.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
     
-    private async Task Load()
-    {
-        if (!TeamId.HasValue)
-            return;
-        
-        var date = _date!.Value;
+    /// <summary>
+    /// Dates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, DateOnly> DateItems { get; set; } = default!;
 
-        await RequestProcessor.Process(
-            () => ReviewService.GetHistory(TeamId.Value, date),
-            nameof(ReviewTotalStatsWidget),
-            r =>
-            {
-                _formModel.Apply(r, date);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
-    }
-
-    private async Task Changed(DateOnly date)
-    {
-        _date = date;
-        
-        await Load();
-    }
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public ReviewTotalStatsWidgetFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// On selected event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnSelected { get; set; }
 }

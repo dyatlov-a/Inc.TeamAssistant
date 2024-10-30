@@ -1,0 +1,55 @@
+@inject IReviewService ReviewService
+@inject RequestProcessor RequestProcessor
+@inject IDateSelectorFactory DateSelectorFactory
+
+<ReviewHistoryWidget
+    TeamId="TeamId"
+    Date="_date"
+    DateItems="DateItems"
+    State="_state"
+    Items="_tasks"
+    Retry="Load"
+    OnSelected="Changed" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+
+    private DateOnly? _date;
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
+    private IReadOnlyCollection<TaskForReviewDto> _tasks = Array.Empty<TaskForReviewDto>();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _date ??= DateItems.First().Value;
+
+        await Load();
+    }
+    
+    private async Task Load()
+    {
+        if (!TeamId.HasValue)
+            return;
+        
+        await RequestProcessor.Process(
+            () => ReviewService.GetLast(TeamId.Value, _date!.Value),
+            nameof(ReviewHistoryWidgetContainer),
+            r => _tasks = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+    
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        
+        await Load();
+    }
+}

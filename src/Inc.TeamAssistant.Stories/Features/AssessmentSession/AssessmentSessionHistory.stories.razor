@@ -1,0 +1,143 @@
+@attribute [Stories("Features/AssessmentSession/History")]
+
+<Stories TComponent="AssessmentSessionHistory" Layout="typeof(DarkLayout)">
+    <Story Name="Done">
+        <Template>
+            <AssessmentSessionHistory
+                TeamId="Guid.NewGuid()"
+                Date="2024-10-22"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged"
+                CurrentView="_currentView"
+                State="LoadingState.Done()"
+                Items="_items" />
+        </Template>
+    </Story>
+    <Story Name="Loading">
+        <Template>
+            <AssessmentSessionHistory
+                TeamId="Guid.NewGuid()"
+                Date="2024-10-22"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged"
+                CurrentView="_currentView"
+                State="LoadingState.Loading()"
+                Items="_items" />
+        </Template>
+    </Story>
+    <Story Name="Error">
+        <Template>
+            <AssessmentSessionHistory
+                TeamId="Guid.NewGuid()"
+                Date="2024-10-22"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                ViewChanged="OnViewChanged"
+                CurrentView="_currentView"
+                State="LoadingState.Error()"
+                Items="_items" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private AssessmentType _currentView = AssessmentType.Individual;
+
+    private readonly IReadOnlyCollection<StoryDto> _items =
+    [
+        new(
+            Id: Guid.NewGuid(),
+            Title: "Create order from user card",
+            Links: ["https://amazon.com", "https://ozon.ru"],
+            StoryForEstimates:
+            [
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Aleksandr (adiatlov)",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Ivan",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "13",
+                    ValueGroup: 13),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Petr",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8)
+            ],
+            EstimateEnded: true,
+            Mean: "9.6",
+            Median: "8",
+            AcceptedValue: "8"),
+        new(
+            Id: Guid.NewGuid(),
+            Title: "Create order from user card",
+            Links: ["https://amazon.com", "https://ozon.ru"],
+            StoryForEstimates:
+            [
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Aleksandr (adiatlov)",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Ivan",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "13",
+                    ValueGroup: 13),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Petr",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8)
+            ],
+            EstimateEnded: true,
+            Mean: "9.6",
+            Median: "8",
+            AcceptedValue: "8"),
+        new(
+            Id: Guid.NewGuid(),
+            Title: "Create order from user card",
+            Links: ["https://amazon.com", "https://ozon.ru"],
+            StoryForEstimates:
+            [
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Aleksandr (adiatlov)",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Ivan",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "13",
+                    ValueGroup: 13),
+                new StoryForEstimateDto(
+                    ParticipantId: 0,
+                    ParticipantName: "Petr",
+                    AvatarUrl: "/imgs/user_stub.jpg",
+                    DisplayValue: "8",
+                    ValueGroup: 8)
+            ],
+            EstimateEnded: true,
+            Mean: "9.6",
+            Median: "8",
+            AcceptedValue: "8")
+    ];
+
+    private void OnViewChanged(AssessmentType view)
+    {
+        _currentView = view;
+    }
+}

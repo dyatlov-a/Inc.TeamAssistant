@@ -1,0 +1,128 @@
+@page "/dashboard"
+@page "/ru/dashboard"
+@page "/en/dashboard"
+@page "/dashboard/{BotId:guid}"
+@page "/ru/dashboard/{BotId:guid}"
+@page "/en/dashboard/{BotId:guid}"
+@page "/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/ru/dashboard/{BotId:guid}/{TeamId:guid}"
+@page "/en/dashboard/{BotId:guid}/{TeamId:guid}"
+
+@attribute [Authorize]
+
+@inject IBotService BotService
+@inject IStringLocalizer<DashboardResources> Localizer
+@inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
+
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Dashboard"
+    MetaOverrideTitle="@Localizer["Title"]" />
+
+<Dashboard
+    BotId="_botId"
+    TeamId="_teamId"
+    State="_state"
+    Widgets="_widgetTypes"
+    Load="Load"
+    WidgetParametersFactory="WidgetParametersFactory">
+    <Settings>
+        <DashboardSettingsContainer BotId="_botId" Widgets="_widgets" Changed="Load" />
+    </Settings>
+    <Toolbar>
+        <DashboardTeamSelectorContainer BotId="_botId" TeamId="_teamId" TeamContextChanged="ChangeTeamContext" />
+
+        @if (_teamId.HasValue)
+        {
+            <DashboardTeamConnectorContainer TeamId="_teamId.Value" />
+        }
+    </Toolbar>
+</Dashboard>
+
+@code {
+    [Parameter]
+    public Guid? BotId { get; set; }
+    
+    [Parameter]
+    public Guid? TeamId { get; set; }
+
+    private Guid? _botId;
+    private Guid? _teamId;
+    
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<Type> _widgetTypes = Array.Empty<Type>();
+    private IReadOnlyCollection<WidgetDto> _widgets = Array.Empty<WidgetDto>();
+    
+    private readonly Dictionary<string, Type> _widgetsLookup = new()
+    {
+        [nameof(TeammatesWidget)] = typeof(TeammatesWidgetContainer),
+        [nameof(ReviewAverageStatsWidget)] = typeof(ReviewAverageStatsWidgetContainer),
+        [nameof(ReviewHistoryWidget)] = typeof(ReviewHistoryWidgetContainer),
+        [nameof(ReviewTotalStatsWidget)] = typeof(ReviewTotalStatsWidgetContainer),
+        [nameof(AppraiserHistoryWidget)] = typeof(AppraiserHistoryWidgetContainer),
+        [nameof(AppraiserIntegrationWidget)] = typeof(AppraiserIntegrationWidgetContainer),
+        [nameof(RandomCoffeeHistoryWidget)] = typeof(RandomCoffeeHistoryWidgetContainer),
+        [nameof(MapWidget)] = typeof(MapWidgetContainer)
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _botId = BotId;
+        _teamId = TeamId;
+        
+        await Load();
+    }
+    
+    private async Task Load()
+    {
+        if (_botId.HasValue)
+            await RequestProcessor.Process(
+                () => BotService.GetWidgetsForCurrentUser(_botId.Value),
+                nameof(DashboardContainer),
+                r =>
+                {
+                    _widgets = r.Widgets;
+                    _widgetTypes = _widgets
+                        .Where(w => w.IsVisible)
+                        .OrderBy(w => w.Position)
+                        .Select(w => _widgetsLookup[w.Type])
+                        .ToArray();
+                },
+                s =>
+                {
+                    _state = s;
+                    StateHasChanged();
+                });
+        else
+        {
+            _widgets = Array.Empty<WidgetDto>();
+            _widgetTypes = Array.Empty<Type>();
+        }
+        
+        StateHasChanged();
+    }
+
+    private Dictionary<string, object?> WidgetParametersFactory(Type type)
+    {
+        return new Dictionary<string, object?>
+        {
+            ["BotId"] = _botId!.Value,
+            ["TeamId"] = _teamId
+        };
+    }
+    
+    private async Task ChangeTeamContext((Guid? BotId, Guid? TeamId) botContext)
+    {
+        var routeSegment = (botContext.BotId.HasValue, botContext.TeamId.HasValue) switch
+        {
+            (true, true) => $"dashboard/{botContext.BotId:N}/{botContext.TeamId:N}",
+            (true, false) => $"dashboard/{botContext.BotId:N}",
+            _ => "dashboard"
+        };
+
+        _botId = botContext.BotId;
+        _teamId = botContext.TeamId;
+        
+        await NavRouter.MoveToRoute(routeSegment);
+    }
+}

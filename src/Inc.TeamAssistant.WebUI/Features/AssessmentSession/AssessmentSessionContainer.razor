@@ -1,0 +1,106 @@
+@page "/assessment-session/{id:guid}"
+@page "/en/assessment-session/{id:guid}"
+@page "/ru/assessment-session/{id:guid}"
+@page "/assessment-session/{id:guid}/{View}"
+@page "/en/assessment-session/{id:guid}/{View}"
+@page "/ru/assessment-session/{id:guid}/{View}"
+
+@implements IAsyncDisposable
+
+@inject IAppraiserService AppraiserService
+@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule
+    WebsiteSection="WebsiteSection.Assessment"
+    MetaOverrideTitle="@Localizer["TaskAssess"]" />
+
+<AssessmentSession
+    TeamId="Id"
+    Item="_item"
+    CurrentView="_currentView"
+    State="_state"
+    Retry="() => Load()"
+    LinkFactory="s => NavRouter.CreateRoute(s).ToString()"
+    ViewChanged="OnViewChanged">
+    <Footer>
+        <AssessmentSessionHistorySummaryContainer TeamId="Id" />
+    </Footer>
+</AssessmentSession>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid Id { get; set; }
+    
+    [Parameter]
+    public string View { get; set; } = string.Empty;
+    
+    private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
+    
+    private LoadingState _state = LoadingState.Done();
+    private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
+    private IAsyncDisposable? _eventListener;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
+            _currentView = value;
+        
+        await Load();
+        
+        await StartListenEvents();
+    }
+
+    private async Task StartListenEvents()
+    {
+        var showLoading = false;
+        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        
+        if (eventsProvider is not null)
+            _eventListener = await eventsProvider.OnStoryChanged(
+                Id,
+                b => b.OnStoryChanged(() => Load(showLoading)),
+                b => b.OnStoryAccepted(async v =>
+                {
+                    var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+                    var message = string.Format(Localizer["EstimationAcceptedTemplate"], v);
+
+                    notificationsService.Publish(Notification.Info(message));
+
+                    await Load(showLoading);
+                }));
+    }
+
+    private async Task Load(bool showLoading = true)
+    {
+        await RequestProcessor.Process(
+            () => AppraiserService.GetActiveStory(Id, "000", "dfdfdf"),
+            nameof(AssessmentSessionContainer),
+            r => _item = r,
+            s =>
+            {
+                if (showLoading || !s.IsLoading)
+                {
+                    _state = s;
+                    StateHasChanged();
+                }
+            });
+    }
+    
+    private async Task OnViewChanged(AssessmentType assessmentType)
+    {
+        var routeSegment = $"assessment-session/{Id:N}/{assessmentType}".ToLowerInvariant();
+        
+        _currentView = assessmentType;
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
+    }
+}

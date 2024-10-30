@@ -19,6 +19,7 @@ internal static class StoryConverter
                 return new StoryForEstimateDto(
                     e.ParticipantId,
                     e.ParticipantDisplayName,
+                    $"/photos/{e.ParticipantId}",
                     story.EstimateEnded ? estimation.DisplayValue : estimation.HasValue,
                     e.Value == Estimation.None.Value ? null : e.Value);
             })

@@ -1,0 +1,56 @@
+@inject IReviewService ReviewService
+@inject RequestProcessor RequestProcessor
+@inject IDateSelectorFactory DateSelectorFactory
+
+<ReviewAverageStatsWidget
+    TeamId="TeamId"
+    Date="_date"
+    DateItems="DateItems"
+    State="_state"
+    Items="_items"
+    Retry="Load"
+    OnSelected="Changed" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid? BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    private DateOnly? _date;
+    private LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<ReviewAverageStatsDto> _items = Array.Empty<ReviewAverageStatsDto>();
+    
+    private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _date ??= DateItems.First().Value;
+
+        await Load();
+    }
+    
+    private async Task Load()
+    {
+        if (!TeamId.HasValue)
+            return;
+        
+        await RequestProcessor.Process(
+            () => ReviewService.GetAverage(TeamId.Value, _date!.Value),
+            nameof(ReviewAverageStatsWidgetContainer),
+            r => _items = r.Items,
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+
+    private async Task Changed(DateOnly date)
+    {
+        _date = date;
+        
+        await Load();
+    }
+}

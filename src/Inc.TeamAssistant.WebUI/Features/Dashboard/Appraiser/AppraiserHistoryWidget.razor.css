@@ -3,6 +3,3 @@
     justify-content: right;
     margin: 10px;
 }
-::deep .no-data {
-    height: 100%;
-}

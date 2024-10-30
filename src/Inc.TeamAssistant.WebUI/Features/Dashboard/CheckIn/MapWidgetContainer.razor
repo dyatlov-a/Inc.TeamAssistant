@@ -1,0 +1,31 @@
+@inject ICheckInService CheckInService
+@inject NavRouter NavRouter
+@inject RequestProcessor RequestProcessor
+
+<MapWidget State="_state" FormModel="_formModel" Retry="Load" LinkFactory="s => (string)NavRouter.CreateRoute(s)" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid BotId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    private LoadingState _state = LoadingState.Done();
+    private readonly MapWidgetFormModel _formModel = new();
+
+    protected override Task OnParametersSetAsync() => Load();
+    
+    private async Task Load()
+    {
+        await RequestProcessor.Process(
+            () => CheckInService.GetMaps(BotId),
+            nameof(MapWidgetContainer),
+            r => _formModel.Apply(r),
+            s =>
+            {
+                _state = s;
+                StateHasChanged();
+            });
+    }
+}

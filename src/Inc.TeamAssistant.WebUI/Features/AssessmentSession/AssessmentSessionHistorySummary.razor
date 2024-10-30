@@ -1,0 +1,45 @@
+@inject IStringLocalizer<AssessmentSessionResources> Localizer
+@inject NavRouter NavRouter
+
+@if (Items.Any())
+{
+    <div class="history">
+        <div class="history__title">@Localizer["History"]</div>
+        <div class="history__body">
+            <Loading State="State" Retry="Retry" ComponentStyle="ComponentStyle.Secondary">
+                @foreach (var item in Items)
+                {
+                    <RouterLink Href="@LinkFactory(item)" ComponentStyle="ComponentStyle.Secondary">
+                        @item.AssessmentDate.ToString("dd-MM-yyyy") - @item.StoriesCount @Localizer["Tasks"]
+                    </RouterLink>
+                }
+            </Loading>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// History items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<AssessmentHistoryDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Factory for create link to history.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<AssessmentHistoryDto, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+}

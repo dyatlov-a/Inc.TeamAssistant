@@ -1,0 +1,56 @@
+@if (string.IsNullOrWhiteSpace(Href))
+{
+    <a href="#" class="link @CssClass" @onclick="EmitOnClick" @onclick:preventDefault="true">
+        @ChildContent
+    </a>
+}
+else
+{
+    <a href="@Href" class="link @CssClass" target="@Target">
+        @ChildContent
+    </a>
+}
+
+@code {
+    /// <summary>
+    /// Html content.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+    
+    /// <summary>
+    /// Target for navigation.
+    /// </summary>
+    [Parameter]
+    public string Target { get; set; } = RouterTarget.Self;
+    
+    /// <summary>
+    /// Link to navigate.
+    /// </summary>
+    [Parameter]
+    public string Href { get; set; } = default!;
+    
+    /// <summary>
+    /// On click event.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+    
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "link_primary",
+        _ => "link_secondary"
+    };
+    
+    private async Task EmitOnClick()
+    {
+        if (!OnClick.Equals(default(EventCallback)))
+            await OnClick.InvokeAsync();
+    }
+}

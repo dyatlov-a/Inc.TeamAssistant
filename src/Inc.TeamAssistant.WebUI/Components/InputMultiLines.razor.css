@@ -1,0 +1,19 @@
+::deep .input-multilines {
+    font-size: 1rem;
+    width: 100%;
+    padding: .625rem .3125rem;
+    border: 3px solid var(--bg-secondary-color);
+    border-radius: 0;
+    color: var(--text-secondary-color);
+    background-color: var(--text-primary-color);
+    transition: border 0.3s;
+    resize: none;
+    height: 102px;
+}
+::deep .input-multilines:focus, ::deep .input-multilines_enabled:hover {
+    border: 3px solid var(--block-secondary-color);
+}
+::deep .input-multilines_disabled {
+    background-color: var(--control-disabled-color);
+    cursor: default;
+}
