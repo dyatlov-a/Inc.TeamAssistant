@@ -75,7 +75,7 @@ public sealed class DraftTaskForReview
     public DraftTaskForReview CheckRights(long personId)
     {
         if (OwnerId != personId)
-            throw new TeamAssistantException("User has not rights for action.");
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
 
         return this;
     }

@@ -20,7 +20,7 @@ internal sealed class AttachPollCommandHandler : IRequestHandler<AttachPollComma
         ArgumentNullException.ThrowIfNull(command);
 
         var randomCoffeeEntry = await _repository.Find(command.RandomCoffeeEntryId, token);
-        if (randomCoffeeEntry is null)
+        if (randomCoffeeEntry is null || randomCoffeeEntry.Refused is true)
             throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
 
         randomCoffeeEntry.AttachPoll(command.PollId);

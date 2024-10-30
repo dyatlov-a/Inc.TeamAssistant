@@ -91,7 +91,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state,
                 poll_id,
                 participant_ids,
-                name)
+                name,
+                refused)
             VALUES (
                 @id,
                 @created,
@@ -102,7 +103,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 @state,
                 @poll_id,
                 @participant_ids::jsonb,
-                @name)
+                @name,
+                @refused)
             ON CONFLICT (id) DO UPDATE SET
                 created = excluded.created,
                 bot_id = excluded.bot_id,
@@ -112,7 +114,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state = excluded.state,
                 poll_id = excluded.poll_id,
                 participant_ids = excluded.participant_ids,
-                name = excluded.name;",
+                name = excluded.name,
+                refused = excluded.refused;",
             new
             {
                 id = randomCoffeeEntry.Id,
@@ -124,7 +127,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state = randomCoffeeEntry.State,
                 poll_id = randomCoffeeEntry.PollId,
                 participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
-                name = randomCoffeeEntry.Name
+                name = randomCoffeeEntry.Name,
+                refused = randomCoffeeEntry.Refused
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -185,7 +189,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.state AS state,
                 e.poll_id AS pollid,
                 e.participant_ids AS participantids,
-                e.name AS name
+                e.name AS name,
+                e.refused AS refused
             FROM random_coffee.entries AS e
             WHERE e.id = @id;
 

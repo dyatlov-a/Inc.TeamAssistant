@@ -5,4 +5,6 @@ internal static class CommandList
     public const string InviteForCoffee = "/invite";
 
     public const string AddPollAnswer = "/poll_answer?pollId=";
+    
+    public const string RefuseForCoffee = "/refuse";
 }
