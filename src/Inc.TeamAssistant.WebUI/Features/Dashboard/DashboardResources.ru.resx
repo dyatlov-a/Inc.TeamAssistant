@@ -165,14 +165,14 @@
     <data name="ReviewByOwnerTemplate" xml:space="preserve">
         <value>Отправлено на ревью ({0} дней)</value>
     </data>
-    <data name="LeaveTeammate" xml:space="preserve">
+    <data name="ConfirmDeleteTeammate" xml:space="preserve">
         <value>Удалить участника</value>
     </data>
     <data name="Days" xml:space="preserve">
         <value>дня</value>
     </data>
-    <data name="Forever" xml:space="preserve">
-        <value>навсегда</value>
+    <data name="Delete" xml:space="preserve">
+        <value>удалить</value>
     </data>
     <data name="RecoveryTeammate" xml:space="preserve">
         <value>Восстановить участника</value>

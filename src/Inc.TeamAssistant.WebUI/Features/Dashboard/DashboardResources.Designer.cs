@@ -339,9 +339,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
             }
         }
         
-        internal static string LeaveTeammate {
+        internal static string ConfirmDeleteTeammate {
             get {
-                return ResourceManager.GetString("LeaveTeammate", resourceCulture);
+                return ResourceManager.GetString("ConfirmDeleteTeammate", resourceCulture);
             }
         }
         
@@ -351,9 +351,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
             }
         }
         
-        internal static string Forever {
+        internal static string Delete {
             get {
-                return ResourceManager.GetString("Forever", resourceCulture);
+                return ResourceManager.GetString("Delete", resourceCulture);
             }
         }
         

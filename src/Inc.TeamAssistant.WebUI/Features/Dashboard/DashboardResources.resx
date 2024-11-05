@@ -165,14 +165,14 @@
     <data name="ReviewByOwnerTemplate" xml:space="preserve">
         <value>Submitted ({0} days)</value>
     </data>
-    <data name="LeaveTeammate" xml:space="preserve">
-        <value>Leave teammate</value>
+    <data name="ConfirmDeleteTeammate" xml:space="preserve">
+        <value>Delete teammate</value>
     </data>
     <data name="Days" xml:space="preserve">
         <value>days</value>
     </data>
-    <data name="Forever" xml:space="preserve">
-        <value>forever</value>
+    <data name="Delete" xml:space="preserve">
+        <value>delete</value>
     </data>
     <data name="RecoveryTeammate" xml:space="preserve">
         <value>Recovery teammate</value>
