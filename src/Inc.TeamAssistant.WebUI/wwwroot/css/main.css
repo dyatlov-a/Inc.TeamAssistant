@@ -132,6 +132,7 @@ html {
 .map-popup {
     overflow: hidden;
     width: 290px;
+    color: var(--text-secondary-color);
 }
 .map-popup__user-avatar {
     width: 50px;
