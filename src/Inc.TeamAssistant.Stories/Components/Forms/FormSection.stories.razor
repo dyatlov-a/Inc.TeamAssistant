@@ -4,7 +4,9 @@
     <Story Name="Default">
         <Template>
             <FormSection Title="@_title" HelpText="@_helpText" @attributes="context.Args">
-                Html content
+                <FormFieldSet FieldId="@_fieldId" Label="Text field">
+                    <InputSingleLine FieldId="@_fieldId" @bind-Value="_value" IsDisabled="false" />
+                </FormFieldSet>
             </FormSection>
         </Template>
     </Story>
@@ -14,13 +16,17 @@
         </Arguments>
         <Template>
             <FormSection Title="@_title" HelpText="@_helpText" @attributes="context.Args">
-                Html content
+                <FormFieldSet FieldId="@_fieldId" Label="Text field">
+                    <InputSingleLine FieldId="@_fieldId" @bind-Value="_value" IsDisabled="false" />
+                </FormFieldSet>
             </FormSection>
         </Template>
     </Story>
 </Stories>
 
 @code {
-    private readonly string _title = "Title";
-    private readonly string _helpText = "HelpText";
+    private readonly string _title = "Form section";
+    private readonly string _helpText = "Description";
+    private readonly string _fieldId = "input-single-line";
+    private string _value = string.Empty;
 }

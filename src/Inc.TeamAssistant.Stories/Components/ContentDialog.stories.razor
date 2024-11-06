@@ -4,7 +4,7 @@
     <Story Name="Default">
         <Template>
             <ContentDialog Title="@_title" @attributes="context.Args" @ref="_defaultDialog">
-                Html content
+                @_content
             </ContentDialog>
         </Template>
     </Story>
@@ -14,14 +14,15 @@
         </Arguments>
         <Template>
             <ContentDialog Title="@_title" @attributes="context.Args" @ref="_grandDialog">
-                Html content
+                @_content
             </ContentDialog>
         </Template>
     </Story>
 </Stories>
 
 @code {
-    private readonly string _title = "Title";
+    private readonly string _title = "Dialog title";
+    private readonly string _content = "Dialog content";
     private ContentDialog? _defaultDialog;
     private ContentDialog? _grandDialog;
     
