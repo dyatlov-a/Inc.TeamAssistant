@@ -3,7 +3,13 @@
 <Stories TComponent="AcceptCookieDialog">
     <Story Name="Default">
         <Template>
-            <AcceptCookieDialog IsShow="true" Accepted="() => { }" />
+            <AcceptCookieDialog IsShow="@_isShow" Accepted="HideDialog" />
         </Template>
     </Story>
 </Stories>
+
+@code {
+    private bool _isShow = true;
+    
+    private void HideDialog() => _isShow = false;
+}
