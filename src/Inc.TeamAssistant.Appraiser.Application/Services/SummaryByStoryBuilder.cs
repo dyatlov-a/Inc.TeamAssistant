@@ -39,6 +39,8 @@ internal sealed class SummaryByStoryBuilder
         if (summary.Accepted)
             await AddAcceptedValue(builder, summary);
         
+        await AddRoundsInfo(builder, summary);
+        
         var notification = summary.StoryExternalId.HasValue
             ? NotificationMessage.Edit(
                 new ChatMessage(summary.ChatId, summary.StoryExternalId.Value),
@@ -160,5 +162,16 @@ internal sealed class SummaryByStoryBuilder
             _connectToDashboardLinkTemplate,
             languageId.Value,
             teamId.ToString("N"));
+    }
+
+    private async Task AddRoundsInfo(StringBuilder builder, SummaryByStory summary)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(summary);
+        
+        builder.AppendLine();
+        builder.Append(await _messageBuilder.Build(Messages.Appraiser_NumberOfRounds, summary.LanguageId));
+        builder.Append(' ');
+        builder.Append(summary.RoundsCount);
     }
 }

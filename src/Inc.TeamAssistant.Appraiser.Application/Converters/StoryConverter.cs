@@ -33,6 +33,7 @@ internal static class StoryConverter
             story.EstimateEnded,
             story.CalculateMean().DisplayValue,
             story.CalculateMedian().DisplayValue,
-            story.AcceptedValue.DisplayValue);
+            story.AcceptedValue.DisplayValue,
+            story.RoundsCount);
     }
 }

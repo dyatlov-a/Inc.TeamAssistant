@@ -17,6 +17,7 @@ public sealed class Story
 	public int? ExternalId { get; private set; }
 	public bool Accepted => TotalValue.HasValue;
 	public int? TotalValue { get; private set; }
+	public int RoundsCount { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates;
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
@@ -53,7 +54,8 @@ public sealed class Story
 		LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
 		TeamId = teamId;
         Title = title;
-	}
+        RoundsCount = 1;
+    }
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
 
@@ -91,6 +93,8 @@ public sealed class Story
 	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
+
+        RoundsCount++;
 	}
 
 	public void Finish(long participantId, bool hasManagerAccess)

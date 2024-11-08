@@ -40,6 +40,7 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
+  "Appraiser_NumberOfRounds": "Количество раундов оценки",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",

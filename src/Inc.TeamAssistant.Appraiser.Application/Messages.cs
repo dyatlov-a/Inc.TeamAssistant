@@ -15,4 +15,5 @@ internal static class Messages
     public static readonly MessageId Appraiser_Revote = new(nameof(Appraiser_Revote));
     public static readonly MessageId Connector_TeamNotFound = new(nameof(Connector_TeamNotFound));
     public static readonly MessageId Appraiser_MissingTaskForEvaluate = new(nameof(Appraiser_MissingTaskForEvaluate));
+    public static readonly MessageId Appraiser_NumberOfRounds = new(nameof(Appraiser_NumberOfRounds));
 }

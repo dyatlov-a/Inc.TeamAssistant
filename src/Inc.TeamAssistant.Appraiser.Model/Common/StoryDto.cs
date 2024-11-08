@@ -8,4 +8,5 @@ public sealed record StoryDto(
     bool EstimateEnded,
     string Mean,
     string Median,
-    string AcceptedValue);
+    string AcceptedValue,
+    int RoundsCount);

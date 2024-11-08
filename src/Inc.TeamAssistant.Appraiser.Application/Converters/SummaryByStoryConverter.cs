@@ -43,6 +43,7 @@ internal static class SummaryByStoryConverter
             storyForEstimates,
             assessments,
             story.Accepted,
-            assessmentsToAccept);
+            assessmentsToAccept,
+            story.RoundsCount);
     }
 }

@@ -18,4 +18,5 @@ public sealed record SummaryByStory(
     IReadOnlyCollection<EstimateItemDetails> Items,
 	IReadOnlyCollection<EstimateDto> Assessments,
 	bool Accepted,
-	IReadOnlyCollection<EstimateDto> AssessmentsToAccept);
+	IReadOnlyCollection<EstimateDto> AssessmentsToAccept,
+	int RoundsCount);
