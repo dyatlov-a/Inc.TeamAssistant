@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Stories;
+using Inc.TeamAssistant.Stories.Features.Dashboard;
 using Inc.TeamAssistant.WebUI.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -11,6 +12,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
     .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddScoped<WidgetsDataFactory>()
     .AddClientServices()
     .AddIsomorphicServices();
 
