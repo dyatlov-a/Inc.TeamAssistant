@@ -255,7 +255,7 @@
     private readonly IReadOnlyCollection<BotDto> _bots =
     [
         new(
-            Id: Guid.NewGuid(),
+            Id: BotId,
             Name: "Bot 1",
             OwnerId: 1,
             Teams:
@@ -269,7 +269,7 @@
             OwnerId: 1,
             Teams:
             [
-                new TeamDto(Id: TeamId, Name: "Team 3")
+                new TeamDto(Id: Guid.NewGuid(), Name: "Team 3")
             ]),
         new(
             Id: Guid.NewGuid(),

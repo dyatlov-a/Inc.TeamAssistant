@@ -76,6 +76,42 @@ internal sealed class WidgetsDataFactory
                         PersonId: 2,
                         Name: "Alex",
                         UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 3,
+                        Name: "Ivan",
+                        UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 4,
+                        Name: "Petr",
+                        UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 5,
+                        Name: "Samson",
+                        UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 6,
+                        Name: "Konstantin",
+                        UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 7,
+                        Name: "Pavel",
+                        UserName: null,
+                        LeaveUntil: null),
+                    new TeammateDto(
+                        TeamId: teamId,
+                        PersonId: 8,
+                        Name: "Andrey",
+                        UserName: null,
                         LeaveUntil: null)
                 ]),
             ["Retry"] = () => Task.CompletedTask
@@ -98,9 +134,29 @@ internal sealed class WidgetsDataFactory
             {
                 new ReviewAverageStatsDto(
                     Created: new DateOnly(2024, 10, 28),
+                    FirstTouch: TimeSpan.FromMinutes(8),
+                    Review: TimeSpan.FromMinutes(21),
+                    Correction: TimeSpan.FromMinutes(4)),
+                new ReviewAverageStatsDto(
+                    Created: new DateOnly(2024, 10, 29),
                     FirstTouch: TimeSpan.FromMinutes(10),
+                    Review: TimeSpan.FromMinutes(30),
+                    Correction: TimeSpan.FromMinutes(10)),
+                new ReviewAverageStatsDto(
+                    Created: new DateOnly(2024, 10, 30),
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Review: TimeSpan.FromMinutes(30),
+                    Correction: TimeSpan.FromMinutes(10)),
+                new ReviewAverageStatsDto(
+                    Created: new DateOnly(2024, 11, 1),
+                    FirstTouch: TimeSpan.FromMinutes(12),
                     Review: TimeSpan.FromMinutes(40),
-                    Correction: TimeSpan.FromMinutes(20))
+                    Correction: TimeSpan.FromMinutes(14)),
+                new ReviewAverageStatsDto(
+                    Created: new DateOnly(2024, 11, 2),
+                    FirstTouch: TimeSpan.FromMinutes(8),
+                    Review: TimeSpan.FromMinutes(21),
+                    Correction: TimeSpan.FromMinutes(4))
             },
             ["Retry"] = () => Task.CompletedTask
         };
@@ -120,6 +176,159 @@ internal sealed class WidgetsDataFactory
             ["State"] = LoadingState.Done(),
             ["Items"] = new[]
             {
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
+                new TaskForReviewDto(
+                    Id: Guid.NewGuid(),
+                    Created: DateTimeOffset.UtcNow,
+                    State: "Accept",
+                    Description: "Description",
+                    FirstTouch: TimeSpan.FromMinutes(10),
+                    Correction: TimeSpan.FromMinutes(20),
+                    Review: TimeSpan.FromMinutes(40),
+                    Iterations: 2,
+                    ReviewerId: 1,
+                    ReviewerName: "Aleksandr",
+                    ReviewerUserName: "adiatlov",
+                    OwnerId: 2,
+                    OwnerName: "Alex",
+                    OwnerUserName: null,
+                    HasConcreteReviewer: false,
+                    IsOriginalReviewer: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -158,12 +367,16 @@ internal sealed class WidgetsDataFactory
                 Review:
                 [
                     new HistoryByTeamItemDto(PersonName: "Aleksandr (adiatlov)", Count: 10),
-                    new HistoryByTeamItemDto(PersonName: "Alex", Count: 6)
+                    new HistoryByTeamItemDto(PersonName: "Alex", Count: 6),
+                    new HistoryByTeamItemDto(PersonName: "Ivan", Count: 4),
+                    new HistoryByTeamItemDto(PersonName: "Petr", Count: 2)
                 ],
                 Requests:
                 [
                     new HistoryByTeamItemDto(PersonName: "Aleksandr (adiatlov)", Count: 6),
-                    new HistoryByTeamItemDto(PersonName: "Alex", Count: 10)
+                    new HistoryByTeamItemDto(PersonName: "Alex", Count: 10),
+                    new HistoryByTeamItemDto(PersonName: "Ivan", Count: 2),
+                    new HistoryByTeamItemDto(PersonName: "Petr", Count: 4)
                 ]), weeks.First().Value),
             ["Retry"] = () => Task.CompletedTask
         };
@@ -184,9 +397,49 @@ internal sealed class WidgetsDataFactory
             ["Items"] = new[]
             {
                 new AssessmentHistoryDto(
-                    AssessmentDate: new DateOnly(2024, 10, 28),
+                    AssessmentDate: new DateOnly(2024, 11, 18),
                     StoriesCount: 10,
-                    AssessmentSum: 80)
+                    AssessmentSum: 80),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 11, 5),
+                    StoriesCount: 10,
+                    AssessmentSum: 50),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 10, 21),
+                    StoriesCount: 3,
+                    AssessmentSum: 63),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 10, 7),
+                    StoriesCount: 10,
+                    AssessmentSum: 80),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 9, 23),
+                    StoriesCount: 10,
+                    AssessmentSum: 50),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 9, 9),
+                    StoriesCount: 10,
+                    AssessmentSum: 61),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 8, 26),
+                    StoriesCount: 5,
+                    AssessmentSum: 25),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 8, 12),
+                    StoriesCount: 3,
+                    AssessmentSum: 6),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 7, 29),
+                    StoriesCount: 4,
+                    AssessmentSum: 7),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 7, 15),
+                    StoriesCount: 4,
+                    AssessmentSum: 7),
+                new AssessmentHistoryDto(
+                    AssessmentDate: new DateOnly(2024, 7, 1),
+                    StoriesCount: 4,
+                    AssessmentSum: 7)
             },
             ["LinkFactory"] = (string _) => new NavRoute(LanguageId: null, RouteSegment: "#"),
             ["Retry"] = () => Task.CompletedTask
@@ -202,7 +455,7 @@ internal sealed class WidgetsDataFactory
             ["FormModel"] = new AppraiserIntegrationFromModel().Apply(new GetIntegrationPropertiesResult(
                 Properties: new IntegrationProperties(
                     AccessToken: Guid.NewGuid().ToString("N"),
-                    ProjectKey: "test",
+                    ProjectKey: "test_project",
                     ScrumMasterId: 1),
                 HasManagerAccess: true,
                 Teammates:
@@ -221,7 +474,10 @@ internal sealed class WidgetsDataFactory
             ["State"] = LoadingState.Done(),
             ["FormModel"] = new RandomCoffeeHistoryWidgetFormModel().Apply(
                 new RandomCoffeeHistoryWidgetFormModel.Parameters(
-                    new GetChatsResult([new ChatDto(Id: 1, Name: "Chat 1")]),
+                    new GetChatsResult([
+                        new ChatDto(Id: 1, Name: "Chat 1"),
+                        new ChatDto(Id: 2, Name: "Chat 2")
+                    ]),
                     ChatId: 1,
                     History: new GetHistoryResult(
                     [
@@ -233,6 +489,21 @@ internal sealed class WidgetsDataFactory
                                     FirstName: "Aleksandr",
                                     FirstUserName: "adiatlov",
                                     SecondName: "Alex",
+                                    SecondUserName: null),
+                                new PairDto(
+                                    FirstName: "Ivan",
+                                    FirstUserName: null,
+                                    SecondName: "Petr",
+                                    SecondUserName: null),
+                                new PairDto(
+                                    FirstName: "Samson",
+                                    FirstUserName: null,
+                                    SecondName: "Konstantin",
+                                    SecondUserName: null),
+                                new PairDto(
+                                    FirstName: "Pavel",
+                                    FirstUserName: null,
+                                    SecondName: "Andrey",
                                     SecondUserName: null)
                             ],
                             ExcludedPersonName: null,
@@ -248,7 +519,8 @@ internal sealed class WidgetsDataFactory
             ["State"] = LoadingState.Done(),
             ["FormModel"] = new MapWidgetFormModel().Apply(new GetMapsResult(
             [
-                new MapDto(Id: Guid.NewGuid(), Name: "Chat 1")
+                new MapDto(Id: Guid.NewGuid(), Name: "Chat 1"),
+                new MapDto(Id: Guid.NewGuid(), Name: "Chat 2")
             ])),
             ["Retry"] = () => Task.CompletedTask,
             ["LinkFactory"] = (string _) => "/imgs/map.png"
