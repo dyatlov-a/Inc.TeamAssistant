@@ -29,8 +29,7 @@ public sealed class Build : NukeBuild
 
     [Parameter("Server password", Name = "serverpassword")]
     private readonly string ServerPassword = default!;
-
-
+    
     public static int Main () => Execute<Build>(x => x.Compile);
 
     private AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -38,9 +37,9 @@ public sealed class Build : NukeBuild
     private AbsolutePath TestsDirectory => RootDirectory / "tests";
     private AbsolutePath TestReportsDirectory => OutputDirectory / "test-reports";
 
+    private const string AppDirectory = "/home/teamassist/prod";
     private const string MigrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
-    private const string GatewayProject = "Inc.TeamAssistant.Gateway";
-    private readonly IEnumerable<string> AppProjects = [GatewayProject];
+    private readonly IEnumerable<string> AppProjects = ["Inc.TeamAssistant.Gateway", "Inc.TeamAssistant.Stories"];
 
     private IEnumerable<string> ProjectsForPublish => AppProjects.Concat(MigrationRunnerProject);
 
@@ -115,13 +114,14 @@ public sealed class Build : NukeBuild
         .DependsOn(Publish)
         .Executes(() =>
         {
-            DockerBuild(x => x
-                .DisableProcessLogOutput()
-                .SetProcessWorkingDirectory(RootDirectory)
-                .SetPath(".")
-                .SetFile("cicd/dockerfile.app_component")
-                .SetBuildArg($"PROJECT={GatewayProject}")
-                .SetTag(GetImageName(GatewayProject)));
+            foreach (var appProject in AppProjects)
+                DockerBuild(x => x
+                    .DisableProcessLogOutput()
+                    .SetProcessWorkingDirectory(RootDirectory)
+                    .SetPath(".")
+                    .SetFile("cicd/dockerfile.app_component")
+                    .SetBuildArg($"PROJECT={appProject}")
+                    .SetTag(GetImageName(appProject)));
             
             DockerBuild(x => x
                 .DisableProcessLogOutput()
@@ -140,43 +140,35 @@ public sealed class Build : NukeBuild
                 .SetPassword(HubPassword)
                 .DisableProcessLogOutput());
 
-            DockerPush(s => s
-                .SetName(GetImageName(GatewayProject))
-                .DisableProcessLogOutput());
-            DockerPush(s => s
-                .SetName(GetImageName(MigrationRunnerProject))
-                .DisableProcessLogOutput());
+            foreach (var appProject in ProjectsForPublish)
+                DockerPush(s => s
+                    .SetName(GetImageName(appProject))
+                    .DisableProcessLogOutput());
         });
 
     private Target Deploy => _ => _
         .DependsOn(PushImages)
         .Executes(() =>
         {
-            var appDirectory = "/home/teamassist/prod";
-            var appraiserImage = GetImageName(GatewayProject);
-            var migrationsRunnerImage = GetImageName(MigrationRunnerProject);
-
             using var client = new SshClient(ServerName, ServerUsername, ServerPassword);
-
             client.Connect();
 
-            client.RunCommand($"docker pull {appraiserImage}");
-            Console.WriteLine($"Image {appraiserImage} pulled");
+            foreach (var appProject in ProjectsForPublish)
+            {
+                var image = GetImageName(appProject);
+                
+                client.RunCommand($"docker pull {image}");
+                Console.WriteLine($"Image {image} pulled");
+            }
 
-            client.RunCommand($"docker pull {migrationsRunnerImage}");
-            Console.WriteLine($"Image {migrationsRunnerImage} pulled");
-
-            client.RunCommand($"cd {appDirectory} && docker compose down");
+            client.RunCommand($"cd {AppDirectory} && docker compose down");
             Console.WriteLine("App stopped");
 
-            client.RunCommand($"cd {appDirectory} && docker compose up -d");
+            client.RunCommand($"cd {AppDirectory} && docker compose up -d");
             Console.WriteLine("App started");
 
             client.Disconnect();
         });
 
-    private string GetImageName(string projectName)
-    {
-        return $"dyatlovhome/{projectName.ToLowerInvariant()}:latest";
-    }
+    private string GetImageName(string projectName) => $"dyatlovhome/{projectName.ToLowerInvariant()}:latest";
 }
