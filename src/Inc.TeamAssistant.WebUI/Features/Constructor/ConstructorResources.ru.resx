@@ -304,16 +304,16 @@
         <value>СБ</value>
     </data>
     <data name="StageCheckBot" xml:space="preserve">
-        <value>Подключение</value>
+        <value>1. Подключение</value>
     </data>
     <data name="StageSelectFeatures" xml:space="preserve">
-        <value>Выбор функционала</value>
+        <value>2. Выбор функционала</value>
     </data>
     <data name="StageSetSettings" xml:space="preserve">
-        <value>Настройка</value>
+        <value>3. Настройка</value>
     </data>
     <data name="StageComplete" xml:space="preserve">
-        <value>Подтверждение</value>
+        <value>4. Подтверждение</value>
     </data>
     <data name="FeatureAppraiserDescription" xml:space="preserve">
         <value>Проведение оценки задач при помощи planning poker. Для оценки доступны числа Фибоначчи, майки, степени двойки.</value>

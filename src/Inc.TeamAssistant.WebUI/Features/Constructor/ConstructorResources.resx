@@ -304,16 +304,16 @@
         <value>SA</value>
     </data>
     <data name="StageCheckBot" xml:space="preserve">
-        <value>Connecting</value>
+        <value>1. Connecting</value>
     </data>
     <data name="StageSelectFeatures" xml:space="preserve">
-        <value>Features</value>
+        <value>2. Features</value>
     </data>
     <data name="StageSetSettings" xml:space="preserve">
-        <value>Settings</value>
+        <value>3. Settings</value>
     </data>
     <data name="StageComplete" xml:space="preserve">
-        <value>Confirmation</value>
+        <value>4. Confirmation</value>
     </data>
     <data name="FeatureAppraiserDescription" xml:space="preserve">
         <value>Evaluate tasks using the planning poker method. Fibonacci numbers and degrees of two, as well as T-shirt sizes, are available for evaluation.</value>
