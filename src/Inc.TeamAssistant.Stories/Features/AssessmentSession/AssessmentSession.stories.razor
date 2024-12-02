@@ -79,7 +79,6 @@
         new StoryDto(
             Id: Guid.NewGuid(),
             Title: "Create order from user card",
-            Links: ["https://amazon.com", "https://ozon.ru"],
             StoryForEstimates: [
                 new StoryForEstimateDto(
                     ParticipantId: 0,
@@ -104,7 +103,8 @@
             Mean: "9.6",
             Median: "8",
             AcceptedValue: string.Empty,
-            RoundsCount: 1));
+            RoundsCount: 1,
+            Url: "https://ozon.ru"));
 
     private void OnViewChanged(AssessmentType view)
     {

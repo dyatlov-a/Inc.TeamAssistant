@@ -41,6 +41,8 @@
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
   "Appraiser_NumberOfRounds": "Количество раундов оценки",
+  "Appraiser_MultipleLinkError": "Описание должно содержать одну ссылку",
+  "Appraiser_LinkLengthError": "Длина ссылки не должна превышать 2000 символов",
 
   "CheckIn_GetStarted": "Добавьте бота в чат для начала работы",
   "CheckIn_ConnectLinkText": "Перейдите по ссылке {0} чтобы увидеть наши локации",

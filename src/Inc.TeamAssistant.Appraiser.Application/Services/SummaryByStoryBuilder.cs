@@ -70,10 +70,11 @@ internal sealed class SummaryByStoryBuilder
             summary.LanguageId);
         
         builder.AppendLine(storyHeader);
+        
         builder.AppendLine(summary.StoryTitle);
-        if (summary.StoryLinks.Any())
-            foreach (var link in summary.StoryLinks)
-                builder.AppendLine(link);
+        
+        if (!string.IsNullOrWhiteSpace(summary.Url))
+            builder.AppendLine(summary.Url);
     }
 
     private async Task AddEstimateSummary(StringBuilder builder, SummaryByStory summary)
@@ -170,8 +171,7 @@ internal sealed class SummaryByStoryBuilder
         ArgumentNullException.ThrowIfNull(summary);
         
         builder.AppendLine();
-        builder.Append(await _messageBuilder.Build(Messages.Appraiser_NumberOfRounds, summary.LanguageId));
-        builder.Append(' ');
-        builder.Append(summary.RoundsCount);
+        var roundsInfo = await _messageBuilder.Build(Messages.Appraiser_NumberOfRounds, summary.LanguageId);
+        builder.AppendLine($"{roundsInfo} {summary.RoundsCount}");
     }
 }

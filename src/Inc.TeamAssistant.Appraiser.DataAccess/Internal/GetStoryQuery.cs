@@ -25,9 +25,9 @@ internal static class GetStoryQuery
                 s.language_id AS languageid,
                 s.title AS title,
                 s.external_id AS externalid,
-                s.links AS links,
                 s.total_value AS totalvalue,
-                s.rounds_count AS roundscount
+                s.rounds_count AS roundscount,
+                s.url AS url
             FROM appraiser.stories AS s
             WHERE s.id = ANY(@story_ids);
 

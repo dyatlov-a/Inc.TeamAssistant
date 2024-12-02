@@ -18,18 +18,16 @@ public sealed class Story
 	public bool Accepted => TotalValue.HasValue;
 	public int? TotalValue { get; private set; }
 	public int RoundsCount { get; private set; }
+	public string? Url { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates;
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
-
-    public ICollection<string> Links { get; private set; }
 
     private IEstimationStrategy EstimationStrategy => EstimationStrategyFactory.Create(StoryType);
 
     private Story()
     {
 	    _storyForEstimates = new();
-	    Links = new List<string>();
     }
     
     public Story(
@@ -79,8 +77,8 @@ public sealed class Story
 	public void AddLink(string link)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(link);
-		
-		Links.Add(link);
+
+		Url = link;
 	}
 
 	public void Reset(long participantId, bool hasManagerAccess)

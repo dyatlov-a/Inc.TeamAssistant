@@ -43,8 +43,8 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
             command.MessageContext.LanguageId,
             command.Title);
 
-        foreach (var link in command.Links)
-            story.AddLink(link);
+        if(command.Links.Any())
+            story.AddLink(command.Links.Single());
 
         foreach (var teammate in command.Teammates)
             story.AddStoryForEstimate(new StoryForEstimate(
