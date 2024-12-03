@@ -258,14 +258,14 @@
     <data name="WorkTimeEndLabel" xml:space="preserve">
         <value>Время завершения (UTC)</value>
     </data>
-    <data name="WeekendsTitle" xml:space="preserve">
-        <value>Выходные</value>
+    <data name="WorkdaysTitle" xml:space="preserve">
+        <value>Рабочие дни</value>
     </data>
-    <data name="WeekendsHelp" xml:space="preserve">
-        <value>Пожалуйста, укажите выходные дни</value>
+    <data name="WorkdaysHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите рабочие дни</value>
     </data>
-    <data name="WeekendsLabel" xml:space="preserve">
-        <value>Выходные</value>
+    <data name="WorkdaysLabel" xml:space="preserve">
+        <value>Рабочие дни</value>
     </data>
     <data name="HolidaysTitle" xml:space="preserve">
         <value>Праздники</value>

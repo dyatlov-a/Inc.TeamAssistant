@@ -258,14 +258,14 @@
     <data name="WorkTimeEndLabel" xml:space="preserve">
         <value>End time (UTC)</value>
     </data>
-    <data name="WeekendsTitle" xml:space="preserve">
-        <value>Weekends</value>
+    <data name="WorkdaysTitle" xml:space="preserve">
+        <value>Workdays</value>
     </data>
-    <data name="WeekendsHelp" xml:space="preserve">
-        <value>Please select standard weekends</value>
+    <data name="WorkdaysHelp" xml:space="preserve">
+        <value>Please select workdays</value>
     </data>
-    <data name="WeekendsLabel" xml:space="preserve">
-        <value>Weekends</value>
+    <data name="WorkdaysLabel" xml:space="preserve">
+        <value>Workdays</value>
     </data>
     <data name="HolidaysTitle" xml:space="preserve">
         <value>Holidays</value>

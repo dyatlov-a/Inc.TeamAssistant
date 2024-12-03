@@ -43,18 +43,18 @@
                     }
                 </FormSection>
                 <FormSection
-                    Title="@Localizer["WeekendsTitle"]"
-                    HelpText="@Localizer["WeekendsHelp"]">
-                    <FormFieldSet FieldId="weekends" Label="@Localizer["WeekendsLabel"]">
+                    Title="@Localizer["WorkdaysTitle"]"
+                    HelpText="@Localizer["WorkdaysHelp"]">
+                    <FormFieldSet FieldId="workdays" Label="@Localizer["WorkdaysLabel"]">
                         <InputMultiSelectList
-                            FieldId="weekends"
-                            Value="FormModel.SelectedWeekends"
-                            ValueExpression="@(() => FormModel.SelectedWeekends)"
-                            ValueChanged="(IEnumerable<DayOfWeek> v) => FormModel.SetWeekends(v)"
-                            Items="Enum.GetValues<DayOfWeek>()"
+                            FieldId="workdays"
+                            Value="FormModel.Workdays"
+                            ValueExpression="@(() => FormModel.Workdays)"
+                            ValueChanged="(IEnumerable<DayOfWeek> v) => FormModel.SetWorkdays(v)"
+                            Items="FormModel.WeekDays"
                             TitleSelector="i => Localizer[GetDayOfWeekTitle(i)]"
                             ValueSelector="i => i" />
-                        <ValidationMessage For="@(() => FormModel.SelectedWeekends)"/>
+                        <ValidationMessage For="@(() => FormModel.Workdays)"/>
                     </FormFieldSet>
                 </FormSection>
                 <FormSection

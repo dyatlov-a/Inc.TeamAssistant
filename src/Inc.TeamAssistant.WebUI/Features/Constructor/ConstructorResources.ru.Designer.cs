@@ -525,21 +525,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor {
             }
         }
         
-        internal static string WeekendsTitle {
+        internal static string WorkdaysTitle {
             get {
-                return ResourceManager.GetString("WeekendsTitle", resourceCulture);
+                return ResourceManager.GetString("WorkdaysTitle", resourceCulture);
             }
         }
         
-        internal static string WeekendsHelp {
+        internal static string WorkdaysHelp {
             get {
-                return ResourceManager.GetString("WeekendsHelp", resourceCulture);
+                return ResourceManager.GetString("WorkdaysHelp", resourceCulture);
             }
         }
         
-        internal static string WeekendsLabel {
+        internal static string WorkdaysLabel {
             get {
-                return ResourceManager.GetString("WeekendsLabel", resourceCulture);
+                return ResourceManager.GetString("WorkdaysLabel", resourceCulture);
             }
         }
         
