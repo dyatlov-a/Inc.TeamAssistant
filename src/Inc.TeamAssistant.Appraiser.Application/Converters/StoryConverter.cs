@@ -28,11 +28,12 @@ internal static class StoryConverter
         return new(
             story.Id,
             story.Title,
-            story.Links.ToArray(),
             items,
             story.EstimateEnded,
             story.CalculateMean().DisplayValue,
             story.CalculateMedian().DisplayValue,
-            story.AcceptedValue.DisplayValue);
+            story.AcceptedValue.DisplayValue,
+            story.RoundsCount,
+            story.Url);
     }
 }

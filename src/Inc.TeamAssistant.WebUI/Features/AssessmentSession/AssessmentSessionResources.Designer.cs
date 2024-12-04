@@ -57,6 +57,12 @@ namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession {
             }
         }
         
+        internal static string RoundsCount {
+            get {
+                return ResourceManager.GetString("RoundsCount", resourceCulture);
+            }
+        }
+        
         internal static string AcceptedValue {
             get {
                 return ResourceManager.GetString("AcceptedValue", resourceCulture);

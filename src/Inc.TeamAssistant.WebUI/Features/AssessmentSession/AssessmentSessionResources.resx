@@ -24,6 +24,9 @@
     <data name="MedianRating" xml:space="preserve">
         <value>median</value>
     </data>
+    <data name="RoundsCount" xml:space="preserve">
+        <value>round</value>
+    </data>
     <data name="AcceptedValue" xml:space="preserve">
         <value>accepted</value>
     </data>

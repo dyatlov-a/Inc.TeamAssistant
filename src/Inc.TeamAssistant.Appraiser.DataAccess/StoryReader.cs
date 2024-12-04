@@ -33,8 +33,9 @@ internal sealed class StoryReader : IStoryReader
                 s.language_id AS languageid,
                 s.title AS title,
                 s.external_id AS externalid,
-                s.links AS links,
-                s.total_value AS totalvalue
+                s.total_value AS totalvalue,
+                s.rounds_count AS roundscount,
+                s.url AS url
             FROM appraiser.stories AS s
             WHERE s.team_id = @team_id AND s.created <= @before AND (@from is null OR s.created >= @from);",
             new

@@ -50,7 +50,6 @@
         new(
             Id: Guid.NewGuid(),
             Title: "Create order from user card",
-            Links: ["https://amazon.com", "https://ozon.ru"],
             StoryForEstimates:
             [
                 new StoryForEstimateDto(
@@ -75,11 +74,12 @@
             EstimateEnded: true,
             Mean: "9.6",
             Median: "8",
-            AcceptedValue: "8"),
+            AcceptedValue: "8",
+            RoundsCount: 1,
+            Url: "https://ozon.ru"),
         new(
             Id: Guid.NewGuid(),
             Title: "Create order from user card",
-            Links: ["https://amazon.com", "https://ozon.ru"],
             StoryForEstimates:
             [
                 new StoryForEstimateDto(
@@ -104,11 +104,12 @@
             EstimateEnded: true,
             Mean: "9.6",
             Median: "8",
-            AcceptedValue: "8"),
+            AcceptedValue: "8",
+            RoundsCount: 1,
+            Url: "https://ozon.ru"),
         new(
             Id: Guid.NewGuid(),
             Title: "Create order from user card",
-            Links: ["https://amazon.com", "https://ozon.ru"],
             StoryForEstimates:
             [
                 new StoryForEstimateDto(
@@ -133,7 +134,9 @@
             EstimateEnded: true,
             Mean: "9.6",
             Median: "8",
-            AcceptedValue: "8")
+            AcceptedValue: "8",
+            RoundsCount: 1,
+            Url: "https://ozon.ru")
     ];
 
     private void OnViewChanged(AssessmentType view)

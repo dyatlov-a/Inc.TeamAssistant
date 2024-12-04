@@ -35,7 +35,6 @@ internal static class SummaryByStoryConverter
             story.ExternalId,
             story.Title,
             story.StoryType.ToString(),
-            story.Links.ToArray(),
             story.EstimateEnded,
             story.CalculateMean().DisplayValue,
             story.CalculateMedian().DisplayValue,
@@ -43,6 +42,8 @@ internal static class SummaryByStoryConverter
             storyForEstimates,
             assessments,
             story.Accepted,
-            assessmentsToAccept);
+            assessmentsToAccept,
+            story.RoundsCount,
+            story.Url);
     }
 }

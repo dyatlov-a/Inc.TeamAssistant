@@ -1,15 +1,13 @@
 <div class="story">
-    <h2 class="story__title">@Story.Title</h2>
-    @if (Story.Links.Any())
+    @if (String.IsNullOrWhiteSpace(Story.Url))
     {
-        <ul class="story__items">
-            @foreach (var link in Story.Links)
-            {
-                <li class="story__item">
-                    <RouterLink Href="@link" Target="@RouterTarget.Blank">@link</RouterLink>
-                </li>
-            }
-        </ul>
+        <h2 class="story__title">@Story.Title</h2>
+    }
+    else
+    {
+        <h2 class="story__title">
+            <RouterLink Href="@Story.Url" Target="@RouterTarget.Blank">@Story.Title</RouterLink>
+        </h2>
     }
 </div>
 

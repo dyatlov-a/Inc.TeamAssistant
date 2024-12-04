@@ -17,18 +17,17 @@ public sealed class Story
 	public int? ExternalId { get; private set; }
 	public bool Accepted => TotalValue.HasValue;
 	public int? TotalValue { get; private set; }
+	public int RoundsCount { get; private set; }
+	public string? Url { get; private set; }
 
 	private readonly List<StoryForEstimate> _storyForEstimates;
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
-
-    public ICollection<string> Links { get; private set; }
 
     private IEstimationStrategy EstimationStrategy => EstimationStrategyFactory.Create(StoryType);
 
     private Story()
     {
 	    _storyForEstimates = new();
-	    Links = new List<string>();
     }
     
     public Story(
@@ -53,7 +52,8 @@ public sealed class Story
 		LanguageId = languageId ?? throw new ArgumentNullException(nameof(languageId));
 		TeamId = teamId;
         Title = title;
-	}
+        RoundsCount = 1;
+    }
 
     public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
 
@@ -77,8 +77,8 @@ public sealed class Story
 	public void AddLink(string link)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(link);
-		
-		Links.Add(link);
+
+		Url = link;
 	}
 
 	public void Reset(long participantId, bool hasManagerAccess)
@@ -91,6 +91,8 @@ public sealed class Story
 	    
         foreach (var storyForEstimate in _storyForEstimates)
             storyForEstimate.Reset();
+
+        RoundsCount++;
 	}
 
 	public void Finish(long participantId, bool hasManagerAccess)

@@ -10,7 +10,6 @@ public sealed record SummaryByStory(
 	int? StoryExternalId,
 	string StoryTitle,
 	string StoryType,
-	IReadOnlyCollection<string> StoryLinks,
 	bool EstimateEnded,
     string Mean,
 	string Median,
@@ -18,4 +17,6 @@ public sealed record SummaryByStory(
     IReadOnlyCollection<EstimateItemDetails> Items,
 	IReadOnlyCollection<EstimateDto> Assessments,
 	bool Accepted,
-	IReadOnlyCollection<EstimateDto> AssessmentsToAccept);
+	IReadOnlyCollection<EstimateDto> AssessmentsToAccept,
+	int RoundsCount,
+	string? Url);
