@@ -11,7 +11,7 @@ internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFor
     {
         ArgumentNullException.ThrowIfNull(localizer);
         
-        RuleFor(e => e.SelectedWeekends)
+        RuleFor(e => e.Workdays)
             .NotNull()
             .Must(e => e.Distinct().Count() == e.Count);
         

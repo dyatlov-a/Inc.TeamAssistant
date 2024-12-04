@@ -14,7 +14,7 @@
 .nav-stages__item_can-move {
     cursor: pointer;
 }
-.nav-stages__item_active, .nav-stages__item_can-move:hover {
+.nav-stages__item_active, .nav-stages__item_can-move {
     background-color: var(--text-primary-color);
     color: var(--text-secondary-color);
 }

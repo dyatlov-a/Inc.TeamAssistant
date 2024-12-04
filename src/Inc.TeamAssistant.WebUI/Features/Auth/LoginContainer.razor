@@ -9,13 +9,15 @@
 
 <MetaDataModule />
 
-<Login
-    State="_state"
-    ReturnUrl="@ReturnUrl"
-    BotUserName="@_botUserName"
-    HasSuperUser="RenderContext.IsDevelopment()"
-    Retry="Load"
-    LoginAsSuperUser="LoginAsSuperUser" />
+<div class="login-container">
+    <Login
+        State="_state"
+        ReturnUrl="@ReturnUrl"
+        BotUserName="@_botUserName"
+        HasSuperUser="RenderContext.IsDevelopment()"
+        Retry="Load"
+        LoginAsSuperUser="LoginAsSuperUser" />
+</div>
 
 @code {
     [Parameter, SupplyParameterFromQuery]

@@ -258,14 +258,14 @@
     <data name="WorkTimeEndLabel" xml:space="preserve">
         <value>Время завершения (UTC)</value>
     </data>
-    <data name="WeekendsTitle" xml:space="preserve">
-        <value>Выходные</value>
+    <data name="WorkdaysTitle" xml:space="preserve">
+        <value>Рабочие дни</value>
     </data>
-    <data name="WeekendsHelp" xml:space="preserve">
-        <value>Пожалуйста, укажите выходные дни</value>
+    <data name="WorkdaysHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите рабочие дни</value>
     </data>
-    <data name="WeekendsLabel" xml:space="preserve">
-        <value>Выходные</value>
+    <data name="WorkdaysLabel" xml:space="preserve">
+        <value>Рабочие дни</value>
     </data>
     <data name="HolidaysTitle" xml:space="preserve">
         <value>Праздники</value>
@@ -304,16 +304,16 @@
         <value>СБ</value>
     </data>
     <data name="StageCheckBot" xml:space="preserve">
-        <value>Подключение</value>
+        <value>1. Подключение</value>
     </data>
     <data name="StageSelectFeatures" xml:space="preserve">
-        <value>Выбор функционала</value>
+        <value>2. Выбор функционала</value>
     </data>
     <data name="StageSetSettings" xml:space="preserve">
-        <value>Настройка</value>
+        <value>3. Настройка</value>
     </data>
     <data name="StageComplete" xml:space="preserve">
-        <value>Подтверждение</value>
+        <value>4. Подтверждение</value>
     </data>
     <data name="FeatureAppraiserDescription" xml:space="preserve">
         <value>Проведение оценки задач при помощи planning poker. Для оценки доступны числа Фибоначчи, майки, степени двойки.</value>

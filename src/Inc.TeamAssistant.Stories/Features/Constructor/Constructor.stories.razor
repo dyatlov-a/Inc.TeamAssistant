@@ -1,7 +1,20 @@
 @attribute [Stories("Features/Constructor/BotSelector")]
 
 <Stories TComponent="Constructor" Layout="typeof(DarkLayout)">
-    <Story Name="Done">
+    <Story Name="User has not bots">
+        <Template>
+            <Constructor
+                OwnerId="_ownerId"
+                Bots="Array.Empty<BotDto>()"
+                State="LoadingState.Done()"
+                Retry="() => Task.CompletedTask"
+                LinkFactory="@(_ => string.Empty)"
+                MoveToAdd="() => { }"
+                MoveToEdit="_ => { }"
+                MoveToRemove="_ => { }"/>
+        </Template>
+    </Story>
+    <Story Name="User has bots">
         <Template>
             <Constructor
                 OwnerId="_ownerId"

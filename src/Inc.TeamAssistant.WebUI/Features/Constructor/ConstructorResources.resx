@@ -258,14 +258,14 @@
     <data name="WorkTimeEndLabel" xml:space="preserve">
         <value>End time (UTC)</value>
     </data>
-    <data name="WeekendsTitle" xml:space="preserve">
-        <value>Weekends</value>
+    <data name="WorkdaysTitle" xml:space="preserve">
+        <value>Workdays</value>
     </data>
-    <data name="WeekendsHelp" xml:space="preserve">
-        <value>Please select standard weekends</value>
+    <data name="WorkdaysHelp" xml:space="preserve">
+        <value>Please select workdays</value>
     </data>
-    <data name="WeekendsLabel" xml:space="preserve">
-        <value>Weekends</value>
+    <data name="WorkdaysLabel" xml:space="preserve">
+        <value>Workdays</value>
     </data>
     <data name="HolidaysTitle" xml:space="preserve">
         <value>Holidays</value>
@@ -304,16 +304,16 @@
         <value>SA</value>
     </data>
     <data name="StageCheckBot" xml:space="preserve">
-        <value>Connecting</value>
+        <value>1. Connecting</value>
     </data>
     <data name="StageSelectFeatures" xml:space="preserve">
-        <value>Features</value>
+        <value>2. Features</value>
     </data>
     <data name="StageSetSettings" xml:space="preserve">
-        <value>Settings</value>
+        <value>3. Settings</value>
     </data>
     <data name="StageComplete" xml:space="preserve">
-        <value>Confirmation</value>
+        <value>4. Confirmation</value>
     </data>
     <data name="FeatureAppraiserDescription" xml:space="preserve">
         <value>Evaluate tasks using the planning poker method. Fibonacci numbers and degrees of two, as well as T-shirt sizes, are available for evaluation.</value>

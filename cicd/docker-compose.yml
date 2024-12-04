@@ -30,6 +30,17 @@ services:
     networks:
       - team_assistant
     restart: unless-stopped
+    
+  stories:
+    image: dyatlovhome/inc.teamassistant.stories:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    container_name: stories
+    expose:
+      - 8080
+    networks:
+      - team_assistant
+    restart: unless-stopped
 
   migrate:
     image: dyatlovhome/inc.teamassistant.migrationsrunner:latest

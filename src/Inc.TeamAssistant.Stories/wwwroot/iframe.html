@@ -35,6 +35,12 @@
     <script src="leaflet/leaflet.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
+        window.browserJsFunctions = {
+            scrollToTop: () => {
+                document.documentElement.scrollTop = 0;
+            }
+        };
+        
         Blazor.start({
             environment: window.localStorage.getItem("current_culture")
         });

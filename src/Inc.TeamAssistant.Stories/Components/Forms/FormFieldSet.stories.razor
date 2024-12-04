@@ -3,9 +3,14 @@
 <Stories TComponent="FormFieldSet" Layout="typeof(DarkLayout)">
     <Story Name="Default">
         <Template>
-            <FormFieldSet FieldId="form-field-set" Label="FormFieldSet" @attributes="context.Args">
-                Html content
+            <FormFieldSet FieldId="@_fieldId" Label="Text field" @attributes="context.Args">
+                <InputSingleLine FieldId="@_fieldId" @bind-Value="_value" IsDisabled="false" />
             </FormFieldSet>
         </Template>
     </Story>
 </Stories>
+
+@code {
+    private readonly string _fieldId = "input-single-line";
+    private string _value = string.Empty;
+}

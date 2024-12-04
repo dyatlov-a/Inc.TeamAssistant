@@ -1,16 +1,12 @@
 @inject IStringLocalizer<DashboardResources> Localizer
 
 <ConfirmDialog OnConfirm="EmitTeammateRemoved" @ref="_confirmDialog">
-    @if (_exclude || _leaveUntil.HasValue)
+    @if (_isDelete || _deleteUntil.HasValue)
     {
-        <p>@Localizer["LeaveTeammate"] @_selectedTeammate?.Name</p>
-        @if (_leaveUntil.HasValue)
+        <p>@Localizer["ConfirmDeleteTeammate"] @_selectedTeammate?.Name</p>
+        @if (_deleteUntil.HasValue)
         {
-            <p>@_leaveUntil.Value @Localizer["Days"]</p>
-        }
-        else
-        {
-            <p>@Localizer["Forever"]</p>
+            <p>@_deleteUntil.Value @Localizer["Days"]</p>
         }
     }
     else
@@ -44,19 +40,19 @@
                                 <span>@context.LeaveUntil.Value.ToString("dd.MM.yyyy")</span>
                                 if (Item.HasManagerAccess)
                                 {
-                                    <RouterLink OnClick="() => ExcludeFromTeam(context, false)">[X]</RouterLink>
+                                    <RouterLink OnClick="() => RecoveryTeammate(context)">[X]</RouterLink>
                                 }
                             }
                         </TemplateColumn>
                         <TemplateColumn Title="@Localizer["ExcludeFromTeam"]" Sortable="false">
                             @if (Item.HasManagerAccess)
                             {
-                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 1)">1</RouterLink>
-                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 7)">7</RouterLink>
-                                <RouterLink OnClick="() => ExcludeFromTeam(context, false, 14)">14</RouterLink>
+                                <RouterLink OnClick="() => DeleteTeammate(context, 1)">1</RouterLink>
+                                <RouterLink OnClick="() => DeleteTeammate(context, 7)">7</RouterLink>
+                                <RouterLink OnClick="() => DeleteTeammate(context, 14)">14</RouterLink>
                                 <br/>
-                                <RouterLink OnClick="() => ExcludeFromTeam(context, true)">
-                                    @Localizer["Forever"]
+                                <RouterLink OnClick="() => DeleteTeammate(context, null)">
+                                    @Localizer["Delete"]
                                 </RouterLink>
                             }
                             else
@@ -108,16 +104,25 @@
 
     private ConfirmDialog? _confirmDialog;
     private TeammateDto? _selectedTeammate;
-    private bool _exclude;
-    private int? _leaveUntil;
+    private bool _isDelete;
+    private int? _deleteUntil;
     
     private IQueryable<TeammateDto> Teammates => Item.Teammates.AsQueryable();
 
-    private void ExcludeFromTeam(TeammateDto teammate, bool exclude, int? leaveUntil = null)
+    private void DeleteTeammate(TeammateDto teammate, int? leaveUntil)
     {
-        _leaveUntil = leaveUntil;
         _selectedTeammate = teammate;
-        _exclude = exclude;
+        _deleteUntil = leaveUntil;
+        _isDelete = !leaveUntil.HasValue;
+
+        _confirmDialog?.Open();
+    }
+
+    private void RecoveryTeammate(TeammateDto teammate)
+    {
+        _selectedTeammate = teammate;
+        _deleteUntil = null;
+        _isDelete = false;
 
         _confirmDialog?.Open();
     }
@@ -125,10 +130,10 @@
     private async Task EmitTeammateRemoved()
     {
         if (_selectedTeammate is not null)
-            await TeammateRemoved.InvokeAsync((_selectedTeammate, _exclude, _leaveUntil));
+            await TeammateRemoved.InvokeAsync((_selectedTeammate, _isDelete, _deleteUntil));
 
         _selectedTeammate = null;
-        _exclude = false;
-        _leaveUntil = null;
+        _isDelete = false;
+        _deleteUntil = null;
     }
 }

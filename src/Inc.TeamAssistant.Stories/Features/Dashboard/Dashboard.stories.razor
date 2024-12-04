@@ -1,6 +1,6 @@
 @attribute [Stories("Features/Dashboard/Widgets")]
 
-@inject IDateSelectorFactory DateSelectorFactory
+@inject WidgetsDataFactory WidgetsDataFactory
 
 <Stories TComponent="Dashboard" Layout="typeof(DarkLayout)">
     <Story Name="Without bots">
@@ -224,7 +224,7 @@
         typeof(RandomCoffeeHistoryWidget),
         typeof(MapWidget)
     ];
-    
+
     private readonly IReadOnlyCollection<Type> _reviewerWidgets =
     [
         typeof(TeammatesWidget),
@@ -232,20 +232,20 @@
         typeof(ReviewHistoryWidget),
         typeof(ReviewTotalStatsWidget)
     ];
-    
+
     private readonly IReadOnlyCollection<Type> _appraiserWidgets =
     [
         typeof(TeammatesWidget),
         typeof(AppraiserHistoryWidget),
         typeof(AppraiserIntegrationWidget)
     ];
-    
+
     private readonly IReadOnlyCollection<Type> _randomCoffeeWidgets =
     [
         typeof(TeammatesWidget),
         typeof(RandomCoffeeHistoryWidget)
     ];
-    
+
     private readonly IReadOnlyCollection<Type> _mapWidgets =
     [
         typeof(TeammatesWidget),
@@ -255,10 +255,11 @@
     private readonly IReadOnlyCollection<BotDto> _bots =
     [
         new(
-            Id: Guid.NewGuid(),
+            Id: BotId,
             Name: "Bot 1",
             OwnerId: 1,
-            Teams: [
+            Teams:
+            [
                 new TeamDto(Id: TeamId, Name: "Team 1"),
                 new TeamDto(Id: Guid.NewGuid(), Name: "Team 2")
             ]),
@@ -266,8 +267,9 @@
             Id: Guid.NewGuid(),
             Name: "Bot 2",
             OwnerId: 1,
-            Teams: [
-                new TeamDto(Id: TeamId, Name: "Team 3")
+            Teams:
+            [
+                new TeamDto(Id: Guid.NewGuid(), Name: "Team 3")
             ]),
         new(
             Id: Guid.NewGuid(),
@@ -281,172 +283,5 @@
         LinkForConnect: "#",
         Code: CodeForConnectFactory.CreateDark());
 
-    private Dictionary<string, object?> CreateWidgetParameters(Type type)
-    {
-        var weeks = DateSelectorFactory.CreateWeeks();
-        var months = DateSelectorFactory.CreateMonths();
-        
-        if (type == typeof(TeammatesWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["State"] = LoadingState.Done(),
-                ["Item"] = new GetTeammatesResult(
-                    HasManagerAccess: true,
-                    Teammates: 
-                    [
-                        new TeammateDto(
-                            TeamId: TeamId,
-                            PersonId: 1,
-                            Name: "Aleksandr",
-                            UserName: "adiatlov",
-                            LeaveUntil: null),
-                        new TeammateDto(
-                            TeamId: TeamId,
-                            PersonId: 2,
-                            Name: "Alex",
-                            UserName: null,
-                            LeaveUntil: null)
-                    ]),
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(ReviewAverageStatsWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["Date"] = weeks.First().Value,
-                ["DateItems"] = weeks,
-                ["State"] = LoadingState.Done(),
-                ["Items"] = new[]
-                {
-                    new ReviewAverageStatsDto(
-                        Created: new DateOnly(2024, 10, 28),
-                        FirstTouch: TimeSpan.FromMinutes(10),
-                        Review: TimeSpan.FromMinutes(40),
-                        Correction: TimeSpan.FromMinutes(20))
-                },
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(ReviewHistoryWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["Date"] = weeks.First().Value,
-                ["DateItems"] = weeks,
-                ["State"] = LoadingState.Done(),
-                ["Items"] = new[]
-                {
-                    new TaskForReviewDto(
-                        Id: Guid.NewGuid(),
-                        Created: DateTimeOffset.UtcNow,
-                        State: "Accept",
-                        Description: "Description",
-                        FirstTouch: TimeSpan.FromMinutes(10),
-                        Correction: TimeSpan.FromMinutes(20),
-                        Review: TimeSpan.FromMinutes(40),
-                        Iterations: 2,
-                        ReviewerId: 1,
-                        ReviewerName: "Aleksandr",
-                        ReviewerUserName: "adiatlov",
-                        OwnerId: 2,
-                        OwnerName: "Alex",
-                        OwnerUserName: null,
-                        HasConcreteReviewer: false,
-                        IsOriginalReviewer: false)
-                },
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(ReviewTotalStatsWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["Date"] = weeks.First().Value,
-                ["DateItems"] = weeks,
-                ["State"] = LoadingState.Done(),
-                ["FormModel"] = new ReviewTotalStatsWidgetFormModel().Apply(new GetHistoryByTeamResult(
-                    Review:
-                    [
-                        new HistoryByTeamItemDto(PersonName: "Aleksandr (adiatlov)", Count: 10),
-                        new HistoryByTeamItemDto(PersonName: "Alex", Count: 6)
-                    ],
-                    Requests:
-                    [
-                        new HistoryByTeamItemDto(PersonName: "Aleksandr (adiatlov)", Count: 6),
-                        new HistoryByTeamItemDto(PersonName: "Alex", Count: 10)
-                    ]), weeks.First().Value),
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(AppraiserHistoryWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["Date"] = months.First().Value,
-                ["DateItems"] = months,
-                ["State"] = LoadingState.Done(),
-                ["Items"] = new[]
-                {
-                    new AssessmentHistoryDto(
-                        AssessmentDate: new DateOnly(2024, 10, 28),
-                        StoriesCount: 10,
-                        AssessmentSum: 80)
-                },
-                ["LinkFactory"] = (string _) => new NavRoute(LanguageId: null, RouteSegment: "#"),
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(AppraiserIntegrationWidget))
-            return new Dictionary<string, object?>
-            {
-                ["TeamId"] = TeamId,
-                ["State"] = LoadingState.Done(),
-                ["FormModel"] = new AppraiserIntegrationFromModel().Apply(new GetIntegrationPropertiesResult(
-                    Properties: new IntegrationProperties(
-                        AccessToken: Guid.NewGuid().ToString("N"),
-                        ProjectKey: "test",
-                        ScrumMasterId: 1),
-                    HasManagerAccess: true,
-                    Teammates:
-                    [
-                        new Person(Id: 1, Name: "Aleksandr", Username: "adiatlov"),
-                        new Person(Id: 2, Name: "Alex", Username: null)
-                    ])),
-                ["Retry"] = () => Task.CompletedTask
-            };
-        if (type == typeof(RandomCoffeeHistoryWidget))
-            return new Dictionary<string, object?>
-            {
-                ["State"] = LoadingState.Done(),
-                ["FormModel"] = new RandomCoffeeHistoryWidgetFormModel().Apply(
-                    new RandomCoffeeHistoryWidgetFormModel.Parameters(
-                        new GetChatsResult([new ChatDto(Id: 1, Name: "Chat 1")]),
-                        ChatId: 1,
-                        History: new GetHistoryResult(
-                            [
-                                new RandomCoffeeHistoryDto(
-                                    Created: new DateOnly(2024, 10, 28),
-                                    Pairs:
-                                    [
-                                        new PairDto(
-                                            FirstName: "Aleksandr",
-                                            FirstUserName: "adiatlov",
-                                            SecondName: "Alex",
-                                            SecondUserName: null)
-                                    ],
-                                    ExcludedPersonName: null,
-                                    ExcludedPersonUserName: null)
-                            ])))
-            };
-        if (type == typeof(MapWidget))
-            return new Dictionary<string, object?>
-            {
-                ["State"] = LoadingState.Done(),
-                ["FormModel"] = new MapWidgetFormModel().Apply(new GetMapsResult(
-                [
-                    new MapDto(Id: Guid.NewGuid(), Name: "Chat 1")
-                ])),
-                ["Retry"] = () => Task.CompletedTask,
-                ["LinkFactory"] = (string _) => "/imgs/map.png"
-            };
-        
-        throw new NotSupportedException($"{type.Name} is not supported.");
-    }
+    private Dictionary<string, object?> CreateWidgetParameters(Type type) => WidgetsDataFactory.Create(type, TeamId);
 }
