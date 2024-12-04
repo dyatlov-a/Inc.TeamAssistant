@@ -30,16 +30,35 @@ public sealed class AddUrl  : Migration
 
     public override void Down()
     {
-        Delete
-            .Column("url")
-            .FromTable("stories")
-            .InSchema("appraiser");
-        
         Create
             .Column("links")
             .OnTable("stories")
             .InSchema("appraiser")
             .AsCustom("jsonb")
+            .Nullable();
+
+        Execute.Sql(
+            """
+            UPDATE appraiser.stories as s
+            SET links =
+                CASE
+                    WHEN s.url IS NULL
+                        THEN '[]'::JSONB
+                    ELSE to_jsonb(ARRAY[s.url])
+                END;
+            """, 
+            "Move url to links");
+
+        Alter
+            .Column("links")
+            .OnTable("stories")
+            .InSchema("appraiser")
+            .AsCustom("jsonb")
             .NotNullable();
+        
+        Delete
+            .Column("url")
+            .FromTable("stories")
+            .InSchema("appraiser");
     }
 }
