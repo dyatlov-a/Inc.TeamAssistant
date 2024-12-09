@@ -56,6 +56,7 @@
   "Reviewer_Owner": "Автор {0}",
   "Reviewer_TargetAutomatically": "Автоматически назначена на ",
   "Reviewer_TargetManually": "Вручную назначена на ",
+  "Reviewer_TargetReassigned": "Переназначена на ",
   "Reviewer_ReviewDeclined": "Задача отклонена.",
   "Reviewer_Accepted": "Ревью задачи завершено.",
   "Reviewer_TotalTime": "Общее время ревью {0}",
