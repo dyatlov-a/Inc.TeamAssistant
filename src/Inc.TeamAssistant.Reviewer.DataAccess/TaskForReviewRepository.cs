@@ -40,7 +40,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.accept_date AS acceptdate,
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
-                t.has_concrete_reviewer AS hasconcretereviewer,
                 t.original_reviewer_id AS originalreviewerid,
                 t.review_intervals AS reviewintervals,
                 t.accepted_with_comments AS acceptedwithcomments
@@ -80,7 +79,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.accept_date AS acceptdate,
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
-                t.has_concrete_reviewer AS hasconcretereviewer,
                 t.original_reviewer_id AS originalreviewerid,
                 t.review_intervals AS reviewintervals,
                 t.accepted_with_comments AS acceptedwithcomments
@@ -118,7 +116,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date,
                 message_id,
                 chat_id,
-                has_concrete_reviewer,
                 original_reviewer_id,
                 review_intervals,
                 accepted_with_comments)
@@ -138,7 +135,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @accept_date,
                 @message_id,
                 @chat_id,
-                @has_concrete_reviewer,
                 @original_reviewer_id,
                 @review_intervals::jsonb,
                 @accepted_with_comments)
@@ -157,7 +153,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date = excluded.accept_date,
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
-                has_concrete_reviewer = excluded.has_concrete_reviewer,
                 original_reviewer_id = excluded.original_reviewer_id,
                 review_intervals = excluded.review_intervals,
                 accepted_with_comments = excluded.accepted_with_comments;",
@@ -178,7 +173,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 owner_message_id = taskForReview.OwnerMessageId,
                 reviewer_id = taskForReview.ReviewerId,
                 reviewer_message_id = taskForReview.ReviewerMessageId,
-                has_concrete_reviewer = taskForReview.HasConcreteReviewer,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
                 review_intervals = reviewIntervals,
                 accepted_with_comments = taskForReview.AcceptedWithComments
@@ -197,14 +191,15 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             SELECT
                 t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND NOT t.has_concrete_reviewer
+            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND t.strategy != @next_reviewer_type__target
             ORDER BY t.created DESC
             OFFSET 0
             LIMIT 1;",
             new
             {
                 team_id = teamId,
-                owner_id = ownerId
+                owner_id = ownerId,
+                next_reviewer_type__target = (int)NextReviewerType.Target
             },
             flags: CommandFlags.None,
             cancellationToken: token);

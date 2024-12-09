@@ -210,10 +210,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
         var languageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
-        var reviewerTargetMessageKey = (task.OriginalReviewerId.HasValue, task.HasConcreteReviewer) switch
+        var reviewerTargetMessageKey = (task.OriginalReviewerId.HasValue, task.Strategy) switch
         {
             (true, _) => Messages.Reviewer_TargetReassigned,
-            (_, true) => Messages.Reviewer_TargetManually,
+            (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
             (_, _) => Messages.Reviewer_TargetAutomatically
         };
         

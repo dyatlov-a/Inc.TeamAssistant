@@ -27,12 +27,9 @@ internal sealed class EditDraftCommandHandler : IRequestHandler<EditDraftCommand
 
         if (draft is not null)
         {
-            draft.WithDescription(command.Description);
-
-            if (command.MessageContext.TargetPersonId.HasValue)
-                draft.WithTargetPerson(command.MessageContext.TargetPersonId.Value);
-            else
-                draft.WithoutTargetPerson();
+            draft
+                .WithDescription(command.Description)
+                .SetTargetPerson(command.MessageContext.TargetPersonId);
             
             var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
             

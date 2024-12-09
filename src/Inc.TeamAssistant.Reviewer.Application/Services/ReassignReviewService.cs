@@ -1,9 +1,10 @@
-using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
@@ -12,20 +13,21 @@ internal sealed class ReassignReviewService
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
-    private readonly ITaskForReviewReader _taskForReviewReader;
+    private readonly INextReviewerStrategyFactory _nextReviewerStrategyFactory;
     
     public ReassignReviewService(
         ITaskForReviewRepository taskForReviewRepository,
         ITeamAccessor teamAccessor,
         IReviewMessageBuilder reviewMessageBuilder,
-        ITaskForReviewReader taskForReviewReader)
+        INextReviewerStrategyFactory nextReviewerStrategyFactory)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _reviewMessageBuilder =
             reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
+        _nextReviewerStrategyFactory =
+            nextReviewerStrategyFactory ?? throw new ArgumentNullException(nameof(nextReviewerStrategyFactory));
     }
     
     public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
@@ -38,19 +40,20 @@ internal sealed class ReassignReviewService
         if (!task.CanAccept())
             return Array.Empty<NotificationMessage>();
         
-        var history = await _taskForReviewReader.GetHistory(
-            task.TeamId,
-            DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
-            token);
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
-        var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(task.TeamId, task.OwnerId, token);
-
-        task.Reassign(
-            DateTimeOffset.UtcNow,
+        var nextReviewerType = task.Strategy == NextReviewerType.Target
+            ? NextReviewerType.Random
+            : task.Strategy;
+        var nextReviewerStrategy = await _nextReviewerStrategyFactory.Create(
+            task.TeamId,
+            task.OwnerId,
+            nextReviewerType,
+            targetPersonId: null,
             teammates.Select(t => t.Id).ToArray(),
-            history,
-            task.ReviewerId,
-            lastReviewerId);
+            excludePersonId: task.ReviewerId,
+            token);
+        
+        task.Reassign(DateTimeOffset.UtcNow, nextReviewerStrategy.GetReviewer());
         
         var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
         if (owner is null)

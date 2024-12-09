@@ -152,17 +152,18 @@ public sealed class ReviewMetricsProviderTests
             _fixture.Create<Guid>(),
             teamId,
             _fixture.Create<long>(),
-            _fixture.Create<NextReviewerType>(),
             _fixture.Create<long>(),
             _fixture.Create<int>(),
             _fixture.Create<string>(),
-            start);
+            start,
+            _fixture.Create<NextReviewerType>());
         var taskForReview = new TaskForReview(
             _fixture.Create<Guid>(),
             draft,
             _fixture.Create<Guid>(),
             start,
             _fixture.Create<NotificationIntervals>(),
+            _fixture.Create<long>(),
             _fixture.Create<long>());
         var operationStart = start;
 
