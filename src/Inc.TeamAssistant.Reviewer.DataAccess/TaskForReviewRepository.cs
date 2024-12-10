@@ -41,8 +41,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
-                t.review_intervals AS reviewintervals,
-                t.accepted_with_comments AS acceptedwithcomments
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.state = ANY(@states);",
             new
@@ -80,8 +79,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
-                t.review_intervals AS reviewintervals,
-                t.accepted_with_comments AS acceptedwithcomments
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;",
             new { id = taskForReviewId },
@@ -117,8 +115,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id,
                 chat_id,
                 original_reviewer_id,
-                review_intervals,
-                accepted_with_comments)
+                review_intervals)
             VALUES (
                 @id,
                 @bot_id,
@@ -136,8 +133,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @message_id,
                 @chat_id,
                 @original_reviewer_id,
-                @review_intervals::jsonb,
-                @accepted_with_comments)
+                @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
                 team_id = excluded.team_id,
@@ -154,8 +150,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
                 original_reviewer_id = excluded.original_reviewer_id,
-                review_intervals = excluded.review_intervals,
-                accepted_with_comments = excluded.accepted_with_comments;",
+                review_intervals = excluded.review_intervals;",
             new
             {
                 id = taskForReview.Id,
@@ -174,8 +169,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 reviewer_id = taskForReview.ReviewerId,
                 reviewer_message_id = taskForReview.ReviewerMessageId,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
-                review_intervals = reviewIntervals,
-                accepted_with_comments = taskForReview.AcceptedWithComments
+                review_intervals = reviewIntervals
             },
             flags: CommandFlags.None,
             cancellationToken: token);

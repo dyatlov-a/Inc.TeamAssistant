@@ -9,6 +9,7 @@ public static class Icons
     public static readonly string InProgress = "🤩";
     public static readonly string OnCorrection = "😱";
     public static readonly string Accept = "🤝";
+    public static readonly string AcceptWithComments = "🙏";
     public static readonly string Comment = "💬";
     public static readonly string Start = "⭐";
     public static readonly string Ok = "👌";

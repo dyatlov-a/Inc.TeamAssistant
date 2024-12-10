@@ -388,11 +388,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
         var languageId = await _teamAccessor.GetClientLanguage(task.BotId, task.OwnerId, token);
         var totalTime = task.GetTotalTime(DateTimeOffset.UtcNow);
+        var stateMessage = task.State == TaskForReviewState.AcceptWithComments
+            ? Messages.Reviewer_AcceptedWithComments
+            : Messages.Reviewer_Accepted;
         
         var builder = new StringBuilder();
-        builder.AppendLine(await _messageBuilder.Build(
-            task.AcceptedWithComments ? Messages.Reviewer_AcceptedWithComments : Messages.Reviewer_Accepted,
-            languageId));
+        builder.AppendLine(await _messageBuilder.Build(stateMessage, languageId));
         builder.AppendLine();
         builder.AppendLine(task.Description);
         builder.AppendLine();
@@ -412,6 +413,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             TaskForReviewState.InProgress => Icons.InProgress,
             TaskForReviewState.OnCorrection => Icons.OnCorrection,
             TaskForReviewState.Accept => Icons.Accept,
+            TaskForReviewState.AcceptWithComments => Icons.AcceptWithComments,
             _ => throw new ArgumentOutOfRangeException(nameof(task.State), task.State, "State out of range.")
         };
     }

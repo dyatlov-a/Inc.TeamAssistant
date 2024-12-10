@@ -228,4 +228,7 @@
     <data name="TeamField" xml:space="preserve">
         <value>Команда</value>
     </data>
+    <data name="ReviewStateAcceptWithComments" xml:space="preserve">
+        <value>Принята с коментариями</value>
+    </data>
 </root>

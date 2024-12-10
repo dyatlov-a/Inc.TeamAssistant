@@ -19,7 +19,6 @@ public sealed class TaskForReview : ITaskForReviewStats
     public int? MessageId { get; private set; }
     public long? OriginalReviewerId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
-    public bool AcceptedWithComments { get; private set; }
 
     private TaskForReview()
     {
@@ -80,19 +79,14 @@ public sealed class TaskForReview : ITaskForReviewStats
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
-    public void Accept(DateTimeOffset now, bool acceptedWithComments)
+    public void Accept(DateTimeOffset now, bool hasComments)
     {
         AddReviewInterval(ReviewerId, now);
         
         AcceptDate = now;
-
-        if (acceptedWithComments)
-        {
-            MoveToAcceptWithComments();
-            return;
-        }
-
-        MoveToAccept();
+        State = hasComments
+            ? TaskForReviewState.AcceptWithComments
+            : TaskForReviewState.Accept;
     }
     
     public void MoveToAccept() => State = TaskForReviewState.Accept;
@@ -161,11 +155,5 @@ public sealed class TaskForReview : ITaskForReviewStats
             OriginalReviewerId = ReviewerId;
             
         ReviewerId = reviewerId;
-    }
-    
-    private void MoveToAcceptWithComments()
-    {
-        State = TaskForReviewState.Accept;
-        AcceptedWithComments = true;
     }
 }
