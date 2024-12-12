@@ -2,9 +2,9 @@ using Dapper;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Npgsql;
 
-namespace Inc.TeamAssistant.Appraiser.DataAccess.Internal;
+namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
-internal static class GetStoryQuery
+internal static class StoryProvider
 {
     public static async Task<IReadOnlyCollection<Story>> Get(
         NpgsqlConnection connection,
