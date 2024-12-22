@@ -11,8 +11,12 @@
                 <FormSection
                     Title="@Localizer["BotDetails"]"
                     HelpText="@Localizer["BotDetailsHelp"]">
-                    @foreach (var item in FormModel.BotDetails.Where(b => StagesState.SupportedLanguages.Contains(b.LanguageId)))
+                    @foreach (var language in StagesState.SupportedLanguages)
                     {
+                        var item = FormModel.BotDetails.FirstOrDefault(l => l.LanguageId == language);
+                        if (item is null) 
+                            item = FormModel.AddEmptyItem(language);
+                        
                         <BotDetailsItemEditor Item="item"/>
                     }
                 </FormSection>
@@ -68,7 +72,9 @@
     
     public async Task SubmitForm()
     {
-        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+        FormModel.FilterByLanguage(StagesState.SupportedLanguages);
+        
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;
 
         await OnValidSubmit.InvokeAsync();

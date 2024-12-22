@@ -342,4 +342,7 @@
     <data name="DataRefreshed" xml:space="preserve">
         <value>Successfully updated</value>
     </data>
+    <data name="DataCreated" xml:space="preserve">
+        <value>Successfully created</value>
+    </data>
 </root>

@@ -692,5 +692,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor {
                 return ResourceManager.GetString("DataRefreshed", resourceCulture);
             }
         }
+        
+        internal static string DataCreated {
+            get {
+                return ResourceManager.GetString("DataCreated", resourceCulture);
+            }
+        }
     }
 }
