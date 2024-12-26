@@ -44,16 +44,19 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         try
         {
             var bot = await _botReader.Find(_botId, DateTimeOffset.UtcNow, token);
-            if (bot is null)
-                return;
-            
-            var messageContext = await _messageContextBuilder.Build(bot, update, token);
-            if (messageContext is null)
-                return;
-        
-            var command = await _commandFactory.TryCreate(bot, messageContext, token);
-            if (command is not null)
-                await _commandExecutor.Execute(command, token);
+            if (bot is not null)
+            {
+                var messageContext = await _messageContextBuilder.Build(bot, update, token);
+                if (messageContext is not null)
+                {
+                    var command = await _commandFactory.TryCreate(bot, messageContext, token);
+                    if (command is not null)
+                        await _commandExecutor.Execute(command, token);
+                }
+            }
+
+            if (update.CallbackQuery is not null)
+                await botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id, cancellationToken: token);
         }
         catch (Exception ex)
         {
@@ -64,9 +67,9 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(botClient);
-        
-        _logger.LogWarning(exception, "Bot {BotId} listened message with error", _botId);
 
+        _logger.LogWarning(exception, "Bot {BotId} listened message with error", _botId);
+        
         return Task.CompletedTask;
     }
 }
