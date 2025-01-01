@@ -123,7 +123,9 @@
         
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
         
-        notificationsService.Publish(Notification.Info(Localizer["DataRefreshed"]));
+        notificationsService.Publish(Notification.Info(
+            _stagesState.Id.HasValue ? 
+                Localizer["DataRefreshed"] : Localizer["DataCreated"]));
         
         await NavRouter.MoveToRoute("constructor");
     }
