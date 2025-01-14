@@ -1,6 +1,6 @@
 @inject IStringLocalizer<LayoutResources> Localizer
 
-@if (IsShow)
+@if (_isOpen)
 {
     <div class="inline-dialog">
         <div class="inline-dialog__content">
@@ -13,15 +13,22 @@
 }
 
 @code {
-    /// <summary>
-    /// Visualizes the dialog.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool IsShow { get; set; }
-    
-    /// <summary>
-    /// Accepted event.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback Accepted { get; set; }
+    private bool _isOpen = false;
+    private readonly TaskCompletionSource<object> _state = new();
+
+    public Task Open()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+
+        return _state.Task;
+    }
+
+    private void Accepted()
+    {
+        _isOpen = false;
+        
+        _state.SetResult(null!);
+    }
 }

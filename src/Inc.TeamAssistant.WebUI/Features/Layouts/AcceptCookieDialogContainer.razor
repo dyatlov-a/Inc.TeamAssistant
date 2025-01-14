@@ -3,12 +3,12 @@
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 
-<AcceptCookieDialog IsShow="_isShow" Accepted="Accept" />
+<AcceptCookieDialog @ref="_dialog" />
 
 @code {
     private IJSObjectReference? _cookieModule;
-    
-    private bool _isShow;
+
+    private AcceptCookieDialog _dialog = null!;
     private readonly string _rightsCookieName = "rights";
     private readonly string _rightsCookieValue = "accept";
     private readonly int _rightsCookieLifetime = 365;
@@ -20,16 +20,18 @@
             _cookieModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",
                 "./Features/Layouts/AcceptCookieDialogContainer.razor.js");
-
             var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
+            
             if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
-                _isShow = true;
+            {
+                await _dialog.Open();
 
-            StateHasChanged();
+                await Accepted();
+            }
         }
     }
 
-    private async Task Accept()
+    private async Task Accepted()
     {
         if (_cookieModule is null)
             return;
@@ -39,8 +41,6 @@
             _rightsCookieName,
             _rightsCookieValue,
             _rightsCookieLifetime);
-
-        _isShow = false;
     }
 
     public async ValueTask DisposeAsync()
