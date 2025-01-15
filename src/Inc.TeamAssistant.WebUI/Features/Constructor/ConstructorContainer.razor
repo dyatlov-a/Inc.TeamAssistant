@@ -13,8 +13,8 @@
     WebsiteSection="WebsiteSection.Constructor"
     MetaOverrideTitle="@Localizer["Title"]" />
 
-<ConfirmDialog OnConfirm="Remove" @ref="_confirmDialog">
-    <p>@string.Format(Localizer["RemoveConfirmationText"], _selectedBot?.Name)</p>
+<ConfirmDialog @ref="_confirmDialog">
+    <p>@string.Format(Localizer["RemoveConfirmationText"], _botName)</p>
 </ConfirmDialog>
 
 <AuthorizeView>
@@ -36,7 +36,7 @@
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     private ConfirmDialog? _confirmDialog;
-    private BotDto? _selectedBot;
+    private string? _botName;
 
     protected override Task OnParametersSetAsync() => Load();
     
@@ -65,11 +65,12 @@
         await NavRouter.MoveToRoute(routeSegment);
     }
 
-    private void MoveToRemove(BotDto bot)
+    private async Task MoveToRemove(BotDto bot)
     {
-        _selectedBot = bot;
-        
-        _confirmDialog?.Open();
+        _botName = bot.Name;
+
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await Removed(bot.Id);
     }
 
     private string CreateMoveToDashboardLink(BotDto bot)
@@ -81,12 +82,9 @@
             : NavRouter.CreateRoute($"dashboard/{bot.Id:N}");
     }
 
-    private async Task Remove()
+    private async Task Removed(Guid botId)
     {
-        if (_selectedBot is null)
-            return;
-        
-        await BotService.Remove(_selectedBot.Id);
+        await BotService.Remove(botId);
 
         await Load();
     }

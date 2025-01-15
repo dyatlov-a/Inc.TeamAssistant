@@ -11,5 +11,5 @@
 @code {
     private AcceptCookieDialog? _dialog;
 
-    protected override Task OnAfterRenderAsync(bool firstRender) => _dialog?.Open() ?? Task.CompletedTask;
+    protected override Task OnAfterRenderAsync(bool firstRender) => _dialog?.IsAccepted() ?? Task.CompletedTask;
 }

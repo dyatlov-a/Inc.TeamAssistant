@@ -14,9 +14,9 @@
 
 @code {
     private bool _isOpen = false;
-    private readonly TaskCompletionSource<object> _state = new();
+    private readonly TaskCompletionSource<bool> _state = new();
 
-    public Task Open()
+    public Task<bool> IsAccepted()
     {
         _isOpen = true;
         
@@ -29,6 +29,6 @@
     {
         _isOpen = false;
         
-        _state.SetResult(null!);
+        _state.SetResult(true);
     }
 }

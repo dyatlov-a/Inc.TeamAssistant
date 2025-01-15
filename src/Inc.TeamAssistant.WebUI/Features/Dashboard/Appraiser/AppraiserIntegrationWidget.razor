@@ -1,6 +1,6 @@
 @inject IStringLocalizer<DashboardResources> Localizer
 
-<ConfirmDialog OnConfirm="Disable" @ref="_confirmDialog">
+<ConfirmDialog @ref="_confirmDialog">
     <p>@Localizer["AppraiserIntegrationConfirmText"]</p>
 </ConfirmDialog>
 
@@ -83,13 +83,13 @@
     /// Form model.
     /// </summary>
     [Parameter, EditorRequired]
-    public AppraiserIntegrationFromModel FormModel { get; set; } = default!;
+    public AppraiserIntegrationFromModel FormModel { get; set; } = null!;
     
     /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = default!;
+    public LoadingState State { get; set; } = null!;
     
     /// <summary>
     /// On disabled event.
@@ -107,7 +107,7 @@
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = default!;
+    public Func<Task> Retry { get; set; } = null!;
     
     private ConfirmDialog? _confirmDialog;
     private FluentValidationValidator? _fluentValidationValidator;
@@ -118,18 +118,10 @@
         _editContext = EditContextFactory.Create(FormModel);
     }
 
-    private void BeginDisable()
+    private async Task BeginDisable()
     {
-        if (FormModel.IsEnabled)
-            _confirmDialog?.Open();
-    }
-
-    private async Task Disable()
-    {
-        if (!TeamId.HasValue)
-            return;
-
-        await OnDisabled.InvokeAsync();
+        if (FormModel.IsEnabled && _confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await OnDisabled.InvokeAsync();
     }
     
     private async Task SubmitForm()
