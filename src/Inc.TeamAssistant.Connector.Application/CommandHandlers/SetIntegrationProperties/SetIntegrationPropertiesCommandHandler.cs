@@ -33,7 +33,8 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
         
         var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        if (!await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token))
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token);
+        if (!hasManagerAccess)
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
         

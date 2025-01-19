@@ -58,6 +58,7 @@ internal sealed class ReassignReviewService
         var owner = await _teamAccessor.FindPerson(task.OwnerId, token);
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.OwnerId);
+        
         var newReviewer = await _teamAccessor.FindPerson(task.ReviewerId, token);
         if (newReviewer is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, task.ReviewerId);

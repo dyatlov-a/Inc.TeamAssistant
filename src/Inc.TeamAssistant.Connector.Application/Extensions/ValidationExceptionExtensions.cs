@@ -7,8 +7,7 @@ internal static class ValidationExceptionExtensions
 {
     public static string ToMessage(this ValidationException validationException)
     {
-        if (validationException is null)
-            throw new ArgumentNullException(nameof(validationException));
+        ArgumentNullException.ThrowIfNull(validationException);
 
         return validationException.Errors.Any()
             ? validationException.Errors.Aggregate(

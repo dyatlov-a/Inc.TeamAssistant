@@ -35,14 +35,14 @@ internal sealed class BotListeners : IBotListeners
         
         try
         {
-            var consumeTokenSource = new CancellationTokenSource();
-            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, consumeTokenSource.Token);
+            var listener = new CancellationTokenSource();
+            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, listener.Token);
             var client = new TelegramBotClient(bot!.Token);
             var handler = _updateHandlerFactory.Create(botId);
             
-            client.StartReceiving(handler, ReceiverOptions, cancellationToken: consumeTokenSource.Token);
+            client.StartReceiving(handler, ReceiverOptions, cancellationToken: listener.Token);
             
-            _listeners.TryAdd(botId, consumeTokenSource);
+            _listeners.TryAdd(botId, listener);
         }
         catch (Exception ex)
         {
@@ -64,13 +64,9 @@ internal sealed class BotListeners : IBotListeners
         if (NotWorking())
             return;
         
-        _listeners.Remove(botId, out var cancellationTokenSource);
-        
-        if (cancellationTokenSource is null)
-            return;
-        
-        using (cancellationTokenSource)
-            await cancellationTokenSource.CancelAsync();
+        if (_listeners.Remove(botId, out var listener))
+            using (listener)
+                await listener.CancelAsync();
     }
     
     private bool NotWorking() => _isWorking == 0;
@@ -79,12 +75,12 @@ internal sealed class BotListeners : IBotListeners
     {
         Interlocked.Exchange(ref _isWorking, 0);
 
-        foreach (var cancellationTokenSource in _listeners.Values)
+        foreach (var listener in _listeners.Values)
         {
             token.ThrowIfCancellationRequested();
             
-            using (cancellationTokenSource)
-                await cancellationTokenSource.CancelAsync();
+            using (listener)
+                await listener.CancelAsync();
         }
     }
 }

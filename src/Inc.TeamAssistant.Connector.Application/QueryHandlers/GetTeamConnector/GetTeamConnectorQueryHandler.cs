@@ -15,6 +15,8 @@ public sealed class GetTeamConnectorQueryHandler : IRequestHandler<GetTeamConnec
 
     public async Task<GetTeamConnectorResult> Handle(GetTeamConnectorQuery query, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(query);
+        
         var teamConnector = await _teamLinkBuilder.GenerateTeamConnector(
             query.TeamId,
             query.Foreground,

@@ -27,7 +27,6 @@ internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeamm
 
         var currentPerson = _currentPersonProvider.GetCurrentPerson();
         var hasManagerAccess = await _teamAccessor.HasManagerAccess(command.TeamId, currentPerson.Id, token);
-
         if (!hasManagerAccess)
             throw new ApplicationException(
                 $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
