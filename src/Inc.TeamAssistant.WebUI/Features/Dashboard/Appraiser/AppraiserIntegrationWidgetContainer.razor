@@ -19,7 +19,7 @@
     public Guid? TeamId { get; set; }
     
     private readonly AppraiserIntegrationFromModel _formModel = new();
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     
     protected override Task OnParametersSetAsync() => Load();
 
@@ -32,21 +32,17 @@
         
         var notificationsService = ServiceProvider.GetService<INotificationsService>();
         
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => IntegrationService.GetTeamProperties(TeamId.Value),
             nameof(AppraiserIntegrationWidgetContainer),
-            r =>
-            {
-                _formModel.Apply(r);
+            _state);
+        
+        _formModel.Apply(result);
                 
-                if (notificationsService is not null && notification is not null)
-                    notificationsService.Publish(notification);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        if (notificationsService is not null && notification is not null)
+            notificationsService.Publish(notification);
+        
+        StateHasChanged();
     }
 
     private async Task Disable()
@@ -56,27 +52,19 @@
         
         await RequestProcessor.Process(
             () => IntegrationService.DisableIntegration(new DisableIntegrationCommand(TeamId.Value)),
-            () =>
-            {
-                _formModel.Clear();
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+        
+        _formModel.Clear();
+        
+        StateHasChanged();
     }
     
     private async Task SubmitForm(SetIntegrationPropertiesCommand command)
     {
         await RequestProcessor.Process(
-            async () =>
-            {
-                await IntegrationService.SetTeamProperties(command);
-
-                await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"]));
-            },
-            () => {},
-            _ => StateHasChanged());
+             () => IntegrationService.SetTeamProperties(command),
+            _state);
+        
+        await Load(Notification.Info(Localizer["AppraiserIntegrationEnableSuccess"]));
     }
 }

@@ -40,7 +40,7 @@
     [Parameter]
     public string SelectedStage { get; set; } = default!;
     
-    private LoadingState _state = LoadingState.Loading();
+    private readonly LoadingState _state = LoadingState.Loading();
     private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
@@ -84,7 +84,7 @@
     {
         var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
         
-        await RequestProcessor.Process(
+        _stagesState = await RequestProcessor.Process(
             () =>
             {
                 return appLocalStorage.GetValueOrDefault(BotStorageKey, async t =>
@@ -100,12 +100,9 @@
                 });
             },
             nameof(StagesContainer),
-            r => _stagesState = r,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+        
+        StateHasChanged();
     }
 
     private async Task MoveToNext(Stage? stage)

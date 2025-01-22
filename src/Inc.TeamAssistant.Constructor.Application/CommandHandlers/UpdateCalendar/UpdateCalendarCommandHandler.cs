@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateCalendar;
 
-internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, Guid>
+internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, UpdateCalendarResult>
 {
     private readonly ICalendarRepository _calendarRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
@@ -24,7 +24,7 @@ internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalen
         _holidayReader = holidayReader ?? throw new ArgumentNullException(nameof(holidayReader));
     }
 
-    public async Task<Guid> Handle(UpdateCalendarCommand command, CancellationToken token)
+    public async Task<UpdateCalendarResult> Handle(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -49,6 +49,6 @@ internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalen
         foreach (var botId in botIds)
             _holidayReader.Reload(botId);
 
-        return calendar.Id;
+        return new(calendar.Id);
     }
 }

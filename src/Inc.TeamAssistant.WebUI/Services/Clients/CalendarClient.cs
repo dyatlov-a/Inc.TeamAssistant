@@ -15,14 +15,16 @@ internal sealed class CalendarClient : ICalendarService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<GetCalendarByOwnerResult?> GetCalendarByOwner(CancellationToken token)
+    public async Task<GetCalendarByOwnerResult> GetCalendarByOwner(CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetCalendarByOwnerResult?>("calendars", token);
+        var result = await _client.GetFromJsonAsync<GetCalendarByOwnerResult>("calendars", token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
 
         return result;
     }
 
-    public async Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token)
+    public async Task<UpdateCalendarResult> Update(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -30,6 +32,10 @@ internal sealed class CalendarClient : ICalendarService
         
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<Guid>(token);
+        var result = await response.Content.ReadFromJsonAsync<UpdateCalendarResult>(token);
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
     }
 }

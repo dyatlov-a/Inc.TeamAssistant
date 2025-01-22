@@ -32,7 +32,7 @@
 </AuthorizeView>
 
 @code {
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     private ConfirmDialog? _confirmDialog;
@@ -42,15 +42,14 @@
     
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
             nameof(ConstructorContainer),
-            r => _bots = r.Bots.ToArray(),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _bots = result.Bots;
+        
+        StateHasChanged();
     }
 
     private Task MoveToAdd() => MoveToEdit(botId: null);

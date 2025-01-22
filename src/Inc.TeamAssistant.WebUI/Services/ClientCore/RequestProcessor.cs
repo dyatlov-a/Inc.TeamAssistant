@@ -12,139 +12,147 @@ public sealed class RequestProcessor : IDisposable
     private readonly PersistentComponentState _applicationState;
     private readonly INotificationsService? _notificationsService;
     private readonly List<PersistingComponentStateSubscription> _persistingSubscriptions = new();
-    
-    private readonly SemaphoreSlim _sync = new(1, 1);
-    private volatile int _requestCount;
+    private readonly ILogger<RequestProcessor> _logger;
 
     public RequestProcessor(
         IRenderContext renderContext,
         PersistentComponentState applicationState,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ILogger<RequestProcessor> logger)
     {
         _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         _applicationState = applicationState ?? throw new ArgumentNullException(nameof(applicationState));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _notificationsService = serviceProvider.GetService<INotificationsService>();
     }
-
-    public async Task Process<TResponse>(
+    
+    public async Task<TResponse> Process<TResponse>(
         Func<Task<TResponse>> request,
         string key,
-        Action<TResponse> onLoaded,
-        Action<LoadingState> stateChanged)
+        IProgress<LoadingState.State> progress,
+        bool showLoading = true)
+        where TResponse : IWithEmpty<TResponse>
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNull(onLoaded);
-        ArgumentNullException.ThrowIfNull(stateChanged);
+        ArgumentNullException.ThrowIfNull(progress);
         
         if (_renderContext.IsBrowser)
         {
             if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
             {
-                onLoaded(restored);
-                stateChanged(LoadingState.Done());
-                return;
+                progress.Report(LoadingState.State.Done);
+                
+                return restored;
             }
             
-            stateChanged(LoadingState.Loading());
-
-            await BackgroundEnding(request, onLoaded, stateChanged);
-            return;
+            if (showLoading)
+                progress.Report(LoadingState.State.Loading);
+            
+            return await BackgroundEnding(request, progress);
         }
 
-        await ForegroundEnding(request, key, onLoaded, stateChanged);
+        return await ForegroundEnding(request, key, progress);
+    }
+    
+    public async Task<TResponse> Process<TResponse>(
+        Func<Task<TResponse>> request,
+        IProgress<LoadingState.State> progress,
+        bool showLoading = true)
+        where TResponse : IWithEmpty<TResponse>
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(progress);
+        
+        if (showLoading)
+            progress.Report(LoadingState.State.Loading);
+        
+        return await BackgroundEnding(request, progress);
     }
     
     public async Task Process(
         Func<Task> request,
-        Action onLoaded,
-        Action<LoadingState> stateChanged)
+        IProgress<LoadingState.State> progress,
+        bool showLoading = true)
     {
         ArgumentNullException.ThrowIfNull(request);
-        ArgumentNullException.ThrowIfNull(onLoaded);
-        ArgumentNullException.ThrowIfNull(stateChanged);
-
-        stateChanged(LoadingState.Loading());
+        ArgumentNullException.ThrowIfNull(progress);
+        
+        if (showLoading)
+            progress.Report(LoadingState.State.Loading);
         
         await BackgroundEnding(async () =>
-        {
-            await request();
-            return true;
-        }, _ =>
-        {
-            onLoaded();
-        },
-        stateChanged);
+            {
+                await request();
+                return IdleResult.Empty;
+            }, progress);
     }
-
-    private Task BackgroundEnding<TResponse>(
+    
+    private async Task<TResponse> BackgroundEnding<TResponse>(
         Func<Task<TResponse>> request,
-        Action<TResponse> onLoaded,
-        Action<LoadingState> stateChanged)
+        IProgress<LoadingState.State> progress)
+        where TResponse : IWithEmpty<TResponse>
     {
         ArgumentNullException.ThrowIfNull(request);
-        ArgumentNullException.ThrowIfNull(onLoaded);
-        ArgumentNullException.ThrowIfNull(stateChanged);
+        ArgumentNullException.ThrowIfNull(progress);
 
-        Task.Run(async () =>
+        try
         {
-            Interlocked.Increment(ref _requestCount);
-            await _sync.WaitAsync();
+            var handler = request();
 
-            try
-            {
-                var handler = request();
+            await Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay));
 
-                await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
+            progress.Report(LoadingState.State.Done);
                 
-                onLoaded(handler.Result);
+            return handler.Result;
+        }
+        catch (Exception ex)
+        {
+            _notificationsService?.Publish(Notification.Error(ex.Message));
                 
-                stateChanged(LoadingState.Done());
-            }
-            catch (Exception ex)
-            {
-                _notificationsService?.Publish(Notification.Error(ex.Message));
-                
-                stateChanged(LoadingState.Error());
-            }
-            finally
-            {
-                _sync.Release();
-                Interlocked.Decrement(ref _requestCount);
-            }
-        });
-        
-        return Task.CompletedTask;
+            progress.Report(LoadingState.State.Error);
+        }
+
+        return TResponse.Empty;
     }
 
-    private async Task ForegroundEnding<TResponse>(
+    private async Task<TResponse> ForegroundEnding<TResponse>(
         Func<Task<TResponse>> request,
         string key,
-        Action<TResponse> onLoaded,
-        Action<LoadingState> stateChanged)
+        IProgress<LoadingState.State> progress)
+        where TResponse : IWithEmpty<TResponse>
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        ArgumentNullException.ThrowIfNull(onLoaded);
+        ArgumentNullException.ThrowIfNull(progress);
 
         try
         {
             var response = await request();
-            
+
             _persistingSubscriptions.Add(_applicationState.RegisterOnPersisting(() =>
             {
                 _applicationState.PersistAsJson(key, response);
                 return Task.CompletedTask;
             }));
-        
-            onLoaded(response);
             
-            stateChanged(LoadingState.Done());
+            progress.Report(LoadingState.State.Done);
+
+            return response;
         }
-        catch
+        catch (Exception ex)
         {
-            stateChanged(LoadingState.Error());
+            _logger.LogError(ex, "Error on request foreground ending");
+            
+            progress.Report(LoadingState.State.Error);
         }
+
+        return TResponse.Empty;
+    }
+    
+    private sealed class IdleResult : IWithEmpty<IdleResult>
+    {
+        public static IdleResult Empty { get; } = new();
     }
 
     public void Dispose()

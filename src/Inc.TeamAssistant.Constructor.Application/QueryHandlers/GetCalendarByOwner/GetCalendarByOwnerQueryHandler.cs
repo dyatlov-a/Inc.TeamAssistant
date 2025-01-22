@@ -7,7 +7,7 @@ using MediatR;
 namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetCalendarByOwner;
 
 internal sealed class GetCalendarByOwnerQueryHandler
-    : IRequestHandler<GetCalendarByOwnerQuery, GetCalendarByOwnerResult?>
+    : IRequestHandler<GetCalendarByOwnerQuery, GetCalendarByOwnerResult>
 {
     private readonly ICalendarRepository _calendarRepository;
     private readonly ICurrentPersonResolver _currentPersonResolver;
@@ -21,7 +21,7 @@ internal sealed class GetCalendarByOwnerQueryHandler
             currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
     }
 
-    public async Task<GetCalendarByOwnerResult?> Handle(GetCalendarByOwnerQuery query, CancellationToken token)
+    public async Task<GetCalendarByOwnerResult> Handle(GetCalendarByOwnerQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
@@ -29,7 +29,7 @@ internal sealed class GetCalendarByOwnerQueryHandler
         var calendar = await _calendarRepository.FindByOwner(currentPerson.Id, token);
 
         return calendar is null
-            ? null
+            ? GetCalendarByOwnerResult.Empty
             : new GetCalendarByOwnerResult(calendar.Id, calendar.OwnerId,
                 calendar.Schedule is null
                     ? null

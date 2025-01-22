@@ -10,14 +10,14 @@
     [Parameter, EditorRequired] 
     public Guid? TeamId { get; set; }
     
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private readonly RandomCoffeeHistoryWidgetFormModel _formModel = new();
 
     protected override Task OnParametersSetAsync() => Load(null);
     
     private async Task Load(long? chatId)
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             async () =>
             {
                 var chats = await RandomCoffeeService.GetChatsByBot(BotId);
@@ -29,11 +29,10 @@
                 return new RandomCoffeeHistoryWidgetFormModel.Parameters(chats, targetChatId, getHistoryResult);
             },
             nameof(RandomCoffeeHistoryWidgetContainer),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _formModel.Apply(result);
+        
+        StateHasChanged();
     }
 }

@@ -20,7 +20,7 @@
     
     private DateOnly? _date;
 
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateWeeks();
     private readonly ReviewTotalStatsWidgetFormModel _formModel = new();
 
@@ -37,19 +37,14 @@
             return;
         
         var date = _date!.Value;
-
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => ReviewService.GetHistory(TeamId.Value, date),
             nameof(ReviewTotalStatsWidgetContainer),
-            r =>
-            {
-                _formModel.Apply(r, date);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+        
+        _formModel.Apply(result, date);
+        
+        StateHasChanged();
     }
 
     private async Task Changed(DateOnly date)
