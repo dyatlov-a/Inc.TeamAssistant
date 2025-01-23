@@ -12,6 +12,8 @@ public sealed class RequestProcessor : IDisposable
     private readonly PersistentComponentState _applicationState;
     private readonly INotificationsService? _notificationsService;
     private readonly List<PersistingComponentStateSubscription> _persistingSubscriptions = new();
+    private readonly SemaphoreSlim _sync = new(1, 1);
+    private volatile int _requestCount;
     private readonly ILogger<RequestProcessor> _logger;
 
     public RequestProcessor(
@@ -96,21 +98,29 @@ public sealed class RequestProcessor : IDisposable
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(progress);
 
+        Interlocked.Increment(ref _requestCount);
+        await _sync.WaitAsync();
+
         try
         {
             var handler = request();
 
-            await Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay));
+            await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
 
             progress.Report(LoadingState.State.Done);
-                
+
             return handler.Result;
         }
         catch (Exception ex)
         {
             _notificationsService?.Publish(Notification.Error(ex.Message));
-                
+
             progress.Report(LoadingState.State.Error);
+        }
+        finally
+        {
+            _sync.Release();
+            Interlocked.Decrement(ref _requestCount);
         }
 
         return TResponse.Empty;
