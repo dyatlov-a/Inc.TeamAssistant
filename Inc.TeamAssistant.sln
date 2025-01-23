@@ -102,6 +102,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.CheckIn.G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Stories", "src\Inc.TeamAssistant.Stories\Inc.TeamAssistant.Stories.csproj", "{DA961B87-B9F3-4A4E-8C2B-F91101FB07CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.ApplicationTests", "tests\Inc.TeamAssistant.Connector.ApplicationTests\Inc.TeamAssistant.Connector.ApplicationTests.csproj", "{DC8CE5DD-1854-4760-99E0-D35F221ABF21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -262,6 +264,10 @@ Global
 		{DA961B87-B9F3-4A4E-8C2B-F91101FB07CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA961B87-B9F3-4A4E-8C2B-F91101FB07CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA961B87-B9F3-4A4E-8C2B-F91101FB07CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC8CE5DD-1854-4760-99E0-D35F221ABF21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC8CE5DD-1854-4760-99E0-D35F221ABF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC8CE5DD-1854-4760-99E0-D35F221ABF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC8CE5DD-1854-4760-99E0-D35F221ABF21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B9C88CA2-123E-4D55-A931-91B0CFA08447} = {BF819FCA-A383-4283-B680-4B80B7B5CA32}
@@ -311,5 +317,6 @@ Global
 		{504EF63F-2C47-44FC-BB22-F199C7DF7251} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
 		{41B5195D-3C81-4501-9278-57FA95F973FD} = {15DCF7E1-1D36-4C21-A623-35A1D037A4DA}
 		{DA961B87-B9F3-4A4E-8C2B-F91101FB07CB} = {8285EFA4-C244-455D-94D1-86994A904BFF}
+		{DC8CE5DD-1854-4760-99E0-D35F221ABF21} = {1943C11E-7A4A-4300-BDC1-DA333BD3EBED}
 	EndGlobalSection
 EndGlobal
