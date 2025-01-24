@@ -56,7 +56,11 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
             }
 
             if (update.CallbackQuery is not null)
-                await botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id, cancellationToken: token);
+                await botClient.AnswerCallbackQueryAsync(
+                    update.CallbackQuery.Id,
+                    "Done",
+                    false,
+                    cancellationToken: token);
         }
         catch (Exception ex)
         {
