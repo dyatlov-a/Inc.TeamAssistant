@@ -135,12 +135,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     Messages.Reviewer_PreviewCheckTeammate,
                     languageId,
                     reviewTarget.DisplayName,
-                    teamContext.TeamName));
+                    teamContext.Name));
                 builder.AppendLine();
             }
         }
         else
-            builder.AppendLine(string.Format(reviewTargetMessageTemplate, teamContext.TeamName));
+            builder.AppendLine(string.Format(reviewTargetMessageTemplate, teamContext.Name));
         
         if (!_draftService.HasDescriptionAndLinks(draft.Description))
         {

@@ -40,6 +40,6 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
         var link = BuildLinkForConnect(botContext.UserName, teamId);
         var code = _codeGenerator.Generate(link, foreground, background);
         
-        return (teamContext.TeamName, link, code);
+        return (teamContext.Name, link, code);
     }
 }

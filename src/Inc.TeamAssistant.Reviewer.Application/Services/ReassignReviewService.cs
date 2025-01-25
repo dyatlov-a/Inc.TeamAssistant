@@ -41,9 +41,8 @@ internal sealed class ReassignReviewService
             return Array.Empty<NotificationMessage>();
         
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
-        var nextReviewerType = task.Strategy == NextReviewerType.Target
-            ? NextReviewerType.Random
-            : task.Strategy;
+        var teamContext = await _teamAccessor.GetTeamContext(task.TeamId, token);
+        var nextReviewerType = Enum.Parse<NextReviewerType>(teamContext.GetNextReviewerType());
         var nextReviewerStrategy = await _nextReviewerStrategyFactory.Create(
             task.TeamId,
             task.OwnerId,

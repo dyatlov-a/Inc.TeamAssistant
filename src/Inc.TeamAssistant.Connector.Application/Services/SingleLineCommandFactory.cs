@@ -36,12 +36,12 @@ internal sealed class SingleLineCommandFactory
 
         var commandCreator = _commandCreatorResolver.TryResolve(cmd, onlySingleLineCommand: true);
         var canSelectTeam = messageContext.Teams.Any(t => TeamFilter(t.Name));
-        var teamSettings = bot.Teams.SingleOrDefault(t => TeamFilter(t.Name));
+        var team = bot.Teams.SingleOrDefault(t => TeamFilter(t.Name));
 
-        if (!canSelectTeam || commandCreator is null || teamSettings is null)
+        if (!canSelectTeam || commandCreator is null || team is null)
             return null;
         
-        var teamContext = new CurrentTeamContext(teamSettings.Id, teamSettings.Properties);
+        var teamContext = new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId);
         return await commandCreator.Create(
             messageContext with { Text = description },
             teamContext,
