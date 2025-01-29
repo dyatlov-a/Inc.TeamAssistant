@@ -6,6 +6,8 @@ namespace Inc.TeamAssistant.Primitives.Commands;
 
 public sealed class MessageContext
 {
+    private const string DefaultCommand = "/";
+    
     public ChatMessage ChatMessage { get; }
     public BotContext Bot { get; }
     public IReadOnlyList<TeamContext> Teams { get; }
@@ -41,8 +43,8 @@ public sealed class MessageContext
     public TargetChat TargetChat => new(Person.Id, ChatMessage.ChatId);
     
     public TeamContext? FindTeam(Guid teamId) => Teams.SingleOrDefault(t => t.Id == teamId);
-
-    public Guid TryParseId(string command)
+    
+    public Guid TryParseId(string command = DefaultCommand)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(command);
 

@@ -209,7 +209,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(metricsByTask);
 
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
-        var languageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
+        var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
+        var reviewerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, reviewer.Id, token);
         var reviewerTargetMessageKey = (task.OriginalReviewerId.HasValue, task.Strategy) switch
         {
             (true, _) => Messages.Reviewer_TargetReassigned,
@@ -218,11 +219,11 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         };
         
         var builder = new StringBuilder();
-        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, languageId));
-        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, languageId, owner.DisplayName));
+        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId));
+        builder.AppendLine(await _messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName));
         
-        builder.Append(await _messageBuilder.Build(reviewerTargetMessageKey, languageId));
-        reviewer.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+        builder.Append(await _messageBuilder.Build(reviewerTargetMessageKey, ownerLanguageId));
+        reviewer.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, reviewerLanguageId, o));
         builder.AppendLine();
         
         builder.AppendLine();
@@ -233,7 +234,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             .Create(_messageBuilder)
             .WithReviewMetrics()
             .WithCorrectionMetrics()
-            .Build(task, metricsByTeam, metricsByTask, languageId);
+            .Build(task, metricsByTeam, metricsByTask, ownerLanguageId);
         builder.Append(stats);
         
         var message = builder.ToString();

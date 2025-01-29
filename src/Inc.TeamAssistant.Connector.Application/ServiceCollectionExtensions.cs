@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Service
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Services;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Application.Executors;
 using Inc.TeamAssistant.Connector.Application.Parsers;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Bots;

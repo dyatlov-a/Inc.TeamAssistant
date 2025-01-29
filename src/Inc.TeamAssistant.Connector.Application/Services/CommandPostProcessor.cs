@@ -1,7 +1,8 @@
-using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
+using Telegram.Bot;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -24,8 +25,7 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
 
     public async Task Process(TCommand command, TResult result, CancellationToken token)
     {
-        if (command is null)
-            throw new ArgumentNullException(nameof(command));
+        ArgumentNullException.ThrowIfNull(command);
         
         var client = await _provider.Get(command.MessageContext.Bot.Id, token);
         var messages = _dialogContinuation.End(
@@ -34,6 +34,25 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
             command.SaveEndOfDialog ? null : command.MessageContext.ChatMessage);
 
         if (messages.Any())
-            await client.TryDeleteMessages(messages, _logger, token);
+            await TryDeleteMessages(client, messages, token);
+    }
+    
+    private async Task TryDeleteMessages(
+        ITelegramBotClient client,
+        IReadOnlyCollection<ChatMessage> messages,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(messages);
+        
+        try
+        {
+            foreach (var message in messages)
+                await client.DeleteMessageAsync(message.ChatId, message.MessageId, cancellationToken: token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Bot has not rights for delete messages");
+        }
     }
 }

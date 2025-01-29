@@ -14,7 +14,7 @@ internal sealed class ChangeTeamPropertyCommandFactory : IChangeTeamPropertyComm
 
         return new ChangeTeamPropertyCommand(
             messageContext,
-            messageContext.TryParseId("/"),
+            messageContext.TryParseId(),
             propertyName,
             propertyValue);
     }

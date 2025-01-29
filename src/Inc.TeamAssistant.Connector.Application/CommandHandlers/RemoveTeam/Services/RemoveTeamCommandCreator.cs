@@ -17,6 +17,6 @@ internal sealed class RemoveTeamCommandCreator : ICommandCreator
 
         return Task.FromResult<IDialogCommand>(new RemoveTeamCommand(
             messageContext,
-            messageContext.TryParseId("/")));
+            messageContext.TryParseId()));
     }
 }

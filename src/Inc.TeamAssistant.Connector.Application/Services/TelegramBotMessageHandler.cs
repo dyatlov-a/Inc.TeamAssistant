@@ -1,10 +1,10 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Application.Extensions;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -39,7 +39,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         ArgumentNullException.ThrowIfNull(botClient);
         ArgumentNullException.ThrowIfNull(update);
 
-        using var logScope = _logger.BeginScope("Bot {BotId} User {User}", _botId, update.GetUserName());
+        using var logScope = _logger.BeginScope("Bot {BotId} User {User}", _botId, GetUserName(update));
         
         try
         {
@@ -75,5 +75,27 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         _logger.LogWarning(exception, "Bot {BotId} listened message with error", _botId);
         
         return Task.CompletedTask;
+    }
+    
+    private static string GetUserName(Update update)
+    {
+        ArgumentNullException.ThrowIfNull(update);
+        
+        return update.Type switch
+        {
+            UpdateType.Message or UpdateType.EditedMessage => ToLogEntry(update.Message?.From),
+            UpdateType.CallbackQuery => ToLogEntry(update.CallbackQuery?.From),
+            UpdateType.PollAnswer => ToLogEntry(update.PollAnswer?.User),
+            _ => string.Empty
+        };
+    }
+    
+    private static string ToLogEntry(User? user)
+    {
+        var result = user is null
+            ? string.Empty
+            : $"(Id: {user.Id}, FirstName: {user.FirstName}, Username: {user.Username})";
+
+        return result;
     }
 }
