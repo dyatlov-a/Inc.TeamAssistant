@@ -148,7 +148,7 @@ internal sealed class MessageContextBuilder
         var language = await EnsureLanguage(bot.Id, user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
-        return new(
+        return MessageContext.Create(
             new ChatMessage(chatId, messageId),
             new BotContext(bot.Id, bot.Name, bot.Properties),
             teams,

@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Validators;
@@ -19,7 +20,7 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
         
         RuleFor(e => e.Title)
             .NotEmpty()
-            .Must(e => !e.StartsWith("/"))
+            .Must(e => !e.HasCommand())
             .WithMessage("'{PropertyName}' please enter text value.");
         
         RuleFor(e => e.Links)

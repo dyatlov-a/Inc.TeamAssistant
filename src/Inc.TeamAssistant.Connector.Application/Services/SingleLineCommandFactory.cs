@@ -43,7 +43,7 @@ internal sealed class SingleLineCommandFactory
         
         var teamContext = new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId);
         return await commandCreator.Create(
-            messageContext with { Text = description },
+            messageContext.ChangeText(description),
             teamContext,
             token);
 

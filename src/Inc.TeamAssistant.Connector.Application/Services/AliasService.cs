@@ -1,26 +1,30 @@
+using Inc.TeamAssistant.Primitives.Extensions;
+
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class AliasService
 {
-    private readonly IReadOnlyDictionary<string, string> _aliases = new Dictionary<string, string>(
-        StringComparer.CurrentCultureIgnoreCase)
+    private readonly IReadOnlyDictionary<string, string> _aliasMap;
+
+    public AliasService(IEnumerable<(string Alias, string Command)> aliasMap)
     {
-        ["/nr"] = "/need_review",
-        ["/l"] = "/location"
-    };
+        ArgumentNullException.ThrowIfNull(aliasMap);
+
+        _aliasMap = aliasMap.ToDictionary(i => i.Alias, i => i.Command, StringComparer.InvariantCultureIgnoreCase);
+    }
     
     public string OverrideCommand(string text)
     {
         ArgumentNullException.ThrowIfNull(text);
+
+        if (!text.HasCommand())
+            return text;
         
-        if (text.StartsWith('/'))
-        {
-            var alias = text.Split(' ').First();
-        
-            if (_aliases.TryGetValue(alias, out var command))
-                return text.Replace(alias, command);
-        }
-        
-        return text;
+        var alias = text.Split(' ').First();
+        var result = _aliasMap.TryGetValue(alias, out var command)
+            ? text.Replace(alias, command)
+            : text;
+
+        return result;
     }
 }
