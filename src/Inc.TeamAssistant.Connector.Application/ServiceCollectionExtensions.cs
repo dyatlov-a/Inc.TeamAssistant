@@ -8,6 +8,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Executors;
 using Inc.TeamAssistant.Connector.Application.Parsers;
 using Inc.TeamAssistant.Connector.Application.Services;
+using Inc.TeamAssistant.Connector.Application.Telegram;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
@@ -27,25 +28,25 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<CommandFactory>()
             .AddSingleton<DialogCommandFactory>()
-            .AddSingleton<MessageContextBuilder>()
+            .AddSingleton<TelegramMessageContextFactory>()
             .AddSingleton<MessageParser>()
             .AddSingleton<DialogContinuation>()
-            .AddSingleton<UpdateHandlerFactory>()
-            .AddHostedService<TelegramBotConnector>()
+            .AddSingleton<TelegramUpdateHandlerFactory>()
+            .AddHostedService<BotWorker>()
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramBotClientProvider>()
             .AddSingleton(new AliasService(CommandList.BuildAliasMap()))
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
             .AddSingleton<IBotAccessor, BotAccessor>()
-            .AddSingleton<ContextCommandConverter>()
-            .AddSingleton<IBotConnector, BotConnector>()
-            .AddSingleton<IBotListeners, BotListeners>()
+            .AddSingleton<TelegramContextCommandConverter>()
+            .AddSingleton<IBotConnector, TelegramBotConnector>()
+            .AddSingleton<IBotListeners, TelegramBotListeners>()
 
-            .AddSingleton<PersonPhotosService>()
-            .AddSingleton<IPersonPhotosService>(sp => ActivatorUtilities.CreateInstance<PersonPhotosServiceCache>(
+            .AddSingleton<TelegramPhotoService>()
+            .AddSingleton<IPersonPhotoService>(sp => ActivatorUtilities.CreateInstance<PersonPhotoServiceCache>(
                 sp,
-                sp.GetRequiredService<PersonPhotosService>(),
+                sp.GetRequiredService<TelegramPhotoService>(),
                 userAvatarCacheDurationInSeconds))
 
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))

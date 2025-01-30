@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Application.Telegram;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR.Pipeline;

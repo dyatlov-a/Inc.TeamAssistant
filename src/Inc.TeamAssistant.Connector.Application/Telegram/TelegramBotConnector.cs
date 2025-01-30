@@ -6,15 +6,18 @@ using Inc.TeamAssistant.Primitives.Languages;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class BotConnector : IBotConnector
+internal sealed class TelegramBotConnector : IBotConnector
 {
     private readonly IBotReader _botReader;
-    private readonly ContextCommandConverter _converter;
+    private readonly TelegramContextCommandConverter _converter;
     private readonly IMessageBuilder _messageBuilder;
 
-    public BotConnector(IBotReader botReader, ContextCommandConverter converter, IMessageBuilder messageBuilder)
+    public TelegramBotConnector(
+        IBotReader botReader,
+        TelegramContextCommandConverter converter,
+        IMessageBuilder messageBuilder)
     {
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _converter = converter ?? throw new ArgumentNullException(nameof(converter));

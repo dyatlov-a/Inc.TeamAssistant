@@ -2,21 +2,20 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class PersonPhotosService : IPersonPhotosService
+internal sealed class TelegramPhotoService : IPersonPhotoService
 {
     private readonly IPersonRepository _personRepository;
-    private readonly TelegramBotClientProvider _telegramBotClientProvider;
-    private readonly ILogger<PersonPhotosService> _logger;
+    private readonly TelegramBotClientProvider _botClientProvider;
+    private readonly ILogger<TelegramPhotoService> _logger;
 
-    public PersonPhotosService(
-        TelegramBotClientProvider telegramBotClientProvider,
-        ILogger<PersonPhotosService> logger,
+    public TelegramPhotoService(
+        TelegramBotClientProvider botClientProvider,
+        ILogger<TelegramPhotoService> logger,
         IPersonRepository personRepository)
     {
-        _telegramBotClientProvider =
-            telegramBotClientProvider ?? throw new ArgumentNullException(nameof(telegramBotClientProvider));
+        _botClientProvider = botClientProvider ?? throw new ArgumentNullException(nameof(botClientProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
     }
@@ -29,7 +28,7 @@ internal sealed class PersonPhotosService : IPersonPhotosService
             if (!botId.HasValue)
                 return null;
             
-            var telegramBotClient = await _telegramBotClientProvider.Get(botId.Value, token);
+            var telegramBotClient = await _botClientProvider.Get(botId.Value, token);
             var userProfilePhotos = await telegramBotClient.GetUserProfilePhotosAsync(
                 personId,
                 offset: 0,
@@ -51,7 +50,7 @@ internal sealed class PersonPhotosService : IPersonPhotosService
         }
         catch(Exception ex)
         {
-            _logger.LogWarning(ex, "Error on sync photo for person {personId}", personId);
+            _logger.LogWarning(ex, "Error on sync photo for person {PersonId}", personId);
         }
 
         return null;

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class TelegramBotConnector : IHostedService
+internal sealed class BotWorker : IHostedService
 {
     private readonly IBotReader _botReader;
     private readonly IBotListeners _botListeners;
     
-    public TelegramBotConnector(IBotReader botReader, IBotListeners botListeners)
+    public BotWorker(IBotReader botReader, IBotListeners botListeners)
     {
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));

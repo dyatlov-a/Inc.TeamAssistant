@@ -6,13 +6,13 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class BotListeners : IBotListeners
+internal sealed class TelegramBotListeners : IBotListeners
 {
-    private readonly UpdateHandlerFactory _updateHandlerFactory;
+    private readonly TelegramUpdateHandlerFactory _updateHandlerFactory;
     private readonly IBotReader _botReader;
-    private readonly ILogger<BotListeners> _logger;
+    private readonly ILogger<TelegramBotListeners> _logger;
     
     private static readonly ReceiverOptions ReceiverOptions = new()
     {
@@ -21,7 +21,10 @@ internal sealed class BotListeners : IBotListeners
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _listeners = new();
     private volatile int _isWorking = 1;
 
-    public BotListeners(UpdateHandlerFactory updateHandlerFactory, IBotReader botReader, ILogger<BotListeners> logger)
+    public TelegramBotListeners(
+        TelegramUpdateHandlerFactory updateHandlerFactory,
+        IBotReader botReader,
+        ILogger<TelegramBotListeners> logger)
     {
         _updateHandlerFactory = updateHandlerFactory ?? throw new ArgumentNullException(nameof(updateHandlerFactory));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));

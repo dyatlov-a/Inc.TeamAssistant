@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.AddPollAnswer;
 
@@ -15,7 +16,9 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        var parameters = messageContext.Text.Replace(CommandList.AddPollAnswer, string.Empty).Split("&option=");
+        var parameters = messageContext.Text
+            .Replace(CommandList.AddPollAnswer, string.Empty)
+            .Split(GlobalSettings.OptionParameterName);
         var pollId = parameters[0];
         var options = parameters.Skip(1).ToArray();
         

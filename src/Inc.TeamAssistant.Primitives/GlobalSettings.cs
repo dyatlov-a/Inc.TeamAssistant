@@ -12,5 +12,7 @@ public static class GlobalSettings
     
     public static readonly TimeSpan MinLoadingDelay = TimeSpan.FromMilliseconds(700);
     
-    public static string TimeFormat = @"d\.hh\:mm\:ss";
+    public static readonly string TimeFormat = @"d\.hh\:mm\:ss";
+
+    public static readonly string OptionParameterName = "&option=";
 }

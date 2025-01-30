@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Telegram.Bot;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
 internal sealed class TelegramBotClientProvider
 {

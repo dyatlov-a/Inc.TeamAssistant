@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Connector.Application.Services;
+using Inc.TeamAssistant.Connector.Application.Telegram;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;

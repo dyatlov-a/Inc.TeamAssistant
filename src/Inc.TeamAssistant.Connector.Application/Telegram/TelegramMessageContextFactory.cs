@@ -1,3 +1,4 @@
+using System.Text;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Parsers;
 using Inc.TeamAssistant.Connector.Domain;
@@ -9,15 +10,15 @@ using Inc.TeamAssistant.Primitives.Notifications;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class MessageContextBuilder
+internal sealed class TelegramMessageContextFactory
 {
     private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _clientLanguageRepository;
     private readonly MessageParser _messageParser;
 
-    public MessageContextBuilder(
+    public TelegramMessageContextFactory(
         IPersonRepository personRepository,
         IClientLanguageRepository clientLanguageRepository,
         MessageParser messageParser)
@@ -27,7 +28,7 @@ internal sealed class MessageContextBuilder
         _messageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
     }
     
-    public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
+    public async Task<MessageContext?> Create(Bot bot, Update update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(update);
@@ -72,8 +73,10 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(pollAnswer);
         
-        var parameters = string.Join("&option=", pollAnswer.OptionIds);
-        var text = string.Format(CommandList.AddPollAnswer, pollAnswer.PollId, parameters);
+        var text = pollAnswer.OptionIds.Aggregate(
+            new StringBuilder(string.Format(CommandList.AddPollAnswer, pollAnswer.PollId)),
+            (sb, p) => sb.Append(GlobalSettings.OptionParameterName).Append(p),
+            sb => sb.ToString());
             
         return await Create(
             bot,
@@ -184,9 +187,6 @@ internal sealed class MessageContextBuilder
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)
     {
         ArgumentNullException.ThrowIfNull(bot);
-
-        bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
-        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
         
         var memberOfChats = bot.Teams
             .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.Owner.Id == personId)
@@ -199,5 +199,8 @@ internal sealed class MessageContextBuilder
             .ToArray();
 
         return results;
+        
+        bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
+        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
     }
 }

@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Commands;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -6,14 +7,14 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
 internal sealed class TelegramBotMessageHandler : IUpdateHandler
 {
     private readonly ILogger _logger;
     private readonly CommandFactory _commandFactory;
     private readonly ICommandExecutor _commandExecutor;
-    private readonly MessageContextBuilder _messageContextBuilder;
+    private readonly TelegramMessageContextFactory _messageContextFactory;
     private readonly IBotReader _botReader;
     private readonly Guid _botId;
 
@@ -21,15 +22,14 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         ILogger logger,
         CommandFactory commandFactory,
         ICommandExecutor commandExecutor,
-        MessageContextBuilder messageContextBuilder,
+        TelegramMessageContextFactory messageContextFactory,
         IBotReader botReader,
         Guid botId)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
-        _messageContextBuilder =
-            messageContextBuilder ?? throw new ArgumentNullException(nameof(messageContextBuilder));
+        _messageContextFactory = messageContextFactory ?? throw new ArgumentNullException(nameof(messageContextFactory));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _botId = botId;
     }
@@ -46,21 +46,21 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
             var bot = await _botReader.Find(_botId, DateTimeOffset.UtcNow, token);
             if (bot is not null)
             {
-                var messageContext = await _messageContextBuilder.Build(bot, update, token);
+                var messageContext = await _messageContextFactory.Create(bot, update, token);
                 if (messageContext is not null)
                 {
                     var command = await _commandFactory.TryCreate(bot, messageContext, token);
                     if (command is not null)
                         await _commandExecutor.Execute(command, token);
                 }
+                
+                if (update.CallbackQuery is not null)
+                    await botClient.AnswerCallbackQueryAsync(
+                        update.CallbackQuery.Id,
+                        "Done",
+                        false,
+                        cancellationToken: token);
             }
-
-            if (update.CallbackQuery is not null)
-                await botClient.AnswerCallbackQueryAsync(
-                    update.CallbackQuery.Id,
-                    "Done",
-                    false,
-                    cancellationToken: token);
         }
         catch (Exception ex)
         {
