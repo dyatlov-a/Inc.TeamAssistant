@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Application.Alias;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Help.Services;
@@ -36,7 +37,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramMessageSender>()
             .AddSingleton<TelegramBotClientProvider>()
-            .AddSingleton(new AliasService(CommandList.BuildAliasMap()))
+            .AddSingleton(new AliasService(AliasFactory.Create()))
             .AddSingleton<SingleLineCommandFactory>()
             .AddSingleton<CommandCreatorResolver>()
             .AddSingleton<IBotAccessor, BotAccessor>()

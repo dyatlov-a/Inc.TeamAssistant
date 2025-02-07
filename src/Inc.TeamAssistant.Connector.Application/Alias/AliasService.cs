@@ -1,12 +1,12 @@
 using Inc.TeamAssistant.Primitives.Extensions;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Alias;
 
 internal sealed class AliasService
 {
     private readonly IReadOnlyDictionary<string, string> _aliasMap;
 
-    public AliasService(IEnumerable<(string Alias, string Command)> aliasMap)
+    public AliasService(IEnumerable<AliasValue> aliasMap)
     {
         ArgumentNullException.ThrowIfNull(aliasMap);
 

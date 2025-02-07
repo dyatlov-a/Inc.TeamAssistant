@@ -1,12 +1,11 @@
-using Inc.TeamAssistant.Connector.Application;
-using Inc.TeamAssistant.Connector.Application.Services;
+using Inc.TeamAssistant.Connector.Application.Alias;
 using Xunit;
 
-namespace Inc.TeamAssistant.Connector.ApplicationTests.Services;
+namespace Inc.TeamAssistant.Connector.ApplicationTests.Alias;
 
 public sealed class AliasServiceTests
 {
-    private readonly AliasService _target = new(CommandList.BuildAliasMap());
+    private readonly AliasService _target = new(AliasFactory.Create());
     
     [Fact]
     public void Constructor_AliasMapIsNull_ThrowsException()
@@ -19,7 +18,7 @@ public sealed class AliasServiceTests
     [Fact]
     public void Constructor_AliasMapWithDuplicate_ThrowsException()
     {
-        AliasService Actual() => new([("/c1", "/command1"), ("/c1", "/command2")]);
+        AliasService Actual() => new([new("/c1", "/command1"), new("/c1", "/command2")]);
 
         Assert.Throws<ArgumentException>(Actual);
     }

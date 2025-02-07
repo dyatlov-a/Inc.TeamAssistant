@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Connector.Application.Alias;
+
 namespace Inc.TeamAssistant.Connector.Application;
 
 internal static class CommandList
@@ -16,20 +18,14 @@ internal static class CommandList
 
     public const string ChangeToRoundRobin = "/change_to_round_robin";
     public const string ChangeToRandom = "/change_to_random";
-
-    private const string NeedReviewAlias = "/nr";
+    
+    [CommandAlias("/nr", "/need_review")]
     public const string NeedReview = "/need_review";
-
-    private const string AddLocationAlias = "/l";
+    
+    [CommandAlias("/l", "/location")]
     public const string AddLocation = "/location";
 
     public const string AddPollAnswer = "/poll_answer?pollId={0}";
     
     public const string EditDraft = "/edit_draft?description={0}";
-
-    public static IEnumerable<(string Aleas, string Command)> BuildAliasMap()
-    {
-        yield return (NeedReviewAlias, NeedReview);
-        yield return (AddLocationAlias, AddLocation);
-    }
 }
