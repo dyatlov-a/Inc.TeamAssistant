@@ -1,14 +1,14 @@
 namespace Inc.TeamAssistant.Connector.Application.Alias;
 
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public sealed class CommandAlias : Attribute
 {
-    public AliasValue Value { get; }
+    public string Value { get; }
 
-    public CommandAlias(string alias, string command)
+    public CommandAlias(string value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(alias);
-        ArgumentException.ThrowIfNullOrWhiteSpace(command);
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
 
-        Value = new(alias, command);
+        Value = value;
     }
 }

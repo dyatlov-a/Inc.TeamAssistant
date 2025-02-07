@@ -3,10 +3,10 @@ using Xunit;
 
 namespace Inc.TeamAssistant.Connector.ApplicationTests.Alias;
 
-public sealed class AliasFactoryTests
+public sealed class AliasFinderTests
 {
     [Fact]
-    public void Create_ShouldBeExpected()
+    public void Find_Static_ShouldBeExpected()
     {
         var aliases = new []
         {
@@ -14,7 +14,7 @@ public sealed class AliasFactoryTests
             new AliasValue("/nr", "/need_review")
         };
 
-        var actual = AliasFactory.Create().ToArray();
+        var actual = AliasFinder.Find().ToArray();
 
         Assert.Equal(aliases.Length, actual.Length);
         

@@ -19,10 +19,10 @@ internal static class CommandList
     public const string ChangeToRoundRobin = "/change_to_round_robin";
     public const string ChangeToRandom = "/change_to_random";
     
-    [CommandAlias("/nr", "/need_review")]
+    [CommandAlias("/nr")]
     public const string NeedReview = "/need_review";
     
-    [CommandAlias("/l", "/location")]
+    [CommandAlias("/l")]
     public const string AddLocation = "/location";
 
     public const string AddPollAnswer = "/poll_answer?pollId={0}";

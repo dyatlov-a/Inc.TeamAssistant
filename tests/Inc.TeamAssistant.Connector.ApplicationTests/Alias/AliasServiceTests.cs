@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Connector.ApplicationTests.Alias;
 
 public sealed class AliasServiceTests
 {
-    private readonly AliasService _target = new(AliasFactory.Create());
+    private readonly AliasService _target = new(AliasFinder.Find());
     
     [Fact]
     public void Constructor_AliasMapIsNull_ThrowsException()
