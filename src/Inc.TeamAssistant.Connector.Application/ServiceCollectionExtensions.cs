@@ -15,6 +15,8 @@ using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Handlers;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types.Enums;
 
 namespace Inc.TeamAssistant.Connector.Application;
 
@@ -44,6 +46,14 @@ public static class ServiceCollectionExtensions
             .AddSingleton<TelegramContextCommandConverter>()
             .AddSingleton<IBotConnector, TelegramBotConnector>()
             .AddSingleton<IBotListeners, TelegramBotListeners>()
+            .AddSingleton(new ReceiverOptions
+            {
+                AllowedUpdates = [
+                    UpdateType.Message,
+                    UpdateType.CallbackQuery,
+                    UpdateType.PollAnswer,
+                    UpdateType.EditedMessage]
+            })
 
             .AddSingleton<TelegramPhotoService>()
             .AddSingleton<IPersonPhotoService>(sp => ActivatorUtilities.CreateInstance<PersonPhotoServiceCache>(
