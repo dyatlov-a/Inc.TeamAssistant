@@ -25,16 +25,19 @@ public sealed class BotDetailsFormModel
         return this;
     }
 
-    public void FilterByLanguage(IReadOnlyCollection<string> languageIds)
+    public void Apply(IReadOnlyCollection<string> languageIds)
     {
         ArgumentNullException.ThrowIfNull(languageIds);
-        var filteredList = _botDetails.Where(b => languageIds.Contains(b.LanguageId)).ToArray();
+        
+        var targetLanguages = _botDetails
+            .Where(b => languageIds.Contains(b.LanguageId))
+            .ToArray();
         
         _botDetails.Clear();
-        _botDetails.AddRange(filteredList);
+        _botDetails.AddRange(targetLanguages);
     }
 
-    public BotDetailsItemFormModel AddEmptyItem(string languageId)
+    public BotDetailsItemFormModel AddLanguage(string languageId)
     {
         ArgumentNullException.ThrowIfNull(languageId);
 

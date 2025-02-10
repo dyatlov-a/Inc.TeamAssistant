@@ -18,14 +18,13 @@
     
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => CheckInService.GetMaps(BotId),
             nameof(MapWidgetContainer),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _formModel.Apply(result);
+        
+        StateHasChanged();
     }
 }

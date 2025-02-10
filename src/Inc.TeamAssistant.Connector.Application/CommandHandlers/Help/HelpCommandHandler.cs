@@ -5,7 +5,6 @@ using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
-using ArgumentNullException = System.ArgumentNullException;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help;
 

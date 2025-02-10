@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -22,13 +23,13 @@ internal sealed class TeamAccessor : ITeamAccessor
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
     }
 
-    public async Task<(Guid BotId, string TeamName)> GetTeamContext(Guid teamId, CancellationToken token)
+    public async Task<CurrentTeamContext> GetTeamContext(Guid teamId, CancellationToken token)
     {
         var team = await _teamRepository.Find(teamId, token);
         if (team is null)
             throw new TeamAssistantException($"Team by id {teamId} was not found.");
 
-        return (team.BotId, team.Name);
+        return new(team.Id, team.Name, team.Properties, team.BotId);
     }
 
     public async Task<IReadOnlyCollection<Person>> GetTeammates(

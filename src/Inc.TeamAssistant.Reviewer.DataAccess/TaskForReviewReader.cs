@@ -202,6 +202,7 @@ SELECT
     t.id AS id,
     t.created AS created,
     t.state AS state,
+    t.strategy AS strategy,
     t.bot_id AS botid,
     t.description AS description,
     t.review_intervals AS reviewintervals,
@@ -211,7 +212,6 @@ SELECT
     o.id AS ownerid,
     o.name AS ownername,
     o.username AS ownerusername,
-    t.has_concrete_reviewer AS hasconcretereviewer,
     t.original_reviewer_id IS NULL AS isoriginalreviewer
 FROM review.task_for_reviews AS t
 JOIN connector.persons AS r ON r.id = t.reviewer_id

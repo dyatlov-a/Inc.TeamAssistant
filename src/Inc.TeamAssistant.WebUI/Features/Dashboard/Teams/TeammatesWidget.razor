@@ -1,6 +1,6 @@
 @inject IStringLocalizer<DashboardResources> Localizer
 
-<ConfirmDialog OnConfirm="EmitTeammateRemoved" @ref="_confirmDialog">
+<ConfirmDialog @ref="_confirmDialog">
     @if (_isDelete || _deleteUntil.HasValue)
     {
         <p>@Localizer["ConfirmDeleteTeammate"] @_selectedTeammate?.Name</p>
@@ -82,19 +82,19 @@
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = default!;
+    public LoadingState State { get; set; } = null!;
     
     /// <summary>
     /// Teammates data.
     /// </summary>
     [Parameter, EditorRequired]
-    public GetTeammatesResult Item { get; set; } = default!;
+    public GetTeammatesResult Item { get; set; } = null!;
     
     /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = default!;
+    public Func<Task> Retry { get; set; } = null!;
     
     /// <summary>
     /// On confirm event
@@ -109,22 +109,24 @@
     
     private IQueryable<TeammateDto> Teammates => Item.Teammates.AsQueryable();
 
-    private void DeleteTeammate(TeammateDto teammate, int? leaveUntil)
+    private async Task DeleteTeammate(TeammateDto teammate, int? leaveUntil)
     {
         _selectedTeammate = teammate;
         _deleteUntil = leaveUntil;
         _isDelete = !leaveUntil.HasValue;
 
-        _confirmDialog?.Open();
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await EmitTeammateRemoved();
     }
 
-    private void RecoveryTeammate(TeammateDto teammate)
+    private async Task RecoveryTeammate(TeammateDto teammate)
     {
         _selectedTeammate = teammate;
         _deleteUntil = null;
         _isDelete = false;
 
-        _confirmDialog?.Open();
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await EmitTeammateRemoved();
     }
 
     private async Task EmitTeammateRemoved()

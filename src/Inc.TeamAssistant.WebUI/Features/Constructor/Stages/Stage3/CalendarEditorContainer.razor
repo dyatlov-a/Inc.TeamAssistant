@@ -23,7 +23,7 @@
 
     private bool _isOpen;
     private readonly CalendarFormModel _formModel = new();
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -33,42 +33,31 @@
 
     private async Task Load()
     {
-        var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
-        
         _isOpen = true;
-        await RequestProcessor.Process(
+        
+        var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
+        var result = await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
             nameof(CalendarEditor),
-            r =>
-            {
-                if (r is null)
-                    _formModel.Apply(clientTimezoneOffset);
-                else
-                    _formModel.Apply(r, clientTimezoneOffset);
-            },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+        
+        if (result == GetCalendarByOwnerResult.Empty)
+            _formModel.Apply(clientTimezoneOffset);
+        else
+            _formModel.Apply(result, clientTimezoneOffset);
         
         StateHasChanged();
     }
     
     public async Task SubmitForm()
     {
-        await RequestProcessor.Process(
-            async () =>
-            {
-                var calendarId = await CalendarService.Update(_formModel.ToCommand());
-                await SelectedCalendar(calendarId);
-            },
-            () => {},
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+        var result = await RequestProcessor.Process(
+            () => CalendarService.Update(_formModel.ToCommand()),
+            _state);
+        
+        await SelectedCalendar(result.Id);
+        
+        StateHasChanged();
     }
     
     private async Task SelectedCalendar(Guid calendarId)

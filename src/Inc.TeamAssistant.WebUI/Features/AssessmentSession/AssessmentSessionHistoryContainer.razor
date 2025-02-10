@@ -38,7 +38,7 @@
     
     private AssessmentType _currentView = Enum.GetValues<AssessmentType>().Last();
 
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<StoryDto> _items = Array.Empty<StoryDto>();
 
     protected override async Task OnParametersSetAsync()
@@ -60,14 +60,13 @@
 
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => AppraiserService.GetStories(TeamId, DateOnly.Parse(Date)),
             nameof(AssessmentSessionHistoryContainer),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _items = result.Items;
+        
+        StateHasChanged();
     }
 }

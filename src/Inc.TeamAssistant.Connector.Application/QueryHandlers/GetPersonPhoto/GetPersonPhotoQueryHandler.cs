@@ -6,18 +6,18 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetPersonPhoto;
 
 internal sealed class GetPersonPhotoQueryHandler : IRequestHandler<GetPersonPhotoQuery, GetPersonPhotoResult>
 {
-    private readonly IPersonPhotosService _personPhotosService;
+    private readonly IPersonPhotoService _personPhotoService;
 
-    public GetPersonPhotoQueryHandler(IPersonPhotosService personPhotosService)
+    public GetPersonPhotoQueryHandler(IPersonPhotoService personPhotoService)
     {
-        _personPhotosService = personPhotosService ?? throw new ArgumentNullException(nameof(personPhotosService));
+        _personPhotoService = personPhotoService ?? throw new ArgumentNullException(nameof(personPhotoService));
     }
 
     public async Task<GetPersonPhotoResult> Handle(GetPersonPhotoQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var photo = await _personPhotosService.GetPersonPhoto(query.PersonId, token);
+        var photo = await _personPhotoService.GetPersonPhoto(query.PersonId, token);
 
         return new GetPersonPhotoResult(photo);
     }

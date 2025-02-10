@@ -1,9 +1,10 @@
 namespace Inc.TeamAssistant.Primitives.Bots;
 
 public sealed record BotContext(Guid Id, string UserName, IReadOnlyDictionary<string, string> Properties)
+    : IWithEmpty<BotContext>
 {
-    public static readonly BotContext Empty = new(Guid.Empty, string.Empty, new Dictionary<string, string>());
-    
+    public static BotContext Empty { get; } = new(Guid.Empty, string.Empty, new Dictionary<string, string>());
+
     public TimeSpan GetIntervalOrDefault(string propertyKey, TimeSpan defaultValue)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(propertyKey);

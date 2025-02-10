@@ -3,7 +3,7 @@
 <Stories TComponent="ConfirmDialog" Layout="typeof(StubLayout)">
     <Story Name="Default">
         <Template>
-            <ConfirmDialog OnConfirm="() => { }" @attributes="context.Args" @ref="_dialog">
+            <ConfirmDialog @attributes="context.Args" @ref="_dialog">
                 Are you sure?
             </ConfirmDialog>
         </Template>
@@ -12,10 +12,6 @@
 
 @code {
     private ConfirmDialog? _dialog;
-    
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-            _dialog?.Open();
-    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender) => _dialog?.IsConfirmed() ?? Task.CompletedTask;
 }

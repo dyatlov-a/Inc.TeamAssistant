@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Connector.Application.Alias;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
 

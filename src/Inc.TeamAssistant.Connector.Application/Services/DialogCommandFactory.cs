@@ -25,11 +25,9 @@ internal sealed class DialogCommandFactory
         MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(currentStage);
         ArgumentNullException.ThrowIfNull(messageContext);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
         
         var teamSelected = Guid.TryParse(messageContext.Text.TrimStart('/'), out var teamId);
         var memberOfTeams = messageContext.Teams
@@ -90,11 +88,9 @@ internal sealed class DialogCommandFactory
         MessageContext messageContext,
         IReadOnlyCollection<TeamContext> teams)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teams);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
         var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
@@ -123,12 +119,10 @@ internal sealed class DialogCommandFactory
         Guid? teamId,
         MessageId messageId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(messageId);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
         var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
@@ -141,7 +135,9 @@ internal sealed class DialogCommandFactory
         return new BeginCommand(
             messageContext,
             StageType.EnterText,
-            team is not null ? new CurrentTeamContext(team.Id, team.Properties) : CurrentTeamContext.Empty,
+            team is not null
+                ? new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId)
+                : CurrentTeamContext.Empty,
             botCommand,
             notification);
     }

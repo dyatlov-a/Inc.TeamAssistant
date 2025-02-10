@@ -23,7 +23,7 @@
     [Parameter, SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
     
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private string _botUserName = string.Empty;
 
     protected override async Task OnParametersSetAsync()
@@ -34,15 +34,14 @@
 
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => UserService.GetAuthBotContext(),
             nameof(LoginContainer),
-            r => _botUserName = r.UserName,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _botUserName = result.UserName;
+        
+        StateHasChanged();
     }
     
     private async Task LoginAsSuperUser()

@@ -39,8 +39,8 @@
     
     private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
     
-    private LoadingState _state = LoadingState.Done();
-    private GetActiveStoryResult _item = new(string.Empty, string.Empty, Story: null);
+    private readonly LoadingState _state = LoadingState.Done();
+    private GetActiveStoryResult _item = GetActiveStoryResult.Empty;
     private IAsyncDisposable? _eventListener;
     
     protected override async Task OnParametersSetAsync()
@@ -75,18 +75,13 @@
 
     private async Task Load(bool showLoading = true)
     {
-        await RequestProcessor.Process(
+        _item = await RequestProcessor.Process(
             () => AppraiserService.GetActiveStory(Id, "000", "dfdfdf"),
             nameof(AssessmentSessionContainer),
-            r => _item = r,
-            s =>
-            {
-                if (showLoading || !s.IsLoading)
-                {
-                    _state = s;
-                    StateHasChanged();
-                }
-            });
+            _state,
+            showLoading);
+        
+        StateHasChanged();
     }
     
     private async Task OnViewChanged(AssessmentType assessmentType)

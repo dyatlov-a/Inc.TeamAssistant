@@ -14,6 +14,7 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Handlers;
 using Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
 using Inc.TeamAssistant.Reviewer.Application.Services;
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Reviewer.Application;
@@ -25,6 +26,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
+            .AddSingleton<INextReviewerStrategyFactory, NextReviewerStrategyFactory>()
             .AddSingleton<DraftTaskForReviewService>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()

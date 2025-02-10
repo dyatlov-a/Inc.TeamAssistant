@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
@@ -7,6 +6,7 @@ using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToReview;
 using MediatR;
 
@@ -17,31 +17,32 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
     private readonly ITaskForReviewRepository _taskForReviewRepository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly ITaskForReviewReader _taskForReviewReader;
     private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
     private readonly DraftTaskForReviewService _draftTaskForReviewService;
     private readonly IBotAccessor _botAccessor;
+    private readonly INextReviewerStrategyFactory _nextReviewerStrategyFactory;
 
     public MoveToReviewCommandHandler(
         ITaskForReviewRepository taskForReviewRepository,
         IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor,
-        ITaskForReviewReader taskForReviewReader,
         IDraftTaskForReviewRepository draftTaskForReviewRepository,
         DraftTaskForReviewService draftTaskForReviewService,
-        IBotAccessor botAccessor)
+        IBotAccessor botAccessor,
+        INextReviewerStrategyFactory nextReviewerStrategyFactory)
     {
         _taskForReviewRepository =
             taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
         _reviewMessageBuilder =
             reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
         _draftTaskForReviewRepository =
             draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
         _draftTaskForReviewService =
             draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
         _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
+        _nextReviewerStrategyFactory =
+            nextReviewerStrategyFactory ?? throw new ArgumentNullException(nameof(nextReviewerStrategyFactory));
     }
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
@@ -60,29 +61,22 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, draft.TeamId);
         
+        var nextReviewerStrategy = await _nextReviewerStrategyFactory.Create(
+            draft.TeamId,
+            draft.OwnerId,
+            draft.GetStrategy(),
+            draft.TargetPersonId,
+            teammates.Select(t => t.Id).ToArray(),
+            excludePersonId: null,
+            token);
         var taskForReview = new TaskForReview(
             Guid.NewGuid(),
             draft,
             command.MessageContext.Bot.Id,
             DateTimeOffset.UtcNow,
             botContext.GetNotificationIntervals(),
-            targetTeam.ChatId);
-
-        if (draft.TargetPersonId.HasValue)
-            taskForReview.SetConcreteReviewer(draft.TargetPersonId.Value);
-        else
-        {
-            var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(
-                taskForReview.TeamId,
-                taskForReview.OwnerId,
-                token);
-            var history = await _taskForReviewReader.GetHistory(
-                taskForReview.TeamId,
-                DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
-                token);
-            
-            taskForReview.DetectReviewer(teammates.Select(t => t.Id).ToArray(), history, lastReviewerId);
-        }
+            targetTeam.ChatId,
+            nextReviewerStrategy.GetReviewer());
         
         var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
         if (reviewer is null)

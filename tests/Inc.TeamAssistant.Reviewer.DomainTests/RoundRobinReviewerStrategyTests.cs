@@ -7,7 +7,6 @@ namespace Inc.TeamAssistant.Reviewer.DomainTests;
 public sealed class RoundRobinReviewerStrategyTests
 {
     private readonly IReadOnlyCollection<long> _teammates;
-    private readonly RoundRobinReviewerStrategy _target;
     private readonly Fixture _fixture = new();
 
     public RoundRobinReviewerStrategyTests()
@@ -20,13 +19,15 @@ public sealed class RoundRobinReviewerStrategyTests
             _fixture.Create<long>(),
             _fixture.Create<long>()
         };
-        _target = new RoundRobinReviewerStrategy(_teammates);
     }
     
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(teammates: null!, new Dictionary<long, int>());
+        RoundRobinReviewerStrategy Action() => new(
+            teammates: null!,
+            excludedPersonIds: Array.Empty<long>(),
+            lastReviewerId: null);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -34,7 +35,10 @@ public sealed class RoundRobinReviewerStrategyTests
     [Fact]
     public void Constructor_HistoryIsNull_ThrowsException()
     {
-        RandomReviewerStrategy Action() => new(_teammates, null!);
+        RoundRobinReviewerStrategy Action() => new(
+            _teammates,
+            null!,
+            lastReviewerId: null);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -43,8 +47,9 @@ public sealed class RoundRobinReviewerStrategyTests
     public void Next_Team_ShouldNotOwner()
     {
         var ownerId = _teammates.First();
-
-        var reviewerId = _target.Next([ownerId], lastReviewerId: null);
+        var target = new RoundRobinReviewerStrategy(_teammates, [ownerId], lastReviewerId: null);
+        
+        var reviewerId = target.GetReviewer();
         
         Assert.NotEqual(ownerId, reviewerId);
     }
@@ -54,8 +59,9 @@ public sealed class RoundRobinReviewerStrategyTests
     {
         var ownerId = _teammates.First();
         var lastReviewerId = _teammates.Skip(1).First();
-        
-        var reviewerId = _target.Next([ownerId], lastReviewerId);
+        var target = new RoundRobinReviewerStrategy(_teammates, [ownerId], lastReviewerId);
+
+        var reviewerId = target.GetReviewer();
         
         Assert.NotEqual(lastReviewerId, reviewerId);
     }
@@ -72,7 +78,8 @@ public sealed class RoundRobinReviewerStrategyTests
         long? lastReviewerId = null;
         foreach (var otherPlayerId in otherPlayerIds.Concat(otherPlayerIds))
         {
-            var reviewerId = _target.Next([ownerId], lastReviewerId);
+            var target = new RoundRobinReviewerStrategy(_teammates, [ownerId], lastReviewerId);
+            var reviewerId = target.GetReviewer();
             lastReviewerId = reviewerId;
             Assert.Equal(otherPlayerId, reviewerId);
         }

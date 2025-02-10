@@ -75,7 +75,7 @@ public sealed class Calendar
     
     public bool IsWorkTime(DateTimeOffset value)
     {
-        if (Schedule?.IsWorkTime(value) == false)
+        if (Schedule is null || !Schedule.IsWorkTime(value))
             return false;
         
         return IsWorkday(DateOnly.FromDateTime(value.DateTime));

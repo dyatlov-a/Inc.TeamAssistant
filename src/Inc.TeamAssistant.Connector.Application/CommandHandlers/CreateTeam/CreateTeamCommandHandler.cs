@@ -38,12 +38,13 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             command.MessageContext.Bot.Properties);
 
         await _teamRepository.Upsert(team, token);
-        
+
+        var linkForConnect = _teamLinkBuilder.BuildLinkForConnect(command.BotName, team.Id);
         var message = await _messageBuilder.Build(
             Messages.Connector_JoinToTeam,
             command.MessageContext.LanguageId,
             team.Name,
-            _teamLinkBuilder.BuildLinkForConnect(command.BotName, team.Id));
+            linkForConnect);
         var notification = NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message, pinned: true);
         
         return CommandResult.Build(notification);

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Model.Commands.NeedReview;
 
 namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.NeedReview.Validators;
@@ -13,7 +14,7 @@ internal sealed class NeedReviewCommandValidator : AbstractValidator<NeedReviewC
         RuleFor(e => e.Description)
             .NotEmpty()
             .MaximumLength(2000)
-            .Must(e => !e.StartsWith("/"))
+            .Must(e => !e.HasCommand())
             .WithMessage("'{PropertyName}' please enter text value");
     }
 }

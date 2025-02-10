@@ -49,7 +49,7 @@
     private Guid? _botId;
     private Guid? _teamId;
     
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<Type> _widgetTypes = Array.Empty<Type>();
     private IReadOnlyCollection<WidgetDto> _widgets = Array.Empty<WidgetDto>();
     
@@ -76,23 +76,19 @@
     private async Task Load()
     {
         if (_botId.HasValue)
-            await RequestProcessor.Process(
+        {
+            var result = await RequestProcessor.Process(
                 () => BotService.GetWidgetsForCurrentUser(_botId.Value),
                 nameof(DashboardContainer),
-                r =>
-                {
-                    _widgets = r.Widgets;
-                    _widgetTypes = _widgets
-                        .Where(w => w.IsVisible)
-                        .OrderBy(w => w.Position)
-                        .Select(w => _widgetsLookup[w.Type])
-                        .ToArray();
-                },
-                s =>
-                {
-                    _state = s;
-                    StateHasChanged();
-                });
+                _state);
+            
+            _widgets = result.Widgets;
+            _widgetTypes = _widgets
+                .Where(w => w.IsVisible)
+                .OrderBy(w => w.Position)
+                .Select(w => _widgetsLookup[w.Type])
+                .ToArray();
+        }
         else
         {
             _widgets = Array.Empty<WidgetDto>();

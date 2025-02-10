@@ -13,10 +13,9 @@
                     HelpText="@Localizer["BotDetailsHelp"]">
                     @foreach (var language in StagesState.SupportedLanguages)
                     {
-                        var item = FormModel.BotDetails.FirstOrDefault(l => l.LanguageId == language);
-                        if (item is null) 
-                            item = FormModel.AddEmptyItem(language);
-                        
+                        var item = FormModel.BotDetails
+                            .SingleOrDefault(l => l.LanguageId == language) ?? FormModel.AddLanguage(language);
+
                         <BotDetailsItemEditor Item="item"/>
                     }
                 </FormSection>
@@ -72,7 +71,7 @@
     
     public async Task SubmitForm()
     {
-        FormModel.FilterByLanguage(StagesState.SupportedLanguages);
+        FormModel.Apply(StagesState.SupportedLanguages);
         
         if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
             return;

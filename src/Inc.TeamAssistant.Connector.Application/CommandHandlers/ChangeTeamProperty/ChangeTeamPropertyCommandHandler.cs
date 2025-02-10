@@ -27,12 +27,14 @@ internal sealed class ChangeTeamPropertyCommandHandler : IRequestHandler<ChangeT
             throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
 
         team.ChangeProperty(new PropertyKey(command.Name), command.Value);
+        
         await _teamRepository.Upsert(team, token);
         
         var message = await _messageBuilder.Build(
             Messages.Connector_ChangedPropertySuccess,
             command.MessageContext.LanguageId,
             team.Name);
+        
         return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message));
     }
 }

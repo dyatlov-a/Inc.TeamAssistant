@@ -23,7 +23,7 @@
     private Guid? _botId;
     private Guid? _teamId;
     
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
 
     protected override async Task OnParametersSetAsync()
@@ -39,15 +39,14 @@
 
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => BotService.GetFromCurrentUser(),
             nameof(DashboardTeamSelectorContainer),
-            r => _bots = r.Bots,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _bots = result.Bots;
+        
+        StateHasChanged();
     }
     
     private async Task ChangeTeam(Guid? value)

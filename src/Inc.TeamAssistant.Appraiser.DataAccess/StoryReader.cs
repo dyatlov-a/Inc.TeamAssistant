@@ -1,6 +1,5 @@
 using Dapper;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
@@ -37,7 +36,7 @@ internal sealed class StoryReader : IStoryReader
                 s.rounds_count AS roundscount,
                 s.url AS url
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND s.created <= @before AND (@from is null OR s.created >= @from);",
+            WHERE s.team_id = @team_id AND s.created <= @before AND (@from IS NULL OR s.created >= @from);",
             new
             {
                 team_id = teamId,
@@ -74,7 +73,7 @@ internal sealed class StoryReader : IStoryReader
         await using var connection = _connectionFactory.Create();
 
         var storyIds = await connection.QueryAsync<Guid>(command);
-        var stories = await GetStoryQuery.Get(connection, storyIds.ToArray(), token);
+        var stories = await StoryProvider.Get(connection, storyIds.ToArray(), token);
         var results = stories.OrderBy(p => p.Created).ToArray();
         
         return results;
@@ -86,7 +85,7 @@ internal sealed class StoryReader : IStoryReader
             SELECT
                 s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND total_value is null
+            WHERE s.team_id = @team_id AND total_value IS NULL
             ORDER BY s.created
             OFFSET 0
             LIMIT 1;",
@@ -100,7 +99,7 @@ internal sealed class StoryReader : IStoryReader
         if (!storyId.HasValue)
             return null;
         
-        var stories = await GetStoryQuery.Get(connection, new[] { storyId.Value }, token);
+        var stories = await StoryProvider.Get(connection, new[] { storyId.Value }, token);
         return stories.SingleOrDefault();
     }
 }

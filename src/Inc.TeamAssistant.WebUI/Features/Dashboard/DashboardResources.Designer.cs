@@ -464,5 +464,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
                 return ResourceManager.GetString("TeamField", resourceCulture);
             }
         }
+        
+        internal static string ReviewStateAcceptWithComments {
+            get {
+                return ResourceManager.GetString("ReviewStateAcceptWithComments", resourceCulture);
+            }
+        }
     }
 }

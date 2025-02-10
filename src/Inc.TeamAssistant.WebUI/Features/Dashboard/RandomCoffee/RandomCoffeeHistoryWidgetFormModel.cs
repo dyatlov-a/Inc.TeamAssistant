@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetChats;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory;
 
@@ -31,5 +32,9 @@ public sealed class RandomCoffeeHistoryWidgetFormModel
         return this;
     }
 
-    public sealed record Parameters(GetChatsResult Chats, long? ChatId, GetHistoryResult? History);
+    public sealed record Parameters(GetChatsResult Chats, long? ChatId, GetHistoryResult? History)
+        : IWithEmpty<Parameters>
+    {
+        public static Parameters Empty { get; } = new(GetChatsResult.Empty, null, null);
+    }
 }

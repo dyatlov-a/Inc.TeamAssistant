@@ -19,6 +19,7 @@ internal sealed class NotificationsBuilder
     
     public async Task<NotificationMessage> Build(
         long chatId,
+        Guid botId,
         LanguageId languageId,
         RandomCoffeeHistory randomCoffeeHistory,
         CancellationToken token)
@@ -37,9 +38,12 @@ internal sealed class NotificationsBuilder
 
             if (firstPerson is not null && secondPerson is not null)
             {
-                firstPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+                var firstLanguageId = await _teamAccessor.GetClientLanguage(botId, firstPerson.Id, token);
+                var secondLanguageId = await _teamAccessor.GetClientLanguage(botId, secondPerson.Id, token);
+                
+                firstPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, firstLanguageId, o));
                 builder.Append(" - ");
-                secondPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+                secondPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, secondLanguageId, o));
                 builder.AppendLine();
             }
         }
@@ -50,10 +54,12 @@ internal sealed class NotificationsBuilder
 
             if (excludedPerson is not null)
             {
+                var excludedLanguageId = await _teamAccessor.GetClientLanguage(botId, excludedPerson.Id, token);
+                
                 builder.AppendLine();
                 builder.Append(await _messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId));
                 builder.Append(' ');
-                excludedPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, o));
+                excludedPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, excludedLanguageId, o));
                 builder.AppendLine();
             }
         }

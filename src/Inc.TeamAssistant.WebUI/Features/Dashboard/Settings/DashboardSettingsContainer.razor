@@ -21,7 +21,7 @@
     public IReadOnlyCollection<WidgetDto> Widgets { get; set; } = default!;
     
     private DashboardSettings? _settings;
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     
     private async Task SubmitForm(UpdateWidgetsCommand command)
     {
@@ -29,17 +29,12 @@
         var notification = Notification.Info(Localizer["SettingsApplied"]);
 
         await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.UpdateWidgets(command);
-
-                await Changed.InvokeAsync();
-            },
-            () =>
-            {
-                _settings?.Close();
-                notificationsService.Publish(notification);
-            },
-            s => _state = s);
+            () => BotService.UpdateWidgets(command),
+            _state);
+        
+        _settings?.Close();
+        notificationsService.Publish(notification);
+        
+        await Changed.InvokeAsync();
     }
 }

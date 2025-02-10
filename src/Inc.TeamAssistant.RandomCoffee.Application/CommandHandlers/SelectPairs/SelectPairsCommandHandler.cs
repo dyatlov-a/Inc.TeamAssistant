@@ -42,7 +42,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (randomCoffeeEntry is null)
             throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
         
-        if (randomCoffeeEntry.Refused is true)
+        if (randomCoffeeEntry.Refused)
             return CommandResult.Empty;
         
         var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
@@ -54,6 +54,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         var notificationMessage = randomCoffeeEntry.CanSelectPairs()
             ? await _notificationsBuilder.Build(
                 randomCoffeeEntry.ChatId,
+                randomCoffeeEntry.BotId,
                 languageId,
                 randomCoffeeEntry.SelectPairs(),
                 token)

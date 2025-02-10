@@ -22,7 +22,7 @@
     public Guid? TeamId { get; set; }
     
     private DateOnly? _date;
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
     
     private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
@@ -39,15 +39,14 @@
         if (!TeamId.HasValue)
             return;
 
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => AppraiserService.GetAssessmentHistory(TeamId.Value, from: _date!.Value),
             nameof(AppraiserHistoryWidgetContainer),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _items = result.Items;
+        
+        StateHasChanged();
     }
 
     private Task MoveToAssessmentSession() => NavRouter.MoveToRoute($"assessment-session/{TeamId:N}");

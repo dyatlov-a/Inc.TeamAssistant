@@ -1,4 +1,6 @@
+using System.Text;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Application.Parsers;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
@@ -8,22 +10,25 @@ using Inc.TeamAssistant.Primitives.Notifications;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class MessageContextBuilder
+internal sealed class TelegramMessageContextFactory
 {
     private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _clientLanguageRepository;
+    private readonly MessageParser _messageParser;
 
-    public MessageContextBuilder(
+    public TelegramMessageContextFactory(
         IPersonRepository personRepository,
-        IClientLanguageRepository clientLanguageRepository)
+        IClientLanguageRepository clientLanguageRepository,
+        MessageParser messageParser)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
+        _messageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
     }
     
-    public async Task<MessageContext?> Build(Bot bot, Update update, CancellationToken token)
+    public async Task<MessageContext?> Create(Bot bot, Update update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(update);
@@ -48,7 +53,7 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(editedMessage);
         
-        var parsedText = await ParseText(bot.Name, editedMessage, token);
+        var parsedText = await _messageParser.Parse(TelegramMessageAdapter.Create(bot.Name, editedMessage), token);
         var text = string.Format(CommandList.EditDraft, parsedText.Text);
         
         return await Create(
@@ -68,8 +73,10 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(pollAnswer);
         
-        var parameters = string.Join("&option=", pollAnswer.OptionIds);
-        var text = string.Format(CommandList.AddPollAnswer, pollAnswer.PollId, parameters);
+        var text = pollAnswer.OptionIds.Aggregate(
+            new StringBuilder(string.Format(CommandList.AddPollAnswer, pollAnswer.PollId)),
+            (sb, p) => sb.Append(GlobalSettings.OptionParameterName).Append(p),
+            sb => sb.ToString());
             
         return await Create(
             bot,
@@ -111,7 +118,7 @@ internal sealed class MessageContextBuilder
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(message);
         
-        var parsedText = await ParseText(bot.Name, message, token);
+        var parsedText = await _messageParser.Parse(TelegramMessageAdapter.Create(bot.Name, message), token);
 
         return await Create(
             bot,
@@ -144,7 +151,7 @@ internal sealed class MessageContextBuilder
         var language = await EnsureLanguage(bot.Id, user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
-        return new(
+        return MessageContext.Create(
             new ChatMessage(chatId, messageId),
             new BotContext(bot.Id, bot.Name, bot.Properties),
             teams,
@@ -176,32 +183,10 @@ internal sealed class MessageContextBuilder
         var person = await _personRepository.Find(user.Id, token);
         return person!;
     }
-    
-    private async Task<(string Text, long? TargetPersonId)> ParseText(
-        string botName,
-        Message message,
-        CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(message);
-        
-        if (string.IsNullOrWhiteSpace(botName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botName));
-
-        var input = message.Text ?? String.Empty;
-        var text = input.Replace($"@{botName} ", string.Empty);
-        var attachedPerson = await GetPersonFromEntities(message, token) ?? await GetPersonFromText(text, token);
-
-        return attachedPerson.HasValue
-            ? (text.Replace(attachedPerson.Value.Marker, string.Empty), attachedPerson.Value.Id)
-            : (text, null);
-    }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)
     {
         ArgumentNullException.ThrowIfNull(bot);
-
-        bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
-        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
         
         var memberOfChats = bot.Teams
             .Where(t => MemberOfTeam(t) || t.ChatId == chatId || t.Owner.Id == personId)
@@ -214,43 +199,8 @@ internal sealed class MessageContextBuilder
             .ToArray();
 
         return results;
-    }
-
-    private async Task<(long Id, string Marker)?> GetPersonFromEntities(Message message, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(message);
-
-        var personId = message.Entities
-            ?.LastOrDefault(e => e is { Type: MessageEntityType.TextMention, User: not null })
-            ?.User!.Id;
-
-        if (personId.HasValue)
-        {
-            var person = await _personRepository.Find(personId.Value, token);
-            
-            return person is not null
-                ? (person.Id, person.Name)
-                : null;
-        }
-
-        return null;
-    }
-
-    private async Task<(long Id, string Marker)?> GetPersonFromText(string text, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return null;
         
-        const char usernameMarker = '@';
-        var username = text.Split(usernameMarker).LastOrDefault()?.Trim();
-
-        if (string.IsNullOrWhiteSpace(username))
-            return null;
-        
-        var person = await _personRepository.Find(username, token);
-        
-        return person is not null
-            ? (person.Id, $"{usernameMarker}{username}")
-            : null;
+        bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
+        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
     }
 }

@@ -17,6 +17,6 @@ internal sealed class LeaveFromTeamCommandCreator : ICommandCreator
 
         return Task.FromResult<IDialogCommand>(new LeaveFromTeamCommand(
             messageContext,
-            messageContext.TryParseId("/")));
+            messageContext.TryParseId()));
     }
 }

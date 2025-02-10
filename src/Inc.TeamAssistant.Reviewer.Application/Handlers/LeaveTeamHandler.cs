@@ -34,11 +34,15 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
             token);
 
         foreach (var task in tasks)
-            notifications.AddRange(await _reassignReviewService.ReassignReview(
+        {
+            var notificationsByTask = await _reassignReviewService.ReassignReview(
                 messageContext.ChatMessage.MessageId,
                 task.Id,
                 messageContext.Bot,
-                token));
+                token);
+            
+            notifications.AddRange(notificationsByTask);
+        }
 
         return notifications;
     }

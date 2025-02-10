@@ -21,11 +21,11 @@ Collect a random coffee meetings 💬.
 
 - Create a bot for team
 - Creating teams to work together
-- Estimate of tasks. SP or t-shirts
-- Select a reviewer for the code. Round-robin or random selection
+- Estimate of tasks. SP, power of two, t-shirts
+- Select a reviewer for the code. Round-robin, random selection, specific target, retargeting
 - Notification of the review of the code and code owners
-- Show teammates on world map
 - Organize random coffee meetings
+- Show teammates stats on world map
 
 ## Technology
 
@@ -94,6 +94,7 @@ The community looks forward to your contributions.
 - [X] Integrate with Jira/Trello (estimate tasks)
 - [X] Add a feature for use world map
 - [X] Redesign UI/UX
+- [X] Add story book for UI
 - [ ] Integrate with GitLab (code review)
 - [ ] Split the monolith into separate services
 

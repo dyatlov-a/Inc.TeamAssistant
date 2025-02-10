@@ -9,8 +9,8 @@
                 @ChildContent
             </div>
             <div class="confirm-dialog__actions">
-                <Button OnClick="() => Close(OnConfirm)">@Localizer["Yes"]</Button>
-                <Button OnClick="() => Close()" ComponentStyle="ComponentStyle.Secondary">@Localizer["No"]</Button>
+                <Button OnClick="() => Close(true)">@Localizer["Yes"]</Button>
+                <Button OnClick="() => Close(false)" ComponentStyle="ComponentStyle.Secondary">@Localizer["No"]</Button>
             </div>
         </div>
     </div>
@@ -21,30 +21,26 @@
     /// HTML content
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
-    
-    /// <summary>
-    /// On confirm event
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback OnConfirm { get; set; }
+    public RenderFragment ChildContent { get; set; } = null!;
     
     private bool _isOpen;
+    private TaskCompletionSource<bool>? _state;
 
-    public void Open()
+    public Task<bool> IsConfirmed()
     {
         _isOpen = true;
         
         StateHasChanged();
+
+        _state = new TaskCompletionSource<bool>();
+
+        return _state.Task;
     }
 
-    private async Task Close(EventCallback? confirm = null)
+    private void Close(bool confirmed)
     {
         _isOpen = false;
         
-        if (confirm.HasValue)
-            await confirm.Value.InvokeAsync();
-        else
-            StateHasChanged();
+        _state?.SetResult(confirmed);
     }
 }

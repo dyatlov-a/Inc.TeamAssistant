@@ -42,7 +42,7 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
         if (owner is null)
             throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
 
-        taskForReview.Accept(DateTimeOffset.UtcNow, command.AcceptedWithComments);
+        taskForReview.Accept(DateTimeOffset.UtcNow, command.HasComments);
 
         var notifications = await _reviewMessageBuilder.Build(
             command.MessageContext.ChatMessage.MessageId,

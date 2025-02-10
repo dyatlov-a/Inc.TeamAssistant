@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
+using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
@@ -34,7 +35,7 @@ internal sealed class TaskForReviewHistoryConverter
             item.OwnerId,
             item.OwnerName,
             item.OwnerUserName,
-            item.HasConcreteReviewer,
+            HasConcreteReviewer: item.Strategy == NextReviewerType.Target,
             item.IsOriginalReviewer);
     }
 }

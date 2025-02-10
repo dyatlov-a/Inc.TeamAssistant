@@ -8,7 +8,7 @@
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
     
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     
     private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
 
@@ -19,14 +19,13 @@
 
     private async Task Load()
     {
-        await RequestProcessor.Process(
+        var result = await RequestProcessor.Process(
             () => AppraiserService.GetAssessmentHistory(TeamId, limit: 3),
             nameof(AssessmentSessionHistorySummary),
-            r => _items = r.Items,
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _items = result.Items;
+        
+        StateHasChanged();
     }
 }

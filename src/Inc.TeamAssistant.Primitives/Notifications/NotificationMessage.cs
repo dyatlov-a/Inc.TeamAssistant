@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Primitives.Notifications;
 
@@ -6,7 +7,7 @@ public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
     private readonly List<string> _options = new();
-    private readonly List<(Person Person, int Offset)> _targetPersons = new();
+    private readonly List<(Person Person, LanguageId LanguageId, int Offset)> _targetPersons = new();
     
 	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, string parameter);
     
@@ -19,7 +20,7 @@ public sealed class NotificationMessage
     public IReadOnlyCollection<string> Options => _options;
     public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
-    public IReadOnlyCollection<(Person Person, int Offset)> TargetPersons => _targetPersons;
+    public IReadOnlyCollection<(Person Person, LanguageId LanguageId, int Offset)> TargetPersons => _targetPersons;
     public int? ReplyToMessageId { get; private set; }
 
     private NotificationMessage(
@@ -72,11 +73,12 @@ public sealed class NotificationMessage
         return this;
     }
 
-    public NotificationMessage AttachPerson(Person person, int offset)
+    public NotificationMessage AttachPerson(Person person, LanguageId languageId, int offset)
     {
         ArgumentNullException.ThrowIfNull(person);
+        ArgumentNullException.ThrowIfNull(languageId);
 
-        _targetPersons.Add((person, offset));
+        _targetPersons.Add((person, languageId, offset));
 
         return this;
     }

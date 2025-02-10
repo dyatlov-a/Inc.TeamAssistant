@@ -15,8 +15,8 @@
     [Parameter, EditorRequired]
     public Guid? TeamId { get; set; }
     
-    private LoadingState _state = LoadingState.Done();
-    private GetTeammatesResult _item = new(false, Array.Empty<TeammateDto>());
+    private readonly LoadingState _state = LoadingState.Done();
+    private GetTeammatesResult _item = GetTeammatesResult.Empty;
 
     protected override Task OnParametersSetAsync() => Load();
 
@@ -25,18 +25,13 @@
         if (!TeamId.HasValue)
             return;
 
-        await RequestProcessor.Process(
+        _item = await RequestProcessor.Process(
             () => BotService.GetTeammates(TeamId.Value),
             nameof(TeammatesWidgetContainer),
-            r => _item = r,
-            s =>
-            {
-                if (showLoading || !s.IsLoading)
-                {
-                    _state = s;
-                    StateHasChanged();
-                }
-            });
+            _state,
+            showLoading);
+        
+        StateHasChanged();
     }
 
     private async Task RemoveTeammate(TeammateDto teammate, bool exclude, int? leaveUntil)
@@ -52,7 +47,6 @@
                 
                 await Load(showLoading: false);
             },
-            () => { },
-            _ => StateHasChanged());
+            _state);
     }
 }

@@ -14,12 +14,12 @@ internal sealed class CalendarService : ICalendarService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
     
-    public async Task<GetCalendarByOwnerResult?> GetCalendarByOwner(CancellationToken token)
+    public async Task<GetCalendarByOwnerResult> GetCalendarByOwner(CancellationToken token)
     {
         return await _mediator.Send(new GetCalendarByOwnerQuery(), token);
     }
 
-    public async Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token)
+    public async Task<UpdateCalendarResult> Update(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         

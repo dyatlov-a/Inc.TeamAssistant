@@ -2,13 +2,13 @@ using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives.Languages;
 using Telegram.Bot.Types;
 
-namespace Inc.TeamAssistant.Connector.Application.Services;
+namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
-internal sealed class ContextCommandConverter
+internal sealed class TelegramContextCommandConverter
 {
     private readonly IMessageBuilder _messageBuilder;
 
-    public ContextCommandConverter(IMessageBuilder messageBuilder)
+    public TelegramContextCommandConverter(IMessageBuilder messageBuilder)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
@@ -25,13 +25,14 @@ internal sealed class ContextCommandConverter
             var commandsByScopes = contextCommands
                 .Where(c => c.HelpMessageId is not null && c.Scopes.Any(s => s == commandScope))
                 .ToArray();
-            if (!commandsByScopes.Any())
-                continue;
             
-            var botCommandScope = ToBotCommandScope(commandScope);
-            var botCommands = await ToBotCommands(commandsByScopes, languageId);
+            if (commandsByScopes.Any())
+            {
+                var botCommandScope = ToBotCommandScope(commandScope);
+                var botCommands = await ToBotCommands(commandsByScopes, languageId);
             
-            yield return (botCommandScope, botCommands);
+                yield return (botCommandScope, botCommands);
+            }
         }
     }
     
