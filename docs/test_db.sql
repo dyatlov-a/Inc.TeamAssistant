@@ -33,10 +33,17 @@ SET
 
 
 -- random_coffee
+DELETE FROM random_coffee.history
+WHERE random_coffee_entry_id != '8daec45e-79cc-4ead-888f-2abc874176d9';
+
+DELETE FROM random_coffee.entries
+WHERE id != '8daec45e-79cc-4ead-888f-2abc874176d9';
+
 UPDATE random_coffee.entries
 SET
     bot_id = '8eace573-343b-4af7-b255-40c152d6832a',
-    chat_id = -1001685108427;
+    chat_id = -1001685108427
+WHERE id = '8daec45e-79cc-4ead-888f-2abc874176d9';
 
 -- review
 UPDATE review.task_for_reviews
