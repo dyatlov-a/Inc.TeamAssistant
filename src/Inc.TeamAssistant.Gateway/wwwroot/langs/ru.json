@@ -105,7 +105,6 @@
   "Connector_NewTeamHelp": "Создать новую команду",
   "Connector_LeaveFromTeamHelp": "Покинуть команду",
   "Connector_LeaveTeamSuccess": "{0} покинул команду «{1}»",
-  "Connector_CancelHelp": "Отменить текущую операцию",
   "Connector_Cancel": "Отменить",
   "Connector_BotNotFound": "Бот {0} не найден",
   "Connector_TeamNotFound": "Команда {0} не найдена",
