@@ -49,7 +49,7 @@
             _state);
         
         await appLocalStorage.Detach<StagesState>(BotStorageKey);
-        
-        StateHasChanged();
+
+        await MoveToNext(null);
     }
 }
