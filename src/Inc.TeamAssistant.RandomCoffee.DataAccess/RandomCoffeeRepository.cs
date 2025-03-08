@@ -1,9 +1,9 @@
+using System.Data.Common;
 using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
-using Npgsql;
 
 namespace Inc.TeamAssistant.RandomCoffee.DataAccess;
 
@@ -173,7 +173,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
         await transaction.CommitAsync(token);
     }
     
-    private async Task<RandomCoffeeEntry?> Find(NpgsqlConnection connection, Guid id, CancellationToken token)
+    private async Task<RandomCoffeeEntry?> Find(DbConnection connection, Guid id, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(connection);
         
