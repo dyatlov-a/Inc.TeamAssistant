@@ -1,6 +1,7 @@
 using System.Text;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AttachStory;
 using Inc.TeamAssistant.Appraiser.Model.Common;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -162,7 +163,7 @@ internal sealed class SummaryByStoryBuilder
         return string.Format(
             _connectToDashboardLinkTemplate,
             languageId.Value,
-            teamId.ToString("N"));
+            teamId.ToLinkSegment());
     }
 
     private async Task AddRoundsInfo(StringBuilder builder, SummaryByStory summary)

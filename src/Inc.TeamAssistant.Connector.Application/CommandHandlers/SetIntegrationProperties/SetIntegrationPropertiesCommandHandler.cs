@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.SetIntegrationProperties;
@@ -40,7 +41,7 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
         
         var accessToken = team.Properties.GetPropertyValueOrDefault(
             ConnectorProperties.AccessToken,
-            Guid.NewGuid().ToString("N"));
+            Guid.NewGuid().ToLinkSegment());
         
         team
             .ChangeProperty(ConnectorProperties.AccessToken, accessToken)

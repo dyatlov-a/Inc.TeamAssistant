@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.CheckIn.Application.CommandHandlers.AddLocationToMap.Services;
@@ -17,6 +18,6 @@ internal sealed class MapLinksBuilder
     {
         ArgumentNullException.ThrowIfNull(languageId);
         
-        return string.Format(_connectToMapLinkTemplate, languageId.Value, mapId.ToString("N"));
+        return string.Format(_connectToMapLinkTemplate, languageId.Value, mapId.ToLinkSegment());
     }
 }

@@ -3,6 +3,7 @@ using Inc.TeamAssistant.CheckIn.Model.Queries.GetMaps;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeammates;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetChats;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
@@ -454,7 +455,7 @@ internal sealed class WidgetsDataFactory
             ["State"] = LoadingState.Done(),
             ["FormModel"] = new AppraiserIntegrationFromModel().Apply(new GetIntegrationPropertiesResult(
                 Properties: new IntegrationProperties(
-                    AccessToken: Guid.NewGuid().ToString("N"),
+                    AccessToken: Guid.NewGuid().ToLinkSegment(),
                     ProjectKey: "test_project",
                     ScrumMasterId: 1),
                 HasManagerAccess: true,
