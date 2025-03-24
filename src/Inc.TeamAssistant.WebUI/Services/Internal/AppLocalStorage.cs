@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
 internal sealed class AppLocalStorage
 {

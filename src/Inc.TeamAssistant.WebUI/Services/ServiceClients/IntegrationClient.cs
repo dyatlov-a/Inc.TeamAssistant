@@ -5,7 +5,7 @@ using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Clients;
+namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
 internal sealed class IntegrationClient : IIntegrationService
 {

@@ -4,7 +4,7 @@ using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetChats;
 using Inc.TeamAssistant.RandomCoffee.Model.Queries.GetHistory;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Clients;
+namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
 internal sealed class RandomCoffeeClient : IRandomCoffeeService
 {

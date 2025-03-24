@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Clients;
+namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
 internal sealed class UserClient : IUserService
 {

@@ -11,8 +11,8 @@ using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Routing;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
-using Inc.TeamAssistant.WebUI.Services.Clients;
+using Inc.TeamAssistant.WebUI.Services.Internal;
+using Inc.TeamAssistant.WebUI.Services.ServiceClients;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;

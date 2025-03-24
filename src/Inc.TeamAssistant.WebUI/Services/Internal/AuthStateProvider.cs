@@ -4,7 +4,7 @@ using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
 internal sealed class AuthStateProvider : AuthenticationStateProvider, IDisposable
 {

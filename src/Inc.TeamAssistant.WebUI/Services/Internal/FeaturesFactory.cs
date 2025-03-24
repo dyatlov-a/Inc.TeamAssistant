@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.WebUI.Features.Constructor;
 using Microsoft.Extensions.Localization;
 
-namespace Inc.TeamAssistant.WebUI.Services.ClientCore;
+namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
 internal sealed class FeaturesFactory
 {

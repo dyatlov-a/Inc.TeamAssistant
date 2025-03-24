@@ -3,7 +3,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace Inc.TeamAssistant.WebUI.Services.Clients;
+namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
 internal sealed class ClientRenderContext : IRenderContext
 {

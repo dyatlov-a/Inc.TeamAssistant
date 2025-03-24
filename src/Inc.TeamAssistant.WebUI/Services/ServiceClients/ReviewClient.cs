@@ -5,7 +5,7 @@ using Inc.TeamAssistant.Reviewer.Model.Queries.GetHistoryByTeam;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 using Inc.TeamAssistant.WebUI.Contracts;
 
-namespace Inc.TeamAssistant.WebUI.Services.Clients;
+namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
 internal sealed class ReviewClient : IReviewService
 {
