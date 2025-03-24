@@ -36,17 +36,14 @@
 
     private async Task RemoveTeammate(TeammateDto teammate, bool exclude, int? leaveUntil)
     {
-        await RequestProcessor.Process(
-            async () =>
-            {
-                await BotService.RemoveTeammate(new RemoveTeammateCommand(
-                    teammate.TeamId,
-                    teammate.PersonId,
-                    leaveUntil.HasValue ? DateTimeOffset.UtcNow.AddDays(leaveUntil.Value) : null,
-                    exclude));
-                
-                await Load(showLoading: false);
-            },
-            _state);
+        await RequestProcessor.Process(() => BotService.RemoveTeammate(new RemoveTeammateCommand(
+                teammate.TeamId,
+                teammate.PersonId,
+                leaveUntil.HasValue ? DateTimeOffset.UtcNow.AddDays(leaveUntil.Value) : null,
+                exclude)),
+            _state,
+            showLoading: false);
+
+        await Load(showLoading: false);
     }
 }
