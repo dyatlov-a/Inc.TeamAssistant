@@ -83,13 +83,13 @@
     /// Form model.
     /// </summary>
     [Parameter, EditorRequired]
-    public AppraiserIntegrationFromModel FormModel { get; set; } = null!;
+    public AppraiserIntegrationFromModel FormModel { get; set; } = default!;
     
     /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = null!;
+    public LoadingState State { get; set; } = default!;
     
     /// <summary>
     /// On disabled event.
@@ -107,7 +107,7 @@
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = null!;
+    public Func<Task> Retry { get; set; } = default!;
     
     private ConfirmDialog? _confirmDialog;
     private FluentValidationValidator? _fluentValidationValidator;

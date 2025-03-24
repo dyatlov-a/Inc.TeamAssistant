@@ -82,19 +82,19 @@
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = null!;
+    public LoadingState State { get; set; } = default!;
     
     /// <summary>
     /// Teammates data.
     /// </summary>
     [Parameter, EditorRequired]
-    public GetTeammatesResult Item { get; set; } = null!;
+    public GetTeammatesResult Item { get; set; } = default!;
     
     /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = null!;
+    public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
     /// On confirm event

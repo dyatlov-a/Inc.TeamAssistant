@@ -21,7 +21,7 @@
     /// HTML content
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment ChildContent { get; set; } = null!;
+    public RenderFragment ChildContent { get; set; } = default!;
     
     private bool _isOpen;
     private TaskCompletionSource<bool>? _state;
