@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
+
 namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
 public sealed class RandomCoffeeEntry
@@ -45,17 +47,17 @@ public sealed class RandomCoffeeEntry
         return this;
     }
 
-    public RandomCoffeeEntry MoveToWaiting(DateTimeOffset now, TimeSpan waitingInterval)
+    public RandomCoffeeEntry MoveToWaiting(DateTimeOffset now, TimeSpan waitingInterval, long? personId)
     {
-        NextRound = now.Add(waitingInterval);
-        State = RandomCoffeeState.Waiting;
+        var entry = personId.HasValue ? EnsureRights(personId.Value) : this;
         
-        ParticipantIds.Clear();
-        PollId = null;
+        entry.NextRound = now.Add(waitingInterval);
+        entry.State = RandomCoffeeState.Waiting;
+        entry.ParticipantIds.Clear();
+        entry.PollId = null;
+        entry.Refused = false;
         
-        Refused = false;
-        
-        return this;
+        return entry;
     }
 
     public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval, TimeSpan votingInterval)
@@ -109,10 +111,20 @@ public sealed class RandomCoffeeEntry
         return randomCoffeeHistory;
     }
 
-    public RandomCoffeeEntry MoveToRefused()
+    public RandomCoffeeEntry MoveToRefused(long personId)
     {
-        Refused = true;
+        var entry = EnsureRights(personId);
         
+        entry.Refused = true;
+        
+        return entry;
+    }
+    
+    private RandomCoffeeEntry EnsureRights(long personId)
+    {
+        if (OwnerId != personId)
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
+
         return this;
     }
 }

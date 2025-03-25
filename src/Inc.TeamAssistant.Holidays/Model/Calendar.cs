@@ -75,10 +75,10 @@ public sealed class Calendar
     
     public bool IsWorkTime(DateTimeOffset value)
     {
-        if (Schedule is null || !Schedule.IsWorkTime(value))
-            return false;
+        if (Schedule is null)
+            return true;
         
-        return IsWorkday(DateOnly.FromDateTime(value.DateTime));
+        return Schedule.IsWorkTime(value) && IsWorkday(DateOnly.FromDateTime(value.DateTime));
     }
     
     private bool IsWorkday(DateOnly date)

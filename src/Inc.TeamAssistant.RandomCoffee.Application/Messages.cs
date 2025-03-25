@@ -12,5 +12,4 @@ internal static class Messages
     public static readonly MessageId RandomCoffee_MeetingDescription = new(nameof(RandomCoffee_MeetingDescription));
     public static readonly MessageId RandomCoffee_NotEnoughParticipants = new(nameof(RandomCoffee_NotEnoughParticipants));
     public static readonly MessageId RandomCoffee_RefusedForCoffee = new(nameof(RandomCoffee_RefusedForCoffee));
-    public static readonly MessageId Connector_HasNoRights = new(nameof(Connector_HasNoRights));
 }

@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -29,33 +28,19 @@ public sealed class RefuseForCoffeeCommandHandler : IRequestHandler<RefuseForCof
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var existsRandomCoffeeEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        
-        if (existsRandomCoffeeEntry is null || existsRandomCoffeeEntry.Refused)
+        var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
+        if (existsEntry is null || existsEntry.Refused)
             return CommandResult.Empty;
         
-        if (command.MessageContext.Person.Id != existsRandomCoffeeEntry.OwnerId)
-            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, command.MessageContext.Person.Id);
-        
-        var owner = await _teamAccessor.FindPerson(existsRandomCoffeeEntry.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantException($"Owner {existsRandomCoffeeEntry.OwnerId} was not found.");
-        
-        existsRandomCoffeeEntry.MoveToRefused();
+        existsEntry.MoveToRefused(command.MessageContext.Person.Id);
 
-        await _repository.Upsert(existsRandomCoffeeEntry, token);
+        await _repository.Upsert(existsEntry, token);
 
-        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, owner.Id, token);
-        var notification = NotificationMessage
-            .Create(
-                existsRandomCoffeeEntry.ChatId,
-                await _messageBuilder.Build(Messages.RandomCoffee_RefusedForCoffee, languageId));
-        var notifications = new[]
-        {
-            notification,
-            NotificationMessage.Delete(command.MessageContext.ChatMessage)
-        };
+        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, existsEntry.OwnerId, token);
+        var notification = NotificationMessage.Create(
+            existsEntry.ChatId,
+            await _messageBuilder.Build(Messages.RandomCoffee_RefusedForCoffee, languageId));
         
-        return CommandResult.Build(notifications);
+        return CommandResult.Build(notification, NotificationMessage.Delete(command.MessageContext.ChatMessage));
     }
 }

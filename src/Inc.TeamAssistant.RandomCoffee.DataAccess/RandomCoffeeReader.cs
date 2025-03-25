@@ -30,7 +30,7 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e
-            WHERE e.next_round < @now;",
+            WHERE e.refused is false AND e.next_round < @now;",
             new { now },
             flags: CommandFlags.None,
             cancellationToken: token);
