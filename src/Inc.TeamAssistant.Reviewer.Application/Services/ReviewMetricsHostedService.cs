@@ -4,16 +4,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class ReviewMetricsService : IHostedService
+internal sealed class ReviewMetricsHostedService : IHostedService
 {
     private readonly ITaskForReviewReader _taskForReviewReader;
     private readonly IReviewMetricsLoader _reviewMetricsLoader;
-    private readonly ILogger<ReviewMetricsService> _logger;
+    private readonly ILogger<ReviewMetricsHostedService> _logger;
 
-    public ReviewMetricsService(
+    public ReviewMetricsHostedService(
         ITaskForReviewReader taskForReviewReader,
         IReviewMetricsLoader reviewMetricsLoader,
-        ILogger<ReviewMetricsService> logger)
+        ILogger<ReviewMetricsHostedService> logger)
     {
         _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
         _reviewMetricsLoader = reviewMetricsLoader ?? throw new ArgumentNullException(nameof(reviewMetricsLoader));

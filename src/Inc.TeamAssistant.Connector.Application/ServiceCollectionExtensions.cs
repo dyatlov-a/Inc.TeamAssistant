@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<MessageParser>()
             .AddSingleton<DialogContinuation>()
             .AddSingleton<TelegramUpdateHandlerFactory>()
-            .AddHostedService<BotWorker>()
+            .AddHostedService<BotsHostedService>()
             .AddSingleton<ICommandExecutor, CommandExecutor>()
             .AddSingleton<TelegramMessageSender>()
             .AddSingleton<TelegramBotClientProvider>()

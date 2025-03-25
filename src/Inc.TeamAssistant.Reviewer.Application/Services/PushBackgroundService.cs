@@ -9,18 +9,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class PushService : BackgroundService
+internal sealed class PushBackgroundService : BackgroundService
 {
     private readonly ICommandExecutor _commandExecutor;
     private readonly ITaskForReviewReader _reader;
     private readonly IHolidayService _holidayService;
-    private readonly ILogger<PushService> _logger;
+    private readonly ILogger<PushBackgroundService> _logger;
 
-    public PushService(
+    public PushBackgroundService(
         ICommandExecutor commandExecutor,
         ITaskForReviewReader reader,
         IHolidayService holidayService,
-        ILogger<PushService> logger)
+        ILogger<PushBackgroundService> logger)
     {
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));

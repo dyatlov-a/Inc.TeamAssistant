@@ -4,12 +4,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class BotWorker : IHostedService
+internal sealed class BotsHostedService : IHostedService
 {
     private readonly IBotReader _botReader;
     private readonly IBotListeners _botListeners;
     
-    public BotWorker(IBotReader botReader, IBotListeners botListeners)
+    public BotsHostedService(IBotReader botReader, IBotListeners botListeners)
     {
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
@@ -17,12 +17,11 @@ internal sealed class BotWorker : IHostedService
 
     public async Task StartAsync(CancellationToken token)
     {
-        var botIds = await _botReader.GetBotIds(token);
-
-        foreach (var botId in botIds)
+        foreach (var botId in await _botReader.GetBotIds(token))
         {
             token.ThrowIfCancellationRequested();
-            await _botListeners.Start(botId);
+            
+            await _botListeners.Start(botId, token);
         }
     }
     

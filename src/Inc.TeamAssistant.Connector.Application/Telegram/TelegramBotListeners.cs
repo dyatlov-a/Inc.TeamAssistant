@@ -29,21 +29,23 @@ internal sealed class TelegramBotListeners : IBotListeners
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task Start(Guid botId)
+    public async Task Start(Guid botId, CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
+        
+        if (NotWorking())
+            return;
+        
         try
         {
-            if (IsWorking())
-            {
-                var listener = new CancellationTokenSource();
-                var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, listener.Token);
-                var client = new TelegramBotClient(bot!.Token);
-                var handler = _updateHandlerFactory.Create(botId);
+            var listener = CancellationTokenSource.CreateLinkedTokenSource(token);
+            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, listener.Token);
+            var client = new TelegramBotClient(bot!.Token);
+            var handler = _updateHandlerFactory.Create(botId);
             
-                client.StartReceiving(handler, _receiverOptions, cancellationToken: listener.Token);
-            
-                _listeners.TryAdd(botId, listener);
-            }
+            client.StartReceiving(handler, _receiverOptions, cancellationToken: listener.Token);
+
+            _listeners.TryAdd(botId, listener);
         }
         catch (Exception ex)
         {
@@ -51,23 +53,30 @@ internal sealed class TelegramBotListeners : IBotListeners
         }
     }
 
-    public async Task Restart(Guid botId)
+    public async Task Restart(Guid botId, CancellationToken token)
     {
-        if (IsWorking())
-        {
-            await Stop(botId);
-            await Start(botId);
-        }
+        token.ThrowIfCancellationRequested();
+        
+        if (NotWorking())
+            return;
+        
+        await Stop(botId, token);
+        await Start(botId, token);
     }
 
-    public async Task Stop(Guid botId)
+    public async Task Stop(Guid botId, CancellationToken token)
     {
-        if (IsWorking() && _listeners.Remove(botId, out var listener))
+        token.ThrowIfCancellationRequested();
+        
+        if (NotWorking())
+            return;
+        
+        if (_listeners.Remove(botId, out var listener))
             using (listener)
                 await listener.CancelAsync();
     }
     
-    private bool IsWorking() => _isWorking != ShutdownValue;
+    private bool NotWorking() => _isWorking == ShutdownValue;
 
     public async Task Shutdown(CancellationToken token)
     {

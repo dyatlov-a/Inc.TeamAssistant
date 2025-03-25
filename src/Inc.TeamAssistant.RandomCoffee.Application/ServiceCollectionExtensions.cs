@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, AddPollAnswerCommandCreator>()
             .AddSingleton<ICommandCreator, RefuseForCoffeeCommandCreator>()
             
-            .AddHostedService<ScheduleService>();
+            .AddHostedService<ScheduleBackgroundService>();
 
         return services;
     }

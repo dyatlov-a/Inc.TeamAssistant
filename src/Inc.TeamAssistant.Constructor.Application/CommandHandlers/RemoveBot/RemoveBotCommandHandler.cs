@@ -34,6 +34,6 @@ internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand
         
         await _botRepository.Remove(command.Id, token);
         
-        await _botListeners.Stop(bot.Id);
+        await _botListeners.Stop(bot.Id, token);
     }
 }

@@ -48,6 +48,6 @@ internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand
 
         await _botConnector.SetCommands(bot.Id, bot.SupportedLanguages, token);
         
-        await _botListeners.Restart(bot.Id);
+        await _botListeners.Restart(bot.Id, token);
     }
 }

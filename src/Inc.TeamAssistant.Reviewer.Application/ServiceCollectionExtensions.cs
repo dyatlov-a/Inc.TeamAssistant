@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<DraftTaskForReviewService>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
-            .AddHostedService<PushService>()
+            .AddHostedService<PushBackgroundService>()
             
             .AddSingleton<ISettingSectionProvider, ReviewerSettingSectionProvider>()
             .AddSingleton<ReviewMetricsProvider>()
@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<ReviewTeamMetricsFactory>()
             .AddSingleton<TaskForReviewHistoryConverter>()
-            .AddHostedService<ReviewMetricsService>()
+            .AddHostedService<ReviewMetricsHostedService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToAcceptWithCommentsCommandCreator>()
