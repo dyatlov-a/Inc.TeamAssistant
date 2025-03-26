@@ -17,8 +17,6 @@ public sealed class RandomCoffeeEntry
 
     private readonly List<RandomCoffeeHistory> _history = new();
     public IReadOnlyCollection<RandomCoffeeHistory> History => _history;
-    
-    public bool Refused { get; private set; }
 
     private RandomCoffeeEntry()
     {
@@ -55,7 +53,6 @@ public sealed class RandomCoffeeEntry
         entry.State = RandomCoffeeState.Waiting;
         entry.ParticipantIds.Clear();
         entry.PollId = null;
-        entry.Refused = false;
         
         return entry;
     }
@@ -115,7 +112,7 @@ public sealed class RandomCoffeeEntry
     {
         var entry = EnsureRights(personId);
         
-        entry.Refused = true;
+        entry.State = RandomCoffeeState.Refused;
         
         return entry;
     }

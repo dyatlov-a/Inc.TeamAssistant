@@ -49,7 +49,7 @@ internal sealed class ScheduleBackgroundService : BackgroundService
     private async Task Execute(CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow;
-        var entries = await _reader.GetByDate(now, token);
+        var entries = await _reader.GetByDate(RandomCoffeeStateRules.ActiveStates, now, token);
 
         foreach (var entry in entries)
         {

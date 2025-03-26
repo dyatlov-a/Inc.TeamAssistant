@@ -35,7 +35,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
         ArgumentNullException.ThrowIfNull(command);
         
         var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        if (existsEntry is not null && new [] {existsEntry.Refused, command.OnDemand}.Count(i => i) == 1)
+        if (existsEntry is not null && new [] { existsEntry.State == RandomCoffeeState.Refused, command.OnDemand }.Count(i => i) == 1)
             return CommandResult.Empty;
         
         var entry = existsEntry ?? new RandomCoffeeEntry(

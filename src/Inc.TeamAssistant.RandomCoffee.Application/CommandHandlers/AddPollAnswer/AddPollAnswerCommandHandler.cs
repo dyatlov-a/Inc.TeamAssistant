@@ -19,7 +19,7 @@ internal sealed class AddPollAnswerCommandHandler : IRequestHandler<AddPollAnswe
         ArgumentNullException.ThrowIfNull(command);
         
         var randomCoffeeEntry = await _repository.Find(command.PollId, token);
-        if (randomCoffeeEntry?.Refused is false)
+        if (randomCoffeeEntry is not null)
         {
             const string optionYes = "0";
             
