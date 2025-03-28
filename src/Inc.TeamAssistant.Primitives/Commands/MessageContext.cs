@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -41,8 +42,15 @@ public sealed class MessageContext
     }
 
     public TargetChat TargetChat => new(Person.Id, ChatMessage.ChatId);
-    
-    public TeamContext? FindTeam(Guid teamId) => Teams.SingleOrDefault(t => t.Id == teamId);
+
+    public TeamContext EnsureTeam(Guid teamId)
+    {
+        var team = Teams.SingleOrDefault(t => t.Id == teamId);
+        if (team is null)
+            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, teamId);
+
+        return team;
+    }
     
     public Guid TryParseId(string command = DefaultCommand)
     {

@@ -4,27 +4,26 @@ using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Model.Commands.FinishEstimate;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate;
 
 internal sealed class FinishEstimateCommandHandler : IRequestHandler<FinishEstimateCommand, CommandResult>
 {
-    private readonly IStoryRepository _storyRepository;
-    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly IStoryRepository _repository;
+    private readonly SummaryByStoryBuilder _summaryBuilder;
     private readonly IMessagesSender _messagesSender;
     private readonly ITeamAccessor _teamAccessor;
 
     public FinishEstimateCommandHandler(
-        IStoryRepository storyRepository,
-        SummaryByStoryBuilder summaryByStoryBuilder,
+        IStoryRepository repository,
+        SummaryByStoryBuilder summaryBuilder,
         IMessagesSender messagesSender,
         ITeamAccessor teamAccessor)
     {
-        _storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
-        _summaryByStoryBuilder =
-            summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
         _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
@@ -33,18 +32,15 @@ internal sealed class FinishEstimateCommandHandler : IRequestHandler<FinishEstim
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var story = await _storyRepository.Find(command.StoryId, token);
-        if (story is null)
-            throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
+        var personId = command.MessageContext.Person.Id;
+        
+        var story = await command.StoryId.Required(_repository.Find, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, personId, token);
+        
+        await _repository.Upsert(story.Finish(personId, hasManagerAccess), token);
 
-        var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, command.MessageContext.Person.Id, token);
-        
-        story.Finish(command.MessageContext.Person.Id, hasManagerAccess);
-        
-        await _storyRepository.Upsert(story, token);
-        
+        var notification = await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
         await _messagesSender.StoryChanged(story.TeamId);
-
-        return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+        return CommandResult.Build(notification);
     }
 }

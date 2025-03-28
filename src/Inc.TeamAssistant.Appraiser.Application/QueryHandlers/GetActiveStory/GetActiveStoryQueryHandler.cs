@@ -26,7 +26,6 @@ internal sealed class GetActiveStoryQueryHandler : IRequestHandler<GetActiveStor
 			query.Foreground,
 			query.Background,
 			token);
-		
 		var story = await _reader.FindLast(query.TeamId, token);
 		var details = story is not null
 			? StoryConverter.Convert(story)

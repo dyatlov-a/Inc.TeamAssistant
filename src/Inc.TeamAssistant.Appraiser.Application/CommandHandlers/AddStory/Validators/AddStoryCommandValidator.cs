@@ -38,26 +38,28 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
     {
         ArgumentNullException.ThrowIfNull(links);
         ArgumentNullException.ThrowIfNull(context);
+        
+        const int maxLinksLength = 2000;
+        const int maxLinksCount = 1;
+        const string propertyName = nameof(AddStoryCommand.Links);
+        
+        var languageId = context.InstanceToValidate.MessageContext.LanguageId;
 
-        if (links.Count > 1)
+        if (links.Count > maxLinksCount)
         {
-            var errorMessage = await _messageBuilder.Build(
-                Messages.Appraiser_MultipleLinkError,
-                context.InstanceToValidate.MessageContext.LanguageId);
+            var errorMessage = await _messageBuilder.Build(Messages.Appraiser_MultipleLinkError, languageId);
             
-            context.AddFailure(nameof(AddStoryCommand.Links), errorMessage);
+            context.AddFailure(propertyName, errorMessage);
         }
         else
         {
-            var link = links.FirstOrDefault();
+            var link = links.SingleOrDefault();
             
-            if (!string.IsNullOrWhiteSpace(link) && link.Length > 2000)
+            if (!string.IsNullOrWhiteSpace(link) && link.Length > maxLinksLength)
             { 
-                var errorMessage = await _messageBuilder.Build(
-                    Messages.Appraiser_LinkLengthError,
-                    context.InstanceToValidate.MessageContext.LanguageId);
+                var errorMessage = await _messageBuilder.Build(Messages.Appraiser_LinkLengthError, languageId);
                 
-                context.AddFailure(nameof(AddStoryCommand.Links), errorMessage);
+                context.AddFailure(propertyName, errorMessage);
             }
         }
     }

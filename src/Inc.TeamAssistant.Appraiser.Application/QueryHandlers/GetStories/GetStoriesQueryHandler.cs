@@ -19,7 +19,9 @@ internal sealed class GetStoriesQueryHandler : IRequestHandler<GetStoriesQuery, 
         ArgumentNullException.ThrowIfNull(query);
 
         var stories = await _reader.GetStories(query.TeamId, query.AssessmentDate, token);
-        var results = stories.Select(StoryConverter.Convert).ToArray(); 
+        var results = stories
+            .Select(StoryConverter.Convert)
+            .ToArray(); 
 
         return new GetStoriesResult(results);
     }

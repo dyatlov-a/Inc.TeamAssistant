@@ -11,8 +11,7 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
 
     public SetEstimateForStoryCommandCreator(string command, int value)
     {
-        if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
+        ArgumentException.ThrowIfNullOrWhiteSpace(command);
         
         Command = command;
         _value = value;

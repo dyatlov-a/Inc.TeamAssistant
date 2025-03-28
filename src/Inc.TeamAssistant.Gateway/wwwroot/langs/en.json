@@ -7,7 +7,6 @@
   "Appraiser_MeanEstimate": "Mean",
   "Appraiser_MedianEstimate": "Median",
   "Appraiser_AcceptedEstimate": "Accepted",
-  "Appraiser_StoryNotFound": "Story {0} was not found",
   "Appraiser_MoveToFibonacciHelp": "Move to Fibonacci numbers",
   "Appraiser_MoveToTShirtsHelp": "Move to t-shirts",
   "Appraiser_MoveToPowerOfTwoHelp": "Move to power of two",

@@ -5,6 +5,7 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateForStory;
 
@@ -28,23 +29,21 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var story = await _storyRepository.Find(command.StoryId, token);
-        if (story is null)
-	        throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
-
-        var alreadyEstimate = story.Estimate(command.MessageContext.Person.Id, command.Value);
+        var story = await command.StoryId.Required(_storyRepository.Find, token);
+        var alreadyEstimated = story.Estimate(command.MessageContext.Person.Id, command.Value);
 
         await _storyRepository.Upsert(story, token);
         
-        switch (alreadyEstimate)
+        switch (alreadyEstimated)
         {
 	        case null:
 		        throw new TeamAssistantUserException(Messages.Appraiser_MissingTaskForEvaluate);
 	        case true:
 		        return CommandResult.Empty;
 	        default:
+		        var notification = await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
 		        await _messagesSender.StoryChanged(story.TeamId);
-		        return CommandResult.Build(await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+		        return CommandResult.Build(notification);
         }
     }
 }

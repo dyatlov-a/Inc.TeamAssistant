@@ -53,9 +53,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
         draft.CheckRights(command.MessageContext.Person.Id);
         
-        var targetTeam = command.MessageContext.FindTeam(draft.TeamId);
-        if (targetTeam is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, draft.TeamId);
+        var targetTeam = command.MessageContext.EnsureTeam(draft.TeamId);
         
         var teammates = await _teamAccessor.GetTeammates(draft.TeamId, DateTimeOffset.UtcNow, token);
         if (!teammates.Any())
