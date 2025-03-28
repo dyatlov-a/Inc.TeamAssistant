@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
@@ -9,6 +8,7 @@ using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.SelectPairs;
 using MediatR;
+using Inc.TeamAssistant.Primitives.Extensions;
 
 namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs;
 
@@ -37,37 +37,30 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
     public async Task<CommandResult> Handle(SelectPairsCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        var randomCoffeeEntry = await _repository.Find(command.RandomCoffeeEntryId, token);
-        if (randomCoffeeEntry is null)
-            throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
         
-        if (randomCoffeeEntry.State == RandomCoffeeState.Refused)
+        var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
+        if (entry.AlreadyStarted(onDemand: false))
             return CommandResult.Empty;
         
-        var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
-        var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
-        
-        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, owner.Id, token);
-        var notificationMessage = randomCoffeeEntry.CanSelectPairs()
+        var botContext = await _botAccessor.GetBotContext(entry.BotId, token);
+        var languageId = await _teamAccessor.GetClientLanguage(
+            command.MessageContext.Bot.Id,
+            entry.OwnerId,
+            token);
+        var notificationMessage = entry.CanSelectPairs()
             ? await _notificationsBuilder.Build(
-                randomCoffeeEntry.ChatId,
-                randomCoffeeEntry.BotId,
+                entry.ChatId,
+                entry.BotId,
                 languageId,
-                randomCoffeeEntry.SelectPairs(),
+                entry.SelectPairs(),
                 token)
             : NotificationMessage.Create(
-                randomCoffeeEntry.ChatId,
+                entry.ChatId,
                 await _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
-        
-        randomCoffeeEntry.MoveToNextRound(
-            DateTimeOffset.UtcNow,
-            botContext.GetRoundInterval(),
-            botContext.GetVotingInterval());
-        
-        await _repository.Upsert(randomCoffeeEntry, token);
+
+        await _repository.Upsert(
+            entry.MoveToNextRound(DateTimeOffset.UtcNow, botContext.GetRoundInterval(), botContext.GetVotingInterval()),
+            token);
         
         return CommandResult.Build(notificationMessage);
     }

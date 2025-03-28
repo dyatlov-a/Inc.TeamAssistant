@@ -32,10 +32,8 @@ public sealed class RefuseForCoffeeCommandHandler : IRequestHandler<RefuseForCof
         var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
         if (existsEntry is null || existsEntry.State == RandomCoffeeState.Refused)
             return CommandResult.Empty;
-        
-        existsEntry.MoveToRefused(command.MessageContext.Person.Id);
 
-        await _repository.Upsert(existsEntry, token);
+        await _repository.Upsert(existsEntry.MoveToRefused(command.MessageContext.Person.Id), token);
 
         var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, existsEntry.OwnerId, token);
         var notification = NotificationMessage.Create(

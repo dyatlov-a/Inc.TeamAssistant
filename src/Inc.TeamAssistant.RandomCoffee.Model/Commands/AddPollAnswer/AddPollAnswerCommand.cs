@@ -6,4 +6,9 @@ public sealed record AddPollAnswerCommand(
     MessageContext MessageContext,
     string PollId,
     IReadOnlyCollection<string> Options)
-    : IDialogCommand;
+    : IDialogCommand
+{
+    private const string Yes = "0";
+
+    public bool IsAttend => Options.Contains(Yes);
+}

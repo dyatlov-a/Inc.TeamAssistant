@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.AttachPoll;
 using MediatR;
@@ -19,13 +19,9 @@ internal sealed class AttachPollCommandHandler : IRequestHandler<AttachPollComma
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var randomCoffeeEntry = await _repository.Find(command.RandomCoffeeEntryId, token);
-        if (randomCoffeeEntry is null)
-            throw new TeamAssistantException($"RandomCoffeeEntry {command.RandomCoffeeEntryId} was not found.");
-
-        randomCoffeeEntry.AttachPoll(command.PollId);
+        var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
         
-        await _repository.Upsert(randomCoffeeEntry, token);
+        await _repository.Upsert(entry.AttachPoll(command.PollId), token);
 
         return CommandResult.Empty;
     }

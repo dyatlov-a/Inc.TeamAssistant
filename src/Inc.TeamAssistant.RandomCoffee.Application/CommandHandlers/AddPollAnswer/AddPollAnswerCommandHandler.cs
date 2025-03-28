@@ -18,18 +18,9 @@ internal sealed class AddPollAnswerCommandHandler : IRequestHandler<AddPollAnswe
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var randomCoffeeEntry = await _repository.Find(command.PollId, token);
-        if (randomCoffeeEntry is not null)
-        {
-            const string optionYes = "0";
-            
-            if (command.Options.Contains(optionYes))
-                randomCoffeeEntry.AddPerson(command.MessageContext.Person.Id);
-            else
-                randomCoffeeEntry.RemovePerson(command.MessageContext.Person.Id);
-
-            await _repository.Upsert(randomCoffeeEntry, token);
-        }
+        var entry = await _repository.Find(command.PollId, token);
+        if (entry is not null)
+            await _repository.Upsert(entry.SetAnswer(command.IsAttend, command.MessageContext.Person.Id), token);
         
         return CommandResult.Empty;
     }

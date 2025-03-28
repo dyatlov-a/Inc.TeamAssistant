@@ -67,24 +67,21 @@ public sealed class RandomCoffeeEntry
         return this;
     }
     
-    public RandomCoffeeEntry AddPerson(long participantId)
+    public RandomCoffeeEntry SetAnswer(bool isAttend, long participantId)
     {
-        if (State == RandomCoffeeState.Waiting && !ParticipantIds.Contains(participantId))
-            ParticipantIds.Add(participantId);
+        var entry = State == RandomCoffeeState.Waiting
+            ? isAttend
+                ? AddPerson(participantId)
+                : RemovePerson(participantId)
+            : this;
 
-        return this;
-    }
-
-    public RandomCoffeeEntry RemovePerson(long participantId)
-    {
-        if (State == RandomCoffeeState.Waiting && ParticipantIds.Contains(participantId))
-            ParticipantIds.Remove(participantId);
-
-        return this;
+        return entry;
     }
 
     public RandomCoffeeEntry AttachPoll(string pollId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
+        
         PollId = pollId;
         
         return this;
@@ -115,6 +112,32 @@ public sealed class RandomCoffeeEntry
         entry.State = RandomCoffeeState.Refused;
         
         return entry;
+    }
+
+    public bool AlreadyStarted(bool onDemand)
+    {
+        const int hasOnlyOneCondition = 1;
+        
+        var isRefused = State == RandomCoffeeState.Refused;
+        var startConditions = new[] { isRefused, onDemand };
+        
+        return startConditions.Count(i => i) == hasOnlyOneCondition;
+    }
+    
+    private RandomCoffeeEntry AddPerson(long participantId)
+    {
+        if (!ParticipantIds.Contains(participantId))
+            ParticipantIds.Add(participantId);
+
+        return this;
+    }
+
+    private RandomCoffeeEntry RemovePerson(long participantId)
+    {
+        if (ParticipantIds.Contains(participantId))
+            ParticipantIds.Remove(participantId);
+
+        return this;
     }
     
     private RandomCoffeeEntry EnsureRights(long personId)
