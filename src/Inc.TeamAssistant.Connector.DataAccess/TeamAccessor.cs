@@ -45,7 +45,7 @@ internal sealed class TeamAccessor : ITeamAccessor
         return await _personRepository.Find(personId, token);
     }
 
-    public async Task<Person> GetPerson(long personId, CancellationToken token)
+    public async Task<Person> EnsurePerson(long personId, CancellationToken token)
     {
         var person = await _personRepository.Find(personId, token);
         if (person is null)

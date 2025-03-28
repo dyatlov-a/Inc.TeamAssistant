@@ -15,7 +15,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly ITaskForReviewReader _taskReader;
+    private readonly ITaskForReviewReader _reader;
     private readonly IReviewMetricsProvider _metricsProvider;
     private readonly ReviewTeamMetricsFactory _metricsFactory;
     private readonly DraftTaskForReviewService _draftService;
@@ -23,14 +23,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        ITaskForReviewReader taskReader,
+        ITaskForReviewReader reader,
         IReviewMetricsProvider metricsProvider,
         ReviewTeamMetricsFactory metricsFactory,
         DraftTaskForReviewService draftService)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _taskReader = taskReader ?? throw new ArgumentNullException(nameof(taskReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsProvider = metricsProvider ?? throw new ArgumentNullException(nameof(metricsProvider));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
         _draftService = draftService ?? throw new ArgumentNullException(nameof(draftService));
@@ -124,7 +124,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
         if (draft.TargetPersonId.HasValue)
         {
-            var reviewTarget = await _teamAccessor.GetPerson(draft.TargetPersonId.Value, token);
+            var reviewTarget = await _teamAccessor.EnsurePerson(draft.TargetPersonId.Value, token);
             builder.AppendLine(string.Format(reviewTargetMessageTemplate, reviewTarget.DisplayName));
             
             if (!await _draftService.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
@@ -312,7 +312,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 $"{CommandList.MoveToInProgress}{task.Id:N}"));
 
             var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
-            var hasReassign = await _taskReader.HasReassignFromDate(task.ReviewerId, fromDate, token);
+            var hasReassign = await _reader.HasReassignFromDate(task.ReviewerId, fromDate, token);
             if (!task.OriginalReviewerId.HasValue && !hasReassign)
             {
                 var reassignReviewButton = await _messageBuilder.Build(Messages.Reviewer_Reassign, languageId);
@@ -408,6 +408,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     
     private string StateAsIcon(TaskForReview task)
     {
+        ArgumentNullException.ThrowIfNull(task);
+        
         return task.State switch
         {
             TaskForReviewState.New => Icons.Waiting,

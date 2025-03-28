@@ -99,11 +99,13 @@ public sealed class MessageContext
             chatName);
     }
 
-    public static MessageContext CreateFromBackground(Guid botId, long chatId)
+    public static MessageContext CreateFromBackground(BotContext botContext, long chatId)
     {
+        ArgumentNullException.ThrowIfNull(botContext);
+        
         return new MessageContext(
             new ChatMessage(chatId, MessageId: 0),
-            new BotContext(botId, UserName: string.Empty, new Dictionary<string, string>()),
+            botContext,
             teams: Array.Empty<TeamContext>(),
             text: string.Empty,
             Person.Empty,
@@ -113,11 +115,13 @@ public sealed class MessageContext
             chatName: string.Empty);
     }
 
-    public static MessageContext CreateFromIntegration(Guid botId, Guid teamId, long chatId, long personId)
+    public static MessageContext CreateFromIntegration(BotContext botContext, Guid teamId, long chatId, long personId)
     {
+        ArgumentNullException.ThrowIfNull(botContext);
+        
         return new MessageContext(
             ChatMessage.Empty,
-            new BotContext(botId, UserName: string.Empty, new Dictionary<string, string>()),
+            botContext,
             [new TeamContext(teamId, chatId, Name: string.Empty, UserInTeam: false, OwnerOfTeam: false)],
             text: string.Empty,
             new Person(personId, string.Empty, Username: null),

@@ -7,13 +7,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.
 
 internal sealed class ReassignReviewCommandValidator : AbstractValidator<ReassignReviewCommand>
 {
-    private readonly ITaskForReviewReader _taskForReviewReader;
+    private readonly ITaskForReviewReader _reader;
     
-    public ReassignReviewCommandValidator(ITaskForReviewReader taskForReviewReader)
+    public ReassignReviewCommandValidator(ITaskForReviewReader reader)
     {
-        ArgumentNullException.ThrowIfNull(taskForReviewReader);
+        ArgumentNullException.ThrowIfNull(reader);
         
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         
         RuleFor(e => e.TaskId)
             .NotEmpty();
@@ -28,8 +28,7 @@ internal sealed class ReassignReviewCommandValidator : AbstractValidator<Reassig
         ArgumentNullException.ThrowIfNull(command);
         
         var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
-
-        var hasReassign = await _taskForReviewReader.HasReassignFromDate(
+        var hasReassign = await _reader.HasReassignFromDate(
             command.MessageContext.Person.Id,
             fromDate,
             token);

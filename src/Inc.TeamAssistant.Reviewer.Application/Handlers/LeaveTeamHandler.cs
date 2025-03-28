@@ -9,14 +9,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.Handlers;
 
 internal sealed class LeaveTeamHandler : ILeaveTeamHandler
 {
-    private readonly ReassignReviewService _reassignReviewService;
-    private readonly ITaskForReviewReader _taskForReviewReader;
+    private readonly ReassignReviewService _service;
+    private readonly ITaskForReviewReader _reader;
 
-    public LeaveTeamHandler(ReassignReviewService reassignReviewService, ITaskForReviewReader taskForReviewReader)
+    public LeaveTeamHandler(ReassignReviewService service, ITaskForReviewReader reader)
     {
-        _reassignReviewService =
-            reassignReviewService ?? throw new ArgumentNullException(nameof(reassignReviewService));
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<IEnumerable<NotificationMessage>> Handle(
@@ -26,16 +25,16 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
     {
         ArgumentNullException.ThrowIfNull(messageContext);
         
-        var notifications = new List<NotificationMessage>();
-        var tasks = await _taskForReviewReader.GetTasksByPerson(
+        var tasks = await _reader.GetTasksByPerson(
             teamId,
             messageContext.Person.Id,
             TaskForReviewStateRules.ActiveStates,
             token);
+        var notifications = new List<NotificationMessage>();
 
         foreach (var task in tasks)
         {
-            var notificationsByTask = await _reassignReviewService.ReassignReview(
+            var notificationsByTask = await _service.ReassignReview(
                 messageContext.ChatMessage.MessageId,
                 task.Id,
                 messageContext.Bot,

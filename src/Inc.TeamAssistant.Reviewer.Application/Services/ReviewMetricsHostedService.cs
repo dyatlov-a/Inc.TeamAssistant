@@ -6,17 +6,17 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewMetricsHostedService : IHostedService
 {
-    private readonly ITaskForReviewReader _taskForReviewReader;
-    private readonly IReviewMetricsLoader _reviewMetricsLoader;
+    private readonly ITaskForReviewReader _reader;
+    private readonly IReviewMetricsLoader _metricsLoader;
     private readonly ILogger<ReviewMetricsHostedService> _logger;
 
     public ReviewMetricsHostedService(
-        ITaskForReviewReader taskForReviewReader,
-        IReviewMetricsLoader reviewMetricsLoader,
+        ITaskForReviewReader reader,
+        IReviewMetricsLoader metricsLoader,
         ILogger<ReviewMetricsHostedService> logger)
     {
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
-        _reviewMetricsLoader = reviewMetricsLoader ?? throw new ArgumentNullException(nameof(reviewMetricsLoader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _metricsLoader = metricsLoader ?? throw new ArgumentNullException(nameof(metricsLoader));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -26,9 +26,9 @@ internal sealed class ReviewMetricsHostedService : IHostedService
         {
             var fromDate = DateTimeOffset.UtcNow.AddDays(-90);
 
-            var taskForReviews = await _taskForReviewReader.GetTasksFrom(teamId: null, fromDate, token);
+            var taskForReviews = await _reader.GetTasksFrom(teamId: null, fromDate, token);
 
-            await _reviewMetricsLoader.Load(taskForReviews, token);
+            await _metricsLoader.Load(taskForReviews, token);
         }
         catch (Exception ex)
         {

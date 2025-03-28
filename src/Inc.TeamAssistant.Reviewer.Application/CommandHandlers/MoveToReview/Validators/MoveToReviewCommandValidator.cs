@@ -7,17 +7,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview.Va
 
 internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToReviewCommand>
 {
-    private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
-    private readonly DraftTaskForReviewService _draftTaskForReviewService;
+    private readonly IDraftTaskForReviewRepository _repository;
+    private readonly DraftTaskForReviewService _service;
     
-    public MoveToReviewCommandValidator(
-        IDraftTaskForReviewRepository draftTaskForReviewRepository,
-        DraftTaskForReviewService draftTaskForReviewService)
+    public MoveToReviewCommandValidator(IDraftTaskForReviewRepository repository, DraftTaskForReviewService service)
     {
-        _draftTaskForReviewRepository =
-            draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
-        _draftTaskForReviewService =
-            draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
 
         RuleFor(e => e.DraftId)
             .NotEmpty()
@@ -31,15 +27,15 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
     {
         ArgumentNullException.ThrowIfNull(context);
         
-        var draft = await _draftTaskForReviewRepository.GetById(draftId, token);
+        var draft = await _repository.GetById(draftId, token);
 
-        if (!_draftTaskForReviewService.HasDescriptionAndLinks(draft.Description))
+        if (!_service.HasDescriptionAndLinks(draft.Description))
             context.AddFailure(
                 nameof(draft.Description),
                 "Must contains a link to the source code and some description");
         
         if (draft.TargetPersonId.HasValue &&
-            !await _draftTaskForReviewService.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
+            !await _service.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
             context.AddFailure(nameof(draft.TargetPersonId), "Teammate not found");
     }
 }

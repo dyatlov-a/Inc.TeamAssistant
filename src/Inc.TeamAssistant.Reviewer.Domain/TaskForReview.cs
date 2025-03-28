@@ -52,7 +52,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         SetReviewer(reviewerId);
     }
 
-    public void AttachMessage(MessageType messageType, int messageId)
+    public TaskForReview AttachMessage(MessageType messageType, int messageId)
     {
         switch (messageType)
         {
@@ -68,18 +68,22 @@ public sealed class TaskForReview : ITaskForReviewStats
             default:
                 throw new ArgumentOutOfRangeException(nameof(messageType), messageType, "State out of range.");
         }
+
+        return this;
     }
 
-    public void SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
         NextNotification = now.Add(notificationIntervals.GetNotificationInterval(State));
+
+        return this;
     }
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
-    public void Accept(DateTimeOffset now, bool hasComments)
+    public TaskForReview Accept(DateTimeOffset now, bool hasComments)
     {
         AddReviewInterval(ReviewerId, now);
         
@@ -87,11 +91,18 @@ public sealed class TaskForReview : ITaskForReviewStats
         State = hasComments
             ? TaskForReviewState.AcceptWithComments
             : TaskForReviewState.Accept;
-    }
-    
-    public void MoveToAccept() => State = TaskForReviewState.Accept;
 
-    public void Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
+        return this;
+    }
+
+    public TaskForReview MoveToAccept()
+    {
+        State = TaskForReviewState.Accept;
+
+        return this;
+    }
+
+    public TaskForReview Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
@@ -102,21 +113,25 @@ public sealed class TaskForReview : ITaskForReviewStats
 
         if (ReviewIntervals.All(i => i.State != TaskForReviewState.OnCorrection))
             SetNextNotificationTime(now, notificationIntervals);
+
+        return this;
     }
 
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
 
-    public void MoveToNextRound(DateTimeOffset now)
+    public TaskForReview MoveToNextRound(DateTimeOffset now)
     {
         AddReviewInterval(OwnerId, now);
         
         State = TaskForReviewState.InProgress;
         NextNotification = now;
+
+        return this;
     }
 
     public bool CanMoveToInProgress() => State == TaskForReviewState.New;
 
-    public void MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
@@ -124,6 +139,8 @@ public sealed class TaskForReview : ITaskForReviewStats
         
         State = TaskForReviewState.InProgress;
         SetNextNotificationTime(now, notificationIntervals);
+
+        return this;
     }
 
     private void AddReviewInterval(long userId, DateTimeOffset end)
@@ -131,7 +148,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
 
-    public void Reassign(DateTimeOffset now, long reviewerId)
+    public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
         
@@ -139,6 +156,8 @@ public sealed class TaskForReview : ITaskForReviewStats
         ReviewerMessageId = null;
         
         SetReviewer(reviewerId);
+
+        return this;
     }
 
     public int? GetAttempts()

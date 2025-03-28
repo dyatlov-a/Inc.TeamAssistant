@@ -20,9 +20,7 @@ internal sealed class AttachPreviewCommandHandler : IRequestHandler<AttachPrevie
         
         var draft = await _repository.GetById(command.DraftId, token);
 
-        draft.WithPreviewMessage(command.MessageId);
-
-        await _repository.Upsert(draft, token);
+        await _repository.Upsert(draft.WithPreviewMessage(command.MessageId), token);
         
         return CommandResult.Empty;
     }

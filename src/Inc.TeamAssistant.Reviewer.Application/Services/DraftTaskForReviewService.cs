@@ -7,15 +7,12 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class DraftTaskForReviewService
 {
-    private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
+    private readonly IDraftTaskForReviewRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
 
-    public DraftTaskForReviewService(
-        IDraftTaskForReviewRepository draftTaskForReviewRepository,
-        ITeamAccessor teamAccessor)
+    public DraftTaskForReviewService(IDraftTaskForReviewRepository repository, ITeamAccessor teamAccessor)
     {
-        _draftTaskForReviewRepository =
-            draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -40,6 +37,8 @@ internal sealed class DraftTaskForReviewService
         DraftTaskForReview draft,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(draft);
+        
         var notifications = new List<NotificationMessage>();
         
         if (draft.PreviewMessageId.HasValue)
@@ -47,7 +46,7 @@ internal sealed class DraftTaskForReviewService
         
         notifications.Add(NotificationMessage.Delete(new ChatMessage(draft.ChatId, draft.MessageId)));
         
-        await _draftTaskForReviewRepository.Delete(draft.Id, token);
+        await _repository.Delete(draft.Id, token);
 
         return notifications;
     }

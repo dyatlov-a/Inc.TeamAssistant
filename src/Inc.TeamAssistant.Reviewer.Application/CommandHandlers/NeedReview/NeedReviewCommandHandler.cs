@@ -23,21 +23,20 @@ internal sealed class NeedReviewCommandHandler : IRequestHandler<NeedReviewComma
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        var nextReviewerType = Enum.Parse<NextReviewerType>(command.Strategy);
         var draft = new DraftTaskForReview(
-                Guid.NewGuid(),
-                command.TeamId,
-                command.MessageContext.Person.Id,
-                command.MessageContext.ChatMessage.ChatId,
-                command.MessageContext.ChatMessage.MessageId,
-                command.Description,
-                DateTimeOffset.UtcNow,
-                Enum.Parse<NextReviewerType>(command.Strategy))
-            .SetTargetPerson(command.MessageContext.TargetPersonId);
+            Guid.NewGuid(),
+            command.TeamId,
+            command.MessageContext.Person.Id,
+            command.MessageContext.ChatMessage.ChatId,
+            command.MessageContext.ChatMessage.MessageId,
+            command.Description,
+            DateTimeOffset.UtcNow,
+            nextReviewerType);
 
-        await _repository.Upsert(draft, token);
+        await _repository.Upsert(draft.SetTargetPerson(command.MessageContext.TargetPersonId), token);
 
         var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
-        
         return CommandResult.Build(notification);
     }
 }

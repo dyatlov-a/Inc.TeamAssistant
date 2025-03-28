@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToNextRound;
 using MediatR;
@@ -9,19 +8,17 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToNextRound
 
 internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNextRoundCommand, CommandResult>
 {
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly ITaskForReviewRepository _repository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
 
     public MoveToNextRoundCommandHandler(
-        ITaskForReviewRepository taskForReviewRepository,
+        ITaskForReviewRepository repository,
         IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _reviewMessageBuilder =
-            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _reviewMessageBuilder = reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -29,20 +26,15 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
+        var taskForReview = await _repository.GetById(command.TaskId, token);
         if (!taskForReview.CanMoveToNextRound())
             return CommandResult.Empty;
         
-        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
-        if (reviewer is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
+        var reviewer = await _teamAccessor.EnsurePerson(taskForReview.ReviewerId, token);
+        var owner = await _teamAccessor.EnsurePerson(taskForReview.OwnerId, token);
+
+        await _repository.Upsert(taskForReview.MoveToNextRound(DateTimeOffset.UtcNow), token);
         
-        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
-
-        taskForReview.MoveToNextRound(DateTimeOffset.UtcNow);
-
         var notifications = await _reviewMessageBuilder.Build(
             command.MessageContext.ChatMessage.MessageId,
             taskForReview,
@@ -50,9 +42,6 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
             owner,
             command.MessageContext.Bot,
             token);
-
-        await _taskForReviewRepository.Upsert(taskForReview, token);
-        
         return CommandResult.Build(notifications.ToArray());
     }
 }

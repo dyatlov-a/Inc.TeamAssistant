@@ -8,16 +8,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
 {
-    private readonly ITaskForReviewReader _taskForReviewReader;
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly ITaskForReviewReader _reader;
+    private readonly ITaskForReviewRepository _repository;
 
-    public NextReviewerStrategyFactory(
-        ITaskForReviewReader taskForReviewReader,
-        ITaskForReviewRepository taskForReviewRepository)
+    public NextReviewerStrategyFactory(ITaskForReviewReader reader, ITaskForReviewRepository repository)
     {
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task<INextReviewerStrategy> Create(
@@ -31,15 +28,9 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
     {
         ArgumentNullException.ThrowIfNull(teammates);
         
-        var lastReviewerId = await _taskForReviewRepository.FindLastReviewer(
-            teamId,
-            ownerId,
-            token);
-        var history = await _taskForReviewReader.GetHistory(
-            teamId,
-            DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday),
-            token);
-        
+        var lastDayOfWeek = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
+        var lastReviewerId = await _repository.FindLastReviewer(teamId, ownerId, token);
+        var history = await _reader.GetHistory(teamId, lastDayOfWeek, token);
         var excludedPersonIds = excludePersonId.HasValue
             ? new[] { ownerId, excludePersonId.Value }
             : [ownerId];

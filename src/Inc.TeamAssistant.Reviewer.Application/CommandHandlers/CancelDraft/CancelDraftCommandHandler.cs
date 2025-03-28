@@ -8,27 +8,23 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft;
 
 internal sealed class CancelDraftCommandHandler : IRequestHandler<CancelDraftCommand, CommandResult>
 {
-    private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
-    private readonly DraftTaskForReviewService _draftTaskForReviewService;
+    private readonly IDraftTaskForReviewRepository _repository;
+    private readonly DraftTaskForReviewService _service;
 
-    public CancelDraftCommandHandler(
-        IDraftTaskForReviewRepository draftTaskForReviewRepository,
-        DraftTaskForReviewService draftTaskForReviewService)
+    public CancelDraftCommandHandler(IDraftTaskForReviewRepository repository, DraftTaskForReviewService service)
     {
-        _draftTaskForReviewRepository =
-            draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
-        _draftTaskForReviewService =
-            draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public async Task<CommandResult> Handle(CancelDraftCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
-        draft.CheckRights(command.MessageContext.Person.Id);
-
-        var notifications = await _draftTaskForReviewService.Delete(draft, token);
+        var draft = await _repository.GetById(command.DraftId, token);
+        var notifications = await _service.Delete(
+            draft.CheckRights(command.MessageContext.Person.Id),
+            token);
 
         return CommandResult.Build(notifications.ToArray());
     }

@@ -25,11 +25,6 @@ public sealed record ReviewTeamMetrics(
     {
         return (average * Total + value * count) / (Total + count);
     }
-
-    private decimal Add(decimal average, decimal value, int count)
-    {
-        return (average * Total + value * count) / (Total + count);
-    }
     
     private int Add(int average, int value, int count)
     {

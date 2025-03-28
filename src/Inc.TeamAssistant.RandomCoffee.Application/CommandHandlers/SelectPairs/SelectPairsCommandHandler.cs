@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -18,31 +17,29 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
     private readonly ITeamAccessor _teamAccessor;
     private readonly NotificationsBuilder _notificationsBuilder;
     private readonly IMessageBuilder _messageBuilder;
-    private readonly IBotAccessor _botAccessor;
 
     public SelectPairsCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
         NotificationsBuilder notificationsBuilder,
-        IMessageBuilder messageBuilder,
-        IBotAccessor botAccessor)
+        IMessageBuilder messageBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _notificationsBuilder = notificationsBuilder ?? throw new ArgumentNullException(nameof(notificationsBuilder));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(SelectPairsCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
+        var botContext = command.MessageContext.Bot;
+        
         var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
         if (entry.AlreadyStarted(onDemand: false))
             return CommandResult.Empty;
         
-        var botContext = await _botAccessor.GetBotContext(entry.BotId, token);
         var languageId = await _teamAccessor.GetClientLanguage(
             command.MessageContext.Bot.Id,
             entry.OwnerId,

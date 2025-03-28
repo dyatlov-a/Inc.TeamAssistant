@@ -44,11 +44,10 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
             command.MessageContext.ChatMessage.ChatId,
             command.MessageContext.ChatName!,
             command.MessageContext.Person.Id);
-        var botContext = await _botAccessor.GetBotContext(entry.BotId, token);
         
         entry.MoveToWaiting(
             DateTimeOffset.UtcNow,
-            botContext.GetVotingInterval(),
+            command.MessageContext.Bot.GetVotingInterval(),
             command.OnDemand ? command.MessageContext.Person.Id : null);
 
         await _repository.Upsert(entry, token);

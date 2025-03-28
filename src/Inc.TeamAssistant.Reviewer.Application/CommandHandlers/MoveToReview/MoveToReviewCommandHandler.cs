@@ -1,8 +1,6 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -14,52 +12,44 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToReview;
 
 internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewCommand, CommandResult>
 {
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly ITaskForReviewRepository _repository;
     private readonly IReviewMessageBuilder _reviewMessageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly IDraftTaskForReviewRepository _draftTaskForReviewRepository;
-    private readonly DraftTaskForReviewService _draftTaskForReviewService;
-    private readonly IBotAccessor _botAccessor;
-    private readonly INextReviewerStrategyFactory _nextReviewerStrategyFactory;
+    private readonly IDraftTaskForReviewRepository _draftRepository;
+    private readonly DraftTaskForReviewService _draftService;
+    private readonly INextReviewerStrategyFactory _reviewerFactory;
 
     public MoveToReviewCommandHandler(
-        ITaskForReviewRepository taskForReviewRepository,
+        ITaskForReviewRepository repository,
         IReviewMessageBuilder reviewMessageBuilder,
         ITeamAccessor teamAccessor,
-        IDraftTaskForReviewRepository draftTaskForReviewRepository,
-        DraftTaskForReviewService draftTaskForReviewService,
-        IBotAccessor botAccessor,
-        INextReviewerStrategyFactory nextReviewerStrategyFactory)
+        IDraftTaskForReviewRepository draftRepository,
+        DraftTaskForReviewService draftService,
+        INextReviewerStrategyFactory reviewerFactory)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
-        _reviewMessageBuilder =
-            reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _reviewMessageBuilder = reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _draftTaskForReviewRepository =
-            draftTaskForReviewRepository ?? throw new ArgumentNullException(nameof(draftTaskForReviewRepository));
-        _draftTaskForReviewService =
-            draftTaskForReviewService ?? throw new ArgumentNullException(nameof(draftTaskForReviewService));
-        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
-        _nextReviewerStrategyFactory =
-            nextReviewerStrategyFactory ?? throw new ArgumentNullException(nameof(nextReviewerStrategyFactory));
+        _draftRepository = draftRepository ?? throw new ArgumentNullException(nameof(draftRepository));
+        _draftService = draftService ?? throw new ArgumentNullException(nameof(draftService));
+        _reviewerFactory = reviewerFactory ?? throw new ArgumentNullException(nameof(reviewerFactory));
     }
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var botContext = await _botAccessor.GetBotContext(command.MessageContext.Bot.Id, token);
-        var draft = await _draftTaskForReviewRepository.GetById(command.DraftId, token);
-        draft.CheckRights(command.MessageContext.Person.Id);
+        var botContext = command.MessageContext.Bot;
         
-        var targetTeam = command.MessageContext.EnsureTeam(draft.TeamId);
+        var draft = await _draftRepository.GetById(command.DraftId, token);
+        draft.CheckRights(command.MessageContext.Person.Id);
         
         var teammates = await _teamAccessor.GetTeammates(draft.TeamId, DateTimeOffset.UtcNow, token);
         if (!teammates.Any())
             throw new TeamAssistantUserException(Messages.Reviewer_TeamWithoutUsers, draft.TeamId);
         
-        var nextReviewerStrategy = await _nextReviewerStrategyFactory.Create(
+        var targetTeam = command.MessageContext.EnsureTeam(draft.TeamId);
+        var nextReviewerStrategy = await _reviewerFactory.Create(
             draft.TeamId,
             draft.OwnerId,
             draft.GetStrategy(),
@@ -70,33 +60,26 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var taskForReview = new TaskForReview(
             Guid.NewGuid(),
             draft,
-            command.MessageContext.Bot.Id,
+            botContext.Id,
             DateTimeOffset.UtcNow,
             botContext.GetNotificationIntervals(),
             targetTeam.ChatId,
             nextReviewerStrategy.GetReviewer());
+        var reviewer = await _teamAccessor.EnsurePerson(taskForReview.ReviewerId, token);
+        var owner = await _teamAccessor.EnsurePerson(taskForReview.OwnerId, token);
         
-        var reviewer = await _teamAccessor.FindPerson(taskForReview.ReviewerId, token);
-        if (reviewer is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.ReviewerId);
-        
-        var owner = await _teamAccessor.FindPerson(taskForReview.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantUserException(Messages.Connector_PersonNotFound, taskForReview.OwnerId);
+        await _repository.Upsert(taskForReview, token);
 
-        var notifications = new List<NotificationMessage>();
-        notifications.AddRange(await _reviewMessageBuilder.Build(
-            command.MessageContext.ChatMessage.MessageId,
-            taskForReview,
-            reviewer,
-            owner,
-            command.MessageContext.Bot,
-            token));
+        var notifications = (await _reviewMessageBuilder.Build(
+                command.MessageContext.ChatMessage.MessageId,
+                taskForReview,
+                reviewer,
+                owner,
+                botContext,
+                token))
+            .Union(await _draftService.Delete(draft, token))
+            .ToArray();
         
-        await _taskForReviewRepository.Upsert(taskForReview, token);
-
-        notifications.AddRange(await _draftTaskForReviewService.Delete(draft, token));
-        
-        return CommandResult.Build(notifications.ToArray());
+        return CommandResult.Build(notifications);
     }
 }

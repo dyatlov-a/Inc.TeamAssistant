@@ -8,23 +8,21 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.AttachMessage;
 
 internal sealed class AttachMessageCommandHandler : IRequestHandler<AttachMessageCommand, CommandResult>
 {
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly ITaskForReviewRepository _repository;
 
-    public AttachMessageCommandHandler(ITaskForReviewRepository taskForReviewRepository)
+    public AttachMessageCommandHandler(ITaskForReviewRepository repository)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task<CommandResult> Handle(AttachMessageCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var taskForReview = await _taskForReviewRepository.GetById(command.TaskId, token);
+        var messageType = Enum.Parse<MessageType>(command.MessageType);
+        var taskForReview = await _repository.GetById(command.TaskId, token);
         
-        taskForReview.AttachMessage(Enum.Parse<MessageType>(command.MessageType), command.MessageId);
-        
-        await _taskForReviewRepository.Upsert(taskForReview, token);
+        await _repository.Upsert(taskForReview.AttachMessage(messageType, command.MessageId), token);
 
         return CommandResult.Empty;
     }
