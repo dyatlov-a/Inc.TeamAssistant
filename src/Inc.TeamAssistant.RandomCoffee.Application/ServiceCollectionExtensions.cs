@@ -4,6 +4,7 @@ using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnswer.S
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCoffee.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.RefuseForCoffee.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
+using Inc.TeamAssistant.RandomCoffee.Application.QueryHandlers.GetHistory.Converters;
 using Inc.TeamAssistant.RandomCoffee.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<ISettingSectionProvider, RandomCoffeeSettingSectionProvider>()
                 
+            .AddSingleton<RandomCoffeeHistoryConverter>()
             .AddSingleton<NotificationsBuilder>()
             
             .AddSingleton<ICommandCreator, InviteForCoffeeCommandCreator>()

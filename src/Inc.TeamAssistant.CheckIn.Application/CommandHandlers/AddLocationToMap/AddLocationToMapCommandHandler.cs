@@ -28,26 +28,27 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
     public async Task<CommandResult> Handle(AddLocationToMapCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        if (command.MessageContext.ChatMessage.ChatId == command.MessageContext.Person.Id)
-        {
-            var messageText = await _messageBuilder.Build(
-                Messages.CheckIn_GetStarted,
-                command.MessageContext.LanguageId);
 
-            return CommandResult.Build(NotificationMessage.Create(command.MessageContext.Person.Id, messageText));
+        var chatId = command.MessageContext.ChatMessage.ChatId;
+        var personId = command.MessageContext.Person.Id;
+        var languageId = command.MessageContext.LanguageId;
+        
+        if (chatId == personId)
+        {
+            var messageText = await _messageBuilder.Build(Messages.CheckIn_GetStarted, languageId);
+
+            return CommandResult.Build(NotificationMessage.Create(personId, messageText));
         }
         
-        var existsMap = await _locationsRepository.Find(command.MessageContext.ChatMessage.ChatId, token);
+        var existsMap = await _locationsRepository.Find(chatId, token);
         var map = existsMap ?? new(
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
-            command.MessageContext.ChatMessage.ChatId,
+            chatId,
             command.MessageContext.ChatName!);
-        
         var location = new LocationOnMap(
             Guid.NewGuid(),
-            command.MessageContext.Person.Id,
+            personId,
             command.MessageContext.Person.DisplayName,
             command.MessageContext.Location!.X,
             command.MessageContext.Location.Y,
@@ -57,17 +58,10 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
 
         if (existsMap is not null)
             return CommandResult.Empty;
-        
-        var message = await _messageBuilder.Build(
-            Messages.CheckIn_ConnectLinkText,
-            command.MessageContext.LanguageId,
-            _mapLinksBuilder.Build(command.MessageContext.LanguageId, map.Id));
 
-        var notification = NotificationMessage.Create(
-            command.MessageContext.ChatMessage.ChatId,
-            message,
-            pinned: true);
+        var link = _mapLinksBuilder.Build(languageId, map.Id);
+        var message = await _messageBuilder.Build(Messages.CheckIn_ConnectLinkText, languageId, link);
             
-        return CommandResult.Build(notification);
+        return CommandResult.Build(NotificationMessage.Create(chatId, message, pinned: true));
     }
 }
