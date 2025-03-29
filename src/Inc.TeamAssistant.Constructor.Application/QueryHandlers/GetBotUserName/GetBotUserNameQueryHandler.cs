@@ -6,18 +6,18 @@ namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetBotUserName
 
 internal sealed class GetBotUserNameQueryHandler : IRequestHandler<GetBotUserNameQuery, GetBotUserNameResult>
 {
-    private readonly IBotConnector _botConnector;
+    private readonly IBotConnector _connector;
 
-    public GetBotUserNameQueryHandler(IBotConnector botConnector)
+    public GetBotUserNameQueryHandler(IBotConnector connector)
     {
-        _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
+        _connector = connector ?? throw new ArgumentNullException(nameof(connector));
     }
 
     public async Task<GetBotUserNameResult> Handle(GetBotUserNameQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var userName = await _botConnector.GetUsername(query.Token, token);
+        var userName = await _connector.GetUsername(query.Token, token);
         
         var hasAccess = !string.IsNullOrWhiteSpace(userName);
         return new GetBotUserNameResult(hasAccess, userName ?? string.Empty);

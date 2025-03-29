@@ -15,7 +15,7 @@ internal sealed class BotRepository : IBotRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<Bot?> FindById(Guid id, CancellationToken token)
+    public async Task<Bot?> Find(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT

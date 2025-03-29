@@ -1,32 +1,30 @@
 using Inc.TeamAssistant.Constructor.Application.Contracts;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Extensions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetBot;
 
 internal sealed class GetBotQueryHandler : IRequestHandler<GetBotQuery, GetBotResult>
 {
-    private readonly IBotRepository _botRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly IBotRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
 
-    public GetBotQueryHandler(IBotRepository botRepository, ICurrentPersonResolver currentPersonResolver)
+    public GetBotQueryHandler(IBotRepository repository, ICurrentPersonResolver personResolver)
     {
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _currentPersonResolver = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
 
     public async Task<GetBotResult> Handle(GetBotQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var bot = await _botRepository.FindById(query.Id, token);
-        if (bot is null)
-            throw new ApplicationException($"Bot {query.Id} was not found.");
+        var currentPerson = _personResolver.GetCurrentPerson();
+        var bot = await query.Id.Required(_repository.Find, token);
         
-        if (bot.OwnerId != currentPerson.Id)
-            throw new ApplicationException($"User {currentPerson.Id} has not access to bot {query.Id}.");
+        bot.CheckRights(currentPerson.Id);
 
         return new GetBotResult(
             bot.Id,

@@ -9,45 +9,47 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateCalend
 
 internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, UpdateCalendarResult>
 {
-    private readonly ICalendarRepository _calendarRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
-    private readonly IHolidayReader _holidayReader;
+    private readonly ICalendarRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IHolidayReader _reader;
 
     public UpdateCalendarCommandHandler(
-        ICalendarRepository calendarRepository,
-        ICurrentPersonResolver currentPersonResolver,
-        IHolidayReader holidayReader)
+        ICalendarRepository repository,
+        ICurrentPersonResolver personResolver,
+        IHolidayReader reader)
     {
-        _calendarRepository = calendarRepository ?? throw new ArgumentNullException(nameof(calendarRepository));
-        _currentPersonResolver =
-            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
-        _holidayReader = holidayReader ?? throw new ArgumentNullException(nameof(holidayReader));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<UpdateCalendarResult> Handle(UpdateCalendarCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var existCalendar = await _calendarRepository.FindByOwner(currentPerson.Id, token);
-        var calendar = existCalendar?.Clear() ?? new Calendar(Guid.NewGuid(), currentPerson.Id);
-
-        calendar
-            .SetSchedule(command.Schedule is null
-                ? null
-                : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End));
+        var schedule = command.Schedule is null
+            ? null
+            : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End);
+        var currentPerson = _personResolver.GetCurrentPerson();
+        var existCalendar = await _repository.Find(currentPerson.Id, token);
+        var calendar = (existCalendar?.Clear() ?? new Calendar(Guid.NewGuid(), currentPerson.Id))
+            .SetSchedule(schedule);
         
         foreach (var weekend in command.Weekends)
             calendar.AddWeekend(weekend);
-        
-        foreach (var holiday in command.Holidays)
-            calendar.AddHoliday(holiday.Key, Enum.Parse<HolidayType>(holiday.Value));
 
-        await _calendarRepository.Upsert(calendar, token);
+        foreach (var holiday in command.Holidays)
+        {
+            var holidayType = Enum.Parse<HolidayType>(holiday.Value);
+            
+            calendar.AddHoliday(holiday.Key, holidayType);
+        }
+
+        await _repository.Upsert(calendar, token);
         
-        var botIds = await _calendarRepository.GetBotIds(calendar.Id, token);
+        var botIds = await _repository.GetBotIds(calendar.Id, token);
         foreach (var botId in botIds)
-            _holidayReader.Reload(botId);
+            _reader.Reload(botId);
 
         return new(calendar.Id);
     }

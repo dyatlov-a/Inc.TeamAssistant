@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
+
 namespace Inc.TeamAssistant.Constructor.Domain;
 
 public sealed class Bot
@@ -92,6 +94,14 @@ public sealed class Bot
         ArgumentNullException.ThrowIfNull(properties);
 
         Properties = properties.ToDictionary();
+        
+        return this;
+    }
+
+    public Bot CheckRights(long personId)
+    {
+        if (OwnerId != personId)
+            throw new TeamAssistantException($"User {personId} has not access to bot {Id}.");
         
         return this;
     }

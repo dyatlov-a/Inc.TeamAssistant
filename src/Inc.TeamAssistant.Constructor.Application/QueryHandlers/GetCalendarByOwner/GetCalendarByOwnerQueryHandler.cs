@@ -9,24 +9,21 @@ namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetCalendarByO
 internal sealed class GetCalendarByOwnerQueryHandler
     : IRequestHandler<GetCalendarByOwnerQuery, GetCalendarByOwnerResult>
 {
-    private readonly ICalendarRepository _calendarRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly ICalendarRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
 
-    public GetCalendarByOwnerQueryHandler(
-        ICalendarRepository calendarRepository,
-        ICurrentPersonResolver currentPersonResolver)
+    public GetCalendarByOwnerQueryHandler(ICalendarRepository repository, ICurrentPersonResolver personResolver)
     {
-        _calendarRepository = calendarRepository ?? throw new ArgumentNullException(nameof(calendarRepository));
-        _currentPersonResolver =
-            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
 
     public async Task<GetCalendarByOwnerResult> Handle(GetCalendarByOwnerQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        var calendar = await _calendarRepository.FindByOwner(currentPerson.Id, token);
+        var currentPerson = _personResolver.GetCurrentPerson();
+        var calendar = await _repository.Find(currentPerson.Id, token);
 
         return calendar is null
             ? GetCalendarByOwnerResult.Empty
