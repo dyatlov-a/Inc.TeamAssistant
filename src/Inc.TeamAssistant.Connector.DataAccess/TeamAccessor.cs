@@ -63,4 +63,10 @@ internal sealed class TeamAccessor : ITeamAccessor
     {
         return await _teamRepository.HasManagerAccess(teamId, personId, token);
     }
+
+    public async Task EnsureManagerAccess(Guid teamId, long personId, CancellationToken token)
+    {
+        if (!await HasManagerAccess(teamId, personId, token))
+            throw new ApplicationException($"User {personId} has not rights to remove teammate from team {teamId}");
+    }
 }

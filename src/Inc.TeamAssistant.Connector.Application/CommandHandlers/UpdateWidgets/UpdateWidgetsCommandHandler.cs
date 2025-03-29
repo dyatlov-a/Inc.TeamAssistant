@@ -23,7 +23,7 @@ internal sealed class UpdateWidgetsCommandHandler : IRequestHandler<UpdateWidget
         
         var person = _personResolver.GetCurrentPerson();
         var dashboardSettings = await _repository.Find(person.Id, command.BotId, token)
-                                ?? DashboardSettings.CreateDefaultSettings(person.Id, command.BotId);
+            ?? DashboardSettings.CreateDefaultSettings(person.Id, command.BotId);
 
         foreach (var widget in command.Widgets)
             dashboardSettings.ChangeWidget(widget.Key, widget.Value.Position, widget.Value.IsEnabled);

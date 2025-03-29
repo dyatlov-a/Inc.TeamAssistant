@@ -7,17 +7,17 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetTeammates;
 
 internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQuery, GetTeammatesResult>
 {
-    private readonly ITeamReader _teamReader;
-    private readonly ICurrentPersonResolver _currentPersonProvider;
+    private readonly ITeamReader _reader;
+    private readonly ICurrentPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public GetTeammatesQueryHandler(
-        ITeamReader teamReader, 
-        ICurrentPersonResolver currentPersonProvider,
+        ITeamReader reader, 
+        ICurrentPersonResolver personProvider,
         ITeamAccessor teamAccessor)
     {
-        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
-        _currentPersonProvider = currentPersonProvider ?? throw new ArgumentNullException(nameof(currentPersonProvider));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _personProvider = personProvider ?? throw new ArgumentNullException(nameof(personProvider));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -25,9 +25,9 @@ internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQue
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var currentPerson = _currentPersonProvider.GetCurrentPerson();
+        var currentPerson = _personProvider.GetCurrentPerson();
         var hasManagerAccess = await _teamAccessor.HasManagerAccess(query.TeamId, currentPerson.Id, token);
-        var teammates = await _teamReader.GetTeammates(query.TeamId, token);
+        var teammates = await _reader.GetTeammates(query.TeamId, token);
 
         return new GetTeammatesResult(hasManagerAccess, teammates);
     }

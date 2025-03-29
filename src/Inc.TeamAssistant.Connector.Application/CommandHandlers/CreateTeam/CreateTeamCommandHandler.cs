@@ -11,16 +11,16 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam;
 
 internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, CommandResult>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly ITeamRepository _repository;
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamLinkBuilder _teamLinkBuilder;
 
     public CreateTeamCommandHandler(
-        ITeamRepository teamRepository,
+        ITeamRepository repository,
         IMessageBuilder messageBuilder,
         ITeamLinkBuilder teamLinkBuilder)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamLinkBuilder = teamLinkBuilder ?? throw new ArgumentNullException(nameof(teamLinkBuilder));
     }
@@ -37,15 +37,17 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
             command.Name,
             command.MessageContext.Bot.Properties);
 
-        await _teamRepository.Upsert(team, token);
+        await _repository.Upsert(team, token);
 
         var linkForConnect = _teamLinkBuilder.BuildLinkForConnect(command.BotName, team.Id);
-        var message = await _messageBuilder.Build(
-            Messages.Connector_JoinToTeam,
-            command.MessageContext.LanguageId,
-            team.Name,
-            linkForConnect);
-        var notification = NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message, pinned: true);
+        var notification = NotificationMessage.Create(
+            command.MessageContext.ChatMessage.ChatId,
+            await _messageBuilder.Build(
+                Messages.Connector_JoinToTeam,
+                command.MessageContext.LanguageId,
+                team.Name,
+                linkForConnect),
+            pinned: true);
         
         return CommandResult.Build(notification);
     }

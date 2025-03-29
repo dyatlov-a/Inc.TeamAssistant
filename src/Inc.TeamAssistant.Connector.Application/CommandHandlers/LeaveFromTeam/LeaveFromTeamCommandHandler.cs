@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Handlers;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -11,16 +11,16 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.LeaveFromTeam;
 
 internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTeamCommand, CommandResult>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly ITeamRepository _repository;
     private readonly IMessageBuilder _messageBuilder;
     private readonly IEnumerable<ILeaveTeamHandler> _leaveTeamHandlers;
 
     public LeaveFromTeamCommandHandler(
-        ITeamRepository teamRepository,
+        ITeamRepository repository,
         IMessageBuilder messageBuilder,
         IEnumerable<ILeaveTeamHandler> leaveTeamHandlers)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _leaveTeamHandlers = leaveTeamHandlers ?? throw new ArgumentNullException(nameof(leaveTeamHandlers));
     }
@@ -29,31 +29,25 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var team = await _teamRepository.Find(command.TeamId, token);
-        if (team is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
-
-        team.RemoveTeammate(command.MessageContext.Person.Id);
+        var personId = command.MessageContext.Person.Id;
+        var team = await command.TeamId.Required(_repository.Find, token);
         
-        await _teamRepository.Upsert(team, token);
+        await _repository.Upsert(team.RemoveTeammate(personId), token);
 
         var notifications = new List<NotificationMessage>();
         
         foreach (var leaveTeamHandler in _leaveTeamHandlers)
             notifications.AddRange(await leaveTeamHandler.Handle(command.MessageContext, team.Id, token));
 
-        var leaveTeamSuccessMessage = await _messageBuilder.Build(
+        var leaveSuccessMessage = await _messageBuilder.Build(
             Messages.Connector_LeaveTeamSuccess,
             command.MessageContext.LanguageId,
             command.MessageContext.Person.DisplayName,
             team.Name);
-        var notification = NotificationMessage.Create(
-            command.MessageContext.ChatMessage.ChatId,
-            leaveTeamSuccessMessage);
-        notifications.Add(notification);
+        notifications.Add(NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, leaveSuccessMessage));
         
-        if (command.MessageContext.Person.Id != team.Owner.Id)
-            notifications.Add(NotificationMessage.Create(team.Owner.Id, leaveTeamSuccessMessage));
+        if (personId != team.Owner.Id)
+            notifications.Add(NotificationMessage.Create(team.Owner.Id, leaveSuccessMessage));
         
         return CommandResult.Build(notifications.ToArray());
     }

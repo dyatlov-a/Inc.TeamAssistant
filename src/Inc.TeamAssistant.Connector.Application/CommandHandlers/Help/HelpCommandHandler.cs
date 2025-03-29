@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.Help;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.Help;
 
 internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandResult>
 {
-    private readonly IBotReader _botReader;
+    private readonly IBotReader _reader;
     private readonly IMessageBuilder _messageBuilder;
 
-    public HelpCommandHandler(IBotReader botReader, IMessageBuilder messageBuilder)
+    public HelpCommandHandler(IBotReader reader, IMessageBuilder messageBuilder)
     {
-        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
@@ -23,16 +23,16 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var bot = await _botReader.Find(command.MessageContext.Bot.Id, DateTimeOffset.UtcNow, token);
-        if (bot is null)
-            throw new TeamAssistantUserException(Messages.Connector_BotNotFound, command.MessageContext.Bot.Id);
-
-        var notificationText = await _messageBuilder.Build(
-            Messages.Connector_HelpText,
-            command.MessageContext.LanguageId,
-            CommandList.Cancel);
+        var bot = await command.MessageContext.Bot.Id.Required(
+            (id, t) => _reader.Find(id, DateTimeOffset.UtcNow, t),
+            token);
         var notification = NotificationMessage
-            .Create(command.MessageContext.ChatMessage.ChatId, notificationText)
+            .Create(
+                command.MessageContext.ChatMessage.ChatId,
+                await _messageBuilder.Build(
+                    Messages.Connector_HelpText,
+                    command.MessageContext.LanguageId,
+                    CommandList.Cancel))
             .SetButtonsInRow(1);
         var commands = bot.Commands.Where(c =>
             c.HelpMessageId is not null &&

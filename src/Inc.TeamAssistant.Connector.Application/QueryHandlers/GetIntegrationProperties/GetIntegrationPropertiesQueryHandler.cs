@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Queries.GetIntegrationProperties;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetIntegrationProperties;
@@ -10,18 +10,17 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetIntegrationPr
 internal sealed class GetIntegrationPropertiesQueryHandler
     : IRequestHandler<GetIntegrationPropertiesQuery, GetIntegrationPropertiesResult>
 {
-    private readonly ITeamRepository _teamRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly ITeamRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
     private readonly ITeamAccessor _teamAccessor;
 
     public GetIntegrationPropertiesQueryHandler(
-        ITeamRepository teamRepository,
-        ICurrentPersonResolver currentPersonResolver,
+        ITeamRepository repository,
+        ICurrentPersonResolver personResolver,
         ITeamAccessor teamAccessor)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
-        _currentPersonResolver =
-            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -31,11 +30,8 @@ internal sealed class GetIntegrationPropertiesQueryHandler
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var team = await _teamRepository.Find(query.TeamId, token);
-        if (team is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, query.TeamId);
-        
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
+        var team = await query.TeamId.Required(_repository.Find, token);
+        var currentPerson = _personResolver.GetCurrentPerson();
         var hasManagerAccess = await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token);
         var scrumMaster = team.Properties.GetPropertyValueOrDefault(ConnectorProperties.ScrumMaster);
         var scrumMasterId = long.TryParse(scrumMaster, out var value)
