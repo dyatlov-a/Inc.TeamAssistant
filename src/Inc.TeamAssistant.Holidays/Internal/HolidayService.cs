@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Extensions;
+
 namespace Inc.TeamAssistant.Holidays.Internal;
 
 internal sealed class HolidayService : IHolidayService
@@ -11,9 +13,7 @@ internal sealed class HolidayService : IHolidayService
 
     public async Task<bool> IsWorkTime(Guid botId, DateTimeOffset value, CancellationToken token)
     {
-        var calendar = await _reader.Find(botId, token);
-        if (calendar is null)
-            throw new ApplicationException($"Calendar for bot {botId} not found.");
+        var calendar = await botId.Required(_reader.Find, token);
 
         return calendar.IsWorkTime(value.DateTime);
     }
@@ -24,10 +24,7 @@ internal sealed class HolidayService : IHolidayService
         DateTimeOffset end,
         CancellationToken token)
     {
-        var calendar = await _reader.Find(botId, token);
-        if (calendar is null)
-            throw new ApplicationException($"Calendar for bot {botId} not found.");
-        
+        var calendar = await botId.Required(_reader.Find, token);
         var interval = TimeSpan.Zero;
         var currentDate = new DateOnly(start.Year, start.Month, start.Day);
         var endDate = new DateOnly(end.Year, end.Month, end.Day);

@@ -6,5 +6,5 @@ public interface IHolidayReader
 {
     Task<Calendar?> Find(Guid botId, CancellationToken token);
 
-    void Reload(Guid botId);
+    Task Reload(Guid botId, CancellationToken token) => Task.CompletedTask;
 }

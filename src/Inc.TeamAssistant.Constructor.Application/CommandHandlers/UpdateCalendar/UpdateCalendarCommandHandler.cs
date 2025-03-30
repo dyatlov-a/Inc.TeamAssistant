@@ -49,7 +49,7 @@ internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalen
         
         var botIds = await _repository.GetBotIds(calendar.Id, token);
         foreach (var botId in botIds)
-            _reader.Reload(botId);
+            await _reader.Reload(botId, token);
 
         return new(calendar.Id);
     }
