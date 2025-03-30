@@ -28,7 +28,7 @@ internal sealed class DraftTaskForReviewService
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
         var descriptionParts = description.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var links = descriptionParts.Where(t => GlobalSettings.LinksPrefix.Any(t.Contains)).ToArray();
+        var links = descriptionParts.Where(t => GlobalResources.Settings.LinksPrefix.Any(t.Contains)).ToArray();
 
         return links.Any() && descriptionParts.Length > links.Length;
     }

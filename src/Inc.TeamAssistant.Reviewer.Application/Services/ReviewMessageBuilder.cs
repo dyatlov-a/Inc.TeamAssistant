@@ -129,7 +129,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             if (!await _draftService.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
             {
                 builder.AppendLine();
-                builder.Append(Icons.Alert);
+                builder.Append(GlobalResources.Icons.Alert);
                 builder.Append(await _messageBuilder.Build(
                     Messages.Reviewer_PreviewCheckTeammate,
                     languageId,
@@ -144,7 +144,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         if (!_draftService.HasDescriptionAndLinks(draft.Description))
         {
             builder.AppendLine();
-            builder.Append(Icons.Alert);
+            builder.Append(GlobalResources.Icons.Alert);
             builder.Append(await _messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId));
             builder.AppendLine();
         }
@@ -186,7 +186,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         builder.AppendLine(await _messageBuilder.Build(
             Messages.Reviewer_TotalTime,
             languageId,
-            workTimeTotal.ToString(GlobalSettings.TimeFormat)));
+            workTimeTotal.ToString(GlobalResources.Settings.TimeFormat)));
         
         return NotificationMessage
             .Create(personId, builder.ToString())
@@ -400,7 +400,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         builder.AppendLine(await _messageBuilder.Build(
             Messages.Reviewer_TotalTime,
             languageId,
-            totalTime.ToString(GlobalSettings.TimeFormat)));
+            totalTime.ToString(GlobalResources.Settings.TimeFormat)));
 
         return NotificationMessage.Create(task.OwnerId, builder.ToString());
     }
@@ -411,11 +411,11 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         return task.State switch
         {
-            TaskForReviewState.New => Icons.Waiting,
-            TaskForReviewState.InProgress => Icons.InProgress,
-            TaskForReviewState.OnCorrection => Icons.OnCorrection,
-            TaskForReviewState.Accept => Icons.Accept,
-            TaskForReviewState.AcceptWithComments => Icons.AcceptWithComments,
+            TaskForReviewState.New => GlobalResources.Icons.Waiting,
+            TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
+            TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
+            TaskForReviewState.Accept => GlobalResources.Icons.Accept,
+            TaskForReviewState.AcceptWithComments => GlobalResources.Icons.AcceptWithComments,
             _ => throw new ArgumentOutOfRangeException(nameof(task.State), task.State, "State out of range.")
         };
     }

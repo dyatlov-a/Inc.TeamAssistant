@@ -105,7 +105,9 @@ public sealed class RequestProcessor : IDisposable
         {
             var handler = request();
 
-            await (_requestCount > 1 ? handler : Task.WhenAll(handler, Task.Delay(GlobalSettings.MinLoadingDelay)));
+            await (_requestCount > 1
+                ? handler
+                : Task.WhenAll(handler, Task.Delay(GlobalResources.Settings.MinLoadingDelay)));
 
             progress.Report(LoadingState.State.Done);
 

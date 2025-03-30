@@ -8,7 +8,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Servi
 internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly ITeamAccessor _teamAccessor;
-    
+
     public string Command => CommandList.AddStory;
     public bool SupportSingleLineMode => true;
 
@@ -16,7 +16,7 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
     {
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
-    
+
     public async Task<IDialogCommand> Create(
         MessageContext messageContext,
         CurrentTeamContext teamContext,
@@ -33,12 +33,14 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
 
         foreach (var storyItem in storyItems)
         {
-            if (GlobalSettings.LinksPrefix.Any(l => storyItem.StartsWith(l, StringComparison.InvariantCultureIgnoreCase)))
+            if (GlobalResources.Settings.LinksPrefix.Any(l => storyItem.StartsWith(
+                    l,
+                    StringComparison.InvariantCultureIgnoreCase)))
                 links.Add(storyItem.ToLowerInvariant());
             else
                 text.Add(storyItem);
         }
-            
+
         return new AddStoryCommand(
             messageContext,
             teamContext.TeamId,

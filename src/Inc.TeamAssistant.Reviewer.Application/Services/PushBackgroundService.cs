@@ -45,7 +45,7 @@ internal sealed class PushBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error on send notifications by tasks");
             }
 
-            await Task.Delay(GlobalSettings.NotificationsDelay, token);
+            await Task.Delay(GlobalResources.Settings.NotificationsDelay, token);
         }
     }
 

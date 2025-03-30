@@ -46,7 +46,7 @@ internal sealed class ScheduleBackgroundService : BackgroundService
                 _logger.LogError(ex, "Error on schedule RandomCoffee");
             }
 
-            await Task.Delay(GlobalSettings.NotificationsDelay, token);
+            await Task.Delay(GlobalResources.Settings.NotificationsDelay, token);
         }
     }
 

@@ -24,7 +24,7 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(botName);
         
-        return string.Format(GlobalSettings.LinkForConnectTemplate, botName, teamId.ToLinkSegment());
+        return string.Format(GlobalResources.Settings.LinkForConnectTemplate, botName, teamId.ToLinkSegment());
     }
 
     public async Task<(string TeamName, string Link, string Code)> GenerateTeamConnector(

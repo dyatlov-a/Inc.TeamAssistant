@@ -15,16 +15,16 @@ namespace Inc.TeamAssistant.Connector.Application.Telegram;
 internal sealed class TelegramMessageContextFactory
 {
     private readonly IPersonRepository _personRepository;
-    private readonly IClientLanguageRepository _clientLanguageRepository;
+    private readonly IClientLanguageRepository _languageRepository;
     private readonly MessageParser _messageParser;
 
     public TelegramMessageContextFactory(
         IPersonRepository personRepository,
-        IClientLanguageRepository clientLanguageRepository,
+        IClientLanguageRepository languageRepository,
         MessageParser messageParser)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
-        _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
+        _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
         _messageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
     }
     
@@ -75,7 +75,7 @@ internal sealed class TelegramMessageContextFactory
         
         var text = pollAnswer.OptionIds.Aggregate(
             new StringBuilder(string.Format(CommandList.AddPollAnswer, pollAnswer.PollId)),
-            (sb, p) => sb.Append(GlobalSettings.OptionParameterName).Append(p),
+            (sb, p) => sb.Append(GlobalResources.Settings.OptionParameterName).Append(p),
             sb => sb.ToString());
             
         return await Create(
@@ -168,9 +168,9 @@ internal sealed class TelegramMessageContextFactory
         ArgumentNullException.ThrowIfNull(user);
         
         if (!string.IsNullOrWhiteSpace(user.LanguageCode))
-            await _clientLanguageRepository.Upsert(botId, user.Id, user.LanguageCode, DateTimeOffset.UtcNow, token);
+            await _languageRepository.Upsert(botId, user.Id, user.LanguageCode, DateTimeOffset.UtcNow, token);
         
-        var language = await _clientLanguageRepository.Get(botId, user.Id, token);
+        var language = await _languageRepository.Get(botId, user.Id, token);
         return language;
     }
 

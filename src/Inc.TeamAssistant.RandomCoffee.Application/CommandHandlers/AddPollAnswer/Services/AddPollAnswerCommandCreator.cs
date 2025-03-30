@@ -18,7 +18,7 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
 
         var parameters = messageContext.Text
             .Replace(CommandList.AddPollAnswer, string.Empty)
-            .Split(GlobalSettings.OptionParameterName);
+            .Split(GlobalResources.Settings.OptionParameterName);
         var pollId = parameters[0];
         var options = parameters.Skip(1).ToArray();
         

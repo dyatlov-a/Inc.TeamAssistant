@@ -5,14 +5,14 @@
 <meta property="og:title" content="@Localizer[_data.Title]">
 <meta property="og:description" content="@Localizer[_data.Description]">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://@(GlobalSettings.CanonicalName)">
-<meta property="og:site_name" content="@GlobalSettings.CanonicalName">
+<meta property="og:url" content="https://@(GlobalResources.Settings.CanonicalName)">
+<meta property="og:site_name" content="@GlobalResources.Settings.CanonicalName">
 <meta property="og:image" content="@ImageUrl">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@(GlobalSettings.CanonicalName)">
+<meta name="twitter:site" content="@(GlobalResources.Settings.CanonicalName)">
 <meta name="twitter:title" content="@Localizer[_data.Title]">
 <meta name="twitter:description" content="@Localizer[_data.Description]">
 <meta name="twitter:image" content="@ImageUrl">
@@ -41,5 +41,5 @@
         };
     }
 
-    private string ImageUrl => $"https://{GlobalSettings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Localizer[_data.ImageText]}";
+    private string ImageUrl => $"https://{GlobalResources.Settings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Localizer[_data.ImageText]}";
 }

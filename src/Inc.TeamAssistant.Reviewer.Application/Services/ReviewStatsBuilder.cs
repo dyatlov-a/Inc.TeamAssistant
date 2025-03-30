@@ -78,18 +78,18 @@ internal sealed class ReviewStatsBuilder
             _builder.AppendLine(await _messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouchAverage,
                 languageId,
-                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat)));
+                metricsByTeam.FirstTouch.ToString(GlobalResources.Settings.TimeFormat)));
             _builder.AppendLine(await _messageBuilder.Build(
                 Messages.Reviewer_StatsReviewAverage,
                 languageId,
-                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat)));
+                metricsByTeam.Review.ToString(GlobalResources.Settings.TimeFormat)));
         }
 
         if (_hasCorrectionMetrics && attempts.HasValue)
             _builder.AppendLine(await _messageBuilder.Build(
                 Messages.Reviewer_StatsCorrectionAverage,
                 languageId,
-                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat)));
+                metricsByTeam.Correction.ToString(GlobalResources.Settings.TimeFormat)));
     }
 
     private async Task ByAccept(
@@ -105,36 +105,36 @@ internal sealed class ReviewStatsBuilder
         if (_hasReviewMetrics)
         {
             var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch
-                ? Icons.TrendUp
-                : Icons.TrendDown;
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
             var firstTouchMessage = await _messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouch,
                 languageId,
-                metricsByTask.FirstTouch.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.FirstTouch.ToString(GlobalResources.Settings.TimeFormat),
+                metricsByTeam.FirstTouch.ToString(GlobalResources.Settings.TimeFormat));
             _builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
                 
             var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
-                ? Icons.TrendUp
-                : Icons.TrendDown;
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
             var reviewMessage = await _messageBuilder.Build(
                 Messages.Reviewer_StatsReview,
                 languageId,
-                metricsByTask.Review.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.Review.ToString(GlobalResources.Settings.TimeFormat),
+                metricsByTeam.Review.ToString(GlobalResources.Settings.TimeFormat));
             _builder.AppendLine($"{reviewMessage} {reviewTrend}");
         }
 
         if (_hasCorrectionMetrics && attempts.HasValue)
         {
             var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction
-                ? Icons.TrendUp
-                : Icons.TrendDown;
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
             var correctionMessage = await _messageBuilder.Build(
                 Messages.Reviewer_StatsCorrection,
                 languageId,
-                metricsByTask.Correction.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.Correction.ToString(GlobalResources.Settings.TimeFormat),
+                metricsByTeam.Correction.ToString(GlobalResources.Settings.TimeFormat));
             _builder.AppendLine($"{correctionMessage} {correctionTrend}");
         }
     }
