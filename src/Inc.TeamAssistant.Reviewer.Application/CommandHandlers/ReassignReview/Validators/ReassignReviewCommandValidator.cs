@@ -1,5 +1,4 @@
 using FluentValidation;
-using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.ReassignReview;
 
@@ -27,7 +26,7 @@ internal sealed class ReassignReviewCommandValidator : AbstractValidator<Reassig
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
+        var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
         var hasReassign = await _reader.HasReassignFromDate(
             command.MessageContext.Person.Id,
             fromDate,

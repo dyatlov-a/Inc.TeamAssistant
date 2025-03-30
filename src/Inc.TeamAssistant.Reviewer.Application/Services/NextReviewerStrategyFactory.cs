@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -28,9 +27,9 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
     {
         ArgumentNullException.ThrowIfNull(teammates);
         
-        var lastDayOfWeek = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
+        var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
         var lastReviewerId = await _repository.FindLastReviewer(teamId, ownerId, token);
-        var history = await _reader.GetHistory(teamId, lastDayOfWeek, token);
+        var history = await _reader.GetHistory(teamId, fromDate, token);
         var excludedPersonIds = excludePersonId.HasValue
             ? new[] { ownerId, excludePersonId.Value }
             : [ownerId];

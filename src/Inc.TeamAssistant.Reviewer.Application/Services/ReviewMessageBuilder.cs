@@ -1,5 +1,4 @@
 using System.Text;
-using Inc.TeamAssistant.Holidays.Extensions;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
@@ -311,7 +310,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 inProgressButton,
                 $"{CommandList.MoveToInProgress}{task.Id:N}"));
 
-            var fromDate = DateTimeOffset.UtcNow.GetLastDayOfWeek(DayOfWeek.Monday);
+            var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
             var hasReassign = await _reader.HasReassignFromDate(task.ReviewerId, fromDate, token);
             if (!task.OriginalReviewerId.HasValue && !hasReassign)
             {
