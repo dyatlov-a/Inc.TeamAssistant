@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
-    <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Domain\Inc.TeamAssistant.CheckIn.Domain.csproj" />
-    <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Application\Inc.TeamAssistant.CheckIn.Application.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
+    </ItemGroup>
 </Project>

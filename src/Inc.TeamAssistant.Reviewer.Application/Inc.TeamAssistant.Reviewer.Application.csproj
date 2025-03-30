@@ -7,11 +7,8 @@
         <InternalsVisibleTo Include="$(AssemblyName)Tests" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Remove="Services\WithDescriptionValidator.cs" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Domain\Inc.TeamAssistant.Reviewer.Domain.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
 </Project>

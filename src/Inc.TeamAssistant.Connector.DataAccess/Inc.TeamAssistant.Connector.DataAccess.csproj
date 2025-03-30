@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Inc.TeamAssistant.Connector.Application\Inc.TeamAssistant.Connector.Application.csproj" />
+    </ItemGroup>
 </Project>

@@ -16,201 +16,195 @@
         <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
-      <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Appraiser.Model\Inc.TeamAssistant.Appraiser.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Model\Inc.TeamAssistant.CheckIn.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Update="Features\Layouts\LayoutResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>LayoutResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Layouts\LayoutResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>LayoutResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Components\ComponentResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ComponentResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Components\ComponentResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ComponentResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Auth\AuthResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AuthResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Auth\AuthResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AuthResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Main\MainResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MainResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Main\MainResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MainResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Map\MapResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MapResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Map\MapResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MapResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Meta\MetaResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MetaResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Meta\MetaResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>MetaResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AssessmentSessionResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AssessmentSessionResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Constructor\ConstructorResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ConstructorResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Constructor\ConstructorResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ConstructorResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Dashboard\DashboardResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>DashboardResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Dashboard\DashboardResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>DashboardResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Errors\ErrorResources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorResources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Features\Errors\ErrorResources.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorResources.ru.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
+        <EmbeddedResource Update="Features\Layouts\LayoutResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>LayoutResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Layouts\LayoutResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>LayoutResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Components\ComponentResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ComponentResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Components\ComponentResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ComponentResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Auth\AuthResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>AuthResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Auth\AuthResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>AuthResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Main\MainResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MainResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Main\MainResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MainResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Map\MapResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MapResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Map\MapResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MapResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Meta\MetaResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MetaResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Meta\MetaResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>MetaResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>AssessmentSessionResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\AssessmentSession\AssessmentSessionResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>AssessmentSessionResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Constructor\ConstructorResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ConstructorResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Constructor\ConstructorResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ConstructorResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Dashboard\DashboardResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>DashboardResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Dashboard\DashboardResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>DashboardResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Errors\ErrorResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Errors\ErrorResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ErrorResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-      <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>LayoutResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Layouts\LayoutResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>LayoutResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Components\ComponentResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ComponentResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Components\ComponentResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ComponentResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Auth\AuthResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AuthResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Auth\AuthResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AuthResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Main\MainResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MainResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Main\MainResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MainResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Map\MapResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MapResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Map\MapResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MapResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Meta\MetaResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MetaResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Meta\MetaResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>MetaResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\AssessmentSession\AssessmentSessionResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AssessmentSessionResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\AssessmentSession\AssessmentSessionResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>AssessmentSessionResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Constructor\ConstructorResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ConstructorResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Constructor\ConstructorResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ConstructorResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Dashboard\DashboardResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>DashboardResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Dashboard\DashboardResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>DashboardResources.ru.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Errors\ErrorResources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ErrorResources.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Features\Errors\ErrorResources.ru.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ErrorResources.ru.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Features\Notifications\NotificationBar.razor" />
-    </ItemGroup>
-    <ItemGroup>
-      <AdditionalFiles Include="Components\Notifications\NotificationBar.razor" />
+        <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>LayoutResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Layouts\LayoutResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>LayoutResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Components\ComponentResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ComponentResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Components\ComponentResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ComponentResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Auth\AuthResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>AuthResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Auth\AuthResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>AuthResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Main\MainResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MainResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Main\MainResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MainResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Map\MapResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MapResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Map\MapResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MapResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Meta\MetaResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MetaResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Meta\MetaResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>MetaResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\AssessmentSession\AssessmentSessionResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>AssessmentSessionResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\AssessmentSession\AssessmentSessionResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>AssessmentSessionResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Constructor\ConstructorResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ConstructorResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Constructor\ConstructorResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ConstructorResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Dashboard\DashboardResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>DashboardResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Dashboard\DashboardResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>DashboardResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Errors\ErrorResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ErrorResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Errors\ErrorResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ErrorResources.ru.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
