@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Notifications;
 
-namespace Inc.TeamAssistant.Primitives.Handlers;
+namespace Inc.TeamAssistant.Primitives.Features.Teams;
 
 public interface ILeaveTeamHandler
 {

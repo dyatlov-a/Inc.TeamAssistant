@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;

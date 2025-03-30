@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;

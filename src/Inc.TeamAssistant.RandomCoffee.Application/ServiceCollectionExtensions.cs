@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnswer.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCoffee.Services;
 using Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.RefuseForCoffee.Services;

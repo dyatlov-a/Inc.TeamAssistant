@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;

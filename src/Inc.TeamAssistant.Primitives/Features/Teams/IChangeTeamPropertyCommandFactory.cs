@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Commands;
 
-namespace Inc.TeamAssistant.Primitives.Handlers;
+namespace Inc.TeamAssistant.Primitives.Features.Teams;
 
 public interface IChangeTeamPropertyCommandFactory
 {

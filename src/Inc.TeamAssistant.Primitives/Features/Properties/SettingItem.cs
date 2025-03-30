@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Primitives.FeatureProperties;
+namespace Inc.TeamAssistant.Primitives.Features.Properties;
 
 public sealed record SettingItem(
     string PropertyName,

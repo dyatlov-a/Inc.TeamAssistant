@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 
 namespace Inc.TeamAssistant.CheckIn.Application.QueryHandlers.GetLocations.Services;
 

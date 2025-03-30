@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 

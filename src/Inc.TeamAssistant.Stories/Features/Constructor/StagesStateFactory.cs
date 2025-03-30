@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
 namespace Inc.TeamAssistant.Stories.Features.Constructor;

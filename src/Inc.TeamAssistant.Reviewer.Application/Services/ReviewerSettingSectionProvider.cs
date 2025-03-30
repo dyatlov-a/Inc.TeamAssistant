@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;

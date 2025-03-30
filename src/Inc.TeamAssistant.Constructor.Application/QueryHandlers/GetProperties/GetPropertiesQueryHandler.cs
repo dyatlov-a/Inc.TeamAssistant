@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using MediatR;
 
 namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetProperties;

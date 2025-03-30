@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeam;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Extensions;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;

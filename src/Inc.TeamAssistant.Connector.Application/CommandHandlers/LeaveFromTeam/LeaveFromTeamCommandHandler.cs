@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Model.Commands.LeaveFromTeam;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Extensions;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;

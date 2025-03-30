@@ -12,7 +12,7 @@ using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Connector.Application.Telegram;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using MediatR.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot.Polling;

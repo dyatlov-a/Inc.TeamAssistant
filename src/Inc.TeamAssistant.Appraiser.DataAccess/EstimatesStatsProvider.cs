@@ -1,6 +1,7 @@
 using Dapper;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 

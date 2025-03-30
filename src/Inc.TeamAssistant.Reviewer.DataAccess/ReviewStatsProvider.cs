@@ -1,6 +1,6 @@
 using Dapper;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;

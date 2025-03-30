@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
