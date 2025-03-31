@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -20,8 +19,9 @@ internal sealed class PersonPhotoServiceCache : IPersonPhotoService
     public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
     {
         const int maxCacheDurationRandomComponentInSeconds = 60 * 5;
+        var cacheKey = $"{nameof(PersonPhotoServiceCache)}__{nameof(GetPersonPhoto)}__{personId}";
         
-        return await _memoryCache.GetOrCreateAsync(ToKey(personId), async c =>
+        return await _memoryCache.GetOrCreateAsync(cacheKey, async c =>
         {
             var cacheDurationRandomComponentInSeconds = Random.Shared.Next(1, maxCacheDurationRandomComponentInSeconds);
             var cacheDuration = TimeSpan.FromSeconds(_cacheDurationInSeconds + cacheDurationRandomComponentInSeconds);
@@ -30,10 +30,5 @@ internal sealed class PersonPhotoServiceCache : IPersonPhotoService
 
             return await _service.GetPersonPhoto(personId, token);
         });
-    }
-    
-    private static string ToKey(long personId, [CallerMemberName] string method = "")
-    {
-        return $"{nameof(PersonPhotoServiceCache)}__{method}__{personId}";
     }
 }

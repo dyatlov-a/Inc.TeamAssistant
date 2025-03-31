@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Holidays.Model;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -39,8 +38,5 @@ internal sealed class HolidayReaderCache : IHolidayReader
         await Find(botId, token);
     }
 
-    private string GetKey(Guid botId, [CallerMemberName] string method = "")
-    {
-        return $"{nameof(HolidayReaderCache)}__{method}__{botId}";
-    }
+    private string GetKey(Guid botId) => $"{nameof(HolidayReaderCache)}__{botId}";
 }
