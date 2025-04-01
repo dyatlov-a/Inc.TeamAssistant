@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Connector.Model.Commands.SendMessage;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -64,7 +64,7 @@ internal sealed class DialogCommandFactory
             (CommandList.ChangeToRandom, null, _, _, _, _)
                 => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.NeedReview, null, 0, _, _, _)
-                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+                => SendTeamForUserNotFound(messageContext),
             (CommandList.NeedReview, null, 1, _, _, _) when nextStage is not null
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.NeedReview, null, > 1, _, _, _)
@@ -72,7 +72,7 @@ internal sealed class DialogCommandFactory
             (CommandList.NeedReview, StageType.SelectTeam, _, _, _, true) when nextStage is not null
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             (CommandList.AddStory, null, 0, _, _, _)
-                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+                => SendTeamForUserNotFound(messageContext),
             (CommandList.AddStory, null, 1, _, _, _) when nextStage is not null
                 => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.AddStory, null, > 1, _, _, _)
@@ -104,12 +104,13 @@ internal sealed class DialogCommandFactory
             .SetButtonsInRow(2)
             .WithButton(new Button(cancelButtonText, CommandList.Cancel));
         
-        return new BeginCommand(
+        var command = new BeginCommand(
             messageContext,
             StageType.SelectTeam,
             CurrentTeamContext.Empty,
             botCommand,
             notification);
+        return command;
     }
 
     private async Task<IDialogCommand> CreateEnterTextCommand(
@@ -132,7 +133,7 @@ internal sealed class DialogCommandFactory
         
         notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             
-        return new BeginCommand(
+        var command = new BeginCommand(
             messageContext,
             StageType.EnterText,
             team is not null
@@ -140,10 +141,17 @@ internal sealed class DialogCommandFactory
                 : CurrentTeamContext.Empty,
             botCommand,
             notification);
+        return command;
     }
 
-    private IDialogCommand ThrowTeamForUserNotFound(long personId)
+    private IDialogCommand SendTeamForUserNotFound(MessageContext messageContext)
     {
-        throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, personId);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        var command = new SendMessageCommand(
+            messageContext,
+            Messages.Connector_TeamForUserNotFound,
+            messageContext.Person.DisplayName);
+        return command;
     }
 }

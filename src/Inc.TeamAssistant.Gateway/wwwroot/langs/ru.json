@@ -107,7 +107,7 @@
   "Connector_Cancel": "Отменить",
   "Connector_BotNotFound": "Бот {0} не найден",
   "Connector_TeamNotFound": "Команда {0} не найдена",
-  "Connector_TeamForUserNotFound": "Команда для пользователя {0} не найдена",
+  "Connector_TeamForUserNotFound": "Команда для пользователя {0} не обнаружена, либо пользователь находится в отпуске. Выполнение операции невозможно.",
   "Connector_PersonNotFound": "Пользователь {0} не найден",
   "Connector_ChangedPropertySuccess": "Изменено свойство для команды «{0}»",
   "Connector_HelpText": "Выбери подходящую опцию ниже. Если что то пойдет не так, выполните команду {0} и попробуйте снова",
