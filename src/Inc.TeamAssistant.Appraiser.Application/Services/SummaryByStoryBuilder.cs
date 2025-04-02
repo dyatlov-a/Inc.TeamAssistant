@@ -28,12 +28,13 @@ internal sealed class SummaryByStoryBuilder
 
         await AddBody(builder, summary);
 
-        builder.AppendLine();
-        builder.AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId));
-
-        builder.AppendLine();
-        foreach (var item in summary.Items)
-            builder.AppendLine($"{item.AppraiserName} {AddEstimate(summary.EstimateEnded, item)}");
+        builder
+            .AppendLine()
+            .AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId))
+            .AppendLine()
+            .AddItems(
+                summary.Items,
+                (sb, i) => sb.AppendLine($"{i.AppraiserName} {AddEstimate(summary.EstimateEnded, i)}"));
 
         if (summary.EstimateEnded)
             await AddEstimateSummary(builder, summary);
@@ -65,17 +66,16 @@ internal sealed class SummaryByStoryBuilder
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(summary);
+
+        var message = summary.EstimateEnded
+            ? Messages.Appraiser_EndEstimate
+            : Messages.Appraiser_NeedEstimate;
+        var storyHeader = await _messageBuilder.Build(message, summary.LanguageId);
         
-        var storyHeader = await _messageBuilder.Build(
-            summary.EstimateEnded ? Messages.Appraiser_EndEstimate : Messages.Appraiser_NeedEstimate,
-            summary.LanguageId);
-        
-        builder.AppendLine(storyHeader);
-        
-        builder.AppendLine(summary.StoryTitle);
-        
-        if (!string.IsNullOrWhiteSpace(summary.Url))
-            builder.AppendLine(summary.Url);
+        builder
+            .AppendLine(storyHeader)
+            .AppendLine(summary.StoryTitle)
+            .AddIfHasValue(summary.Url);
     }
 
     private async Task AddEstimateSummary(StringBuilder builder, SummaryByStory summary)
@@ -83,15 +83,15 @@ internal sealed class SummaryByStoryBuilder
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(summary);
         
-        builder.AppendLine();
-        builder.Append(await _messageBuilder.Build(Messages.Appraiser_MeanEstimate, summary.LanguageId));
-        builder.Append(' ');
-        builder.Append(summary.Mean);
-            
-        builder.AppendLine();
-        builder.Append(await _messageBuilder.Build(Messages.Appraiser_MedianEstimate, summary.LanguageId));
-        builder.Append(' ');
-        builder.Append(summary.Median);
+        builder
+            .AppendLine()
+            .Append(await _messageBuilder.Build(Messages.Appraiser_MeanEstimate, summary.LanguageId))
+            .Append(' ')
+            .Append(summary.Mean)
+            .AppendLine()
+            .Append(await _messageBuilder.Build(Messages.Appraiser_MedianEstimate, summary.LanguageId))
+            .Append(' ')
+            .Append(summary.Median);
     }
 
     private async Task AddAcceptedValue(StringBuilder builder, SummaryByStory summary)
@@ -99,10 +99,11 @@ internal sealed class SummaryByStoryBuilder
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(summary);
         
-        builder.AppendLine();
-        builder.Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId));
-        builder.Append(' ');
-        builder.Append(summary.AcceptedValue);
+        builder
+            .AppendLine()
+            .Append(await _messageBuilder.Build(Messages.Appraiser_AcceptedEstimate, summary.LanguageId))
+            .Append(' ')
+            .Append(summary.AcceptedValue);
     }
 
     private async Task AddTeamActions(StringBuilder builder, SummaryByStory summary, NotificationMessage notification)
@@ -114,16 +115,17 @@ internal sealed class SummaryByStoryBuilder
         foreach (var assessment in summary.Assessments)
         {
             var buttonText = await _messageBuilder.Build(
-                new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
+                GetAssessmentMessageId(summary.StoryType, assessment.Code),
                 summary.LanguageId);
+            var buttonCommand = $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}";
                 
-            notification.WithButton(new Button(
-                buttonText,
-                $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}"));
+            notification.WithButton(new Button(buttonText, buttonCommand));
         }
 
         var finishText = await _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
-        notification.WithButton(new Button(finishText, $"{CommandList.Finish}{summary.StoryId:N}"));
+        var finishCommand = $"{CommandList.Finish}{summary.StoryId:N}";
+        
+        notification.WithButton(new Button(finishText, finishCommand));
     }
 
     private async Task AddOwnerActions(StringBuilder builder, SummaryByStory summary, NotificationMessage notification)
@@ -137,33 +139,30 @@ internal sealed class SummaryByStoryBuilder
             var acceptText = await _messageBuilder.Build(
                 Messages.Appraiser_Accept,
                 summary.LanguageId);
-
             var buttonAssessmentText = await _messageBuilder.Build(
-                new MessageId($"Appraiser_{summary.StoryType}_{assessment.Code}"),
+                GetAssessmentMessageId(summary.StoryType, assessment.Code),
                 summary.LanguageId);
+            var buttonText = $"{acceptText} {buttonAssessmentText}";
+            var buttonCommand = $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}";
 
-            notification.WithButton(new Button(
-                $"{acceptText} {buttonAssessmentText}",
-                $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}"));
+            notification.WithButton(new Button(buttonText, buttonCommand));
         }
             
         var revoteText = await _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
-        notification.WithButton(new Button(revoteText, $"{CommandList.Revote}{summary.StoryId:N}"));
-    }
-
-    private string AddEstimate(bool estimateEnded, EstimateItemDetails item)
-    {
-        ArgumentNullException.ThrowIfNull(item);
-
-        return estimateEnded ? item.DisplayValue : item.HasValue;
+        var revoteCommand = $"{CommandList.Revote}{summary.StoryId:N}";
+        
+        notification.WithButton(new Button(revoteText, revoteCommand));
     }
     
     private string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
     {
-        return string.Format(
+        ArgumentNullException.ThrowIfNull(languageId);
+        
+        var result = string.Format(
             _connectToDashboardLinkTemplate,
             languageId.Value,
             teamId.ToLinkSegment());
+        return result;
     }
 
     private async Task AddRoundsInfo(StringBuilder builder, SummaryByStory summary)
@@ -171,8 +170,29 @@ internal sealed class SummaryByStoryBuilder
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(summary);
         
-        builder.AppendLine();
         var roundsInfo = await _messageBuilder.Build(Messages.Appraiser_NumberOfRounds, summary.LanguageId);
-        builder.AppendLine($"{roundsInfo} {summary.RoundsCount}");
+        
+        builder
+            .AppendLine()
+            .AppendLine($"{roundsInfo} {summary.RoundsCount}");
+    }
+    
+    private static string AddEstimate(bool estimateEnded, EstimateItemDetails item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var result = estimateEnded
+            ? item.DisplayValue
+            : item.HasValue;
+        return result;
+    }
+
+    private static MessageId GetAssessmentMessageId(string storyType, string assessmentCode)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(storyType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(assessmentCode);
+        
+        var messageId = $"Appraiser_{storyType}_{assessmentCode}";
+        return new(messageId);
     }
 }
