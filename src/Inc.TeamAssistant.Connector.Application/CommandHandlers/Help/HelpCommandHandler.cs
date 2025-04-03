@@ -29,7 +29,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
         var notification = NotificationMessage
             .Create(
                 command.MessageContext.ChatMessage.ChatId,
-                await _messageBuilder.Build(
+                _messageBuilder.Build(
                     Messages.Connector_HelpText,
                     command.MessageContext.LanguageId,
                     CommandList.Cancel))
@@ -40,7 +40,7 @@ internal sealed class HelpCommandHandler : IRequestHandler<HelpCommand, CommandR
 
         foreach (var cmd in commands)
         {
-            var text = await _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
+            var text = _messageBuilder.Build(cmd.HelpMessageId!, command.MessageContext.LanguageId);
 
             notification.WithButton(new Button(text, cmd.Value));
         }

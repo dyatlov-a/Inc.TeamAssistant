@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ISettingSectionProvider, RandomCoffeeSettingSectionProvider>()
                 
             .AddSingleton<RandomCoffeeHistoryConverter>()
-            .AddSingleton<NotificationsBuilder>()
+            .AddSingleton<SelectPairsNotificationBuilder>()
             
             .AddSingleton<ICommandCreator, InviteForCoffeeCommandCreator>()
             .AddSingleton<ICommandCreator, AddPollAnswerCommandCreator>()

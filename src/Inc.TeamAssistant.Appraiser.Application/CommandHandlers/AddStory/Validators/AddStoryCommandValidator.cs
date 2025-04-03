@@ -25,16 +25,13 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
             .WithMessage("'{PropertyName}' please enter text value.");
         
         RuleFor(e => e.Links)
-            .CustomAsync(CheckLinks);
+            .Custom(CheckLinks);
         
         RuleFor(e => e.Teammates)
             .NotEmpty();
     }
 
-    private async Task CheckLinks(
-        IReadOnlyCollection<string> links,
-        ValidationContext<AddStoryCommand> context,
-        CancellationToken token)
+    private void CheckLinks(IReadOnlyCollection<string> links, ValidationContext<AddStoryCommand> context)
     {
         ArgumentNullException.ThrowIfNull(links);
         ArgumentNullException.ThrowIfNull(context);
@@ -47,7 +44,7 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
 
         if (links.Count > maxLinksCount)
         {
-            var errorMessage = await _messageBuilder.Build(Messages.Appraiser_MultipleLinkError, languageId);
+            var errorMessage = _messageBuilder.Build(Messages.Appraiser_MultipleLinkError, languageId);
             
             context.AddFailure(propertyName, errorMessage);
         }
@@ -57,7 +54,7 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
             
             if (!string.IsNullOrWhiteSpace(link) && link.Length > maxLinksLength)
             { 
-                var errorMessage = await _messageBuilder.Build(Messages.Appraiser_LinkLengthError, languageId);
+                var errorMessage = _messageBuilder.Build(Messages.Appraiser_LinkLengthError, languageId);
                 
                 context.AddFailure(propertyName, errorMessage);
             }

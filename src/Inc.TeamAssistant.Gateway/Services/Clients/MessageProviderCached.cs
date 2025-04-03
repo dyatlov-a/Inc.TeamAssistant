@@ -19,17 +19,17 @@ internal sealed class MessageProviderCached : IMessageProvider
         _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
     }
 
-    public async Task<Dictionary<string, Dictionary<string, string>>> Get(CancellationToken token)
+    public Dictionary<string, Dictionary<string, string>> Get()
     {
         var cacheKey = $"{nameof(MessageProviderCached)}_{nameof(Get)}";
-        var cacheItem = await _memoryCache.GetOrCreateAsync(
+        var cacheItem = _memoryCache.GetOrCreate(
             cacheKey,
-            async c =>
+            c =>
             {
                 c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
-                return await _messageProvider.Get(token);
+                return _messageProvider.Get();
             });
 
-        return cacheItem ?? await _messageProvider.Get(token);
+        return cacheItem ?? _messageProvider.Get();
     }
 }

@@ -15,18 +15,18 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
 {
     private readonly IRandomCoffeeRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly NotificationsBuilder _notificationsBuilder;
+    private readonly SelectPairsNotificationBuilder _notificationBuilder;
     private readonly IMessageBuilder _messageBuilder;
 
     public SelectPairsCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
-        NotificationsBuilder notificationsBuilder,
+        SelectPairsNotificationBuilder notificationBuilder,
         IMessageBuilder messageBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _notificationsBuilder = notificationsBuilder ?? throw new ArgumentNullException(nameof(notificationsBuilder));
+        _notificationBuilder = notificationBuilder ?? throw new ArgumentNullException(nameof(notificationBuilder));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
@@ -45,7 +45,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
             entry.OwnerId,
             token);
         var notificationMessage = entry.CanSelectPairs()
-            ? await _notificationsBuilder.Build(
+            ? await _notificationBuilder.Build(
                 entry.ChatId,
                 entry.BotId,
                 languageId,
@@ -53,7 +53,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
                 token)
             : NotificationMessage.Create(
                 entry.ChatId,
-                await _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
+                _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
 
         await _repository.Upsert(
             entry.MoveToNextRound(DateTimeOffset.UtcNow, botContext.GetRoundInterval(), botContext.GetVotingInterval()),

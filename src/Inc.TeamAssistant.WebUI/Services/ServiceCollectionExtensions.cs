@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddScoped<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
             .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
 

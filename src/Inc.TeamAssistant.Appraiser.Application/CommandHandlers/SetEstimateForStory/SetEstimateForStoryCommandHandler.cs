@@ -41,7 +41,7 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 	        case true:
 		        return CommandResult.Empty;
 	        default:
-		        var notification = await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
+		        var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
 		        await _messagesSender.StoryChanged(story.TeamId);
 		        return CommandResult.Build(notification);
         }

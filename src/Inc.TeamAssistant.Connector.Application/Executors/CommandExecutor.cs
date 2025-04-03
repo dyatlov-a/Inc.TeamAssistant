@@ -64,7 +64,7 @@ internal sealed class CommandExecutor : ICommandExecutor
         }
         catch (TeamAssistantUserException userException)
         {
-            var errorMessage = await _messageBuilder.Build(
+            var errorMessage = _messageBuilder.Build(
                 userException.MessageId,
                 command.MessageContext.LanguageId,
                 userException.Values);

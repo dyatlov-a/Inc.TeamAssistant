@@ -28,7 +28,7 @@ internal sealed class ChangeTeamPropertyCommandHandler : IRequestHandler<ChangeT
 
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(
+            _messageBuilder.Build(
                 Messages.Connector_ChangedPropertySuccess,
                 command.MessageContext.LanguageId,
                 team.Name));

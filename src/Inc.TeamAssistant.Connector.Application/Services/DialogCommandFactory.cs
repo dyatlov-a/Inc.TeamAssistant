@@ -16,7 +16,7 @@ internal sealed class DialogCommandFactory
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-    public async Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         Bot bot,
         string botCommand,
         StageType? dialogStage,
@@ -46,44 +46,44 @@ internal sealed class DialogCommandFactory
             switch
         {
             (CommandList.AddLocation, null, _, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
             (CommandList.NewTeam, null, _, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
             (CommandList.LeaveTeam, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
             (CommandList.RemoveTeam, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToFibonacci, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToTShirts, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToPowerOfTwo, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRoundRobin, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRandom, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.NeedReview, null, 0, _, _, _)
                 => SendTeamForUserNotFound(messageContext),
             (CommandList.NeedReview, null, 1, _, _, _) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.NeedReview, null, > 1, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+                => CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.NeedReview, StageType.SelectTeam, _, _, _, true) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             (CommandList.AddStory, null, 0, _, _, _)
                 => SendTeamForUserNotFound(messageContext),
             (CommandList.AddStory, null, 1, _, _, _) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.AddStory, null, > 1, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+                => CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.AddStory, StageType.SelectTeam, _, _, _, true) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             _ => null
         };
     }
 
-    private async Task<IDialogCommand> CreateSelectTeamCommand(
+    private IDialogCommand CreateSelectTeamCommand(
         string botCommand,
         MessageContext messageContext,
         IReadOnlyCollection<TeamContext> teams)
@@ -92,10 +92,10 @@ internal sealed class DialogCommandFactory
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teams);
 
-        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
+        var cancelButtonText = _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
+            _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
@@ -113,7 +113,7 @@ internal sealed class DialogCommandFactory
         return command;
     }
 
-    private async Task<IDialogCommand> CreateEnterTextCommand(
+    private IDialogCommand CreateEnterTextCommand(
         Bot bot,
         string botCommand,
         MessageContext messageContext,
@@ -125,11 +125,11 @@ internal sealed class DialogCommandFactory
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(messageId);
 
-        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
+        var cancelButtonText = _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(messageId, messageContext.LanguageId));
+            _messageBuilder.Build(messageId, messageContext.LanguageId));
         
         notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             

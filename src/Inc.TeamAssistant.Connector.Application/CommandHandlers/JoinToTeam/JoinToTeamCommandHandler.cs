@@ -36,7 +36,7 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
 
         await _teamRepository.Upsert(team.AddTeammate(person), token);
 
-        var joinToTeamSuccessMessage = await _messageBuilder.Build(
+        var joinToTeamSuccessMessage = _messageBuilder.Build(
             Messages.Connector_JoinToTeamSuccess,
             command.MessageContext.LanguageId,
             person.DisplayName,

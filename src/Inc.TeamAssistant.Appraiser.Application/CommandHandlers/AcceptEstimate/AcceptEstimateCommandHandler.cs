@@ -40,7 +40,7 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 
 		await _repository.Upsert(story, token);
 
-		var notification = await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
+		var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
 		await _messagesSender.StoryAccepted(story.TeamId, estimation.DisplayValue);
 		return CommandResult.Build(notification);
     }

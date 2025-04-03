@@ -42,7 +42,7 @@ internal sealed class CreateTeamCommandHandler : IRequestHandler<CreateTeamComma
         var linkForConnect = _teamLinkBuilder.BuildLinkForConnect(command.BotName, team.Id);
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(
+            _messageBuilder.Build(
                 Messages.Connector_JoinToTeam,
                 command.MessageContext.LanguageId,
                 team.Name,

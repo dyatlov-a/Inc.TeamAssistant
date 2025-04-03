@@ -12,7 +12,7 @@ public record Person(long Id, string Name, string? Username)
 
     public virtual string AvatarUrl => $"/photos/{Id}";
 
-    public void Append(StringBuilder builder, Action<Person, int>? attach = null)
+    public StringBuilder AddTo(StringBuilder builder, Action<Person, int>? attach = null)
     {
         if (string.IsNullOrWhiteSpace(Username))
         {
@@ -21,5 +21,7 @@ public record Person(long Id, string Name, string? Username)
         }
         else
             builder.Append($"@{Username}");
+
+        return builder;
     }
 }

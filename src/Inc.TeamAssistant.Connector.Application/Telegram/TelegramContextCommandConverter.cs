@@ -13,7 +13,7 @@ internal sealed class TelegramContextCommandConverter
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
     
-    public async IAsyncEnumerable<(BotCommandScope Scope, IReadOnlyCollection<BotCommand> Commands)> Convert(
+    public IEnumerable<(BotCommandScope Scope, IReadOnlyCollection<BotCommand> Commands)> Convert(
         IReadOnlyCollection<ContextCommand> contextCommands,
         LanguageId languageId)
     {
@@ -29,14 +29,14 @@ internal sealed class TelegramContextCommandConverter
             if (commandsByScopes.Any())
             {
                 var botCommandScope = ToBotCommandScope(commandScope);
-                var botCommands = await ToBotCommands(commandsByScopes, languageId);
+                var botCommands = ToBotCommands(commandsByScopes, languageId);
             
                 yield return (botCommandScope, botCommands);
             }
         }
     }
     
-    private async Task<IReadOnlyCollection<BotCommand>> ToBotCommands(
+    private IReadOnlyCollection<BotCommand> ToBotCommands(
         IReadOnlyCollection<ContextCommand> contextCommands,
         LanguageId languageId)
     {
@@ -46,12 +46,12 @@ internal sealed class TelegramContextCommandConverter
         var result = new List<BotCommand>(contextCommands.Count);
         
         foreach (var contextCommand in contextCommands)
-            result.Add(await ToBotCommand(contextCommand, languageId));
+            result.Add(ToBotCommand(contextCommand, languageId));
 
         return result;
     }
 
-    private async Task<BotCommand> ToBotCommand(ContextCommand command, LanguageId languageId)
+    private BotCommand ToBotCommand(ContextCommand command, LanguageId languageId)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(languageId);
@@ -59,7 +59,7 @@ internal sealed class TelegramContextCommandConverter
         return new BotCommand
         {
             Command = command.Value,
-            Description = await _messageBuilder.Build(command.HelpMessageId!, languageId)
+            Description = _messageBuilder.Build(command.HelpMessageId!, languageId)
         };
     }
     

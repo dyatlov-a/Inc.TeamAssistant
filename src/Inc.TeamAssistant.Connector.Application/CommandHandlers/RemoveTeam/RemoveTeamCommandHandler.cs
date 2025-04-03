@@ -42,7 +42,7 @@ internal sealed class RemoveTeamCommandHandler : IRequestHandler<RemoveTeamComma
 
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(
+            _messageBuilder.Build(
                 Messages.Connector_RemoveTeamSuccess,
                 command.MessageContext.LanguageId,
                 team.Name));

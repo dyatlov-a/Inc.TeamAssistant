@@ -114,4 +114,27 @@ public sealed class NotificationMessage
 
         return new(targetChatId: null, targetMessage: null, deleteMessage, string.Empty);
     }
+    
+    public NotificationMessage AddIf(bool condition, Action<NotificationMessage> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return AddIfElse(condition, action, _ => {});
+    }
+    
+    public NotificationMessage AddIfElse(
+        bool condition,
+        Action<NotificationMessage> firstAction,
+        Action<NotificationMessage> secondAction)
+    {
+        ArgumentNullException.ThrowIfNull(firstAction);
+        ArgumentNullException.ThrowIfNull(secondAction);
+
+        if (condition)
+            firstAction(this);
+        else
+            secondAction(this);
+
+        return this;
+    }
 }

@@ -58,10 +58,10 @@ internal sealed class TelegramBotConnector : IBotConnector
             var botDescription = await client.GetMyDescriptionAsync(languageCode, token);
             
             var shortDescription = string.IsNullOrWhiteSpace(botShortDescription.ShortDescription)
-                ? await _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId)
+                ? _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId)
                 : botShortDescription.ShortDescription;
             var description = string.IsNullOrWhiteSpace(botDescription.Description)
-                ? await _messageBuilder.Build(Messages.Connector_BotDescription, languageId)
+                ? _messageBuilder.Build(Messages.Connector_BotDescription, languageId)
                 : botDescription.Description;
             
             results.Add(new BotDetails(
@@ -143,14 +143,12 @@ internal sealed class TelegramBotConnector : IBotConnector
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(languageId);
 
-        await foreach (var commandsByScope in _converter.Convert(bot.Commands, languageId).WithCancellation(token))
-        {
+        foreach (var commandsByScope in _converter.Convert(bot.Commands, languageId))
             await client.SetMyCommandsAsync(
                 commandsByScope.Commands.OrderBy(c => c.Command),
                 commandsByScope.Scope,
                 languageCode: targetLanguageId,
                 cancellationToken: token);
-        }
     }
 
     private async Task SetDetails(

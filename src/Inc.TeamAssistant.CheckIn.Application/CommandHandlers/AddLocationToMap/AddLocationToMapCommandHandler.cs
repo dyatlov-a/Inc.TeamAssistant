@@ -35,7 +35,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
         
         if (chatId == personId)
         {
-            var messageText = await _messageBuilder.Build(Messages.CheckIn_GetStarted, languageId);
+            var messageText = _messageBuilder.Build(Messages.CheckIn_GetStarted, languageId);
 
             return CommandResult.Build(NotificationMessage.Create(personId, messageText));
         }
@@ -60,7 +60,7 @@ internal sealed class AddLocationToMapCommandHandler : IRequestHandler<AddLocati
             return CommandResult.Empty;
 
         var link = _mapLinksBuilder.Build(languageId, map.Id);
-        var message = await _messageBuilder.Build(Messages.CheckIn_ConnectLinkText, languageId, link);
+        var message = _messageBuilder.Build(Messages.CheckIn_ConnectLinkText, languageId, link);
             
         return CommandResult.Build(NotificationMessage.Create(chatId, message, pinned: true));
     }

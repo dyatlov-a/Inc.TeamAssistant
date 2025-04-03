@@ -1,17 +1,17 @@
-using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 
 namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.SelectPairs.Services;
 
-internal sealed class NotificationsBuilder
+internal sealed class SelectPairsNotificationBuilder
 {
     private readonly ITeamAccessor _teamAccessor;
     private readonly IMessageBuilder _messageBuilder;
 
-    public NotificationsBuilder(ITeamAccessor teamAccessor, IMessageBuilder messageBuilder)
+    public SelectPairsNotificationBuilder(ITeamAccessor teamAccessor, IMessageBuilder messageBuilder)
     {
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
@@ -28,8 +28,8 @@ internal sealed class NotificationsBuilder
         ArgumentNullException.ThrowIfNull(randomCoffeeHistory);
 
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
-        var builder = new StringBuilder();
-        builder.AppendLine(await _messageBuilder.Build(Messages.RandomCoffee_SelectedPairs, languageId));
+        var builder = NotificationBuilder.Create()
+            .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.RandomCoffee_SelectedPairs, languageId)));
             
         foreach (var pair in randomCoffeeHistory.Pairs)
         {
@@ -40,11 +40,14 @@ internal sealed class NotificationsBuilder
             {
                 var firstLanguageId = await _teamAccessor.GetClientLanguage(botId, firstPerson.Id, token);
                 var secondLanguageId = await _teamAccessor.GetClientLanguage(botId, secondPerson.Id, token);
-                
-                firstPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, firstLanguageId, o));
-                builder.Append(" - ");
-                secondPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, secondLanguageId, o));
-                builder.AppendLine();
+
+                builder.Add(sb => firstPerson
+                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, firstLanguageId, o))
+                    .AddSeparator(" - "));
+
+                builder.Add(sb => secondPerson
+                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, secondLanguageId, o))
+                    .AppendLine());
             }
         }
 
@@ -55,18 +58,22 @@ internal sealed class NotificationsBuilder
             if (excludedPerson is not null)
             {
                 var excludedLanguageId = await _teamAccessor.GetClientLanguage(botId, excludedPerson.Id, token);
-                
-                builder.AppendLine();
-                builder.Append(await _messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId));
-                builder.Append(' ');
-                excludedPerson.Append(builder, (p, o) => attachPersons += n => n.AttachPerson(p, excludedLanguageId, o));
-                builder.AppendLine();
+
+                builder.Add(sb => sb
+                    .AppendLine()
+                    .Append(_messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId))
+                    .AddSeparator());
+
+                builder.Add(sb => excludedPerson
+                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, excludedLanguageId, o))
+                    .AppendLine());
             }
         }
 
-        builder.AppendLine();
-        builder.AppendLine(await _messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId));
+        builder.Add(sb => sb
+            .AppendLine()
+            .AppendLine(_messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId)));
         
-        return attachPersons(NotificationMessage.Create(chatId, builder.ToString()));
+        return attachPersons(builder.Build(m => NotificationMessage.Create(chatId, m)));
     }
 }

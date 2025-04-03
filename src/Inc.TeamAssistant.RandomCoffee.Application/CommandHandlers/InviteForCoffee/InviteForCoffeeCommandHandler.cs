@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -16,18 +15,15 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
     private readonly IRandomCoffeeRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IMessageBuilder _messageBuilder;
-    private readonly IBotAccessor _botAccessor;
 
     public InviteForCoffeeCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
-        IMessageBuilder messageBuilder,
-        IBotAccessor botAccessor)
+        IMessageBuilder messageBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(InviteForCoffeeCommand command, CancellationToken token)
@@ -56,9 +52,9 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
         var notification = NotificationMessage
             .Create(
                 entry.ChatId,
-                await _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
-            .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
-            .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_No, languageId))
+                _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
+            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
+            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_No, languageId))
             .AddHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
         var notifications = command.MessageContext.ChatMessage.OnlyChat
             ? [notification]

@@ -48,7 +48,7 @@ internal sealed class CommandFactory
         if (botCommand is null)
             return null;
         
-        var dialogCommand = await TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
+        var dialogCommand = TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
         if (dialogCommand is not null)
             return dialogCommand;
 
@@ -84,7 +84,7 @@ internal sealed class CommandFactory
         return null;
     }
 
-    private async Task<IDialogCommand?> TryCreateDialogCommand(
+    private IDialogCommand? TryCreateDialogCommand(
         ContextCommand botCommand,
         Bot bot,
         MessageContext messageContext,
@@ -98,7 +98,7 @@ internal sealed class CommandFactory
         {
             if ((dialogState is null && botCommand.Stages.IsFirst) || dialogState?.State == botCommand.Stages.Current.Value)
             {
-                var dialogCommand = await _dialogCommandFactory.TryCreate(
+                var dialogCommand = _dialogCommandFactory.TryCreate(
                     bot,
                     botCommand.Value,
                     dialogState?.State,

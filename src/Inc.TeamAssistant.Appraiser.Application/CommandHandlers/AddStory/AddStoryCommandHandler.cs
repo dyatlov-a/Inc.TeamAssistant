@@ -51,7 +51,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
 
         await _repository.Upsert(story, token);
         
-        var notification = await _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
+        var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
         await _messagesSender.StoryChanged(story.TeamId);
         return CommandResult.Build(notification);
     }

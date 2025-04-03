@@ -15,11 +15,11 @@ internal sealed class SendMessageCommandHandler : IRequestHandler<SendMessageCom
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-    public async Task<CommandResult> Handle(SendMessageCommand command, CancellationToken token)
+    public Task<CommandResult> Handle(SendMessageCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var message = await _messageBuilder.Build(
+        var message = _messageBuilder.Build(
             command.MessageId,
             command.MessageContext.LanguageId,
             command.Values);
@@ -27,6 +27,6 @@ internal sealed class SendMessageCommandHandler : IRequestHandler<SendMessageCom
             command.MessageContext.ChatMessage.ChatId,
             message);
         
-        return CommandResult.Build(notification);
+        return Task.FromResult(CommandResult.Build(notification));
     }
 }

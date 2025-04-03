@@ -41,7 +41,7 @@ public sealed class RefuseForCoffeeCommandHandler : IRequestHandler<RefuseForCof
             token);
         var notification = NotificationMessage.Create(
             existsEntry.ChatId,
-            await _messageBuilder.Build(Messages.RandomCoffee_RefusedForCoffee, languageId));
+            _messageBuilder.Build(Messages.RandomCoffee_RefusedForCoffee, languageId));
         
         return CommandResult.Build(notification, NotificationMessage.Delete(command.MessageContext.ChatMessage));
     }
