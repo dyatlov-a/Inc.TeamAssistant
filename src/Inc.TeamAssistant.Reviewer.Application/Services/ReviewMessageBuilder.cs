@@ -108,11 +108,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     {
         ArgumentNullException.ThrowIfNull(draft);
         ArgumentNullException.ThrowIfNull(languageId);
-        
+
         var teamContext = await _teamAccessor.GetTeamContext(draft.TeamId, token);
-        var reviewTargetMessageTemplate = _messageBuilder.Build(
-            Messages.Reviewer_PreviewReviewerTemplate,
-            languageId);
+        var moveToReviewText = _messageBuilder.Build(Messages.Reviewer_PreviewMoveToReview, languageId);
+        var moveToReviewCommand = $"{CommandList.MoveToReview}{draft.Id:N}";
+        var removeDraftText = _messageBuilder.Build(Messages.Reviewer_PreviewRemoveDraft, languageId);
+        var removeDraftCommand = $"{CommandList.RemoveDraft}{draft.Id:N}";
         var builder = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_PreviewTitle, languageId))
@@ -123,7 +124,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         if (draft.TargetPersonId.HasValue)
         {
             var reviewTarget = await _teamAccessor.EnsurePerson(draft.TargetPersonId.Value, token);
-            builder.Add(sb => sb.AppendLine(string.Format(reviewTargetMessageTemplate, reviewTarget.DisplayName)));
+            builder.Add(sb => sb.AppendLine(ReviewTargetMessage(reviewTarget.DisplayName, languageId)));
 
             if (!await _draftService.HasTeammate(draft.TeamId, draft.TargetPersonId.Value, token))
                 builder.Add(sb => sb
@@ -137,7 +138,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                     .AppendLine());
         }
         else
-            builder.Add(sb => sb.AppendLine(string.Format(reviewTargetMessageTemplate, teamContext.Name)));
+            builder.Add(sb => sb.AppendLine(ReviewTargetMessage(teamContext.Name, languageId)));
 
         if (!_draftService.HasDescriptionAndLinks(draft.Description))
             builder.Add(sb => sb
@@ -146,23 +147,31 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 .Append(_messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId))
                 .AppendLine());
 
-        builder.Add(sb => sb
-            .AppendLine()
-            .AppendLine(_messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId)));
-
-        var moveToReviewText = _messageBuilder.Build(Messages.Reviewer_PreviewMoveToReview, languageId);
-        var moveToReviewCommand = $"{CommandList.MoveToReview}{draft.Id:N}";
-        var removeDraftText = _messageBuilder.Build(Messages.Reviewer_PreviewRemoveDraft, languageId);
-        var removeDraftCommand = $"{CommandList.RemoveDraft}{draft.Id:N}";
-        var notification = builder.Build(m => draft.PreviewMessageId.HasValue
-            ? NotificationMessage.Edit(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value), m)
-            : NotificationMessage.Create(draft.ChatId, m)
-                .ReplyTo(draft.MessageId)
-                .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p))))
+        var notification = builder.Add(sb => sb
+                .AppendLine()
+                .AppendLine(_messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId)))
+            .Build(m => draft.PreviewMessageId.HasValue
+                ? NotificationMessage.Edit(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value), m)
+                : NotificationMessage.Create(draft.ChatId, m)
+                    .ReplyTo(draft.MessageId)
+                    .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p))))
             .WithButton(new Button(moveToReviewText, moveToReviewCommand))
             .WithButton(new Button(removeDraftText, removeDraftCommand));
-        
+
         return notification;
+    }
+
+    private string ReviewTargetMessage(string personName, LanguageId languageId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(personName);
+        ArgumentNullException.ThrowIfNull(languageId);
+        
+        var reviewTargetMessageTemplate = _messageBuilder.Build(
+            Messages.Reviewer_PreviewReviewerTemplate,
+            languageId);
+        var reviewTargetMessage = string.Format(reviewTargetMessageTemplate, personName);
+        
+        return reviewTargetMessage;
     }
 
     private async Task<NotificationMessage?> CreatePushMessage(
