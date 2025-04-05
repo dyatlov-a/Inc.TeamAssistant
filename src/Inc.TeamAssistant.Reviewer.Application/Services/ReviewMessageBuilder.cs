@@ -147,14 +147,15 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 .Append(_messageBuilder.Build(Messages.Reviewer_PreviewCheckDescription, languageId))
                 .AppendLine());
 
-        var notification = builder.Add(sb => sb
+        var notification = builder
+            .Add(sb => sb
                 .AppendLine()
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_PreviewEditHelp, languageId)))
             .Build(m => draft.PreviewMessageId.HasValue
                 ? NotificationMessage.Edit(new ChatMessage(draft.ChatId, draft.PreviewMessageId.Value), m)
                 : NotificationMessage.Create(draft.ChatId, m)
                     .ReplyTo(draft.MessageId)
-                    .AddHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p))))
+                    .WithHandler((c, p) => new AttachPreviewCommand(c, draft.Id, int.Parse(p))))
             .WithButton(new Button(moveToReviewText, moveToReviewCommand))
             .WithButton(new Button(removeDraftText, removeDraftCommand));
 
@@ -210,8 +211,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         ArgumentNullException.ThrowIfNull(owner);
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
-
-        Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
+        
         var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
         var reviewerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, reviewer.Id, token);
         var reviewerTargetMessageKey = (task.OriginalReviewerId.HasValue, task.Strategy) switch
@@ -220,8 +220,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
             (_, _) => Messages.Reviewer_TargetAutomatically
         };
+        Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
 
-        var notification = NotificationBuilder.Create()
+        var notification = attachPersons(NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId))
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName))
@@ -242,13 +243,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 ? NotificationMessage.Edit(new ChatMessage(task.ChatId, task.MessageId.Value), m)
                 : NotificationMessage
                     .Create(task.ChatId, m)
-                    .AddHandler((c, p) => new AttachMessageCommand(
+                    .WithHandler((c, p) => new AttachMessageCommand(
                         c,
                         task.Id,
                         int.Parse(p),
-                        MessageType.Shared.ToString())));
+                        MessageType.Shared.ToString()))));
 
-        return attachPersons(notification);
+        return notification;
     }
 
     private async Task<NotificationMessage> HideControlsForOriginalReviewer(
@@ -299,7 +300,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 ? NotificationMessage.Edit(new(task.ReviewerId, task.ReviewerMessageId.Value), m)
                 : NotificationMessage
                     .Create(task.ReviewerId, m)
-                    .AddHandler((c, p) => new AttachMessageCommand(
+                    .WithHandler((c, p) => new AttachMessageCommand(
                         c,
                         task.Id,
                         int.Parse(p),
@@ -325,8 +326,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
                 if (botContext.CanAcceptWithComments())
                 {
-                    var moveToAcceptWithCommentsText =
-                        _messageBuilder.Build(Messages.Reviewer_MoveToAcceptWithComments, languageId);
+                    var moveToAcceptWithCommentsText = _messageBuilder.Build(
+                        Messages.Reviewer_MoveToAcceptWithComments,
+                        languageId);
                     var moveToAcceptWithCommentsCommand = $"{CommandList.AcceptWithComments}{task.Id:N}";
                     n.WithButton(new Button(moveToAcceptWithCommentsText, moveToAcceptWithCommentsCommand));
                 }
@@ -364,7 +366,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 ? NotificationMessage.Edit(new(task.OwnerId, task.OwnerMessageId.Value), m)
                 : NotificationMessage
                     .Create(task.OwnerId, m)
-                    .AddHandler((c, p) => new AttachMessageCommand(
+                    .WithHandler((c, p) => new AttachMessageCommand(
                         c,
                         task.Id,
                         int.Parse(p),

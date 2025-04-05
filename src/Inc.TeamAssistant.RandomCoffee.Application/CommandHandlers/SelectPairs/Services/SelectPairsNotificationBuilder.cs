@@ -41,13 +41,13 @@ internal sealed class SelectPairsNotificationBuilder
                 var firstLanguageId = await _teamAccessor.GetClientLanguage(botId, firstPerson.Id, token);
                 var secondLanguageId = await _teamAccessor.GetClientLanguage(botId, secondPerson.Id, token);
 
-                builder.Add(sb => firstPerson
-                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, firstLanguageId, o))
-                    .AddSeparator(" - "));
-
-                builder.Add(sb => secondPerson
-                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, secondLanguageId, o))
-                    .AppendLine());
+                builder
+                    .Add(sb => firstPerson
+                        .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, firstLanguageId, o))
+                        .AddSeparator(" - "))
+                    .Add(sb => secondPerson
+                        .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, secondLanguageId, o))
+                        .AppendLine());
             }
         }
 
@@ -59,21 +59,23 @@ internal sealed class SelectPairsNotificationBuilder
             {
                 var excludedLanguageId = await _teamAccessor.GetClientLanguage(botId, excludedPerson.Id, token);
 
-                builder.Add(sb => sb
-                    .AppendLine()
-                    .Append(_messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId))
-                    .AddSeparator());
-
-                builder.Add(sb => excludedPerson
-                    .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, excludedLanguageId, o))
-                    .AppendLine());
+                builder
+                    .Add(sb => sb
+                        .AppendLine()
+                        .Append(_messageBuilder.Build(Messages.RandomCoffee_NotSelectedPair, languageId))
+                        .AddSeparator())
+                    .Add(sb => excludedPerson
+                        .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, excludedLanguageId, o))
+                        .AppendLine());
             }
         }
 
-        builder.Add(sb => sb
-            .AppendLine()
-            .AppendLine(_messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId)));
+        var notification = attachPersons(builder
+            .Add(sb => sb
+                .AppendLine()
+                .AppendLine(_messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId)))
+            .Build(m => NotificationMessage.Create(chatId, m)));
         
-        return attachPersons(builder.Build(m => NotificationMessage.Create(chatId, m)));
+        return notification;
     }
 }

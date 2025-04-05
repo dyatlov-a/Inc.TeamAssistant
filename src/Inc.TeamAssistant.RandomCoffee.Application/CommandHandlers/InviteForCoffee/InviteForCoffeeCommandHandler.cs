@@ -50,12 +50,10 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
 
         var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, entry.OwnerId, token);
         var notification = NotificationMessage
-            .Create(
-                entry.ChatId,
-                _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
+            .Create(entry.ChatId, _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
             .WithOption(_messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
             .WithOption(_messageBuilder.Build(Messages.RandomCoffee_No, languageId))
-            .AddHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
+            .WithHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
         var notifications = command.MessageContext.ChatMessage.OnlyChat
             ? [notification]
             : new[]

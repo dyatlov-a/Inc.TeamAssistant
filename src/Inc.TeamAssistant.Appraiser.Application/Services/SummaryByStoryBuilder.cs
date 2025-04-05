@@ -29,17 +29,16 @@ internal sealed class SummaryByStoryBuilder
             .AddIfHasValue(summary.Url, sb => sb.AppendLine(summary.Url))
             .Add(sb => sb
                 .AppendLine()
-                .AppendLine(BuildLinkForDashboard(summary.TeamId, summary.LanguageId))
+                .AppendLine(DashboardLink(summary.TeamId, summary.LanguageId))
                 .AppendLine())
-            .AddItems(summary.Items, (sb, i) => Estimate(sb, summary.EstimateEnded, i))
+            .AddEach(summary.Items, (sb, i) => Estimate(sb, summary.EstimateEnded, i))
             .AddIf(summary.EstimateEnded, sb => EstimateSummary(sb, summary))
             .AddIf(summary.Accepted, sb => AcceptedValue(sb, summary))
-            .Add(sb => AddRoundsInfo(sb, summary))
+            .Add(sb => RoundsInformation(sb, summary))
             .Build(m => summary.StoryExternalId.HasValue
                 ? NotificationMessage.Edit(new ChatMessage(summary.ChatId, summary.StoryExternalId.Value), m)
-                : NotificationMessage
-                    .Create(summary.ChatId, m)
-                    .AddHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p))))
+                : NotificationMessage.Create(summary.ChatId, m)
+                    .WithHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p))))
             .AddIf(!summary.Accepted, n => n.AddIfElse(
                 summary.EstimateEnded,
                 tn => OwnerActions(summary, tn),
@@ -97,12 +96,12 @@ internal sealed class SummaryByStoryBuilder
         
         foreach (var assessment in summary.Assessments)
         {
-            var buttonText = _messageBuilder.Build(
-                GetAssessmentMessageId(summary.StoryType, assessment.Code),
+            var assessmentText = _messageBuilder.Build(
+                AssessmentMessageId(summary.StoryType, assessment.Code),
                 summary.LanguageId);
-            var buttonCommand = $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}";
+            var assessmentCommand = $"{string.Format(CommandList.Set, assessment.Value)}{summary.StoryId:N}";
                 
-            notification.WithButton(new Button(buttonText, buttonCommand));
+            notification.WithButton(new Button(assessmentText, assessmentCommand));
         }
 
         var finishText = _messageBuilder.Build(Messages.Appraiser_Finish, summary.LanguageId);
@@ -121,13 +120,13 @@ internal sealed class SummaryByStoryBuilder
             var acceptText = _messageBuilder.Build(
                 Messages.Appraiser_Accept,
                 summary.LanguageId);
-            var buttonAssessmentText = _messageBuilder.Build(
-                GetAssessmentMessageId(summary.StoryType, assessment.Code),
+            var assessmentPartText = _messageBuilder.Build(
+                AssessmentMessageId(summary.StoryType, assessment.Code),
                 summary.LanguageId);
-            var buttonText = $"{acceptText} {buttonAssessmentText}";
-            var buttonCommand = $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}";
+            var assessmentText = $"{acceptText} {assessmentPartText}";
+            var assessmentCommand = $"{string.Format(CommandList.AcceptEstimate, assessment.Value)}{summary.StoryId:N}";
 
-            notification.WithButton(new Button(buttonText, buttonCommand));
+            notification.WithButton(new Button(assessmentText, assessmentCommand));
         }
             
         var revoteText = _messageBuilder.Build(Messages.Appraiser_Revote, summary.LanguageId);
@@ -136,7 +135,7 @@ internal sealed class SummaryByStoryBuilder
         notification.WithButton(new Button(revoteText, revoteCommand));
     }
     
-    private string BuildLinkForDashboard(Guid teamId, LanguageId languageId)
+    private string DashboardLink(Guid teamId, LanguageId languageId)
     {
         ArgumentNullException.ThrowIfNull(languageId);
         
@@ -148,7 +147,7 @@ internal sealed class SummaryByStoryBuilder
         return result;
     }
 
-    private void AddRoundsInfo(StringBuilder builder, SummaryByStory summary)
+    private void RoundsInformation(StringBuilder builder, SummaryByStory summary)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(summary);
@@ -171,7 +170,7 @@ internal sealed class SummaryByStoryBuilder
         builder.AppendLine($"{item.AppraiserName} {estimate}");
     }
 
-    private static MessageId GetAssessmentMessageId(string storyType, string assessmentCode)
+    private static MessageId AssessmentMessageId(string storyType, string assessmentCode)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(storyType);
         ArgumentException.ThrowIfNullOrWhiteSpace(assessmentCode);

@@ -40,7 +40,7 @@ public sealed class NotificationMessage
         ButtonsInRow = defaultButtonsInRow;
     }
 
-    public NotificationMessage AddHandler(ResponseHandler handler)
+    public NotificationMessage WithHandler(ResponseHandler handler)
     {
         Handler = handler ?? throw new ArgumentNullException(nameof(handler));
 
@@ -65,8 +65,7 @@ public sealed class NotificationMessage
     
     public NotificationMessage WithOption(string option)
     {
-        if (string.IsNullOrWhiteSpace(option))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(option));
+        ArgumentException.ThrowIfNullOrWhiteSpace(option);
         
         _options.Add(option);
 
@@ -92,8 +91,7 @@ public sealed class NotificationMessage
 
     public static NotificationMessage Create(long targetChatId, string text, bool pinned = false)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
         return new(targetChatId, targetMessage: null, deleteMessage: null, text, pinned);
     }
@@ -101,9 +99,7 @@ public sealed class NotificationMessage
     public static NotificationMessage Edit(ChatMessage targetMessage, string text)
     {
         ArgumentNullException.ThrowIfNull(targetMessage);
-        
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
         return new(targetChatId: null, targetMessage, deleteMessage: null, text);
     }

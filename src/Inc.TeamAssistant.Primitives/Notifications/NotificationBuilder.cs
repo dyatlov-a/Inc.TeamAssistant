@@ -11,18 +11,8 @@ public sealed class NotificationBuilder
     }
     
     public static NotificationBuilder Create() => new();
-    
-    public NotificationBuilder AddIfHasValue(string? value, Action<StringBuilder> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
 
-        if (!string.IsNullOrWhiteSpace(value))
-            action(_builder);
-        
-        return this;
-    }
-
-    public NotificationBuilder AddItems<T>(IEnumerable<T> items, Action<StringBuilder, T> action)
+    public NotificationBuilder AddEach<T>(IEnumerable<T> items, Action<StringBuilder, T> action)
     {
         ArgumentNullException.ThrowIfNull(items);
         ArgumentNullException.ThrowIfNull(action);
@@ -47,8 +37,18 @@ public sealed class NotificationBuilder
         ArgumentNullException.ThrowIfNull(action);
         
         if (condition)
-            action(_builder);
+            Add(action);
 
+        return this;
+    }
+    
+    public NotificationBuilder AddIfHasValue(string? value, Action<StringBuilder> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (!string.IsNullOrWhiteSpace(value))
+            Add(action);
+        
         return this;
     }
 
@@ -56,7 +56,8 @@ public sealed class NotificationBuilder
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        var notification = action(_builder.ToString());
+        var message = _builder.ToString();
+        var notification = action(message);
         
         return notification;
     }
