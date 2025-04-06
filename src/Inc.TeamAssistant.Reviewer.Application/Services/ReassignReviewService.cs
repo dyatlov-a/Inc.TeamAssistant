@@ -40,6 +40,8 @@ internal sealed class ReassignReviewService
         
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
         var teamContext = await _teamAccessor.GetTeamContext(task.TeamId, token);
+        var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);
+        var newReviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
         var nextReviewerType = Enum.Parse<NextReviewerType>(teamContext.GetNextReviewerType());
         var nextReviewerStrategy = await _reviewerFactory.Create(
             task.TeamId,
@@ -49,8 +51,6 @@ internal sealed class ReassignReviewService
             teammates.Select(t => t.Id).ToArray(),
             excludePersonId: task.ReviewerId,
             token);
-        var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);
-        var newReviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
 
         await _repository.Upsert(
             task.Reassign(DateTimeOffset.UtcNow, nextReviewerStrategy.GetReviewer()),

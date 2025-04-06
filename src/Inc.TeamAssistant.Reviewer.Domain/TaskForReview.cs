@@ -95,13 +95,6 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public TaskForReview MoveToAccept()
-    {
-        State = TaskForReviewState.Accept;
-
-        return this;
-    }
-
     public TaskForReview Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
@@ -151,11 +144,9 @@ public sealed class TaskForReview : ITaskForReviewStats
     public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
+        SetReviewer(reviewerId);
         
         NextNotification = now;
-        ReviewerMessageId = null;
-        
-        SetReviewer(reviewerId);
 
         return this;
     }
@@ -170,9 +161,9 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     private void SetReviewer(long reviewerId)
     {
-        if (!OriginalReviewerId.HasValue && ReviewerId != 0)
-            OriginalReviewerId = ReviewerId;
-            
+        OriginalReviewerId ??= ReviewerId;
+        ReviewerMessageId = null;
+
         ReviewerId = reviewerId;
     }
 }
