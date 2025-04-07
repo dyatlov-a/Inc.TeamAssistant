@@ -19,17 +19,21 @@ public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
     public long GetReviewer()
     {
         var otherTeammates = GetOtherTeammates();
-        return otherTeammates.Any()
+        var reviewer = otherTeammates.Any()
             ? FromOtherTeammates(otherTeammates)
             : _teammates.First();
+
+        return reviewer;
     }
 
     private IReadOnlyCollection<long> GetOtherTeammates()
     {
-        return _teammates
+        var results = _teammates
             .Where(t => !_excludedPersonIds.Contains(t))
             .OrderBy(t => t)
             .ToArray();
+
+        return results;
     }
 
     private long FromOtherTeammates(IReadOnlyCollection<long> otherTeammates)
@@ -37,10 +41,11 @@ public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
         ArgumentNullException.ThrowIfNull(otherTeammates);
         
         var nextReviewers = otherTeammates
-            .Where(ot => _lastReviewerId is null || ot > _lastReviewerId)
+            .Where(ot => !_lastReviewerId.HasValue || ot > _lastReviewerId.Value)
             .ToArray();
         var targets = nextReviewers.Any() ? nextReviewers : otherTeammates;
+        var reviewer = targets.MinBy(t => t);
 
-        return targets.MinBy(t => t);
+        return reviewer;
     }
 }

@@ -65,6 +65,7 @@
   "Reviewer_MoveToNextRound": "Попробовать снова",
   "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
   "Reviewer_ChangeToRoundRobinHelp": "Перейти на последовательный перебор",
+  "Reviewer_ChangeToRoundRobinForTeamHelp": "Перейти на последовательный перебор по всей команде",
   "Reviewer_ChangeToRandomHelp": "Перейти на случайный выбор",
   "Reviewer_Reassign": "Переназначить",
   "Reviewer_NeedEndReview": "Необходимо провести ревью.",

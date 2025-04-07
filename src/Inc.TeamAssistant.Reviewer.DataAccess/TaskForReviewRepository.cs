@@ -179,27 +179,30 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token)
+    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-            SELECT
-                t.reviewer_id AS reviewerid
+        var command = new CommandDefinition(
+            """
+            SELECT DISTINCT ON (t.owner_id)
+                t.reviewer_id AS reviewerid,
+            	t.owner_id AS ownerid,
+            	t.created AS created
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND t.strategy != @next_reviewer_type__target
-            ORDER BY t.created DESC
-            OFFSET 0
-            LIMIT 1;",
+            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
+            ORDER BY t.owner_id, t.created DESC;
+            """,
             new
             {
                 team_id = teamId,
-                owner_id = ownerId,
-                next_reviewer_type__target = (int)NextReviewerType.Target
+                nrt_target = (int)NextReviewerType.Target
             },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
         
-        return await connection.QuerySingleOrDefaultAsync<long?>(command);
+        var results = await connection.QueryAsync<ReviewTicket>(command);
+        
+        return results.ToArray();
     }
 }

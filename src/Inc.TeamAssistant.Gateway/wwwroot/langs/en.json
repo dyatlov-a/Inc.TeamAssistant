@@ -65,6 +65,7 @@
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_TeamWithoutUsers": "Team has no members",
   "Reviewer_ChangeToRoundRobinHelp": "Change to round robin",
+  "Reviewer_ChangeToRoundRobinForTeamHelp": "Change to round robin by team",
   "Reviewer_ChangeToRandomHelp": "Change to random",
   "Reviewer_Reassign": "Reassign",
   "Reviewer_NeedEndReview": "There is a review that needs to be done.",

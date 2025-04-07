@@ -43,7 +43,11 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
     
     private IEnumerable<SelectValue> GetValuesForNextReviewerType()
     {
-        foreach (var item in Enum.GetValues<NextReviewerType>())
+        var selectableValues = Enum.GetValues<NextReviewerType>()
+            .Where(t => t != NextReviewerType.Target)
+            .ToArray();
+        
+        foreach (var item in selectableValues)
             if (_nextReviewerType.TryGetValue(item, out var value))
                 yield return new SelectValue(value, item.ToString());
     }

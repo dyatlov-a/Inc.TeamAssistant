@@ -28,7 +28,9 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
         ArgumentNullException.ThrowIfNull(teammates);
         
         var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
-        var lastReviewerId = await _repository.FindLastReviewer(teamId, ownerId, token);
+        var lastReviewers = await _repository.GetLastReviewers(teamId, token);
+        var lastReviewerByPerson = lastReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
+        var lastReviewerByTeam = lastReviewers.MaxBy(r => r.Created);
         var history = await _reader.GetHistory(teamId, fromDate, token);
         var excludedPersonIds = excludePersonId.HasValue
             ? new[] { ownerId, excludePersonId.Value }
@@ -36,8 +38,19 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
         
         return nextReviewerType switch
         {
-            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(teammates, excludedPersonIds, lastReviewerId),
-            NextReviewerType.Random => new RandomReviewerStrategy(teammates, history, excludedPersonIds, lastReviewerId),
+            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(
+                teammates,
+                excludedPersonIds,
+                lastReviewerByPerson?.ReviewerId),
+            NextReviewerType.RoundRobinForTeam => new RoundRobinReviewerStrategy(
+                teammates,
+                excludedPersonIds,
+                lastReviewerByTeam?.ReviewerId),
+            NextReviewerType.Random => new RandomReviewerStrategy(
+                teammates,
+                history,
+                excludedPersonIds,
+                lastReviewerByPerson?.ReviewerId),
             NextReviewerType.Target when targetPersonId.HasValue => new TargetReviewerStrategy(targetPersonId.Value),
             _ => throw new TeamAssistantException($"NextReviewerType {nextReviewerType} was not supported.")
         };

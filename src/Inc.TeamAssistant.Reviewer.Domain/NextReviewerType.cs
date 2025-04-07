@@ -3,6 +3,7 @@ namespace Inc.TeamAssistant.Reviewer.Domain;
 public enum NextReviewerType
 {
     RoundRobin = 1,
-    Random = 2,
-    Target = 3
+    RoundRobinForTeam = 2,
+    Random = 11,
+    Target = 100
 }

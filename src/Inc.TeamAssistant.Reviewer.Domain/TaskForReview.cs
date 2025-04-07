@@ -147,6 +147,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         SetReviewer(reviewerId);
         
         NextNotification = now;
+        Strategy = NextReviewerType.Target;
 
         return this;
     }

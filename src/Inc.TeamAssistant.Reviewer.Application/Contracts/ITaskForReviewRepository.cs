@@ -13,5 +13,5 @@ public interface ITaskForReviewRepository
     
     Task Upsert(TaskForReview taskForReview, CancellationToken token);
     
-    Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token);
+    Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token);
 }
