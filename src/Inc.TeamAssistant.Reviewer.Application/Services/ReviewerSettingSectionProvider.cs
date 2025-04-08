@@ -8,6 +8,7 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
     private readonly IReadOnlyDictionary<NextReviewerType, string> _nextReviewerType = new Dictionary<NextReviewerType, string>
     {
         [NextReviewerType.RoundRobin] = "FormSectionSetSettingsRoundRobinDescription",
+        [NextReviewerType.RoundRobinForTeam] = "FormSectionSetSettingsRoundRobinForTeamDescription",
         [NextReviewerType.Random] = "FormSectionSetSettingsRandomDescription"
     };
 

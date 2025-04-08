@@ -345,4 +345,7 @@
     <data name="DataCreated" xml:space="preserve">
         <value>Successfully created</value>
     </data>
+    <data name="FormSectionSetSettingsRoundRobinForTeamDescription" xml:space="preserve">
+        <value>Round robin for the whole team</value>
+    </data>
 </root>

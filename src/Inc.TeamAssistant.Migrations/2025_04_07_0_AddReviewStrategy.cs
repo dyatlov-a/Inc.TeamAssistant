@@ -3,16 +3,16 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2025_04_07_0)]
-public sealed class AddReviewTypes : Migration
+public sealed class AddReviewStrategy : Migration
 {
     public override void Up()
     {
         Execute.Sql(
-            "UPDATE reviewer.task_for_reviews SET type = 11 WHERE type = 2;",
+            "UPDATE review.task_for_reviews SET strategy = 11 WHERE strategy = 2;",
             "Change review strategy for random");
         
         Execute.Sql(
-            "UPDATE reviewer.task_for_reviews SET type = 100 WHERE type = 3;",
+            "UPDATE review.task_for_reviews SET strategy = 100 WHERE strategy = 3;",
             "Change review strategy for target");
         
         Execute.Sql(

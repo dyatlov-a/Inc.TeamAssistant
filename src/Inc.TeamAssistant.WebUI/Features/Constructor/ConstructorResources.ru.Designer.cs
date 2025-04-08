@@ -698,5 +698,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor {
                 return ResourceManager.GetString("DataCreated", resourceCulture);
             }
         }
+        
+        internal static string FormSectionSetSettingsRoundRobinForTeamDescription {
+            get {
+                return ResourceManager.GetString("FormSectionSetSettingsRoundRobinForTeamDescription", resourceCulture);
+            }
+        }
     }
 }
