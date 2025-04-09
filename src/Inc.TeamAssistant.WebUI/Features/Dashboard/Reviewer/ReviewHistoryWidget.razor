@@ -141,7 +141,7 @@
         return builder.ToString();
     }
 
-    private string ConvertToString(TimeSpan value) => value.ToString(GlobalResources.Settings.TimeFormat);
+    private string ConvertToString(TimeSpan value) => value.ToTime();
     
     private string FirstTouchTitle()
     {

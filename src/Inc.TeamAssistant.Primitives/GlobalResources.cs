@@ -9,7 +9,6 @@ public static class GlobalResources
         public static readonly TimeSpan NotificationsDelay = TimeSpan.FromMinutes(1);
         public static readonly string LinkForConnectTemplate = "https://t.me/{0}?start={1}";
         public static readonly TimeSpan MinLoadingDelay = TimeSpan.FromMilliseconds(700);
-        public static readonly string TimeFormat = @"d\.hh\:mm\:ss";
         public static readonly string OptionParameterName = "&option=";
     }
     

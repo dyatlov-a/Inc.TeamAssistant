@@ -1,3 +1,6 @@
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
+
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class TaskForReview : ITaskForReviewStats
@@ -150,6 +153,31 @@ public sealed class TaskForReview : ITaskForReviewStats
         Strategy = NextReviewerType.Target;
 
         return this;
+    }
+    
+    public MessageId GetReviewerMessageId()
+    {
+        var messageId = (OriginalReviewerId.HasValue, Strategy) switch
+        {
+            (true, _) => Messages.Reviewer_TargetReassigned,
+            (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
+            (_, _) => Messages.Reviewer_TargetAutomatically
+        };
+
+        return messageId;
+    }
+    
+    public string AsIcon()
+    {
+        return State switch
+        {
+            TaskForReviewState.New => GlobalResources.Icons.Waiting,
+            TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
+            TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
+            TaskForReviewState.Accept => GlobalResources.Icons.Accept,
+            TaskForReviewState.AcceptWithComments => GlobalResources.Icons.AcceptWithComments,
+            _ => throw new ArgumentOutOfRangeException(nameof(State), State, "State out of range.")
+        };
     }
 
     public int? GetAttempts()

@@ -27,10 +27,12 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
     {
         ArgumentNullException.ThrowIfNull(teammates);
         
-        var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
+        const int historyLimitInDays = 7;
+        
         var lastReviewers = await _repository.GetLastReviewers(teamId, token);
         var lastReviewerByPerson = lastReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
         var lastReviewerByTeam = lastReviewers.MaxBy(r => r.Created);
+        var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(historyLimitInDays));
         var history = await _reader.GetHistory(teamId, fromDate, token);
         var excludedPersonIds = excludePersonId.HasValue
             ? new[] { ownerId, excludePersonId.Value }

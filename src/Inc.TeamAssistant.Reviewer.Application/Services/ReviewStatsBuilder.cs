@@ -1,5 +1,6 @@
 using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -75,18 +76,18 @@ internal sealed class ReviewStatsBuilder
             _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouchAverage,
                 languageId,
-                metricsByTeam.FirstTouch.ToString(GlobalResources.Settings.TimeFormat)));
+                metricsByTeam.FirstTouch.ToTime()));
             _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsReviewAverage,
                 languageId,
-                metricsByTeam.Review.ToString(GlobalResources.Settings.TimeFormat)));
+                metricsByTeam.Review.ToTime()));
         }
 
         if (_hasCorrectionMetrics && attempts.HasValue)
             _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsCorrectionAverage,
                 languageId,
-                metricsByTeam.Correction.ToString(GlobalResources.Settings.TimeFormat)));
+                metricsByTeam.Correction.ToTime()));
     }
 
     private void ByAccept(
@@ -107,8 +108,8 @@ internal sealed class ReviewStatsBuilder
             var firstTouchMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouch,
                 languageId,
-                metricsByTask.FirstTouch.ToString(GlobalResources.Settings.TimeFormat),
-                metricsByTeam.FirstTouch.ToString(GlobalResources.Settings.TimeFormat));
+                metricsByTask.FirstTouch.ToTime(),
+                metricsByTeam.FirstTouch.ToTime());
             _builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
                 
             var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
@@ -117,8 +118,8 @@ internal sealed class ReviewStatsBuilder
             var reviewMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsReview,
                 languageId,
-                metricsByTask.Review.ToString(GlobalResources.Settings.TimeFormat),
-                metricsByTeam.Review.ToString(GlobalResources.Settings.TimeFormat));
+                metricsByTask.Review.ToTime(),
+                metricsByTeam.Review.ToTime());
             _builder.AppendLine($"{reviewMessage} {reviewTrend}");
         }
 
@@ -130,8 +131,8 @@ internal sealed class ReviewStatsBuilder
             var correctionMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsCorrection,
                 languageId,
-                metricsByTask.Correction.ToString(GlobalResources.Settings.TimeFormat),
-                metricsByTeam.Correction.ToString(GlobalResources.Settings.TimeFormat));
+                metricsByTask.Correction.ToTime(),
+                metricsByTeam.Correction.ToTime());
             _builder.AppendLine($"{correctionMessage} {correctionTrend}");
         }
     }
