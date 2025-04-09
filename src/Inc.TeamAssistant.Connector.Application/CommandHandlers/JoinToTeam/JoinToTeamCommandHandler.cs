@@ -35,24 +35,33 @@ internal sealed class JoinToTeamCommandHandler : IRequestHandler<JoinToTeamComma
         var person = await _teamAccessor.EnsurePerson(command.MessageContext.Person.Id, token);
 
         await _teamRepository.Upsert(team.AddTeammate(person), token);
-
-        var joinToTeamSuccessMessage = _messageBuilder.Build(
-            Messages.Connector_JoinToTeamSuccess,
-            command.MessageContext.LanguageId,
-            person.DisplayName,
-            team.Name);
+        
+        var joinToTeamMessageForPerson = BuildJoinToTeamMessage(command.MessageContext.LanguageId);
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
-            joinToTeamSuccessMessage);
-
-        var notifications = command.MessageContext.Person.Id != team.Owner.Id
-            ? new[]
-            {
-                NotificationMessage.Create(team.Owner.Id, joinToTeamSuccessMessage),
-                notification
-            }
-            : [notification];
+            joinToTeamMessageForPerson);
+        var notifications = new List<NotificationMessage> { notification };
         
-        return CommandResult.Build(notifications);
+        if (command.MessageContext.Person.Id != team.Owner.Id)
+        {
+            var ownerLanguageId = await _teamAccessor.GetClientLanguage(
+                command.MessageContext.Bot.Id,
+                team.Owner.Id,
+                token);
+            var joinToTeamMessageForTeamOwner = BuildJoinToTeamMessage(ownerLanguageId);
+            
+            notifications.Add(NotificationMessage.Create(team.Owner.Id, joinToTeamMessageForTeamOwner));
+        }
+        
+        return CommandResult.Build(notifications.ToArray());
+        
+        string BuildJoinToTeamMessage(LanguageId languageId)
+        {
+            return _messageBuilder.Build(
+                Messages.Connector_JoinToTeamSuccess,
+                languageId,
+                person.DisplayName,
+                team.Name);
+        }
     }
 }
