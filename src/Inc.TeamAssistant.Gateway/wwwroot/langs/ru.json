@@ -118,5 +118,6 @@
   "Connector_HasNotRightsForRemoveTeam": "У вас нет прав на удаление команды «{0}»",
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
   "Connector_Help": "Отобразить список команд",
-  "Connector_HasNoRights": "У пользователя недостаточно прав для выполнения операции"
+  "Connector_HasNoRights": "У пользователя недостаточно прав для выполнения операции",
+  "Connector_ObjectNotFound": "{0} по идентификатору {1} не найден"
 }

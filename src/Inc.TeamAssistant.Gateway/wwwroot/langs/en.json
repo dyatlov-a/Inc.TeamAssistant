@@ -118,5 +118,6 @@
   "Connector_HasNotRightsForRemoveTeam": "You do not have permission to remove the command \"{0}\"",
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
-  "Connector_HasNoRights": "User has no rights to perform this action"
+  "Connector_HasNoRights": "User has no rights to perform this action",
+  "Connector_ObjectNotFound": "{0} by id {1} was not found"
 }

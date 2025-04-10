@@ -64,10 +64,8 @@ public sealed class BotsController : ControllerBase
         [FromQuery]string background,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
         
         return Ok(await _botService.GetConnector(teamId, foreground, background, token));
     }

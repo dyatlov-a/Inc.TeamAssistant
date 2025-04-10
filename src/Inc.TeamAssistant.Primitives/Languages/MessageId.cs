@@ -6,8 +6,7 @@ public sealed record MessageId
 
     public MessageId(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
 
         Value = value;
     }

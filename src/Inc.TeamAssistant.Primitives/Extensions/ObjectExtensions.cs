@@ -17,7 +17,7 @@ public static class ObjectExtensions
         var value = await action(id, token);
 
         if (value is null)
-            throw new TeamAssistantException($"{type} by id {id} was not found.");
+            throw new TeamAssistantUserException(Messages.Connector_ObjectNotFound, type, id);
 
         return value;
     }
