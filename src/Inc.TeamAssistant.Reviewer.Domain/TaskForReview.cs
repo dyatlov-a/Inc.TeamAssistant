@@ -146,7 +146,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     public bool HasReassign() => OriginalReviewerId.HasValue && ReviewerId != OriginalReviewerId.Value;
 
-    public long Reassign(DateTimeOffset now, long reviewerId)
+    public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
         SetReviewer(reviewerId);
@@ -154,7 +154,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         NextNotification = now;
         Strategy = NextReviewerType.Target;
 
-        return ReviewerId;
+        return this;
     }
     
     public MessageId GetReviewerMessageId()

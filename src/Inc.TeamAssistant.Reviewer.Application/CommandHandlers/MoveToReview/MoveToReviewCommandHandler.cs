@@ -66,16 +66,12 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             botContext.GetNotificationIntervals(),
             targetTeam.ChatId,
             nextReviewerStrategy.GetReviewer());
-        var reviewer = await _teamAccessor.EnsurePerson(taskForReview.ReviewerId, token);
-        var owner = await _teamAccessor.EnsurePerson(taskForReview.OwnerId, token);
         
         await _repository.Upsert(taskForReview, token);
 
         var notifications = (await _reviewMessageBuilder.Build(
                 command.MessageContext.ChatMessage.MessageId,
                 taskForReview,
-                reviewer,
-                owner,
                 botContext,
                 token))
             .Union(await _draftService.Delete(draft, token))

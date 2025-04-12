@@ -38,19 +38,17 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     public async Task<IReadOnlyCollection<NotificationMessage>> Build(
         int messageId,
         TaskForReview task,
-        Person reviewer,
-        Person owner,
         BotContext botContext,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
-        ArgumentNullException.ThrowIfNull(reviewer);
-        ArgumentNullException.ThrowIfNull(owner);
         ArgumentNullException.ThrowIfNull(botContext);
 
+        var hasOwnerAction = messageId == task.OwnerMessageId;
         var metricsByTeam = _metricsProvider.Get(task.TeamId);
         var metricsByTask = await _metricsFactory.Create(task, token);
-        var hasOwnerAction = messageId == task.OwnerMessageId;
+        var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);
+        var reviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
 
         var notifications = new List<NotificationMessage>
         {
@@ -59,6 +57,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         };
 
         if (!task.ReviewerMessageId.HasValue && task.HasReassign())
+            // TODO: save OriginalReviewerMessageId (support multiple reassign)
             notifications.Add(await HideControlsForOriginalReviewer(
                 task.OriginalReviewerId!.Value,
                 messageId,
@@ -277,7 +276,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
         var reviewerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, task.ReviewerId, token);
-        var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(7));
+        var fromDate = DateTimeOffset.UtcNow.Subtract(GlobalResources.Settings.ReassignInterval);
         var hasReassign = await _reader.HasReassignFromDate(task.ReviewerId, fromDate, token);
         var notification = NotificationBuilder.Create()
             .Add(sb => sb
