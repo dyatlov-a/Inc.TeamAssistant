@@ -6,7 +6,7 @@ public interface IDraftTaskForReviewRepository
 {
     Task<DraftTaskForReview?> Find(long chatId, int messageId, CancellationToken token);
     
-    Task<DraftTaskForReview> GetById(Guid id, CancellationToken token);
+    Task<DraftTaskForReview?> Find(Guid id, CancellationToken token);
     
     Task Upsert(DraftTaskForReview draft, CancellationToken token);
     

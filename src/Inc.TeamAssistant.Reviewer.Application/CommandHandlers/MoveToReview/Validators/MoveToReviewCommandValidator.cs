@@ -27,7 +27,12 @@ internal sealed class MoveToReviewCommandValidator : AbstractValidator<MoveToRev
     {
         ArgumentNullException.ThrowIfNull(context);
         
-        var draft = await _repository.GetById(draftId, token);
+        var draft = await _repository.Find(draftId, token);
+        if (draft is null)
+        {
+            context.AddFailure(nameof(draftId), "Draft not found");
+            return;
+        }
 
         if (!_service.HasDescriptionAndLinks(draft.Description))
             context.AddFailure(

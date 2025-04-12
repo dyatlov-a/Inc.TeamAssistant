@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -41,7 +42,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
 
         var botContext = command.MessageContext.Bot;
         
-        var draft = await _draftRepository.GetById(command.DraftId, token);
+        var draft = await command.DraftId.Required(_draftRepository.Find, token);
         draft.CheckRights(command.MessageContext.Person.Id);
         
         var teammates = await _teamAccessor.GetTeammates(draft.TeamId, DateTimeOffset.UtcNow, token);

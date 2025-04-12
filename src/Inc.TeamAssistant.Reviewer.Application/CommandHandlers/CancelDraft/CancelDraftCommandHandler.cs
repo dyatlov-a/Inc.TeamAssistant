@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Model.Commands.CancelDraft;
@@ -21,7 +22,7 @@ internal sealed class CancelDraftCommandHandler : IRequestHandler<CancelDraftCom
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var draft = await _repository.GetById(command.DraftId, token);
+        var draft = await command.DraftId.Required(_repository.Find, token);
         var notifications = await _service.Delete(
             draft.CheckRights(command.MessageContext.Person.Id),
             token);

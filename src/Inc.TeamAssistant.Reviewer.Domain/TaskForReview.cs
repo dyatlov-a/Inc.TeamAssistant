@@ -143,8 +143,10 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
+    
+    public bool HasReassign() => OriginalReviewerId.HasValue && ReviewerId != OriginalReviewerId.Value;
 
-    public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
+    public long Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
         SetReviewer(reviewerId);
@@ -152,12 +154,12 @@ public sealed class TaskForReview : ITaskForReviewStats
         NextNotification = now;
         Strategy = NextReviewerType.Target;
 
-        return this;
+        return ReviewerId;
     }
     
     public MessageId GetReviewerMessageId()
     {
-        var messageId = (OriginalReviewerId.HasValue, Strategy) switch
+        var messageId = (HasReassign(), Strategy) switch
         {
             (true, _) => Messages.Reviewer_TargetReassigned,
             (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
@@ -190,7 +192,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     private void SetReviewer(long reviewerId)
     {
-        OriginalReviewerId ??= ReviewerId;
+        OriginalReviewerId ??= reviewerId;
         ReviewerMessageId = null;
 
         ReviewerId = reviewerId;

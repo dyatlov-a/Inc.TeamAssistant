@@ -58,9 +58,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             await MessageForReviewer(task, botContext, owner, metricsByTeam, metricsByTask, token)
         };
 
-        if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerId.HasValue)
+        if (!task.ReviewerMessageId.HasValue && task.HasReassign())
             notifications.Add(await HideControlsForOriginalReviewer(
-                task.OriginalReviewerId.Value,
+                task.OriginalReviewerId!.Value,
                 messageId,
                 task,
                 token));
@@ -305,7 +305,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 var inProgressCommand = $"{CommandList.MoveToInProgress}{task.Id:N}";
                 n.WithButton(new Button(inProgressText, inProgressCommand));
 
-                if (!task.OriginalReviewerId.HasValue && !hasReassign)
+                if (!task.HasReassign() && !hasReassign)
                 {
                     var reassignReviewText = _messageBuilder.Build(Messages.Reviewer_Reassign, reviewerLanguageId);
                     var reassignReviewCommand = $"{CommandList.ReassignReview}{task.Id:N}";
