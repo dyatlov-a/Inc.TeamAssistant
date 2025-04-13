@@ -39,7 +39,7 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
-  "Appraiser_NumberOfRounds": "Количество раундов оценки",
+  "Appraiser_NumberOfRounds": "Раунд",
   "Appraiser_MultipleLinkError": "Описание должно содержать одну ссылку",
   "Appraiser_LinkLengthError": "Длина ссылки не должна превышать 2000 символов",
 

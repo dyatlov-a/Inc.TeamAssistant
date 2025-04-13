@@ -9,7 +9,7 @@ public static class StringBuilderExtensions
     public static StringBuilder AddSeparator(this StringBuilder builder, string separator = DefaultSeparator)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentException.ThrowIfNullOrWhiteSpace(separator);
+        ArgumentNullException.ThrowIfNull(separator);
         
         builder.Append(separator);
 

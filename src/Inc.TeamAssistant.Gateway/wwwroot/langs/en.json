@@ -39,7 +39,7 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
-  "Appraiser_NumberOfRounds": "Number of evaluation rounds",
+  "Appraiser_NumberOfRounds": "Round",
   "Appraiser_MultipleLinkError": "Description must contain one link",
   "Appraiser_LinkLengthError": "Link length must be less than 2000 symbols",
 
