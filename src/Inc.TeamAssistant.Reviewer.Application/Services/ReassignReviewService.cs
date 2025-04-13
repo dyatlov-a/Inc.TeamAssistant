@@ -50,8 +50,9 @@ internal sealed class ReassignReviewService
             teammates.Select(t => t.Id).ToArray(),
             excludePersonId: task.ReviewerId,
             token);
+        var nextReviewer = nextReviewerStrategy.GetReviewer();
 
-        await _repository.Upsert(task.Reassign(DateTimeOffset.UtcNow, nextReviewerStrategy.GetReviewer()), token);
+        await _repository.Upsert(task.Reassign(DateTimeOffset.UtcNow, nextReviewer), token);
         
         return await _reviewMessageBuilder.Build(messageId, task, botContext, token);
     }

@@ -214,7 +214,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
 
-        var notification = attachPersons(NotificationBuilder.Create()
+        var notification = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId))
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName))
@@ -236,9 +236,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                         c,
                         task.Id,
                         int.Parse(p),
-                        MessageType.Shared.ToString()))));
+                        MessageType.Shared.ToString())));
 
-        return notification;
+        var result = attachPersons(notification);
+        return result;
     }
 
     private async Task<NotificationMessage> HideControlsForOriginalReviewer(

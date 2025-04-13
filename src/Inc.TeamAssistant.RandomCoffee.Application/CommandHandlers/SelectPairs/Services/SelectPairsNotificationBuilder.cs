@@ -70,12 +70,13 @@ internal sealed class SelectPairsNotificationBuilder
             }
         }
 
-        var notification = attachPersons(builder
+        var notification = builder
             .Add(sb => sb
                 .AppendLine()
                 .AppendLine(_messageBuilder.Build(Messages.RandomCoffee_MeetingDescription, languageId)))
-            .Build(m => NotificationMessage.Create(chatId, m)));
-        
-        return notification;
+            .Build(m => NotificationMessage.Create(chatId, m));
+
+        var result = attachPersons(notification);
+        return result;
     }
 }
