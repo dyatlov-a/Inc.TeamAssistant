@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -34,7 +35,7 @@ internal sealed class ReassignReviewService
     {
         ArgumentNullException.ThrowIfNull(botContext);
         
-        var task = await _repository.GetById(taskId, token);
+        var task = await taskId.Required(_repository.Find, token);
         if (!task.CanAccept())
             return Array.Empty<NotificationMessage>();
         

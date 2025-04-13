@@ -276,8 +276,6 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, owner.Id, token);
         var reviewerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, task.ReviewerId, token);
-        var fromDate = DateTimeOffset.UtcNow.Subtract(GlobalResources.Settings.ReassignInterval);
-        var hasReassign = await _reader.HasReassignFromDate(task.ReviewerId, fromDate, token);
         var notification = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_NeedReview, reviewerLanguageId))
@@ -304,7 +302,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 var inProgressCommand = $"{CommandList.MoveToInProgress}{task.Id:N}";
                 n.WithButton(new Button(inProgressText, inProgressCommand));
 
-                if (!task.HasReassign() && !hasReassign)
+                if (!task.HasReassign())
                 {
                     var reassignReviewText = _messageBuilder.Build(Messages.Reviewer_Reassign, reviewerLanguageId);
                     var reassignReviewCommand = $"{CommandList.ReassignReview}{task.Id:N}";

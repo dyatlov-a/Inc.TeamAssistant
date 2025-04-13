@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachMessage;
@@ -20,7 +21,7 @@ internal sealed class AttachMessageCommandHandler : IRequestHandler<AttachMessag
         ArgumentNullException.ThrowIfNull(command);
 
         var messageType = Enum.Parse<MessageType>(command.MessageType);
-        var taskForReview = await _repository.GetById(command.TaskId, token);
+        var taskForReview = await command.TaskId.Required(_repository.Find, token);
         
         await _repository.Upsert(taskForReview.AttachMessage(messageType, command.MessageId), token);
 

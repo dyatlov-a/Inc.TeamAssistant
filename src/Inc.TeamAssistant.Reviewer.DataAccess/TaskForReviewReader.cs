@@ -2,7 +2,6 @@ using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
-using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
@@ -102,28 +101,6 @@ WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@sta
         var results = await connection.QueryAsync<TaskForReview>(command);
 
         return results.ToArray();
-    }
-
-    public async Task<bool> HasReassignFromDate(long personId, DateTimeOffset date, CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT true
-            FROM review.task_for_reviews AS t
-            WHERE t.original_reviewer_id = @person_id AND t.created >= @date
-            ORDER BY t.created DESC
-            OFFSET 0
-            LIMIT 1;",
-            new
-            {
-                person_id = personId,
-                date = date.UtcDateTime
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-        
-        return await connection.QuerySingleOrDefaultAsync<bool>(command);
     }
 
     public async Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(

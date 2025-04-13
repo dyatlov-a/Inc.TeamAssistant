@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToInProgress;
@@ -23,7 +24,7 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var taskForReview = await _repository.GetById(command.TaskId, token);
+        var taskForReview = await command.TaskId.Required(_repository.Find, token);
         if (!taskForReview.CanMoveToInProgress())
             return CommandResult.Empty;
         

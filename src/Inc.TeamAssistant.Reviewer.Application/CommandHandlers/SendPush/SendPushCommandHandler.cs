@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.SendPush;
@@ -22,7 +23,7 @@ internal sealed class SendPushCommandHandler : IRequestHandler<SendPushCommand, 
         ArgumentNullException.ThrowIfNull(command);
         
         var botContext = command.MessageContext.Bot;
-        var taskForReview = await _repository.GetById(command.TaskId, token);
+        var taskForReview = await command.TaskId.Required(_repository.Find, token);
 
         await _repository.Upsert(
             taskForReview.SetNextNotificationTime(DateTimeOffset.UtcNow, botContext.GetNotificationIntervals()),

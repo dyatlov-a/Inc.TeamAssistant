@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Commands.MoveToDecline;
@@ -21,7 +22,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var taskForReview = await _repository.GetById(command.TaskId, token);
+        var taskForReview = await command.TaskId.Required(_repository.Find, token);
         if (!taskForReview.CanAccept())
             return CommandResult.Empty;
         

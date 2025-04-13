@@ -15,7 +15,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<IReadOnlyCollection<TaskForReview>> Get(
+    public async Task<IReadOnlyCollection<TaskForReview>> GetAll(
         Guid teamId,
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken token)
@@ -59,7 +59,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         return results.ToArray();
     }
 
-    public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
+    public async Task<TaskForReview?> Find(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT
@@ -88,7 +88,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
         await using var connection = _connectionFactory.Create();
         
-        return await connection.QuerySingleAsync<TaskForReview>(command);
+        return await connection.QuerySingleOrDefaultAsync<TaskForReview>(command);
     }
 
     public async Task Upsert(TaskForReview taskForReview, CancellationToken token)

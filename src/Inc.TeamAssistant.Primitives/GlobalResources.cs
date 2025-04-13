@@ -10,7 +10,6 @@ public static class GlobalResources
         public static readonly string LinkForConnectTemplate = "https://t.me/{0}?start={1}";
         public static readonly TimeSpan MinLoadingDelay = TimeSpan.FromMilliseconds(700);
         public static readonly string OptionParameterName = "&option=";
-        public static readonly TimeSpan ReassignInterval = TimeSpan.FromDays(7);
     }
     
     public static class Icons
