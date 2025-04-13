@@ -88,7 +88,7 @@ public sealed class MessageParserTests
         var text = _fixture.Create<string>();
         var otherUserName = _fixture.Create<string>();
         var message = CreateMessage(text: $"{text} @{otherUserName} @{targetPerson.Username} {text}");
-        _personRepository.Find(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(targetPerson);
+        _personRepository.Find(targetPerson.Username!, Arg.Any<CancellationToken>()).Returns(targetPerson);
 
         var actual = await _messageParser.Parse(message, CancellationToken.None);
         

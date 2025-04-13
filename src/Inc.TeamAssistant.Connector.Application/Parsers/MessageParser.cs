@@ -46,20 +46,21 @@ internal sealed class MessageParser
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
         
-        var userName = text
+        var userNames = text
             .Split(' ')
-            .LastOrDefault(i => i.StartsWith(UserNameMarker))
-            ?.TrimStart(UserNameMarker);
+            .Where(i => i.StartsWith(UserNameMarker))
+            .Select(i => i.TrimStart(UserNameMarker))
+            .Where(i => !string.IsNullOrWhiteSpace(i))
+            .ToArray();
 
-        if (string.IsNullOrWhiteSpace(userName))
-            return null;
-        
-        var person = await _personRepository.Find(userName, token);
-        var result = person is not null
-            ? new ParsedPerson(person.Id, $"{UserNameMarker}{userName}")
-            : null;
+        foreach (var userName in userNames)
+        {
+            var person = await _personRepository.Find(userName, token);
+            if (person is not null)
+                return new ParsedPerson(person.Id, $"{UserNameMarker}{userName}");
+        }
 
-        return result;
+        return null;
     }
 
     private sealed record ParsedPerson(long Id, string Marker);
