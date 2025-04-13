@@ -61,6 +61,8 @@ internal sealed class DialogCommandFactory
                 => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRoundRobin, null, _, _, _, _)
                 => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.ChangeToRoundRobinForTeam, null, _, _, _, _)
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRandom, null, _, _, _, _)
                 => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.NeedReview, null, 0, _, _, _)

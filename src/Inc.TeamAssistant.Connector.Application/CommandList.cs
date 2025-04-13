@@ -18,6 +18,7 @@ internal static class CommandList
 
     public const string ChangeToRoundRobin = "/change_to_round_robin";
     public const string ChangeToRandom = "/change_to_random";
+    public const string ChangeToRoundRobinForTeam = "/change_to_team_round_robin";
     
     [CommandAlias("/nr")]
     public const string NeedReview = "/need_review";

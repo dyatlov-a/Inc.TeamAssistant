@@ -24,6 +24,13 @@ public sealed class AddReviewStrategy : Migration
             "Insert new reviewer commands");
         Execute.Sql(
             """
+            INSERT INTO connector.bot_command_stages(id, bot_command_id, value, dialog_message_id, position)
+            VALUES
+            	('cb4d6b85-69a8-405c-918b-4277da537c94', '42ddafda-a478-4f6e-b626-4855912813e7', 2, 'Connector_SelectTeam', 1);
+            """,
+            "Insert new reviewer bot_command_stages");
+        Execute.Sql(
+            """
             INSERT INTO connector.command_packs(feature_id, bot_command_id)
             VALUES
                 ('501df55a-42db-4db6-a057-e5a4d3ed3625', '42ddafda-a478-4f6e-b626-4855912813e7')
