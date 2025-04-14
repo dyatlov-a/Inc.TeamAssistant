@@ -22,26 +22,29 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         ArgumentNullException.ThrowIfNull(states);
 
         var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    bot_id AS botid,
-    t.team_id AS teamid,
-    t.strategy AS strategy,
-    t.owner_id AS ownerid,
-    t.reviewer_id AS reviewerid,
-    t.description AS description,
-    t.state AS state,
-    t.created AS created,
-    t.next_notification AS nextnotification,
-    t.accept_date AS acceptdate,
-    t.message_id AS messageid,
-    t.chat_id AS chatid,
-    t.original_reviewer_id AS originalreviewerid,
-    t.review_intervals AS reviewintervals
-FROM review.task_for_reviews AS t
-WHERE t.state = ANY(@states) AND t.next_notification < @now
-ORDER BY t.next_notification;",
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.reviewer_id AS reviewerid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.review_intervals AS reviewintervals
+            FROM review.task_for_reviews AS t
+            WHERE t.state = ANY(@states) AND t.next_notification < @now
+            ORDER BY t.next_notification;           
+            """,
             new
             {
                 now,
@@ -66,27 +69,30 @@ ORDER BY t.next_notification;",
         ArgumentNullException.ThrowIfNull(states);
 
         var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    bot_id AS botid,
-    t.team_id AS teamid,
-    t.strategy AS strategy,
-    t.owner_id AS ownerid,
-    t.owner_message_id AS ownermessageid,
-    t.reviewer_id AS reviewerid,
-    t.reviewer_message_id AS reviewermessageid,
-    t.description AS description,
-    t.state AS state,
-    t.created AS created,
-    t.next_notification AS nextnotification,
-    t.accept_date AS acceptdate,
-    t.message_id AS messageid,
-    t.chat_id AS chatid,
-    t.original_reviewer_id AS originalreviewerid,
-    t.review_intervals AS reviewintervals
-FROM review.task_for_reviews AS t
-WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);",
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.owner_message_id AS ownermessageid,
+                t.reviewer_id AS reviewerid,
+                t.reviewer_message_id AS reviewermessageid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.review_intervals AS reviewintervals
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);           
+            """,
             new
             {
                 team_id = teamId,
@@ -108,26 +114,29 @@ WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@sta
         DateTimeOffset date,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    bot_id AS botid,
-    t.team_id AS teamid,
-    t.strategy AS strategy,
-    t.owner_id AS ownerid,
-    t.reviewer_id AS reviewerid,
-    t.description AS description,
-    t.state AS state,
-    t.created AS created,
-    t.next_notification AS nextnotification,
-    t.accept_date AS acceptdate,
-    t.message_id AS messageid,
-    t.chat_id AS chatid,
-    t.original_reviewer_id AS originalreviewerid,
-    t.review_intervals AS reviewintervals
-FROM review.task_for_reviews AS t
-WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
-ORDER BY t.created;",
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.reviewer_id AS reviewerid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.review_intervals AS reviewintervals
+            FROM review.task_for_reviews AS t
+            WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
+            ORDER BY t.created;         
+            """,
             new
             {
                 team_id = teamId,
@@ -149,11 +158,13 @@ ORDER BY t.created;",
         DateTimeOffset date,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT t.reviewer_id AS reviewerid, COUNT(*) AS count
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.created >= @date
-            GROUP BY t.reviewer_id;",
+            GROUP BY t.reviewer_id;
+            """,
             new
             {
                 team_id = teamId,
@@ -174,27 +185,29 @@ ORDER BY t.created;",
         DateTimeOffset from,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-SELECT
-    t.id AS id,
-    t.created AS created,
-    t.state AS state,
-    t.strategy AS strategy,
-    t.bot_id AS botid,
-    t.description AS description,
-    t.review_intervals AS reviewintervals,
-    r.id AS reviewerid,
-    r.name AS reviewername,
-    r.username AS reviewerusername,
-    o.id AS ownerid,
-    o.name AS ownername,
-    o.username AS ownerusername,
-    t.original_reviewer_id IS NULL AS isoriginalreviewer
-FROM review.task_for_reviews AS t
-JOIN connector.persons AS r ON r.id = t.reviewer_id
-JOIN connector.persons AS o ON o.id = t.owner_id
-WHERE t.team_id = @team_id AND t.created >= @from
-ORDER BY t.created DESC;",
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.created AS created,
+                t.state AS state,
+                t.strategy AS strategy,
+                t.bot_id AS botid,
+                t.description AS description,
+                t.review_intervals AS reviewintervals,
+                r.id AS reviewerid,
+                r.name AS reviewername,
+                r.username AS reviewerusername,
+                o.id AS ownerid,
+                o.name AS ownername,
+                o.username AS ownerusername,
+                t.original_reviewer_id != t.reviewer_id AS isoriginalreviewer
+            FROM review.task_for_reviews AS t
+            JOIN connector.persons AS r ON r.id = t.reviewer_id
+            JOIN connector.persons AS o ON o.id = t.owner_id
+            WHERE t.team_id = @team_id AND t.created >= @from
+            ORDER BY t.created DESC;            
+            """,
             new
             {
                 team_id = teamId,

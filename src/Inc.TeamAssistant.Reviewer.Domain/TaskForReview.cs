@@ -21,6 +21,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     public DateTimeOffset? AcceptDate { get; private set; }
     public int? MessageId { get; private set; }
     public long? OriginalReviewerId { get; private set; }
+    public int? OriginalReviewerMessageId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
 
     private TaskForReview()
@@ -63,6 +64,7 @@ public sealed class TaskForReview : ITaskForReviewStats
                 MessageId = messageId;
                 break;
             case MessageType.Reviewer:
+                OriginalReviewerMessageId ??= messageId;
                 ReviewerMessageId = messageId;
                 break;
             case MessageType.Owner:
@@ -193,8 +195,8 @@ public sealed class TaskForReview : ITaskForReviewStats
     private void SetReviewer(long reviewerId)
     {
         OriginalReviewerId ??= reviewerId;
-        ReviewerMessageId = null;
-
         ReviewerId = reviewerId;
+        
+        ReviewerMessageId = null;
     }
 }

@@ -14,7 +14,6 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 {
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
-    private readonly ITaskForReviewReader _reader;
     private readonly IReviewMetricsProvider _metricsProvider;
     private readonly ReviewTeamMetricsFactory _metricsFactory;
     private readonly DraftTaskForReviewService _draftService;
@@ -22,14 +21,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
-        ITaskForReviewReader reader,
         IReviewMetricsProvider metricsProvider,
         ReviewTeamMetricsFactory metricsFactory,
         DraftTaskForReviewService draftService)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsProvider = metricsProvider ?? throw new ArgumentNullException(nameof(metricsProvider));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
         _draftService = draftService ?? throw new ArgumentNullException(nameof(draftService));
@@ -56,11 +53,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             await MessageForReviewer(task, botContext, owner, metricsByTeam, metricsByTask, token)
         };
 
-        if (!task.ReviewerMessageId.HasValue && task.HasReassign())
-            // TODO: save OriginalReviewerMessageId (support multiple reassign)
+        if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerMessageId.HasValue && task.HasReassign())
             notifications.Add(await HideControlsForOriginalReviewer(
                 task.OriginalReviewerId!.Value,
-                messageId,
+                task.OriginalReviewerMessageId.Value,
                 task,
                 token));
         

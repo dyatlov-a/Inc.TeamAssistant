@@ -14,6 +14,20 @@ public sealed class AddReviewStrategy : Migration
         Execute.Sql(
             "UPDATE review.task_for_reviews SET strategy = 100 WHERE strategy = 3;",
             "Change review strategy for target");
+
+        Create
+            .Column("original_reviewer_message_id")
+            .OnTable("task_for_reviews")
+            .InSchema("review")
+            .AsInt32().Nullable();
+        
+        Execute.Sql(
+            """
+            UPDATE review.task_for_reviews
+            SET original_reviewer_message_id = reviewer_message_id
+            WHERE original_reviewer_message_id IS NULL;
+            """,
+            "Set original_reviewer_message_id for all tasks");
         
         Execute.Sql(
             """
@@ -22,6 +36,7 @@ public sealed class AddReviewStrategy : Migration
                 ('42ddafda-a478-4f6e-b626-4855912813e7', '/change_to_team_round_robin', 'Reviewer_ChangeToRoundRobinForTeamHelp', '[1, 2]'::jsonb)
             """,
             "Insert new reviewer commands");
+        
         Execute.Sql(
             """
             INSERT INTO connector.bot_command_stages(id, bot_command_id, value, dialog_message_id, position)
@@ -29,6 +44,7 @@ public sealed class AddReviewStrategy : Migration
             	('cb4d6b85-69a8-405c-918b-4277da537c94', '42ddafda-a478-4f6e-b626-4855912813e7', 2, 'Connector_SelectTeam', 1);
             """,
             "Insert new reviewer bot_command_stages");
+        
         Execute.Sql(
             """
             INSERT INTO connector.command_packs(feature_id, bot_command_id)

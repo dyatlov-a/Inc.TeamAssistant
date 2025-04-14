@@ -9,7 +9,7 @@ namespace Inc.TeamAssistant.Reviewer.DataAccess;
 internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 {
     private readonly IConnectionFactory _connectionFactory;
-    
+
     public TaskForReviewRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -21,9 +21,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(states);
-        
+
         var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
@@ -41,9 +42,11 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.state = ANY(@states);",
+            WHERE t.team_id = @team_id AND t.state = ANY(@states);
+            """,
             new
             {
                 team_id = teamId,
@@ -53,7 +56,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
+
         var results = await connection.QueryAsync<TaskForReview>(command);
 
         return results.ToArray();
@@ -61,7 +64,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
     public async Task<TaskForReview?> Find(Guid taskForReviewId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
@@ -79,15 +83,17 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
-            WHERE t.id = @id;",
+            WHERE t.id = @id;
+            """,
             new { id = taskForReviewId },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
+
         return await connection.QuerySingleOrDefaultAsync<TaskForReview>(command);
     }
 
@@ -97,7 +103,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
         var reviewIntervals = JsonSerializer.Serialize(taskForReview.ReviewIntervals);
 
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             INSERT INTO review.task_for_reviews (
                 id,
                 bot_id,
@@ -115,6 +122,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id,
                 chat_id,
                 original_reviewer_id,
+                original_reviewer_message_id,
                 review_intervals)
             VALUES (
                 @id,
@@ -133,6 +141,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @message_id,
                 @chat_id,
                 @original_reviewer_id,
+                @original_reviewer_message_id,
                 @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
@@ -150,7 +159,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
                 original_reviewer_id = excluded.original_reviewer_id,
-                review_intervals = excluded.review_intervals;",
+                original_reviewer_message_id = excluded.original_reviewer_message_id,
+                review_intervals = excluded.review_intervals;
+            """,
             new
             {
                 id = taskForReview.Id,
@@ -169,6 +180,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 reviewer_id = taskForReview.ReviewerId,
                 reviewer_message_id = taskForReview.ReviewerMessageId,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
+                original_reviewer_message_id = taskForReview.OriginalReviewerMessageId,
                 review_intervals = reviewIntervals
             },
             flags: CommandFlags.None,
@@ -200,9 +212,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
+
         var results = await connection.QueryAsync<ReviewTicket>(command);
-        
+
         return results.ToArray();
     }
 }
