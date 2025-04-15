@@ -201,7 +201,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 o.id AS ownerid,
                 o.name AS ownername,
                 o.username AS ownerusername,
-                t.original_reviewer_id != t.reviewer_id AS isoriginalreviewer
+                t.original_reviewer_id AS originalreviewerid
             FROM review.task_for_reviews AS t
             JOIN connector.persons AS r ON r.id = t.reviewer_id
             JOIN connector.persons AS o ON o.id = t.owner_id

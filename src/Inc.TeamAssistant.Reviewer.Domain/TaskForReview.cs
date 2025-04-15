@@ -154,12 +154,11 @@ public sealed class TaskForReview : ITaskForReviewStats
         SetReviewer(reviewerId);
         
         NextNotification = now;
-        Strategy = NextReviewerType.Target;
 
         return this;
     }
     
-    public MessageId GetReviewerMessageId()
+    public MessageId ReviewerInMessage()
     {
         var messageId = (HasReassign(), Strategy) switch
         {

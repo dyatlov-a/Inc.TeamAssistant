@@ -135,7 +135,7 @@
     <data name="HasConcreteReviewer" xml:space="preserve">
         <value>Assigned to a concrete reviewer</value>
     </data>
-    <data name="IsOriginalReviewer" xml:space="preserve">
+    <data name="HasReassign" xml:space="preserve">
         <value>Has been reassigned</value>
     </data>
     <data name="FirstTouch" xml:space="preserve">

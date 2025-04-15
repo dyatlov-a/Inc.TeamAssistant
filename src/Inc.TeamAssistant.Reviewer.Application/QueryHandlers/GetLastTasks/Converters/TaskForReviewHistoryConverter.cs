@@ -1,29 +1,24 @@
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
-using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 
 namespace Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
 
-internal sealed class TaskForReviewHistoryConverter
+internal static class TaskForReviewHistoryConverter
 {
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
-
-    public TaskForReviewHistoryConverter(ReviewTeamMetricsFactory metricsFactory)
-    {
-        _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
-    }
-
-    public async Task<TaskForReviewDto> ConvertTo(TaskForReviewHistory item, CancellationToken token)
+    public static TaskForReviewDto ConvertTo(TaskForReviewHistory item, ReviewTeamMetrics stats)
     {
         ArgumentNullException.ThrowIfNull(item);
+        ArgumentNullException.ThrowIfNull(stats);
 
-        var stats = await _metricsFactory.Create(item, token);
+        var state = item.State.ToString();
+        var hasConcreteReviewer = item.Strategy == NextReviewerType.Target;
+        var hasReassign = item.OriginalReviewerId.HasValue && item.ReviewerId != item.OriginalReviewerId.Value;
         
         return new TaskForReviewDto(
             item.Id,
             item.Created,
-            item.State.ToString(),
+            state,
             item.Description,
             stats.FirstTouch,
             stats.Correction,
@@ -35,7 +30,7 @@ internal sealed class TaskForReviewHistoryConverter
             item.OwnerId,
             item.OwnerName,
             item.OwnerUserName,
-            HasConcreteReviewer: item.Strategy == NextReviewerType.Target,
-            item.IsOriginalReviewer);
+            hasConcreteReviewer,
+            hasReassign);
     }
 }

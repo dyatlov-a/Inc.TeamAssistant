@@ -214,7 +214,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId))
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName))
-                .Append(_messageBuilder.Build(task.GetReviewerMessageId(), ownerLanguageId)))
+                .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId)))
             .Add(sb => reviewer
                 .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, reviewerLanguageId, o))
                 .AppendLine())
@@ -344,7 +344,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, task.OwnerId, token);
         var notification = NotificationBuilder.Create()
             .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_ReviewDeclined, ownerLanguageId))
-                .Append(_messageBuilder.Build(task.GetReviewerMessageId(), ownerLanguageId))
+                .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
                 .Append($" {reviewer.DisplayName}")
                 .AppendLine()
                 .AppendLine()
@@ -387,7 +387,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notification = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(stateMessage, ownerLanguageId))
-                .Append(_messageBuilder.Build(task.GetReviewerMessageId(), ownerLanguageId))
+                .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
                 .Append($" {reviewer.DisplayName}")
                 .AppendLine()
                 .AppendLine()

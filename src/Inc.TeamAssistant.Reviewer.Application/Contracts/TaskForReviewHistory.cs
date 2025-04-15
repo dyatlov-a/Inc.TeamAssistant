@@ -16,5 +16,5 @@ public sealed record TaskForReviewHistory(
     long OwnerId,
     string OwnerName,
     string? OwnerUserName,
-    bool IsOriginalReviewer)
+    long? OriginalReviewerId)
     : ITaskForReviewStats;

@@ -193,7 +193,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -210,7 +210,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -227,7 +227,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -244,7 +244,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -261,7 +261,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -278,7 +278,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -295,7 +295,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -312,7 +312,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -329,7 +329,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false),
+                    HasReassign: false),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -346,7 +346,7 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    IsOriginalReviewer: false)
+                    HasReassign: false)
             },
             ["Retry"] = () => Task.CompletedTask
         };
