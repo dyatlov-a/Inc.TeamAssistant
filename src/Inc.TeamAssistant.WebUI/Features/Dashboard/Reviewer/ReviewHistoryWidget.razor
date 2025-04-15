@@ -131,8 +131,8 @@
             ? Localizer["BooleanTrueText"]
             : Localizer["BooleanFalseText"];
         var hasReassign = task.HasReassign
-            ? Localizer["BooleanFalseText"]
-            : Localizer["BooleanTrueText"];
+            ? Localizer["BooleanTrueText"]
+            : Localizer["BooleanFalseText"];
         var builder = new StringBuilder();
         
         builder.AppendLine($"{Localizer["HasConcreteReviewer"]} - {hasConcreteReviewer}");
