@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Npgsql;
 
 namespace Inc.TeamAssistant.Primitives.DataAccess.Internal;
@@ -11,5 +12,5 @@ internal sealed class ConnectionFactory : IConnectionFactory
         _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
     }
 
-    public NpgsqlConnection Create() => _dataSource.CreateConnection();
+    public DbConnection Create() => _dataSource.CreateConnection();
 }

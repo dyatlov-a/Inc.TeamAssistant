@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.CancelDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Services;
 using Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Services;
@@ -14,6 +14,7 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Handlers;
 using Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
 using Inc.TeamAssistant.Reviewer.Application.Services;
+using Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Reviewer.Application;
@@ -25,18 +26,18 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
+            .AddSingleton<INextReviewerStrategyFactory, NextReviewerStrategyFactory>()
             .AddSingleton<DraftTaskForReviewService>()
             .AddScoped<IReviewMessageBuilder, ReviewMessageBuilder>()
             .AddScoped<ReassignReviewService>()
-            .AddHostedService<PushService>()
+            .AddHostedService<PushBackgroundService>()
             
             .AddSingleton<ISettingSectionProvider, ReviewerSettingSectionProvider>()
             .AddSingleton<ReviewMetricsProvider>()
             .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<ReviewTeamMetricsFactory>()
-            .AddSingleton<TaskForReviewHistoryConverter>()
-            .AddHostedService<ReviewMetricsService>()
+            .AddHostedService<ReviewMetricsHostedService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToAcceptWithCommentsCommandCreator>()
@@ -50,6 +51,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, CancelDraftCommandCreator>()
             .AddSingleton<ICommandCreator, ChangeToRandomCommandCreator>()
             .AddSingleton<ICommandCreator, ChangeToRoundRobinCommandCreator>()
+            .AddSingleton<ICommandCreator, ChangeToRoundRobinForTeamCommandCreator>()
 
             .AddScoped<ILeaveTeamHandler, LeaveTeamHandler>()
             .AddScoped<IRemoveTeamHandler, RemoveTeamHandler>();

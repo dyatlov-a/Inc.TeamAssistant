@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Appraiser.Domain;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 

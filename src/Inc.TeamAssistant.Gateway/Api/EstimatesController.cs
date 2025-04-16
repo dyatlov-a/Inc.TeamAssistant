@@ -21,7 +21,7 @@ public sealed class EstimatesController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(startEstimate);
 
-        await _estimatesService.StartEstimate(startEstimate);
+        await _estimatesService.StartEstimate(startEstimate, CancellationToken.None);
         
         return Ok();
     }

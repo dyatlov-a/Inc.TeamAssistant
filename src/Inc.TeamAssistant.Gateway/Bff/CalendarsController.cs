@@ -24,10 +24,10 @@ public sealed class CalendarsController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody]UpdateCalendarCommand command, CancellationToken token)
+    public async Task<IActionResult> Update([FromBody]UpdateCalendarCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        return Ok(await _calendarService.Update(command, token));
+        return Ok(await _calendarService.Update(command, CancellationToken.None));
     }
 }

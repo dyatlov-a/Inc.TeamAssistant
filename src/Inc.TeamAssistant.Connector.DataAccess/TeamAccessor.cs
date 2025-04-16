@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -22,13 +23,13 @@ internal sealed class TeamAccessor : ITeamAccessor
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
     }
 
-    public async Task<(Guid BotId, string TeamName)> GetTeamContext(Guid teamId, CancellationToken token)
+    public async Task<CurrentTeamContext> GetTeamContext(Guid teamId, CancellationToken token)
     {
         var team = await _teamRepository.Find(teamId, token);
         if (team is null)
             throw new TeamAssistantException($"Team by id {teamId} was not found.");
 
-        return (team.BotId, team.Name);
+        return new(team.Id, team.Name, team.Properties, team.BotId);
     }
 
     public async Task<IReadOnlyCollection<Person>> GetTeammates(
@@ -44,7 +45,7 @@ internal sealed class TeamAccessor : ITeamAccessor
         return await _personRepository.Find(personId, token);
     }
 
-    public async Task<Person> GetPerson(long personId, CancellationToken token)
+    public async Task<Person> EnsurePerson(long personId, CancellationToken token)
     {
         var person = await _personRepository.Find(personId, token);
         if (person is null)
@@ -61,5 +62,11 @@ internal sealed class TeamAccessor : ITeamAccessor
     public async Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token)
     {
         return await _teamRepository.HasManagerAccess(teamId, personId, token);
+    }
+
+    public async Task EnsureManagerAccess(Guid teamId, long personId, CancellationToken token)
+    {
+        if (!await HasManagerAccess(teamId, personId, token))
+            throw new ApplicationException($"User {personId} has not rights to remove teammate from team {teamId}");
     }
 }

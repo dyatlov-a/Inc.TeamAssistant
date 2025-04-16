@@ -23,13 +23,20 @@ public sealed class CheckBotFormTracker : ComponentBase, IDisposable
 
         CascadedEditContext.OnFieldChanged += OnFieldChanged;
     }
-
-    private async void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
     {
         if (e.FieldIdentifier.FieldName != nameof(CheckBotFormModel.Token))
             return;
         
         var model = (CheckBotFormModel)e.FieldIdentifier.Model;
+        
+        Task.Run(() => CheckToken(model));
+    }
+
+    private async Task CheckToken(CheckBotFormModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
 
         if (string.IsNullOrWhiteSpace(model.Token))
             model.Clear();

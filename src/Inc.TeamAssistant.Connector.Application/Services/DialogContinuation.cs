@@ -24,9 +24,7 @@ internal sealed class DialogContinuation
     {
         ArgumentNullException.ThrowIfNull(targetChat);
         ArgumentNullException.ThrowIfNull(chatMessage);
-        
-        if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
+        ArgumentException.ThrowIfNullOrWhiteSpace(command);
 
         var key = (botId, targetChat);
         

@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 

@@ -24,23 +24,14 @@ internal sealed class EditDraftCommandHandler : IRequestHandler<EditDraftCommand
             command.MessageContext.ChatMessage.ChatId,
             command.MessageContext.ChatMessage.MessageId,
             token);
-
-        if (draft is not null)
-        {
-            draft.WithDescription(command.Description);
-
-            if (command.MessageContext.TargetPersonId.HasValue)
-                draft.WithTargetPerson(command.MessageContext.TargetPersonId.Value);
-            else
-                draft.WithoutTargetPerson();
+        if (draft is null)
+            return CommandResult.Empty;
             
-            var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
+        await _repository.Upsert(
+            draft.WithDescription(command.Description).SetTargetPerson(command.MessageContext.TargetPersonId),
+            token);
             
-            await _repository.Upsert(draft, token);
-            
-            return CommandResult.Build(notification);
-        }
-
-        return CommandResult.Empty;
+        var notification = await _reviewMessageBuilder.Build(draft, command.MessageContext.LanguageId, token);
+        return CommandResult.Build(notification);
     }
 }

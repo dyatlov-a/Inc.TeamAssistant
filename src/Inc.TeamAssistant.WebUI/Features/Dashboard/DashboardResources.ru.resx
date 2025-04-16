@@ -135,7 +135,7 @@
     <data name="HasConcreteReviewer" xml:space="preserve">
         <value>Назначена на конкретного ревьювера</value>
     </data>
-    <data name="IsOriginalReviewer" xml:space="preserve">
+    <data name="HasReassign" xml:space="preserve">
         <value>Была переназначена</value>
     </data>
     <data name="FirstTouch" xml:space="preserve">
@@ -227,5 +227,8 @@
     </data>
     <data name="TeamField" xml:space="preserve">
         <value>Команда</value>
+    </data>
+    <data name="ReviewStateAcceptWithComments" xml:space="preserve">
+        <value>Принята с коментариями</value>
     </data>
 </root>

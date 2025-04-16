@@ -44,7 +44,7 @@ internal sealed class LocationConverter
         ArgumentNullException.ThrowIfNull(personStatsLookup);
         ArgumentNullException.ThrowIfNull(maxStatsLookup);
         
-        const string unknown = "?";
+        const string unknown = "-";
         const string defaultTimeZone = "UTC";
 
         var stats = personStatsLookup.Keys
@@ -56,7 +56,7 @@ internal sealed class LocationConverter
         try
         {
             var country = _geoService.FindCountry(location.Latitude, location.Longitude);
-            var timeZone = _geoService.GetTimeZone(location.Latitude, location.Longitude);
+            var baseUtcOffset = _geoService.GetTimeZone(location.Latitude, location.Longitude).BaseUtcOffset;
             var workSchedule = calendar?.Schedule is null
                 ? defaultTimeZone 
                 : $"{ToLocalTime(calendar.Schedule.Start)}-{ToLocalTime(calendar.Schedule.End)}";
@@ -67,12 +67,13 @@ internal sealed class LocationConverter
                 $"/photos/{location.UserId}",
                 location.Longitude,
                 location.Latitude,
-                $"{(timeZone.BaseUtcOffset < TimeSpan.Zero ? "-" : "+")}{timeZone.BaseUtcOffset:hh\\:mm}",
+                AddTimeZone(),
                 country?.Name ?? unknown,
                 workSchedule,
                 stats);
 
-            string ToLocalTime(TimeOnly value) => value.Add(timeZone.BaseUtcOffset).ToString("HH:mm");
+            string ToLocalTime(TimeOnly value) => value.Add(baseUtcOffset).ToString("HH:mm");
+            string AddTimeZone() => $"{(baseUtcOffset < TimeSpan.Zero ? "-" : "+")}{baseUtcOffset:hh\\:mm}";
         }
         catch (Exception ex)
         {

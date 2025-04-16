@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Constructor.Application.Contracts;
 
 public interface IBotRepository
 {
-    Task<Bot?> FindById(Guid id, CancellationToken token);
+    Task<Bot?> Find(Guid id, CancellationToken token);
     
     Task Upsert(Bot bot, CancellationToken token);
 

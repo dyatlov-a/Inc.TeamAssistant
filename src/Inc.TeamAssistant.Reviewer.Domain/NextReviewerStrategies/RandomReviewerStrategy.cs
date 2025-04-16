@@ -1,32 +1,49 @@
 namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
-internal sealed class RandomReviewerStrategy : INextReviewerStrategy
+public sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
     private const int ReviewerWeight = 100;
 
     private readonly IReadOnlyCollection<long> _teammates;
     private readonly IReadOnlyDictionary<long, int> _history;
+    private readonly IReadOnlyCollection<long> _excludedPersonIds;
+    private readonly long? _lastReviewerId;
 
-    public RandomReviewerStrategy(IReadOnlyCollection<long> teammates, IReadOnlyDictionary<long, int> history)
+    public RandomReviewerStrategy(
+        IReadOnlyCollection<long> teammates,
+        IReadOnlyDictionary<long, int> history,
+        IReadOnlyCollection<long> excludedPersonIds,
+        long? lastReviewerId)
     {
         _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
         _history = history ?? throw new ArgumentNullException(nameof(history));
+        _excludedPersonIds = excludedPersonIds ?? throw new ArgumentNullException(nameof(excludedPersonIds));
+        _lastReviewerId = lastReviewerId;
     }
-    
-    public long Next(IReadOnlyCollection<long> excludedPersonIds, long? lastReviewerId)
+
+    public long GetReviewer()
     {
-        ArgumentNullException.ThrowIfNull(excludedPersonIds);
+        var targetPlayers = GetTargetPlayers();
+        return targetPlayers.Any()
+            ? FromTargetPlayers(targetPlayers)
+            : _teammates.First();
+    }
+
+    private IReadOnlyCollection<long> GetTargetPlayers()
+    {
+        var excludedTeammates = _lastReviewerId.HasValue
+            ? _excludedPersonIds.Append(_lastReviewerId.Value)
+            : _excludedPersonIds;
         
-        var excludedTeammates = lastReviewerId.HasValue
-            ? excludedPersonIds.Append(lastReviewerId.Value)
-            : excludedPersonIds;
-        var targetPlayers = _teammates
+        return _teammates
             .Where(t => !excludedTeammates.Contains(t))
             .OrderBy(t => t)
             .ToArray();
+    }
 
-        if (!targetPlayers.Any())
-            return _teammates.First();
+    private long FromTargetPlayers(IReadOnlyCollection<long> targetPlayers)
+    {
+        ArgumentNullException.ThrowIfNull(targetPlayers);
         
         var seeding = targetPlayers
             .Select(t => (PersonId: t, Count: 1d / _history.GetValueOrDefault(t, 1) * ReviewerWeight))

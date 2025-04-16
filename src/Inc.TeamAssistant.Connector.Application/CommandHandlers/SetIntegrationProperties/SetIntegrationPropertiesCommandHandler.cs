@@ -2,25 +2,24 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.SetIntegrationProperties;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using MediatR;
 
 namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.SetIntegrationProperties;
 
 internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<SetIntegrationPropertiesCommand>
 {
-    private readonly ITeamRepository _teamRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly ITeamRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
     private readonly ITeamAccessor _teamAccessor;
 
     public SetIntegrationPropertiesCommandHandler(
-        ITeamRepository teamRepository,
-        ICurrentPersonResolver currentPersonResolver,
+        ITeamRepository repository,
+        ICurrentPersonResolver personResolver,
         ITeamAccessor teamAccessor)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
-        _currentPersonResolver =
-            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
@@ -28,24 +27,20 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var team = await _teamRepository.Find(command.TeamId, token);
-        if (team is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
+        var team = await command.TeamId.Required(_repository.Find, token);
+        var currentPerson = _personResolver.GetCurrentPerson();
         
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
-        if (!await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token))
-            throw new ApplicationException(
-                $"User {currentPerson.DisplayName} has not rights to remove teammate from team {command.TeamId}");
+        await _teamAccessor.EnsureManagerAccess(command.TeamId, currentPerson.Id, token);
         
         var accessToken = team.Properties.GetPropertyValueOrDefault(
             ConnectorProperties.AccessToken,
-            Guid.NewGuid().ToString("N"));
+            Guid.NewGuid().ToLinkSegment());
         
         team
             .ChangeProperty(ConnectorProperties.AccessToken, accessToken)
             .ChangeProperty(ConnectorProperties.ProjectKey, command.ProjectKey)
             .ChangeProperty(ConnectorProperties.ScrumMaster, command.ScrumMasterId.ToString());
 
-        await _teamRepository.Upsert(team, token);
+        await _repository.Upsert(team, token);
     }
 }

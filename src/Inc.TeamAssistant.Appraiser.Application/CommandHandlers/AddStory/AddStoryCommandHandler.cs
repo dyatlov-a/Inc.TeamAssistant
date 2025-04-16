@@ -5,23 +5,22 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory;
 
 internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, CommandResult>
 {
-    private readonly IStoryRepository _storyRepository;
-    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+    private readonly IStoryRepository _repository;
+    private readonly SummaryByStoryBuilder _summaryBuilder;
     private readonly IMessagesSender _messagesSender;
 
     public AddStoryCommandHandler(
-        IStoryRepository storyRepository,
-        SummaryByStoryBuilder summaryByStoryBuilder,
+        IStoryRepository repository,
+        SummaryByStoryBuilder summaryBuilder,
         IMessagesSender messagesSender)
 	{
-        _storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
-        _summaryByStoryBuilder = summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
         _messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
     }
 
@@ -29,10 +28,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var targetTeam = command.MessageContext.FindTeam(command.TeamId);
-        if (targetTeam is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
-
+        var targetTeam = command.MessageContext.EnsureTeam(command.TeamId);
         var story = new Story(
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
@@ -53,10 +49,10 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
                 teammate.Id,
                 teammate.DisplayName));
 
-        await _storyRepository.Upsert(story, token);
+        await _repository.Upsert(story, token);
         
+        var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
         await _messagesSender.StoryChanged(story.TeamId);
-
-        return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+        return CommandResult.Build(notification);
     }
 }

@@ -9,11 +9,9 @@ internal static class Messages
     public static readonly MessageId Appraiser_MeanEstimate = new(nameof(Appraiser_MeanEstimate));
     public static readonly MessageId Appraiser_MedianEstimate = new(nameof(Appraiser_MedianEstimate));
     public static readonly MessageId Appraiser_AcceptedEstimate = new(nameof(Appraiser_AcceptedEstimate));
-    public static readonly MessageId Appraiser_StoryNotFound = new(nameof(Appraiser_StoryNotFound));
     public static readonly MessageId Appraiser_Accept = new(nameof(Appraiser_Accept));
     public static readonly MessageId Appraiser_Finish = new(nameof(Appraiser_Finish));
     public static readonly MessageId Appraiser_Revote = new(nameof(Appraiser_Revote));
-    public static readonly MessageId Connector_TeamNotFound = new(nameof(Connector_TeamNotFound));
     public static readonly MessageId Appraiser_MissingTaskForEvaluate = new(nameof(Appraiser_MissingTaskForEvaluate));
     public static readonly MessageId Appraiser_NumberOfRounds = new(nameof(Appraiser_NumberOfRounds));
     public static readonly MessageId Appraiser_MultipleLinkError = new(nameof(Appraiser_MultipleLinkError));

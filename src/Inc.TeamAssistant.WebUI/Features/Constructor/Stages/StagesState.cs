@@ -2,7 +2,8 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetCalendarByOwner;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
@@ -10,7 +11,7 @@ using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages;
 
-public sealed class StagesState
+public sealed class StagesState : IWithEmpty<StagesState>
 {
     public Guid? Id { get; private set; }
     public Guid? CalendarId { get; private set; }

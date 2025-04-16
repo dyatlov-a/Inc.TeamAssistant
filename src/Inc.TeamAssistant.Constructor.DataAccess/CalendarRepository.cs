@@ -34,7 +34,7 @@ internal sealed class CalendarRepository : ICalendarRepository
         return botIds.ToArray();
     }
 
-    public async Task<Calendar?> FindByOwner(long ownerId, CancellationToken token)
+    public async Task<Calendar?> Find(long ownerId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """

@@ -6,7 +6,7 @@
 
 <meta name="robots" content="@(_data.Indexed ? "index" : "noindex")" />
 
-<link rel="canonical" href="https://@(GlobalSettings.CanonicalName)" />
+<link rel="canonical" href="https://@(GlobalResources.Settings.CanonicalName)" />
 
 @code {
     [Parameter, EditorRequired]

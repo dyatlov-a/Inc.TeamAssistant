@@ -20,14 +20,13 @@ public sealed class Story
 	public int RoundsCount { get; private set; }
 	public string? Url { get; private set; }
 
-	private readonly List<StoryForEstimate> _storyForEstimates;
+	private readonly List<StoryForEstimate> _storyForEstimates = new();
     public IReadOnlyCollection<StoryForEstimate> StoryForEstimates => _storyForEstimates;
 
     private IEstimationStrategy EstimationStrategy => EstimationStrategyFactory.Create(StoryType);
 
     private Story()
     {
-	    _storyForEstimates = new();
     }
     
     public Story(
@@ -55,7 +54,12 @@ public sealed class Story
         RoundsCount = 1;
     }
 
-    public void SetExternalId(int storyExternalId) => ExternalId = storyExternalId;
+    public Story SetExternalId(int storyExternalId)
+    {
+	    ExternalId = storyExternalId;
+
+	    return this;
+    }
 
 	public bool? Estimate(long participantId, int value)
     {
@@ -81,44 +85,44 @@ public sealed class Story
 		Url = link;
 	}
 
-	public void Reset(long participantId, bool hasManagerAccess)
+	public Story Reset(long participantId, bool hasManagerAccess)
 	{
 		if (Accepted)
-			return;
-		
-		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
-	    
-        foreach (var storyForEstimate in _storyForEstimates)
-            storyForEstimate.Reset();
+			return this;
 
-        RoundsCount++;
+		var story = EnsureRights(participantId, hasManagerAccess);
+
+		foreach (var storyForEstimate in story.StoryForEstimates)
+			storyForEstimate.Reset();
+
+		story.RoundsCount++;
+
+		return story;
 	}
 
-	public void Finish(long participantId, bool hasManagerAccess)
+	public Story Finish(long participantId, bool hasManagerAccess)
 	{
 		if (Accepted)
-			return;
-		
-		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
-		
-		foreach (var storyForEstimate in _storyForEstimates)
+			return this;
+
+		var story = EnsureRights(participantId, hasManagerAccess);
+
+		foreach (var storyForEstimate in story.StoryForEstimates)
 			if (storyForEstimate.Value == Estimation.None.Value)
 				storyForEstimate.SetValue(Estimation.NoIdea);
+
+		return story;
 	}
-	
+
 	public IEnumerable<Estimation> GetAssessments() => EstimationStrategy.GetValues();
 	public Estimation ToEstimation(int value) => EstimationStrategy.GetValue(value);
 
 	public Estimation Accept(long participantId, bool hasManagerAccess, int value)
 	{
-		if (ModeratorId != participantId && !hasManagerAccess)
-			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
-
-		var totalEstimation = ToEstimation(value);
+		var story = EnsureRights(participantId, hasManagerAccess);
+		var totalEstimation = story.ToEstimation(value);
 		
-		TotalValue = totalEstimation.Value;
+		story.TotalValue = totalEstimation.Value;
 
 		return totalEstimation;
 	}
@@ -146,4 +150,12 @@ public sealed class Story
 	public Estimation CalculateMedian() => EstimationStrategy.CalculateMedian(this);
 
 	public int GetWeight() => EstimationStrategy.GetWeight(this);
+	
+	private Story EnsureRights(long participantId, bool hasManagerAccess)
+	{
+		if (ModeratorId != participantId && !hasManagerAccess)
+			throw new TeamAssistantUserException(Messages.Connector_HasNoRights, participantId);
+
+		return this;
+	}
 }

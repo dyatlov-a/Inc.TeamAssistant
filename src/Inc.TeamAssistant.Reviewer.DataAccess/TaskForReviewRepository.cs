@@ -9,21 +9,22 @@ namespace Inc.TeamAssistant.Reviewer.DataAccess;
 internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 {
     private readonly IConnectionFactory _connectionFactory;
-    
+
     public TaskForReviewRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<IReadOnlyCollection<TaskForReview>> Get(
+    public async Task<IReadOnlyCollection<TaskForReview>> GetAll(
         Guid teamId,
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(states);
-        
+
         var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
@@ -40,12 +41,12 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.accept_date AS acceptdate,
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
-                t.has_concrete_reviewer AS hasconcretereviewer,
                 t.original_reviewer_id AS originalreviewerid,
-                t.review_intervals AS reviewintervals,
-                t.accepted_with_comments AS acceptedwithcomments
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.state = ANY(@states);",
+            WHERE t.team_id = @team_id AND t.state = ANY(@states);
+            """,
             new
             {
                 team_id = teamId,
@@ -55,15 +56,16 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
+
         var results = await connection.QueryAsync<TaskForReview>(command);
 
         return results.ToArray();
     }
 
-    public async Task<TaskForReview> GetById(Guid taskForReviewId, CancellationToken token)
+    public async Task<TaskForReview?> Find(Guid taskForReviewId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
@@ -80,19 +82,19 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.accept_date AS acceptdate,
                 t.message_id AS messageid,
                 t.chat_id AS chatid,
-                t.has_concrete_reviewer AS hasconcretereviewer,
                 t.original_reviewer_id AS originalreviewerid,
-                t.review_intervals AS reviewintervals,
-                t.accepted_with_comments AS acceptedwithcomments
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
-            WHERE t.id = @id;",
+            WHERE t.id = @id;
+            """,
             new { id = taskForReviewId },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
-        return await connection.QuerySingleAsync<TaskForReview>(command);
+
+        return await connection.QuerySingleOrDefaultAsync<TaskForReview>(command);
     }
 
     public async Task Upsert(TaskForReview taskForReview, CancellationToken token)
@@ -101,7 +103,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
 
         var reviewIntervals = JsonSerializer.Serialize(taskForReview.ReviewIntervals);
 
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             INSERT INTO review.task_for_reviews (
                 id,
                 bot_id,
@@ -118,10 +121,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date,
                 message_id,
                 chat_id,
-                has_concrete_reviewer,
                 original_reviewer_id,
-                review_intervals,
-                accepted_with_comments)
+                original_reviewer_message_id,
+                review_intervals)
             VALUES (
                 @id,
                 @bot_id,
@@ -138,10 +140,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @accept_date,
                 @message_id,
                 @chat_id,
-                @has_concrete_reviewer,
                 @original_reviewer_id,
-                @review_intervals::jsonb,
-                @accepted_with_comments)
+                @original_reviewer_message_id,
+                @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
                 team_id = excluded.team_id,
@@ -157,10 +158,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 accept_date = excluded.accept_date,
                 message_id = excluded.message_id,
                 chat_id = excluded.chat_id,
-                has_concrete_reviewer = excluded.has_concrete_reviewer,
                 original_reviewer_id = excluded.original_reviewer_id,
-                review_intervals = excluded.review_intervals,
-                accepted_with_comments = excluded.accepted_with_comments;",
+                original_reviewer_message_id = excluded.original_reviewer_message_id,
+                review_intervals = excluded.review_intervals;
+            """,
             new
             {
                 id = taskForReview.Id,
@@ -178,10 +179,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 owner_message_id = taskForReview.OwnerMessageId,
                 reviewer_id = taskForReview.ReviewerId,
                 reviewer_message_id = taskForReview.ReviewerMessageId,
-                has_concrete_reviewer = taskForReview.HasConcreteReviewer,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
-                review_intervals = reviewIntervals,
-                accepted_with_comments = taskForReview.AcceptedWithComments
+                original_reviewer_message_id = taskForReview.OriginalReviewerMessageId,
+                review_intervals = reviewIntervals
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -191,26 +191,30 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task<long?> FindLastReviewer(Guid teamId, long ownerId, CancellationToken token)
+    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-            SELECT
-                t.reviewer_id AS reviewerid
+        var command = new CommandDefinition(
+            """
+            SELECT DISTINCT ON (t.owner_id)
+                t.reviewer_id AS reviewerid,
+            	t.owner_id AS ownerid,
+            	t.created AS created
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.owner_id = @owner_id AND NOT t.has_concrete_reviewer
-            ORDER BY t.created DESC
-            OFFSET 0
-            LIMIT 1;",
+            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
+            ORDER BY t.owner_id, t.created DESC;
+            """,
             new
             {
                 team_id = teamId,
-                owner_id = ownerId
+                nrt_target = (int)NextReviewerType.Target
             },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
-        return await connection.QuerySingleOrDefaultAsync<long?>(command);
+
+        var results = await connection.QueryAsync<ReviewTicket>(command);
+
+        return results.ToArray();
     }
 }

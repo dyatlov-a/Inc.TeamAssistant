@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Validators;
@@ -7,6 +8,7 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Valid
 internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryCommand>
 {
     private readonly IMessageBuilder _messageBuilder;
+    
     public AddStoryCommandValidator(IMessageBuilder messageBuilder)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
@@ -19,39 +21,42 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
         
         RuleFor(e => e.Title)
             .NotEmpty()
-            .Must(e => !e.StartsWith("/"))
+            .Must(e => !e.HasCommand())
             .WithMessage("'{PropertyName}' please enter text value.");
         
         RuleFor(e => e.Links)
-            .CustomAsync(CheckLinks);
+            .Custom(CheckLinks);
         
         RuleFor(e => e.Teammates)
             .NotEmpty();
     }
 
-    private async Task CheckLinks(
-        IReadOnlyCollection<string> links,
-        ValidationContext<AddStoryCommand> context,
-        CancellationToken token)
+    private void CheckLinks(IReadOnlyCollection<string> links, ValidationContext<AddStoryCommand> context)
     {
         ArgumentNullException.ThrowIfNull(links);
         ArgumentNullException.ThrowIfNull(context);
+        
+        const int maxLinksLength = 2000;
+        const int maxLinksCount = 1;
+        const string propertyName = nameof(AddStoryCommand.Links);
+        
+        var languageId = context.InstanceToValidate.MessageContext.LanguageId;
 
-        if (links.Count > 1)
+        if (links.Count > maxLinksCount)
         {
-            var errorMessage = await _messageBuilder.Build(Messages.Appraiser_MultipleLinkError,
-                context.InstanceToValidate.MessageContext.LanguageId);
-            context.AddFailure(nameof(AddStoryCommand.Links), errorMessage);
+            var errorMessage = _messageBuilder.Build(Messages.Appraiser_MultipleLinkError, languageId);
+            
+            context.AddFailure(propertyName, errorMessage);
         }
         else
         {
-            var link = links.FirstOrDefault();
+            var link = links.SingleOrDefault();
             
-            if (!string.IsNullOrWhiteSpace(link) && link.Length > 2000)
+            if (!string.IsNullOrWhiteSpace(link) && link.Length > maxLinksLength)
             { 
-                var errorMessage = await _messageBuilder.Build(Messages.Appraiser_LinkLengthError,
-                    context.InstanceToValidate.MessageContext.LanguageId);
-                context.AddFailure(nameof(AddStoryCommand.Links), errorMessage);
+                var errorMessage = _messageBuilder.Build(Messages.Appraiser_LinkLengthError, languageId);
+                
+                context.AddFailure(propertyName, errorMessage);
             }
         }
     }

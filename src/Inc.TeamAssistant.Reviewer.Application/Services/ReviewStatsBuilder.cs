@@ -1,5 +1,6 @@
 using System.Text;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -41,7 +42,7 @@ internal sealed class ReviewStatsBuilder
         return this;
     }
 
-    public async Task<string> Build(
+    public string Build(
         TaskForReview task,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
@@ -55,44 +56,41 @@ internal sealed class ReviewStatsBuilder
         _builder.AppendLine();
         var attempts = task.GetAttempts();
         if (attempts.HasValue)
-            _builder.AppendLine(await _messageBuilder.Build(
-                Messages.Reviewer_StatsAttempts,
-                languageId,
-                attempts.Value));
+            _builder.AppendLine(_messageBuilder.Build(Messages.Reviewer_StatsAttempts, languageId, attempts.Value));
         
         if (task.State == TaskForReviewState.Accept)
-            await ByAccept(metricsByTeam, metricsByTask, languageId, attempts);
+            ByAccept(metricsByTeam, metricsByTask, languageId, attempts);
         else
-            await ByInProgress(metricsByTeam, languageId, attempts);
+            ByInProgress(metricsByTeam, languageId, attempts);
 
         return _builder.ToString();
     }
 
-    private async Task ByInProgress(ReviewTeamMetrics metricsByTeam, LanguageId languageId, int? attempts)
+    private void ByInProgress(ReviewTeamMetrics metricsByTeam, LanguageId languageId, int? attempts)
     {
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(languageId);
         
         if (_hasReviewMetrics)
         {
-            _builder.AppendLine(await _messageBuilder.Build(
+            _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouchAverage,
                 languageId,
-                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat)));
-            _builder.AppendLine(await _messageBuilder.Build(
+                metricsByTeam.FirstTouch.ToTime()));
+            _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsReviewAverage,
                 languageId,
-                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat)));
+                metricsByTeam.Review.ToTime()));
         }
 
         if (_hasCorrectionMetrics && attempts.HasValue)
-            _builder.AppendLine(await _messageBuilder.Build(
+            _builder.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_StatsCorrectionAverage,
                 languageId,
-                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat)));
+                metricsByTeam.Correction.ToTime()));
     }
 
-    private async Task ByAccept(
+    private void ByAccept(
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
         LanguageId languageId,
@@ -105,36 +103,36 @@ internal sealed class ReviewStatsBuilder
         if (_hasReviewMetrics)
         {
             var firstTouchTrend = metricsByTask.FirstTouch <= metricsByTeam.FirstTouch
-                ? Icons.TrendUp
-                : Icons.TrendDown;
-            var firstTouchMessage = await _messageBuilder.Build(
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
+            var firstTouchMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsFirstTouch,
                 languageId,
-                metricsByTask.FirstTouch.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.FirstTouch.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.FirstTouch.ToTime(),
+                metricsByTeam.FirstTouch.ToTime());
             _builder.AppendLine($"{firstTouchMessage} {firstTouchTrend}");
                 
             var reviewTrend = metricsByTask.Review <= metricsByTeam.Review
-                ? Icons.TrendUp
-                : Icons.TrendDown;
-            var reviewMessage = await _messageBuilder.Build(
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
+            var reviewMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsReview,
                 languageId,
-                metricsByTask.Review.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.Review.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.Review.ToTime(),
+                metricsByTeam.Review.ToTime());
             _builder.AppendLine($"{reviewMessage} {reviewTrend}");
         }
 
         if (_hasCorrectionMetrics && attempts.HasValue)
         {
             var correctionTrend = metricsByTask.Correction <= metricsByTeam.Correction
-                ? Icons.TrendUp
-                : Icons.TrendDown;
-            var correctionMessage = await _messageBuilder.Build(
+                ? GlobalResources.Icons.TrendUp
+                : GlobalResources.Icons.TrendDown;
+            var correctionMessage = _messageBuilder.Build(
                 Messages.Reviewer_StatsCorrection,
                 languageId,
-                metricsByTask.Correction.ToString(GlobalSettings.TimeFormat),
-                metricsByTeam.Correction.ToString(GlobalSettings.TimeFormat));
+                metricsByTask.Correction.ToTime(),
+                metricsByTeam.Correction.ToTime());
             _builder.AppendLine($"{correctionMessage} {correctionTrend}");
         }
     }

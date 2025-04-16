@@ -7,7 +7,6 @@
   "Appraiser_MeanEstimate": "Mean",
   "Appraiser_MedianEstimate": "Median",
   "Appraiser_AcceptedEstimate": "Accepted",
-  "Appraiser_StoryNotFound": "Story {0} was not found",
   "Appraiser_MoveToFibonacciHelp": "Move to Fibonacci numbers",
   "Appraiser_MoveToTShirtsHelp": "Move to t-shirts",
   "Appraiser_MoveToPowerOfTwoHelp": "Move to power of two",
@@ -40,7 +39,7 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
-  "Appraiser_NumberOfRounds": "Number of evaluation rounds",
+  "Appraiser_NumberOfRounds": "Round",
   "Appraiser_MultipleLinkError": "Description must contain one link",
   "Appraiser_LinkLengthError": "Link length must be less than 2000 symbols",
 
@@ -56,6 +55,7 @@
   "Reviewer_Owner": "Author {0}",
   "Reviewer_TargetAutomatically": "Automatically assigned to ",
   "Reviewer_TargetManually": "Manually assigned to ",
+  "Reviewer_TargetReassigned": "Reassigned to ",
   "Reviewer_ReviewDeclined": "The task has been declined.",
   "Reviewer_Accepted": "Task review has been completed.",
   "Reviewer_TotalTime": "Total review time {0}",
@@ -65,6 +65,7 @@
   "Reviewer_MoveToNextRound": "Try again",
   "Reviewer_TeamWithoutUsers": "Team has no members",
   "Reviewer_ChangeToRoundRobinHelp": "Change to round robin",
+  "Reviewer_ChangeToRoundRobinForTeamHelp": "Change to round robin by team",
   "Reviewer_ChangeToRandomHelp": "Change to random",
   "Reviewer_Reassign": "Reassign",
   "Reviewer_NeedEndReview": "There is a review that needs to be done.",
@@ -104,11 +105,10 @@
   "Connector_NewTeamHelp": "Create a new team",
   "Connector_LeaveFromTeamHelp": "Leave from the team",
   "Connector_LeaveTeamSuccess": "{0} left the team \"{1}\"",
-  "Connector_CancelHelp": "Cancel current operation",
   "Connector_Cancel": "Cancel",
   "Connector_BotNotFound": "Bot {0} was not found",
   "Connector_TeamNotFound": "Team {0} was not found",
-  "Connector_TeamForUserNotFound": "Team for user {0} was not found",
+  "Connector_TeamForUserNotFound": "The command for user {0} was not found, or the user is on vacation. The operation cannot be performed.",
   "Connector_PersonNotFound": "Person {0} was not found",
   "Connector_ChangedPropertySuccess": "Changed property for team \"{0}\"",
   "Connector_HelpText": "Choose the option. If something goes wrong, run the command {0} and try again",
@@ -118,5 +118,6 @@
   "Connector_HasNotRightsForRemoveTeam": "You do not have permission to remove the command \"{0}\"",
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
-  "Connector_HasNoRights": "User has no rights to perform this action"
+  "Connector_HasNoRights": "User has no rights to perform this action",
+  "Connector_ObjectNotFound": "{0} by id {1} was not found"
 }

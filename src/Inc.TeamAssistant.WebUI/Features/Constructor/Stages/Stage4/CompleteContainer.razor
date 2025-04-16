@@ -27,7 +27,7 @@
     public Action EmitStateChanged { get; set; } = default!;
     
     private readonly CompleteFormModel _formModel = new();
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
     
     protected override void OnParametersSet()
     {
@@ -45,10 +45,11 @@
                     await BotService.Update(_formModel.ToUpdateBotCommand(StagesState.Id.Value));
                 else
                     await BotService.Create(_formModel.ToCreateBotCommand());
-
-                await appLocalStorage.Detach<StagesState>(BotStorageKey);
             },
-            () => MoveToNext(null),
-            s => _state = s);
+            _state);
+        
+        await appLocalStorage.Detach<StagesState>(BotStorageKey);
+
+        await MoveToNext(null);
     }
 }

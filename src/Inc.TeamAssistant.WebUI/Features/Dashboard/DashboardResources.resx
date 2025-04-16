@@ -135,7 +135,7 @@
     <data name="HasConcreteReviewer" xml:space="preserve">
         <value>Assigned to a concrete reviewer</value>
     </data>
-    <data name="IsOriginalReviewer" xml:space="preserve">
+    <data name="HasReassign" xml:space="preserve">
         <value>Has been reassigned</value>
     </data>
     <data name="FirstTouch" xml:space="preserve">
@@ -227,5 +227,8 @@
     </data>
     <data name="TeamField" xml:space="preserve">
         <value>Team</value>
+    </data>
+    <data name="ReviewStateAcceptWithComments" xml:space="preserve">
+        <value>Accept with comments</value>
     </data>
 </root>

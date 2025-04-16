@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 
 namespace Inc.TeamAssistant.Appraiser.Application.Services;
 

@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -11,8 +10,6 @@ public interface IReviewMessageBuilder
     Task<IReadOnlyCollection<NotificationMessage>> Build(
         int messageId,
         TaskForReview task,
-        Person reviewer,
-        Person owner,
         BotContext botContext,
         CancellationToken token);
 

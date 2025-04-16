@@ -40,7 +40,7 @@
     [Parameter]
     public string SelectedStage { get; set; } = default!;
     
-    private LoadingState _state = LoadingState.Loading();
+    private readonly LoadingState _state = LoadingState.Loading();
     private StagesState _stagesState = StagesState.Empty;
 
     private string BotStorageKey => BotId.HasValue ? $"bot_{BotId.Value:N}" : "bot_new";
@@ -83,29 +83,22 @@
     private async Task Load()
     {
         var appLocalStorage = ServiceProvider.GetRequiredService<AppLocalStorage>();
-        
-        await RequestProcessor.Process(
-            () =>
-            {
-                return appLocalStorage.GetValueOrDefault(BotStorageKey, async t =>
-                {
-                    var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
-                    var getFeaturesResult = await BotService.GetFeatures(t);
-                    var getPropertiesResult = await BotService.GetProperties(t);
-                    var getCalendarResult = await CalendarService.GetCalendarByOwner(t);
 
-                    return getBotResult is null
-                        ? StagesState.Create(getFeaturesResult, getPropertiesResult, getCalendarResult)
-                        : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
-                });
-            },
-            nameof(StagesContainer),
-            r => _stagesState = r,
-            s =>
+        _stagesState = await RequestProcessor.Process(() => appLocalStorage.GetValueOrDefault(BotStorageKey, async t =>
             {
-                _state = s;
-                StateHasChanged();
-            });
+                var getBotResult = BotId.HasValue ? await BotService.GetBotById(BotId.Value, t) : null;
+                var getFeaturesResult = await BotService.GetFeatures(t);
+                var getPropertiesResult = await BotService.GetProperties(t);
+                var getCalendarResult = await CalendarService.GetCalendarByOwner(t);
+
+                return getBotResult is null
+                    ? StagesState.Create(getFeaturesResult, getPropertiesResult, getCalendarResult)
+                    : StagesState.Create(getBotResult, getFeaturesResult, getPropertiesResult);
+            }),
+            nameof(StagesContainer),
+            _state);
+        
+        StateHasChanged();
     }
 
     private async Task MoveToNext(Stage? stage)
@@ -122,10 +115,9 @@
         }
         
         var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        var message = _stagesState.Id.HasValue ? Localizer["DataRefreshed"] : Localizer["DataCreated"];
         
-        notificationsService.Publish(Notification.Info(
-            _stagesState.Id.HasValue ? 
-                Localizer["DataRefreshed"] : Localizer["DataCreated"]));
+        notificationsService.Publish(Notification.Info(message));
         
         await NavRouter.MoveToRoute("constructor");
     }

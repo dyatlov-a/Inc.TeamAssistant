@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Appraiser.DataAccess.Internal;
 using Inc.TeamAssistant.Appraiser.Domain;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
@@ -20,7 +18,7 @@ internal sealed class StoryRepository : IStoryRepository
     {
         await using var connection = _connectionFactory.Create();
         
-        var stories = await GetStoryQuery.Get(connection, new[] { storyId }, token);
+        var stories = await StoryProvider.Get(connection, new[] { storyId }, token);
 
         return stories.SingleOrDefault();
     }

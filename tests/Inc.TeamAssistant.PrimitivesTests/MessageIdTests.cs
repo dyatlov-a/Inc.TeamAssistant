@@ -1,5 +1,4 @@
 using AutoFixture;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Xunit;
 
@@ -18,7 +17,6 @@ public sealed class MessageIdTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
     public void Constructor_NotValidValue_ThrowsException(string? value)
@@ -26,5 +24,13 @@ public sealed class MessageIdTests
         MessageId Actual() => new(value!);
 
         Assert.Throws<ArgumentException>(Actual);
+    }
+    
+    [Fact]
+    public void Constructor_NullValue_ThrowsException()
+    {
+        MessageId Actual() => new(null!);
+
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 }

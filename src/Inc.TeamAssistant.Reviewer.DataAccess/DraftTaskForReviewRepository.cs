@@ -43,7 +43,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
         return await connection.QuerySingleOrDefaultAsync<DraftTaskForReview>(command);
     }
 
-    public async Task<DraftTaskForReview> GetById(Guid id, CancellationToken token)
+    public async Task<DraftTaskForReview?> Find(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(@"
             SELECT 
@@ -65,7 +65,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
         
         await using var connection = _connectionFactory.Create();
 
-        return await connection.QuerySingleAsync<DraftTaskForReview>(command);
+        return await connection.QuerySingleOrDefaultAsync<DraftTaskForReview>(command);
     }
 
     public async Task Upsert(DraftTaskForReview draft, CancellationToken token)

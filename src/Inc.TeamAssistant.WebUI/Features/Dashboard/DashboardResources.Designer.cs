@@ -279,9 +279,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
             }
         }
         
-        internal static string IsOriginalReviewer {
+        internal static string HasReassign {
             get {
-                return ResourceManager.GetString("IsOriginalReviewer", resourceCulture);
+                return ResourceManager.GetString("HasReassign", resourceCulture);
             }
         }
         
@@ -462,6 +462,12 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
         internal static string TeamField {
             get {
                 return ResourceManager.GetString("TeamField", resourceCulture);
+            }
+        }
+        
+        internal static string ReviewStateAcceptWithComments {
+            get {
+                return ResourceManager.GetString("ReviewStateAcceptWithComments", resourceCulture);
             }
         }
     }

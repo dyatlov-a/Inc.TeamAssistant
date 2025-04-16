@@ -120,7 +120,8 @@
         ["New"] = Localizer["ReviewStateNew"],
         ["InProgress"] = Localizer["ReviewStateInProgress"],
         ["OnCorrection"] = Localizer["ReviewStateOnCorrection"],
-        ["Accept"] = Localizer["ReviewStateAccept"]
+        ["Accept"] = Localizer["ReviewStateAccept"],
+        ["AcceptWithComments"] = Localizer["ReviewStateAcceptWithComments"]
     };
     private IQueryable<TaskForReviewDto> Tasks => Items.AsQueryable();
 
@@ -129,18 +130,18 @@
         var hasConcreteReviewer = task.HasConcreteReviewer
             ? Localizer["BooleanTrueText"]
             : Localizer["BooleanFalseText"];
-        var isOriginalReviewer = task.IsOriginalReviewer
-            ? Localizer["BooleanFalseText"]
-            : Localizer["BooleanTrueText"];
+        var hasReassign = task.HasReassign
+            ? Localizer["BooleanTrueText"]
+            : Localizer["BooleanFalseText"];
         var builder = new StringBuilder();
         
         builder.AppendLine($"{Localizer["HasConcreteReviewer"]} - {hasConcreteReviewer}");
-        builder.Append($"{Localizer["IsOriginalReviewer"]} - {isOriginalReviewer}");
+        builder.Append($"{Localizer["HasReassign"]} - {hasReassign}");
         
         return builder.ToString();
     }
 
-    private string ConvertToString(TimeSpan value) => value.ToString(GlobalSettings.TimeFormat);
+    private string ConvertToString(TimeSpan value) => value.ToTime();
     
     private string FirstTouchTitle()
     {

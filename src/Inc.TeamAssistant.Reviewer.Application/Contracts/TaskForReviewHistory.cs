@@ -6,6 +6,7 @@ public sealed record TaskForReviewHistory(
     Guid Id,
     DateTimeOffset Created,
     TaskForReviewState State,
+    NextReviewerType Strategy,
     Guid BotId,
     string Description,
     IReadOnlyCollection<ReviewInterval> ReviewIntervals,
@@ -15,6 +16,5 @@ public sealed record TaskForReviewHistory(
     long OwnerId,
     string OwnerName,
     string? OwnerUserName,
-    bool HasConcreteReviewer,
-    bool IsOriginalReviewer)
+    long? OriginalReviewerId)
     : ITaskForReviewStats;

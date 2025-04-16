@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
+
 namespace Inc.TeamAssistant.RandomCoffee.Domain;
 
 public sealed class RandomCoffeeEntry
@@ -15,8 +17,6 @@ public sealed class RandomCoffeeEntry
 
     private readonly List<RandomCoffeeHistory> _history = new();
     public IReadOnlyCollection<RandomCoffeeHistory> History => _history;
-    
-    public bool Refused { get; private set; }
 
     private RandomCoffeeEntry()
     {
@@ -45,17 +45,16 @@ public sealed class RandomCoffeeEntry
         return this;
     }
 
-    public RandomCoffeeEntry MoveToWaiting(DateTimeOffset now, TimeSpan waitingInterval)
+    public RandomCoffeeEntry MoveToWaiting(DateTimeOffset now, TimeSpan waitingInterval, long? personId)
     {
-        NextRound = now.Add(waitingInterval);
-        State = RandomCoffeeState.Waiting;
+        var entry = personId.HasValue ? EnsureRights(personId.Value) : this;
         
-        ParticipantIds.Clear();
-        PollId = null;
+        entry.NextRound = now.Add(waitingInterval);
+        entry.State = RandomCoffeeState.Waiting;
+        entry.ParticipantIds.Clear();
+        entry.PollId = null;
         
-        Refused = false;
-        
-        return this;
+        return entry;
     }
 
     public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval, TimeSpan votingInterval)
@@ -68,24 +67,21 @@ public sealed class RandomCoffeeEntry
         return this;
     }
     
-    public RandomCoffeeEntry AddPerson(long participantId)
+    public RandomCoffeeEntry SetAnswer(bool isAttend, long participantId)
     {
-        if (State == RandomCoffeeState.Waiting && !ParticipantIds.Contains(participantId))
-            ParticipantIds.Add(participantId);
+        var entry = State == RandomCoffeeState.Waiting
+            ? isAttend
+                ? AddPerson(participantId)
+                : RemovePerson(participantId)
+            : this;
 
-        return this;
-    }
-
-    public RandomCoffeeEntry RemovePerson(long participantId)
-    {
-        if (State == RandomCoffeeState.Waiting && ParticipantIds.Contains(participantId))
-            ParticipantIds.Remove(participantId);
-
-        return this;
+        return entry;
     }
 
     public RandomCoffeeEntry AttachPoll(string pollId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
+        
         PollId = pollId;
         
         return this;
@@ -109,10 +105,46 @@ public sealed class RandomCoffeeEntry
         return randomCoffeeHistory;
     }
 
-    public RandomCoffeeEntry MoveToRefused()
+    public RandomCoffeeEntry MoveToRefused(long personId)
     {
-        Refused = true;
+        var entry = EnsureRights(personId);
         
+        entry.State = RandomCoffeeState.Refused;
+        
+        return entry;
+    }
+
+    public bool AlreadyStarted(bool onDemand)
+    {
+        const int hasOnlyOneCondition = 1;
+        
+        var isRefused = State == RandomCoffeeState.Refused;
+        var startConditions = new[] { isRefused, onDemand };
+        
+        return startConditions.Count(i => i) == hasOnlyOneCondition;
+    }
+    
+    private RandomCoffeeEntry AddPerson(long participantId)
+    {
+        if (!ParticipantIds.Contains(participantId))
+            ParticipantIds.Add(participantId);
+
+        return this;
+    }
+
+    private RandomCoffeeEntry RemovePerson(long participantId)
+    {
+        if (ParticipantIds.Contains(participantId))
+            ParticipantIds.Remove(participantId);
+
+        return this;
+    }
+    
+    private RandomCoffeeEntry EnsureRights(long personId)
+    {
+        if (OwnerId != personId)
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
+
         return this;
     }
 }

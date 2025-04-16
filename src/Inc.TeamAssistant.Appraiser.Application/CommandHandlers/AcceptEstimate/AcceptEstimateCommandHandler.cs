@@ -5,26 +5,25 @@ using MediatR;
 using Inc.TeamAssistant.Appraiser.Application.Services;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 
 namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate;
 
 internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstimateCommand, CommandResult>
 {
-	private readonly IStoryRepository _storyRepository;
-    private readonly SummaryByStoryBuilder _summaryByStoryBuilder;
+	private readonly IStoryRepository _repository;
+    private readonly SummaryByStoryBuilder _summaryBuilder;
     private readonly IMessagesSender _messagesSender;
     private readonly ITeamAccessor _teamAccessor;
 
 	public AcceptEstimateCommandHandler(
-		IStoryRepository storyRepository,
-		SummaryByStoryBuilder summaryByStoryBuilder,
+		IStoryRepository repository,
+		SummaryByStoryBuilder summaryBuilder,
 		IMessagesSender messagesSender,
 		ITeamAccessor teamAccessor)
 	{
-		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
-		_summaryByStoryBuilder =
-			summaryByStoryBuilder ?? throw new ArgumentNullException(nameof(summaryByStoryBuilder));
+		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+		_summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
 		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
 		_teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
 	}
@@ -33,18 +32,16 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 	{
         ArgumentNullException.ThrowIfNull(command);
 
-        var story = await _storyRepository.Find(command.StoryId, token);
-		if (story is null)
-			throw new TeamAssistantUserException(Messages.Appraiser_StoryNotFound, command.StoryId);
-		
-		var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, command.MessageContext.Person.Id, token);
+        var personId = command.MessageContext.Person.Id;
+        
+        var story = await command.StoryId.Required(_repository.Find, token);
+		var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, personId, token);
+		var estimation = story.Accept(personId, hasManagerAccess, command.Value);
 
-		var totalEstimation = story.Accept(command.MessageContext.Person.Id, hasManagerAccess, command.Value);
+		await _repository.Upsert(story, token);
 
-		await _storyRepository.Upsert(story, token);
-
-		await _messagesSender.StoryAccepted(story.TeamId, totalEstimation.DisplayValue);
-
-		return CommandResult.Build(await _summaryByStoryBuilder.Build(SummaryByStoryConverter.ConvertTo(story)));
+		var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
+		await _messagesSender.StoryAccepted(story.TeamId, estimation.DisplayValue);
+		return CommandResult.Build(notification);
     }
 }

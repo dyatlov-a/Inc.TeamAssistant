@@ -7,24 +7,22 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview;
 
 internal sealed class ReassignReviewCommandHandler : IRequestHandler<ReassignReviewCommand, CommandResult>
 {
-    private readonly ReassignReviewService _reassignReviewService;
+    private readonly ReassignReviewService _service;
     
-    public ReassignReviewCommandHandler(ReassignReviewService reassignReviewService)
+    public ReassignReviewCommandHandler(ReassignReviewService service)
     {
-        _reassignReviewService =
-            reassignReviewService ?? throw new ArgumentNullException(nameof(reassignReviewService));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
     
     public async Task<CommandResult> Handle(ReassignReviewCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var notifications = await _reassignReviewService.ReassignReview(
+        var notifications = await _service.ReassignReview(
             command.MessageContext.ChatMessage.MessageId,
             command.TaskId,
             command.MessageContext.Bot,
             token);
-        
         return CommandResult.Build(notifications.ToArray());
     }
 }

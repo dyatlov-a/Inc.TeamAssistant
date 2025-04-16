@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
@@ -7,14 +8,12 @@ namespace Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetAverageByTeam;
 
 internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageByTeamQuery, GetAverageByTeamResult>
 {
-    private readonly ITaskForReviewReader _taskForReviewReader;
+    private readonly ITaskForReviewReader _reader;
     private readonly ReviewTeamMetricsFactory _metricsFactory;
 
-    public GetAverageByTeamQueryHandler(
-        ITaskForReviewReader taskForReviewReader,
-        ReviewTeamMetricsFactory metricsFactory)
+    public GetAverageByTeamQueryHandler(ITaskForReviewReader reader, ReviewTeamMetricsFactory metricsFactory)
     {
-        _taskForReviewReader = taskForReviewReader ?? throw new ArgumentNullException(nameof(taskForReviewReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
     }
 
@@ -22,9 +21,8 @@ internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageB
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var from = new DateTimeOffset(query.From, TimeOnly.MinValue, TimeSpan.Zero);
-        var tasks = await _taskForReviewReader.GetTasksFrom(query.TeamId, from, token);
-        var tasksByDays = tasks.ToLookup(t => new DateOnly(t.Created.Year, t.Created.Month, t.Created.Day));
+        var tasks = await _reader.GetTasksFrom(query.TeamId, query.From.ToDateTimeOffset(), token);
+        var tasksByDays = tasks.ToLookup(t => t.Created.ToDateOnly());
         ReviewAverageStatsDto? previous = null;
         var items = new List<ReviewAverageStatsDto>();
 

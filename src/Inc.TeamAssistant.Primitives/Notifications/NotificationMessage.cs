@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Primitives.Notifications;
 
@@ -6,7 +7,7 @@ public sealed class NotificationMessage
 {
     private readonly List<Button> _buttons = new();
     private readonly List<string> _options = new();
-    private readonly List<(Person Person, int Offset)> _targetPersons = new();
+    private readonly List<(Person Person, LanguageId LanguageId, int Offset)> _targetPersons = new();
     
 	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, string parameter);
     
@@ -19,7 +20,7 @@ public sealed class NotificationMessage
     public IReadOnlyCollection<string> Options => _options;
     public int ButtonsInRow { get; private set; }
     public ResponseHandler? Handler { get; private set; }
-    public IReadOnlyCollection<(Person Person, int Offset)> TargetPersons => _targetPersons;
+    public IReadOnlyCollection<(Person Person, LanguageId LanguageId, int Offset)> TargetPersons => _targetPersons;
     public int? ReplyToMessageId { get; private set; }
 
     private NotificationMessage(
@@ -39,7 +40,7 @@ public sealed class NotificationMessage
         ButtonsInRow = defaultButtonsInRow;
     }
 
-    public NotificationMessage AddHandler(ResponseHandler handler)
+    public NotificationMessage WithHandler(ResponseHandler handler)
     {
         Handler = handler ?? throw new ArgumentNullException(nameof(handler));
 
@@ -64,19 +65,19 @@ public sealed class NotificationMessage
     
     public NotificationMessage WithOption(string option)
     {
-        if (string.IsNullOrWhiteSpace(option))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(option));
+        ArgumentException.ThrowIfNullOrWhiteSpace(option);
         
         _options.Add(option);
 
         return this;
     }
 
-    public NotificationMessage AttachPerson(Person person, int offset)
+    public NotificationMessage AttachPerson(Person person, LanguageId languageId, int offset)
     {
         ArgumentNullException.ThrowIfNull(person);
+        ArgumentNullException.ThrowIfNull(languageId);
 
-        _targetPersons.Add((person, offset));
+        _targetPersons.Add((person, languageId, offset));
 
         return this;
     }
@@ -90,8 +91,7 @@ public sealed class NotificationMessage
 
     public static NotificationMessage Create(long targetChatId, string text, bool pinned = false)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
         return new(targetChatId, targetMessage: null, deleteMessage: null, text, pinned);
     }
@@ -99,9 +99,7 @@ public sealed class NotificationMessage
     public static NotificationMessage Edit(ChatMessage targetMessage, string text)
     {
         ArgumentNullException.ThrowIfNull(targetMessage);
-        
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(text));
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
         return new(targetChatId: null, targetMessage, deleteMessage: null, text);
     }
@@ -111,5 +109,28 @@ public sealed class NotificationMessage
         ArgumentNullException.ThrowIfNull(deleteMessage);
 
         return new(targetChatId: null, targetMessage: null, deleteMessage, string.Empty);
+    }
+    
+    public NotificationMessage AddIf(bool condition, Action<NotificationMessage> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return AddIfElse(condition, action, _ => {});
+    }
+    
+    public NotificationMessage AddIfElse(
+        bool condition,
+        Action<NotificationMessage> firstAction,
+        Action<NotificationMessage> secondAction)
+    {
+        ArgumentNullException.ThrowIfNull(firstAction);
+        ArgumentNullException.ThrowIfNull(secondAction);
+
+        if (condition)
+            firstAction(this);
+        else
+            secondAction(this);
+
+        return this;
     }
 }

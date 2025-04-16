@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Handlers;
+using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 
@@ -7,25 +7,20 @@ namespace Inc.TeamAssistant.Reviewer.Application.Handlers;
 
 internal sealed class RemoveTeamHandler : IRemoveTeamHandler
 {
-    private readonly ITaskForReviewRepository _taskForReviewRepository;
+    private readonly ITaskForReviewRepository _repository;
 
-    public RemoveTeamHandler(ITaskForReviewRepository taskForReviewRepository)
+    public RemoveTeamHandler(ITaskForReviewRepository repository)
     {
-        _taskForReviewRepository =
-            taskForReviewRepository ?? throw new ArgumentNullException(nameof(taskForReviewRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task Handle(MessageContext messageContext, Guid teamId, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(messageContext);
         
-        var tasks = await _taskForReviewRepository.Get(teamId, TaskForReviewStateRules.ActiveStates, token);
+        var tasks = await _repository.GetAll(teamId, TaskForReviewStateRules.ActiveStates, token);
 
         foreach (var task in tasks)
-        {
-            task.MoveToAccept();
-            
-            await _taskForReviewRepository.Upsert(task, token);
-        }
+            await _repository.Upsert(task.Accept(DateTimeOffset.UtcNow, hasComments: true), token);
     }
 }

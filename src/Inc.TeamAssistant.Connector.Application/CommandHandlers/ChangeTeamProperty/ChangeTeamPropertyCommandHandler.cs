@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Connector.Model.Commands.ChangeTeamProperty;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using MediatR;
@@ -11,28 +11,27 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.ChangeTeamProp
 
 internal sealed class ChangeTeamPropertyCommandHandler : IRequestHandler<ChangeTeamPropertyCommand, CommandResult>
 {
-    private readonly ITeamRepository _teamRepository;
+    private readonly ITeamRepository _repository;
     private readonly IMessageBuilder _messageBuilder;
 
-    public ChangeTeamPropertyCommandHandler(ITeamRepository teamRepository, IMessageBuilder messageBuilder)
+    public ChangeTeamPropertyCommandHandler(ITeamRepository repository, IMessageBuilder messageBuilder)
     {
-        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
     public async Task<CommandResult> Handle(ChangeTeamPropertyCommand command, CancellationToken token)
     {
-        var team = await _teamRepository.Find(command.TeamId, token);
-        if (team is null)
-            throw new TeamAssistantUserException(Messages.Connector_TeamNotFound, command.TeamId);
-
-        team.ChangeProperty(new PropertyKey(command.Name), command.Value);
-        await _teamRepository.Upsert(team, token);
+        var team = await command.TeamId.Required(_repository.Find, token);
         
-        var message = await _messageBuilder.Build(
-            Messages.Connector_ChangedPropertySuccess,
-            command.MessageContext.LanguageId,
-            team.Name);
-        return CommandResult.Build(NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, message));
+        await _repository.Upsert(team.ChangeProperty(new PropertyKey(command.Name), command.Value), token);
+
+        var notification = NotificationMessage.Create(
+            command.MessageContext.ChatMessage.ChatId,
+            _messageBuilder.Build(
+                Messages.Connector_ChangedPropertySuccess,
+                command.MessageContext.LanguageId,
+                team.Name));
+        return CommandResult.Build(notification);
     }
 }

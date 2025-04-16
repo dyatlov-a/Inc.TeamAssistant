@@ -9,16 +9,14 @@ public sealed class MigrationRunnerWrapper
 
     public MigrationRunnerWrapper(string connectionString)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         _serviceProvider = Build(connectionString);
     }
 
     public void Execute(Action<IMigrationRunner> action)
     {
-        if (action == null)
-            throw new ArgumentNullException(nameof(action));
+        ArgumentNullException.ThrowIfNull(action);
 
         using var scope = _serviceProvider.CreateScope();
         var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
@@ -27,8 +25,7 @@ public sealed class MigrationRunnerWrapper
 
     private ServiceProvider Build(string connectionString)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         return new ServiceCollection()
                .AddFluentMigratorCore()

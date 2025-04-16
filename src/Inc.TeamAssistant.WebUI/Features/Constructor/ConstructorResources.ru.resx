@@ -345,4 +345,7 @@
     <data name="DataCreated" xml:space="preserve">
         <value>Успешно создано</value>
     </data>
+    <data name="FormSectionSetSettingsRoundRobinForTeamDescription" xml:space="preserve">
+        <value>Последовательный перебор для всей команды</value>
+    </data>
 </root>

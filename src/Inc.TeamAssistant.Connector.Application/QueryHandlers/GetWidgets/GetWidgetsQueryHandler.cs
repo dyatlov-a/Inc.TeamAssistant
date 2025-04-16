@@ -9,16 +9,16 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetWidgets;
 
 internal sealed class GetWidgetsQueryHandler : IRequestHandler<GetWidgetsQuery, GetWidgetsResult>
 {
-    private readonly IBotReader _botReader;
+    private readonly IBotReader _reader;
     private readonly ICurrentPersonResolver _personResolver;
     private readonly IDashboardSettingsRepository _repository;
 
     public GetWidgetsQueryHandler(
-        IBotReader botReader,
+        IBotReader reader,
         ICurrentPersonResolver personResolver,
         IDashboardSettingsRepository repository)
     {
-        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
@@ -28,9 +28,8 @@ internal sealed class GetWidgetsQueryHandler : IRequestHandler<GetWidgetsQuery, 
         ArgumentNullException.ThrowIfNull(query);
 
         var person = _personResolver.GetCurrentPerson();
-        var features = await _botReader.GetFeatures(query.BotId, token);
+        var features = await _reader.GetFeatures(query.BotId, token);
         var dashboardSettings = await _repository.Find(person.Id, query.BotId, token);
-        
         var widgets = DashboardSettingsConverter.Convert(
             dashboardSettings ?? DashboardSettings.CreateDefaultSettings(person.Id, query.BotId),
             features);

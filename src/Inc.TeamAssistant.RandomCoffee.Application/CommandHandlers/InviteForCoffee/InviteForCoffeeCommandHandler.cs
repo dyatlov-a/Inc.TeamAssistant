@@ -1,7 +1,5 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -17,57 +15,45 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
     private readonly IRandomCoffeeRepository _repository;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IMessageBuilder _messageBuilder;
-    private readonly IBotAccessor _botAccessor;
 
     public InviteForCoffeeCommandHandler(
         IRandomCoffeeRepository repository,
         ITeamAccessor teamAccessor,
-        IMessageBuilder messageBuilder,
-        IBotAccessor botAccessor)
+        IMessageBuilder messageBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
     public async Task<CommandResult> Handle(InviteForCoffeeCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var existsRandomCoffeeEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        if (existsRandomCoffeeEntry?.Refused is false && command.OnDemand)
+        var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
+        if (existsEntry?.AlreadyStarted(command.OnDemand) == true)
             return CommandResult.Empty;
         
-        if (existsRandomCoffeeEntry?.Refused is true && !command.OnDemand)
-            return CommandResult.Empty;
-        
-        if (existsRandomCoffeeEntry is not null && existsRandomCoffeeEntry.OwnerId != command.MessageContext.Person.Id)
-            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, command.MessageContext.Person.Id);
-        
-        var randomCoffeeEntry = existsRandomCoffeeEntry ?? new RandomCoffeeEntry(
+        var entry = existsEntry ?? new RandomCoffeeEntry(
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
             command.MessageContext.ChatMessage.ChatId,
             command.MessageContext.ChatName!,
             command.MessageContext.Person.Id);
-        var botContext = await _botAccessor.GetBotContext(randomCoffeeEntry.BotId, token);
-        var owner = await _teamAccessor.FindPerson(randomCoffeeEntry.OwnerId, token);
-        if (owner is null)
-            throw new TeamAssistantException($"Owner {randomCoffeeEntry.OwnerId} was not found.");
         
-        randomCoffeeEntry.MoveToWaiting(DateTimeOffset.UtcNow, botContext.GetVotingInterval());
+        entry.MoveToWaiting(
+            DateTimeOffset.UtcNow,
+            command.MessageContext.Bot.GetVotingInterval(),
+            command.OnDemand ? command.MessageContext.Person.Id : null);
 
-        await _repository.Upsert(randomCoffeeEntry, token);
+        await _repository.Upsert(entry, token);
 
-        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, owner.Id, token);
+        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, entry.OwnerId, token);
         var notification = NotificationMessage
-            .Create(
-                randomCoffeeEntry.ChatId,
-                await _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
-            .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
-            .WithOption(await _messageBuilder.Build(Messages.RandomCoffee_No, languageId))
-            .AddHandler((c, p) => new AttachPollCommand(c, randomCoffeeEntry.Id, p));
+            .Create(entry.ChatId, _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
+            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
+            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_No, languageId))
+            .WithHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
         var notifications = command.MessageContext.ChatMessage.OnlyChat
             ? [notification]
             : new[]

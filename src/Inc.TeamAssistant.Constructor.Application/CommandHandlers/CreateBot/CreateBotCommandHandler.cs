@@ -9,20 +9,19 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot;
 
 internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand>
 {
-    private readonly IBotRepository _botRepository;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly IBotRepository _repository;
+    private readonly ICurrentPersonResolver _personResolver;
     private readonly IBotListeners _botListeners;
     private readonly IBotConnector _botConnector;
 
     public CreateBotCommandHandler(
-        IBotRepository botRepository,
-        ICurrentPersonResolver currentPersonResolver,
+        IBotRepository repository,
+        ICurrentPersonResolver personResolver,
         IBotListeners botListeners,
         IBotConnector botConnector)
     {
-        _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _currentPersonResolver =
-            currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _botListeners = botListeners ?? throw new ArgumentNullException(nameof(botListeners));
         _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
     }
@@ -31,7 +30,7 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var currentPerson = _currentPersonResolver.GetCurrentPerson();
+        var currentPerson = _personResolver.GetCurrentPerson();
         var bot = new Bot(
             Guid.NewGuid(),
             command.Name,
@@ -42,9 +41,8 @@ internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand
             command.FeatureIds,
             command.SupportedLanguages);
         
-        await _botRepository.Upsert(bot, token);
-
+        await _repository.Upsert(bot, token);
         await _botConnector.SetCommands(bot.Id, bot.SupportedLanguages, token);
-        await _botListeners.Start(bot.Id);
+        await _botListeners.Start(bot.Id, token);
     }
 }

@@ -10,20 +10,19 @@ internal sealed class MessageProvider : IMessageProvider
 
     public MessageProvider(string webRootPath)
     {
-        if (string.IsNullOrWhiteSpace(webRootPath))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(webRootPath));
+        ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);
 
         _webRootPath = webRootPath;
     }
 
-    public async Task<Dictionary<string, Dictionary<string, string>>> Get(CancellationToken token)
+    public Dictionary<string, Dictionary<string, string>> Get()
     {
         var result = new Dictionary<string, Dictionary<string, string>>();
 
         foreach (var languageId in LanguageSettings.LanguageIds)
         {
             var language = Path.Combine(_webRootPath, "langs", $"{languageId.Value}.json");
-            var resourcesAsString = await File.ReadAllTextAsync(language, token);
+            var resourcesAsString = File.ReadAllText(language);
             var resources = JsonSerializer.Deserialize<Dictionary<string, string>>(resourcesAsString);
 
             result.Add(languageId.Value, resources!);

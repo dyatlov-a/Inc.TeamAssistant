@@ -1,9 +1,9 @@
+using System.Data.Common;
 using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
-using Npgsql;
 
 namespace Inc.TeamAssistant.RandomCoffee.DataAccess;
 
@@ -91,8 +91,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state,
                 poll_id,
                 participant_ids,
-                name,
-                refused)
+                name)
             VALUES (
                 @id,
                 @created,
@@ -103,8 +102,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 @state,
                 @poll_id,
                 @participant_ids::jsonb,
-                @name,
-                @refused)
+                @name)
             ON CONFLICT (id) DO UPDATE SET
                 created = excluded.created,
                 bot_id = excluded.bot_id,
@@ -114,8 +112,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state = excluded.state,
                 poll_id = excluded.poll_id,
                 participant_ids = excluded.participant_ids,
-                name = excluded.name,
-                refused = excluded.refused;",
+                name = excluded.name;",
             new
             {
                 id = randomCoffeeEntry.Id,
@@ -127,8 +124,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state = randomCoffeeEntry.State,
                 poll_id = randomCoffeeEntry.PollId,
                 participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
-                name = randomCoffeeEntry.Name,
-                refused = randomCoffeeEntry.Refused
+                name = randomCoffeeEntry.Name
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -173,7 +169,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
         await transaction.CommitAsync(token);
     }
     
-    private async Task<RandomCoffeeEntry?> Find(NpgsqlConnection connection, Guid id, CancellationToken token)
+    private async Task<RandomCoffeeEntry?> Find(DbConnection connection, Guid id, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(connection);
         
@@ -189,8 +185,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.state AS state,
                 e.poll_id AS pollid,
                 e.participant_ids AS participantids,
-                e.name AS name,
-                e.refused AS refused
+                e.name AS name
             FROM random_coffee.entries AS e
             WHERE e.id = @id;
 

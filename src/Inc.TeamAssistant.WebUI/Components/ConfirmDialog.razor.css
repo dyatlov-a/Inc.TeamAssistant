@@ -7,12 +7,12 @@
     left: 0;
 }
 .confirm-dialog-bg {
-    z-index: 1000;
+    z-index: 10000;
     background-color: var(--block-secondary-color);
     opacity: .7;
 }
 .confirm-dialog {
-    z-index: 1001;
+    z-index: 10001;
 }
 .confirm-dialog__body {
     position: fixed;

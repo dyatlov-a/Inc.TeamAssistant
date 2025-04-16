@@ -6,17 +6,17 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.SetBotDetail
 
 internal sealed class SetBotDetailsCommandHandler : IRequestHandler<SetBotDetailsCommand>
 {
-    private readonly IBotConnector _botConnector;
+    private readonly IBotConnector _connector;
 
-    public SetBotDetailsCommandHandler(IBotConnector botConnector)
+    public SetBotDetailsCommandHandler(IBotConnector connector)
     {
-        _botConnector = botConnector ?? throw new ArgumentNullException(nameof(botConnector));
+        _connector = connector ?? throw new ArgumentNullException(nameof(connector));
     }
 
     public async Task Handle(SetBotDetailsCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _botConnector.SetDetails(command.Token, command.BotDetails, token);
+        await _connector.SetDetails(command.Token, command.BotDetails, token);
     }
 }

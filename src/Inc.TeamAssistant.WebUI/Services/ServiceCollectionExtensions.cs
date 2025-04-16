@@ -11,8 +11,8 @@ using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Routing;
-using Inc.TeamAssistant.WebUI.Services.ClientCore;
-using Inc.TeamAssistant.WebUI.Services.Clients;
+using Inc.TeamAssistant.WebUI.Services.Internal;
+using Inc.TeamAssistant.WebUI.Services.ServiceClients;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;
@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddScoped<IMessageProvider, MessageProviderClient>()
             .AddSingleton<EventsProvider>()
             .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
 

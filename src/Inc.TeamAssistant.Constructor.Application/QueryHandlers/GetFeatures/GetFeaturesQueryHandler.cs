@@ -6,18 +6,18 @@ namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetFeatures;
 
 internal sealed class GetFeaturesQueryHandler : IRequestHandler<GetFeaturesQuery, GetFeaturesResult>
 {
-    private readonly IFeatureReader _featureReader;
+    private readonly IFeatureReader _reader;
 
-    public GetFeaturesQueryHandler(IFeatureReader featureReader)
+    public GetFeaturesQueryHandler(IFeatureReader reader)
     {
-        _featureReader = featureReader ?? throw new ArgumentNullException(nameof(featureReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<GetFeaturesResult> Handle(GetFeaturesQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var features = await _featureReader.GetAll(token);
+        var features = await _reader.GetAll(token);
         
         return new GetFeaturesResult(features);
     }

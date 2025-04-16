@@ -9,16 +9,14 @@ public sealed class DatabaseInitialManager
 
     public DatabaseInitialManager(string connectionString)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         _connectionString = connectionString;
     }
 
     public void CreateDatabase(string userPassword)
     {
-        if (string.IsNullOrWhiteSpace(userPassword))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(userPassword));
+        ArgumentException.ThrowIfNullOrWhiteSpace(userPassword);
 
         var createScriptTemplate = ReadEmbeddedScript("create-template.sql");
         var createScript = String.Format(createScriptTemplate, userPassword);
@@ -29,8 +27,7 @@ public sealed class DatabaseInitialManager
 
     private static string ReadEmbeddedScript(string scriptName)
     {
-        if (string.IsNullOrWhiteSpace(scriptName))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(scriptName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(scriptName);
 
         var assembly = typeof(DatabaseInitialManager).Assembly;
         using var stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.scripts.{scriptName}");

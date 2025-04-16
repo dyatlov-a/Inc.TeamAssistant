@@ -23,11 +23,11 @@ public sealed class DraftTaskForReview
         Guid id,
         Guid teamId,
         long ownerId,
-        NextReviewerType strategy,
         long chatId,
         int messageId,
         string description,
-        DateTimeOffset now)
+        DateTimeOffset now,
+        NextReviewerType strategy)
         : this()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
@@ -35,11 +35,11 @@ public sealed class DraftTaskForReview
         Id = id;
         TeamId = teamId;
         OwnerId = ownerId;
-        Strategy = strategy;
         ChatId = chatId;
         MessageId = messageId;
         Description = description;
         Created = now;
+        Strategy = strategy;
     }
     
     public DraftTaskForReview WithDescription(string description)
@@ -51,16 +51,9 @@ public sealed class DraftTaskForReview
         return this;
     }
     
-    public DraftTaskForReview WithTargetPerson(long personId)
+    public DraftTaskForReview SetTargetPerson(long? personId)
     {
         TargetPersonId = personId;
-        
-        return this;
-    }
-    
-    public DraftTaskForReview WithoutTargetPerson()
-    {
-        TargetPersonId = null;
         
         return this;
     }
@@ -79,4 +72,6 @@ public sealed class DraftTaskForReview
 
         return this;
     }
+
+    public NextReviewerType GetStrategy() => TargetPersonId.HasValue ? NextReviewerType.Target : Strategy;
 }

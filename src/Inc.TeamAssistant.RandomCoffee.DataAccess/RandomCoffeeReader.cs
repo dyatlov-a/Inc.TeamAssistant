@@ -15,8 +15,13 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<RandomCoffeeEntry>> GetByDate(DateTimeOffset now, CancellationToken token)
+    public async Task<IReadOnlyCollection<RandomCoffeeEntry>> GetByDate(
+        IReadOnlyCollection<RandomCoffeeState> activeStates,
+        DateTimeOffset now,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(activeStates);
+        
         var command = new CommandDefinition(@"
             SELECT
                 e.id AS id,
@@ -30,8 +35,12 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e
-            WHERE e.next_round < @now;",
-            new { now },
+            WHERE e.state = ANY(@active_states) AND e.next_round < @now;",
+            new
+            {
+                active_states = activeStates.Select(i => (int)i).ToArray(),
+                now
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

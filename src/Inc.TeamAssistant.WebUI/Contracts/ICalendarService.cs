@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface ICalendarService
 {
-    Task<GetCalendarByOwnerResult?> GetCalendarByOwner(CancellationToken token = default);
+    Task<GetCalendarByOwnerResult> GetCalendarByOwner(CancellationToken token = default);
 
-    Task<Guid> Update(UpdateCalendarCommand command, CancellationToken token = default);
+    Task<UpdateCalendarResult> Update(UpdateCalendarCommand command, CancellationToken token = default);
 }

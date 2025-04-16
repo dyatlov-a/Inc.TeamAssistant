@@ -1,13 +1,14 @@
-using Inc.TeamAssistant.Primitives.FeatureProperties;
+using Inc.TeamAssistant.Primitives.Features.Properties;
 using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
 internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
 {
-    private readonly IReadOnlyDictionary<NextReviewerType, string> _storyType = new Dictionary<NextReviewerType, string>
+    private readonly IReadOnlyDictionary<NextReviewerType, string> _nextReviewerType = new Dictionary<NextReviewerType, string>
     {
         [NextReviewerType.RoundRobin] = "FormSectionSetSettingsRoundRobinDescription",
+        [NextReviewerType.RoundRobinForTeam] = "FormSectionSetSettingsRoundRobinForTeamDescription",
         [NextReviewerType.Random] = "FormSectionSetSettingsRandomDescription"
     };
 
@@ -43,8 +44,12 @@ internal sealed class ReviewerSettingSectionProvider : ISettingSectionProvider
     
     private IEnumerable<SelectValue> GetValuesForNextReviewerType()
     {
-        foreach (var item in Enum.GetValues<NextReviewerType>())
-            if (_storyType.TryGetValue(item, out var value))
+        var selectableValues = Enum.GetValues<NextReviewerType>()
+            .Where(t => t != NextReviewerType.Target)
+            .ToArray();
+        
+        foreach (var item in selectableValues)
+            if (_nextReviewerType.TryGetValue(item, out var value))
                 yield return new SelectValue(value, item.ToString());
     }
     

@@ -27,25 +27,18 @@
     
     private bool _isOpen;
     private readonly BotDetailsFormModel _formModel = new();
-    private LoadingState _state = LoadingState.Done();
+    private readonly LoadingState _state = LoadingState.Done();
 
     private async Task Load()
     {
         _isOpen = true;
         
-        await RequestProcessor.Process(
-            async () =>
-            {
-                var botDetails = await BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token));
-                return botDetails;
-            },
+        var result = await RequestProcessor.Process(
+            () => BotService.GetDetails(new GetBotDetailsQuery(StagesState.Token)),
             nameof(BotDetailsEditor),
-            r => _formModel.Apply(r),
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
+
+        _formModel.Apply(result);
         
         StateHasChanged();
     }
@@ -54,11 +47,6 @@
     {
         await RequestProcessor.Process(
             () => BotService.SetDetails(_formModel.ToCommand(StagesState.Token)),
-            () => { },
-            s =>
-            {
-                _state = s;
-                StateHasChanged();
-            });
+            _state);
     }
 }

@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Model.Commands.AttachPreview;
 using MediatR;
@@ -18,11 +19,9 @@ internal sealed class AttachPreviewCommandHandler : IRequestHandler<AttachPrevie
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var draft = await _repository.GetById(command.DraftId, token);
+        var draft = await command.DraftId.Required(_repository.Find, token);
 
-        draft.WithPreviewMessage(command.MessageId);
-
-        await _repository.Upsert(draft, token);
+        await _repository.Upsert(draft.WithPreviewMessage(command.MessageId), token);
         
         return CommandResult.Empty;
     }

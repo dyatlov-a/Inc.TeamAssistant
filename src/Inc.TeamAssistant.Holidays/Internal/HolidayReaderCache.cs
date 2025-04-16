@@ -21,17 +21,22 @@ internal sealed class HolidayReaderCache : IHolidayReader
 
     public async Task<Calendar?> Find(Guid botId, CancellationToken token)
     {
-        return await _memoryCache.GetOrCreateAsync(
-            GetKey(botId),
-            e =>
-            {
-                e.SetAbsoluteExpiration(_cacheTimeout);
+        return await _memoryCache.GetOrCreateAsync(GetKey(botId), e =>
+        {
+            e.SetAbsoluteExpiration(_cacheTimeout);
 
-                return _reader.Find(botId, token);
-            });
+            return _reader.Find(botId, token);
+        });
     }
 
-    public void Reload(Guid botId) => _memoryCache.Remove(GetKey(botId));
+    public async Task Reload(Guid botId, CancellationToken token)
+    {
+        _memoryCache.Remove(GetKey(botId));
+        
+        await _reader.Reload(botId, token);
 
-    private string GetKey(Guid botId) => $"{nameof(HolidayReaderCache)}__{nameof(Find)}__{botId}";
+        await Find(botId, token);
+    }
+
+    private string GetKey(Guid botId) => $"{nameof(HolidayReaderCache)}__{botId}";
 }

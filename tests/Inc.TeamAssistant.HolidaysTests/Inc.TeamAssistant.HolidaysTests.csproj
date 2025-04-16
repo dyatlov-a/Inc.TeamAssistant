@@ -15,6 +15,6 @@
         <PackageReference Include="NSubstitute" Version="5.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
+        <ProjectReference Include="..\..\src\Inc.TeamAssistant.Holidays\Inc.TeamAssistant.Holidays.csproj" />
     </ItemGroup>
 </Project>

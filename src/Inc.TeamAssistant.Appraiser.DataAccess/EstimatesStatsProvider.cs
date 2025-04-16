@@ -1,6 +1,6 @@
 using Dapper;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.PersonStats;
 
 namespace Inc.TeamAssistant.Appraiser.DataAccess;
 
@@ -26,7 +26,7 @@ internal sealed class EstimatesStatsProvider : IPersonStatsProvider
             """
             SELECT
                 sfe.participant_id AS personid,
-                count(*) AS eventscount
+                COUNT(*) AS eventscount
             FROM appraiser.story_for_estimates AS sfe
             JOIN appraiser.stories AS s ON sfe.story_id = s.id
             WHERE s.created > @from AND sfe.participant_id = ANY(@person_ids) AND sfe.value > 0

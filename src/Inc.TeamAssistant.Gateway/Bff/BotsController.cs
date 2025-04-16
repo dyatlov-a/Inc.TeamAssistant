@@ -42,11 +42,11 @@ public sealed class BotsController : ControllerBase
     }
     
     [HttpPut("widgets")]
-    public async Task<IActionResult> Widgets(UpdateWidgetsCommand command, CancellationToken token)
+    public async Task<IActionResult> Widgets(UpdateWidgetsCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        await _botService.UpdateWidgets(command, token);
+        await _botService.UpdateWidgets(command, CancellationToken.None);
 
         return Ok();
     }
@@ -64,30 +64,28 @@ public sealed class BotsController : ControllerBase
         [FromQuery]string background,
         CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(foreground))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(foreground));
-        if (string.IsNullOrWhiteSpace(background))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(background));
+        ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
+        ArgumentException.ThrowIfNullOrWhiteSpace(background);
         
         return Ok(await _botService.GetConnector(teamId, foreground, background, token));
     }
 
     [HttpPut("teammate")]
-    public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
+    public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _botService.RemoveTeammate(command, token);
+        await _botService.RemoveTeammate(command, CancellationToken.None);
         
         return Ok();
     }
 
     [HttpPost("check")]
-    public async Task<IActionResult> Check(GetBotUserNameQuery query, CancellationToken token)
+    public async Task<IActionResult> Check(GetBotUserNameQuery query)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        return Ok(await _botService.Check(query, token));
+        return Ok(await _botService.Check(query, CancellationToken.None));
     }
 
     [HttpGet("features")]
@@ -103,47 +101,47 @@ public sealed class BotsController : ControllerBase
     }
 
     [HttpPost("details")]
-    public async Task<IActionResult> GetDetails(GetBotDetailsQuery query, CancellationToken token)
+    public async Task<IActionResult> GetDetails(GetBotDetailsQuery query)
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        return Ok(await _botService.GetDetails(query, token));
+        return Ok(await _botService.GetDetails(query, CancellationToken.None));
     }
 
     [HttpPut("set-details")]
-    public async Task<IActionResult> SetDetails(SetBotDetailsCommand command, CancellationToken token)
+    public async Task<IActionResult> SetDetails(SetBotDetailsCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _botService.SetDetails(command, token);
+        await _botService.SetDetails(command, CancellationToken.None);
         
         return Ok();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateBotCommand command, CancellationToken token)
+    public async Task<IActionResult> Create(CreateBotCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _botService.Create(command, token);
+        await _botService.Create(command, CancellationToken.None);
 
         return Ok();
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update(UpdateBotCommand command, CancellationToken token)
+    public async Task<IActionResult> Update(UpdateBotCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _botService.Update(command, token);
+        await _botService.Update(command, CancellationToken.None);
 
         return Ok();
     }
 
     [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> Remove(Guid id, CancellationToken token)
+    public async Task<IActionResult> Remove(Guid id)
     {
-        await _botService.Remove(id, token);
+        await _botService.Remove(id, CancellationToken.None);
 
         return Ok();
     }

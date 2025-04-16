@@ -7,4 +7,4 @@ public sealed record UpdateCalendarCommand(
     WorkScheduleUtcDto? Schedule,
     IReadOnlyCollection<DayOfWeek> Weekends,
     IReadOnlyDictionary<DateOnly, string> Holidays)
-    : IRequest<Guid>;
+    : IRequest<UpdateCalendarResult>;

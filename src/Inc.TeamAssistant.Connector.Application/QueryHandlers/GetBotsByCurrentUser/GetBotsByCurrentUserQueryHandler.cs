@@ -8,22 +8,21 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetBotsByCurrent
 internal sealed class GetBotsByCurrentUserQueryHandler
     : IRequestHandler<GetBotsByCurrentUserQuery, GetBotsByCurrentUserResult>
 {
-    private readonly IBotReader _botReader;
-    private readonly ICurrentPersonResolver _currentPersonResolver;
+    private readonly IBotReader _reader;
+    private readonly ICurrentPersonResolver _personResolver;
 
-    public GetBotsByCurrentUserQueryHandler(IBotReader botReader, ICurrentPersonResolver currentPersonResolver)
+    public GetBotsByCurrentUserQueryHandler(IBotReader reader, ICurrentPersonResolver personResolver)
     {
-        _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
-        _currentPersonResolver
-            = currentPersonResolver ?? throw new ArgumentNullException(nameof(currentPersonResolver));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
 
     public async Task<GetBotsByCurrentUserResult> Handle(GetBotsByCurrentUserQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var person = _currentPersonResolver.GetCurrentPerson();
-        var bots = await _botReader.GetBotsByUser(person.Id, token);
+        var person = _personResolver.GetCurrentPerson();
+        var bots = await _reader.GetBotsByUser(person.Id, token);
 
         return new GetBotsByCurrentUserResult(bots);
     }

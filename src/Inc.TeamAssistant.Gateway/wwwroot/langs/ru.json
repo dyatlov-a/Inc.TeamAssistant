@@ -7,7 +7,6 @@
   "Appraiser_MeanEstimate": "Среднее",
   "Appraiser_MedianEstimate": "Медиана",
   "Appraiser_AcceptedEstimate": "Принята оценка",
-  "Appraiser_StoryNotFound": "История {0} не найдена",
   "Appraiser_MoveToFibonacciHelp": "Изменить единицы на числа Фибоначчи",
   "Appraiser_MoveToTShirtsHelp": "Изменить единицы на майки",
   "Appraiser_MoveToPowerOfTwoHelp": "Изменить единицы на степени двойки",
@@ -40,7 +39,7 @@
   "Appraiser_PowerOfTwo_16SP": "16",
   "Appraiser_PowerOfTwo_32SP": "32",
   "Appraiser_PowerOfTwo_64SP": "64",
-  "Appraiser_NumberOfRounds": "Количество раундов оценки",
+  "Appraiser_NumberOfRounds": "Раунд",
   "Appraiser_MultipleLinkError": "Описание должно содержать одну ссылку",
   "Appraiser_LinkLengthError": "Длина ссылки не должна превышать 2000 символов",
 
@@ -56,6 +55,7 @@
   "Reviewer_Owner": "Автор {0}",
   "Reviewer_TargetAutomatically": "Автоматически назначена на ",
   "Reviewer_TargetManually": "Вручную назначена на ",
+  "Reviewer_TargetReassigned": "Переназначена на ",
   "Reviewer_ReviewDeclined": "Задача отклонена.",
   "Reviewer_Accepted": "Ревью задачи завершено.",
   "Reviewer_TotalTime": "Общее время ревью {0}",
@@ -65,6 +65,7 @@
   "Reviewer_MoveToNextRound": "Попробовать снова",
   "Reviewer_TeamWithoutUsers": "Команда не содержит участников",
   "Reviewer_ChangeToRoundRobinHelp": "Перейти на последовательный перебор",
+  "Reviewer_ChangeToRoundRobinForTeamHelp": "Перейти на последовательный перебор по всей команде",
   "Reviewer_ChangeToRandomHelp": "Перейти на случайный выбор",
   "Reviewer_Reassign": "Переназначить",
   "Reviewer_NeedEndReview": "Необходимо провести ревью.",
@@ -104,11 +105,10 @@
   "Connector_NewTeamHelp": "Создать новую команду",
   "Connector_LeaveFromTeamHelp": "Покинуть команду",
   "Connector_LeaveTeamSuccess": "{0} покинул команду «{1}»",
-  "Connector_CancelHelp": "Отменить текущую операцию",
   "Connector_Cancel": "Отменить",
   "Connector_BotNotFound": "Бот {0} не найден",
   "Connector_TeamNotFound": "Команда {0} не найдена",
-  "Connector_TeamForUserNotFound": "Команда для пользователя {0} не найдена",
+  "Connector_TeamForUserNotFound": "Команда для пользователя {0} не обнаружена, либо пользователь находится в отпуске. Выполнение операции невозможно.",
   "Connector_PersonNotFound": "Пользователь {0} не найден",
   "Connector_ChangedPropertySuccess": "Изменено свойство для команды «{0}»",
   "Connector_HelpText": "Выбери подходящую опцию ниже. Если что то пойдет не так, выполните команду {0} и попробуйте снова",
@@ -118,5 +118,6 @@
   "Connector_HasNotRightsForRemoveTeam": "У вас нет прав на удаление команды «{0}»",
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
   "Connector_Help": "Отобразить список команд",
-  "Connector_HasNoRights": "У пользователя недостаточно прав для выполнения операции"
+  "Connector_HasNoRights": "У пользователя недостаточно прав для выполнения операции",
+  "Connector_ObjectNotFound": "{0} по идентификатору {1} не найден"
 }

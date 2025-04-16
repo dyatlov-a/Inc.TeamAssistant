@@ -27,25 +27,21 @@ public sealed class IntegrationsController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> SetTeamProperties(
-        SetIntegrationPropertiesCommand command,
-        CancellationToken token)
+    public async Task<IActionResult> SetTeamProperties(SetIntegrationPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        await _integrationService.SetTeamProperties(command, token);
+        await _integrationService.SetTeamProperties(command, CancellationToken.None);
 
         return Ok();
     }
     
     [HttpPut("disable")]
-    public async Task<IActionResult> DisableIntegration(
-        DisableIntegrationCommand command,
-        CancellationToken token)
+    public async Task<IActionResult> DisableIntegration(DisableIntegrationCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        await _integrationService.DisableIntegration(command, token);
+        await _integrationService.DisableIntegration(command, CancellationToken.None);
 
         return Ok();
     }

@@ -1,3 +1,6 @@
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Languages;
+
 namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class TaskForReview : ITaskForReviewStats
@@ -17,10 +20,9 @@ public sealed class TaskForReview : ITaskForReviewStats
     public DateTimeOffset NextNotification { get; private set; }
     public DateTimeOffset? AcceptDate { get; private set; }
     public int? MessageId { get; private set; }
-    public bool HasConcreteReviewer { get; private set; }
     public long? OriginalReviewerId { get; private set; }
+    public int? OriginalReviewerMessageId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
-    public bool AcceptedWithComments { get; private set; }
 
     private TaskForReview()
     {
@@ -33,7 +35,8 @@ public sealed class TaskForReview : ITaskForReviewStats
         Guid botId,
         DateTimeOffset now,
         NotificationIntervals notificationIntervals,
-        long chatId)
+        long chatId,
+        long reviewerId)
         : this()
     {
         ArgumentNullException.ThrowIfNull(draft);
@@ -41,7 +44,7 @@ public sealed class TaskForReview : ITaskForReviewStats
 
         Id = id;
         BotId = botId;
-        Strategy = draft.Strategy;
+        Strategy = draft.GetStrategy();
         Created = now;
         TeamId = draft.TeamId;
         OwnerId = draft.OwnerId;
@@ -50,9 +53,10 @@ public sealed class TaskForReview : ITaskForReviewStats
         State = TaskForReviewState.New;
         
         SetNextNotificationTime(now, notificationIntervals);
+        SetReviewer(reviewerId);
     }
 
-    public void AttachMessage(MessageType messageType, int messageId)
+    public TaskForReview AttachMessage(MessageType messageType, int messageId)
     {
         switch (messageType)
         {
@@ -60,6 +64,7 @@ public sealed class TaskForReview : ITaskForReviewStats
                 MessageId = messageId;
                 break;
             case MessageType.Reviewer:
+                OriginalReviewerMessageId ??= messageId;
                 ReviewerMessageId = messageId;
                 break;
             case MessageType.Owner:
@@ -68,35 +73,34 @@ public sealed class TaskForReview : ITaskForReviewStats
             default:
                 throw new ArgumentOutOfRangeException(nameof(messageType), messageType, "State out of range.");
         }
+
+        return this;
     }
 
-    public void SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
         NextNotification = now.Add(notificationIntervals.GetNotificationInterval(State));
+
+        return this;
     }
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
-    public void Accept(DateTimeOffset now, bool acceptedWithComments)
+    public TaskForReview Accept(DateTimeOffset now, bool hasComments)
     {
         AddReviewInterval(ReviewerId, now);
         
         AcceptDate = now;
+        State = hasComments
+            ? TaskForReviewState.AcceptWithComments
+            : TaskForReviewState.Accept;
 
-        if (acceptedWithComments)
-        {
-            MoveToAcceptWithComments();
-            return;
-        }
-
-        MoveToAccept();
+        return this;
     }
-    
-    public void MoveToAccept() => State = TaskForReviewState.Accept;
 
-    public void Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
@@ -107,21 +111,25 @@ public sealed class TaskForReview : ITaskForReviewStats
 
         if (ReviewIntervals.All(i => i.State != TaskForReviewState.OnCorrection))
             SetNextNotificationTime(now, notificationIntervals);
+
+        return this;
     }
 
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
 
-    public void MoveToNextRound(DateTimeOffset now)
+    public TaskForReview MoveToNextRound(DateTimeOffset now)
     {
         AddReviewInterval(OwnerId, now);
         
         State = TaskForReviewState.InProgress;
         NextNotification = now;
+
+        return this;
     }
 
     public bool CanMoveToInProgress() => State == TaskForReviewState.New;
 
-    public void MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
@@ -129,56 +137,50 @@ public sealed class TaskForReview : ITaskForReviewStats
         
         State = TaskForReviewState.InProgress;
         SetNextNotificationTime(now, notificationIntervals);
+
+        return this;
     }
 
     private void AddReviewInterval(long userId, DateTimeOffset end)
     {
         ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
+    
+    public bool HasReassign() => OriginalReviewerId.HasValue && ReviewerId != OriginalReviewerId.Value;
 
-    public TaskForReview SetConcreteReviewer(long reviewerId)
+    public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
-        SetReviewer(reviewerId);
-        HasConcreteReviewer = true;
-        
-        return this;
-    }
-
-    public TaskForReview Reassign(
-        DateTimeOffset now,
-        IReadOnlyCollection<long> teammates,
-        IReadOnlyDictionary<long, int> history,
-        long excludedPersonId,
-        long? lastReviewerId)
-    {
-        ArgumentNullException.ThrowIfNull(teammates);
-        ArgumentNullException.ThrowIfNull(history);
-        
         AddReviewInterval(ReviewerId, now);
+        SetReviewer(reviewerId);
         
         NextNotification = now;
-        ReviewerMessageId = null;
-
-        return DetectReviewer(teammates, history, lastReviewerId, excludedPersonId);
-    }
-
-    public TaskForReview DetectReviewer(
-        IReadOnlyCollection<long> teammates,
-        IReadOnlyDictionary<long, int> history,
-        long? lastReviewerId,
-        long? excludedPersonId = null)
-    {
-        ArgumentNullException.ThrowIfNull(teammates);
-        ArgumentNullException.ThrowIfNull(history);
-
-        var excludedPersonIds = excludedPersonId.HasValue
-            ? new[] { OwnerId, excludedPersonId.Value }
-            : [OwnerId];
-        var reviewerStrategy = NextReviewerStrategyFactory.Create(Strategy, teammates, history);
-        
-        SetReviewer(reviewerStrategy.Next(excludedPersonIds, lastReviewerId));
 
         return this;
+    }
+    
+    public MessageId ReviewerInMessage()
+    {
+        var messageId = (HasReassign(), Strategy) switch
+        {
+            (true, _) => Messages.Reviewer_TargetReassigned,
+            (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
+            (_, _) => Messages.Reviewer_TargetAutomatically
+        };
+
+        return messageId;
+    }
+    
+    public string AsIcon()
+    {
+        return State switch
+        {
+            TaskForReviewState.New => GlobalResources.Icons.Waiting,
+            TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
+            TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
+            TaskForReviewState.Accept => GlobalResources.Icons.Accept,
+            TaskForReviewState.AcceptWithComments => GlobalResources.Icons.AcceptWithComments,
+            _ => throw new ArgumentOutOfRangeException(nameof(State), State, "State out of range.")
+        };
     }
 
     public int? GetAttempts()
@@ -191,15 +193,9 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     private void SetReviewer(long reviewerId)
     {
-        if (!OriginalReviewerId.HasValue && ReviewerId != 0)
-            OriginalReviewerId = ReviewerId;
-            
+        OriginalReviewerId ??= reviewerId;
         ReviewerId = reviewerId;
-    }
-    
-    private void MoveToAcceptWithComments()
-    {
-        State = TaskForReviewState.Accept;
-        AcceptedWithComments = true;
+        
+        ReviewerMessageId = null;
     }
 }

@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.CommandHandlers.Begin.Contracts;
 using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Connector.Model.Commands.SendMessage;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 
@@ -16,7 +16,7 @@ internal sealed class DialogCommandFactory
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
     }
 
-    public async Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         Bot bot,
         string botCommand,
         StageType? dialogStage,
@@ -25,11 +25,9 @@ internal sealed class DialogCommandFactory
         MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(bot);
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(currentStage);
         ArgumentNullException.ThrowIfNull(messageContext);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
         
         var teamSelected = Guid.TryParse(messageContext.Text.TrimStart('/'), out var teamId);
         var memberOfTeams = messageContext.Teams
@@ -48,58 +46,58 @@ internal sealed class DialogCommandFactory
             switch
         {
             (CommandList.AddLocation, null, _, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
             (CommandList.NewTeam, null, _, _, _, _)
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId: null, currentStage.DialogMessageId),
             (CommandList.LeaveTeam, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, memberOfTeams),
             (CommandList.RemoveTeam, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToFibonacci, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToTShirts, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.MoveToPowerOfTwo, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRoundRobin, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+            (CommandList.ChangeToRoundRobinForTeam, null, _, _, _, _)
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.ChangeToRandom, null, _, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
+                => CreateSelectTeamCommand(botCommand, messageContext, ownerOfTeams),
             (CommandList.NeedReview, null, 0, _, _, _)
-                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+                => SendTeamForUserNotFound(messageContext),
             (CommandList.NeedReview, null, 1, _, _, _) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.NeedReview, null, > 1, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+                => CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.NeedReview, StageType.SelectTeam, _, _, _, true) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             (CommandList.AddStory, null, 0, _, _, _)
-                => ThrowTeamForUserNotFound(messageContext.Person.Id),
+                => SendTeamForUserNotFound(messageContext),
             (CommandList.AddStory, null, 1, _, _, _) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, messageContext.Teams[0].Id, nextStage.DialogMessageId),
             (CommandList.AddStory, null, > 1, _, _, _)
-                => await CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
+                => CreateSelectTeamCommand(botCommand, messageContext, messageContext.Teams),
             (CommandList.AddStory, StageType.SelectTeam, _, _, _, true) when nextStage is not null
-                => await CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
+                => CreateEnterTextCommand(bot, botCommand, messageContext, teamId, nextStage.DialogMessageId),
             _ => null
         };
     }
 
-    private async Task<IDialogCommand> CreateSelectTeamCommand(
+    private IDialogCommand CreateSelectTeamCommand(
         string botCommand,
         MessageContext messageContext,
         IReadOnlyCollection<TeamContext> teams)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teams);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
-        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
+        var cancelButtonText = _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
+            _messageBuilder.Build(Messages.Connector_SelectTeam, messageContext.LanguageId));
             
         foreach (var team in teams.OrderBy(t => t.Name))
             notification.WithButton(new Button(team.Name, $"/{team.Id:N}"));
@@ -108,46 +106,54 @@ internal sealed class DialogCommandFactory
             .SetButtonsInRow(2)
             .WithButton(new Button(cancelButtonText, CommandList.Cancel));
         
-        return new BeginCommand(
+        var command = new BeginCommand(
             messageContext,
             StageType.SelectTeam,
             CurrentTeamContext.Empty,
             botCommand,
             notification);
+        return command;
     }
 
-    private async Task<IDialogCommand> CreateEnterTextCommand(
+    private IDialogCommand CreateEnterTextCommand(
         Bot bot,
         string botCommand,
         MessageContext messageContext,
         Guid? teamId,
         MessageId messageId)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(botCommand);
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(messageId);
-        
-        if (string.IsNullOrWhiteSpace(botCommand))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(botCommand));
 
-        var cancelButtonText = await _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
+        var cancelButtonText = _messageBuilder.Build(Messages.Connector_Cancel, messageContext.LanguageId);
         var team = teamId.HasValue ? bot.Teams.Single(t => t.Id == teamId.Value) : null;
         var notification = NotificationMessage.Create(
             messageContext.ChatMessage.ChatId,
-            await _messageBuilder.Build(messageId, messageContext.LanguageId));
+            _messageBuilder.Build(messageId, messageContext.LanguageId));
         
         notification.WithButton(new Button(cancelButtonText, CommandList.Cancel));
             
-        return new BeginCommand(
+        var command = new BeginCommand(
             messageContext,
             StageType.EnterText,
-            team is not null ? new CurrentTeamContext(team.Id, team.Properties) : CurrentTeamContext.Empty,
+            team is not null
+                ? new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId)
+                : CurrentTeamContext.Empty,
             botCommand,
             notification);
+        return command;
     }
 
-    private IDialogCommand ThrowTeamForUserNotFound(long personId)
+    private IDialogCommand SendTeamForUserNotFound(MessageContext messageContext)
     {
-        throw new TeamAssistantUserException(Messages.Connector_TeamForUserNotFound, personId);
+        ArgumentNullException.ThrowIfNull(messageContext);
+        
+        var command = new SendMessageCommand(
+            messageContext,
+            Messages.Connector_TeamForUserNotFound,
+            messageContext.Person.DisplayName);
+        return command;
     }
 }
