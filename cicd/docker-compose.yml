@@ -29,11 +29,11 @@ services:
       - team_assistant
     restart: unless-stopped
     
-  stories:
+  webui:
     image: dyatlovhome/inc.teamassistant.stories:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-    container_name: stories
+    container_name: webui
     expose:
       - 8080
     networks:
