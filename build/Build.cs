@@ -39,9 +39,10 @@ public sealed class Build : NukeBuild
 
     private const string AppDirectory = "/home/teamassist/prod";
     private const string MigrationRunnerProject = "Inc.TeamAssistant.MigrationsRunner";
-    private readonly IEnumerable<string> AppProjects = ["Inc.TeamAssistant.Gateway", "Inc.TeamAssistant.Stories"];
+    private readonly string AppProject = "Inc.TeamAssistant.Gateway";
+    private readonly string DesignProject = "Inc.TeamAssistant.Stories";
 
-    private IEnumerable<string> ProjectsForPublish => AppProjects.Concat(MigrationRunnerProject);
+    private IEnumerable<string> ProjectsForPublish => [AppProject, DesignProject, MigrationRunnerProject];
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -114,14 +115,21 @@ public sealed class Build : NukeBuild
         .DependsOn(Publish)
         .Executes(() =>
         {
-            foreach (var appProject in AppProjects)
-                DockerBuild(x => x
-                    .DisableProcessLogOutput()
-                    .SetProcessWorkingDirectory(RootDirectory)
-                    .SetPath(".")
-                    .SetFile("cicd/dockerfile.app_component")
-                    .SetBuildArg($"PROJECT={appProject}")
-                    .SetTag(GetImageName(appProject)));
+            DockerBuild(x => x
+                .DisableProcessLogOutput()
+                .SetProcessWorkingDirectory(RootDirectory)
+                .SetPath(".")
+                .SetFile("cicd/dockerfile.app_component")
+                .SetBuildArg($"PROJECT={AppProject}")
+                .SetTag(GetImageName(AppProject)));
+            
+            DockerBuild(x => x
+                .DisableProcessLogOutput()
+                .SetProcessWorkingDirectory(RootDirectory)
+                .SetPath(".")
+                .SetFile("cicd/dockerfile.static_component")
+                .SetBuildArg($"PROJECT={DesignProject}")
+                .SetTag(GetImageName(DesignProject)));
             
             DockerBuild(x => x
                 .DisableProcessLogOutput()
