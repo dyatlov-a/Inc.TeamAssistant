@@ -29,11 +29,11 @@ services:
       - team_assistant
     restart: unless-stopped
     
-  stories:
+  design:
     image: dyatlovhome/inc.teamassistant.stories:latest
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-    container_name: stories
+    container_name: design
     expose:
       - 8080
     networks:
