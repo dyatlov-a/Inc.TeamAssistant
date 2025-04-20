@@ -1,7 +1,7 @@
 FROM nginx:1.23.1
 
 ARG PROJECT
-EXPOSE 80
+EXPOSE 8080
 
 # VARS
 ENV APP_DIR="/usr/share/nginx/html"
