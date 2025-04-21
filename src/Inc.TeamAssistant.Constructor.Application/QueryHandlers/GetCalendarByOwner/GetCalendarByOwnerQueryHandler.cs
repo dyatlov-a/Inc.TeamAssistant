@@ -25,13 +25,23 @@ internal sealed class GetCalendarByOwnerQueryHandler
         var currentPerson = _personResolver.GetCurrentPerson();
         var calendar = await _repository.Find(currentPerson.Id, token);
 
-        return calendar is null
-            ? GetCalendarByOwnerResult.Empty
-            : new GetCalendarByOwnerResult(calendar.Id, calendar.OwnerId,
-                calendar.Schedule is null
-                    ? null
-                    : new WorkScheduleUtcDto(calendar.Schedule.Start, calendar.Schedule.End),
-                calendar.Weekends,
-                calendar.Holidays.ToDictionary(h => h.Key, h => h.Value.ToString()));
+        if (calendar is null)
+            return GetCalendarByOwnerResult.Empty;
+
+        var now = DateTimeOffset.UtcNow;
+        var schedule = calendar.Schedule is null
+            ? null
+            : new WorkScheduleUtcDto(calendar.Schedule.Start, calendar.Schedule.End);
+        var futureHolidays = calendar.Holidays
+            .Where(c => c.Key.Year >= now.Year)
+            .ToDictionary(h => h.Key, h => h.Value.ToString());
+        
+        var result = new GetCalendarByOwnerResult(
+            calendar.Id,
+            calendar.OwnerId,
+            schedule,
+            calendar.Weekends,
+            futureHolidays);
+        return result;
     }
 }
