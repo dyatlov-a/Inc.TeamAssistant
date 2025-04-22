@@ -53,6 +53,7 @@ internal sealed class PersonRepository : IPersonRepository
     public async Task<IReadOnlyCollection<Person>> GetTeammates(
         Guid teamId,
         DateTimeOffset now,
+        bool? canFinalize,
         CancellationToken token)
     {
         var command = new CommandDefinition(@"
@@ -62,10 +63,11 @@ internal sealed class PersonRepository : IPersonRepository
                 p.username AS username
             FROM connector.persons AS p
             JOIN connector.teammates AS tm ON p.id = tm.person_id AND (tm.leave_until IS NULL OR tm.leave_until < @now)
-            WHERE tm.team_id = @team_id;",
+            WHERE tm.team_id = @team_id AND (@can_finalize IS NULL OR tm.can_finalize = @can_finalize);",
             new
             {
                 team_id = teamId,
+                can_finalize = canFinalize,
                 now
             },
             flags: CommandFlags.None,

@@ -8,12 +8,10 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
 {
     private readonly ITaskForReviewReader _reader;
-    private readonly ITaskForReviewRepository _repository;
 
-    public NextReviewerStrategyFactory(ITaskForReviewReader reader, ITaskForReviewRepository repository)
+    public NextReviewerStrategyFactory(ITaskForReviewReader reader)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task<INextReviewerStrategy> Create(
@@ -29,9 +27,10 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
         
         const int historyLimitInDays = 7;
         
-        var lastReviewers = await _repository.GetLastReviewers(teamId, token);
-        var lastReviewerByPerson = lastReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
-        var lastReviewerByTeam = lastReviewers.MaxBy(r => r.Created);
+        var lastFirstReviewers = await _reader.GetLastFirstReviewers(teamId, token);
+        var lastSecondReviewer = await _reader.GetLastSecondReviewer(teamId, token);
+        var lastReviewerByPerson = lastFirstReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
+        var lastReviewerByTeam = lastFirstReviewers.MaxBy(r => r.Created);
         var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(historyLimitInDays));
         var history = await _reader.GetHistory(teamId, fromDate, token);
         var excludedPersonIds = excludePersonId.HasValue
@@ -48,6 +47,10 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
                 teammates,
                 excludedPersonIds,
                 lastReviewerByTeam?.ReviewerId),
+            NextReviewerType.SecondRoundRobinForTeam => new RoundRobinReviewerStrategy(
+                teammates,
+                excludedPersonIds,
+                lastSecondReviewer),
             NextReviewerType.Random => new RandomReviewerStrategy(
                 teammates,
                 history,

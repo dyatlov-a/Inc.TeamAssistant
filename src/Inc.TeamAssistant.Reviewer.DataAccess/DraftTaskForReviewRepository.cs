@@ -16,7 +16,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
 
     public async Task<DraftTaskForReview?> Find(long chatId, int messageId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT 
                 d.id AS id,
                 d.team_id AS teamid,
@@ -29,7 +30,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
                 d.preview_message_id AS previewmessageid,
                 d.created AS created
             FROM review.draft_task_for_reviews AS d
-            WHERE d.chat_id = @chat_id AND d.message_id = @message_id;",
+            WHERE d.chat_id = @chat_id AND d.message_id = @message_id;
+            """,
             new
             {
                 chat_id = chatId,
@@ -45,7 +47,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
 
     public async Task<DraftTaskForReview?> Find(Guid id, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT 
                 d.id AS id,
                 d.team_id AS teamid,
@@ -58,7 +61,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
                 d.preview_message_id AS previewmessageid,
                 d.created AS created
             FROM review.draft_task_for_reviews AS d
-            WHERE d.id = @id;",
+            WHERE d.id = @id;
+            """,
             new { id },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -72,7 +76,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
     {
         ArgumentNullException.ThrowIfNull(draft);
         
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             INSERT INTO review.draft_task_for_reviews (
                 id,
                 team_id,
@@ -103,7 +108,8 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
                 description = excluded.description,
                 target_person_id = excluded.target_person_id,
                 preview_message_id = excluded.preview_message_id,
-                created = excluded.created;",
+                created = excluded.created;
+            """,
             new
             {
                 id = draft.Id,
@@ -127,9 +133,11 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
 
     public async Task Delete(Guid id, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             DELETE FROM review.draft_task_for_reviews AS d
-            WHERE d.id = @id;",
+            WHERE d.id = @id;
+            """,
             new { id },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -21,6 +21,6 @@ internal sealed class RemoveTeamHandler : IRemoveTeamHandler
         var tasks = await _repository.GetAll(teamId, TaskForReviewStateRules.ActiveStates, token);
 
         foreach (var task in tasks)
-            await _repository.Upsert(task.Accept(DateTimeOffset.UtcNow, hasComments: true), token);
+            await _repository.Upsert(task.FinishRound(DateTimeOffset.UtcNow, hasComments: true), token);
     }
 }

@@ -37,7 +37,7 @@ internal sealed class ReassignReviewService
         
         var task = await taskId.Required(_repository.Find, token);
         if (!task.CanAccept() || task.HasReassign())
-            return Array.Empty<NotificationMessage>();
+            return [];
         
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
         var teamContext = await _teamAccessor.GetTeamContext(task.TeamId, token);

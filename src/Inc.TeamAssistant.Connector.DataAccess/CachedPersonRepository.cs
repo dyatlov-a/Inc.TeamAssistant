@@ -35,9 +35,10 @@ internal sealed class CachedPersonRepository : IPersonRepository
     public async Task<IReadOnlyCollection<Person>> GetTeammates(
         Guid teamId,
         DateTimeOffset now,
+        bool? canFinalize,
         CancellationToken token)
     {
-        return await _repository.GetTeammates(teamId, now, token);
+        return await _repository.GetTeammates(teamId, now, canFinalize, token);
     }
 
     public async Task Upsert(Person person, CancellationToken token)

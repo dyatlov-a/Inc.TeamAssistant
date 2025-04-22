@@ -43,6 +43,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.state = ANY(@states);
@@ -84,6 +86,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;
@@ -123,6 +127,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 chat_id,
                 original_reviewer_id,
                 original_reviewer_message_id,
+                first_reviewer_id,
+                second_reviewer_id,
                 review_intervals)
             VALUES (
                 @id,
@@ -142,6 +148,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @chat_id,
                 @original_reviewer_id,
                 @original_reviewer_message_id,
+                @first_reviewer_id,
+                @second_reviewer_id,
                 @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
                 bot_id = excluded.bot_id,
@@ -160,6 +168,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 chat_id = excluded.chat_id,
                 original_reviewer_id = excluded.original_reviewer_id,
                 original_reviewer_message_id = excluded.original_reviewer_message_id,
+                first_reviewer_id = excluded.first_reviewer_id,
+                second_reviewer_id = excluded.second_reviewer_id,
                 review_intervals = excluded.review_intervals;
             """,
             new
@@ -181,6 +191,8 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 reviewer_message_id = taskForReview.ReviewerMessageId,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
                 original_reviewer_message_id = taskForReview.OriginalReviewerMessageId,
+                first_reviewer_id = taskForReview.FirstReviewerId,
+                second_reviewer_id = taskForReview.SecondReviewerId,
                 review_intervals = reviewIntervals
             },
             flags: CommandFlags.None,
@@ -189,32 +201,5 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
-    }
-
-    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token)
-    {
-        var command = new CommandDefinition(
-            """
-            SELECT DISTINCT ON (t.owner_id)
-                t.reviewer_id AS reviewerid,
-            	t.owner_id AS ownerid,
-            	t.created AS created
-            FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
-            ORDER BY t.owner_id, t.created DESC;
-            """,
-            new
-            {
-                team_id = teamId,
-                nrt_target = (int)NextReviewerType.Target
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-
-        var results = await connection.QueryAsync<ReviewTicket>(command);
-
-        return results.ToArray();
     }
 }

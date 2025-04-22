@@ -6,6 +6,7 @@ public static class TaskForReviewStateRules
     [
         TaskForReviewState.New,
         TaskForReviewState.InProgress,
-        TaskForReviewState.OnCorrection
+        TaskForReviewState.OnCorrection,
+        TaskForReviewState.FirstAccept
     ];
 }

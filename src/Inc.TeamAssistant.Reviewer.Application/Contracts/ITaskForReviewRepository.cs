@@ -12,6 +12,4 @@ public interface ITaskForReviewRepository
     Task<TaskForReview?> Find(Guid taskForReviewId, CancellationToken token);
     
     Task Upsert(TaskForReview taskForReview, CancellationToken token);
-    
-    Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token);
 }

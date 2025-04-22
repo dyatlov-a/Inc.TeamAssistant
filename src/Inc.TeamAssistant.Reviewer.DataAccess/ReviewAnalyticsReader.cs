@@ -21,16 +21,22 @@ internal sealed class ReviewAnalyticsReader : IReviewAnalyticsReader
         DateTimeOffset from,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-            SELECT p.id AS personid, p.name AS name, p.username AS username, COUNT(*) AS count
+        var command = new CommandDefinition(
+            """
+            SELECT
+                p.id AS personid,
+                p.name AS name,
+                p.username AS username,
+                COUNT(*) AS count
             FROM review.task_for_reviews AS t
             JOIN connector.persons AS p ON p.id = t.reviewer_id
             WHERE team_id = @team_id AND t.created >= @from
-            GROUP BY p.id, p.name, p.username;",
+            GROUP BY p.id, p.name, p.username;
+            """,
             new
             {
                 team_id = teamId,
-                from
+                from = from.UtcDateTime
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -50,16 +56,22 @@ internal sealed class ReviewAnalyticsReader : IReviewAnalyticsReader
         DateTimeOffset from,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
-            SELECT p.id AS personid, p.name AS name, p.username AS username, COUNT(*) AS count
+        var command = new CommandDefinition(
+            """
+            SELECT
+                p.id AS personid,
+                p.name AS name,
+                p.username AS username,
+                COUNT(*) AS count
             FROM review.task_for_reviews AS t
             JOIN connector.persons AS p ON p.id = t.owner_id
             WHERE team_id = @team_id AND t.created >= @from
-            GROUP BY p.id, p.name, p.username;",
+            GROUP BY p.id, p.name, p.username;
+            """,
             new
             {
                 team_id = teamId,
-                from
+                from = from.UtcDateTime
             },
             flags: CommandFlags.None,
             cancellationToken: token);

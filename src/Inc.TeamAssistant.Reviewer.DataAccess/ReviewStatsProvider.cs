@@ -37,7 +37,7 @@ internal sealed class ReviewStatsProvider : IPersonStatsProvider
             new
             {
                 person_ids = personIds,
-                from,
+                from = from.UtcDateTime,
                 accept_state = (int)TaskForReviewState.Accept
             },
             flags: CommandFlags.None,

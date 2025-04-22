@@ -26,7 +26,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             """
             SELECT
                 t.id AS id,
-                bot_id AS botid,
+                t.bot_id AS botid,
                 t.team_id AS teamid,
                 t.strategy AS strategy,
                 t.owner_id AS ownerid,
@@ -40,6 +40,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.state = ANY(@states) AND t.next_notification < @now
@@ -47,7 +49,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             """,
             new
             {
-                now,
+                now = now.UtcDateTime,
                 states = targetStates
             },
             flags: CommandFlags.None,
@@ -89,6 +91,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);           
@@ -132,6 +136,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
@@ -140,7 +146,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             new
             {
                 team_id = teamId,
-                date,
+                date = date.UtcDateTime,
                 target_status = (int)TaskForReviewState.Accept
             },
             flags: CommandFlags.None,
@@ -160,10 +166,12 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
     {
         var command = new CommandDefinition(
             """
-            SELECT t.reviewer_id AS reviewerid, COUNT(*) AS count
+            SELECT
+                t.first_reviewer_id AS reviewerid,
+                COUNT(*) AS count
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.created >= @date
-            GROUP BY t.reviewer_id;
+            WHERE t.team_id = @team_id AND t.first_reviewer_id IS NOT NULL AND t.created >= @date
+            GROUP BY t.first_reviewer_id;
             """,
             new
             {
@@ -211,7 +219,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             new
             {
                 team_id = teamId,
-                from
+                from = from.UtcDateTime
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -221,5 +229,55 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         var results = await connection.QueryAsync<TaskForReviewHistory>(command);
 
         return results.ToArray();
+    }
+    
+    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastFirstReviewers(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT DISTINCT ON (t.owner_id)
+                NULLIF(t.first_reviewer_id, t.reviewer_id) AS reviewerid,
+            	t.owner_id AS ownerid,
+            	t.created AS created
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
+            ORDER BY t.owner_id, t.created DESC;
+            """,
+            new
+            {
+                team_id = teamId,
+                nrt_target = (int)NextReviewerType.Target
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var results = await connection.QueryAsync<ReviewTicket>(command);
+
+        return results.ToArray();
+    }
+    
+    public async Task<long?> GetLastSecondReviewer(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT NULLIF(t.second_reviewer_id, t.reviewer_id) AS reviewerid,
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.first_reviewer_id IS NOT NULL
+            ORDER BY t.created DESC;
+            """,
+            new
+            {
+                team_id = teamId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var result = await connection.QuerySingleOrDefaultAsync(command);
+        
+        return result;
     }
 }

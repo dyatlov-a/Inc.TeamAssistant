@@ -22,6 +22,8 @@ public sealed class TaskForReview : ITaskForReviewStats
     public int? MessageId { get; private set; }
     public long? OriginalReviewerId { get; private set; }
     public int? OriginalReviewerMessageId { get; private set; }
+    public long? FirstReviewerId { get; private set; }
+    public long? SecondReviewerId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
 
     private TaskForReview()
@@ -52,8 +54,8 @@ public sealed class TaskForReview : ITaskForReviewStats
         Description = draft.Description;
         State = TaskForReviewState.New;
         
-        SetNextNotificationTime(now, notificationIntervals);
-        SetReviewer(reviewerId);
+        RescheduleNotify(now, notificationIntervals);
+        ChangeReviewer(reviewerId);
     }
 
     public TaskForReview AttachMessage(MessageType messageType, int messageId)
@@ -77,7 +79,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public TaskForReview SetNextNotificationTime(DateTimeOffset now, NotificationIntervals notificationIntervals)
+    public TaskForReview RescheduleNotify(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
         
@@ -88,16 +90,36 @@ public sealed class TaskForReview : ITaskForReviewStats
 
     public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
-    public TaskForReview Accept(DateTimeOffset now, bool hasComments)
+    public TaskForReview FinishRound(DateTimeOffset now, bool hasComments, long? nextReviewerId = null)
     {
         AddReviewInterval(ReviewerId, now);
-        
-        AcceptDate = now;
-        State = hasComments
-            ? TaskForReviewState.AcceptWithComments
-            : TaskForReviewState.Accept;
+
+        if (!FirstReviewerId.HasValue && nextReviewerId.HasValue)
+            MoveToSecondRound(nextReviewerId.Value);
+        else
+            Accept();
 
         return this;
+        
+        void MoveToSecondRound(long reviewerId)
+        {
+            FirstReviewerId = ReviewerId;
+            
+            ChangeReviewer(reviewerId);
+        
+            State = TaskForReviewState.FirstAccept;
+        }
+
+        void Accept()
+        {
+            if (FirstReviewerId.HasValue)
+                SecondReviewerId = ReviewerId;
+            else
+                FirstReviewerId = ReviewerId;
+
+            AcceptDate = now;
+            State = hasComments ? TaskForReviewState.AcceptWithComments : TaskForReviewState.Accept;
+        }
     }
 
     public TaskForReview Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)
@@ -109,8 +131,9 @@ public sealed class TaskForReview : ITaskForReviewStats
         State = TaskForReviewState.OnCorrection;
         NextNotification = now;
 
-        if (ReviewIntervals.All(i => i.State != TaskForReviewState.OnCorrection))
-            SetNextNotificationTime(now, notificationIntervals);
+        var firstMoveToCorrection = ReviewIntervals.All(i => i.State != TaskForReviewState.OnCorrection);
+        if (firstMoveToCorrection)
+            RescheduleNotify(now, notificationIntervals);
 
         return this;
     }
@@ -136,7 +159,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         AddReviewInterval(ReviewerId, now);
         
         State = TaskForReviewState.InProgress;
-        SetNextNotificationTime(now, notificationIntervals);
+        RescheduleNotify(now, notificationIntervals);
 
         return this;
     }
@@ -151,7 +174,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
-        SetReviewer(reviewerId);
+        ChangeReviewer(reviewerId);
         
         NextNotification = now;
 
@@ -191,7 +214,7 @@ public sealed class TaskForReview : ITaskForReviewStats
 
     public TimeSpan GetTotalTime(DateTimeOffset now) => now - Created;
     
-    private void SetReviewer(long reviewerId)
+    private void ChangeReviewer(long reviewerId)
     {
         OriginalReviewerId ??= reviewerId;
         ReviewerId = reviewerId;

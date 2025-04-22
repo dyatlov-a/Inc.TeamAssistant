@@ -5,6 +5,7 @@ public enum TaskForReviewState
     New = 1,
     InProgress = 2,
     OnCorrection = 3,
-    Accept = 4,
-    AcceptWithComments = 5
+    FirstAccept = 4,
+    Accept = 5,
+    AcceptWithComments = 6
 }

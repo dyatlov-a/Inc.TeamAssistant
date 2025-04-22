@@ -37,7 +37,15 @@ internal sealed class TeamAccessor : ITeamAccessor
         DateTimeOffset now,
         CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, now, token);
+        return await _personRepository.GetTeammates(teamId, now, canFinalize: null, token);
+    }
+
+    public async Task<IReadOnlyCollection<Person>> GetFinalizes(
+        Guid teamId,
+        DateTimeOffset now,
+        CancellationToken token)
+    {
+        return await _personRepository.GetTeammates(teamId, now, canFinalize: true, token);
     }
 
     public async Task<Person?> FindPerson(long personId, CancellationToken token)
