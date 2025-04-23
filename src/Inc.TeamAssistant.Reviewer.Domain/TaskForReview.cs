@@ -169,7 +169,8 @@ public sealed class TaskForReview : ITaskForReviewStats
         ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
     }
     
-    public bool HasReassign() => OriginalReviewerId.HasValue && ReviewerId != OriginalReviewerId.Value;
+    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId;
+    public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
 
     public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {

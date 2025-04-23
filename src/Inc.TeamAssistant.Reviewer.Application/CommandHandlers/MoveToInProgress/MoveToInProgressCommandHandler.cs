@@ -33,9 +33,9 @@ internal sealed class MoveToInProgressCommandHandler : IRequestHandler<MoveToInP
             token);
         
         var notifications = await _reviewMessageBuilder.Build(
-            command.MessageContext.ChatMessage.MessageId,
             taskForReview,
             command.MessageContext.Bot,
+            fromOwner: false,
             token);
         return CommandResult.Build(notifications.ToArray());
     }

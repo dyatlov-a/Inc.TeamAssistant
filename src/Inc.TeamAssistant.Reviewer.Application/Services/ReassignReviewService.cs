@@ -28,7 +28,6 @@ internal sealed class ReassignReviewService
     }
     
     public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
-        int messageId,
         Guid taskId,
         BotContext botContext,
         CancellationToken token)
@@ -36,7 +35,7 @@ internal sealed class ReassignReviewService
         ArgumentNullException.ThrowIfNull(botContext);
         
         var task = await taskId.Required(_repository.Find, token);
-        if (!task.CanAccept() || task.HasReassign())
+        if (!task.CanAccept())
             return [];
         
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
@@ -54,6 +53,6 @@ internal sealed class ReassignReviewService
 
         await _repository.Upsert(task.Reassign(DateTimeOffset.UtcNow, nextReviewer), token);
         
-        return await _reviewMessageBuilder.Build(messageId, task, botContext, token);
+        return await _reviewMessageBuilder.Build(task, botContext, fromOwner: false, token);
     }
 }

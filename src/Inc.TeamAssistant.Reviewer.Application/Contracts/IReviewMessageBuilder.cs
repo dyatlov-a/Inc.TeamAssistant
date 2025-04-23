@@ -8,9 +8,9 @@ namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 public interface IReviewMessageBuilder
 {
     Task<IReadOnlyCollection<NotificationMessage>> Build(
-        int messageId,
         TaskForReview task,
         BotContext botContext,
+        bool fromOwner,
         CancellationToken token);
 
     Task<NotificationMessage?> Push(TaskForReview task, CancellationToken token);

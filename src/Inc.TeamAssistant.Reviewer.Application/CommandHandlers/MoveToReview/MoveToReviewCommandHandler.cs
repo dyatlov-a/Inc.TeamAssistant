@@ -70,9 +70,9 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         await _repository.Upsert(taskForReview, token);
 
         var notifications = (await _reviewMessageBuilder.Build(
-                command.MessageContext.ChatMessage.MessageId,
                 taskForReview,
                 botContext,
+                fromOwner: false,
                 token))
             .Union(await _draftService.Delete(draft, token))
             .ToArray();
