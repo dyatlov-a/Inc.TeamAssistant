@@ -35,7 +35,7 @@ internal sealed class FinishEstimateCommandHandler : IRequestHandler<FinishEstim
         var personId = command.MessageContext.Person.Id;
         
         var story = await command.StoryId.Required(_repository.Find, token);
-        var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, personId, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(new(story.TeamId, personId), token);
         
         await _repository.Upsert(story.Finish(personId, hasManagerAccess), token);
 

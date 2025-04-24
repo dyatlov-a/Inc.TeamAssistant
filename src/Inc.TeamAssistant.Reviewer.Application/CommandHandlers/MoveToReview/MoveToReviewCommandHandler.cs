@@ -69,14 +69,9 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         
         await _repository.Upsert(taskForReview, token);
 
-        var notifications = (await _reviewMessageBuilder.Build(
-                taskForReview,
-                botContext,
-                fromOwner: false,
-                token))
-            .Union(await _draftService.Delete(draft, token))
-            .ToArray();
+        var newNotifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: false, token);
+        var deleteNotifications = await _draftService.Delete(draft, token);
         
-        return CommandResult.Build(notifications);
+        return CommandResult.Build(newNotifications.Union(deleteNotifications).ToArray());
     }
 }

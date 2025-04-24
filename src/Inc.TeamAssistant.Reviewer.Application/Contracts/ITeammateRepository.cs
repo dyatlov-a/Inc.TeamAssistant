@@ -1,6 +1,7 @@
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Reviewer.Domain;
 
-namespace Inc.TeamAssistant.Connector.Application.Contracts;
+namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 public interface ITeammateRepository
 {

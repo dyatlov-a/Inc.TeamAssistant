@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -18,23 +18,17 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
-    public async Task<IEnumerable<NotificationMessage>> Handle(
-        MessageContext messageContext,
-        Guid teamId,
-        CancellationToken token)
+    public async Task<IEnumerable<NotificationMessage>> Handle(TeammateKey key, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(messageContext);
-        
-        var tasks = await _reader.GetTasksByPerson(
-            teamId,
-            messageContext.Person.Id,
-            TaskForReviewStateRules.ActiveStates,
-            token);
+        ArgumentNullException.ThrowIfNull(key);
+
         var notifications = new List<NotificationMessage>();
+        var states = TaskForReviewStateRules.ActiveStates;
+        var tasks = await _reader.GetTasksByPerson(key.TeamId, key.PersonId, states, token);
 
         foreach (var task in tasks)
         {
-            var notificationsByTask = await _service.ReassignReview(task.Id, messageContext.Bot, token);
+            var notificationsByTask = await _service.ReassignReview(task.Id, token);
             
             notifications.AddRange(notificationsByTask);
         }

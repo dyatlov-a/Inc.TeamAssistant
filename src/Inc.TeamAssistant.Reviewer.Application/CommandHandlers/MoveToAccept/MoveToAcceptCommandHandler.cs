@@ -45,11 +45,7 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
             taskForReview.FinishRound(DateTimeOffset.UtcNow, command.HasComments, nextReviewerId),
             token);
 
-        var notifications = await _reviewMessageBuilder.Build(
-            taskForReview,
-            command.MessageContext.Bot,
-            fromOwner: false,
-            token);
+        var notifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: false, token);
         await _metricsProvider.Add(taskForReview, token);
         return CommandResult.Build(notifications.ToArray());
     }

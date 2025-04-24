@@ -1,11 +1,11 @@
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
-using Inc.TeamAssistant.Connector.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
+using Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Reviewer.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

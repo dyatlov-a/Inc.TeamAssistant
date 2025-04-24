@@ -37,7 +37,8 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         var team = await command.TeamId.Required(_repository.Find, token);
         
         await _repository.Upsert(team.RemoveTeammate(personId), token);
-        
+
+        var teammateKey = new TeammateKey(team.Id, command.MessageContext.Person.Id);
         var leaveMessageForPerson = BuildLeaveFromTeamMessage(command.MessageContext.LanguageId);
         var notification = NotificationMessage.Create(
             command.MessageContext.ChatMessage.ChatId,
@@ -56,7 +57,7 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
         }
         
         foreach (var leaveTeamHandler in _leaveTeamHandlers)
-            notifications.AddRange(await leaveTeamHandler.Handle(command.MessageContext, team.Id, token));
+            notifications.AddRange(await leaveTeamHandler.Handle(teammateKey, token));
         
         return CommandResult.Build(notifications.ToArray());
 

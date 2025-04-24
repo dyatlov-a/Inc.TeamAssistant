@@ -33,6 +33,5 @@ internal static class Messages
     public static readonly MessageId Reviewer_PreviewMoveToReview = new(nameof(Reviewer_PreviewMoveToReview));
     public static readonly MessageId Reviewer_PreviewRemoveDraft = new(nameof(Reviewer_PreviewRemoveDraft));
     public static readonly MessageId Reviewer_AcceptedWithComments = new(nameof(Reviewer_AcceptedWithComments));
-    public static readonly MessageId Reviewer_MoveToAcceptWithComments = new(nameof(Reviewer_MoveToAcceptWithComments));
     public static readonly MessageId Reviewer_FirstAccept = new(nameof(Reviewer_FirstAccept));
 }

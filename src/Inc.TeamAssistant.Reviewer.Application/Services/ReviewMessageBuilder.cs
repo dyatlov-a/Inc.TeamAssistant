@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
@@ -34,12 +33,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     public async Task<IReadOnlyCollection<NotificationMessage>> Build(
         TaskForReview task,
-        BotContext botContext,
         bool fromOwner,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
-        ArgumentNullException.ThrowIfNull(botContext);
         
         var metricsByTeam = _metricsProvider.Get(task.TeamId);
         var metricsByTask = await _metricsFactory.Create(task, token);
@@ -52,7 +49,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notifications = new List<NotificationMessage>
         {
             await MessageForTeam(task, firstReviewer, reviewer, owner, metricsByTeam, metricsByTask, token),
-            await MessageForReviewer(task, botContext, owner, metricsByTeam, metricsByTask, token)
+            await MessageForReviewer(task, owner, metricsByTeam, metricsByTask, token)
         };
 
         if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerMessageId.HasValue && task.HasReassign())
@@ -256,14 +253,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     private async Task<NotificationMessage> MessageForReviewer(
         TaskForReview task,
-        BotContext botContext,
         Person owner,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
-        ArgumentNullException.ThrowIfNull(botContext);
         ArgumentNullException.ThrowIfNull(owner);
         ArgumentNullException.ThrowIfNull(metricsByTeam);
         ArgumentNullException.ThrowIfNull(metricsByTask);
@@ -308,15 +303,6 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 var moveToAcceptText = _messageBuilder.Build(Messages.Reviewer_MoveToAccept, reviewerLanguageId);
                 var moveToAcceptCommand = $"{CommandList.Accept}{task.Id:N}";
                 n.WithButton(new Button(moveToAcceptText, moveToAcceptCommand));
-
-                if (botContext.CanAcceptWithComments())
-                {
-                    var moveToAcceptWithCommentsText = _messageBuilder.Build(
-                        Messages.Reviewer_MoveToAcceptWithComments,
-                        reviewerLanguageId);
-                    var moveToAcceptWithCommentsCommand = $"{CommandList.AcceptWithComments}{task.Id:N}";
-                    n.WithButton(new Button(moveToAcceptWithCommentsText, moveToAcceptWithCommentsCommand));
-                }
 
                 var moveToDeclineText = _messageBuilder.Build(Messages.Reviewer_MoveToDecline, reviewerLanguageId);
                 var moveToDeclineCommand = $"{CommandList.Decline}{task.Id:N}";

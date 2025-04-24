@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITaskForReviewReader, TaskForReviewReader>()
             .AddSingleton<IReviewAnalyticsReader, ReviewAnalyticsReader>()
             .AddSingleton<IDraftTaskForReviewRepository, DraftTaskForReviewRepository>()
+            .AddSingleton<ITeammateRepository, TeammateRepository>()
             
             .AddSingleton<IPersonStatsProvider, ReviewStatsProvider>();
 

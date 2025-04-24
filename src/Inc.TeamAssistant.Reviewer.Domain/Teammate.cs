@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Connector.Domain;
+namespace Inc.TeamAssistant.Reviewer.Domain;
 
 public sealed class Teammate
 {

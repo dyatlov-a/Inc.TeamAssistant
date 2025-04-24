@@ -11,6 +11,6 @@ public interface ITeamAccessor
     Task<Person?> FindPerson(long personId, CancellationToken token);
     Task<Person> EnsurePerson(long personId, CancellationToken token);
     Task<LanguageId> GetClientLanguage(Guid botId, long personId, CancellationToken token);
-    Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token);
-    Task EnsureManagerAccess(Guid teamId, long personId, CancellationToken token);
+    Task<bool> HasManagerAccess(TeammateKey key, CancellationToken token);
+    Task EnsureManagerAccess(TeammateKey key, CancellationToken token);
 }

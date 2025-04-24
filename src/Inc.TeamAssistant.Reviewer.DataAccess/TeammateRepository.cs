@@ -1,9 +1,10 @@
 using Dapper;
-using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Domain;
 
-namespace Inc.TeamAssistant.Connector.DataAccess;
+namespace Inc.TeamAssistant.Reviewer.DataAccess;
 
 internal sealed class TeammateRepository : ITeammateRepository
 {

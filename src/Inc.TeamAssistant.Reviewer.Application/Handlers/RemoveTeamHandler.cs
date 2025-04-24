@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Features.Teams;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
@@ -14,10 +13,8 @@ internal sealed class RemoveTeamHandler : IRemoveTeamHandler
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public async Task Handle(MessageContext messageContext, Guid teamId, CancellationToken token)
+    public async Task Handle(Guid teamId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(messageContext);
-        
         var tasks = await _repository.GetAll(teamId, TaskForReviewStateRules.ActiveStates, token);
 
         foreach (var task in tasks)

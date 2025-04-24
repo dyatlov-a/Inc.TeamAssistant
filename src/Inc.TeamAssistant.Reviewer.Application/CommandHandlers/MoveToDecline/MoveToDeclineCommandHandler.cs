@@ -30,11 +30,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
             taskForReview.Decline(DateTimeOffset.UtcNow, command.MessageContext.Bot.GetNotificationIntervals()),
             token);
         
-        var notifications = await _reviewMessageBuilder.Build(
-            taskForReview,
-            command.MessageContext.Bot,
-            fromOwner: false,
-            token);
+        var notifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: false, token);
         return CommandResult.Build(notifications.ToArray());
     }
 }

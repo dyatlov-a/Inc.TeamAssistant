@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
+namespace Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
 
 public sealed record RemoveTeammateCommand(Guid TeamId, long PersonId)
     : IRequest;

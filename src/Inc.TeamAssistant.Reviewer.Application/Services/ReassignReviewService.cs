@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -27,13 +26,8 @@ internal sealed class ReassignReviewService
         _reviewerFactory = reviewerFactory ?? throw new ArgumentNullException(nameof(reviewerFactory));
     }
     
-    public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(
-        Guid taskId,
-        BotContext botContext,
-        CancellationToken token)
+    public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(Guid taskId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(botContext);
-        
         var task = await taskId.Required(_repository.Find, token);
         if (!task.CanAccept())
             return [];
@@ -53,6 +47,6 @@ internal sealed class ReassignReviewService
 
         await _repository.Upsert(task.Reassign(DateTimeOffset.UtcNow, nextReviewer), token);
         
-        return await _reviewMessageBuilder.Build(task, botContext, fromOwner: false, token);
+        return await _reviewMessageBuilder.Build(task, fromOwner: false, token);
     }
 }

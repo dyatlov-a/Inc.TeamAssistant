@@ -17,7 +17,6 @@ public static class ServiceCollectionExtensions
             
             .AddSingleton<IBotReader, BotReader>()
             .AddSingleton<ITeamReader, TeamReader>()
-            .AddSingleton<ITeammateRepository, TeammateRepository>()
             
             .AddSingleton<ITeamRepository, TeamRepository>()
             .AddSingleton<IDashboardSettingsRepository, DashboardSettingsRepository>()

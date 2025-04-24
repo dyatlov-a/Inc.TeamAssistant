@@ -1,5 +1,3 @@
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
-using Inc.TeamAssistant.Connector.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
@@ -14,6 +12,8 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
+using Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Reviewer.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
