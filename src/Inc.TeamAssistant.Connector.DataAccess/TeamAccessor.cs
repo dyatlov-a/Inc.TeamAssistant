@@ -11,16 +11,19 @@ internal sealed class TeamAccessor : ITeamAccessor
     private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _clientLanguageRepository;
     private readonly ITeamRepository _teamRepository;
+    private readonly ITeamReader _teamReader;
 
     public TeamAccessor(
         IPersonRepository personRepository,
         IClientLanguageRepository clientLanguageRepository,
-        ITeamRepository teamRepository)
+        ITeamRepository teamRepository,
+        ITeamReader teamReader)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _clientLanguageRepository =
             clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
     }
 
     public async Task<CurrentTeamContext> GetTeamContext(Guid teamId, CancellationToken token)
@@ -37,7 +40,7 @@ internal sealed class TeamAccessor : ITeamAccessor
         DateTimeOffset now,
         CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, now, canFinalize: null, token);
+        return await _teamReader.GetTeammates(teamId, now, canFinalize: null, token);
     }
 
     public async Task<IReadOnlyCollection<Person>> GetFinalizes(
@@ -45,7 +48,7 @@ internal sealed class TeamAccessor : ITeamAccessor
         DateTimeOffset now,
         CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, now, canFinalize: true, token);
+        return await _teamReader.GetTeammates(teamId, now, canFinalize: true, token);
     }
 
     public async Task<Person?> FindPerson(long personId, CancellationToken token)

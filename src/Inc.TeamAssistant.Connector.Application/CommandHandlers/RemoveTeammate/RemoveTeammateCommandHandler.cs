@@ -8,12 +8,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeammate
 
 internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeammateCommand>
 {
-    private readonly IPersonRepository _repository;
+    private readonly ITeammateRepository _repository;
     private readonly ICurrentPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public RemoveTeammateCommandHandler(
-        IPersonRepository repository,
+        ITeammateRepository repository,
         ICurrentPersonResolver personProvider,
         ITeamAccessor teamAccessor)
     {

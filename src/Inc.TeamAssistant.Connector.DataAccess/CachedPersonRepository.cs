@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -30,23 +29,12 @@ internal sealed class CachedPersonRepository : IPersonRepository
 
     public async Task<Person?> Find(string username, CancellationToken token)
     {
-        return await _repository.Find(username, token);
-    }
+        return await _memoryCache.GetOrCreateAsync(GetKey(username), async c =>
+        {
+            c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
 
-    public async Task<Teammate?> Find(TeammateKey key, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(key);
-        
-        return await _repository.Find(key, token);
-    }
-
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(
-        Guid teamId,
-        DateTimeOffset now,
-        bool? canFinalize,
-        CancellationToken token)
-    {
-        return await _repository.GetTeammates(teamId, now, canFinalize, token);
+            return await _repository.Find(username, token);
+        });
     }
 
     public async Task Upsert(Person person, CancellationToken token)
@@ -59,27 +47,14 @@ internal sealed class CachedPersonRepository : IPersonRepository
             return;
 
         await _repository.Upsert(person, token);
+        
         _memoryCache.Remove(key);
-    }
-
-    public async Task RemoveFromTeam(TeammateKey key, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(key);
         
-        await _repository.RemoveFromTeam(key, token);
+        if (!string.IsNullOrWhiteSpace(person.Username))
+            _memoryCache.Remove(GetKey(person.Username));
     }
 
-    public async Task Upsert(Teammate teammate, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(teammate);
-        
-        await _repository.Upsert(teammate, token);
-    }
-
-    public async Task<Guid?> FindBotId(long personId, CancellationToken token)
-    {
-        return await _repository.FindBotId(personId, token);
-    }
-
-    private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_{personId}";
+    private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_id_{personId}";
+    
+    private string GetKey(string username) => $"{nameof(CachedPersonRepository)}_username_{username}";
 }

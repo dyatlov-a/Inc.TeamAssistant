@@ -16,7 +16,8 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
     
     public async Task<LanguageId> Get(Guid botId, long personId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 b.supported_languages AS supportedlanguages
             FROM connector.bots AS b
@@ -26,7 +27,8 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
                 p.language_id AS languageid,
                 p.last_use AS lastuse
             FROM connector.client_languages AS p
-            WHERE p.person_id = @person_id;",
+            WHERE p.person_id = @person_id;
+            """,
             new
             {
                 bot_id = botId,
@@ -59,11 +61,13 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
 
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             INSERT INTO connector.client_languages AS p (person_id, language_id, last_use)
             VALUES (@person_id, @language_id, @last_use)
             ON CONFLICT (person_id, language_id) DO UPDATE SET
-                last_use = EXCLUDED.last_use;",
+                last_use = EXCLUDED.last_use;
+            """,
             new
             {
                 person_id = personId,

@@ -1,6 +1,5 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
-using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
@@ -17,13 +16,15 @@ internal sealed class PersonRepository : IPersonRepository
     
     public async Task<Person?> Find(long personId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 p.id AS id,
                 p.name AS name,
                 p.username AS username
             FROM connector.persons AS p
-            WHERE p.id = @person_id;",
+            WHERE p.id = @person_id;
+            """,
             new { person_id = personId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -35,13 +36,15 @@ internal sealed class PersonRepository : IPersonRepository
 
     public async Task<Person?> Find(string username, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 p.id AS id,
                 p.name AS name,
                 p.username AS username
             FROM connector.persons AS p
-            WHERE LOWER(p.username) = @username;",
+            WHERE LOWER(p.username) = @username;
+            """,
             new { username = username.ToLowerInvariant() },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -51,70 +54,18 @@ internal sealed class PersonRepository : IPersonRepository
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
 
-    public async Task<Teammate?> Find(TeammateKey key, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(key);
-        
-        var command = new CommandDefinition(@"
-            SELECT
-                t.team_id AS teamid,
-                t.person_id AS personid,
-                t.leave_until AS leaveuntil,
-                t.can_finalize AS canfinalize
-            FROM connector.teammates AS t
-            WHERE t.team_id = @team_id AND t.person_id = @person_id;",
-            new
-            {
-                team_id = key.TeamId,
-                person_id = key.PersonId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        return await connection.QuerySingleOrDefaultAsync<Teammate>(command);
-    }
-
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(
-        Guid teamId,
-        DateTimeOffset now,
-        bool? canFinalize,
-        CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT
-                p.id AS id,
-                p.name AS name,
-                p.username AS username
-            FROM connector.persons AS p
-            JOIN connector.teammates AS tm ON p.id = tm.person_id AND (tm.leave_until IS NULL OR tm.leave_until < @now)
-            WHERE tm.team_id = @team_id AND (@can_finalize IS NULL OR tm.can_finalize = @can_finalize);",
-            new
-            {
-                team_id = teamId,
-                can_finalize = canFinalize,
-                now
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        var persons = await connection.QueryAsync<Person>(command);
-        return persons.ToArray();
-    }
-
     public async Task Upsert(Person person, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(person);
 
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             INSERT INTO connector.persons (id, name, username)
             VALUES (@id, @name, @username)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
-                username = EXCLUDED.username;",
+                username = EXCLUDED.username;
+            """,
             new
             {
                 id = person.Id,
@@ -127,70 +78,5 @@ internal sealed class PersonRepository : IPersonRepository
         await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
-    }
-
-    public async Task RemoveFromTeam(TeammateKey key, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(key);
-        
-        var command = new CommandDefinition(@"
-            DELETE FROM connector.teammates
-            WHERE person_id = @person_id AND team_id = @team_id;",
-            new
-            {
-                team_id = key.TeamId,
-                person_id = key.PersonId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        await connection.ExecuteAsync(command);
-    }
-
-    public async Task Upsert(Teammate teammate, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(teammate);
-        
-        var command = new CommandDefinition(@"
-            INSERT INTO connector.teammates (team_id, person_id, leave_until, can_finalize)
-            VALUES (@team_id, @person_id, @leave_until, @can_finalize)
-            ON CONFLICT (team_id, person_id) DO UPDATE SET
-                leave_until = EXCLUDED.leave_until,
-                can_finalize = EXCLUDED.can_finalize;",
-            new
-            {
-                team_id = teammate.TeamId,
-                person_id = teammate.PersonId,
-                leave_until = teammate.LeaveUntil,
-                can_finalize = teammate.CanFinalize
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-
-        await connection.ExecuteAsync(command);
-    }
-    
-    public async Task<Guid?> FindBotId(
-        long personId,
-        CancellationToken token)
-    {
-        var command = new CommandDefinition(@"
-            SELECT
-                t.bot_id AS botid
-            FROM connector.teammates AS tm
-            JOIN connector.teams AS t ON tm.team_id = t.id
-            WHERE tm.person_id = @person_id
-            LIMIT 1;",
-            new { person_id = personId },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-        
-        return await connection.QuerySingleOrDefaultAsync<Guid?>(command);
     }
 }

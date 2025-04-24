@@ -9,12 +9,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.UpdateTeammate
 
 internal sealed class UpdateTeammateCommandHandler : IRequestHandler<UpdateTeammateCommand>
 {
-    private readonly IPersonRepository _repository;
+    private readonly ITeammateRepository _repository;
     private readonly ICurrentPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public UpdateTeammateCommandHandler(
-        IPersonRepository repository,
+        ITeammateRepository repository,
         ICurrentPersonResolver personProvider,
         ITeamAccessor teamAccessor)
     {
