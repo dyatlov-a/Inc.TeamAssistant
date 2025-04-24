@@ -231,4 +231,7 @@
     <data name="TaskForReviewStateAcceptWithComments" xml:space="preserve">
         <value>Has comments</value>
     </data>
+    <data name="CanFinalize" xml:space="preserve">
+        <value>Decisive opinion</value>
+    </data>
 </root>

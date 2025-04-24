@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -32,6 +33,13 @@ internal sealed class CachedPersonRepository : IPersonRepository
         return await _repository.Find(username, token);
     }
 
+    public async Task<Teammate?> Find(TeammateKey key, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        
+        return await _repository.Find(key, token);
+    }
+
     public async Task<IReadOnlyCollection<Person>> GetTeammates(
         Guid teamId,
         DateTimeOffset now,
@@ -54,14 +62,18 @@ internal sealed class CachedPersonRepository : IPersonRepository
         _memoryCache.Remove(key);
     }
 
-    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
+    public async Task RemoveFromTeam(TeammateKey key, CancellationToken token)
     {
-        await _repository.LeaveFromTeam(teamId, personId, token);
+        ArgumentNullException.ThrowIfNull(key);
+        
+        await _repository.RemoveFromTeam(key, token);
     }
 
-    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset? until, CancellationToken token)
+    public async Task Upsert(Teammate teammate, CancellationToken token)
     {
-        await _repository.LeaveFromTeam(teamId, personId, until, token);
+        ArgumentNullException.ThrowIfNull(teammate);
+        
+        await _repository.Upsert(teammate, token);
     }
 
     public async Task<Guid?> FindBotId(long personId, CancellationToken token)

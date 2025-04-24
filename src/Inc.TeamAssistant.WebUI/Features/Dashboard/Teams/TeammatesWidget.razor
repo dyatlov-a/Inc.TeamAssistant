@@ -32,6 +32,13 @@
                             @context.UserName
                         </TemplateColumn>
                         <TemplateColumn
+                            Title="@Localizer["CanFinalize"]"
+                            Sortable="false">
+                            <RouterLink OnClick="() => ChangeTeammate(context)">
+                                @ValueToString(context.CanFinalize)
+                            </RouterLink>
+                        </TemplateColumn>
+                        <TemplateColumn
                             Title="@Localizer["LeaveUntil"]"
                             Sortable="true"
                             SortBy="GridSort<TeammateDto>.ByAscending(e => e.LeaveUntil)">
@@ -97,10 +104,16 @@
     public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
-    /// On confirm event
+    /// Removed teammate callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<(TeammateDto Teammate, bool Exclude, int? LeaveUntil)> TeammateRemoved { get; set; }
+    public EventCallback<RemoveTeammateCommand> TeammateRemoved { get; set; }
+    
+    /// <summary>
+    /// Updated teammate callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<UpdateTeammateCommand> TeammateUpdated { get; set; }
 
     private ConfirmDialog? _confirmDialog;
     private TeammateDto? _selectedTeammate;
@@ -108,6 +121,20 @@
     private int? _deleteUntil;
     
     private IQueryable<TeammateDto> Teammates => Item.Teammates.AsQueryable();
+    
+    private string ValueToString(bool value) => value
+        ? Localizer["BooleanTrueText"]
+        : Localizer["BooleanFalseText"];
+
+    private async Task ChangeTeammate(TeammateDto teammate)
+    {
+        await TeammateUpdated.InvokeAsync(new UpdateTeammateCommand(
+            teammate.TeamId,
+            teammate.PersonId,
+            HasLeaveUntil: false,
+            LeaveUntil: null,
+            !teammate.CanFinalize));
+    }
 
     private async Task DeleteTeammate(TeammateDto teammate, int? leaveUntil)
     {
@@ -116,7 +143,7 @@
         _isDelete = !leaveUntil.HasValue;
 
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
-            await EmitTeammateRemoved();
+            await ChangeMembership();
     }
 
     private async Task RecoveryTeammate(TeammateDto teammate)
@@ -126,13 +153,31 @@
         _isDelete = false;
 
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
-            await EmitTeammateRemoved();
+            await ChangeMembership();
     }
 
-    private async Task EmitTeammateRemoved()
+    private async Task ChangeMembership()
     {
         if (_selectedTeammate is not null)
-            await TeammateRemoved.InvokeAsync((_selectedTeammate, _isDelete, _deleteUntil));
+        {
+            if (_isDelete)
+                await TeammateRemoved.InvokeAsync(new RemoveTeammateCommand(
+                    _selectedTeammate.TeamId,
+                    _selectedTeammate.PersonId));
+            else
+            {
+                var leaveUntil = _deleteUntil.HasValue
+                    ? DateTimeOffset.UtcNow.AddDays(_deleteUntil.Value)
+                    : (DateTimeOffset?)null;
+                
+                await TeammateUpdated.InvokeAsync(new UpdateTeammateCommand(
+                    _selectedTeammate.TeamId,
+                    _selectedTeammate.PersonId,
+                    HasLeaveUntil: true,
+                    leaveUntil,
+                    CanFinalize: null));
+            }
+        }
 
         _selectedTeammate = null;
         _isDelete = false;

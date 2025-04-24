@@ -22,7 +22,8 @@ internal sealed class TeamReader : ITeamReader
                 p.id AS personid,
                 p.name AS name,
                 p.username AS username,
-                tm.leave_until AS leaveuntil
+                tm.leave_until AS leaveuntil,
+                tm.can_finalize AS canfinalize
             FROM connector.teammates AS tm
             JOIN connector.persons AS p ON p.id = tm.person_id
             WHERE tm.team_id = @team_id;",

@@ -23,6 +23,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     public long? OriginalReviewerId { get; private set; }
     public int? OriginalReviewerMessageId { get; private set; }
     public long? FirstReviewerId { get; private set; }
+    public int? FirstReviewerMessageId { get; private set; }
     public long? SecondReviewerId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
 
@@ -104,6 +105,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         void MoveToSecondRound(long reviewerId)
         {
             FirstReviewerId = ReviewerId;
+            FirstReviewerMessageId = ReviewerMessageId;
             
             ChangeReviewer(reviewerId);
         
@@ -150,7 +152,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public bool CanMoveToInProgress() => State == TaskForReviewState.New;
+    public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
 
     public TaskForReview MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {

@@ -6,7 +6,8 @@
     State="_state"
     Item="_item"
     Retry="() => Load()"
-    TeammateRemoved="e => RemoveTeammate(e.Teammate, e.Exclude, e.LeaveUntil)" />
+    TeammateUpdated="UpdateTeammate"
+    TeammateRemoved="RemoveTeammate" />
 
 @code {
     [Parameter, EditorRequired]
@@ -33,14 +34,21 @@
         
         StateHasChanged();
     }
-
-    private async Task RemoveTeammate(TeammateDto teammate, bool exclude, int? leaveUntil)
+    
+    private async Task UpdateTeammate(UpdateTeammateCommand command)
     {
-        await RequestProcessor.Process(() => BotService.RemoveTeammate(new RemoveTeammateCommand(
-                teammate.TeamId,
-                teammate.PersonId,
-                leaveUntil.HasValue ? DateTimeOffset.UtcNow.AddDays(leaveUntil.Value) : null,
-                exclude)),
+        await RequestProcessor.Process(
+            () => BotService.UpdateTeammate(command),
+            _state,
+            showLoading: false);
+
+        await Load(showLoading: false);
+    }
+
+    private async Task RemoveTeammate(RemoveTeammateCommand command)
+    {
+        await RequestProcessor.Process(
+            () => BotService.RemoveTeammate(command),
             _state,
             showLoading: false);
 

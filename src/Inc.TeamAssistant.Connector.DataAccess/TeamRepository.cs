@@ -98,7 +98,10 @@ internal sealed class TeamRepository : ITeamRepository
         var upsertTeammates = new CommandDefinition(@"
             MERGE INTO connector.teammates AS ttm
             USING (
-                SELECT DISTINCT ON (q.person_id) @team_id AS team_id, q.person_id AS person_id, q.mark_as_removed
+                SELECT DISTINCT ON (q.person_id)
+                    @team_id AS team_id,
+                    q.person_id AS person_id,
+                    q.mark_as_removed AS mark_as_removed
                 FROM (
                     SELECT tm.person_id, false AS mark_as_removed
                     FROM UNNEST(@person_ids) AS tm(person_id)
@@ -109,7 +112,7 @@ internal sealed class TeamRepository : ITeamRepository
                 ORDER BY q.person_id, q.mark_as_removed
             ) AS stm ON ttm.team_id = stm.team_id AND ttm.person_id = stm.person_id
             WHEN NOT MATCHED THEN
-                INSERT VALUES(stm.team_id, stm.person_id)
+                INSERT VALUES(stm.team_id, stm.person_id, NULL, false)
             WHEN MATCHED AND NOT stm.mark_as_removed THEN
                 UPDATE SET team_id = stm.team_id, person_id = stm.person_id
             WHEN MATCHED THEN

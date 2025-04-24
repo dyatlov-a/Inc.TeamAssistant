@@ -470,5 +470,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
                 return ResourceManager.GetString("TaskForReviewStateAcceptWithComments", resourceCulture);
             }
         }
+        
+        internal static string CanFinalize {
+            get {
+                return ResourceManager.GetString("CanFinalize", resourceCulture);
+            }
+        }
     }
 }

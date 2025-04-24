@@ -1,5 +1,6 @@
 using Dapper;
 using Inc.TeamAssistant.Connector.Application.Contracts;
+using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 
@@ -49,7 +50,32 @@ internal sealed class PersonRepository : IPersonRepository
 
         return await connection.QuerySingleOrDefaultAsync<Person>(command);
     }
-    
+
+    public async Task<Teammate?> Find(TeammateKey key, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        
+        var command = new CommandDefinition(@"
+            SELECT
+                t.team_id AS teamid,
+                t.person_id AS personid,
+                t.leave_until AS leaveuntil,
+                t.can_finalize AS canfinalize
+            FROM connector.teammates AS t
+            WHERE t.team_id = @team_id AND t.person_id = @person_id;",
+            new
+            {
+                team_id = key.TeamId,
+                person_id = key.PersonId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+
+        return await connection.QuerySingleOrDefaultAsync<Teammate>(command);
+    }
+
     public async Task<IReadOnlyCollection<Person>> GetTeammates(
         Guid teamId,
         DateTimeOffset now,
@@ -84,7 +110,7 @@ internal sealed class PersonRepository : IPersonRepository
         ArgumentNullException.ThrowIfNull(person);
 
         var command = new CommandDefinition(@"
-            INSERT INTO connector.persons AS p (id, name, username)
+            INSERT INTO connector.persons (id, name, username)
             VALUES (@id, @name, @username)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
@@ -103,15 +129,17 @@ internal sealed class PersonRepository : IPersonRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
+    public async Task RemoveFromTeam(TeammateKey key, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(key);
+        
         var command = new CommandDefinition(@"
             DELETE FROM connector.teammates
             WHERE person_id = @person_id AND team_id = @team_id;",
             new
             {
-                team_id = teamId,
-                person_id = personId
+                team_id = key.TeamId,
+                person_id = key.PersonId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -121,17 +149,22 @@ internal sealed class PersonRepository : IPersonRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset? until, CancellationToken token)
+    public async Task Upsert(Teammate teammate, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(teammate);
+        
         var command = new CommandDefinition(@"
-            UPDATE connector.teammates
-            SET leave_until = @leave_until
-            WHERE person_id = @person_id AND team_id = @team_id;",
+            INSERT INTO connector.teammates (team_id, person_id, leave_until, can_finalize)
+            VALUES (@team_id, @person_id, @leave_until, @can_finalize)
+            ON CONFLICT (team_id, person_id) DO UPDATE SET
+                leave_until = EXCLUDED.leave_until,
+                can_finalize = EXCLUDED.can_finalize;",
             new
             {
-                team_id = teamId,
-                person_id = personId,
-                leave_until = until
+                team_id = teammate.TeamId,
+                person_id = teammate.PersonId,
+                leave_until = teammate.LeaveUntil,
+                can_finalize = teammate.CanFinalize
             },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -44,6 +44,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
                 t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
@@ -87,6 +88,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
                 t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
@@ -128,6 +130,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 original_reviewer_id,
                 original_reviewer_message_id,
                 first_reviewer_id,
+                first_reviewer_message_id,
                 second_reviewer_id,
                 review_intervals)
             VALUES (
@@ -149,6 +152,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @original_reviewer_id,
                 @original_reviewer_message_id,
                 @first_reviewer_id,
+                @first_reviewer_message_id,
                 @second_reviewer_id,
                 @review_intervals::jsonb)
             ON CONFLICT (id) DO UPDATE SET
@@ -169,6 +173,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 original_reviewer_id = excluded.original_reviewer_id,
                 original_reviewer_message_id = excluded.original_reviewer_message_id,
                 first_reviewer_id = excluded.first_reviewer_id,
+                first_reviewer_message_id = excluded.first_reviewer_message_id,
                 second_reviewer_id = excluded.second_reviewer_id,
                 review_intervals = excluded.review_intervals;
             """,
@@ -192,6 +197,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 original_reviewer_id = taskForReview.OriginalReviewerId,
                 original_reviewer_message_id = taskForReview.OriginalReviewerMessageId,
                 first_reviewer_id = taskForReview.FirstReviewerId,
+                first_reviewer_message_id = taskForReview.FirstReviewerMessageId,
                 second_reviewer_id = taskForReview.SecondReviewerId,
                 review_intervals = reviewIntervals
             },

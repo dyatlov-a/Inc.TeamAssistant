@@ -5,4 +5,5 @@ public sealed record TeammateDto(
     long PersonId,
     string Name,
     string? UserName,
-    DateTimeOffset? LeaveUntil);
+    DateTimeOffset? LeaveUntil,
+    bool CanFinalize);

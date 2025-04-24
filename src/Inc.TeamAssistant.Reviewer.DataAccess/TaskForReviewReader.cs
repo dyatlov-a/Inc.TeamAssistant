@@ -41,6 +41,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
                 t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
@@ -92,6 +93,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
                 t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
@@ -137,6 +139,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
                 t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
@@ -260,23 +263,30 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
     
     public async Task<long?> GetLastSecondReviewer(Guid teamId, CancellationToken token)
     {
+        var activeStates = TaskForReviewStateRules.ActiveStates.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
-            SELECT NULLIF(t.second_reviewer_id, t.reviewer_id) AS reviewerid,
+            SELECT
+                NULLIF(t.second_reviewer_id, t.reviewer_id) AS reviewerid
             FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.first_reviewer_id IS NOT NULL
-            ORDER BY t.created DESC;
+            WHERE t.team_id = @team_id AND (
+                (t.first_reviewer_id IS NOT NULL AND t.state = ANY(@active_states)) OR
+                t.second_reviewer_id IS NOT NULL
+            )
+            ORDER BY t.created DESC
+            LIMIT 1;
             """,
             new
             {
-                team_id = teamId
+                team_id = teamId,
+                active_states = activeStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var result = await connection.QuerySingleOrDefaultAsync(command);
+        var result = await connection.QuerySingleOrDefaultAsync<long?>(command);
         
         return result;
     }
