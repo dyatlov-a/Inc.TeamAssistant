@@ -34,9 +34,16 @@
                         <TemplateColumn
                             Title="@Localizer["CanFinalize"]"
                             Sortable="false">
-                            <RouterLink OnClick="() => ChangeTeammate(context)">
+                            @if (Item.HasManagerAccess)
+                            {
+                                <RouterLink OnClick="() => ChangeTeammate(context)">
+                                    @ValueToString(context.CanFinalize)
+                                </RouterLink>
+                            }
+                            else
+                            {
                                 @ValueToString(context.CanFinalize)
-                            </RouterLink>
+                            }
                         </TemplateColumn>
                         <TemplateColumn
                             Title="@Localizer["LeaveUntil"]"
@@ -79,6 +86,7 @@
 }
 
 @code {
+
     /// <summary>
     /// Team identifier.
     /// </summary>
@@ -90,25 +98,25 @@
     /// </summary>
     [Parameter, EditorRequired]
     public LoadingState State { get; set; } = default!;
-    
+
     /// <summary>
     /// Teammates data.
     /// </summary>
     [Parameter, EditorRequired]
     public GetTeammatesResult Item { get; set; } = default!;
-    
+
     /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
-    
+
     /// <summary>
     /// Removed teammate callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RemoveTeammateCommand> TeammateRemoved { get; set; }
-    
+
     /// <summary>
     /// Updated teammate callback.
     /// </summary>
@@ -119,9 +127,9 @@
     private TeammateDto? _selectedTeammate;
     private bool _isDelete;
     private int? _deleteUntil;
-    
+
     private IQueryable<TeammateDto> Teammates => Item.Teammates.AsQueryable();
-    
+
     private string ValueToString(bool value) => value
         ? Localizer["BooleanTrueText"]
         : Localizer["BooleanFalseText"];
@@ -169,7 +177,7 @@
                 var leaveUntil = _deleteUntil.HasValue
                     ? DateTimeOffset.UtcNow.AddDays(_deleteUntil.Value)
                     : (DateTimeOffset?)null;
-                
+
                 await TeammateUpdated.InvokeAsync(new UpdateTeammateCommand(
                     _selectedTeammate.TeamId,
                     _selectedTeammate.PersonId,
