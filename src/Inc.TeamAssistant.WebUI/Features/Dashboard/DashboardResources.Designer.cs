@@ -243,33 +243,33 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
             }
         }
         
-        internal static string ReviewStateNone {
+        internal static string TaskForReviewStateFirstAccept {
             get {
-                return ResourceManager.GetString("ReviewStateNone", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateFirstAccept", resourceCulture);
             }
         }
         
-        internal static string ReviewStateNew {
+        internal static string TaskForReviewStateNew {
             get {
-                return ResourceManager.GetString("ReviewStateNew", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateNew", resourceCulture);
             }
         }
         
-        internal static string ReviewStateInProgress {
+        internal static string TaskForReviewStateInProgress {
             get {
-                return ResourceManager.GetString("ReviewStateInProgress", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateInProgress", resourceCulture);
             }
         }
         
-        internal static string ReviewStateOnCorrection {
+        internal static string TaskForReviewStateOnCorrection {
             get {
-                return ResourceManager.GetString("ReviewStateOnCorrection", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateOnCorrection", resourceCulture);
             }
         }
         
-        internal static string ReviewStateAccept {
+        internal static string TaskForReviewStateAccept {
             get {
-                return ResourceManager.GetString("ReviewStateAccept", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateAccept", resourceCulture);
             }
         }
         
@@ -465,9 +465,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
             }
         }
         
-        internal static string ReviewStateAcceptWithComments {
+        internal static string TaskForReviewStateAcceptWithComments {
             get {
-                return ResourceManager.GetString("ReviewStateAcceptWithComments", resourceCulture);
+                return ResourceManager.GetString("TaskForReviewStateAcceptWithComments", resourceCulture);
             }
         }
     }

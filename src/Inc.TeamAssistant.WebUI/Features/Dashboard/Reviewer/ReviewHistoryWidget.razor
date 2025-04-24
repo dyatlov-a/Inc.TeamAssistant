@@ -116,12 +116,12 @@
     private readonly PaginationState _pagination = new() { ItemsPerPage = 8 };
     private IReadOnlyDictionary<string, string> StateLookup => new Dictionary<string, string>
     {
-        ["None"] = Localizer["ReviewStateNone"],
-        ["New"] = Localizer["ReviewStateNew"],
-        ["InProgress"] = Localizer["ReviewStateInProgress"],
-        ["OnCorrection"] = Localizer["ReviewStateOnCorrection"],
-        ["Accept"] = Localizer["ReviewStateAccept"],
-        ["AcceptWithComments"] = Localizer["ReviewStateAcceptWithComments"]
+        ["New"] = Localizer["TaskForReviewStateNew"],
+        ["InProgress"] = Localizer["TaskForReviewStateInProgress"],
+        ["OnCorrection"] = Localizer["TaskForReviewStateOnCorrection"],
+        ["FirstAccept"] = Localizer["TaskForReviewStateFirstAccept"],
+        ["Accept"] = Localizer["TaskForReviewStateAccept"],
+        ["AcceptWithComments"] = Localizer["TaskForReviewStateAcceptWithComments"]
     };
     private IQueryable<TaskForReviewDto> Tasks => Items.AsQueryable();
 

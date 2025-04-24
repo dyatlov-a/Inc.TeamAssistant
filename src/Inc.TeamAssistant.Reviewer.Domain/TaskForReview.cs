@@ -198,7 +198,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         return State switch
         {
-            TaskForReviewState.New => GlobalResources.Icons.Waiting,
+            TaskForReviewState.New or TaskForReviewState.FirstAccept => GlobalResources.Icons.Waiting,
             TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
             TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
             TaskForReviewState.Accept => GlobalResources.Icons.Accept,
