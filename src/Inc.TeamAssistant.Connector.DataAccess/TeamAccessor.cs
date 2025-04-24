@@ -82,6 +82,6 @@ internal sealed class TeamAccessor : ITeamAccessor
         ArgumentNullException.ThrowIfNull(key);
         
         if (!await HasManagerAccess(key, token))
-            throw new ApplicationException($"User {key.PersonId} has not rights for team {key.TeamId}");
+            throw new ApplicationException($"User {key.PersonId} does not have access rights for team {key.TeamId}.");
     }
 }
