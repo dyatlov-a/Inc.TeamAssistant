@@ -28,7 +28,10 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
         const int historyLimitInDays = 7;
         
         var lastFirstReviewers = await _reader.GetLastFirstReviewers(teamId, token);
-        var lastSecondReviewer = await _reader.GetLastSecondReviewer(teamId, token);
+        var lastSecondReviewer = await _reader.GetLastSecondReviewer(
+            teamId,
+            TaskForReviewStateRules.ActiveStates,
+            token);
         var lastReviewerByPerson = lastFirstReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
         var lastReviewerByTeam = lastFirstReviewers.MaxBy(r => r.Created);
         var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(historyLimitInDays));
@@ -47,7 +50,7 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
                 teammates,
                 excludedPersonIds,
                 lastReviewerByTeam?.ReviewerId),
-            NextReviewerType.SecondRoundRobinForTeam => new RoundRobinReviewerStrategy(
+            NextReviewerType.SecondRound => new RoundRobinReviewerStrategy(
                 teammates,
                 excludedPersonIds,
                 lastSecondReviewer),

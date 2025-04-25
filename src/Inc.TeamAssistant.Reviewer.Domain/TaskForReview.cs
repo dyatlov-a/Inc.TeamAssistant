@@ -24,7 +24,6 @@ public sealed class TaskForReview : ITaskForReviewStats
     public int? OriginalReviewerMessageId { get; private set; }
     public long? FirstReviewerId { get; private set; }
     public int? FirstReviewerMessageId { get; private set; }
-    public long? SecondReviewerId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
 
     private TaskForReview()
@@ -89,39 +88,27 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public bool CanAccept() => TaskForReviewStateRules.ActiveStates.Contains(State);
+    public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);
 
     public TaskForReview FinishRound(DateTimeOffset now, bool hasComments, long? nextReviewerId = null)
     {
         AddReviewInterval(ReviewerId, now);
 
         if (!FirstReviewerId.HasValue && nextReviewerId.HasValue)
-            MoveToSecondRound(nextReviewerId.Value);
-        else
-            Accept();
-
-        return this;
-        
-        void MoveToSecondRound(long reviewerId)
         {
-            FirstReviewerId = ReviewerId;
-            FirstReviewerMessageId = ReviewerMessageId;
-            
-            ChangeReviewer(reviewerId);
-        
+            ChangeReviewer(nextReviewerId.Value);
             State = TaskForReviewState.FirstAccept;
         }
-
-        void Accept()
+        else
         {
-            if (FirstReviewerId.HasValue)
-                SecondReviewerId = ReviewerId;
-            else
-                FirstReviewerId = ReviewerId;
-
             AcceptDate = now;
             State = hasComments ? TaskForReviewState.AcceptWithComments : TaskForReviewState.Accept;
         }
+        
+        FirstReviewerId ??= ReviewerId;
+        FirstReviewerMessageId ??= ReviewerMessageId;
+
+        return this;
     }
 
     public TaskForReview Decline(DateTimeOffset now, NotificationIntervals notificationIntervals)

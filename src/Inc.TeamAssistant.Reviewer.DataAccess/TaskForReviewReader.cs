@@ -42,7 +42,6 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.state = ANY(@states) AND t.next_notification < @now
@@ -94,7 +93,6 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);           
@@ -115,7 +113,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         return results.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(
+    public async Task<IReadOnlyCollection<TaskForReview>> GetTasksByTeam(
         Guid? teamId,
         DateTimeOffset date,
         CancellationToken token)
@@ -140,7 +138,6 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.second_reviewer_id AS secondreviewerid,
                 t.review_intervals AS reviewintervals
             FROM review.task_for_reviews AS t
             WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
@@ -217,7 +214,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             JOIN connector.persons AS r ON r.id = t.reviewer_id
             JOIN connector.persons AS o ON o.id = t.owner_id
             WHERE t.team_id = @team_id AND t.created >= @from
-            ORDER BY t.created DESC;            
+            ORDER BY t.created DESC;
             """,
             new
             {
@@ -261,25 +258,29 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         return results.ToArray();
     }
     
-    public async Task<long?> GetLastSecondReviewer(Guid teamId, CancellationToken token)
+    public async Task<long?> GetLastSecondReviewer(
+        Guid teamId,
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken token)
     {
-        var activeStates = TaskForReviewStateRules.ActiveStates.Select(s => (int)s).ToArray();
+        ArgumentNullException.ThrowIfNull(states);
+        
+        var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
             SELECT
-                NULLIF(t.second_reviewer_id, t.reviewer_id) AS reviewerid
+                t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND (
-                (t.first_reviewer_id IS NOT NULL AND t.state = ANY(@active_states)) OR
-                t.second_reviewer_id IS NOT NULL
-            )
+                (t.first_reviewer_id IS NOT NULL AND t.state = ANY(@target_states)) OR
+                t.state != ALL(@target_states))
             ORDER BY t.created DESC
             LIMIT 1;
             """,
             new
             {
                 team_id = teamId,
-                active_states = activeStates
+                target_states = targetStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -23,8 +23,11 @@ internal sealed class LeaveTeamHandler : ILeaveTeamHandler
         ArgumentNullException.ThrowIfNull(key);
 
         var notifications = new List<NotificationMessage>();
-        var states = TaskForReviewStateRules.ActiveStates;
-        var tasks = await _reader.GetTasksByPerson(key.TeamId, key.PersonId, states, token);
+        var tasks = await _reader.GetTasksByPerson(
+            key.TeamId,
+            key.PersonId,
+            TaskForReviewStateRules.ActiveStates,
+            token);
 
         foreach (var task in tasks)
         {

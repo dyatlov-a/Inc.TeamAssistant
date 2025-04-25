@@ -15,7 +15,7 @@ public interface ITaskForReviewReader
         IReadOnlyCollection<TaskForReviewState> states,
         CancellationToken token);
     
-    Task<IReadOnlyCollection<TaskForReview>> GetTasksFrom(Guid? teamId, DateTimeOffset date, CancellationToken token);
+    Task<IReadOnlyCollection<TaskForReview>> GetTasksByTeam(Guid? teamId, DateTimeOffset date, CancellationToken token);
     
     Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
     
@@ -26,5 +26,8 @@ public interface ITaskForReviewReader
     
     Task<IReadOnlyCollection<ReviewTicket>> GetLastFirstReviewers(Guid teamId, CancellationToken token);
 
-    Task<long?> GetLastSecondReviewer(Guid teamId, CancellationToken token);
+    Task<long?> GetLastSecondReviewer(
+        Guid teamId,
+        IReadOnlyCollection<TaskForReviewState> states,
+        CancellationToken token);
 }

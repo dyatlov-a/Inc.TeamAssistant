@@ -23,7 +23,7 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
         ArgumentNullException.ThrowIfNull(command);
 
         var taskForReview = await command.TaskId.Required(_repository.Find, token);
-        if (!taskForReview.CanAccept())
+        if (!taskForReview.CanMakeDecision())
             return CommandResult.Empty;
         
         await _repository.Upsert(

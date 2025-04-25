@@ -36,10 +36,10 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
         ArgumentNullException.ThrowIfNull(command);
 
         var taskForReview = await command.TaskId.Required(_repository.Find, token);
-        if (!taskForReview.CanAccept())
+        if (!taskForReview.CanMakeDecision())
             return CommandResult.Empty;
 
-        var nextReviewerId = await GetNextReviewer(taskForReview, token);
+        var nextReviewerId = await GetSecondRoundReviewer(taskForReview, token);
 
         await _repository.Upsert(
             taskForReview.FinishRound(DateTimeOffset.UtcNow, command.HasComments, nextReviewerId),
@@ -50,19 +50,18 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
         return CommandResult.Build(notifications.ToArray());
     }
 
-    private async Task<long?> GetNextReviewer(TaskForReview taskForReview, CancellationToken token)
+    private async Task<long?> GetSecondRoundReviewer(TaskForReview taskForReview, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(taskForReview);
         
         var finalizes = await _teamAccessor.GetFinalizes(taskForReview.TeamId, DateTimeOffset.UtcNow, token);
-
         if (!finalizes.Any())
             return null;
 
         var nextReviewerStrategy = await _reviewerFactory.Create(
             taskForReview.TeamId,
             taskForReview.OwnerId,
-            NextReviewerType.SecondRoundRobinForTeam,
+            NextReviewerType.SecondRound,
             targetPersonId: null,
             finalizes.Select(t => t.Id).ToArray(),
             excludePersonId: taskForReview.ReviewerId,

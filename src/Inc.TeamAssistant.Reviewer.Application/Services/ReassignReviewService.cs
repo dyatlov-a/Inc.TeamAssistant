@@ -29,7 +29,7 @@ internal sealed class ReassignReviewService
     public async Task<IReadOnlyCollection<NotificationMessage>> ReassignReview(Guid taskId, CancellationToken token)
     {
         var task = await taskId.Required(_repository.Find, token);
-        if (!task.CanAccept())
+        if (!task.CanMakeDecision())
             return [];
         
         var teammates = await _teamAccessor.GetTeammates(task.TeamId, DateTimeOffset.UtcNow, token);
