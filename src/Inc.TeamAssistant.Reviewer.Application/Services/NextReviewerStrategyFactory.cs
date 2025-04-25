@@ -26,16 +26,15 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
         ArgumentNullException.ThrowIfNull(teammates);
         
         const int historyLimitInDays = 7;
-        
-        var lastFirstReviewers = await _reader.GetLastFirstReviewers(teamId, token);
-        var lastSecondReviewer = await _reader.GetLastSecondReviewer(
-            teamId,
-            TaskForReviewStateRules.ActiveStates,
-            token);
-        var lastReviewerByPerson = lastFirstReviewers.SingleOrDefault(r => r.OwnerId == ownerId);
-        var lastReviewerByTeam = lastFirstReviewers.MaxBy(r => r.Created);
         var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(historyLimitInDays));
-        var history = await _reader.GetHistory(teamId, fromDate, token);
+        var reviewerCandidatePool = await _reader.GetReviewerCandidates(
+            teamId,
+            fromDate,
+            TaskForReviewStateRules.ActiveStates,
+            NextReviewerType.Target,
+            token);
+        var lastReviewerByPerson = reviewerCandidatePool.FirstRoundHistory.SingleOrDefault(r => r.OwnerId == ownerId);
+        var lastReviewerByTeam = reviewerCandidatePool.FirstRoundHistory.MaxBy(r => r.Created);
         var excludedPersonIds = excludePersonId.HasValue
             ? new[] { ownerId, excludePersonId.Value }
             : [ownerId];
@@ -53,10 +52,10 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
             NextReviewerType.SecondRound => new RoundRobinReviewerStrategy(
                 teammates,
                 excludedPersonIds,
-                lastSecondReviewer),
+                reviewerCandidatePool.SecondRoundHistory),
             NextReviewerType.Random => new RandomReviewerStrategy(
                 teammates,
-                history,
+                reviewerCandidatePool.FirstRoundStats,
                 excludedPersonIds,
                 lastReviewerByPerson?.ReviewerId),
             NextReviewerType.Target when targetPersonId.HasValue => new TargetReviewerStrategy(targetPersonId.Value),

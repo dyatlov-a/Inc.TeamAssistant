@@ -17,17 +17,15 @@ public interface ITaskForReviewReader
     
     Task<IReadOnlyCollection<TaskForReview>> GetTasksByTeam(Guid? teamId, DateTimeOffset date, CancellationToken token);
     
-    Task<IReadOnlyDictionary<long, int>> GetHistory(Guid teamId, DateTimeOffset date, CancellationToken token);
-    
     Task<IReadOnlyCollection<TaskForReviewHistory>> GetLastTasks(
         Guid teamId,
         DateTimeOffset from,
         CancellationToken token);
-    
-    Task<IReadOnlyCollection<ReviewTicket>> GetLastFirstReviewers(Guid teamId, CancellationToken token);
 
-    Task<long?> GetLastSecondReviewer(
+    Task<ReviewerCandidatePool> GetReviewerCandidates(
         Guid teamId,
+        DateTimeOffset fromDate,
         IReadOnlyCollection<TaskForReviewState> states,
+        NextReviewerType excludeType,
         CancellationToken token);
 }

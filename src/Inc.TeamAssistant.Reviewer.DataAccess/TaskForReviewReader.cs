@@ -159,35 +159,6 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         return results.ToArray();
     }
 
-    public async Task<IReadOnlyDictionary<long, int>> GetHistory(
-        Guid teamId,
-        DateTimeOffset date,
-        CancellationToken token)
-    {
-        var command = new CommandDefinition(
-            """
-            SELECT
-                t.first_reviewer_id AS reviewerid,
-                COUNT(*) AS count
-            FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.first_reviewer_id IS NOT NULL AND t.created >= @date
-            GROUP BY t.first_reviewer_id;
-            """,
-            new
-            {
-                team_id = teamId,
-                date = date.UtcDateTime
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-        
-        var history = await connection.QueryAsync<(long ReviewerId, int Count)>(command);
-
-        return history.ToDictionary(h => h.ReviewerId, h => h.Count);
-    }
-
     public async Task<IReadOnlyCollection<TaskForReviewHistory>> GetLastTasks(
         Guid teamId,
         DateTimeOffset from,
@@ -230,37 +201,12 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
 
         return results.ToArray();
     }
-    
-    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastFirstReviewers(Guid teamId, CancellationToken token)
-    {
-        var command = new CommandDefinition(
-            """
-            SELECT DISTINCT ON (t.owner_id)
-                NULLIF(t.first_reviewer_id, t.reviewer_id) AS reviewerid,
-            	t.owner_id AS ownerid,
-            	t.created AS created
-            FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
-            ORDER BY t.owner_id, t.created DESC;
-            """,
-            new
-            {
-                team_id = teamId,
-                nrt_target = (int)NextReviewerType.Target
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
 
-        await using var connection = _connectionFactory.Create();
-
-        var results = await connection.QueryAsync<ReviewTicket>(command);
-
-        return results.ToArray();
-    }
-    
-    public async Task<long?> GetLastSecondReviewer(
+    public async Task<ReviewerCandidatePool> GetReviewerCandidates(
         Guid teamId,
+        DateTimeOffset fromDate,
         IReadOnlyCollection<TaskForReviewState> states,
+        NextReviewerType excludeType,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(states);
@@ -268,6 +214,21 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
+            SELECT
+                t.first_reviewer_id AS reviewerid,
+                COUNT(*) AS count
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.first_reviewer_id IS NOT NULL AND t.created >= @from_date
+            GROUP BY t.first_reviewer_id;        
+
+            SELECT DISTINCT ON (t.owner_id)
+                NULLIF(t.first_reviewer_id, t.reviewer_id) AS reviewerid,
+            	t.owner_id AS ownerid,
+            	t.created AS created
+            FROM review.task_for_reviews AS t
+            WHERE t.team_id = @team_id AND t.strategy != @exclude_type
+            ORDER BY t.owner_id, t.created DESC;
+
             SELECT
                 t.reviewer_id AS reviewerid
             FROM review.task_for_reviews AS t
@@ -280,15 +241,23 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             new
             {
                 team_id = teamId,
+                from_date = fromDate.UtcDateTime,
+                exclude_type = (int)excludeType,
                 target_states = targetStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-
-        var result = await connection.QuerySingleOrDefaultAsync<long?>(command);
         
-        return result;
+        await using var connection = _connectionFactory.Create();
+        await using var query = await  connection.QueryMultipleAsync(command);
+        
+        var firstRoundStats = await query.ReadAsync<(long ReviewerId, int Count)>();
+        var firstRoundHistory = await query.ReadAsync<ReviewerCandidatePool.FirstRoundHistoryItem>();
+        var secondRoundHistory = await query.ReadSingleOrDefaultAsync();
+        
+        return new ReviewerCandidatePool(
+            firstRoundStats.ToDictionary(h => h.ReviewerId, h => h.Count),
+            firstRoundHistory.ToArray(),
+            secondRoundHistory);
     }
 }
