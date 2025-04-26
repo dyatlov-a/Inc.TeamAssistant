@@ -5,12 +5,12 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class SingleLineCommandFactory
 {
-    private readonly CommandCreatorResolver _commandCreatorResolver;
+    private readonly CommandCreatorFactory _commandCreatorFactory;
     
-    public SingleLineCommandFactory(CommandCreatorResolver commandCreatorResolver)
+    public SingleLineCommandFactory(CommandCreatorFactory commandCreatorFactory)
     {
-        _commandCreatorResolver =
-            commandCreatorResolver ?? throw new ArgumentNullException(nameof(commandCreatorResolver));
+        _commandCreatorFactory =
+            commandCreatorFactory ?? throw new ArgumentNullException(nameof(commandCreatorFactory));
     }
     
     public async Task<IDialogCommand?> TryCreate(
@@ -33,19 +33,21 @@ internal sealed class SingleLineCommandFactory
         var cmd = parameters[0];
         var teamName = parameters[1];
         var description = string.Join(cmdSeparator, parameters[2..]);
-
-        var commandCreator = _commandCreatorResolver.TryResolve(cmd, onlySingleLineCommand: true);
+        
         var canSelectTeam = messageContext.Teams.Any(t => TeamFilter(t.Name));
         var team = bot.Teams.SingleOrDefault(t => TeamFilter(t.Name));
 
-        if (!canSelectTeam || commandCreator is null || team is null)
+        if (!canSelectTeam || team is null)
             return null;
         
         var teamContext = new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId);
-        return await commandCreator.Create(
+        var command = await _commandCreatorFactory.TryCreate(
+            cmd,
+            singleLineMode: true,
             messageContext.ChangeText(description),
             teamContext,
             token);
+        return command;
 
         bool TeamFilter(string name) => name.Equals(teamName, StringComparison.InvariantCultureIgnoreCase);
     }

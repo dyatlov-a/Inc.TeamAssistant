@@ -5,18 +5,24 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToDecline.S
 
 internal sealed class MoveToDeclineCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.Decline;
+    private readonly string _command = CommandList.Decline;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
 
-        return Task.FromResult<IDialogCommand>(new MoveToDeclineCommand(
+        return Task.FromResult<IDialogCommand?>(new MoveToDeclineCommand(
             messageContext,
-            messageContext.TryParseId(Command)));
+            messageContext.TryParseId(_command)));
     }
 }

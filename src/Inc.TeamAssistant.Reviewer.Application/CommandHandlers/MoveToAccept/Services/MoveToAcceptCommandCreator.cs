@@ -5,19 +5,25 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToAccept.Se
 
 internal sealed class MoveToAcceptCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.Accept;
+    private readonly string _command = CommandList.Accept;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
 
-        return Task.FromResult<IDialogCommand>(new MoveToAcceptCommand(
+        return Task.FromResult<IDialogCommand?>(new MoveToAcceptCommand(
             messageContext,
-            messageContext.TryParseId(Command),
+            messageContext.TryParseId(_command),
             false));
     }
 }

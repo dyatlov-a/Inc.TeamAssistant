@@ -8,22 +8,26 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Servi
 internal sealed class AddStoryCommandCreator : ICommandCreator
 {
     private readonly ITeamAccessor _teamAccessor;
-
-    public string Command => CommandList.AddStory;
-    public bool SupportSingleLineMode => true;
-
+    private readonly string _command = CommandList.AddStory;
+    
     public AddStoryCommandCreator(ITeamAccessor teamAccessor)
     {
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
     }
 
-    public async Task<IDialogCommand> Create(
+    public async Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+
+        if (!command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
         var separator = ' ';
         var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, DateTimeOffset.UtcNow, token);

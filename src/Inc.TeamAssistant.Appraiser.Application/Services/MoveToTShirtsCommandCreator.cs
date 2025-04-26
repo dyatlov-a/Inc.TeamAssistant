@@ -7,27 +7,32 @@ namespace Inc.TeamAssistant.Appraiser.Application.Services;
 internal sealed class MoveToTShirtsCommandCreator : ICommandCreator
 {
     private readonly IChangeTeamPropertyCommandFactory _commandFactory;
+    private readonly string _command = CommandList.MoveToTShirts;
 
     public MoveToTShirtsCommandCreator(IChangeTeamPropertyCommandFactory commandFactory)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
-
-    public string Command => CommandList.MoveToTShirts;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        var command = _commandFactory.Create(
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
+        
+        var cmd = _commandFactory.Create(
             messageContext,
             AppraiserProperties.StoryTypeKey,
-            StoryType.TShirt.ToString());
+            nameof(StoryType.TShirt));
 
-        return Task.FromResult(command);
+        return Task.FromResult<IDialogCommand?>(cmd);
     }
 }

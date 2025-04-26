@@ -5,18 +5,24 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.JoinToTeam.Ser
 
 internal sealed class JoinToTeamCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.Start;
+    private readonly string _command = CommandList.Start;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
 
-        return Task.FromResult<IDialogCommand>(new JoinToTeamCommand(
+        return Task.FromResult<IDialogCommand?>(new JoinToTeamCommand(
             messageContext,
-            messageContext.TryParseId(Command)));
+            messageContext.TryParseId(_command)));
     }
 }

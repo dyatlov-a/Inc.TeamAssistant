@@ -5,18 +5,25 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.ReassignReview.
 
 internal sealed class ReassignReviewCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.ReassignReview;
+    private readonly string _command = CommandList.ReassignReview;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
-        return Task.FromResult<IDialogCommand>(new ReassignReviewCommand(
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
+
+        
+        return Task.FromResult<IDialogCommand?>(new ReassignReviewCommand(
             messageContext,
-            messageContext.TryParseId(Command)));
+            messageContext.TryParseId(_command)));
     }
 }

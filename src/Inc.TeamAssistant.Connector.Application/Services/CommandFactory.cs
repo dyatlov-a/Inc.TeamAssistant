@@ -6,21 +6,21 @@ namespace Inc.TeamAssistant.Connector.Application.Services;
 
 internal sealed class CommandFactory
 {
-    private readonly CommandCreatorResolver _commandCreatorResolver;
+    private readonly CommandCreatorFactory _commandCreatorFactory;
     private readonly DialogContinuation _dialogContinuation;
     private readonly DialogCommandFactory _dialogCommandFactory;
     private readonly SingleLineCommandFactory _singleLineCommandFactory;
     private readonly AliasService _aliasService;
 
     public CommandFactory(
-        CommandCreatorResolver commandCreatorResolver,
+        CommandCreatorFactory commandCreatorFactory,
         DialogContinuation dialogContinuation,
         DialogCommandFactory dialogCommandFactory,
         SingleLineCommandFactory singleLineCommandFactory,
         AliasService aliasService)
     {
-        _commandCreatorResolver =
-            commandCreatorResolver ?? throw new ArgumentNullException(nameof(commandCreatorResolver));
+        _commandCreatorFactory =
+            commandCreatorFactory ?? throw new ArgumentNullException(nameof(commandCreatorFactory));
         _dialogContinuation = dialogContinuation ?? throw new ArgumentNullException(nameof(dialogContinuation));
         _dialogCommandFactory = dialogCommandFactory ?? throw new ArgumentNullException(nameof(dialogCommandFactory));
         _aliasService = aliasService ?? throw new ArgumentNullException(nameof(aliasService));
@@ -51,13 +51,14 @@ internal sealed class CommandFactory
         var dialogCommand = TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
         if (dialogCommand is not null)
             return dialogCommand;
-
-        var commandCreator = _commandCreatorResolver.TryResolve(contextCommand);
-        if (commandCreator is null)
-            return null;
         
         var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
-        var command = await commandCreator.Create(messageContext, currentTeamContext, token);
+        var command = await _commandCreatorFactory.TryCreate(
+            contextCommand,
+            singleLineMode: false,
+            messageContext,
+            currentTeamContext,
+            token);
         return command;
     }
 
@@ -75,10 +76,13 @@ internal sealed class CommandFactory
         
         if (simpleCommand?.MultipleStages == false)
         {
-            var priorityCommandCreator = _commandCreatorResolver.TryResolve(inputCommand);
-            
-            if (priorityCommandCreator is not null)
-                return await priorityCommandCreator.Create(messageContext, CurrentTeamContext.Empty, token);
+            var command = await _commandCreatorFactory.TryCreate(
+                inputCommand,
+                singleLineMode: false,
+                messageContext,
+                CurrentTeamContext.Empty,
+                token);
+            return command;
         }
 
         return null;

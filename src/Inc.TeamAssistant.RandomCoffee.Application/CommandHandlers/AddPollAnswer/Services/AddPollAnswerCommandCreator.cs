@@ -6,15 +6,21 @@ namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.AddPollAnsw
 
 internal sealed class AddPollAnswerCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.AddPollAnswer;
+    private readonly string _command = CommandList.AddPollAnswer;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
 
         var parameters = messageContext.Text
             .Replace(CommandList.AddPollAnswer, string.Empty)
@@ -22,6 +28,6 @@ internal sealed class AddPollAnswerCommandCreator : ICommandCreator
         var pollId = parameters[0];
         var options = parameters.Skip(1).ToArray();
         
-        return Task.FromResult<IDialogCommand>(new AddPollAnswerCommand(messageContext, pollId, options));
+        return Task.FromResult<IDialogCommand?>(new AddPollAnswerCommand(messageContext, pollId, options));
     }
 }

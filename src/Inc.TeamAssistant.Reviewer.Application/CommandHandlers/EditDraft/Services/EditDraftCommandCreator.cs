@@ -5,18 +5,24 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.EditDraft.Servi
 
 internal sealed class EditDraftCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.EditDraft;
+    private readonly string _command = CommandList.EditDraft;
     
-    public Task<IDialogCommand> Create(
+    public Task<IDialogCommand?> TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
         CurrentTeamContext teamContext,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return Task.FromResult<IDialogCommand?>(null);
 
-        var description = messageContext.Text.TrimStart(Command.ToArray());
+        var description = messageContext.Text.TrimStart(_command.ToArray());
 
-        return Task.FromResult<IDialogCommand>(new EditDraftCommand(messageContext, description));
+        return Task.FromResult<IDialogCommand?>(new EditDraftCommand(messageContext, description));
     }
 }
