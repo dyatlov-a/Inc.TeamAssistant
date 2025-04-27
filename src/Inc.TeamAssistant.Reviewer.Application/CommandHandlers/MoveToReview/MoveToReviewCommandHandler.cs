@@ -56,10 +56,10 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         var nextReviewerStrategy = await _reviewerFactory.Create(
             draft.TeamId,
             draft.OwnerId,
+            reviewerId: null,
             draft.GetStrategy(),
             draft.TargetPersonId,
             teammates.Select(t => t.Id).ToArray(),
-            excludePersonId: null,
             token);
         var taskForReview = new TaskForReview(
             Guid.NewGuid(),

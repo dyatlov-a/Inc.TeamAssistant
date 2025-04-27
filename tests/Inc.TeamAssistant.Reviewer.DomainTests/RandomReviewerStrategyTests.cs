@@ -11,24 +11,22 @@ public sealed class RandomReviewerStrategyTests
 
     public RandomReviewerStrategyTests()
     {
-        _teammates = new[]
-        {
+        _teammates =
+        [
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>(),
             _fixture.Create<long>()
-        };
+        ];
     }
 
     [Fact]
     public void Constructor_TeamIsNull_ThrowsException()
     {
         RandomReviewerStrategy Action() => new(
-            teammates: null!,
-            new Dictionary<long, int>(),
-            excludedPersonIds: Array.Empty<long>(),
-            lastReviewerId: null);
+            teammatesPool: null!,
+            new Dictionary<long, int>());
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -37,22 +35,8 @@ public sealed class RandomReviewerStrategyTests
     public void Constructor_HistoryIsNull_ThrowsException()
     {
         RandomReviewerStrategy Action() => new(
-            _teammates,
-            null!,
-            excludedPersonIds: Array.Empty<long>(),
-            lastReviewerId: null);
-
-        Assert.Throws<ArgumentNullException>(Action);
-    }
-    
-    [Fact]
-    public void Constructor_ExcludedPersonIdsIsNull_ThrowsException()
-    {
-        RandomReviewerStrategy Action() => new(
-            _teammates,
-            new Dictionary<long, int>(),
-            excludedPersonIds: null!,
-            lastReviewerId: null);
+            new TeammatesPool(_teammates, _fixture.Create<long>(), ReviewerId: null, LastReviewerId: null),
+            null!);
 
         Assert.Throws<ArgumentNullException>(Action);
     }
@@ -62,10 +46,8 @@ public sealed class RandomReviewerStrategyTests
     {
         var ownerId = _teammates.First();
         var target = new RandomReviewerStrategy(
-            _teammates,
-            new Dictionary<long, int>(),
-            [ownerId],
-            lastReviewerId: null);
+            new TeammatesPool(_teammates, ownerId, ReviewerId: null, LastReviewerId: null),
+            new Dictionary<long, int>());
 
         var reviewerId = target.GetReviewer();
         
@@ -78,10 +60,8 @@ public sealed class RandomReviewerStrategyTests
         var ownerId = _teammates.First();
         var lastReviewerId = _teammates.Skip(1).First();
         var target = new RandomReviewerStrategy(
-            _teammates,
-            new Dictionary<long, int>(),
-            [ownerId],
-            lastReviewerId);
+            new TeammatesPool(_teammates, ownerId, ReviewerId: null, lastReviewerId),
+            new Dictionary<long, int>());
 
         var reviewerId = target.GetReviewer();
         
@@ -92,12 +72,10 @@ public sealed class RandomReviewerStrategyTests
     [InlineData(1_000, 200)]
     public void Next_MultipleIterations_MustRandomReviewer(int iterationCount, int reviewerCountByPlayer)
     {
-        var owner = _teammates.First();
+        var ownerId = _teammates.First();
         var target = new RandomReviewerStrategy(
-            _teammates,
-            new Dictionary<long, int>(),
-            [owner],
-            lastReviewerId: null);
+            new TeammatesPool(_teammates, ownerId, ReviewerId: null, LastReviewerId: null),
+            new Dictionary<long, int>());
         var reviewerIds = Enumerable.Range(0, iterationCount)
             .Select(_ => target.GetReviewer())
             .GroupBy(i => i)

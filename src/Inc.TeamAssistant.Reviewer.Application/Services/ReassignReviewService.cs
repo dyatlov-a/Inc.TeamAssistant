@@ -41,10 +41,10 @@ internal sealed class ReassignReviewService
         var nextReviewerStrategy = await _reviewerFactory.Create(
             task.TeamId,
             task.OwnerId,
+            task.ReviewerId,
             nextReviewerType,
             targetPersonId: null,
             teammates.Select(t => t.Id).ToArray(),
-            excludePersonId: task.ReviewerId,
             token);
         var nextReviewer = nextReviewerStrategy.GetReviewer();
         

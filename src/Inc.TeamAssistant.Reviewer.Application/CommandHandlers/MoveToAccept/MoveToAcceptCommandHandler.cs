@@ -68,10 +68,10 @@ internal sealed class MoveToAcceptCommandHandler : IRequestHandler<MoveToAcceptC
         var nextReviewerStrategy = await _reviewerFactory.Create(
             taskForReview.TeamId,
             taskForReview.OwnerId,
+            taskForReview.ReviewerId,
             NextReviewerType.SecondRound,
             targetPersonId: null,
             finalizes.Select(t => t.Id).ToArray(),
-            excludePersonId: taskForReview.ReviewerId,
             token);
         
         var result = nextReviewerStrategy.GetReviewer();

@@ -60,7 +60,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         ChangeReviewer(reviewerId);
     }
     
-    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId;
+    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId && ReviewerId != OwnerId;
     public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
     public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
     public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);

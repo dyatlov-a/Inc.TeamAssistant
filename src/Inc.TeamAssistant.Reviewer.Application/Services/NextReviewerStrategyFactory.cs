@@ -17,10 +17,10 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
     public async Task<INextReviewerStrategy> Create(
         Guid teamId,
         long ownerId,
+        long? reviewerId,
         NextReviewerType nextReviewerType,
         long? targetPersonId,
         IReadOnlyCollection<long> teammates,
-        long? excludePersonId,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(teammates);
@@ -35,29 +35,30 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
             token);
         var lastReviewerByPerson = reviewerCandidatePool.FirstRoundHistory.SingleOrDefault(r => r.OwnerId == ownerId);
         var lastReviewerByTeam = reviewerCandidatePool.FirstRoundHistory.MaxBy(r => r.Created);
-        var excludedPersonIds = excludePersonId.HasValue
-            ? new[] { ownerId, excludePersonId.Value }
-            : [ownerId];
-        
+
         return nextReviewerType switch
         {
-            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(
+            NextReviewerType.RoundRobin => new RoundRobinReviewerStrategy(new TeammatesPool(
                 teammates,
-                excludedPersonIds,
+                ownerId,
+                reviewerId,
+                lastReviewerByPerson?.ReviewerId)),
+            NextReviewerType.RoundRobinForTeam => new RoundRobinReviewerStrategy(new TeammatesPool(
+                teammates,
+                ownerId,
+                reviewerId,
+                lastReviewerByTeam?.ReviewerId)),
+            NextReviewerType.SecondRound => new RoundRobinReviewerStrategy(new TeammatesPool(
+                teammates,
+                ownerId,
+                reviewerId,
+                reviewerCandidatePool.SecondRoundHistory)),
+            NextReviewerType.Random => new RandomReviewerStrategy(new TeammatesPool(
+                teammates,
+                ownerId,
+                reviewerId,
                 lastReviewerByPerson?.ReviewerId),
-            NextReviewerType.RoundRobinForTeam => new RoundRobinReviewerStrategy(
-                teammates,
-                excludedPersonIds,
-                lastReviewerByTeam?.ReviewerId),
-            NextReviewerType.SecondRound => new RoundRobinReviewerStrategy(
-                teammates,
-                excludedPersonIds,
-                reviewerCandidatePool.SecondRoundHistory),
-            NextReviewerType.Random => new RandomReviewerStrategy(
-                teammates,
-                reviewerCandidatePool.FirstRoundStats,
-                excludedPersonIds,
-                lastReviewerByPerson?.ReviewerId),
+                reviewerCandidatePool.FirstRoundStats),
             NextReviewerType.Target when targetPersonId.HasValue => new TargetReviewerStrategy(targetPersonId.Value),
             _ => throw new TeamAssistantException($"NextReviewerType {nextReviewerType} was not supported.")
         };

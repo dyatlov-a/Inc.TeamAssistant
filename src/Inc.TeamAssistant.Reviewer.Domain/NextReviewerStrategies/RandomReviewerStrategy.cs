@@ -4,21 +4,13 @@ public sealed class RandomReviewerStrategy : INextReviewerStrategy
 {
     private const int ReviewerWeight = 100;
 
-    private readonly IReadOnlyCollection<long> _teammates;
+    private readonly TeammatesPool _teammatesPool;
     private readonly IReadOnlyDictionary<long, int> _history;
-    private readonly IReadOnlyCollection<long> _excludedPersonIds;
-    private readonly long? _lastReviewerId;
 
-    public RandomReviewerStrategy(
-        IReadOnlyCollection<long> teammates,
-        IReadOnlyDictionary<long, int> history,
-        IReadOnlyCollection<long> excludedPersonIds,
-        long? lastReviewerId)
+    public RandomReviewerStrategy(TeammatesPool teammatesPool, IReadOnlyDictionary<long, int> history)
     {
-        _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
+        _teammatesPool = teammatesPool ?? throw new ArgumentNullException(nameof(teammatesPool));
         _history = history ?? throw new ArgumentNullException(nameof(history));
-        _excludedPersonIds = excludedPersonIds ?? throw new ArgumentNullException(nameof(excludedPersonIds));
-        _lastReviewerId = lastReviewerId;
     }
 
     public long GetReviewer()
@@ -26,19 +18,17 @@ public sealed class RandomReviewerStrategy : INextReviewerStrategy
         var targetPlayers = GetTargetPlayers();
         return targetPlayers.Any()
             ? FromTargetPlayers(targetPlayers)
-            : _teammates.First();
+            : _teammatesPool.Teammates.First();
     }
 
     private IReadOnlyCollection<long> GetTargetPlayers()
     {
-        var excludedTeammates = _lastReviewerId.HasValue
-            ? _excludedPersonIds.Append(_lastReviewerId.Value)
-            : _excludedPersonIds;
+        var teammatesWithoutParticipates = _teammatesPool.WithoutParticipates();
+        var results = teammatesWithoutParticipates.Any()
+            ? teammatesWithoutParticipates
+            : _teammatesPool.OnlyOtherTeammates();
         
-        return _teammates
-            .Where(t => !excludedTeammates.Contains(t))
-            .OrderBy(t => t)
-            .ToArray();
+        return results;
     }
 
     private long FromTargetPlayers(IReadOnlyCollection<long> targetPlayers)
