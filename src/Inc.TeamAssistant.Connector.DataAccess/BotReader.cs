@@ -93,6 +93,7 @@ internal sealed class BotReader : IBotReader
                 b.id AS id,
                 b.name AS name,
                 b.token AS token,
+                b.owner_id AS ownerid,
                 b.properties AS properties
             FROM connector.bots AS b
             WHERE b.id = @id;

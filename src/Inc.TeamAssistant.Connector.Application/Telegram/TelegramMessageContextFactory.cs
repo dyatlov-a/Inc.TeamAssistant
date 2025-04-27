@@ -206,6 +206,6 @@ internal sealed class TelegramMessageContextFactory
         return results;
         
         bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
-        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
+        bool OwnerOfTeam(Team t) => t.Owner.Id == personId || bot.OwnerId == personId;
     }
 }
