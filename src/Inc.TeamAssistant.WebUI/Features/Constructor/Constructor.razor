@@ -13,7 +13,7 @@
                 </BotCard>
             </div>
             <Loading State="State" Retry="Retry">
-                @foreach (var bot in Bots.Where(b => b.OwnerId == OwnerId))
+                @foreach (var bot in Bots)
                 {
                     <div class="bot-selector__item">
                         <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
@@ -23,12 +23,15 @@
                                 </RouterLink>
                             </Content>
                             <Buttons>
-                                <Button OnClick="@(() => MoveToEdit.InvokeAsync(bot.Id))">
-                                    @Localizer["Edit"]
-                                </Button>
-                                <Button OnClick="@(() => MoveToRemove.InvokeAsync(bot))">
-                                    @Localizer["Remove"]
-                                </Button>
+                                @if (bot.OwnerId == OwnerId)
+                                {
+                                    <Button OnClick="@(() => MoveToEdit.InvokeAsync(bot.Id))">
+                                        @Localizer["Edit"]
+                                    </Button>
+                                    <Button OnClick="@(() => MoveToRemove.InvokeAsync(bot))">
+                                        @Localizer["Remove"]
+                                    </Button>
+                                }
                             </Buttons>
                         </BotCard>
                     </div>
