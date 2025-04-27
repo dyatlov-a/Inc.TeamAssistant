@@ -23,10 +23,10 @@ public sealed class RandomReviewerStrategy : INextReviewerStrategy
 
     private IReadOnlyCollection<long> GetTargetPlayers()
     {
-        var teammatesWithoutParticipates = _teammatesPool.WithoutParticipates();
-        var results = teammatesWithoutParticipates.Any()
-            ? teammatesWithoutParticipates
-            : _teammatesPool.OnlyOtherTeammates();
+        var withoutAllParticipants = _teammatesPool.WithoutAllParticipants();
+        var results = withoutAllParticipants.Any()
+            ? withoutAllParticipants
+            : _teammatesPool.WithoutPriorityParticipants();
         
         return results;
     }

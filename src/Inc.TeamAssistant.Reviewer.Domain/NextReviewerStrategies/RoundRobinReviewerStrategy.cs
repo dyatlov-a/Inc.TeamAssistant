@@ -11,9 +11,9 @@ public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
 
     public long GetReviewer()
     {
-        var otherTeammates = _teammatesPool.OnlyOtherTeammates();
-        var reviewer = otherTeammates.Any()
-            ? FromOtherTeammates(otherTeammates)
+        var withoutPriorityParticipants = _teammatesPool.WithoutPriorityParticipants();
+        var reviewer = withoutPriorityParticipants.Any()
+            ? FromOtherTeammates(withoutPriorityParticipants)
             : _teammatesPool.Teammates.First();
 
         return reviewer;

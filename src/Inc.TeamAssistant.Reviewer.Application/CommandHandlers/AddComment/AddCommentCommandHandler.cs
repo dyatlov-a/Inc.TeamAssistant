@@ -31,6 +31,7 @@ internal sealed class AddCommentCommandHandler : IRequestHandler<AddCommentComma
 
         var authorId = command.MessageContext.Person.Id;
         var taskId = _commentsProvider.Check(command.MessageContext.ChatMessage.ChatId, command.ReplyToMessageId);
+        
         if (taskId.HasValue)
         {
             var task = await taskId.Value.Required(_repository.Find, token);
@@ -44,8 +45,12 @@ internal sealed class AddCommentCommandHandler : IRequestHandler<AddCommentComma
                 var messageForDelete = new ChatMessage(
                     command.MessageContext.ChatMessage.ChatId,
                     command.MessageContext.ChatMessage.MessageId);
-                var notification = await _reviewMessageBuilder.BuildForTeam(task, token);
-                return CommandResult.Build(notification, NotificationMessage.Delete(messageForDelete));
+                var notificationsAfterComments = await _reviewMessageBuilder.BuildAfterComments(task, token);
+                var notifications = notificationsAfterComments
+                    .Append(NotificationMessage.Delete(messageForDelete))
+                    .ToArray();
+                
+                return CommandResult.Build(notifications);
             }
         }
 

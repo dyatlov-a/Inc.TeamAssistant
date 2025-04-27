@@ -6,20 +6,15 @@ public sealed record TeammatesPool(
     long? ReviewerId,
     long? LastReviewerId)
 {
-    public IReadOnlyCollection<long> WithoutParticipates()
+    public IReadOnlyCollection<long> WithoutAllParticipants()
         => Apply(t => t != OwnerId && t != ReviewerId && t != LastReviewerId);
 
-    public IReadOnlyCollection<long> OnlyOtherTeammates()
+    public IReadOnlyCollection<long> WithoutPriorityParticipants()
     {
-        var teammatesWithoutOwner = WithoutOwner();
-        var results = teammatesWithoutOwner.Any() ? teammatesWithoutOwner : WithoutReviewer();
+        var teammatesWithoutOwner = Apply(t => t != OwnerId && t != ReviewerId);
+        var results = teammatesWithoutOwner.Any() ? teammatesWithoutOwner : Apply(t => t != ReviewerId);
         return results;
     }
-    
-    private IReadOnlyCollection<long> WithoutOwner()
-        => Apply(t => t != OwnerId && t != ReviewerId);
-    private IReadOnlyCollection<long> WithoutReviewer()
-        => Apply(t => t != ReviewerId);
     
     private IReadOnlyCollection<long> Apply(Func<long, bool> filter)
     {
