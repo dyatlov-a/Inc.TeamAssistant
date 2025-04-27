@@ -75,6 +75,21 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         return notifications;
     }
 
+    public async Task<NotificationMessage> BuildForTeam(TaskForReview task, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+        
+        var metricsByTeam = _metricsProvider.Get(task.TeamId);
+        var metricsByTask = await _metricsFactory.Create(task, token);
+        var firstReviewer = task.FirstReviewerId.HasValue
+            ? await _teamAccessor.EnsurePerson(task.FirstReviewerId.Value, token)
+            : null;
+        var reviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
+        var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);
+
+        return await MessageForTeam(task, firstReviewer, reviewer, owner, metricsByTeam, metricsByTask, token);
+    }
+
     public async Task<NotificationMessage?> Push(TaskForReview task, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
@@ -200,10 +215,17 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         Func<NotificationMessage, NotificationMessage> attachPersons = n => n;
 
         var notification = NotificationBuilder.Create()
-            .Add(sb => sb
-                .AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId))
-                .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName)))
-            .AddIf(firstReviewer is not null, sb => sb.Append(_messageBuilder.Build(
+            .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId)))
+            .AddIf(task.Comments.Any(), sb =>
+            {
+                sb.AppendLine();
+                sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_Comments, ownerLanguageId));
+                foreach (var comment in task.Comments.OrderBy(c => c.Created))
+                    sb.AppendLine(comment.Comment);
+                sb.AppendLine();
+            })
+            .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName)))
+            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_FirstAccept,
                 ownerLanguageId,
                 firstReviewer!.DisplayName)))

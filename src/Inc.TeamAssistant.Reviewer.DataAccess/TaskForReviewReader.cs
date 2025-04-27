@@ -13,6 +13,56 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
+    
+    public async Task<IReadOnlyCollection<TaskForReview>> GetAll(
+        IReadOnlyCollection<TaskForReviewState> states,
+        Guid? teamId,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(states);
+
+        var targetStates = states.Select(s => (int)s).ToArray();
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.bot_id AS botid,
+                t.team_id AS teamid,
+                t.strategy AS strategy,
+                t.owner_id AS ownerid,
+                t.owner_message_id AS ownermessageid,
+                t.reviewer_id AS reviewerid,
+                t.reviewer_message_id AS reviewermessageid,
+                t.description AS description,
+                t.state AS state,
+                t.created AS created,
+                t.next_notification AS nextnotification,
+                t.accept_date AS acceptdate,
+                t.message_id AS messageid,
+                t.chat_id AS chatid,
+                t.original_reviewer_id AS originalreviewerid,
+                t.original_reviewer_message_id AS originalreviewermessageid,
+                t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
+                t.review_intervals AS reviewintervals,
+                t.comments AS comments
+            FROM review.task_for_reviews AS t
+            WHERE t.state = ANY(@states) AND (@team_id IS NULL OR t.team_id = @team_id);
+            """,
+            new
+            {
+                team_id = teamId,
+                states = targetStates,
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var results = await connection.QueryAsync<TaskForReview>(command);
+
+        return results.ToArray();
+    }
 
     public async Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
         DateTimeOffset now,
@@ -42,7 +92,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.review_intervals AS reviewintervals
+                t.review_intervals AS reviewintervals,
+                t.comments AS comments
             FROM review.task_for_reviews AS t
             WHERE t.state = ANY(@states) AND t.next_notification < @now
             ORDER BY t.next_notification;           
@@ -93,7 +144,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.review_intervals AS reviewintervals
+                t.review_intervals AS reviewintervals,
+                t.comments AS comments
             FROM review.task_for_reviews AS t
             WHERE t.team_id = @team_id AND t.reviewer_id = @person_id AND t.state = ANY(@states);           
             """,
@@ -138,7 +190,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.original_reviewer_message_id AS originalreviewermessageid,
                 t.first_reviewer_id AS firstreviewerid,
                 t.first_reviewer_message_id AS firstreviewermessageid,
-                t.review_intervals AS reviewintervals
+                t.review_intervals AS reviewintervals,
+                t.comments AS comments
             FROM review.task_for_reviews AS t
             WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
             ORDER BY t.created;         
@@ -180,7 +233,8 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 o.id AS ownerid,
                 o.name AS ownername,
                 o.username AS ownerusername,
-                t.original_reviewer_id AS originalreviewerid
+                t.original_reviewer_id AS originalreviewerid,
+                t.comments AS comments
             FROM review.task_for_reviews AS t
             JOIN connector.persons AS r ON r.id = t.reviewer_id
             JOIN connector.persons AS o ON o.id = t.owner_id
@@ -253,7 +307,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         
         var firstRoundStats = await query.ReadAsync<(long ReviewerId, int Count)>();
         var firstRoundHistory = await query.ReadAsync<ReviewerCandidatePool.FirstRoundHistoryItem>();
-        var secondRoundHistory = await query.ReadSingleOrDefaultAsync();
+        var secondRoundHistory = await query.ReadSingleOrDefaultAsync<long?>();
         
         return new ReviewerCandidatePool(
             firstRoundStats.ToDictionary(h => h.ReviewerId, h => h.Count),

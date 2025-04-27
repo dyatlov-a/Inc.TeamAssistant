@@ -4,6 +4,11 @@ namespace Inc.TeamAssistant.Reviewer.Application.Contracts;
 
 public interface ITaskForReviewReader
 {
+    Task<IReadOnlyCollection<TaskForReview>> GetAll(
+        IReadOnlyCollection<TaskForReviewState> states,
+        Guid? teamId,
+        CancellationToken token);
+    
     Task<IReadOnlyCollection<TaskForReview>> GetTasksForNotifications(
         DateTimeOffset now,
         IReadOnlyCollection<TaskForReviewState> states,

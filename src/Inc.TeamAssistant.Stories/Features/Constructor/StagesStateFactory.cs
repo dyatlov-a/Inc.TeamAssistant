@@ -87,18 +87,6 @@ internal static class StagesStateFactory
                                 new SelectValue(
                                     MessageId: "FormSectionSetSettingsNotificationInterval4Description",
                                     Value: "02:00:00")
-                            ]),
-                        new SettingItem(
-                            PropertyName: "acceptWithComments",
-                            LabelMessageId: "FormSectionSetSettingsAcceptWithCommentsFieldLabel",
-                            Values:
-                            [
-                                new SelectValue(
-                                    MessageId: "BooleanTrueText",
-                                    Value: "true"),
-                                new SelectValue(
-                                    MessageId: "BooleanFalseText",
-                                    Value: "false")
                             ])
                     ])
             ],
@@ -176,7 +164,6 @@ internal static class StagesStateFactory
                 ["nextReviewerStrategy"] = "RoundRobin",
                 ["waitingNotificationInterval"] = "00:30:00",
                 ["inProgressNotificationInterval"] = "01:00:00",
-                ["acceptWithComments"] = "true",
                 ["roundInterval"] = "14.00:00:00",
                 ["votingInterval"] = "1.00:00:00"
             },
@@ -192,8 +179,7 @@ internal static class StagesStateFactory
                     Properties: [
                         "nextReviewerStrategy",
                         "waitingNotificationInterval",
-                        "inProgressNotificationInterval",
-                        "acceptWithComments"
+                        "inProgressNotificationInterval"
                     ]),
                 new FeatureDto(
                     Id: Guid.Parse("01142088-5dbd-4438-b594-c53de1427582"),

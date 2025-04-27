@@ -188,7 +188,7 @@ internal sealed class WidgetsDataFactory
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
-                    State: "Accept",
+                    State: "AcceptWithComments",
                     Description: "Description",
                     FirstTouch: TimeSpan.FromMinutes(10),
                     Correction: TimeSpan.FromMinutes(20),
@@ -201,7 +201,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    ["It is necessary to start a task for refactoring"]),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -218,7 +219,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -235,7 +237,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -252,7 +255,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -269,7 +273,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -286,7 +291,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -303,7 +309,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -320,7 +327,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -337,7 +345,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -354,7 +363,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false)
+                    HasReassign: false,
+                    [])
             },
             ["Retry"] = () => Task.CompletedTask
         };

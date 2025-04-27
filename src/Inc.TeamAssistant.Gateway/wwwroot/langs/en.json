@@ -85,7 +85,8 @@
   "Reviewer_PreviewMoveToReview": "Submit",
   "Reviewer_PreviewRemoveDraft": "Cancel",
   "Reviewer_AcceptedWithComments": "Task review has been completed with comments.",
-  "Reviewer_FirstAccept": "The first-round review has been completed ",
+  "Reviewer_FirstAccept": "The first-round review has been completed {0}",
+  "Reviewer_Comments": "Comments:",
 
   "RandomCoffee_Question": "Would you like to participate random coffee meetings on this week?",
   "RandomCoffee_Yes": "Yes",

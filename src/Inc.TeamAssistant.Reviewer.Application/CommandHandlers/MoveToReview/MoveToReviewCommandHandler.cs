@@ -19,6 +19,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
     private readonly IDraftTaskForReviewRepository _draftRepository;
     private readonly DraftTaskForReviewService _draftService;
     private readonly INextReviewerStrategyFactory _reviewerFactory;
+    private readonly ReviewCommentsProvider _commentsProvider;
 
     public MoveToReviewCommandHandler(
         ITaskForReviewRepository repository,
@@ -26,7 +27,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         ITeamAccessor teamAccessor,
         IDraftTaskForReviewRepository draftRepository,
         DraftTaskForReviewService draftService,
-        INextReviewerStrategyFactory reviewerFactory)
+        INextReviewerStrategyFactory reviewerFactory,
+        ReviewCommentsProvider commentsProvider)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _reviewMessageBuilder = reviewMessageBuilder ?? throw new ArgumentNullException(nameof(reviewMessageBuilder));
@@ -34,6 +36,7 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
         _draftRepository = draftRepository ?? throw new ArgumentNullException(nameof(draftRepository));
         _draftService = draftService ?? throw new ArgumentNullException(nameof(draftService));
         _reviewerFactory = reviewerFactory ?? throw new ArgumentNullException(nameof(reviewerFactory));
+        _commentsProvider = commentsProvider ?? throw new ArgumentNullException(nameof(commentsProvider));
     }
 
     public async Task<CommandResult> Handle(MoveToReviewCommand command, CancellationToken token)
@@ -68,6 +71,8 @@ internal sealed class MoveToReviewCommandHandler : IRequestHandler<MoveToReviewC
             nextReviewerStrategy.GetReviewer());
         
         await _repository.Upsert(taskForReview, token);
+        
+        _commentsProvider.Add(taskForReview);
 
         var newNotifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: false, token);
         var deleteNotifications = await _draftService.Delete(draft, token);

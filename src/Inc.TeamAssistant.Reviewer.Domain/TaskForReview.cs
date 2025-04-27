@@ -25,10 +25,12 @@ public sealed class TaskForReview : ITaskForReviewStats
     public long? FirstReviewerId { get; private set; }
     public int? FirstReviewerMessageId { get; private set; }
     public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
+    public IReadOnlyCollection<ReviewComment> Comments { get; private set; }
 
     private TaskForReview()
     {
         ReviewIntervals = new List<ReviewInterval>();
+        Comments = new List<ReviewComment>();
     }
 
     public TaskForReview(
@@ -57,6 +59,14 @@ public sealed class TaskForReview : ITaskForReviewStats
         RescheduleNotify(now, notificationIntervals);
         ChangeReviewer(reviewerId);
     }
+    
+    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId;
+    public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
+    public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
+    public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);
+    public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
+    public bool HasRightsForComments(long authorId)
+        => new[] { OwnerId, ReviewerId, OriginalReviewerId, FirstReviewerId }.Any(i => i == authorId);
 
     public TaskForReview AttachMessage(MessageType messageType, int messageId)
     {
@@ -88,25 +98,33 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);
+    public TaskForReview AddComment(DateTimeOffset now, string comment, long authorId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(comment);
+        
+        Comments = Comments.Append(new ReviewComment(now, comment, authorId)).ToArray();
 
-    public TaskForReview FinishRound(DateTimeOffset now, bool hasComments, long? nextReviewerId = null)
+        return this;
+    }
+
+    public TaskForReview FinishRound(DateTimeOffset now, long? secondRoundReviewerId = null)
     {
         AddReviewInterval(ReviewerId, now);
 
-        if (!FirstReviewerId.HasValue && nextReviewerId.HasValue)
+        var isSecondRound = FirstReviewerId.HasValue;
+        FirstReviewerId ??= ReviewerId;
+        FirstReviewerMessageId ??= ReviewerMessageId;
+
+        if (!isSecondRound && secondRoundReviewerId.HasValue)
         {
-            ChangeReviewer(nextReviewerId.Value);
+            ChangeReviewer(secondRoundReviewerId.Value);
             State = TaskForReviewState.FirstAccept;
         }
         else
         {
             AcceptDate = now;
-            State = hasComments ? TaskForReviewState.AcceptWithComments : TaskForReviewState.Accept;
+            State = Comments.Any() ? TaskForReviewState.AcceptWithComments : TaskForReviewState.Accept;
         }
-        
-        FirstReviewerId ??= ReviewerId;
-        FirstReviewerMessageId ??= ReviewerMessageId;
 
         return this;
     }
@@ -127,8 +145,6 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
-
     public TaskForReview MoveToNextRound(DateTimeOffset now)
     {
         AddReviewInterval(OwnerId, now);
@@ -138,9 +154,7 @@ public sealed class TaskForReview : ITaskForReviewStats
 
         return this;
     }
-
-    public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
-
+    
     public TaskForReview MoveToInProgress(DateTimeOffset now, NotificationIntervals notificationIntervals)
     {
         ArgumentNullException.ThrowIfNull(notificationIntervals);
@@ -153,19 +167,11 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    private void AddReviewInterval(long userId, DateTimeOffset end)
-    {
-        ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
-    }
-    
-    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId;
-    public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
-
     public TaskForReview Reassign(DateTimeOffset now, long reviewerId)
     {
         AddReviewInterval(ReviewerId, now);
-        ChangeReviewer(reviewerId);
         
+        ChangeReviewer(reviewerId);
         NextNotification = now;
 
         return this;
@@ -203,6 +209,11 @@ public sealed class TaskForReview : ITaskForReviewStats
     }
 
     public TimeSpan GetTotalTime(DateTimeOffset now) => now - Created;
+    
+    private void AddReviewInterval(long userId, DateTimeOffset end)
+    {
+        ReviewIntervals = ReviewIntervals.Append(new ReviewInterval(State, end, userId)).ToArray();
+    }
     
     private void ChangeReviewer(long reviewerId)
     {

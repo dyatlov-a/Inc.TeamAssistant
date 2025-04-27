@@ -476,5 +476,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Dashboard {
                 return ResourceManager.GetString("CanFinalize", resourceCulture);
             }
         }
+        
+        internal static string ReviewComments {
+            get {
+                return ResourceManager.GetString("ReviewComments", resourceCulture);
+            }
+        }
     }
 }

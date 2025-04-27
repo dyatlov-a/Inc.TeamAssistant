@@ -9,8 +9,7 @@ public static class BotPropertiesBuilder
         ["nextReviewerStrategy"] = "RoundRobin",
         ["waitingNotificationInterval"] = "00:30:00",
         ["inProgressNotificationInterval"] = "01:00:00",
-        ["storyType"] = "Fibonacci",
-        ["acceptWithComments"] = "true"
+        ["storyType"] = "Fibonacci"
     };
 
     public static IEnumerable<KeyValuePair<string, string>> Build(IReadOnlyDictionary<string, string> properties)

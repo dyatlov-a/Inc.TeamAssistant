@@ -387,12 +387,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor {
             }
         }
         
-        internal static string FormSectionSetSettingsAcceptWithCommentsFieldLabel {
-            get {
-                return ResourceManager.GetString("FormSectionSetSettingsAcceptWithCommentsFieldLabel", resourceCulture);
-            }
-        }
-        
         internal static string FormSectionSetSettingsNotificationInterval1Description {
             get {
                 return ResourceManager.GetString("FormSectionSetSettingsNotificationInterval1Description", resourceCulture);

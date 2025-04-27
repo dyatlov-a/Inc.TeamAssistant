@@ -45,12 +45,12 @@ internal sealed class CommandFactory
         var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
         var contextCommand = dialogState is null ? inputCommand : dialogState.Command;
         var botCommand = bot.FindCommand(contextCommand);
-        if (botCommand is null)
-            return null;
-        
-        var dialogCommand = TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
-        if (dialogCommand is not null)
-            return dialogCommand;
+        if (botCommand is not null)
+        {
+            var dialogCommand = TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
+            if (dialogCommand is not null)
+                return dialogCommand;
+        }
         
         var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
         var command = _commandCreatorFactory.TryCreate(

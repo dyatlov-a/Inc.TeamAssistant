@@ -20,7 +20,7 @@
                             @context.OwnerUserName
                         </TemplateColumn>
                         <TemplateColumn Title="@Localizer["ReviewDescriptionTitle"]" Sortable="false">
-                            <span title="@context.Description" class="hint">
+                            <span title="@ToDescription(context)" class="hint">
                                 @context.Description.ToShort()
                             </span>
                         </TemplateColumn>
@@ -28,7 +28,7 @@
                             Title="@Localizer["ReviewReviewerNameTitle"]"
                             Sortable="true"
                             SortBy="GridSort<TaskForReviewDto>.ByAscending(e => e.ReviewerName).ThenAscending(e => e.ReviewerUserName)">
-                            <span title="@GetReviewerTitle(context)" class="hint">
+                            <span title="@ToReviewerTitle(context)" class="hint">
                                 @context.ReviewerName
                                 <br/>
                                 @context.ReviewerUserName
@@ -125,7 +125,7 @@
     };
     private IQueryable<TaskForReviewDto> Tasks => Items.AsQueryable();
 
-    private string GetReviewerTitle(TaskForReviewDto task)
+    private string ToReviewerTitle(TaskForReviewDto task)
     {
         var hasConcreteReviewer = task.HasConcreteReviewer
             ? Localizer["BooleanTrueText"]
@@ -137,6 +137,25 @@
         
         builder.AppendLine($"{Localizer["HasConcreteReviewer"]} - {hasConcreteReviewer}");
         builder.Append($"{Localizer["HasReassign"]} - {hasReassign}");
+        
+        return builder.ToString();
+    }
+    
+    private string ToDescription(TaskForReviewDto task)
+    {
+        var builder = new StringBuilder();
+
+        builder.Append(task.Description);
+        if (task.Comments.Any())
+        {
+            builder.AppendLine();
+            builder.Append(Localizer["ReviewComments"]);
+            foreach (var comment in task.Comments)
+            {
+                builder.AppendLine();
+                builder.Append(comment);
+            }
+        }
         
         return builder.ToString();
     }

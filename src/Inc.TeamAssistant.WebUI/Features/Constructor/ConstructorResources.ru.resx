@@ -189,9 +189,6 @@
     <data name="FormSectionSetSettingsInProgressNotificationIntervalFieldLabel" xml:space="preserve">
         <value>Интервал уведомлений для ревью в процессе</value>
     </data>
-    <data name="FormSectionSetSettingsAcceptWithCommentsFieldLabel" xml:space="preserve">
-        <value>Принятие ревью с замечаниями</value>
-    </data>
     <data name="FormSectionSetSettingsNotificationInterval1Description" xml:space="preserve">
         <value>00:30:00</value>
     </data>

@@ -20,6 +20,6 @@ internal sealed class MoveToAcceptCommandCreator : ICommandCreator
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
             return null;
 
-        return new MoveToAcceptCommand(messageContext, messageContext.TryParseId(_command), HasComments: false);
+        return new MoveToAcceptCommand(messageContext, messageContext.TryParseId(_command));
     }
 }

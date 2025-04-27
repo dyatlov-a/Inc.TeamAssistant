@@ -234,4 +234,7 @@
     <data name="CanFinalize" xml:space="preserve">
         <value>Решающее мнение</value>
     </data>
+    <data name="ReviewComments" xml:space="preserve">
+        <value>Комментарии:</value>
+    </data>
 </root>

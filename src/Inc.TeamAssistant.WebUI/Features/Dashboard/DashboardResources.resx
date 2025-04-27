@@ -234,4 +234,7 @@
     <data name="CanFinalize" xml:space="preserve">
         <value>Decisive opinion</value>
     </data>
+    <data name="ReviewComments" xml:space="preserve">
+        <value>Comments:</value>
+    </data>
 </root>
