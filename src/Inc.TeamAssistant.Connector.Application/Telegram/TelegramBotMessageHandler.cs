@@ -49,7 +49,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
                 var messageContext = await _messageContextFactory.Create(bot, update, token);
                 if (messageContext is not null)
                 {
-                    var command = await _commandFactory.TryCreate(bot, messageContext, token);
+                    var command = _commandFactory.TryCreate(bot, messageContext);
                     if (command is not null)
                         await _commandExecutor.Execute(command, token);
                 }

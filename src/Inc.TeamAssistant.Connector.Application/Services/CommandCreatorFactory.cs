@@ -11,12 +11,11 @@ internal sealed class CommandCreatorFactory
         _commandCreators = commandCreators ?? throw new ArgumentNullException(nameof(commandCreators));
     }
 
-    public async Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string input,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(messageContext);
@@ -24,12 +23,11 @@ internal sealed class CommandCreatorFactory
 
         foreach (var commandCreator in _commandCreators)
         {
-            var command = await commandCreator.TryCreate(
+            var command = commandCreator.TryCreate(
                 input,
                 singleLineMode,
                 messageContext,
-                teamContext,
-                token);
+                teamContext);
 
             if (command is not null)
                 return command;

@@ -7,20 +7,13 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Servi
 
 internal sealed class AddStoryCommandCreator : ICommandCreator
 {
-    private readonly ITeamAccessor _teamAccessor;
     private readonly string _command = CommandList.AddStory;
-    
-    public AddStoryCommandCreator(ITeamAccessor teamAccessor)
-    {
-        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-    }
 
-    public async Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string command,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
@@ -30,7 +23,6 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
             return null;
 
         var separator = ' ';
-        var teammates = await _teamAccessor.GetTeammates(teamContext.TeamId, DateTimeOffset.UtcNow, token);
         var storyItems = messageContext.Text.Split(separator);
         var links = new List<string>();
         var text = new List<string>();
@@ -50,7 +42,6 @@ internal sealed class AddStoryCommandCreator : ICommandCreator
             teamContext.TeamId,
             teamContext.Properties.GetStoryType(),
             string.Join(separator, text),
-            links,
-            teammates);
+            links);
     }
 }

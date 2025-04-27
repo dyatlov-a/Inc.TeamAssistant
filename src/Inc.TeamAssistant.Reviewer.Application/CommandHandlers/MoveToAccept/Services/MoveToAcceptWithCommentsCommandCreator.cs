@@ -7,23 +7,19 @@ internal sealed class MoveToAcceptWithCommentsCommandCreator : ICommandCreator
 {
     private readonly string _command = CommandList.AcceptWithComments;
     
-    public Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string command,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
-            return Task.FromResult<IDialogCommand?>(null);
+            return null;
 
-        return Task.FromResult<IDialogCommand?>(new MoveToAcceptCommand(
-            messageContext,
-            messageContext.TryParseId(_command),
-            true));
+        return new MoveToAcceptCommand(messageContext, messageContext.TryParseId(_command), HasComments: true);
     }
 }

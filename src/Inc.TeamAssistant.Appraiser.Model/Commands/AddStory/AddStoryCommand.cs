@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
 
 namespace Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
@@ -8,6 +7,5 @@ public sealed record AddStoryCommand(
     Guid TeamId,
     string StoryType,
     string Title,
-    IReadOnlyCollection<string> Links,
-    IReadOnlyCollection<Person> Teammates)
+    IReadOnlyCollection<string> Links)
     : IEndDialogCommand;

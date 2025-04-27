@@ -13,11 +13,7 @@ internal sealed class SingleLineCommandFactory
             commandCreatorFactory ?? throw new ArgumentNullException(nameof(commandCreatorFactory));
     }
     
-    public async Task<IDialogCommand?> TryCreate(
-        Bot bot,
-        MessageContext messageContext,
-        string inputCommand,
-        CancellationToken token)
+    public IDialogCommand? TryCreate(Bot bot, MessageContext messageContext, string inputCommand)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
@@ -25,7 +21,7 @@ internal sealed class SingleLineCommandFactory
         
         const char cmdSeparator = ' ';
         const int minParametersCount = 3;
-        var parameters = inputCommand.Split(cmdSeparator).ToArray();
+        var parameters = inputCommand.Split(cmdSeparator);
 
         if (parameters.Length < minParametersCount)
             return null;
@@ -41,12 +37,11 @@ internal sealed class SingleLineCommandFactory
             return null;
         
         var teamContext = new CurrentTeamContext(team.Id, team.Name, team.Properties, team.BotId);
-        var command = await _commandCreatorFactory.TryCreate(
+        var command = _commandCreatorFactory.TryCreate(
             cmd,
             singleLineMode: true,
             messageContext.ChangeText(description),
-            teamContext,
-            token);
+            teamContext);
         return command;
 
         bool TeamFilter(string name) => name.Equals(teamName, StringComparison.InvariantCultureIgnoreCase);

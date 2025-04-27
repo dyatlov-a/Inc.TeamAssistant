@@ -16,23 +16,19 @@ internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
         _value = value;
     }
     
-    public Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string command,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
-            return Task.FromResult<IDialogCommand?>(null);
+            return null;
 
-        return Task.FromResult<IDialogCommand?>(new SetEstimateForStoryCommand(
-            messageContext,
-            messageContext.TryParseId(_command),
-            _value));
+        return new SetEstimateForStoryCommand(messageContext, messageContext.TryParseId(_command), _value);
     }
 }

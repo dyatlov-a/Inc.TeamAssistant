@@ -7,22 +7,19 @@ internal sealed class FinishEstimateCommandCreator : ICommandCreator
 {
     private readonly string _command = CommandList.Finish;
     
-    public Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string command,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
-            return Task.FromResult<IDialogCommand?>(null);
+            return null;
 
-        return Task.FromResult<IDialogCommand?>(new FinishEstimateCommand(
-            messageContext,
-            messageContext.TryParseId(_command)));
+        return new FinishEstimateCommand(messageContext, messageContext.TryParseId(_command));
     }
 }

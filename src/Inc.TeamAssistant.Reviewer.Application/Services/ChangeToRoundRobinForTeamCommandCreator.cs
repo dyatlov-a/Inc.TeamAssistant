@@ -14,25 +14,22 @@ internal sealed class ChangeToRoundRobinForTeamCommandCreator : ICommandCreator
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
     
-    public Task<IDialogCommand?> TryCreate(
+    public IDialogCommand? TryCreate(
         string command,
         bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
         
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
-            return Task.FromResult<IDialogCommand?>(null);
+            return null;
 
-        var cmd = _commandFactory.Create(
+        return _commandFactory.Create(
             messageContext,
             ReviewerProperties.NextReviewerTypeKey,
             nameof(NextReviewerType.RoundRobinForTeam));
-
-        return Task.FromResult<IDialogCommand?>(cmd);
     }
 }

@@ -28,17 +28,17 @@ internal sealed class CommandFactory
             singleLineCommandFactory ?? throw new ArgumentNullException(nameof(singleLineCommandFactory));
     }
 
-    public async Task<IDialogCommand?> TryCreate(Bot bot, MessageContext messageContext, CancellationToken token)
+    public IDialogCommand? TryCreate(Bot bot, MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
 
         var inputCommand = _aliasService.OverrideCommand(messageContext.Text);
-        var simpleCommand = await TryCreateSimple(inputCommand, bot, messageContext, token);
+        var simpleCommand = TryCreateSimple(inputCommand, bot, messageContext);
         if (simpleCommand is not null)
             return simpleCommand;
         
-        var singleLineCommand = await _singleLineCommandFactory.TryCreate(bot, messageContext, inputCommand, token);
+        var singleLineCommand = _singleLineCommandFactory.TryCreate(bot, messageContext, inputCommand);
         if (singleLineCommand is not null)
             return singleLineCommand;
         
@@ -53,20 +53,15 @@ internal sealed class CommandFactory
             return dialogCommand;
         
         var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
-        var command = await _commandCreatorFactory.TryCreate(
+        var command = _commandCreatorFactory.TryCreate(
             contextCommand,
             singleLineMode: false,
             messageContext,
-            currentTeamContext,
-            token);
+            currentTeamContext);
         return command;
     }
 
-    private async Task<IDialogCommand?> TryCreateSimple(
-        string inputCommand,
-        Bot bot,
-        MessageContext messageContext,
-        CancellationToken token)
+    private IDialogCommand? TryCreateSimple(string inputCommand, Bot bot, MessageContext messageContext)
     {
         ArgumentNullException.ThrowIfNull(inputCommand);
         ArgumentNullException.ThrowIfNull(bot);
@@ -76,12 +71,11 @@ internal sealed class CommandFactory
         
         if (simpleCommand?.MultipleStages == false)
         {
-            var command = await _commandCreatorFactory.TryCreate(
+            var command = _commandCreatorFactory.TryCreate(
                 inputCommand,
                 singleLineMode: false,
                 messageContext,
-                CurrentTeamContext.Empty,
-                token);
+                CurrentTeamContext.Empty);
             return command;
         }
 
