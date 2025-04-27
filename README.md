@@ -29,15 +29,16 @@ Collect a random coffee meetings 💬.
 
 ## Technology
 
-- .net8
+- .NET8
 - Blazor
-- FluentValidation
 - Telegram.Bot
-- Nuke
-- FluentMigrator
+- MediatR
+- FluentValidation
 - Dapper
 - Npgsql
 - Postgres
+- Nuke
+- FluentMigrator
 
 ## How to use
 
@@ -95,6 +96,12 @@ The community looks forward to your contributions.
 - [X] Add a feature for use world map
 - [X] Redesign UI/UX
 - [X] Add story book for UI
+- [X] Add second round for code review
+- [X] Add comments to code review
+- [ ] Move to .NET9
+- [ ] Add telegram messages to story book
+- [ ] Add dashboard for retro
+- [ ] Add a feature for team health check
 - [ ] Integrate with GitLab (code review)
 - [ ] Split the monolith into separate services
 
