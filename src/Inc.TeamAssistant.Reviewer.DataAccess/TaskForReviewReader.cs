@@ -276,7 +276,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             GROUP BY t.first_reviewer_id;        
 
             SELECT DISTINCT ON (t.owner_id)
-                NULLIF(t.first_reviewer_id, t.reviewer_id) AS reviewerid,
+                COALESCE(t.first_reviewer_id, t.reviewer_id) AS reviewerid,
             	t.owner_id AS ownerid,
             	t.created AS created
             FROM review.task_for_reviews AS t
@@ -303,7 +303,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
             cancellationToken: token);
         
         await using var connection = _connectionFactory.Create();
-        await using var query = await  connection.QueryMultipleAsync(command);
+        await using var query = await connection.QueryMultipleAsync(command);
         
         var firstRoundStats = await query.ReadAsync<(long ReviewerId, int Count)>();
         var firstRoundHistory = await query.ReadAsync<ReviewerCandidatePool.FirstRoundHistoryItem>();
