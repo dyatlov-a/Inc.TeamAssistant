@@ -30,7 +30,7 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
         var team = await command.TeamId.Required(_repository.Find, token);
         var currentPerson = _personResolver.GetCurrentPerson();
         
-        await _teamAccessor.EnsureManagerAccess(command.TeamId, currentPerson.Id, token);
+        await _teamAccessor.EnsureManagerAccess(new(command.TeamId, currentPerson.Id), token);
         
         var accessToken = team.Properties.GetPropertyValueOrDefault(
             ConnectorProperties.AccessToken,

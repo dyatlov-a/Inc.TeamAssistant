@@ -7,27 +7,29 @@ namespace Inc.TeamAssistant.Reviewer.Application.Services;
 internal sealed class ChangeToRoundRobinCommandCreator : ICommandCreator
 {
     private readonly IChangeTeamPropertyCommandFactory _commandFactory;
+    private readonly string _command = CommandList.ChangeToRoundRobin;
 
     public ChangeToRoundRobinCommandCreator(IChangeTeamPropertyCommandFactory commandFactory)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
-
-    public string Command => CommandList.ChangeToRoundRobin;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        var command = _commandFactory.Create(
+        return _commandFactory.Create(
             messageContext,
             ReviewerProperties.NextReviewerTypeKey,
-            NextReviewerType.RoundRobin.ToString());
-
-        return Task.FromResult(command);
+            nameof(NextReviewerType.RoundRobin));
     }
 }

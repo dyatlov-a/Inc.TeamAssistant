@@ -21,7 +21,7 @@ internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageB
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var tasks = await _reader.GetTasksFrom(query.TeamId, query.From.ToDateTimeOffset(), token);
+        var tasks = await _reader.GetTasksByTeam(query.TeamId, query.From.ToDateTimeOffset(), token);
         var tasksByDays = tasks.ToLookup(t => t.Created.ToDateOnly());
         ReviewAverageStatsDto? previous = null;
         var items = new List<ReviewAverageStatsDto>();

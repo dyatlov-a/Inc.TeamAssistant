@@ -6,21 +6,25 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.NeedReview.Serv
 
 internal sealed class NeedReviewCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.NeedReview;
-    public bool SupportSingleLineMode => true;
+    private readonly string _command = CommandList.NeedReview;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (!command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new NeedReviewCommand(
+        return new NeedReviewCommand(
             messageContext,
             teamContext.TeamId,
             teamContext.GetNextReviewerType(),
-            messageContext.Text));
+            messageContext.Text);
     }
 }

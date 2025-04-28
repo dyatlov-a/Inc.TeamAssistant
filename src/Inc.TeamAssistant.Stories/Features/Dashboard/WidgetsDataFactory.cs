@@ -71,49 +71,57 @@ internal sealed class WidgetsDataFactory
                         PersonId: 1,
                         Name: "Aleksandr",
                         UserName: "adiatlov",
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: true),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 2,
                         Name: "Alex",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 3,
                         Name: "Ivan",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 4,
                         Name: "Petr",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 5,
                         Name: "Samson",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 6,
                         Name: "Konstantin",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 7,
                         Name: "Pavel",
                         UserName: null,
-                        LeaveUntil: null),
+                        LeaveUntil: null,
+                        CanFinalize: false),
                     new TeammateDto(
                         TeamId: teamId,
                         PersonId: 8,
                         Name: "Andrey",
                         UserName: null,
-                        LeaveUntil: null)
+                        LeaveUntil: null,
+                        CanFinalize: false)
                 ]),
             ["Retry"] = () => Task.CompletedTask
         };
@@ -180,7 +188,7 @@ internal sealed class WidgetsDataFactory
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
-                    State: "Accept",
+                    State: "AcceptWithComments",
                     Description: "Description",
                     FirstTouch: TimeSpan.FromMinutes(10),
                     Correction: TimeSpan.FromMinutes(20),
@@ -193,7 +201,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    ["It is necessary to start a task for refactoring"]),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -210,7 +219,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -227,7 +237,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -244,7 +255,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -261,7 +273,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -278,7 +291,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -295,7 +309,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -312,7 +327,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -329,7 +345,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false),
+                    HasReassign: false,
+                    []),
                 new TaskForReviewDto(
                     Id: Guid.NewGuid(),
                     Created: DateTimeOffset.UtcNow,
@@ -346,7 +363,8 @@ internal sealed class WidgetsDataFactory
                     OwnerName: "Alex",
                     OwnerUserName: null,
                     HasConcreteReviewer: false,
-                    HasReassign: false)
+                    HasReassign: false,
+                    [])
             },
             ["Retry"] = () => Task.CompletedTask
         };

@@ -18,7 +18,8 @@ internal sealed class TeamRepository : ITeamRepository
 
     public async Task<Team?> Find(Guid teamId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 t.id AS id,
                 t.bot_id AS botid,
@@ -38,7 +39,8 @@ internal sealed class TeamRepository : ITeamRepository
                 p.username AS username
             FROM connector.persons AS p
             JOIN connector.teammates AS tm ON p.id = tm.person_id
-            WHERE tm.team_id = @team_id;",
+            WHERE tm.team_id = @team_id;
+            """,
             new { team_id = teamId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -73,7 +75,8 @@ internal sealed class TeamRepository : ITeamRepository
     {
         ArgumentNullException.ThrowIfNull(team);
 
-        var upsertTeam = new CommandDefinition(@"
+        var upsertTeam = new CommandDefinition(
+            """
             INSERT INTO connector.teams (id, bot_id, chat_id, owner_id, name, properties)
             VALUES (@id, @bot_id, @chat_id, @owner_id, @name, @properties::jsonb)
             ON CONFLICT (id) DO UPDATE SET
@@ -81,7 +84,8 @@ internal sealed class TeamRepository : ITeamRepository
                 chat_id = EXCLUDED.chat_id,
                 owner_id = EXCLUDED.owner_id,
                 name = EXCLUDED.name,
-                properties = EXCLUDED.properties;",
+                properties = EXCLUDED.properties;
+            """,
             new
             {
                 id = team.Id,
@@ -95,10 +99,14 @@ internal sealed class TeamRepository : ITeamRepository
             cancellationToken: token);
 
         var personIds = team.Teammates.Select(t => t.Id).ToArray();
-        var upsertTeammates = new CommandDefinition(@"
+        var upsertTeammates = new CommandDefinition(
+            """
             MERGE INTO connector.teammates AS ttm
             USING (
-                SELECT DISTINCT ON (q.person_id) @team_id AS team_id, q.person_id AS person_id, q.mark_as_removed
+                SELECT DISTINCT ON (q.person_id)
+                    @team_id AS team_id,
+                    q.person_id AS person_id,
+                    q.mark_as_removed AS mark_as_removed
                 FROM (
                     SELECT tm.person_id, false AS mark_as_removed
                     FROM UNNEST(@person_ids) AS tm(person_id)
@@ -109,11 +117,12 @@ internal sealed class TeamRepository : ITeamRepository
                 ORDER BY q.person_id, q.mark_as_removed
             ) AS stm ON ttm.team_id = stm.team_id AND ttm.person_id = stm.person_id
             WHEN NOT MATCHED THEN
-                INSERT VALUES(stm.team_id, stm.person_id)
+                INSERT VALUES(stm.team_id, stm.person_id, NULL, false)
             WHEN MATCHED AND NOT stm.mark_as_removed THEN
                 UPDATE SET team_id = stm.team_id, person_id = stm.person_id
             WHEN MATCHED THEN
-                DELETE;",
+                DELETE;
+            """,
             new
             {
                 person_ids = personIds,
@@ -135,7 +144,10 @@ internal sealed class TeamRepository : ITeamRepository
     public async Task Remove(Guid teamId, CancellationToken token)
     {
         var command = new CommandDefinition(
-            "DELETE FROM connector.teams WHERE id = @team_id;",
+            """
+            DELETE FROM connector.teams
+            WHERE id = @team_id;
+            """,
             new { team_id = teamId },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Appraiser.Model.Commands.AddStory;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Languages;
 
@@ -8,11 +9,13 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AddStory.Valid
 internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryCommand>
 {
     private readonly IMessageBuilder _messageBuilder;
+    private readonly ITeamAccessor _teamAccessor;
     
-    public AddStoryCommandValidator(IMessageBuilder messageBuilder)
+    public AddStoryCommandValidator(IMessageBuilder messageBuilder, ITeamAccessor teamAccessor)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
-        
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+
         RuleFor(e => e.TeamId)
             .NotEmpty();
         
@@ -27,8 +30,16 @@ internal sealed class AddStoryCommandValidator : AbstractValidator<AddStoryComma
         RuleFor(e => e.Links)
             .Custom(CheckLinks);
         
-        RuleFor(e => e.Teammates)
-            .NotEmpty();
+        RuleFor(e => e.TeamId)
+            .MustAsync(HasTeammates)
+            .WithMessage("'{PropertyName}' no teammates found.");
+    }
+
+    private async Task<bool> HasTeammates(Guid teamId, CancellationToken token)
+    {
+        var teammates = await _teamAccessor.GetTeammates(teamId, DateTimeOffset.UtcNow, token);
+
+        return teammates.Any();
     }
 
     private void CheckLinks(IReadOnlyCollection<string> links, ValidationContext<AddStoryCommand> context)

@@ -27,16 +27,18 @@ internal sealed class ReviewTeamMetricsFactory
         
         foreach (var interval in taskForReview.ReviewIntervals.OrderBy(i => i.End))
         {
+            var duration = await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
+            
             switch (interval.State)
             {
-                case TaskForReviewState.New when interval.UserId == taskForReview.ReviewerId:
-                    firstTouch += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
+                case TaskForReviewState.New or TaskForReviewState.FirstAccept:
+                    firstTouch += duration;
                     break;
-                case TaskForReviewState.InProgress when interval.UserId == taskForReview.ReviewerId:
-                    review += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
+                case TaskForReviewState.InProgress:
+                    review += duration;
                     break;
-                case TaskForReviewState.OnCorrection when interval.UserId == taskForReview.OwnerId:
-                    correction += await _holidayService.CalculateWorkTime(taskForReview.BotId, start, interval.End, token);
+                case TaskForReviewState.OnCorrection:
+                    correction += duration;
                     iterations++;
                     break;
             }

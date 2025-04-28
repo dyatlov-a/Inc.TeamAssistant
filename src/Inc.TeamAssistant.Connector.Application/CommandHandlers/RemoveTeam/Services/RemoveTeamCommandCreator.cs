@@ -5,18 +5,21 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.RemoveTeam.Ser
 
 internal sealed class RemoveTeamCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.RemoveTeam;
+    private readonly string _command = CommandList.RemoveTeam;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new RemoveTeamCommand(
-            messageContext,
-            messageContext.TryParseId()));
+        return new RemoveTeamCommand(messageContext, messageContext.TryParseId());
     }
 }

@@ -2,38 +2,21 @@ namespace Inc.TeamAssistant.Reviewer.Domain.NextReviewerStrategies;
 
 public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
 {
-    private readonly IReadOnlyCollection<long> _teammates;
-    private readonly IReadOnlyCollection<long> _excludedPersonIds;
-    private readonly long? _lastReviewerId;
+    private readonly TeammatesPool _teammatesPool;
 
-    public RoundRobinReviewerStrategy(
-        IReadOnlyCollection<long> teammates,
-        IReadOnlyCollection<long> excludedPersonIds,
-        long? lastReviewerId)
+    public RoundRobinReviewerStrategy(TeammatesPool teammatesPool)
     {
-        _teammates = teammates ?? throw new ArgumentNullException(nameof(teammates));
-        _excludedPersonIds = excludedPersonIds ?? throw new ArgumentNullException(nameof(excludedPersonIds));
-        _lastReviewerId = lastReviewerId;
+        _teammatesPool = teammatesPool ?? throw new ArgumentNullException(nameof(teammatesPool));
     }
 
     public long GetReviewer()
     {
-        var otherTeammates = GetOtherTeammates();
-        var reviewer = otherTeammates.Any()
-            ? FromOtherTeammates(otherTeammates)
-            : _teammates.First();
+        var withoutPriorityParticipants = _teammatesPool.WithoutPriorityParticipants();
+        var reviewer = withoutPriorityParticipants.Any()
+            ? FromOtherTeammates(withoutPriorityParticipants)
+            : _teammatesPool.Teammates.First();
 
         return reviewer;
-    }
-
-    private IReadOnlyCollection<long> GetOtherTeammates()
-    {
-        var results = _teammates
-            .Where(t => !_excludedPersonIds.Contains(t))
-            .OrderBy(t => t)
-            .ToArray();
-
-        return results;
     }
 
     private long FromOtherTeammates(IReadOnlyCollection<long> otherTeammates)
@@ -41,7 +24,7 @@ public sealed class RoundRobinReviewerStrategy : INextReviewerStrategy
         ArgumentNullException.ThrowIfNull(otherTeammates);
         
         var nextReviewers = otherTeammates
-            .Where(ot => !_lastReviewerId.HasValue || ot > _lastReviewerId.Value)
+            .Where(ot => !_teammatesPool.LastReviewerId.HasValue || ot > _teammatesPool.LastReviewerId.Value)
             .ToArray();
         var targets = nextReviewers.Any() ? nextReviewers : otherTeammates;
         var reviewer = targets.MinBy(t => t);

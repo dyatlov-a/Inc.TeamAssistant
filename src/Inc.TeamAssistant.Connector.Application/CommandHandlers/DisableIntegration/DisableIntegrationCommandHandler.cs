@@ -30,7 +30,7 @@ internal sealed class DisableIntegrationCommandHandler : IRequestHandler<Disable
         var team = await command.TeamId.Required(_repository.Find, token);
         var currentPerson = _personResolver.GetCurrentPerson();
 
-        await _teamAccessor.EnsureManagerAccess(team.Id, currentPerson.Id, token);
+        await _teamAccessor.EnsureManagerAccess(new(team.Id, currentPerson.Id), token);
 
         await _repository.Upsert(
             team.RemoveProperty(

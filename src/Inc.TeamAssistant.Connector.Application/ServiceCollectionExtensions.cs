@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<TelegramBotClientProvider>()
             .AddSingleton(new AliasService(AliasFinder.Find()))
             .AddSingleton<SingleLineCommandFactory>()
-            .AddSingleton<CommandCreatorResolver>()
+            .AddSingleton<CommandCreatorFactory>()
             .AddSingleton<IBotAccessor, BotAccessor>()
             .AddSingleton<TelegramContextCommandConverter>()
             .AddSingleton<IBotConnector, TelegramBotConnector>()

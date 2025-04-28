@@ -6,28 +6,29 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.SetEstimateFor
 internal sealed class SetEstimateForStoryCommandCreator : ICommandCreator
 {
     private readonly int _value;
-    
-    public string Command { get; }
+    private readonly string _command;
 
     public SetEstimateForStoryCommandCreator(string command, int value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(command);
         
-        Command = command;
+        _command = command;
         _value = value;
     }
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new SetEstimateForStoryCommand(
-            messageContext,
-            messageContext.TryParseId(Command),
-            _value));
+        return new SetEstimateForStoryCommand(messageContext, messageContext.TryParseId(_command), _value);
     }
 }

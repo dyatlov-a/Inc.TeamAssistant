@@ -1,10 +1,11 @@
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Constructor.Model.Commands.CreateBot;
 using Inc.TeamAssistant.Constructor.Model.Commands.SetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Commands.UpdateBot;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
+using Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Reviewer.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,12 +71,22 @@ public sealed class BotsController : ControllerBase
         return Ok(await _botService.GetConnector(teamId, foreground, background, token));
     }
 
-    [HttpPut("teammate")]
+    [HttpPost("teammate")]
     public async Task<IActionResult> RemoveTeammate(RemoveTeammateCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
         await _botService.RemoveTeammate(command, CancellationToken.None);
+        
+        return Ok();
+    }
+    
+    [HttpPut("teammate")]
+    public async Task<IActionResult> UpdateTeammate(UpdateTeammateCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _botService.UpdateTeammate(command, CancellationToken.None);
         
         return Ok();
     }

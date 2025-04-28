@@ -8,13 +8,12 @@ public static class ReviewerProperties
     public const string NextReviewerTypeKey = "nextReviewerStrategy";
     public const string WaitingNotificationIntervalKey = "waitingNotificationInterval";
     public const string InProgressNotificationIntervalKey = "inProgressNotificationInterval";
-    public const string AcceptWithCommentsKey = "acceptWithComments";
 
     public static string GetNextReviewerType(this CurrentTeamContext teamContext)
     {
         ArgumentNullException.ThrowIfNull(teamContext);
         
-        return teamContext.Properties.GetValueOrDefault(NextReviewerTypeKey, NextReviewerType.RoundRobin.ToString());
+        return teamContext.Properties.GetValueOrDefault(NextReviewerTypeKey, nameof(NextReviewerType.RoundRobin));
     }
 
     public static NotificationIntervals GetNotificationIntervals(this BotContext botContext)
@@ -25,15 +24,5 @@ public static class ReviewerProperties
         var inProgress = botContext.GetIntervalOrDefault(InProgressNotificationIntervalKey, TimeSpan.FromHours(1));
 
         return new(waiting, inProgress);
-    }
-
-    public static bool CanAcceptWithComments(this BotContext botContext)
-    {
-        ArgumentNullException.ThrowIfNull(botContext);
-
-        var canAcceptWithComments = botContext.Properties.GetValueOrDefault(AcceptWithCommentsKey);
-        bool.TryParse(canAcceptWithComments, out var result);
-
-        return result;
     }
 }

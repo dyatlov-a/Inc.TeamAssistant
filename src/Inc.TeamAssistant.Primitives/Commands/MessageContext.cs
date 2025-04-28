@@ -106,7 +106,7 @@ public sealed class MessageContext
         return new MessageContext(
             new ChatMessage(chatId, MessageId: 0),
             botContext,
-            teams: Array.Empty<TeamContext>(),
+            teams: [],
             text: string.Empty,
             Person.Empty,
             LanguageSettings.DefaultLanguageId,

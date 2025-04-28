@@ -35,7 +35,7 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
         var personId = command.MessageContext.Person.Id;
         
         var story = await command.StoryId.Required(_repository.Find, token);
-		var hasManagerAccess = await _teamAccessor.HasManagerAccess(story.TeamId, personId, token);
+		var hasManagerAccess = await _teamAccessor.HasManagerAccess(new(story.TeamId, personId), token);
 		var estimation = story.Accept(personId, hasManagerAccess, command.Value);
 
 		await _repository.Upsert(story, token);

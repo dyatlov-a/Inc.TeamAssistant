@@ -5,18 +5,21 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.MoveToInProgres
 
 internal sealed class MoveToInProgressCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.MoveToInProgress;
+    private readonly string _command = CommandList.MoveToInProgress;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new MoveToInProgressCommand(
-            messageContext,
-            messageContext.TryParseId(Command)));
+        return new MoveToInProgressCommand(messageContext, messageContext.TryParseId(_command));
     }
 }

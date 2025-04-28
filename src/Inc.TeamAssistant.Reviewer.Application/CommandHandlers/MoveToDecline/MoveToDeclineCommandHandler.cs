@@ -23,18 +23,14 @@ internal sealed class MoveToDeclineCommandHandler : IRequestHandler<MoveToDeclin
         ArgumentNullException.ThrowIfNull(command);
 
         var taskForReview = await command.TaskId.Required(_repository.Find, token);
-        if (!taskForReview.CanAccept())
+        if (!taskForReview.CanMakeDecision())
             return CommandResult.Empty;
         
         await _repository.Upsert(
             taskForReview.Decline(DateTimeOffset.UtcNow, command.MessageContext.Bot.GetNotificationIntervals()),
             token);
         
-        var notifications = await _reviewMessageBuilder.Build(
-            command.MessageContext.ChatMessage.MessageId,
-            taskForReview,
-            command.MessageContext.Bot,
-            token);
+        var notifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: false, token);
         return CommandResult.Build(notifications.ToArray());
     }
 }

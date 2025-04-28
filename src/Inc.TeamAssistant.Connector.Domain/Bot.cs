@@ -5,6 +5,7 @@ public sealed class Bot
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
     public string Token { get; private set; } = default!;
+    public long OwnerId { get; private set; }
     
     private readonly List<ContextCommand> _commands = new();
     public IReadOnlyCollection<ContextCommand> Commands => _commands;

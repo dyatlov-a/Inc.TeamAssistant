@@ -7,27 +7,26 @@ namespace Inc.TeamAssistant.Appraiser.Application.Services;
 internal sealed class MoveToPowerOfTwoCommandCreator : ICommandCreator
 {
     private readonly IChangeTeamPropertyCommandFactory _commandFactory;
+    public readonly string _command = CommandList.MoveToPowerOfTwo;
 
     public MoveToPowerOfTwoCommandCreator(IChangeTeamPropertyCommandFactory commandFactory)
     {
         _commandFactory = commandFactory ?? throw new ArgumentNullException(nameof(commandFactory));
     }
     
-    public string Command => CommandList.MoveToPowerOfTwo;
-    
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        var command = _commandFactory.Create(
-            messageContext,
-            AppraiserProperties.StoryTypeKey,
-            StoryType.PowerOfTwo.ToString());
-
-        return Task.FromResult(command);
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
+        
+        return _commandFactory.Create(messageContext, AppraiserProperties.StoryTypeKey, nameof(StoryType.PowerOfTwo));
     }
 }

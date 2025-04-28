@@ -189,9 +189,6 @@
     <data name="FormSectionSetSettingsInProgressNotificationIntervalFieldLabel" xml:space="preserve">
         <value>Notification interval for in progress review</value>
     </data>
-    <data name="FormSectionSetSettingsAcceptWithCommentsFieldLabel" xml:space="preserve">
-        <value>Accept review with comments</value>
-    </data>
     <data name="FormSectionSetSettingsNotificationInterval1Description" xml:space="preserve">
         <value>00:30:00</value>
     </data>

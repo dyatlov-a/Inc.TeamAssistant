@@ -84,6 +84,7 @@ builder.Services
 	.AddJsonType<ICollection<DashboardWidget>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
+	.AddJsonType<IReadOnlyCollection<ReviewComment>>()
 	.AddJsonType<IReadOnlyCollection<ContextScope>>()
 	.AddJsonType<IReadOnlyCollection<DayOfWeek>>()
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()

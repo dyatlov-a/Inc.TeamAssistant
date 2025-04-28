@@ -36,7 +36,7 @@ internal sealed class RemoveTeamCommandHandler : IRequestHandler<RemoveTeamComma
             throw new TeamAssistantUserException(Messages.Connector_HasNotRightsForRemoveTeam, team.Name);
 
         foreach (var removeTeamHandler in _removeTeamHandlers)
-            await removeTeamHandler.Handle(command.MessageContext, command.TeamId, token);
+            await removeTeamHandler.Handle(command.TeamId, token);
         
         await _repository.Remove(command.TeamId, token);
 

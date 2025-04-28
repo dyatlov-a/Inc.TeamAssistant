@@ -6,28 +6,29 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.AcceptEstimate
 internal sealed class AcceptEstimateCommandCreator : ICommandCreator
 {
     private readonly int _value;
-    
-    public string Command { get; }
+    private readonly string _command;
 
     public AcceptEstimateCommandCreator(string command, int value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(command);
         
-        Command = command;
+        _command = command;
         _value = value;
     }
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
 
-        return Task.FromResult<IDialogCommand>(new AcceptEstimateCommand(
-            messageContext,
-            messageContext.TryParseId(Command),
-            _value));
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
+        
+        return new AcceptEstimateCommand(messageContext, messageContext.TryParseId(_command), _value);
     }
 }

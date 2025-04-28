@@ -5,19 +5,21 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.CreateTeam.Ser
 
 internal sealed class CreateTeamCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.NewTeam;
+    private readonly string _command = CommandList.NewTeam;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new CreateTeamCommand(
-            messageContext,
-            messageContext.Bot.UserName,
-            messageContext.Text));
+        return new CreateTeamCommand(messageContext, messageContext.Bot.UserName, messageContext.Text);
     }
 }

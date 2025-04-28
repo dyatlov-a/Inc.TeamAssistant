@@ -32,7 +32,7 @@ internal sealed class GetIntegrationPropertiesQueryHandler
 
         var team = await query.TeamId.Required(_repository.Find, token);
         var currentPerson = _personResolver.GetCurrentPerson();
-        var hasManagerAccess = await _teamAccessor.HasManagerAccess(team.Id, currentPerson.Id, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(new(team.Id, currentPerson.Id), token);
         var scrumMaster = team.Properties.GetPropertyValueOrDefault(ConnectorProperties.ScrumMaster);
         var scrumMasterId = long.TryParse(scrumMaster, out var value)
             ? value

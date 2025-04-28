@@ -117,19 +117,19 @@
     <data name="ReviewStats" xml:space="preserve">
         <value>Stats</value>
     </data>
-    <data name="ReviewStateNone" xml:space="preserve">
-        <value>None</value>
+    <data name="TaskForReviewStateFirstAccept" xml:space="preserve">
+        <value>Second round</value>
     </data>
-    <data name="ReviewStateNew" xml:space="preserve">
+    <data name="TaskForReviewStateNew" xml:space="preserve">
         <value>New</value>
     </data>
-    <data name="ReviewStateInProgress" xml:space="preserve">
+    <data name="TaskForReviewStateInProgress" xml:space="preserve">
         <value>InProgress</value>
     </data>
-    <data name="ReviewStateOnCorrection" xml:space="preserve">
+    <data name="TaskForReviewStateOnCorrection" xml:space="preserve">
         <value>OnCorrection</value>
     </data>
-    <data name="ReviewStateAccept" xml:space="preserve">
+    <data name="TaskForReviewStateAccept" xml:space="preserve">
         <value>Accept</value>
     </data>
     <data name="HasConcreteReviewer" xml:space="preserve">
@@ -228,7 +228,13 @@
     <data name="TeamField" xml:space="preserve">
         <value>Team</value>
     </data>
-    <data name="ReviewStateAcceptWithComments" xml:space="preserve">
-        <value>Accept with comments</value>
+    <data name="TaskForReviewStateAcceptWithComments" xml:space="preserve">
+        <value>Has comments</value>
+    </data>
+    <data name="CanFinalize" xml:space="preserve">
+        <value>Decisive opinion</value>
+    </data>
+    <data name="ReviewComments" xml:space="preserve">
+        <value>Comments:</value>
     </data>
 </root>

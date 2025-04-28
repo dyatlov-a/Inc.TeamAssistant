@@ -5,16 +5,21 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.End.Services;
 
 internal sealed class EndCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.Cancel;
+    private readonly string _command = CommandList.Cancel;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new EndCommand(messageContext));
+        return new EndCommand(messageContext);
     }
 }

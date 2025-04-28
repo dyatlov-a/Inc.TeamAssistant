@@ -5,18 +5,21 @@ namespace Inc.TeamAssistant.Appraiser.Application.CommandHandlers.FinishEstimate
 
 internal sealed class FinishEstimateCommandCreator : ICommandCreator
 {
-    public string Command => CommandList.Finish;
+    private readonly string _command = CommandList.Finish;
     
-    public Task<IDialogCommand> Create(
+    public IDialogCommand? TryCreate(
+        string command,
+        bool singleLineMode,
         MessageContext messageContext,
-        CurrentTeamContext teamContext,
-        CancellationToken token)
+        CurrentTeamContext teamContext)
     {
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(messageContext);
         ArgumentNullException.ThrowIfNull(teamContext);
+        
+        if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
+            return null;
 
-        return Task.FromResult<IDialogCommand>(new FinishEstimateCommand(
-            messageContext,
-            messageContext.TryParseId(Command)));
+        return new FinishEstimateCommand(messageContext, messageContext.TryParseId(_command));
     }
 }

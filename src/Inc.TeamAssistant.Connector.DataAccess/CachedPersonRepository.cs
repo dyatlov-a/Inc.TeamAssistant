@@ -29,15 +29,12 @@ internal sealed class CachedPersonRepository : IPersonRepository
 
     public async Task<Person?> Find(string username, CancellationToken token)
     {
-        return await _repository.Find(username, token);
-    }
+        return await _memoryCache.GetOrCreateAsync(GetKey(username), async c =>
+        {
+            c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
 
-    public async Task<IReadOnlyCollection<Person>> GetTeammates(
-        Guid teamId,
-        DateTimeOffset now,
-        CancellationToken token)
-    {
-        return await _repository.GetTeammates(teamId, now, token);
+            return await _repository.Find(username, token);
+        });
     }
 
     public async Task Upsert(Person person, CancellationToken token)
@@ -50,23 +47,14 @@ internal sealed class CachedPersonRepository : IPersonRepository
             return;
 
         await _repository.Upsert(person, token);
+        
         _memoryCache.Remove(key);
+        
+        if (!string.IsNullOrWhiteSpace(person.Username))
+            _memoryCache.Remove(GetKey(person.Username));
     }
 
-    public async Task LeaveFromTeam(Guid teamId, long personId, CancellationToken token)
-    {
-        await _repository.LeaveFromTeam(teamId, personId, token);
-    }
-
-    public async Task LeaveFromTeam(Guid teamId, long personId, DateTimeOffset? until, CancellationToken token)
-    {
-        await _repository.LeaveFromTeam(teamId, personId, until, token);
-    }
-
-    public async Task<Guid?> FindBotId(long personId, CancellationToken token)
-    {
-        return await _repository.FindBotId(personId, token);
-    }
-
-    private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_{personId}";
+    private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_id_{personId}";
+    
+    private string GetKey(string username) => $"{nameof(CachedPersonRepository)}_username_{username}";
 }

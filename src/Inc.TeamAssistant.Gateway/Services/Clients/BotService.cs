@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
@@ -13,6 +12,8 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBotDetails;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
+using Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Reviewer.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -75,6 +76,15 @@ internal sealed class BotService : IBotService
 
     public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
+    }
+
+    public async Task UpdateTeammate(UpdateTeammateCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _mediator.Send(command, token);
     }
 
@@ -97,11 +107,15 @@ internal sealed class BotService : IBotService
 
     public async Task Create(CreateBotCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _mediator.Send(command, token);
     }
 
     public async Task Update(UpdateBotCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _mediator.Send(command, token);
     }
 
@@ -112,6 +126,8 @@ internal sealed class BotService : IBotService
 
     public async Task SetDetails(SetBotDetailsCommand command, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(command);
+        
         await _mediator.Send(command, token);
     }
 }

@@ -26,7 +26,7 @@ internal sealed class SendPushCommandHandler : IRequestHandler<SendPushCommand, 
         var taskForReview = await command.TaskId.Required(_repository.Find, token);
 
         await _repository.Upsert(
-            taskForReview.SetNextNotificationTime(DateTimeOffset.UtcNow, botContext.GetNotificationIntervals()),
+            taskForReview.RescheduleNotify(DateTimeOffset.UtcNow, botContext.GetNotificationIntervals()),
             token);
 
         var notification = TaskForReviewStateRules.ActiveStates.Contains(taskForReview.State)

@@ -33,7 +33,7 @@
 
 @code {
     private readonly LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<BotDto> _bots = Array.Empty<BotDto>();
+    private IReadOnlyCollection<BotDto> _bots = [];
 
     private ConfirmDialog? _confirmDialog;
     private string? _botName;
@@ -56,7 +56,7 @@
 
     private async Task MoveToEdit(Guid? botId)
     {
-        var stage = Stage.CheckBot.ToString().ToLowerInvariant();
+        var stage = nameof(Stage.CheckBot).ToLowerInvariant();
         var routeSegment = botId.HasValue
             ? $"constructor/{botId.Value:N}/{stage}"
             : $"constructor/{stage}";

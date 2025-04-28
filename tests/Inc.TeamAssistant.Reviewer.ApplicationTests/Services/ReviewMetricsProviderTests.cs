@@ -184,7 +184,7 @@ public sealed class ReviewMetricsProviderTests
             }
 
         if (acceptDuration.HasValue)
-            taskForReview.Accept(operationStart.Add(acceptDuration.Value), hasComments: false);
+            taskForReview.FinishRound(operationStart.Add(acceptDuration.Value));
 
         return taskForReview;
     }

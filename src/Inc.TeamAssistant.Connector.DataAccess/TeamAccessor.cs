@@ -11,16 +11,19 @@ internal sealed class TeamAccessor : ITeamAccessor
     private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _clientLanguageRepository;
     private readonly ITeamRepository _teamRepository;
+    private readonly ITeamReader _teamReader;
 
     public TeamAccessor(
         IPersonRepository personRepository,
         IClientLanguageRepository clientLanguageRepository,
-        ITeamRepository teamRepository)
+        ITeamRepository teamRepository,
+        ITeamReader teamReader)
     {
         _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _clientLanguageRepository =
             clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
         _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _teamReader = teamReader ?? throw new ArgumentNullException(nameof(teamReader));
     }
 
     public async Task<CurrentTeamContext> GetTeamContext(Guid teamId, CancellationToken token)
@@ -37,7 +40,15 @@ internal sealed class TeamAccessor : ITeamAccessor
         DateTimeOffset now,
         CancellationToken token)
     {
-        return await _personRepository.GetTeammates(teamId, now, token);
+        return await _teamReader.GetTeammates(teamId, now, canFinalize: null, token);
+    }
+
+    public async Task<IReadOnlyCollection<Person>> GetFinalizes(
+        Guid teamId,
+        DateTimeOffset now,
+        CancellationToken token)
+    {
+        return await _teamReader.GetTeammates(teamId, now, canFinalize: true, token);
     }
 
     public async Task<Person?> FindPerson(long personId, CancellationToken token)
@@ -59,14 +70,18 @@ internal sealed class TeamAccessor : ITeamAccessor
         return await _clientLanguageRepository.Get(botId, personId, token);
     }
 
-    public async Task<bool> HasManagerAccess(Guid teamId, long personId, CancellationToken token)
+    public async Task<bool> HasManagerAccess(TeammateKey key, CancellationToken token)
     {
-        return await _teamRepository.HasManagerAccess(teamId, personId, token);
+        ArgumentNullException.ThrowIfNull(key);
+        
+        return await _teamRepository.HasManagerAccess(key.TeamId, key.PersonId, token);
     }
 
-    public async Task EnsureManagerAccess(Guid teamId, long personId, CancellationToken token)
+    public async Task EnsureManagerAccess(TeammateKey key, CancellationToken token)
     {
-        if (!await HasManagerAccess(teamId, personId, token))
-            throw new ApplicationException($"User {personId} has not rights to remove teammate from team {teamId}");
+        ArgumentNullException.ThrowIfNull(key);
+        
+        if (!await HasManagerAccess(key, token))
+            throw new ApplicationException($"User {key.PersonId} does not have access rights for team {key.TeamId}.");
     }
 }

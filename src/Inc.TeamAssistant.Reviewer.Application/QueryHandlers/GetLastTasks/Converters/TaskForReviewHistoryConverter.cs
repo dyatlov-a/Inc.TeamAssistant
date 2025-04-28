@@ -14,6 +14,10 @@ internal static class TaskForReviewHistoryConverter
         var state = item.State.ToString();
         var hasConcreteReviewer = item.Strategy == NextReviewerType.Target;
         var hasReassign = item.OriginalReviewerId.HasValue && item.ReviewerId != item.OriginalReviewerId.Value;
+        var comments = item.Comments
+            .OrderBy(c => c.Created)
+            .Select(c => c.Comment)
+            .ToArray();
         
         return new TaskForReviewDto(
             item.Id,
@@ -31,6 +35,7 @@ internal static class TaskForReviewHistoryConverter
             item.OwnerName,
             item.OwnerUserName,
             hasConcreteReviewer,
-            hasReassign);
+            hasReassign,
+            comments);
     }
 }

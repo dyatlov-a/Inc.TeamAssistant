@@ -117,19 +117,19 @@
     <data name="ReviewStats" xml:space="preserve">
         <value>Статистика</value>
     </data>
-    <data name="ReviewStateNone" xml:space="preserve">
-        <value>Не определен</value>
+    <data name="TaskForReviewStateFirstAccept" xml:space="preserve">
+        <value>Второй раунд</value>
     </data>
-    <data name="ReviewStateNew" xml:space="preserve">
+    <data name="TaskForReviewStateNew" xml:space="preserve">
         <value>Новая</value>
     </data>
-    <data name="ReviewStateInProgress" xml:space="preserve">
+    <data name="TaskForReviewStateInProgress" xml:space="preserve">
         <value>В работе</value>
     </data>
-    <data name="ReviewStateOnCorrection" xml:space="preserve">
+    <data name="TaskForReviewStateOnCorrection" xml:space="preserve">
         <value>На исправлении</value>
     </data>
-    <data name="ReviewStateAccept" xml:space="preserve">
+    <data name="TaskForReviewStateAccept" xml:space="preserve">
         <value>Принята</value>
     </data>
     <data name="HasConcreteReviewer" xml:space="preserve">
@@ -228,7 +228,13 @@
     <data name="TeamField" xml:space="preserve">
         <value>Команда</value>
     </data>
-    <data name="ReviewStateAcceptWithComments" xml:space="preserve">
-        <value>Принята с коментариями</value>
+    <data name="TaskForReviewStateAcceptWithComments" xml:space="preserve">
+        <value>С коментариями</value>
+    </data>
+    <data name="CanFinalize" xml:space="preserve">
+        <value>Решающее мнение</value>
+    </data>
+    <data name="ReviewComments" xml:space="preserve">
+        <value>Комментарии:</value>
     </data>
 </root>

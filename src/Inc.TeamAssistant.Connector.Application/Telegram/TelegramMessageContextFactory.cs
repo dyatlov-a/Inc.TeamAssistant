@@ -65,6 +65,7 @@ internal sealed class TelegramMessageContextFactory
             text,
             targetPersonId: parsedText.TargetPersonId,
             location: null,
+            replyToMessageId: editedMessage.ReplyToMessage?.MessageId,
             token);
     }
 
@@ -87,6 +88,7 @@ internal sealed class TelegramMessageContextFactory
             text,
             targetPersonId: null,
             location: null,
+            replyToMessageId: null,
             token);
     }
 
@@ -107,6 +109,7 @@ internal sealed class TelegramMessageContextFactory
             callbackQuery.Data!,
             targetPersonId: null,
             location: null,
+            replyToMessageId: null,
             token);
     }
 
@@ -127,8 +130,9 @@ internal sealed class TelegramMessageContextFactory
             message.Chat.Title,
             message.From!,
             parsedText.Text,
-            targetPersonId: parsedText.TargetPersonId,
-            location: message.Location,
+            parsedText.TargetPersonId,
+            message.Location,
+            message.ReplyToMessage?.MessageId,
             token);
     }
 
@@ -141,6 +145,7 @@ internal sealed class TelegramMessageContextFactory
         string text,
         long? targetPersonId,
         Location? location,
+        int? replyToMessageId,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(bot);
@@ -152,7 +157,7 @@ internal sealed class TelegramMessageContextFactory
         var teams = GetTeams(bot, person.Id, chatId);
             
         return MessageContext.Create(
-            new ChatMessage(chatId, messageId),
+            new ChatMessage(chatId, messageId, replyToMessageId),
             new BotContext(bot.Id, bot.Name, bot.Properties),
             teams,
             text,
@@ -201,6 +206,6 @@ internal sealed class TelegramMessageContextFactory
         return results;
         
         bool MemberOfTeam(Team t) => t.Teammates.Any(tm => tm.Id == personId);
-        bool OwnerOfTeam(Team t) => t.Owner.Id == personId;
+        bool OwnerOfTeam(Team t) => t.Owner.Id == personId || bot.OwnerId == personId;
     }
 }

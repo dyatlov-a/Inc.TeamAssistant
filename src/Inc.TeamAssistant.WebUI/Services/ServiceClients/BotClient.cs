@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Connector.Model.Commands.RemoveTeammate;
 using Inc.TeamAssistant.Connector.Model.Commands.UpdateWidgets;
 using Inc.TeamAssistant.Connector.Model.Queries.GetBotsByCurrentUser;
 using Inc.TeamAssistant.Connector.Model.Queries.GetTeamConnector;
@@ -14,6 +13,8 @@ using Inc.TeamAssistant.Constructor.Model.Queries.GetBotUserName;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetFeatures;
 using Inc.TeamAssistant.Constructor.Model.Queries.GetProperties;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Reviewer.Model.Commands.RemoveTeammate;
+using Inc.TeamAssistant.Reviewer.Model.Commands.UpdateTeammate;
 using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
@@ -105,6 +106,13 @@ internal sealed class BotClient : IBotService
     }
 
     public async Task RemoveTeammate(RemoveTeammateCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _client.PostAsJsonAsync("bots/teammate", command, token);
+    }
+
+    public async Task UpdateTeammate(UpdateTeammateCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         

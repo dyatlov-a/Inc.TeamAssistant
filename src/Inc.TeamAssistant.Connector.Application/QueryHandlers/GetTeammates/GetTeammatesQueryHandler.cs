@@ -26,7 +26,7 @@ internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQue
         ArgumentNullException.ThrowIfNull(query);
 
         var currentPerson = _personProvider.GetCurrentPerson();
-        var hasManagerAccess = await _teamAccessor.HasManagerAccess(query.TeamId, currentPerson.Id, token);
+        var hasManagerAccess = await _teamAccessor.HasManagerAccess(new(query.TeamId, currentPerson.Id), token);
         var teammates = await _reader.GetTeammates(query.TeamId, token);
 
         return new GetTeammatesResult(hasManagerAccess, teammates);

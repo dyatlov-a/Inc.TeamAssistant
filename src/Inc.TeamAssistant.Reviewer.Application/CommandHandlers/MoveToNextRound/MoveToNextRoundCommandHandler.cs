@@ -29,11 +29,7 @@ internal sealed class MoveToNextRoundCommandHandler : IRequestHandler<MoveToNext
 
         await _repository.Upsert(taskForReview.MoveToNextRound(DateTimeOffset.UtcNow), token);
         
-        var notifications = await _reviewMessageBuilder.Build(
-            command.MessageContext.ChatMessage.MessageId,
-            taskForReview,
-            command.MessageContext.Bot,
-            token);
+        var notifications = await _reviewMessageBuilder.Build(taskForReview, fromOwner: true, token);
         return CommandResult.Build(notifications.ToArray());
     }
 }

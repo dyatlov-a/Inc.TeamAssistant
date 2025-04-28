@@ -16,5 +16,6 @@ public sealed record TaskForReviewHistory(
     long OwnerId,
     string OwnerName,
     string? OwnerUserName,
-    long? OriginalReviewerId)
+    long? OriginalReviewerId,
+    IReadOnlyCollection<ReviewComment> Comments)
     : ITaskForReviewStats;

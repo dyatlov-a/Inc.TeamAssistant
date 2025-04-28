@@ -15,53 +15,6 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<IReadOnlyCollection<TaskForReview>> GetAll(
-        Guid teamId,
-        IReadOnlyCollection<TaskForReviewState> states,
-        CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(states);
-
-        var targetStates = states.Select(s => (int)s).ToArray();
-        var command = new CommandDefinition(
-            """
-            SELECT
-                t.id AS id,
-                t.bot_id AS botid,
-                t.team_id AS teamid,
-                t.strategy AS strategy,
-                t.owner_id AS ownerid,
-                t.owner_message_id AS ownermessageid,
-                t.reviewer_id AS reviewerid,
-                t.reviewer_message_id AS reviewermessageid,
-                t.description AS description,
-                t.state AS state,
-                t.created AS created,
-                t.next_notification AS nextnotification,
-                t.accept_date AS acceptdate,
-                t.message_id AS messageid,
-                t.chat_id AS chatid,
-                t.original_reviewer_id AS originalreviewerid,
-                t.original_reviewer_message_id AS originalreviewermessageid,
-                t.review_intervals AS reviewintervals
-            FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.state = ANY(@states);
-            """,
-            new
-            {
-                team_id = teamId,
-                states = targetStates,
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-
-        var results = await connection.QueryAsync<TaskForReview>(command);
-
-        return results.ToArray();
-    }
-
     public async Task<TaskForReview?> Find(Guid taskForReviewId, CancellationToken token)
     {
         var command = new CommandDefinition(
@@ -84,7 +37,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 t.chat_id AS chatid,
                 t.original_reviewer_id AS originalreviewerid,
                 t.original_reviewer_message_id AS originalreviewermessageid,
-                t.review_intervals AS reviewintervals
+                t.first_reviewer_id AS firstreviewerid,
+                t.first_reviewer_message_id AS firstreviewermessageid,
+                t.review_intervals AS reviewintervals,
+                t.comments AS comments
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;
             """,
@@ -102,6 +58,7 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         ArgumentNullException.ThrowIfNull(taskForReview);
 
         var reviewIntervals = JsonSerializer.Serialize(taskForReview.ReviewIntervals);
+        var comments = JsonSerializer.Serialize(taskForReview.Comments);
 
         var command = new CommandDefinition(
             """
@@ -123,7 +80,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 chat_id,
                 original_reviewer_id,
                 original_reviewer_message_id,
-                review_intervals)
+                first_reviewer_id,
+                first_reviewer_message_id,
+                review_intervals,
+                comments)
             VALUES (
                 @id,
                 @bot_id,
@@ -142,25 +102,31 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 @chat_id,
                 @original_reviewer_id,
                 @original_reviewer_message_id,
-                @review_intervals::jsonb)
+                @first_reviewer_id,
+                @first_reviewer_message_id,
+                @review_intervals::jsonb,
+                @comments::jsonb)
             ON CONFLICT (id) DO UPDATE SET
-                bot_id = excluded.bot_id,
-                team_id = excluded.team_id,
-                strategy = excluded.strategy,
-                owner_id = excluded.owner_id,
-                owner_message_id = excluded.owner_message_id,
-                reviewer_id = excluded.reviewer_id,
-                reviewer_message_id = excluded.reviewer_message_id,
-                description = excluded.description,
-                state = excluded.state,
-                created = excluded.created,
-                next_notification = excluded.next_notification,
-                accept_date = excluded.accept_date,
-                message_id = excluded.message_id,
-                chat_id = excluded.chat_id,
-                original_reviewer_id = excluded.original_reviewer_id,
-                original_reviewer_message_id = excluded.original_reviewer_message_id,
-                review_intervals = excluded.review_intervals;
+                bot_id = EXCLUDED.bot_id,
+                team_id = EXCLUDED.team_id,
+                strategy = EXCLUDED.strategy,
+                owner_id = EXCLUDED.owner_id,
+                owner_message_id = EXCLUDED.owner_message_id,
+                reviewer_id = EXCLUDED.reviewer_id,
+                reviewer_message_id = EXCLUDED.reviewer_message_id,
+                description = EXCLUDED.description,
+                state = EXCLUDED.state,
+                created = EXCLUDED.created,
+                next_notification = EXCLUDED.next_notification,
+                accept_date = EXCLUDED.accept_date,
+                message_id = EXCLUDED.message_id,
+                chat_id = EXCLUDED.chat_id,
+                original_reviewer_id = EXCLUDED.original_reviewer_id,
+                original_reviewer_message_id = EXCLUDED.original_reviewer_message_id,
+                first_reviewer_id = EXCLUDED.first_reviewer_id,
+                first_reviewer_message_id = EXCLUDED.first_reviewer_message_id,
+                review_intervals = EXCLUDED.review_intervals,
+                comments = EXCLUDED.comments;
             """,
             new
             {
@@ -181,7 +147,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 reviewer_message_id = taskForReview.ReviewerMessageId,
                 original_reviewer_id = taskForReview.OriginalReviewerId,
                 original_reviewer_message_id = taskForReview.OriginalReviewerMessageId,
-                review_intervals = reviewIntervals
+                first_reviewer_id = taskForReview.FirstReviewerId,
+                first_reviewer_message_id = taskForReview.FirstReviewerMessageId,
+                review_intervals = reviewIntervals,
+                comments = comments
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -189,32 +158,5 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
         await using var connection = _connectionFactory.Create();
 
         await connection.ExecuteAsync(command);
-    }
-
-    public async Task<IReadOnlyCollection<ReviewTicket>> GetLastReviewers(Guid teamId, CancellationToken token)
-    {
-        var command = new CommandDefinition(
-            """
-            SELECT DISTINCT ON (t.owner_id)
-                t.reviewer_id AS reviewerid,
-            	t.owner_id AS ownerid,
-            	t.created AS created
-            FROM review.task_for_reviews AS t
-            WHERE t.team_id = @team_id AND t.strategy != @nrt_target
-            ORDER BY t.owner_id, t.created DESC;
-            """,
-            new
-            {
-                team_id = teamId,
-                nrt_target = (int)NextReviewerType.Target
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-
-        var results = await connection.QueryAsync<ReviewTicket>(command);
-
-        return results.ToArray();
     }
 }
