@@ -34,7 +34,7 @@ internal sealed class AddStoryCommandHandler : IRequestHandler<AddStoryCommand, 
         ArgumentNullException.ThrowIfNull(command);
         
         var teammates = await _teamAccessor.GetTeammates(command.TeamId, DateTimeOffset.UtcNow, token);
-        if (teammates.Any())
+        if (!teammates.Any())
             throw new TeamAssistantException($"Teammates no found for Team {command.TeamId}.");
         
         var targetTeam = command.MessageContext.EnsureTeam(command.TeamId);

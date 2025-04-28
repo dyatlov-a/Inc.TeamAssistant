@@ -12,6 +12,8 @@ public sealed class ReviewCommentsProvider
     
     public void Add(TaskForReview task)
     {
+        ArgumentNullException.ThrowIfNull(task);
+        
         if (task.MessageId.HasValue)
             AddOrUpdate(task.ChatId, task.MessageId.Value, task.Id);
         if (task.OwnerMessageId.HasValue)
@@ -26,6 +28,8 @@ public sealed class ReviewCommentsProvider
 
     public void Remove(TaskForReview task)
     {
+        ArgumentNullException.ThrowIfNull(task);
+        
         if (task.MessageId.HasValue)
             Remove(task.ChatId, task.MessageId.Value);
         if (task.OwnerMessageId.HasValue)
