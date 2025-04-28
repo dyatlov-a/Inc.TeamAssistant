@@ -67,10 +67,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
                 token));
         
         if (task.State == TaskForReviewState.OnCorrection || fromOwner)
-            notifications.Add(await MessageForOwner(task, reviewer, metricsByTeam, metricsByTask, token));
+            notifications.Add(await MessageForOwner(task, firstReviewer, reviewer, metricsByTeam, metricsByTask, token));
         
         if (task.State is TaskForReviewState.Accept or TaskForReviewState.AcceptWithComments)
-            notifications.Add(await ReviewFinish(task, reviewer, token));
+            notifications.Add(await ReviewFinish(task, firstReviewer, reviewer, token));
 
         return notifications;
     }
@@ -96,7 +96,13 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         };
         
         if (task.OwnerMessageId.HasValue)
-            notifications.Add(await MessageForOwner(task, reviewer, metricsByTeam, metricsByTask, token));
+            notifications.Add(await MessageForOwner(
+                task,
+                firstReviewer,
+                reviewer,
+                metricsByTeam,
+                metricsByTask,
+                token));
 
         return notifications.ToArray();
     }
@@ -228,14 +234,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notification = NotificationBuilder.Create()
             .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_NewTaskForReview, ownerLanguageId)))
             .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName)))
-            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
-                Messages.Reviewer_FirstAccept,
-                ownerLanguageId,
-                firstReviewer!.DisplayName)))
             .Add(sb => sb.Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId)))
             .Add(sb => reviewer
                 .AddTo(sb, (p, o) => attachPersons += n => n.AttachPerson(p, reviewerLanguageId, o))
                 .AppendLine())
+            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
+                Messages.Reviewer_FirstAccept,
+                ownerLanguageId,
+                firstReviewer!.DisplayName)))
             .Add(sb => sb.AppendLine().AppendLine(task.Description))
             .AddIf(task.Comments.Any(), sb =>
             {
@@ -359,6 +365,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     private async Task<NotificationMessage> MessageForOwner(
         TaskForReview task,
+        Person? firstReviewer,
         Person reviewer,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
@@ -374,9 +381,12 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_ReviewDeclined, ownerLanguageId))
                 .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
                 .Append($" {reviewer.DisplayName}")
-                .AppendLine()
-                .AppendLine()
-                .AppendLine(task.Description))
+                .AppendLine())
+            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
+                Messages.Reviewer_FirstAccept,
+                ownerLanguageId,
+                firstReviewer!.DisplayName)))
+            .Add(sb => sb.AppendLine().AppendLine(task.Description))
             .AddIf(task.Comments.Any(), sb =>
             {
                 sb.AppendLine();
@@ -408,7 +418,11 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         return notification;
     }
 
-    private async Task<NotificationMessage> ReviewFinish(TaskForReview task, Person reviewer, CancellationToken token)
+    private async Task<NotificationMessage> ReviewFinish(
+        TaskForReview task,
+        Person? firstReviewer,
+        Person reviewer,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(reviewer);
@@ -423,12 +437,21 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(stateMessage, ownerLanguageId))
                 .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
-                .Append($" {reviewer.DisplayName}")
-                .AppendLine()
-                .AppendLine()
-                .AppendLine(task.Description)
-                .AppendLine()
-                .AppendLine(totalTimeMessage))
+                .Append($" {reviewer.DisplayName}").AppendLine())
+            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
+                Messages.Reviewer_FirstAccept,
+                ownerLanguageId,
+                firstReviewer!.DisplayName)))
+            .Add(sb => sb.AppendLine().AppendLine(task.Description))
+            .AddIf(task.Comments.Any(), sb =>
+            {
+                sb.AppendLine();
+                sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_Comments, ownerLanguageId));
+                foreach (var comment in task.Comments.OrderBy(c => c.Created))
+                    sb.AppendLine(comment.Comment);
+                sb.AppendLine();
+            })
+            .Add(sb => sb.AppendLine().AppendLine(totalTimeMessage))
             .Build(m => NotificationMessage.Create(task.OwnerId, m));
 
         return notification;

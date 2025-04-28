@@ -35,6 +35,7 @@
     {
         _isOpen = true;
         
+        // TODO: add loading for clientTimezoneOffset
         var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
         var result = await RequestProcessor.Process(
             () => CalendarService.GetCalendarByOwner(),
