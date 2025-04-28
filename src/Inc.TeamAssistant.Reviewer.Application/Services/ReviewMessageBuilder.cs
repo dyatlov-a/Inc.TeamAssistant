@@ -49,7 +49,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notifications = new List<NotificationMessage>
         {
             await MessageForTeam(task, firstReviewer, reviewer, owner, metricsByTeam, metricsByTask, token),
-            await MessageForReviewer(task, owner, metricsByTeam, metricsByTask, token)
+            await MessageForReviewer(task, firstReviewer, owner, metricsByTeam, metricsByTask, token)
         };
 
         if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerMessageId.HasValue && task.HasReassign())
@@ -75,7 +75,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         return notifications;
     }
 
-    public async Task<IReadOnlyCollection<NotificationMessage>> BuildAfterComments(TaskForReview task, CancellationToken token)
+    public async Task<IReadOnlyCollection<NotificationMessage>> BuildAfterComments(
+        TaskForReview task,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(task);
         
@@ -89,7 +91,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var notifications = new List<NotificationMessage>
         {
-            await MessageForTeam(task, firstReviewer, reviewer, owner, metricsByTeam, metricsByTask, token)
+            await MessageForTeam(task, firstReviewer, reviewer, owner, metricsByTeam, metricsByTask, token),
+            await MessageForReviewer(task, firstReviewer, owner, metricsByTeam, metricsByTask, token)
         };
         
         if (task.OwnerMessageId.HasValue)
@@ -283,6 +286,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
     private async Task<NotificationMessage> MessageForReviewer(
         TaskForReview task,
+        Person? firstReviewer,
         Person owner,
         ReviewTeamMetrics metricsByTeam,
         ReviewTeamMetrics metricsByTask,
@@ -298,9 +302,20 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var notification = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(Messages.Reviewer_NeedReview, reviewerLanguageId))
-                .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName))
-                .AppendLine()
-                .AppendLine(task.Description))
+                .AppendLine(_messageBuilder.Build(Messages.Reviewer_Owner, ownerLanguageId, owner.DisplayName)))
+            .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
+                Messages.Reviewer_FirstAccept,
+                ownerLanguageId,
+                firstReviewer!.DisplayName)))
+            .Add(sb => sb.AppendLine().AppendLine(task.Description))
+            .AddIf(task.Comments.Any(), sb =>
+            {
+                sb.AppendLine();
+                sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_Comments, ownerLanguageId));
+                foreach (var comment in task.Comments.OrderBy(c => c.Created))
+                    sb.AppendLine(comment.Comment);
+                sb.AppendLine();
+            })
             .Add(sb => sb
                 .Append(ReviewStatsBuilder
                     .Create(_messageBuilder)

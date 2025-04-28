@@ -25,7 +25,7 @@ internal sealed class NextReviewerStrategyFactory : INextReviewerStrategyFactory
     {
         ArgumentNullException.ThrowIfNull(teammates);
         
-        const int historyLimitInDays = 7;
+        const int historyLimitInDays = 14;
         var fromDate = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromDays(historyLimitInDays));
         var reviewerCandidatePool = await _reader.GetReviewerCandidates(
             teamId,

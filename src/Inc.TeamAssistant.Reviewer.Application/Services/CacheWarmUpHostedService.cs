@@ -5,18 +5,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class WarmCacheHostedService : IHostedService
+internal sealed class CacheWarmUpHostedService : IHostedService
 {
     private readonly ITaskForReviewReader _reader;
     private readonly IReviewMetricsLoader _metricsLoader;
     private readonly ReviewCommentsProvider _commentsProvider;
-    private readonly ILogger<WarmCacheHostedService> _logger;
+    private readonly ILogger<CacheWarmUpHostedService> _logger;
 
-    public WarmCacheHostedService(
+    public CacheWarmUpHostedService(
         ITaskForReviewReader reader,
         IReviewMetricsLoader metricsLoader,
         ReviewCommentsProvider commentsProvider,
-        ILogger<WarmCacheHostedService> logger)
+        ILogger<CacheWarmUpHostedService> logger)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsLoader = metricsLoader ?? throw new ArgumentNullException(nameof(metricsLoader));

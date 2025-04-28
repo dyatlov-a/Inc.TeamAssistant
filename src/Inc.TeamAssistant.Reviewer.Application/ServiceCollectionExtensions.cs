@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
             .AddSingleton<ReviewTeamMetricsFactory>()
             .AddSingleton<ReviewCommentsProvider>()
-            .AddHostedService<WarmCacheHostedService>()
+            .AddHostedService<CacheWarmUpHostedService>()
             
             .AddSingleton<ICommandCreator, MoveToAcceptCommandCreator>()
             .AddSingleton<ICommandCreator, MoveToDeclineCommandCreator>()
