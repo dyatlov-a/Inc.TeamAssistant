@@ -9,9 +9,9 @@ namespace Inc.TeamAssistant.Constructor.Application.QueryHandlers.GetBot;
 internal sealed class GetBotQueryHandler : IRequestHandler<GetBotQuery, GetBotResult>
 {
     private readonly IBotRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
 
-    public GetBotQueryHandler(IBotRepository repository, ICurrentPersonResolver personResolver)
+    public GetBotQueryHandler(IBotRepository repository, IPersonResolver personResolver)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));

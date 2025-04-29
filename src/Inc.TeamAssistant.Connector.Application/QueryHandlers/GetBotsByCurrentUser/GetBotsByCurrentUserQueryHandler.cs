@@ -9,9 +9,9 @@ internal sealed class GetBotsByCurrentUserQueryHandler
     : IRequestHandler<GetBotsByCurrentUserQuery, GetBotsByCurrentUserResult>
 {
     private readonly IBotReader _reader;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
 
-    public GetBotsByCurrentUserQueryHandler(IBotReader reader, ICurrentPersonResolver personResolver)
+    public GetBotsByCurrentUserQueryHandler(IBotReader reader, IPersonResolver personResolver)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));

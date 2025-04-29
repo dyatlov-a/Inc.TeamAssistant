@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
-            .AddScoped<ICurrentPersonResolver, CurrentPersonResolver>()
+            .AddScoped<IPersonResolver, PersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddScoped<ICalendarService, CalendarService>()

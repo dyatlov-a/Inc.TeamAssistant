@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.DisableIntegra
 internal sealed class DisableIntegrationCommandHandler : IRequestHandler<DisableIntegrationCommand>
 {
     private readonly ITeamRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly ITeamAccessor _teamAccessor;
 
     public DisableIntegrationCommandHandler(
         ITeamRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         ITeamAccessor teamAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

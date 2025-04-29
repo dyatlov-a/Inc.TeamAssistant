@@ -10,13 +10,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.UpdateTeammate;
 internal sealed class UpdateTeammateCommandHandler : IRequestHandler<UpdateTeammateCommand>
 {
     private readonly ITeammateRepository _repository;
-    private readonly ICurrentPersonResolver _personProvider;
+    private readonly IPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
     private readonly ILeaveTeamHandler _leaveTeamHandler;
 
     public UpdateTeammateCommandHandler(
         ITeammateRepository repository,
-        ICurrentPersonResolver personProvider,
+        IPersonResolver personProvider,
         ITeamAccessor teamAccessor, ILeaveTeamHandler leaveTeamHandler)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

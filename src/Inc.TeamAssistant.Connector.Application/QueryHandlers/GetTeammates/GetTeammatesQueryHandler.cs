@@ -8,12 +8,12 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetTeammates;
 internal sealed class GetTeammatesQueryHandler : IRequestHandler<GetTeammatesQuery, GetTeammatesResult>
 {
     private readonly ITeamReader _reader;
-    private readonly ICurrentPersonResolver _personProvider;
+    private readonly IPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
 
     public GetTeammatesQueryHandler(
         ITeamReader reader, 
-        ICurrentPersonResolver personProvider,
+        IPersonResolver personProvider,
         ITeamAccessor teamAccessor)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));

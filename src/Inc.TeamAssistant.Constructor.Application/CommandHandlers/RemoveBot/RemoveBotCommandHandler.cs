@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.RemoveBot;
 internal sealed class RemoveBotCommandHandler : IRequestHandler<RemoveBotCommand>
 {
     private readonly IBotRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IBotListeners _botListeners;
 
     public RemoveBotCommandHandler(
         IBotRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         IBotListeners botListeners)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

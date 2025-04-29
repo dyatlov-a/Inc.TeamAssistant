@@ -9,13 +9,13 @@ namespace Inc.TeamAssistant.Reviewer.Application.CommandHandlers.RemoveTeammate;
 internal sealed class RemoveTeammateCommandHandler : IRequestHandler<RemoveTeammateCommand>
 {
     private readonly ITeammateRepository _repository;
-    private readonly ICurrentPersonResolver _personProvider;
+    private readonly IPersonResolver _personProvider;
     private readonly ITeamAccessor _teamAccessor;
     private readonly ILeaveTeamHandler _leaveTeamHandler;
 
     public RemoveTeammateCommandHandler(
         ITeammateRepository repository,
-        ICurrentPersonResolver personProvider,
+        IPersonResolver personProvider,
         ITeamAccessor teamAccessor,
         ILeaveTeamHandler leaveTeamHandler)
     {

@@ -8,10 +8,10 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.UpdateWidgets;
 
 internal sealed class UpdateWidgetsCommandHandler : IRequestHandler<UpdateWidgetsCommand>
 {
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IDashboardSettingsRepository _repository;
 
-    public UpdateWidgetsCommandHandler(ICurrentPersonResolver personResolver, IDashboardSettingsRepository repository)
+    public UpdateWidgetsCommandHandler(IPersonResolver personResolver, IDashboardSettingsRepository repository)
     {
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

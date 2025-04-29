@@ -10,9 +10,9 @@ internal sealed class GetCalendarByOwnerQueryHandler
     : IRequestHandler<GetCalendarByOwnerQuery, GetCalendarByOwnerResult>
 {
     private readonly ICalendarRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
 
-    public GetCalendarByOwnerQueryHandler(ICalendarRepository repository, ICurrentPersonResolver personResolver)
+    public GetCalendarByOwnerQueryHandler(ICalendarRepository repository, IPersonResolver personResolver)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));

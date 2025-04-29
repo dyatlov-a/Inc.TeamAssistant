@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Connector.Application.QueryHandlers.GetWidgets;
 internal sealed class GetWidgetsQueryHandler : IRequestHandler<GetWidgetsQuery, GetWidgetsResult>
 {
     private readonly IBotReader _reader;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IDashboardSettingsRepository _repository;
 
     public GetWidgetsQueryHandler(
         IBotReader reader,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         IDashboardSettingsRepository repository)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
