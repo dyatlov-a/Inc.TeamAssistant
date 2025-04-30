@@ -11,12 +11,12 @@ public sealed class MessageParserTests
 {
     private readonly Fixture _fixture = new();
     private readonly IPersonRepository _personRepository;
-    private readonly MessageParser _messageParser;
+    private readonly MessageParser _target;
 
     public MessageParserTests()
     {
         _personRepository = Substitute.For<IPersonRepository>();
-        _messageParser = new MessageParser(_personRepository);
+        _target = new MessageParser(_personRepository);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public sealed class MessageParserTests
     [Fact]
     public async Task Parse_MessageIsNull_ThrowsException()
     {
-        Task<(string Text, long? TargetPersonId)> Actual() => _messageParser.Parse(null!, CancellationToken.None);
+        Task<(string Text, long? TargetPersonId)> Actual() => _target.Parse(null!, CancellationToken.None);
 
         await Assert.ThrowsAsync<ArgumentNullException>(Actual);
     }
@@ -42,7 +42,7 @@ public sealed class MessageParserTests
         var text = _fixture.Create<string>();
         var message = CreateMessage(botName, text);
 
-        var actual = await _messageParser.Parse(message, CancellationToken.None);
+        var actual = await _target.Parse(message, CancellationToken.None);
         
         Assert.Equal(text, actual.Text);
         Assert.Null(actual.TargetPersonId);
@@ -51,7 +51,7 @@ public sealed class MessageParserTests
     [Fact]
     public async Task Parse_MessageWithEntities_ShouldDetectTargetPerson()
     {
-        var targetPerson = _fixture.Create<Person>();
+        var targetPerson = CreatePerson();
         var text = _fixture.Create<string>();
         var otherPersonId = _fixture.Create<long>();
         var message = CreateMessage(
@@ -59,23 +59,23 @@ public sealed class MessageParserTests
             personIds: [otherPersonId, targetPerson.Id]);
         _personRepository.Find(Arg.Any<long>(), Arg.Any<CancellationToken>()).Returns(targetPerson);
 
-        var actual = await _messageParser.Parse(message, CancellationToken.None);
+        var actual = await _target.Parse(message, CancellationToken.None);
         
-        Assert.Equal($"{text}  {text}", actual.Text);
+        Assert.Equal($"{text} {text}", actual.Text);
         Assert.Equal(targetPerson.Id, actual.TargetPersonId);
     }
     
     [Fact]
     public async Task Parse_MessageWithEntitiesWithoutTargetPerson_ShouldDetectTargetPerson()
     {
-        var targetPerson = _fixture.Create<Person>();
+        var targetPerson = CreatePerson();
         var text = _fixture.Create<string>();
         var otherPersonId = _fixture.Create<long>();
         var message = CreateMessage(
             text: text,
             personIds: [otherPersonId, targetPerson.Id]);
 
-        var actual = await _messageParser.Parse(message, CancellationToken.None);
+        var actual = await _target.Parse(message, CancellationToken.None);
         
         Assert.Equal(text, actual.Text);
         Assert.Null(actual.TargetPersonId);
@@ -84,30 +84,75 @@ public sealed class MessageParserTests
     [Fact]
     public async Task Parse_MessageWithUserName_ShouldDetectTargetPerson()
     {
-        var targetPerson = _fixture.Create<Person>();
+        var targetPerson = CreatePerson();
         var text = _fixture.Create<string>();
-        var otherUserName = _fixture.Create<string>();
+        var otherUserName = CreateUserName();
         var message = CreateMessage(text: $"{text} @{otherUserName} @{targetPerson.Username} {text}");
         _personRepository.Find(targetPerson.Username!, Arg.Any<CancellationToken>()).Returns(targetPerson);
 
-        var actual = await _messageParser.Parse(message, CancellationToken.None);
+        var actual = await _target.Parse(message, CancellationToken.None);
         
-        Assert.Equal($"{text} @{otherUserName}  {text}", actual.Text);
+        Assert.Equal($"{text} @{otherUserName} {text}", actual.Text);
         Assert.Equal(targetPerson.Id, actual.TargetPersonId);
     }
     
     [Fact]
-    public async Task Parse_MessageWithUserNameWithoutTargetPerson_ShouldDetectTargetPerson()
+    public async Task Parse_MessageWithUserNameWithoutTargetPerson_ShouldNotDetectTargetPerson()
     {
-        var targetPerson = _fixture.Create<Person>();
+        var targetPerson = CreatePerson();
         var text = _fixture.Create<string>();
-        var otherUserName = _fixture.Create<string>();
+        var otherUserName = CreateUserName();
         var message = CreateMessage(text: $"{text} @{otherUserName} @{targetPerson.Username} {text}");
 
-        var actual = await _messageParser.Parse(message, CancellationToken.None);
+        var actual = await _target.Parse(message, CancellationToken.None);
         
         Assert.Equal($"{text} @{otherUserName} @{targetPerson.Username} {text}", actual.Text);
         Assert.Null(actual.TargetPersonId);
+    }
+    
+    [Fact]
+    public async Task Parse_NewLineUserName_ShouldDetectTargetPerson()
+    {
+        var targetPerson = CreatePerson();
+        var text = _fixture.Create<string>();
+        var otherUserName = CreateUserName();
+        var message = CreateMessage(text: $"{text} @{otherUserName}\n@{targetPerson.Username}");
+        _personRepository.Find(targetPerson.Username!, Arg.Any<CancellationToken>()).Returns(targetPerson);
+
+        var actual = await _target.Parse(message, CancellationToken.None);
+        
+        Assert.Equal($"{text} @{otherUserName}\n", actual.Text);
+        Assert.Equal(targetPerson.Id, actual.TargetPersonId);
+    }
+    
+    [Fact]
+    public async Task Parse_UserNameNewLine_ShouldDetectTargetPerson()
+    {
+        var targetPerson = CreatePerson();
+        var text = _fixture.Create<string>();
+        var otherUserName = CreateUserName();
+        var message = CreateMessage(text: $"{text} @{otherUserName} @{targetPerson.Username}\n");
+        _personRepository.Find(targetPerson.Username!, Arg.Any<CancellationToken>()).Returns(targetPerson);
+
+        var actual = await _target.Parse(message, CancellationToken.None);
+        
+        Assert.Equal($"{text} @{otherUserName} ", actual.Text);
+        Assert.Equal(targetPerson.Id, actual.TargetPersonId);
+    }
+    
+    [Fact]
+    public async Task Parse_NewLineUserNameNewLine_ShouldDetectTargetPerson()
+    {
+        var targetPerson = CreatePerson();
+        var text = _fixture.Create<string>();
+        var otherUserName = CreateUserName();
+        var message = CreateMessage(text: $"{text} @{otherUserName}\n@{targetPerson.Username}\n");
+        _personRepository.Find(targetPerson.Username!, Arg.Any<CancellationToken>()).Returns(targetPerson);
+
+        var actual = await _target.Parse(message, CancellationToken.None);
+        
+        Assert.Equal($"{text} @{otherUserName}\n", actual.Text);
+        Assert.Equal(targetPerson.Id, actual.TargetPersonId);
     }
 
     private IInputMessage CreateMessage(
@@ -125,4 +170,11 @@ public sealed class MessageParserTests
 
         return message;
     }
+
+    private Person CreatePerson() => _fixture.Create<Person>() with
+    {
+        Username = CreateUserName()
+    };
+    
+    private string CreateUserName() => _fixture.Create<string>()[..32].Replace("-", "_");
 }
