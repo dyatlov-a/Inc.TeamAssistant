@@ -37,7 +37,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         var botContext = command.MessageContext.Bot;
         
         var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
-        if (entry.AlreadyStarted(onDemand: false))
+        if (entry.IsRefused())
             return CommandResult.Empty;
 
         var pairs = entry.TrySelectPairs(DateTimeOffset.UtcNow);
@@ -52,7 +52,6 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
             command.MessageContext.Bot.Id,
             entry.OwnerId,
             token);
-        var notEnoughMessage = _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId);
         var notifications = new List<NotificationMessage>
         {
             pairs is not null
@@ -62,7 +61,9 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
                     languageId,
                     pairs,
                     token)
-                : NotificationMessage.Create(entry.ChatId, notEnoughMessage)
+                : NotificationMessage.Create(
+                    entry.ChatId,
+                    _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId))
         };
         
         if (pollMessageId.HasValue)

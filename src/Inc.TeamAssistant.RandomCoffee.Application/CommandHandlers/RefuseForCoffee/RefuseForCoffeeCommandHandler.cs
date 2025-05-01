@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
-using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.RefuseForCoffee;
 using MediatR;
 
@@ -30,10 +29,12 @@ public sealed class RefuseForCoffeeCommandHandler : IRequestHandler<RefuseForCof
         ArgumentNullException.ThrowIfNull(command);
         
         var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        if (existsEntry is null || existsEntry.State == RandomCoffeeState.Refused)
+        if (existsEntry is null || existsEntry.IsRefused())
             return CommandResult.Empty;
 
-        var pollMessageId = existsEntry.MoveToRefused(command.MessageContext.Person.Id);
+        var pollMessageId = existsEntry
+            .CheckRights(command.MessageContext.Person.Id)
+            .MoveToRefused();
         
         await _repository.Upsert(existsEntry, token);
 

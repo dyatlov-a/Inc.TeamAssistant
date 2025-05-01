@@ -19,7 +19,7 @@ internal sealed class AddPollAnswerCommandHandler : IRequestHandler<AddPollAnswe
         ArgumentNullException.ThrowIfNull(command);
         
         var entry = await _repository.Find(command.PollId, token);
-        if (entry is not null)
+        if (entry?.IsWaitAnswer() == true)
             await _repository.Upsert(entry.SetAnswer(command.IsAttend, command.MessageContext.Person.Id), token);
         
         return CommandResult.Empty;

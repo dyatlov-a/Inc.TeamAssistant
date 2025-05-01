@@ -4,7 +4,7 @@ using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.Domain;
-using Inc.TeamAssistant.RandomCoffee.Model.Commands.InviteForCoffee;
+using Inc.TeamAssistant.RandomCoffee.Model.Commands.RepeatMeeting;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.SelectPairs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -66,7 +66,7 @@ internal sealed class ScheduleBackgroundService : BackgroundService
             IDialogCommand command = entry.State switch
             {
                 RandomCoffeeState.Waiting => new SelectPairsCommand(messageContext, entry.Id),
-                RandomCoffeeState.Idle => new InviteForCoffeeCommand(messageContext, OnDemand: false),
+                RandomCoffeeState.Idle => new RepeatMeetingCommand(messageContext),
                 _ => throw new ArgumentOutOfRangeException(nameof(entry.State), entry.State, "State out of range.")
             };
                 

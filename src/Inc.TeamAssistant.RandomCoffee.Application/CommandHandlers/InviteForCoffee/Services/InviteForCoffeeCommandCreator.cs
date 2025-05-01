@@ -20,6 +20,6 @@ internal sealed class InviteForCoffeeCommandCreator : ICommandCreator
         if (singleLineMode || !command.StartsWith(_command, StringComparison.InvariantCultureIgnoreCase))
             return null;
 
-        return new InviteForCoffeeCommand(messageContext, OnDemand: true);
+        return new InviteForCoffeeCommand(messageContext);
     }
 }

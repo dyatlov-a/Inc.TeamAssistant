@@ -98,6 +98,7 @@
   "RandomCoffee_InviteHelp": "Начать проведение встреч",
   "RandomCoffee_RefuseHelp": "Приостановить проведение встреч",
   "RandomCoffee_RefusedForCoffee": "Проведение встреч приостановлено. Вы можете возобновить их в любой момент {0}",
+  "RandomCoffee_AlreadyWaitAnswer": "Встреча random coffee уже началась",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

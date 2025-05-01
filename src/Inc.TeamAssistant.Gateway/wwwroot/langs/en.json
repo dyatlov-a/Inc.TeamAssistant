@@ -98,6 +98,7 @@
   "RandomCoffee_InviteHelp": "Start random coffee meetings",
   "RandomCoffee_RefuseHelp": "Refuse random coffee meetings",
   "RandomCoffee_RefusedForCoffee": "Random coffee meetings are refused. Please use {0} to start them again",
+  "RandomCoffee_AlreadyWaitAnswer": "Random coffee meeting is already started",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",
