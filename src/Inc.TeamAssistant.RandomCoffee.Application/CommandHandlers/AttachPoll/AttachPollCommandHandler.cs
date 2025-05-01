@@ -21,7 +21,7 @@ internal sealed class AttachPollCommandHandler : IRequestHandler<AttachPollComma
 
         var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
         
-        await _repository.Upsert(entry.AttachPoll(command.PollId), token);
+        await _repository.Upsert(entry.AttachPoll(command.PollId, command.MessageId), token);
 
         return CommandResult.Empty;
     }

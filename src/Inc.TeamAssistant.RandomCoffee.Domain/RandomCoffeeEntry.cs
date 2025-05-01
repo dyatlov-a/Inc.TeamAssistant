@@ -12,7 +12,7 @@ public sealed class RandomCoffeeEntry
     public long OwnerId { get; private set; }
     public DateTimeOffset NextRound { get; private set; }
     public RandomCoffeeState State { get; private set; }
-    public string? PollId { get; private set; }
+    public PollEntry? Poll { get; private set; }
     public ICollection<long> ParticipantIds { get; private set; }
 
     private readonly List<RandomCoffeeHistory> _history = new();
@@ -52,19 +52,20 @@ public sealed class RandomCoffeeEntry
         entry.NextRound = now.Add(waitingInterval);
         entry.State = RandomCoffeeState.Waiting;
         entry.ParticipantIds.Clear();
-        entry.PollId = null;
         
         return entry;
     }
 
-    public RandomCoffeeEntry MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval, TimeSpan votingInterval)
+    public int? MoveToNextRound(DateTimeOffset now, TimeSpan roundInterval, TimeSpan votingInterval)
     {
         var waitingInterval = roundInterval - votingInterval;
+        var pollMessageId = Poll?.MessageId;
         
         NextRound = now.Add(waitingInterval);
         State = RandomCoffeeState.Idle;
+        Poll = null;
 
-        return this;
+        return pollMessageId;
     }
     
     public RandomCoffeeEntry SetAnswer(bool isAttend, long participantId)
@@ -78,19 +79,20 @@ public sealed class RandomCoffeeEntry
         return entry;
     }
 
-    public RandomCoffeeEntry AttachPoll(string pollId)
+    public RandomCoffeeEntry AttachPoll(string pollId, int messageId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
         
-        PollId = pollId;
+        Poll = new PollEntry(pollId, messageId);
         
         return this;
     }
 
-    public bool CanSelectPairs() => ParticipantIds.Count >= PersonPair.Size;
-
-    public RandomCoffeeHistory SelectPairs()
+    public RandomCoffeeHistory? TrySelectPairs()
     {
+        if (ParticipantIds.Count < PersonPair.Size)
+            return null;
+        
         var orderedHistory = History
             .OrderByDescending(i => i.Created)
             .Select(i => i.Pairs.ToArray())
@@ -98,20 +100,26 @@ public sealed class RandomCoffeeEntry
         var lastExcludedPersonId = History.MaxBy(i => i.Created)?.ExcludedPersonId;
         var strategy = new SelectPairsStrategy(ParticipantIds, orderedHistory);
         var detectedPairs = strategy.Detect(lastExcludedPersonId);
-        var randomCoffeeHistory = RandomCoffeeHistory.Build(Id, detectedPairs.Pairs, detectedPairs.ExcludedPersonId);
+        var randomCoffeeHistory = RandomCoffeeHistory.Build(
+            Id,
+            detectedPairs.Pairs,
+            detectedPairs.ExcludedPersonId);
         
         _history.Add(randomCoffeeHistory);
-        
+
         return randomCoffeeHistory;
     }
 
-    public RandomCoffeeEntry MoveToRefused(long personId)
+    public int? MoveToRefused(long personId)
     {
-        var entry = EnsureRights(personId);
+        EnsureRights(personId);
         
-        entry.State = RandomCoffeeState.Refused;
+        var messageId = Poll?.MessageId;
         
-        return entry;
+        Poll = null;
+        State = RandomCoffeeState.Refused;
+        
+        return messageId;
     }
 
     public bool AlreadyStarted(bool onDemand)

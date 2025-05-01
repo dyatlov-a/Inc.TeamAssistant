@@ -39,26 +39,35 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         var entry = await command.RandomCoffeeEntryId.Required(_repository.Find, token);
         if (entry.AlreadyStarted(onDemand: false))
             return CommandResult.Empty;
+
+        var pairs = entry.TrySelectPairs();
+        var pollMessageId = entry.MoveToNextRound(
+            DateTimeOffset.UtcNow,
+            botContext.GetRoundInterval(),
+            botContext.GetVotingInterval());
+
+        await _repository.Upsert(entry, token);
         
         var languageId = await _teamAccessor.GetClientLanguage(
             command.MessageContext.Bot.Id,
             entry.OwnerId,
             token);
-        var notificationMessage = entry.CanSelectPairs()
-            ? await _notificationBuilder.Build(
-                entry.ChatId,
-                entry.BotId,
-                languageId,
-                entry.SelectPairs(),
-                token)
-            : NotificationMessage.Create(
-                entry.ChatId,
-                _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId));
-
-        await _repository.Upsert(
-            entry.MoveToNextRound(DateTimeOffset.UtcNow, botContext.GetRoundInterval(), botContext.GetVotingInterval()),
-            token);
+        var notEnoughMessage = _messageBuilder.Build(Messages.RandomCoffee_NotEnoughParticipants, languageId);
+        var notifications = new List<NotificationMessage>
+        {
+            pairs is not null
+                ? await _notificationBuilder.Build(
+                    entry.ChatId,
+                    entry.BotId,
+                    languageId,
+                    pairs,
+                    token)
+                : NotificationMessage.Create(entry.ChatId, notEnoughMessage)
+        };
         
-        return CommandResult.Build(notificationMessage);
+        if (pollMessageId.HasValue)
+            notifications.Add(NotificationMessage.EndPoll(entry.ChatId, pollMessageId.Value));
+        
+        return CommandResult.Build(notifications.ToArray());
     }
 }

@@ -78,18 +78,23 @@ builder.Services
 	.AddLanguageIdType()
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
+	
 	.AddJsonType<ICollection<string>>()
 	.AddJsonType<ICollection<long>>()
-	.AddJsonType<ICollection<PersonPair>>()
-	.AddJsonType<ICollection<DashboardWidget>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	
+	.AddJsonType<ICollection<PersonPair>>()
+	.AddJsonType<PollEntry>()
+	
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ReviewComment>>()
-	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	
+	.AddJsonType<WorkScheduleUtc>()
 	.AddJsonType<IReadOnlyCollection<DayOfWeek>>()
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
-	.AddJsonType<IReadOnlyDictionary<string, string>>()
-	.AddJsonType<WorkScheduleUtc>()
+	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	.AddJsonType<ICollection<DashboardWidget>>()
 	.Build();
 
 builder.Services

@@ -29,7 +29,7 @@ internal sealed class BeginCommandHandler : IRequestHandler<BeginCommand, Comman
         if (command.TeamContext != CurrentTeamContext.Empty)
             dialogState.SetTeam(command.TeamContext);
 
-        command.Notification.WithHandler((c, p) => new MarkMessageForDeleteCommand(c, int.Parse(p)));
+        command.Notification.WithHandler((c, mId, pId) => new MarkMessageForDeleteCommand(c, mId));
 
         return Task.FromResult(CommandResult.Build(command.Notification));
     }

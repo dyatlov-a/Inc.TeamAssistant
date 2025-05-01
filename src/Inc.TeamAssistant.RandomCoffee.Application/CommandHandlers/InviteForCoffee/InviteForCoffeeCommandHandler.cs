@@ -53,7 +53,7 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
             .Create(entry.ChatId, _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
             .WithOption(_messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
             .WithOption(_messageBuilder.Build(Messages.RandomCoffee_No, languageId))
-            .WithHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
+            .WithHandler((c, mId, pId) => new AttachPollCommand(c, entry.Id, pId!, mId));
         var notifications = command.MessageContext.ChatMessage.OnlyChat
             ? [notification]
             : new[]

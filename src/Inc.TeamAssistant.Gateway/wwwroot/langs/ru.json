@@ -97,7 +97,7 @@
   "RandomCoffee_NotEnoughParticipants": "Недостаточно участников для составления пар",
   "RandomCoffee_InviteHelp": "Начать проведение встреч",
   "RandomCoffee_RefuseHelp": "Приостановить проведение встреч",
-  "RandomCoffee_RefusedForCoffee": "Проведение встреч приостановлено",
+  "RandomCoffee_RefusedForCoffee": "Проведение встреч приостановлено. Вы можете возобновить их в любой момент {0}",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",

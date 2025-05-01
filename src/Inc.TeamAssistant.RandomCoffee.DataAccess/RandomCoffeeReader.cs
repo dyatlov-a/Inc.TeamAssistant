@@ -31,7 +31,7 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
                 e.owner_id AS ownerid,
                 e.next_round AS nextround,
                 e.state AS state,
-                e.poll_id AS pollid,
+                e.poll AS poll,
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e

@@ -30,7 +30,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
         var command = new CommandDefinition(@"
             SELECT e.id AS id
             FROM random_coffee.entries AS e
-            WHERE e.poll_id = @poll_id;",
+            WHERE e.poll ->> 'Id' = @poll_id;",
             new { poll_id = pollId },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -67,17 +67,20 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
     {
         ArgumentNullException.ThrowIfNull(randomCoffeeEntry);
 
+        var randomCoffeeEntryPoll = randomCoffeeEntry.Poll is not null
+            ? JsonSerializer.Serialize(randomCoffeeEntry.Poll)
+            : null;
         var historyId = new List<Guid>(randomCoffeeEntry.History.Count);
         var historyCreated = new List<DateTimeOffset>(randomCoffeeEntry.History.Count);
         var historyPairs = new List<string>(randomCoffeeEntry.History.Count);
-        var excludedPersonId = new List<long?>(randomCoffeeEntry.History.Count);
+        var historyExcludedPersonId = new List<long?>(randomCoffeeEntry.History.Count);
 
         foreach (var item in randomCoffeeEntry.History)
         {
             historyId.Add(item.Id);
             historyCreated.Add(item.Created);
             historyPairs.Add(JsonSerializer.Serialize(item.Pairs));
-            excludedPersonId.Add(item.ExcludedPersonId);
+            historyExcludedPersonId.Add(item.ExcludedPersonId);
         }
 
         var upsertEntry = new CommandDefinition(@"
@@ -89,7 +92,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 owner_id,
                 next_round,
                 state,
-                poll_id,
+                poll,
                 participant_ids,
                 name)
             VALUES (
@@ -100,7 +103,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 @owner_id,
                 @next_round,
                 @state,
-                @poll_id,
+                @poll::jsonb,
                 @participant_ids::jsonb,
                 @name)
             ON CONFLICT (id) DO UPDATE SET
@@ -110,7 +113,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 owner_id = excluded.owner_id,
                 next_round = excluded.next_round,
                 state = excluded.state,
-                poll_id = excluded.poll_id,
+                poll = excluded.poll,
                 participant_ids = excluded.participant_ids,
                 name = excluded.name;",
             new
@@ -122,7 +125,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 owner_id = randomCoffeeEntry.OwnerId,
                 next_round = randomCoffeeEntry.NextRound,
                 state = randomCoffeeEntry.State,
-                poll_id = randomCoffeeEntry.PollId,
+                poll = randomCoffeeEntryPoll,
                 participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
                 name = randomCoffeeEntry.Name
             },
@@ -158,7 +161,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                     created = historyCreated,
                     random_coffee_entry_id = randomCoffeeEntry.Id,
                     pairs = historyPairs,
-                    excluded_person_id = excludedPersonId
+                    excluded_person_id = historyExcludedPersonId
                 },
                 flags: CommandFlags.None,
                 cancellationToken: token);
@@ -183,7 +186,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.owner_id AS ownerid,
                 e.next_round AS nextround,
                 e.state AS state,
-                e.poll_id AS pollid,
+                e.poll AS poll,
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e
