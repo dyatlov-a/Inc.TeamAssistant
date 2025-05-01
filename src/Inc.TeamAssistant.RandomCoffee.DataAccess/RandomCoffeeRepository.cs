@@ -27,11 +27,16 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
         
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT e.id AS id
             FROM random_coffee.entries AS e
-            WHERE e.poll ->> 'Id' = @poll_id;",
-            new { poll_id = pollId },
+            WHERE e.poll ->> 'Id' = @poll_id;
+            """,
+            new
+            {
+                poll_id = pollId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -46,11 +51,16 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
     public async Task<RandomCoffeeEntry?> Find(long chatId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT e.id AS id
             FROM random_coffee.entries AS e
-            WHERE e.chat_id = @chat_id;",
-            new { chat_id = chatId },
+            WHERE e.chat_id = @chat_id;
+            """,
+            new
+            {
+                chat_id = chatId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -83,7 +93,9 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             historyExcludedPersonId.Add(item.ExcludedPersonId);
         }
 
-        var upsertEntry = new CommandDefinition(@"
+        var participantIds = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds);
+        var upsertEntry = new CommandDefinition(
+            """
             INSERT INTO random_coffee.entries (
                 id,
                 created,
@@ -115,7 +127,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 state = excluded.state,
                 poll = excluded.poll,
                 participant_ids = excluded.participant_ids,
-                name = excluded.name;",
+                name = excluded.name;
+            """,
             new
             {
                 id = randomCoffeeEntry.Id,
@@ -124,9 +137,9 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 chat_id = randomCoffeeEntry.ChatId,
                 owner_id = randomCoffeeEntry.OwnerId,
                 next_round = randomCoffeeEntry.NextRound,
-                state = randomCoffeeEntry.State,
+                state = (int)randomCoffeeEntry.State,
                 poll = randomCoffeeEntryPoll,
-                participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
+                participant_ids = participantIds,
                 name = randomCoffeeEntry.Name
             },
             flags: CommandFlags.None,
@@ -140,7 +153,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
         if (randomCoffeeEntry.History.Any())
         {
-            var upsertHistory = new CommandDefinition(@"
+            var upsertHistory = new CommandDefinition(
+                """
                 INSERT INTO random_coffee.history (
                     id,
                     created,
@@ -154,7 +168,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                     created = excluded.created,
                     random_coffee_entry_id = excluded.random_coffee_entry_id,
                     pairs = excluded.pairs,
-                    excluded_person_id = excluded.excluded_person_id;",
+                    excluded_person_id = excluded.excluded_person_id;
+                """,
                 new
                 {
                     id = historyId,
@@ -177,7 +192,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
         ArgumentNullException.ThrowIfNull(connection);
         
         const int historyDepth = 5;
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 e.id AS id,
                 e.created AS created,
@@ -202,10 +218,11 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             WHERE h.random_coffee_entry_id = @id
             ORDER BY h.created DESC
             OFFSET 0
-            LIMIT @history_depth;",
+            LIMIT @history_depth;
+            """,
             new
             {
-                id,
+                id = id,
                 history_depth = historyDepth
             },
             flags: CommandFlags.None,

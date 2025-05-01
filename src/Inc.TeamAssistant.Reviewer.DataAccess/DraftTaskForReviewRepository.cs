@@ -63,7 +63,10 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             FROM review.draft_task_for_reviews AS d
             WHERE d.id = @id;
             """,
-            new { id },
+            new
+            {
+                id = id
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -115,7 +118,7 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
                 id = draft.Id,
                 team_id = draft.TeamId,
                 owner_id = draft.OwnerId,
-                strategy = draft.Strategy,
+                strategy = (int)draft.Strategy,
                 chat_id = draft.ChatId,
                 message_id = draft.MessageId,
                 description = draft.Description,
@@ -138,7 +141,10 @@ internal sealed class DraftTaskForReviewRepository : IDraftTaskForReviewReposito
             DELETE FROM review.draft_task_for_reviews AS d
             WHERE d.id = @id;
             """,
-            new { id },
+            new
+            {
+                id = id
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         

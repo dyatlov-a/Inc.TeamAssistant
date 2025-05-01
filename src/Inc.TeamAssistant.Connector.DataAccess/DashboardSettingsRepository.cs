@@ -42,7 +42,8 @@ internal sealed class DashboardSettingsRepository : IDashboardSettingsRepository
     public async Task Upsert(DashboardSettings settings, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        
+
+        var widgets = JsonSerializer.Serialize(settings.Widgets);
         var command = new CommandDefinition(
             """
             INSERT INTO connector.dashboard_settings (person_id, bot_id, widgets)
@@ -54,7 +55,7 @@ internal sealed class DashboardSettingsRepository : IDashboardSettingsRepository
             {
                 person_id = settings.PersonId,
                 bot_id = settings.BotId,
-                widgets = JsonSerializer.Serialize(settings.Widgets)
+                widgets = widgets
             },
             flags: CommandFlags.None,
             cancellationToken: token);

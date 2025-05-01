@@ -16,15 +16,20 @@ internal sealed class LocationsRepository : ILocationsRepository
 
     public async Task<IReadOnlyCollection<Map>> GetByBot(Guid botId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 id AS id,
                 chat_id AS chatid,
                 bot_id AS botid,
                 name AS name
             FROM maps.maps
-            WHERE bot_id = @bot_id;",
-            new { bot_id = botId },
+            WHERE bot_id = @bot_id;
+            """,
+            new
+            {
+                bot_id = botId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -37,15 +42,20 @@ internal sealed class LocationsRepository : ILocationsRepository
 
     public async Task<Map?> Find(long chatId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 id AS id,
                 chat_id AS chatid,
                 bot_id AS botid,
                 name AS name
             FROM maps.maps
-            WHERE chat_id = @chat_id;",
-            new { chat_id = chatId },
+            WHERE chat_id = @chat_id;
+            """,
+            new
+            {
+                chat_id = chatId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -56,7 +66,8 @@ internal sealed class LocationsRepository : ILocationsRepository
 
     public async Task<IReadOnlyCollection<LocationOnMap>> GetLocations(Guid mapId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 l.id AS id,
                 l.map_id AS mapid,
@@ -71,8 +82,12 @@ internal sealed class LocationsRepository : ILocationsRepository
                 m.name AS name
             FROM maps.locations AS l
             JOIN maps.maps AS m ON m.id = l.map_id
-            WHERE l.map_id = @map_id;",
-            new { map_id = mapId },
+            WHERE l.map_id = @map_id;
+            """,
+            new
+            {
+                map_id = mapId
+            },
             flags: CommandFlags.Buffered,
             cancellationToken: token);
 
@@ -90,13 +105,15 @@ internal sealed class LocationsRepository : ILocationsRepository
     {
         ArgumentNullException.ThrowIfNull(locationOnMap);
 
-        var upsertMap = new CommandDefinition(@"
+        var upsertMap = new CommandDefinition(
+            """
             INSERT INTO maps.maps (id, chat_id, bot_id, name)
             VALUES (@id, @chat_id, @bot_id, @name)
             ON CONFLICT (id) DO UPDATE SET
                 chat_id = excluded.chat_id,
                 bot_id = excluded.bot_id,
-                name = excluded.name;",
+                name = excluded.name;
+            """,
             new
             {
                 id = locationOnMap.Map.Id,
@@ -107,10 +124,12 @@ internal sealed class LocationsRepository : ILocationsRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        var upsertLocation = new CommandDefinition(@"
+        var upsertLocation = new CommandDefinition(
+            """
             INSERT INTO maps.locations (id, map_id, user_id, display_name, longitude, latitude, created)
             VALUES (@id, @map_id, @user_id, @display_name, @longitude, @latitude, @created)
-            ON CONFLICT DO NOTHING;",
+            ON CONFLICT DO NOTHING;
+            """,
             new
             {
                 id = locationOnMap.Id,

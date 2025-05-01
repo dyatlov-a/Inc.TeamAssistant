@@ -24,7 +24,10 @@ internal sealed class CalendarRepository : ICalendarRepository
             FROM connector.bots AS b
             WHERE b.calendar_id = @calendar_id;
             """,
-            new { calendar_id = calendarId },
+            new
+            {
+                calendar_id = calendarId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -47,7 +50,10 @@ internal sealed class CalendarRepository : ICalendarRepository
             FROM generic.calendars AS c
             WHERE c.owner_id = @owner_id;
             """,
-            new { owner_id = ownerId },
+            new
+            {
+                owner_id = ownerId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -64,6 +70,8 @@ internal sealed class CalendarRepository : ICalendarRepository
         var schedule = calendar.Schedule is null
             ? null
             : JsonSerializer.Serialize(calendar.Schedule);
+        var weekends = JsonSerializer.Serialize(calendar.Weekends);
+        var holidays = JsonSerializer.Serialize(calendar.Holidays);
         var command = new CommandDefinition(
             """
             INSERT INTO generic.calendars (id, owner_id, schedule, weekends, holidays)
@@ -78,9 +86,9 @@ internal sealed class CalendarRepository : ICalendarRepository
             {
                 id = calendar.Id,
                 owner_id = calendar.OwnerId,
-                schedule,
-                weekends = JsonSerializer.Serialize(calendar.Weekends),
-                holidays = JsonSerializer.Serialize(calendar.Holidays),
+                schedule = schedule,
+                weekends = weekends,
+                holidays = holidays
             },
             flags: CommandFlags.None,
             cancellationToken: token);

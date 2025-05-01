@@ -170,6 +170,7 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
         DateTimeOffset date,
         CancellationToken token)
     {
+        var state = (int)TaskForReviewState.Accept;
         var command = new CommandDefinition(
             """
             SELECT
@@ -193,14 +194,14 @@ internal sealed class TaskForReviewReader : ITaskForReviewReader
                 t.review_intervals AS reviewintervals,
                 t.comments AS comments
             FROM review.task_for_reviews AS t
-            WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @target_status AND t.created > @date
+            WHERE (@team_id IS NULL OR t.team_id = @team_id) AND t.state = @state AND t.created > @date
             ORDER BY t.created;         
             """,
             new
             {
                 team_id = teamId,
                 date = date.UtcDateTime,
-                target_status = (int)TaskForReviewState.Accept
+                state = state
             },
             flags: CommandFlags.None,
             cancellationToken: token);

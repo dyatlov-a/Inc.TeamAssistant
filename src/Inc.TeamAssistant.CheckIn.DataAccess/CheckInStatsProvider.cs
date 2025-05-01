@@ -1,5 +1,4 @@
 using Dapper;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Primitives.Features.PersonStats;
 
@@ -34,8 +33,8 @@ internal sealed class CheckInStatsProvider : IPersonStatsProvider
             """,
             new
             {
-                person_ids = personIds,
-                from
+                person_ids = personIds.ToArray(),
+                from = from.UtcDateTime
             },
             flags: CommandFlags.None,
             cancellationToken: token);

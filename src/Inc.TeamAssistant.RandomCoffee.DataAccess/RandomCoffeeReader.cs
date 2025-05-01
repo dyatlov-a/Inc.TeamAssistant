@@ -21,8 +21,10 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(activeStates);
-        
-        var command = new CommandDefinition(@"
+
+        var states = activeStates.Select(i => (int)i).ToArray();
+        var command = new CommandDefinition(
+            """
             SELECT
                 e.id AS id,
                 e.created AS created,
@@ -35,11 +37,12 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e
-            WHERE e.state = ANY(@active_states) AND e.next_round < @now;",
+            WHERE e.state = ANY(@states) AND e.next_round < @now;
+            """,
             new
             {
-                active_states = activeStates.Select(i => (int)i).ToArray(),
-                now
+                states = states,
+                now = now
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -52,13 +55,18 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
 
     public async Task<IReadOnlyCollection<ChatDto>> GetChats(Guid botId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT DISTINCT
                 e.chat_id AS chatid,
                 e.name AS name
             FROM random_coffee.entries AS e
-            WHERE e.bot_id = @bot_id;",
-            new { bot_id = botId },
+            WHERE e.bot_id = @bot_id;
+            """,
+            new
+            {
+                bot_id = botId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -78,7 +86,8 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
         int depth,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 h.id AS id,
                 h.created AS created,
@@ -90,12 +99,13 @@ internal sealed class RandomCoffeeReader : IRandomCoffeeReader
             WHERE e.bot_id = @bot_id AND e.chat_id = @chat_id
             ORDER BY h.created DESC
             OFFSET 0
-            LIMIT @depth;",
+            LIMIT @depth;
+            """,
             new
             {
                 bot_id = botId,
                 chat_id = chatId,
-                depth
+                depth = depth
             },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -44,7 +44,10 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
             FROM review.task_for_reviews AS t
             WHERE t.id = @id;
             """,
-            new { id = taskForReviewId },
+            new
+            {
+                id = taskForReviewId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -133,9 +136,9 @@ internal sealed class TaskForReviewRepository : ITaskForReviewRepository
                 id = taskForReview.Id,
                 bot_id = taskForReview.BotId,
                 team_id = taskForReview.TeamId,
-                strategy = taskForReview.Strategy,
+                strategy = (int)taskForReview.Strategy,
                 description = taskForReview.Description,
-                state = taskForReview.State,
+                state = (int)taskForReview.State,
                 created = taskForReview.Created,
                 next_notification = taskForReview.NextNotification,
                 accept_date = taskForReview.AcceptDate,

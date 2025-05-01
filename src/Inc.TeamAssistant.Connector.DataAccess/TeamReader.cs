@@ -30,7 +30,10 @@ internal sealed class TeamReader : ITeamReader
             JOIN connector.persons AS p ON p.id = tm.person_id
             WHERE tm.team_id = @team_id;
             """,
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -61,7 +64,7 @@ internal sealed class TeamReader : ITeamReader
             {
                 team_id = teamId,
                 can_finalize = canFinalize,
-                now
+                now = now
             },
             flags: CommandFlags.None,
             cancellationToken: token);

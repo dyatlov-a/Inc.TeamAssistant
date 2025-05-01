@@ -25,7 +25,10 @@ internal sealed class PersonRepository : IPersonRepository
             FROM connector.persons AS p
             WHERE p.id = @person_id;
             """,
-            new { person_id = personId },
+            new
+            {
+                person_id = personId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -43,9 +46,12 @@ internal sealed class PersonRepository : IPersonRepository
                 p.name AS name,
                 p.username AS username
             FROM connector.persons AS p
-            WHERE LOWER(p.username) = @username;
+            WHERE LOWER(p.username) = LOWER(@username);
             """,
-            new { username = username.ToLowerInvariant() },
+            new
+            {
+                username = username
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         

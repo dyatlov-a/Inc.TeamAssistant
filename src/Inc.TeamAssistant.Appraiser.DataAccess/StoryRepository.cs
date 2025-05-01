@@ -42,7 +42,8 @@ internal sealed class StoryRepository : IStoryRepository
             values.Add(storyForEstimate.Value);
         }
         
-        var upsertStory = new CommandDefinition(@"
+        var upsertStory = new CommandDefinition(
+            """
             INSERT INTO appraiser.stories (
                 id, bot_id, story_type, created, team_id, chat_id, moderator_id, language_id, title,
                 external_id, total_value, rounds_count, url)
@@ -61,12 +62,13 @@ internal sealed class StoryRepository : IStoryRepository
                 external_id = EXCLUDED.external_id,
                 total_value = EXCLUDED.total_value,
                 rounds_count = EXCLUDED.rounds_count,
-                url = EXCLUDED.url;",
+                url = EXCLUDED.url;
+            """,
             new
             {
                 id = story.Id,
                 bot_id = story.BotId,
-                story_type = story.StoryType,
+                story_type = (int)story.StoryType,
                 created = story.Created,
                 team_id = story.TeamId,
                 chat_id = story.ChatId,
@@ -81,7 +83,8 @@ internal sealed class StoryRepository : IStoryRepository
             flags: CommandFlags.None,
             cancellationToken: token);
 
-        var upsertStoryForEstimates = new CommandDefinition(@"
+        var upsertStoryForEstimates = new CommandDefinition(
+            """
             INSERT INTO appraiser.story_for_estimates (id, story_id, participant_id, participant_display_name, value)
             SELECT id, story_id, participant_id, participant_display_name, value
             FROM UNNEST(@ids, @story_ids, @participant_ids, @participant_display_names, @values)
@@ -90,14 +93,15 @@ internal sealed class StoryRepository : IStoryRepository
                 story_id = EXCLUDED.story_id,
                 participant_id = EXCLUDED.participant_id,
                 participant_display_name = EXCLUDED.participant_display_name,
-                value = EXCLUDED.value;",
+                value = EXCLUDED.value;
+            """,
             new
             {
-                ids,
+                ids = ids,
                 story_ids = storyIds,
                 participant_ids = participantIds,
                 participant_display_names = participantDisplayNames,
-                values
+                values = values
             },
             flags: CommandFlags.None,
             cancellationToken: token);
