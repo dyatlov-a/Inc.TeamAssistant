@@ -4,11 +4,10 @@ public sealed class DashboardSettings
 {
     public long PersonId { get; private set; }
     public Guid BotId { get; private set; }
-    public ICollection<DashboardWidget> Widgets { get; private set; }
+    public IReadOnlyCollection<DashboardWidget> Widgets { get; private set; } = [];
 
     private DashboardSettings()
     {
-        Widgets = new List<DashboardWidget>();
     }
 
     public DashboardSettings(long personId, Guid botId, IReadOnlyCollection<DashboardWidget> widgets)
@@ -18,9 +17,7 @@ public sealed class DashboardSettings
         
         PersonId = personId;
         BotId = botId;
-
-        foreach (var widget in widgets)
-            Widgets.Add(widget);
+        Widgets = widgets.ToArray();
     }
 
     public DashboardSettings ChangeWidget(string type, int position, bool isEnabled)

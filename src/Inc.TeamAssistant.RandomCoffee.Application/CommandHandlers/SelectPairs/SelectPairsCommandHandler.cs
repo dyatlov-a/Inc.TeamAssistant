@@ -40,7 +40,7 @@ internal sealed class SelectPairsCommandHandler : IRequestHandler<SelectPairsCom
         if (entry.AlreadyStarted(onDemand: false))
             return CommandResult.Empty;
 
-        var pairs = entry.TrySelectPairs();
+        var pairs = entry.TrySelectPairs(DateTimeOffset.UtcNow);
         var pollMessageId = entry.MoveToNextRound(
             DateTimeOffset.UtcNow,
             botContext.GetRoundInterval(),

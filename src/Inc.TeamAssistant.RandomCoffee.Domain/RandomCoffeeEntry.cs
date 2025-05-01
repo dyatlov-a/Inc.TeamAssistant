@@ -13,14 +13,13 @@ public sealed class RandomCoffeeEntry
     public DateTimeOffset NextRound { get; private set; }
     public RandomCoffeeState State { get; private set; }
     public PollEntry? Poll { get; private set; }
-    public ICollection<long> ParticipantIds { get; private set; }
+    public IReadOnlyCollection<long> ParticipantIds { get; private set; } = [];
 
     private readonly List<RandomCoffeeHistory> _history = new();
     public IReadOnlyCollection<RandomCoffeeHistory> History => _history;
 
     private RandomCoffeeEntry()
     {
-        ParticipantIds = new List<long>();
     }
 
     public RandomCoffeeEntry(Guid id, Guid botId, long chatId, string name, long ownerId)
@@ -51,7 +50,7 @@ public sealed class RandomCoffeeEntry
         
         entry.NextRound = now.Add(waitingInterval);
         entry.State = RandomCoffeeState.Waiting;
-        entry.ParticipantIds.Clear();
+        entry.ParticipantIds = [];
         
         return entry;
     }
@@ -88,7 +87,7 @@ public sealed class RandomCoffeeEntry
         return this;
     }
 
-    public RandomCoffeeHistory? TrySelectPairs()
+    public RandomCoffeeHistory? TrySelectPairs(DateTimeOffset now)
     {
         if (ParticipantIds.Count < PersonPair.Size)
             return null;
@@ -98,15 +97,16 @@ public sealed class RandomCoffeeEntry
             .Select(i => i.Pairs.ToArray())
             .ToArray();
         var lastExcludedPersonId = History.MaxBy(i => i.Created)?.ExcludedPersonId;
-        var strategy = new SelectPairsStrategy(ParticipantIds, orderedHistory);
-        var detectedPairs = strategy.Detect(lastExcludedPersonId);
-        var randomCoffeeHistory = RandomCoffeeHistory.Build(
+        var detectedPairs = new SelectPairsStrategy(ParticipantIds, orderedHistory).Detect(lastExcludedPersonId);
+        var randomCoffeeHistory = new RandomCoffeeHistory(
+            Guid.NewGuid(),
+            now,
             Id,
             detectedPairs.Pairs,
             detectedPairs.ExcludedPersonId);
         
         _history.Add(randomCoffeeHistory);
-
+        
         return randomCoffeeHistory;
     }
 
@@ -134,16 +134,19 @@ public sealed class RandomCoffeeEntry
     
     private RandomCoffeeEntry AddPerson(long participantId)
     {
-        if (!ParticipantIds.Contains(participantId))
-            ParticipantIds.Add(participantId);
+        ParticipantIds = ParticipantIds
+            .Append(participantId)
+            .Distinct()
+            .ToArray();
 
         return this;
     }
 
     private RandomCoffeeEntry RemovePerson(long participantId)
     {
-        if (ParticipantIds.Contains(participantId))
-            ParticipantIds.Remove(participantId);
+        ParticipantIds = ParticipantIds
+            .Where(p => p != participantId)
+            .ToArray();
 
         return this;
     }

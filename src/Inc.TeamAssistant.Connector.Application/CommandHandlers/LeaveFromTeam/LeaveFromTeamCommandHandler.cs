@@ -40,10 +40,10 @@ internal sealed class LeaveFromTeamCommandHandler : IRequestHandler<LeaveFromTea
 
         var teammateKey = new TeammateKey(team.Id, command.MessageContext.Person.Id);
         var leaveMessageForPerson = BuildLeaveFromTeamMessage(command.MessageContext.LanguageId);
-        var notification = NotificationMessage.Create(
-            command.MessageContext.ChatMessage.ChatId,
-            leaveMessageForPerson);
-        var notifications = new List<NotificationMessage> { notification };
+        var notifications = new List<NotificationMessage>
+        {
+            NotificationMessage.Create(command.MessageContext.ChatMessage.ChatId, leaveMessageForPerson)
+        };
 
         if (personId != team.Owner.Id)
         {

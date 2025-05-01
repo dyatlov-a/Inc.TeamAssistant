@@ -24,13 +24,11 @@ public sealed class TaskForReview : ITaskForReviewStats
     public int? OriginalReviewerMessageId { get; private set; }
     public long? FirstReviewerId { get; private set; }
     public int? FirstReviewerMessageId { get; private set; }
-    public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
-    public IReadOnlyCollection<ReviewComment> Comments { get; private set; }
+    public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; } = [];
+    public IReadOnlyCollection<ReviewComment> Comments { get; private set; } = [];
 
     private TaskForReview()
     {
-        ReviewIntervals = new List<ReviewInterval>();
-        Comments = new List<ReviewComment>();
     }
 
     public TaskForReview(
