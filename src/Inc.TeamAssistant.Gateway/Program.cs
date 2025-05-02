@@ -157,7 +157,6 @@ app
 	.UseRequestCulture()
 	.UseStatusCodePagesWithReExecute("/error404")
 	.UseExceptionHandler()
-	.UseStaticFiles()
 	.UseRouting()
 	.UseOutputCache()
 	.UseAuthentication()
@@ -167,7 +166,7 @@ app
 	{
 		e.MapStaticAssets();
 		e.MapDefaultControllerRoute();
-        e.MapMetrics();
+        e.MapMetrics().DisableHttpMetrics();
         e.MapHealthChecks("/health");
 	});
 
