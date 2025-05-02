@@ -32,7 +32,7 @@ internal sealed class TelegramBotConnector : IBotConnector
         {
             var client = new TelegramBotClient(botToken);
             
-            var bot = await client.GetMeAsync(token);
+            var bot = await client.GetMe(cancellationToken: token);
 
             return bot.Username;
         }
@@ -53,9 +53,15 @@ internal sealed class TelegramBotConnector : IBotConnector
         {
             var languageCode = languageId.Value;
             
-            var botName = await client.GetMyNameAsync(languageCode, token);
-            var botShortDescription = await client.GetMyShortDescriptionAsync(languageCode, token);
-            var botDescription = await client.GetMyDescriptionAsync(languageCode, token);
+            var botName = await client.GetMyName(
+                languageCode: languageCode,
+                cancellationToken: token);
+            var botShortDescription = await client.GetMyShortDescription(
+                languageCode: languageCode,
+                cancellationToken: token);
+            var botDescription = await client.GetMyDescription(
+                languageCode: languageCode,
+                cancellationToken: token);
             
             var shortDescription = string.IsNullOrWhiteSpace(botShortDescription.ShortDescription)
                 ? _messageBuilder.Build(Messages.Connector_BotShortDescription, languageId)
@@ -129,7 +135,9 @@ internal sealed class TelegramBotConnector : IBotConnector
             CanManageChat = true
         };
         
-        await client.SetMyDefaultAdministratorRightsAsync(rights, cancellationToken: token);
+        await client.SetMyDefaultAdministratorRights(
+            rights: rights,
+            cancellationToken: token);
     }
 
     private async Task SetCommands(
@@ -144,9 +152,9 @@ internal sealed class TelegramBotConnector : IBotConnector
         ArgumentNullException.ThrowIfNull(languageId);
 
         foreach (var commandsByScope in _converter.Convert(bot.Commands, languageId))
-            await client.SetMyCommandsAsync(
-                commandsByScope.Commands.OrderBy(c => c.Command),
-                commandsByScope.Scope,
+            await client.SetMyCommands(
+                commands: commandsByScope.Commands.OrderBy(c => c.Command),
+                scope: commandsByScope.Scope,
                 languageCode: targetLanguageId,
                 cancellationToken: token);
     }
@@ -164,8 +172,17 @@ internal sealed class TelegramBotConnector : IBotConnector
         ArgumentException.ThrowIfNullOrWhiteSpace(shortDescription);
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
         
-        await client.SetMyNameAsync(name, targetLanguageId, token);
-        await client.SetMyShortDescriptionAsync(shortDescription, targetLanguageId, token);
-        await client.SetMyDescriptionAsync(description, targetLanguageId, token);
+        await client.SetMyName(
+            name: name,
+            languageCode: targetLanguageId,
+            cancellationToken: token);
+        await client.SetMyShortDescription(
+            shortDescription: shortDescription,
+            languageCode: targetLanguageId,
+            cancellationToken: token);
+        await client.SetMyDescription(
+            description: description,
+            languageCode: targetLanguageId,
+            cancellationToken: token);
     }
 }

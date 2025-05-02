@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.9.2" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+        <PackageReference Include="FluentValidation" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Domain\Inc.TeamAssistant.CheckIn.Domain.csproj" />

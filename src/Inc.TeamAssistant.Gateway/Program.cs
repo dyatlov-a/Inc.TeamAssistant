@@ -165,6 +165,7 @@ app
 	.UseAntiforgery()
 	.UseEndpoints(e =>
 	{
+		e.MapStaticAssets();
 		e.MapDefaultControllerRoute();
         e.MapMetrics();
         e.MapHealthChecks("/health");

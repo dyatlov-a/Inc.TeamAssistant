@@ -49,7 +49,10 @@ internal sealed class CommandPostProcessor<TCommand, TResult> : IRequestPostProc
         try
         {
             foreach (var message in messages)
-                await client.DeleteMessageAsync(message.ChatId, message.MessageId, cancellationToken: token);
+                await client.DeleteMessage(
+                    chatId: message.ChatId,
+                    messageId: message.MessageId,
+                    cancellationToken: token);
         }
         catch (Exception ex)
         {

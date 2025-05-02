@@ -54,11 +54,12 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
                         await _commandExecutor.Execute(command, token);
                 }
                 
+                const string doneMessage = "Done";
                 if (update.CallbackQuery is not null)
-                    await botClient.AnswerCallbackQueryAsync(
-                        update.CallbackQuery.Id,
-                        "Done",
-                        false,
+                    await botClient.AnswerCallbackQuery(
+                        callbackQueryId: update.CallbackQuery.Id,
+                        text: doneMessage,
+                        showAlert: false,
                         cancellationToken: token);
             }
         }
@@ -68,7 +69,11 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         }
     }
 
-    public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken token)
+    public Task HandleErrorAsync(
+        ITelegramBotClient botClient,
+        Exception exception,
+        HandleErrorSource source,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(botClient);
 

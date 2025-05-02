@@ -35,7 +35,7 @@ internal sealed class TelegramMessageContextFactory
 
         if (update.Message?.From?.IsBot == true ||
             update.CallbackQuery?.From.IsBot == true ||
-            update.PollAnswer?.User.IsBot == true)
+            update.PollAnswer?.User?.IsBot == true)
             return null;
 
         return update.Type switch
@@ -73,6 +73,9 @@ internal sealed class TelegramMessageContextFactory
     {
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(pollAnswer);
+        
+        if (pollAnswer.User is null)
+            return null;
         
         var text = pollAnswer.OptionIds.Aggregate(
             new StringBuilder(string.Format(CommandList.AddPollAnswer, pollAnswer.PollId)),

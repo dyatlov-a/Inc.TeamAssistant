@@ -3,6 +3,6 @@
         <InternalsVisibleTo Include="$(AssemblyName)Tests" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="12.2.0" />
+        <PackageReference Include="MediatR" />
     </ItemGroup>
 </Project>

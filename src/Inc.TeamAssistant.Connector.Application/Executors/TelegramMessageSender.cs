@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace Inc.TeamAssistant.Connector.Application.Executors;
 
@@ -31,18 +32,18 @@ internal sealed class TelegramMessageSender
         if (notificationMessage is { ChatId: not null, PollMessageId: null })
         {
             var message = notificationMessage.Options.Any()
-                ? await client.SendPollAsync(
-                    notificationMessage.ChatId.Value,
-                    notificationMessage.Text,
-                    notificationMessage.Options,
+                ? await client.SendPoll(
+                    chatId: notificationMessage.ChatId.Value,
+                    question: notificationMessage.Text,
+                    options: notificationMessage.Options.Select(o => new InputPollOption(o)),
                     isAnonymous: false,
                     cancellationToken: token)
-                : await client.SendTextMessageAsync(
-                    notificationMessage.ChatId.Value,
-                    notificationMessage.Text,
+                : await client.SendMessage(
+                    chatId: notificationMessage.ChatId.Value,
+                    text: notificationMessage.Text,
                     replyMarkup: TelegramKeyboardBuilder.Build(notificationMessage),
                     entities: entities,
-                    replyToMessageId: notificationMessage.ReplyToMessageId,
+                    replyParameters: ReplyParametersBuilder.Build(notificationMessage),
                     cancellationToken: token);
 
             if (notificationMessage.Pinned)
@@ -56,10 +57,10 @@ internal sealed class TelegramMessageSender
         }
 
         if (notificationMessage.EditedMessage is not null)
-            await client.EditMessageTextAsync(
-                new(notificationMessage.EditedMessage.ChatId),
-                notificationMessage.EditedMessage.MessageId,
-                notificationMessage.Text,
+            await client.EditMessageText(
+                chatId: notificationMessage.EditedMessage.ChatId,
+                messageId: notificationMessage.EditedMessage.MessageId,
+                text: notificationMessage.Text,
                 replyMarkup: TelegramKeyboardBuilder.Build(notificationMessage),
                 entities: entities,
                 cancellationToken: token);
@@ -68,9 +69,9 @@ internal sealed class TelegramMessageSender
             await TryDeleteMessage(client, notificationMessage.DeletedMessage, token);
         
         if (notificationMessage is { ChatId: not null, PollMessageId: not null })
-            await client.StopPollAsync(
-                notificationMessage.ChatId.Value,
-                notificationMessage.PollMessageId.Value,
+            await client.StopPoll(
+                chatId: notificationMessage.ChatId.Value,
+                messageId: notificationMessage.PollMessageId.Value,
                 cancellationToken: token);
 
         return null;
@@ -83,7 +84,10 @@ internal sealed class TelegramMessageSender
 
         try
         {
-            await client.PinChatMessageAsync(new(message.ChatId), message.MessageId, cancellationToken: token);
+            await client.PinChatMessage(
+                chatId: message.ChatId,
+                messageId: message.MessageId,
+                cancellationToken: token);
         }
         catch (Exception ex)
         {
@@ -98,7 +102,10 @@ internal sealed class TelegramMessageSender
         
         try
         {
-            await client.DeleteMessageAsync(new(message.ChatId), message.MessageId, token);
+            await client.DeleteMessage(
+                chatId: message.ChatId,
+                messageId: message.MessageId,
+                cancellationToken: token);
         }
         catch (Exception ex)
         {
