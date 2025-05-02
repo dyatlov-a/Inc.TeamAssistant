@@ -1,40 +1,38 @@
 using Inc.TeamAssistant.Primitives;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class QuickResponseCodeGeneratorCached : IQuickResponseCodeGenerator
 {
-    private readonly IMemoryCache _memoryCache;
+    private readonly HybridCache _cache;
     private readonly IQuickResponseCodeGenerator _generator;
-    private readonly TimeSpan _cacheAbsoluteExpiration;
+    private readonly HybridCacheEntryOptions _cacheOptions;
 
     public QuickResponseCodeGeneratorCached(
-        IMemoryCache memoryCache,
+        HybridCache cache,
         IQuickResponseCodeGenerator generator,
-        TimeSpan cacheAbsoluteExpiration)
+        TimeSpan cacheTimeout)
     {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
-        _cacheAbsoluteExpiration = cacheAbsoluteExpiration;
+        _cacheOptions = new HybridCacheEntryOptions
+        {
+            Expiration = cacheTimeout
+        };
     }
 
-    public string Generate(string data, string foreground, string background)
+    public async Task<string> Generate(string data, string foreground, string background, CancellationToken token)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(data);
         ArgumentException.ThrowIfNullOrWhiteSpace(foreground);
         ArgumentException.ThrowIfNullOrWhiteSpace(background);
-
-        var key = $"data={data}&foreground={foreground}&background{background}";
-        var cacheItem = _memoryCache.GetOrCreate(
-            key,
-            c =>
-            {
-                c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
-
-                return _generator.Generate(data, foreground, background);
-            });
         
-        return cacheItem ?? _generator.Generate(key, foreground, background);
+        return await _cache.GetOrCreateAsync(
+            $"data={data}&foreground={foreground}&background{background}",
+            (Data: data, Foreground: foreground, Background: background),
+            async (s, t) => await _generator.Generate(s.Data, s.Foreground, s.Background, t),
+            _cacheOptions,
+            cancellationToken: token);
     }
 }

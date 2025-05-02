@@ -125,7 +125,6 @@ builder.Services
 
 builder.Services
 	.AddHttpContextAccessor()
-	.AddMemoryCache()
 	.AddOutputCache(c => c.AddPolicy(
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
@@ -136,6 +135,9 @@ builder.Services
 		if (outputFormatter is not null)
 			outputFormatter.TreatNullValueAsNoContent = false;
 	});
+
+builder.Services
+	.AddHybridCache();
 
 builder.Services
 	.AddHealthChecks();

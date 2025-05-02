@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         AuthOptions authOptions,
         OpenGraphOptions openGraphOptions,
         string webRootPath,
-        TimeSpan cacheAbsoluteExpiration)
+        TimeSpan cacheTimeout)
 	{
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(authOptions);
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
                 sp,
                 sp.GetRequiredService<MessageProvider>(),
-                cacheAbsoluteExpiration))
+                cacheTimeout))
             .AddSingleton<IRenderContext, ServerRenderContext>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
                 sp,
                 sp.GetRequiredService<QuickResponseCodeGenerator>(),
-                cacheAbsoluteExpiration))
+                cacheTimeout))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>();

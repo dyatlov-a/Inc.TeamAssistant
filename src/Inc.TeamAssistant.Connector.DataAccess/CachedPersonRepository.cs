@@ -1,57 +1,60 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class CachedPersonRepository : IPersonRepository
 {
-    private readonly IMemoryCache _memoryCache;
+    private readonly HybridCache _cache;
     private readonly IPersonRepository _repository;
-    private readonly TimeSpan _cacheTimeout;
+    private readonly HybridCacheEntryOptions _cacheOptions;
 
-    public CachedPersonRepository(IMemoryCache memoryCache, IPersonRepository repository, TimeSpan cacheTimeout)
+    public CachedPersonRepository(HybridCache cache, IPersonRepository repository, TimeSpan cacheTimeout)
     {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _cacheTimeout = cacheTimeout;
+        _cacheOptions = new HybridCacheEntryOptions
+        {
+            Expiration = cacheTimeout
+        };
     }
 
     public async Task<Person?> Find(long personId, CancellationToken token)
     {
-        return await _memoryCache.GetOrCreateAsync(GetKey(personId), async c =>
-        {
-            c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
-
-            return await _repository.Find(personId, token);
-        });
+        return await _cache.GetOrCreateAsync(
+            GetKey(personId),
+            personId,
+            async (pId, t) => await _repository.Find(pId, t),
+            _cacheOptions,
+            cancellationToken: token);
     }
 
     public async Task<Person?> Find(string username, CancellationToken token)
     {
-        return await _memoryCache.GetOrCreateAsync(GetKey(username), async c =>
-        {
-            c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
-
-            return await _repository.Find(username, token);
-        });
+        return await _cache.GetOrCreateAsync(
+            GetKey(username),
+            username,
+            async (u, t) => await _repository.Find(u, t),
+            _cacheOptions,
+            cancellationToken: token);
     }
 
     public async Task Upsert(Person person, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(person);
-        
-        var key = GetKey(person.Id);
 
-        if (_memoryCache.TryGetValue(key, out Person? cachedPerson) && cachedPerson == person)
+        var cachedPerson = await Find(person.Id, token);
+        
+        if (cachedPerson == person)
             return;
 
         await _repository.Upsert(person, token);
         
-        _memoryCache.Remove(key);
+        await _cache.RemoveAsync(GetKey(person.Id), token);
         
         if (!string.IsNullOrWhiteSpace(person.Username))
-            _memoryCache.Remove(GetKey(person.Username));
+            await _cache.RemoveAsync(GetKey(person.Username), token);
     }
 
     private string GetKey(long personId) => $"{nameof(CachedPersonRepository)}_id_{personId}";
