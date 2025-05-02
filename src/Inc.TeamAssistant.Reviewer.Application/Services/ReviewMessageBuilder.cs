@@ -40,8 +40,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var metricsByTeam = _metricsProvider.Get(task.TeamId);
         var metricsByTask = await _metricsFactory.Create(task, token);
-        var firstReviewer = task.FirstReviewerId.HasValue
-            ? await _teamAccessor.EnsurePerson(task.FirstReviewerId.Value, token)
+        var firstRoundReviewerId = task.GetFirstRoundReviewerId();
+        var firstReviewer = firstRoundReviewerId.HasValue
+            ? await _teamAccessor.EnsurePerson(firstRoundReviewerId.Value, token)
             : null;
         var reviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
         var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);
@@ -83,8 +84,9 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         
         var metricsByTeam = _metricsProvider.Get(task.TeamId);
         var metricsByTask = await _metricsFactory.Create(task, token);
-        var firstReviewer = task.FirstReviewerId.HasValue
-            ? await _teamAccessor.EnsurePerson(task.FirstReviewerId.Value, token)
+        var firstRoundReviewerId = task.GetFirstRoundReviewerId();
+        var firstReviewer = firstRoundReviewerId.HasValue
+            ? await _teamAccessor.EnsurePerson(firstRoundReviewerId.Value, token)
             : null;
         var reviewer = await _teamAccessor.EnsurePerson(task.ReviewerId, token);
         var owner = await _teamAccessor.EnsurePerson(task.OwnerId, token);

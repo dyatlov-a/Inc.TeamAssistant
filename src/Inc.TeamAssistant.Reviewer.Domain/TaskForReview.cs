@@ -65,6 +65,9 @@ public sealed class TaskForReview : ITaskForReviewStats
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
     public bool HasRightsForComments(long authorId)
         => new[] { OwnerId, ReviewerId, OriginalReviewerId, FirstReviewerId }.Any(i => i == authorId);
+    public long? GetFirstRoundReviewerId() => FirstReviewerId.HasValue && FirstReviewerId.Value != ReviewerId
+        ? FirstReviewerId.Value
+        : null;
 
     public TaskForReview AttachMessage(MessageType messageType, int messageId)
     {
@@ -105,7 +108,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public TaskForReview FinishRound(DateTimeOffset now, long? secondRoundReviewerId = null)
+    public TaskForReview FinishRound(DateTimeOffset now, long? secondReviewerId = null)
     {
         AddReviewInterval(ReviewerId, now);
 
@@ -113,9 +116,12 @@ public sealed class TaskForReview : ITaskForReviewStats
         FirstReviewerId ??= ReviewerId;
         FirstReviewerMessageId ??= ReviewerMessageId;
 
-        if (!isSecondRound && secondRoundReviewerId.HasValue)
+        if (!isSecondRound &&
+            secondReviewerId.HasValue &&
+            FirstReviewerId.Value != secondReviewerId.Value &&
+            OwnerId != secondReviewerId.Value)
         {
-            ChangeReviewer(secondRoundReviewerId.Value);
+            ChangeReviewer(secondReviewerId.Value);
             State = TaskForReviewState.FirstAccept;
         }
         else
