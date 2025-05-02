@@ -29,9 +29,6 @@ public sealed class AccountsController : ControllerBase
     [HttpGet("bot")]
     public async Task<IActionResult> GetAuthBot() => Ok(await _userService.GetAuthBotContext());
 
-    [HttpGet("current-user")]
-    public async Task<IActionResult> GetCurrentUser() => Ok(await _userService.GetCurrentUser());
-
     [HttpGet("login-tg")]
     public async Task<IActionResult> Login(
         [FromQuery(Name = "id")] long id,

@@ -13,7 +13,6 @@ using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Inc.TeamAssistant.WebUI.Services.ServiceClients;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -24,10 +23,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         var appVersion = ApplicationContext.GetVersion();
-        
+
         services
             .AddBlazoredLocalStorage()
-            
+
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
@@ -39,7 +38,11 @@ public static class ServiceCollectionExtensions
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<EventsProvider>()
-            .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5));
+            .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5))
+
+            .AddAuthorizationCore()
+            .AddCascadingAuthenticationState()
+            .AddAuthenticationStateDeserialization();
 
         return services;
     }
@@ -50,9 +53,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddOptions()
-            .AddAuthorizationCore()
             .AddLocalization()
-            .AddScoped<AuthenticationStateProvider, AuthStateProvider>()
             .AddScoped<FeaturesFactory>()
             .AddScoped<IDateSelectorFactory, DateSelectorFactory>()
             .AddScoped<MainFooterLinksFactory>()

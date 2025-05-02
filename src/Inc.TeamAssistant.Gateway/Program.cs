@@ -145,7 +145,8 @@ builder.Services
 
 builder.Services
 	.AddRazorComponents()
-	.AddInteractiveWebAssemblyComponents();
+	.AddInteractiveWebAssemblyComponents()
+	.AddAuthenticationStateSerialization(o => o.SerializeAllClaims = true);
 
 var app = builder.Build();
 
