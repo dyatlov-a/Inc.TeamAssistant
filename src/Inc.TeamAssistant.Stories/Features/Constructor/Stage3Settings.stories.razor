@@ -126,13 +126,16 @@
         if (type == typeof(CalendarEditor))
             return new Dictionary<string, object>
             {
-                ["FormModel"] = new CalendarFormModel().Apply(new GetCalendarByOwnerResult(
+                ["FormModel"] = new CalendarFormModel().Apply(
+                    new CalendarViewModel(
+                        ClientTimezoneOffset: 180,
+                        Calendar:
+                    new GetCalendarByOwnerResult(
                     Id: Guid.NewGuid(),
                     OwnerId: 1,
                     Schedule: new WorkScheduleUtcDto(Start: new TimeOnly(10, 0, 0), End: new TimeOnly(19, 0, 0)),
                     Weekends: [DayOfWeek.Saturday, DayOfWeek.Sunday],
-                    Holidays: new Dictionary<DateOnly, string>()),
-                    clientTimezoneOffset: 180),
+                    Holidays: new Dictionary<DateOnly, string>()))),
                 ["IsOpen"] = _calendarIsOpen,
                 ["State"] = LoadingState.Done(),
                 ["Retry"] = () =>

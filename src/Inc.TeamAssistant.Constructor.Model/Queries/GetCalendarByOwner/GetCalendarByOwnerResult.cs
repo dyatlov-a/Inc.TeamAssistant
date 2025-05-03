@@ -15,6 +15,6 @@ public sealed record GetCalendarByOwnerResult(
         Guid.Empty,
         0,
         null,
-        Array.Empty<DayOfWeek>(),
+        [],
         new Dictionary<DateOnly, string>());
 }

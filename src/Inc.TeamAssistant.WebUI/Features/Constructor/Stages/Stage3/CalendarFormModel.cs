@@ -30,20 +30,20 @@ public sealed class CalendarFormModel
         }
     }
     
-    public CalendarFormModel Apply(GetCalendarByOwnerResult calendar, int clientTimezoneOffset)
+    public CalendarFormModel Apply(CalendarViewModel viewModel)
     {
-        ArgumentNullException.ThrowIfNull(calendar);
+        ArgumentNullException.ThrowIfNull(viewModel);
 
-        WorkAllDay = calendar.Schedule is null;
-        (Start, End) = calendar.Schedule is null
-            ? CreateDefaultTime(clientTimezoneOffset)
-            : (calendar.Schedule.Start, calendar.Schedule.End);
+        WorkAllDay = viewModel.Calendar.Schedule is null;
+        (Start, End) = viewModel.Calendar.Schedule is null
+            ? CreateDefaultTime(viewModel.ClientTimezoneOffset)
+            : (viewModel.Calendar.Schedule.Start, viewModel.Calendar.Schedule.End);
         
         _workdays.Clear();
-        _workdays.AddRange(WeekDays.Except(calendar.Weekends));
+        _workdays.AddRange(WeekDays.Except(viewModel.Calendar.Weekends));
         
         _holidays.Clear();
-        foreach (var holiday in calendar.Holidays)
+        foreach (var holiday in viewModel.Calendar.Holidays)
             AddHoliday(holiday.Key, holiday.Value.Equals("Workday", StringComparison.InvariantCultureIgnoreCase));
 
         return this;

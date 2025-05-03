@@ -35,17 +35,21 @@
     {
         _isOpen = true;
         
-        // TODO: add loading for clientTimezoneOffset
-        var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
         var result = await RequestProcessor.Process(
-            () => CalendarService.GetCalendarByOwner(),
+            async () =>
+            {
+                var clientTimezoneOffset = await JsRuntime.Execute(JsFunctions.GetTimezone());
+                var calendar = await CalendarService.GetCalendarByOwner();
+                    
+                return new CalendarViewModel(clientTimezoneOffset, calendar);
+            },
             nameof(CalendarEditor),
             _state);
         
-        if (result == GetCalendarByOwnerResult.Empty)
-            _formModel.Apply(clientTimezoneOffset);
+        if (result.Calendar == GetCalendarByOwnerResult.Empty)
+            _formModel.Apply(result.ClientTimezoneOffset);
         else
-            _formModel.Apply(result, clientTimezoneOffset);
+            _formModel.Apply(result);
         
         StateHasChanged();
     }
