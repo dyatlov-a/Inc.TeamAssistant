@@ -121,7 +121,7 @@ public sealed class MessageParserTests
 
         var actual = await _target.Parse(message, CancellationToken.None);
         
-        Assert.Equal($"{text} @{otherUserName}\n", actual.Text);
+        Assert.Equal($"{text} @{otherUserName}", actual.Text);
         Assert.Equal(targetPerson.Id, actual.TargetPersonId);
     }
     
@@ -151,7 +151,7 @@ public sealed class MessageParserTests
 
         var actual = await _target.Parse(message, CancellationToken.None);
         
-        Assert.Equal($"{text} @{otherUserName}\n", actual.Text);
+        Assert.Equal($"{text} @{otherUserName}", actual.Text);
         Assert.Equal(targetPerson.Id, actual.TargetPersonId);
     }
 

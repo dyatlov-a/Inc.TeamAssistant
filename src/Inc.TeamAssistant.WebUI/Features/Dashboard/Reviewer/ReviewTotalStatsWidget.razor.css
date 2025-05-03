@@ -1,14 +1,15 @@
 .review-total-stats {
-    display: flex;
+    overflow: hidden;
 }
 .review-total-stats__item {
-    flex: 0 1 50%;
+    float: left;
+    width: 50%;
 }
 .component-container {
     height: calc(100% - 66px);
 }
 @media (max-width: 767.98px) {
-    .review-total-stats {
-        display: block;
+    .review-total-stats__item {
+        width: 100%;
     }
 }

@@ -380,9 +380,10 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
         var ownerLanguageId = await _teamAccessor.GetClientLanguage(task.BotId, task.OwnerId, token);
         var notification = NotificationBuilder.Create()
-            .Add(sb => sb.AppendLine(_messageBuilder.Build(Messages.Reviewer_ReviewDeclined, ownerLanguageId))
+            .Add(sb => sb
+                .AppendLine(_messageBuilder.Build(Messages.Reviewer_ReviewDeclined, ownerLanguageId))
                 .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
-                .Append($" {reviewer.DisplayName}")
+                .Append(reviewer.DisplayName)
                 .AppendLine())
             .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_FirstAccept,
@@ -439,7 +440,8 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(stateMessage, ownerLanguageId))
                 .Append(_messageBuilder.Build(task.ReviewerInMessage(), ownerLanguageId))
-                .Append($" {reviewer.DisplayName}").AppendLine())
+                .Append(reviewer.DisplayName)
+                .AppendLine())
             .AddIf(firstReviewer is not null, sb => sb.AppendLine(_messageBuilder.Build(
                 Messages.Reviewer_FirstAccept,
                 ownerLanguageId,

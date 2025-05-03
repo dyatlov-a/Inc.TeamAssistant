@@ -23,7 +23,7 @@
     
     private DateOnly? _date;
     private readonly LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<AssessmentHistoryDto> _items = Array.Empty<AssessmentHistoryDto>();
+    private IReadOnlyCollection<AssessmentHistoryDto> _items = [];
     
     private IReadOnlyDictionary<string, DateOnly> DateItems => DateSelectorFactory.CreateMonths();
     

@@ -7,3 +7,6 @@
 .hint {
     cursor: context-menu;
 }
+::deep tr {
+    height: 1.625rem;
+}

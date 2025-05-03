@@ -31,7 +31,7 @@ internal sealed class MessageParser
         
         var cleanText = WhiteSpacePattern.Replace(
             text.Replace(attachedPerson.Marker, string.Empty),
-            " ");
+            " ").TrimEnd('\n');
             
         return (cleanText, attachedPerson.Id);
     }
