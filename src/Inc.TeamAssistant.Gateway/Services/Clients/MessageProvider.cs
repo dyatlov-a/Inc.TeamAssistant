@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Inc.TeamAssistant.Primitives.Languages;
-using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
