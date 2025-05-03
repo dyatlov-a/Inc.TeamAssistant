@@ -58,8 +58,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         ChangeReviewer(reviewerId);
     }
     
-    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId && ReviewerId != OwnerId;
-    public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
+    public bool CanReassign() => !OriginalReviewerId.HasValue && !FirstReviewerId.HasValue && ReviewerId != OwnerId;
     public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
     public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
@@ -175,15 +174,18 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         AddReviewInterval(ReviewerId, now);
         
-        ChangeReviewer(reviewerId);
+        OriginalReviewerId ??= ReviewerId;
         NextNotification = now;
+        
+        ChangeReviewer(reviewerId);
 
         return this;
     }
     
     public MessageId ReviewerInMessage()
     {
-        var messageId = (HasReassign(), Strategy) switch
+        var hasReassign = OriginalReviewerId.HasValue && !FirstReviewerId.HasValue;
+        var messageId = (hasReassign, Strategy) switch
         {
             (true, _) => Messages.Reviewer_TargetReassigned,
             (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
@@ -197,7 +199,8 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         return State switch
         {
-            TaskForReviewState.New or TaskForReviewState.FirstAccept => GlobalResources.Icons.Waiting,
+            TaskForReviewState.New => GlobalResources.Icons.New,
+            TaskForReviewState.FirstAccept => GlobalResources.Icons.FirstAccept,
             TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
             TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
             TaskForReviewState.Accept => GlobalResources.Icons.Accept,
@@ -221,9 +224,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     private void ChangeReviewer(long reviewerId)
     {
-        OriginalReviewerId ??= reviewerId;
         ReviewerId = reviewerId;
-        
         ReviewerMessageId = null;
     }
 }

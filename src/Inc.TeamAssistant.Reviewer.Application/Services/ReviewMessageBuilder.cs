@@ -53,14 +53,24 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
             await MessageForReviewer(task, firstReviewer, owner, metricsByTeam, metricsByTask, token)
         };
 
-        if (!task.ReviewerMessageId.HasValue && task.OriginalReviewerMessageId.HasValue && task.HasReassign())
+        if (!task.ReviewerMessageId.HasValue && task is
+            {
+                State: not TaskForReviewState.FirstAccept,
+                OriginalReviewerMessageId: not null,
+                OriginalReviewerId: not null
+            })
             notifications.Add(await HideControlsForReviewer(
-                task.OriginalReviewerId!.Value,
+                task.OriginalReviewerId.Value,
                 task.OriginalReviewerMessageId.Value,
                 task,
                 token));
-        
-        if (task is { State: TaskForReviewState.FirstAccept, FirstReviewerId: not null, FirstReviewerMessageId: not null })
+
+        if (task is
+            {
+                State: TaskForReviewState.FirstAccept,
+                FirstReviewerId: not null,
+                FirstReviewerMessageId: not null
+            })
             notifications.Add(await HideControlsForReviewer(
                 task.FirstReviewerId.Value,
                 task.FirstReviewerMessageId.Value,
