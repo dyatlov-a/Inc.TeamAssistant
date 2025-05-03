@@ -50,7 +50,7 @@ public sealed class Build : NukeBuild
     [Solution]
     private readonly Solution Solution = default!;
 
-    [GitVersion(Framework = "net8.0")]
+    [GitVersion(Framework = "net9.0")]
     private readonly GitVersion GitVersion = default!;
 
     private Target Clean => _ => _
@@ -90,7 +90,7 @@ public sealed class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .ResetVerbosity()
                 .SetResultsDirectory(TestReportsDirectory)
-                .When(IsServerBuild, c => c.EnableUseSourceLink())
+                .When(c => IsServerBuild, c => c.EnableUseSourceLink())
                 .EnableNoRestore()
                 .EnableNoBuild()
                 .CombineWith(Solution.GetAllProjects("*Tests"), (_, p) => _
@@ -116,7 +116,7 @@ public sealed class Build : NukeBuild
         .Executes(() =>
         {
             DockerBuild(x => x
-                .DisableProcessLogOutput()
+                .DisableProcessOutputLogging()
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.app_component")
@@ -124,7 +124,7 @@ public sealed class Build : NukeBuild
                 .SetTag(GetImageName(AppProject)));
             
             DockerBuild(x => x
-                .DisableProcessLogOutput()
+                .DisableProcessOutputLogging()
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.static_component")
@@ -132,7 +132,7 @@ public sealed class Build : NukeBuild
                 .SetTag(GetImageName(DesignProject)));
             
             DockerBuild(x => x
-                .DisableProcessLogOutput()
+                .DisableProcessOutputLogging()
                 .SetProcessWorkingDirectory(RootDirectory)
                 .SetPath(".")
                 .SetFile("cicd/dockerfile.migrations_runner")
@@ -146,12 +146,12 @@ public sealed class Build : NukeBuild
             DockerLogin(s => s
                 .SetUsername(HubUsername)
                 .SetPassword(HubPassword)
-                .DisableProcessLogOutput());
+                .DisableProcessOutputLogging());
 
             foreach (var appProject in ProjectsForPublish)
                 DockerPush(s => s
                     .SetName(GetImageName(appProject))
-                    .DisableProcessLogOutput());
+                    .DisableProcessOutputLogging());
         });
 
     private Target Deploy => _ => _

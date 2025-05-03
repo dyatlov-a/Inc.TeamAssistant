@@ -17,7 +17,8 @@ internal sealed class BotRepository : IBotRepository
 
     public async Task<Bot?> Find(Guid id, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 b.id AS id,
                 b.name AS name,
@@ -32,10 +33,11 @@ internal sealed class BotRepository : IBotRepository
             SELECT f.id AS id
             FROM connector.features AS f
             JOIN connector.activated_features AS af ON af.feature_id = f.id
-            WHERE af.bot_id = @id;",
+            WHERE af.bot_id = @id;
+            """,
             new
             {
-                id
+                id = id
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -52,7 +54,10 @@ internal sealed class BotRepository : IBotRepository
 
     public async Task Upsert(Bot bot, CancellationToken token)
     {
-        var upsertBotCommand = new CommandDefinition(@"
+        var properties = JsonSerializer.Serialize(bot.Properties);
+        var supportedLanguages = JsonSerializer.Serialize(bot.SupportedLanguages);
+        var upsertBotCommand = new CommandDefinition(
+            """
             INSERT INTO connector.bots (id, name, token, owner_id, calendar_id, properties, supported_languages)
             VALUES (@id, @name, @token, @owner_id, @calendar_id, @properties::jsonb, @supported_languages::jsonb)
             ON CONFLICT (id) DO UPDATE SET
@@ -61,7 +66,8 @@ internal sealed class BotRepository : IBotRepository
                 owner_id = EXCLUDED.owner_id,
                 calendar_id = EXCLUDED.calendar_id,
                 properties = EXCLUDED.properties,
-                supported_languages = EXCLUDED.supported_languages;",
+                supported_languages = EXCLUDED.supported_languages;
+            """,
             new
             {
                 id = bot.Id,
@@ -69,24 +75,28 @@ internal sealed class BotRepository : IBotRepository
                 token = bot.Token,
                 owner_id = bot.OwnerId,
                 calendar_id = bot.CalendarId,
-                properties = JsonSerializer.Serialize(bot.Properties),
-                supported_languages = JsonSerializer.Serialize(bot.SupportedLanguages)
+                properties = properties,
+                supported_languages = supportedLanguages
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        var deleteFeaturesCommand = new CommandDefinition(@"
+        var deleteFeaturesCommand = new CommandDefinition(
+            """
             DELETE FROM connector.activated_features AS af
-            WHERE af.bot_id = @bot_id;",
+            WHERE af.bot_id = @bot_id;
+            """,
             new
             {
                 bot_id = bot.Id
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        var insertFeaturesCommand = new CommandDefinition(@"
+        var insertFeaturesCommand = new CommandDefinition(
+            """
             INSERT INTO connector.activated_features (bot_id, feature_id)
             SELECT @bot_id, i.feature_id
-            FROM UNNEST(@feature_ids) AS i(feature_id);",
+            FROM UNNEST(@feature_ids) AS i(feature_id);
+            """,
             new
             {
                 bot_id = bot.Id,
@@ -108,12 +118,14 @@ internal sealed class BotRepository : IBotRepository
 
     public async Task Remove(Guid id, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             DELETE FROM connector.bots AS b
-            WHERE b.id = @id;",
+            WHERE b.id = @id;
+            """,
             new
             {
-                id
+                id = id
             },
             flags: CommandFlags.None,
             cancellationToken: token);

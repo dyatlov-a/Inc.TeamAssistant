@@ -16,13 +16,15 @@ internal sealed class FeatureReader : IFeatureReader
     
     public async Task<IReadOnlyCollection<FeatureDto>> GetAll(CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 f.id AS id,
                 f.name AS name,
                 f.properties AS properties
             FROM connector.features AS f
-            ORDER BY f.position;",
+            ORDER BY f.position;
+            """,
             flags: CommandFlags.None,
             cancellationToken: token);
 

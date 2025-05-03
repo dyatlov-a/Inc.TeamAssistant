@@ -30,7 +30,7 @@
 
 @code {
     private readonly string _fieldId = "input-multi-select-list";
-    private IEnumerable<DayOfWeek> _weekends = new List<DayOfWeek>();
+    private IEnumerable<DayOfWeek> _weekends = [];
 
     private string GetTitle(DayOfWeek value) => value.ToString().Substring(0, 2).ToUpperInvariant();
 }

@@ -43,24 +43,15 @@ internal sealed class TelegramContextCommandConverter
         ArgumentNullException.ThrowIfNull(contextCommands);
         ArgumentNullException.ThrowIfNull(languageId);
 
-        var result = new List<BotCommand>(contextCommands.Count);
-        
-        foreach (var contextCommand in contextCommands)
-            result.Add(ToBotCommand(contextCommand, languageId));
+        var result = contextCommands
+            .Select(c => new BotCommand
+            {
+                Command = c.Value,
+                Description = _messageBuilder.Build(c.HelpMessageId!, languageId)
+            })
+            .ToArray();
 
         return result;
-    }
-
-    private BotCommand ToBotCommand(ContextCommand command, LanguageId languageId)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        ArgumentNullException.ThrowIfNull(languageId);
-        
-        return new BotCommand
-        {
-            Command = command.Value,
-            Description = _messageBuilder.Build(command.HelpMessageId!, languageId)
-        };
     }
     
     private static BotCommandScope ToBotCommandScope(ContextScope contextScope)

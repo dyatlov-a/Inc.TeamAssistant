@@ -3,7 +3,6 @@ using Inc.TeamAssistant.Primitives.Commands;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
-using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.RefuseForCoffee;
 using MediatR;
 
@@ -30,19 +29,31 @@ public sealed class RefuseForCoffeeCommandHandler : IRequestHandler<RefuseForCof
         ArgumentNullException.ThrowIfNull(command);
         
         var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        if (existsEntry is null || existsEntry.State == RandomCoffeeState.Refused)
+        if (existsEntry is null || existsEntry.IsRefused())
             return CommandResult.Empty;
 
-        await _repository.Upsert(existsEntry.MoveToRefused(command.MessageContext.Person.Id), token);
+        var pollMessageId = existsEntry
+            .CheckRights(command.MessageContext.Person.Id)
+            .MoveToRefused();
+        
+        await _repository.Upsert(existsEntry, token);
 
         var languageId = await _teamAccessor.GetClientLanguage(
             command.MessageContext.Bot.Id,
             existsEntry.OwnerId,
             token);
-        var notification = NotificationMessage.Create(
-            existsEntry.ChatId,
-            _messageBuilder.Build(Messages.RandomCoffee_RefusedForCoffee, languageId));
+        var refusedMessage = _messageBuilder.Build(
+            Messages.RandomCoffee_RefusedForCoffee,
+            languageId,
+            CommandList.InviteForCoffee);
+        var notifications = new List<NotificationMessage>
+        {
+            NotificationMessage.Create(existsEntry.ChatId, refusedMessage),
+            NotificationMessage.Delete(command.MessageContext.ChatMessage)
+        };
+        if (pollMessageId.HasValue)
+            notifications.Add(NotificationMessage.Delete(new(existsEntry.ChatId, pollMessageId.Value)));
         
-        return CommandResult.Build(notification, NotificationMessage.Delete(command.MessageContext.ChatMessage));
+        return CommandResult.Build(notifications.ToArray());
     }
 }

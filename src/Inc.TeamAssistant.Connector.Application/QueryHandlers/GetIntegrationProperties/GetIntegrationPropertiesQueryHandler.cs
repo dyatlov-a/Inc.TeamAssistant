@@ -11,12 +11,12 @@ internal sealed class GetIntegrationPropertiesQueryHandler
     : IRequestHandler<GetIntegrationPropertiesQuery, GetIntegrationPropertiesResult>
 {
     private readonly ITeamRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly ITeamAccessor _teamAccessor;
 
     public GetIntegrationPropertiesQueryHandler(
         ITeamRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         ITeamAccessor teamAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

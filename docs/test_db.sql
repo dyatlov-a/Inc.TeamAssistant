@@ -29,7 +29,7 @@ SET
 UPDATE maps.maps
 SET
     bot_id = '8eace573-343b-4af7-b255-40c152d6832a',
-    chat_id = -1001685108427;
+    chat_id = 0;
 
 
 -- random_coffee

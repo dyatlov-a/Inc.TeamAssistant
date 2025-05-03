@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateCalend
 internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, UpdateCalendarResult>
 {
     private readonly ICalendarRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IHolidayReader _reader;
 
     public UpdateCalendarCommandHandler(
         ICalendarRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         IHolidayReader reader)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

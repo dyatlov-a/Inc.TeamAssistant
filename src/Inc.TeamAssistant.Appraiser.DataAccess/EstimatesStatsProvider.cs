@@ -34,7 +34,7 @@ internal sealed class EstimatesStatsProvider : IPersonStatsProvider
             """,
             new
             {
-                person_ids = personIds,
+                person_ids = personIds.ToArray(),
                 from
             },
             flags: CommandFlags.None,

@@ -17,4 +17,5 @@ internal static class Messages
     public static readonly MessageId Connector_HasNotRightsForRemoveTeam = new(nameof(Connector_HasNotRightsForRemoveTeam));
     public static readonly MessageId Connector_RemoveTeamSuccess = new(nameof(Connector_RemoveTeamSuccess));
     public static readonly MessageId Connector_Cancel = new(nameof(Connector_Cancel));
+    public static readonly MessageId Connector_Done = new(nameof(Connector_Done));
 }

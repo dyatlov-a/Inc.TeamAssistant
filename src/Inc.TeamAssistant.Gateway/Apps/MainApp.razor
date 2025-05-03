@@ -27,14 +27,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="@Assets["favicon.ico"]">
+    <link rel="apple-touch-icon" sizes="180x180" href="@Assets["apple-touch-icon.png"]">
+    <link rel="icon" type="image/png" sizes="32x32" href="@Assets["favicon-32x32.png"]">
+    <link rel="icon" type="image/png" sizes="16x16" href="@Assets["favicon-16x16.png"]">
+    <link rel="manifest" href="@Assets["site.webmanifest"]">
     
-    <link href="css/main.css?v=@_appVersion" rel="stylesheet"/>
-    <link href="Inc.TeamAssistant.WebUI.styles.css?v=@_appVersion" rel="stylesheet"/>
+    <link href="@Assets["css/main.css"]" rel="stylesheet"/>
+    <link href="@Assets["Inc.TeamAssistant.WebUI.styles.css"]" rel="stylesheet"/>
 
     <HeadOutlet @rendermode="_renderMode"/>
 </head>
@@ -55,7 +55,7 @@
     
     <Routes @rendermode="_renderMode"/>
     
-    <script src="_framework/blazor.web.js?v=@_appVersion" autostart="false"></script>
+    <script src="@Assets["_framework/blazor.web.js"]" autostart="false"></script>
     <script>
         window.browserJsFunctions = {
             getTimezone: () => {
@@ -80,7 +80,6 @@
 
 @code {
     private readonly InteractiveWebAssemblyRenderMode _renderMode = new(prerender: true);
-    private readonly string _appVersion = ApplicationContext.GetVersion();
     private string _lang = LanguageSettings.DefaultLanguageId.Value;
 
     protected override void OnInitialized()

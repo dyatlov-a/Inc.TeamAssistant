@@ -1,10 +1,8 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
+using Inc.TeamAssistant.RandomCoffee.Application.Services;
 using Inc.TeamAssistant.RandomCoffee.Domain;
-using Inc.TeamAssistant.RandomCoffee.Model.Commands.AttachPoll;
 using Inc.TeamAssistant.RandomCoffee.Model.Commands.InviteForCoffee;
 using MediatR;
 
@@ -13,17 +11,12 @@ namespace Inc.TeamAssistant.RandomCoffee.Application.CommandHandlers.InviteForCo
 internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForCoffeeCommand, CommandResult>
 {
     private readonly IRandomCoffeeRepository _repository;
-    private readonly ITeamAccessor _teamAccessor;
-    private readonly IMessageBuilder _messageBuilder;
+    private readonly PollBuilder _pollBuilder;
 
-    public InviteForCoffeeCommandHandler(
-        IRandomCoffeeRepository repository,
-        ITeamAccessor teamAccessor,
-        IMessageBuilder messageBuilder)
+    public InviteForCoffeeCommandHandler(IRandomCoffeeRepository repository, PollBuilder pollBuilder)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
-        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
+        _pollBuilder = pollBuilder ?? throw new ArgumentNullException(nameof(pollBuilder));
     }
 
     public async Task<CommandResult> Handle(InviteForCoffeeCommand command, CancellationToken token)
@@ -31,9 +24,6 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
         ArgumentNullException.ThrowIfNull(command);
         
         var existsEntry = await _repository.Find(command.MessageContext.ChatMessage.ChatId, token);
-        if (existsEntry?.AlreadyStarted(command.OnDemand) == true)
-            return CommandResult.Empty;
-        
         var entry = existsEntry ?? new RandomCoffeeEntry(
             Guid.NewGuid(),
             command.MessageContext.Bot.Id,
@@ -41,26 +31,19 @@ internal sealed class InviteForCoffeeCommandHandler : IRequestHandler<InviteForC
             command.MessageContext.ChatName!,
             command.MessageContext.Person.Id);
         
-        entry.MoveToWaiting(
-            DateTimeOffset.UtcNow,
-            command.MessageContext.Bot.GetVotingInterval(),
-            command.OnDemand ? command.MessageContext.Person.Id : null);
+        entry
+            .CheckRights(command.MessageContext.Person.Id)
+            .MoveToWaiting(
+                DateTimeOffset.UtcNow,
+                command.MessageContext.Bot.GetVotingInterval());
 
         await _repository.Upsert(entry, token);
-
-        var languageId = await _teamAccessor.GetClientLanguage(command.MessageContext.Bot.Id, entry.OwnerId, token);
-        var notification = NotificationMessage
-            .Create(entry.ChatId, _messageBuilder.Build(Messages.RandomCoffee_Question, languageId))
-            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_Yes, languageId))
-            .WithOption(_messageBuilder.Build(Messages.RandomCoffee_No, languageId))
-            .WithHandler((c, p) => new AttachPollCommand(c, entry.Id, p));
-        var notifications = command.MessageContext.ChatMessage.OnlyChat
-            ? [notification]
-            : new[]
-            {
-                notification,
-                NotificationMessage.Delete(command.MessageContext.ChatMessage)
-            };
+        
+        var notifications = new[]
+        {
+            await _pollBuilder.Build(entry, token),
+            NotificationMessage.Delete(command.MessageContext.ChatMessage)
+        };
         
         return CommandResult.Build(notifications);
     }

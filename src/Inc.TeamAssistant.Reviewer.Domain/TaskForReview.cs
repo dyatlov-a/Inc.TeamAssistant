@@ -24,13 +24,11 @@ public sealed class TaskForReview : ITaskForReviewStats
     public int? OriginalReviewerMessageId { get; private set; }
     public long? FirstReviewerId { get; private set; }
     public int? FirstReviewerMessageId { get; private set; }
-    public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; }
-    public IReadOnlyCollection<ReviewComment> Comments { get; private set; }
+    public IReadOnlyCollection<ReviewInterval> ReviewIntervals { get; private set; } = [];
+    public IReadOnlyCollection<ReviewComment> Comments { get; private set; } = [];
 
     private TaskForReview()
     {
-        ReviewIntervals = new List<ReviewInterval>();
-        Comments = new List<ReviewComment>();
     }
 
     public TaskForReview(
@@ -60,13 +58,15 @@ public sealed class TaskForReview : ITaskForReviewStats
         ChangeReviewer(reviewerId);
     }
     
-    public bool CanReassign() => !FirstReviewerId.HasValue && ReviewerId == OriginalReviewerId && ReviewerId != OwnerId;
-    public bool HasReassign() => !FirstReviewerId.HasValue && ReviewerId != OriginalReviewerId;
+    public bool CanReassign() => !OriginalReviewerId.HasValue && !FirstReviewerId.HasValue && ReviewerId != OwnerId;
     public bool CanMoveToInProgress() => State is TaskForReviewState.New or TaskForReviewState.FirstAccept;
     public bool CanMakeDecision() => TaskForReviewStateRules.ActiveStates.Contains(State);
     public bool CanMoveToNextRound() => State == TaskForReviewState.OnCorrection;
     public bool HasRightsForComments(long authorId)
         => new[] { OwnerId, ReviewerId, OriginalReviewerId, FirstReviewerId }.Any(i => i == authorId);
+    public long? GetFirstRoundReviewerId() => FirstReviewerId.HasValue && FirstReviewerId.Value != ReviewerId
+        ? FirstReviewerId.Value
+        : null;
 
     public TaskForReview AttachMessage(MessageType messageType, int messageId)
     {
@@ -107,7 +107,7 @@ public sealed class TaskForReview : ITaskForReviewStats
         return this;
     }
 
-    public TaskForReview FinishRound(DateTimeOffset now, long? secondRoundReviewerId = null)
+    public TaskForReview FinishRound(DateTimeOffset now, long? secondReviewerId = null)
     {
         AddReviewInterval(ReviewerId, now);
 
@@ -115,9 +115,12 @@ public sealed class TaskForReview : ITaskForReviewStats
         FirstReviewerId ??= ReviewerId;
         FirstReviewerMessageId ??= ReviewerMessageId;
 
-        if (!isSecondRound && secondRoundReviewerId.HasValue)
+        if (!isSecondRound &&
+            secondReviewerId.HasValue &&
+            FirstReviewerId.Value != secondReviewerId.Value &&
+            OwnerId != secondReviewerId.Value)
         {
-            ChangeReviewer(secondRoundReviewerId.Value);
+            ChangeReviewer(secondReviewerId.Value);
             State = TaskForReviewState.FirstAccept;
         }
         else
@@ -171,15 +174,18 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         AddReviewInterval(ReviewerId, now);
         
-        ChangeReviewer(reviewerId);
+        OriginalReviewerId ??= ReviewerId;
         NextNotification = now;
+        
+        ChangeReviewer(reviewerId);
 
         return this;
     }
     
     public MessageId ReviewerInMessage()
     {
-        var messageId = (HasReassign(), Strategy) switch
+        var hasReassign = OriginalReviewerId.HasValue && !FirstReviewerId.HasValue;
+        var messageId = (hasReassign, Strategy) switch
         {
             (true, _) => Messages.Reviewer_TargetReassigned,
             (_, NextReviewerType.Target) => Messages.Reviewer_TargetManually,
@@ -193,7 +199,8 @@ public sealed class TaskForReview : ITaskForReviewStats
     {
         return State switch
         {
-            TaskForReviewState.New or TaskForReviewState.FirstAccept => GlobalResources.Icons.Waiting,
+            TaskForReviewState.New => GlobalResources.Icons.New,
+            TaskForReviewState.FirstAccept => GlobalResources.Icons.FirstAccept,
             TaskForReviewState.InProgress => GlobalResources.Icons.InProgress,
             TaskForReviewState.OnCorrection => GlobalResources.Icons.OnCorrection,
             TaskForReviewState.Accept => GlobalResources.Icons.Accept,
@@ -217,9 +224,7 @@ public sealed class TaskForReview : ITaskForReviewStats
     
     private void ChangeReviewer(long reviewerId)
     {
-        OriginalReviewerId ??= reviewerId;
         ReviewerId = reviewerId;
-        
         ReviewerMessageId = null;
     }
 }

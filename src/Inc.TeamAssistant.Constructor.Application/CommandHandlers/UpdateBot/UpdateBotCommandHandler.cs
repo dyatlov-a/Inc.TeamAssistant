@@ -10,13 +10,13 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.UpdateBot;
 internal sealed class UpdateBotCommandHandler : IRequestHandler<UpdateBotCommand>
 {
     private readonly IBotRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IBotListeners _botListeners;
     private readonly IBotConnector _botConnector;
 
     public UpdateBotCommandHandler(
         IBotRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         IBotListeners botListeners,
         IBotConnector botConnector)
     {

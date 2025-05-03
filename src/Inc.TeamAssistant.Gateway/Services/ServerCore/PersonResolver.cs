@@ -3,11 +3,11 @@ using Inc.TeamAssistant.WebUI.Extensions;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
-internal sealed class CurrentPersonResolver : ICurrentPersonResolver
+internal sealed class PersonResolver : IPersonResolver
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentPersonResolver(IHttpContextAccessor httpContextAccessor)
+    public PersonResolver(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }

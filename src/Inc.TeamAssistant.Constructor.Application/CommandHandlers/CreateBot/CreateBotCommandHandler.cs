@@ -10,13 +10,13 @@ namespace Inc.TeamAssistant.Constructor.Application.CommandHandlers.CreateBot;
 internal sealed class CreateBotCommandHandler : IRequestHandler<CreateBotCommand>
 {
     private readonly IBotRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly IBotListeners _botListeners;
     private readonly IBotConnector _botConnector;
 
     public CreateBotCommandHandler(
         IBotRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         IBotListeners botListeners,
         IBotConnector botConnector)
     {

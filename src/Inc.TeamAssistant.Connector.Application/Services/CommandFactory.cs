@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Alias;
 using Inc.TeamAssistant.Connector.Domain;
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Extensions;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
@@ -33,75 +34,78 @@ internal sealed class CommandFactory
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
 
-        var inputCommand = _aliasService.OverrideCommand(messageContext.Text);
-        var simpleCommand = TryCreateSimple(inputCommand, bot, messageContext);
-        if (simpleCommand is not null)
-            return simpleCommand;
-        
-        var singleLineCommand = _singleLineCommandFactory.TryCreate(bot, messageContext, inputCommand);
-        if (singleLineCommand is not null)
-            return singleLineCommand;
-        
-        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
-        var contextCommand = dialogState is null ? inputCommand : dialogState.Command;
-        var botCommand = bot.FindCommand(contextCommand);
-        if (botCommand is not null)
+        var input = _aliasService.OverrideCommand(messageContext.Text);
+        var inputCommand = bot.FindCommand(input);
+        if (inputCommand is not null)
         {
-            var dialogCommand = TryCreateDialogCommand(botCommand, bot, messageContext, dialogState);
-            if (dialogCommand is not null)
-                return dialogCommand;
-        }
-        
-        var currentTeamContext = dialogState?.TeamContext ?? CurrentTeamContext.Empty;
-        var command = _commandCreatorFactory.TryCreate(
-            contextCommand,
-            singleLineMode: false,
-            messageContext,
-            currentTeamContext);
-        return command;
-    }
+            var singleLineCommand = _singleLineCommandFactory.TryCreate(bot, messageContext, input);
+            if (singleLineCommand is not null)
+                return singleLineCommand;
 
-    private IDialogCommand? TryCreateSimple(string inputCommand, Bot bot, MessageContext messageContext)
-    {
-        ArgumentNullException.ThrowIfNull(inputCommand);
-        ArgumentNullException.ThrowIfNull(bot);
-        ArgumentNullException.ThrowIfNull(messageContext);
-        
-        var simpleCommand = bot.FindCommand(inputCommand);
-        
-        if (simpleCommand?.MultipleStages == false)
-        {
-            var command = _commandCreatorFactory.TryCreate(
-                inputCommand,
+            var singleStageCommand = TryCreateSingleStageCommand(inputCommand, bot, messageContext);
+            if (singleStageCommand is not null)
+                return singleStageCommand;
+        }
+            
+        var dialogState = _dialogContinuation.Find(bot.Id, messageContext.TargetChat);
+        var dialogInput = dialogState is null ? input : dialogState.Command;
+        var dialogCommand = bot.FindCommand(dialogInput);
+        if (dialogCommand is null || !dialogInput.HasCommand())
+            return _commandCreatorFactory.TryCreate(
+                messageContext.Text,
                 singleLineMode: false,
                 messageContext,
                 CurrentTeamContext.Empty);
-            return command;
-        }
+        
+        var multiStageCommand = TryCreateMultiStageCommand(dialogCommand, bot, messageContext, dialogState);
+        if (multiStageCommand is not null)
+            return multiStageCommand;
+        
+        return _commandCreatorFactory.TryCreate(
+            dialogInput,
+            singleLineMode: false,
+            messageContext,
+            dialogState?.TeamContext ?? CurrentTeamContext.Empty);
+    }
+    
+    private IDialogCommand? TryCreateSingleStageCommand(ContextCommand command, Bot bot, MessageContext messageContext)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(bot);
+        ArgumentNullException.ThrowIfNull(messageContext);
 
-        return null;
+        return command.MultipleStages
+            ? null
+            : _commandCreatorFactory.TryCreate(
+                command.Value,
+                singleLineMode: false,
+                messageContext,
+                CurrentTeamContext.Empty);
     }
 
-    private IDialogCommand? TryCreateDialogCommand(
-        ContextCommand botCommand,
+    private IDialogCommand? TryCreateMultiStageCommand(
+        ContextCommand command,
         Bot bot,
         MessageContext messageContext,
         DialogState? dialogState)
     {
-        ArgumentNullException.ThrowIfNull(botCommand);
+        ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(messageContext);
         
-        while (botCommand.Stages.MoveNext())
+        while (command.Stages.MoveNext())
         {
-            if ((dialogState is null && botCommand.Stages.IsFirst) || dialogState?.State == botCommand.Stages.Current.Value)
+            var isFirst = dialogState is null && command.Stages.IsFirst;
+            var isCurrent = dialogState?.State == command.Stages.Current.Value;
+            
+            if (isFirst || isCurrent)
             {
                 var dialogCommand = _dialogCommandFactory.TryCreate(
                     bot,
-                    botCommand.Value,
+                    command.Value,
                     dialogState?.State,
-                    botCommand.Stages.Current,
-                    botCommand.Stages.Next,
+                    command.Stages.Current,
+                    command.Stages.Next,
                     messageContext);
 
                 if (dialogCommand is not null)

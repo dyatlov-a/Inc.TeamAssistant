@@ -39,6 +39,8 @@ services:
     networks:
       - team_assistant
     restart: unless-stopped
+    volumes:
+      - /home/teamassist/.htpasswd:/etc/nginx/.htpasswd
 
   migrate:
     image: dyatlovhome/inc.teamassistant.migrationsrunner:latest

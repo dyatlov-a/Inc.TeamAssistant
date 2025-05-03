@@ -38,6 +38,7 @@ internal sealed class GetLocationsQueryHandler : IRequestHandler<GetLocationsQue
             ? await _reader.Find(locations.First().Map.BotId, token)
             : null;
         var locationsByUser = locations
+            .OrderBy(l => l.DisplayName)
             .GroupBy(l => l.DisplayName)
             .ToDictionary(l => l.Key, l => _converter.Convert(l, personStatsLookup, calendar));
 

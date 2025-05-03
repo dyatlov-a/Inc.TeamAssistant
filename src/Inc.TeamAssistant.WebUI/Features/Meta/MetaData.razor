@@ -12,7 +12,7 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
 
-    private (string Description, string Keywords, bool Indexed) _data = default!;
+    private (string Description, string Keywords, bool Indexed) _data;
 
     protected override void OnParametersSet() => Load();
 

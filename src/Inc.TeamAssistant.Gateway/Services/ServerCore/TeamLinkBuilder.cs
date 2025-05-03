@@ -39,7 +39,7 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
         var teamContext = await _teamAccessor.GetTeamContext(teamId, token);
         var botContext = await _botAccessor.GetBotContext(teamContext.BotId, token);
         var link = BuildLinkForConnect(botContext.UserName, teamId);
-        var code = _codeGenerator.Generate(link, foreground, background);
+        var code = await _codeGenerator.Generate(link, foreground, background, token);
         
         return (teamContext.Name, link, code);
     }

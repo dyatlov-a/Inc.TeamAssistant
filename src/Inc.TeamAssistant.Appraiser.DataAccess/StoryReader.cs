@@ -20,7 +20,8 @@ internal sealed class StoryReader : IStoryReader
         DateTimeOffset? from,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 s.id AS id,
                 s.bot_id AS botid,
@@ -36,12 +37,13 @@ internal sealed class StoryReader : IStoryReader
                 s.rounds_count AS roundscount,
                 s.url AS url
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND s.created <= @before AND (@from IS NULL OR s.created >= @from);",
+            WHERE s.team_id = @team_id AND s.created <= @before AND (@from::timestamp IS NULL OR s.created >= @from);
+            """,
             new
             {
                 team_id = teamId,
-                before,
-                from
+                before = before.UtcDateTime,
+                from = from?.UtcDateTime
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -58,10 +60,12 @@ internal sealed class StoryReader : IStoryReader
         DateOnly assessmentDate,
         CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT s.id AS id
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND DATE(s.created) = @assessment_date;",
+            WHERE s.team_id = @team_id AND DATE(s.created) = @assessment_date;
+            """,
             new
             {
                 team_id = teamId,
@@ -81,15 +85,20 @@ internal sealed class StoryReader : IStoryReader
 
     public async Task<Story?> FindLast(Guid teamId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 s.id AS id
             FROM appraiser.stories AS s
             WHERE s.team_id = @team_id AND total_value IS NULL
             ORDER BY s.created
             OFFSET 0
-            LIMIT 1;",
-            new { team_id = teamId },
+            LIMIT 1;
+            """,
+            new
+            {
+                team_id = teamId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -99,7 +108,7 @@ internal sealed class StoryReader : IStoryReader
         if (!storyId.HasValue)
             return null;
         
-        var stories = await StoryProvider.Get(connection, new[] { storyId.Value }, token);
+        var stories = await StoryProvider.Get(connection, [storyId.Value], token);
         return stories.SingleOrDefault();
     }
 }

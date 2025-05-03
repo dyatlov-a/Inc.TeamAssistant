@@ -10,12 +10,12 @@ namespace Inc.TeamAssistant.Connector.Application.CommandHandlers.SetIntegration
 internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<SetIntegrationPropertiesCommand>
 {
     private readonly ITeamRepository _repository;
-    private readonly ICurrentPersonResolver _personResolver;
+    private readonly IPersonResolver _personResolver;
     private readonly ITeamAccessor _teamAccessor;
 
     public SetIntegrationPropertiesCommandHandler(
         ITeamRepository repository,
-        ICurrentPersonResolver personResolver,
+        IPersonResolver personResolver,
         ITeamAccessor teamAccessor)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));

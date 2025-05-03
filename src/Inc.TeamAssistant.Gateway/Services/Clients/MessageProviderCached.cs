@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Inc.TeamAssistant.Gateway.Services.Clients;
@@ -22,14 +21,12 @@ internal sealed class MessageProviderCached : IMessageProvider
     public Dictionary<string, Dictionary<string, string>> Get()
     {
         var cacheKey = $"{nameof(MessageProviderCached)}_{nameof(Get)}";
-        var cacheItem = _memoryCache.GetOrCreate(
+        return _memoryCache.GetOrCreate(
             cacheKey,
             c =>
             {
                 c.SetAbsoluteExpiration(_cacheAbsoluteExpiration);
                 return _messageProvider.Get();
-            });
-
-        return cacheItem ?? _messageProvider.Get();
+            })!;
     }
 }

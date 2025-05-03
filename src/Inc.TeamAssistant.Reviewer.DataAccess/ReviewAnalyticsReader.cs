@@ -15,7 +15,6 @@ internal sealed class ReviewAnalyticsReader : IReviewAnalyticsReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-
     public async Task<IReadOnlyCollection<HistoryByTeamItemDto>> GetReviewHistory(
         Guid teamId,
         DateTimeOffset from,

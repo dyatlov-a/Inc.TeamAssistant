@@ -25,8 +25,8 @@ public sealed class PhotosController : ControllerBase
         
         var result = await _mediator.Send(new GetPersonPhotoQuery(personId));
         
-        return result.Photo is null
-            ? File(userStub, contentType)
-            : File(result.Photo, contentType);
+        return result.Photo.Any()
+            ? File(result.Photo, contentType)
+            : File(userStub, contentType);
     }
 }

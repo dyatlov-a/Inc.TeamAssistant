@@ -97,7 +97,8 @@
   "RandomCoffee_NotEnoughParticipants": "Недостаточно участников для составления пар",
   "RandomCoffee_InviteHelp": "Начать проведение встреч",
   "RandomCoffee_RefuseHelp": "Приостановить проведение встреч",
-  "RandomCoffee_RefusedForCoffee": "Проведение встреч приостановлено",
+  "RandomCoffee_RefusedForCoffee": "Проведение встреч приостановлено. Вы можете возобновить их в любой момент {0}",
+  "RandomCoffee_AlreadyWaitAnswer": "Встреча random coffee уже началась",
 
   "Connector_EnterTeamName": "В ответ на это сообщение необходимо ввести наименование команды",
   "Connector_SelectTeam": "Выберите команду:",
@@ -120,5 +121,6 @@
   "Connector_RemoveTeamSuccess": "Команда «{0}» удалена",
   "Connector_Help": "Отобразить список команд",
   "Connector_HasNoRights": "У пользователя недостаточно прав для выполнения операции",
-  "Connector_ObjectNotFound": "{0} по идентификатору {1} не найден"
+  "Connector_ObjectNotFound": "{0} по идентификатору {1} не найден",
+  "Connector_Done": "Выполнено"
 }

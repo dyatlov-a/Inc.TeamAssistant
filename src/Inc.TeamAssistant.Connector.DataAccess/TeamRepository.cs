@@ -41,7 +41,10 @@ internal sealed class TeamRepository : ITeamRepository
             JOIN connector.teammates AS tm ON p.id = tm.person_id
             WHERE tm.team_id = @team_id;
             """,
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -75,6 +78,7 @@ internal sealed class TeamRepository : ITeamRepository
     {
         ArgumentNullException.ThrowIfNull(team);
 
+        var properties = JsonSerializer.Serialize(team.Properties);
         var upsertTeam = new CommandDefinition(
             """
             INSERT INTO connector.teams (id, bot_id, chat_id, owner_id, name, properties)
@@ -93,7 +97,7 @@ internal sealed class TeamRepository : ITeamRepository
                 chat_id = team.ChatId,
                 owner_id = team.Owner.Id,
                 name = team.Name,
-                properties = JsonSerializer.Serialize(team.Properties)
+                properties = properties
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -148,7 +152,10 @@ internal sealed class TeamRepository : ITeamRepository
             DELETE FROM connector.teams
             WHERE id = @team_id;
             """,
-            new { team_id = teamId },
+            new
+            {
+                team_id = teamId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

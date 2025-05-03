@@ -8,6 +8,6 @@ public static class AppraiserProperties
     {
         ArgumentNullException.ThrowIfNull(properties);
         
-        return properties.GetValueOrDefault(StoryTypeKey, StoryType.Fibonacci.ToString());
+        return properties.GetValueOrDefault(StoryTypeKey, nameof(StoryType.Fibonacci));
     }
 }

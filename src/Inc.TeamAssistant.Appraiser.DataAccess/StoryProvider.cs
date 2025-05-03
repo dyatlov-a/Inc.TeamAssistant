@@ -13,7 +13,8 @@ internal static class StoryProvider
     {
         ArgumentNullException.ThrowIfNull(connection);
 
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 s.id AS id,
                 s.bot_id AS botid,
@@ -38,8 +39,12 @@ internal static class StoryProvider
                 sfe.participant_display_name AS participantdisplayname,
                 sfe.value AS value
             FROM appraiser.story_for_estimates AS sfe
-            WHERE sfe.story_id = ANY(@story_ids);",
-            new { story_ids = storyIds },
+            WHERE sfe.story_id = ANY(@story_ids);
+            """,
+            new
+            {
+                story_ids = storyIds.ToArray()
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         

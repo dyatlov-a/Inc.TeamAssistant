@@ -5,13 +5,12 @@ public sealed class Calendar
     public Guid Id { get; private set; }
     public long OwnerId { get; private set; }
     public WorkScheduleUtc? Schedule { get; private set; }
-    public IReadOnlyCollection<DayOfWeek> Weekends { get; private set; }
+    public IReadOnlyCollection<DayOfWeek> Weekends { get; private set; } = [];
     public IReadOnlyDictionary<DateOnly, HolidayType> Holidays { get; private set; }
+        = new Dictionary<DateOnly, HolidayType>();
 
     private Calendar()
     {
-        Weekends = new List<DayOfWeek>();
-        Holidays = new Dictionary<DateOnly, HolidayType>();
     }
 
     public Calendar(Guid id, long ownerId)
@@ -30,7 +29,7 @@ public sealed class Calendar
 
     public Calendar Clear()
     {
-        Weekends = Array.Empty<DayOfWeek>();
+        Weekends = [];
         Holidays = new Dictionary<DateOnly, HolidayType>();
         
         return this;

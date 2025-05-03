@@ -9,13 +9,17 @@ public sealed class NotificationMessage
     private readonly List<string> _options = new();
     private readonly List<(Person Person, LanguageId LanguageId, int Offset)> _targetPersons = new();
     
-	public delegate IContinuationCommand ResponseHandler(MessageContext messageContext, string parameter);
+	public delegate IContinuationCommand ResponseHandler(
+        MessageContext messageContext,
+        int messageId,
+        string? pollId);
     
 	public string Text { get; }
     public bool Pinned { get; }
-    public long? TargetChatId { get; }
-    public ChatMessage? TargetMessage { get; }
-    public ChatMessage? DeleteMessage { get; }
+    public long? ChatId { get; }
+    public ChatMessage? EditedMessage { get; }
+    public ChatMessage? DeletedMessage { get; }
+    public int? PollMessageId { get; }
     public IReadOnlyCollection<Button> Buttons => _buttons;
     public IReadOnlyCollection<string> Options => _options;
     public int ButtonsInRow { get; private set; }
@@ -24,20 +28,22 @@ public sealed class NotificationMessage
     public int? ReplyToMessageId { get; private set; }
 
     private NotificationMessage(
-        long? targetChatId,
-        ChatMessage? targetMessage,
-        ChatMessage? deleteMessage,
+        long? chatId,
+        ChatMessage? editedMessage,
+        ChatMessage? deletedMessage,
         string text,
-        bool pinned = false)
+        bool pinned = false,
+        int? pollMessageId = null)
     {
         const int defaultButtonsInRow = 5;
         
         Text = text ?? throw new ArgumentNullException(nameof(text));
-        TargetChatId = targetChatId;
-        TargetMessage = targetMessage;
-        DeleteMessage = deleteMessage;
+        ChatId = chatId;
+        EditedMessage = editedMessage;
+        DeletedMessage = deletedMessage;
         Pinned = pinned;
         ButtonsInRow = defaultButtonsInRow;
+        PollMessageId = pollMessageId;
     }
 
     public NotificationMessage WithHandler(ResponseHandler handler)
@@ -93,7 +99,12 @@ public sealed class NotificationMessage
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        return new(targetChatId, targetMessage: null, deleteMessage: null, text, pinned);
+        return new(
+            targetChatId,
+            editedMessage: null,
+            deletedMessage: null,
+            text,
+            pinned);
     }
 
     public static NotificationMessage Edit(ChatMessage targetMessage, string text)
@@ -101,14 +112,32 @@ public sealed class NotificationMessage
         ArgumentNullException.ThrowIfNull(targetMessage);
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        return new(targetChatId: null, targetMessage, deleteMessage: null, text);
+        return new(
+            chatId: null,
+            targetMessage,
+            deletedMessage: null,
+            text);
     }
 
     public static NotificationMessage Delete(ChatMessage deleteMessage)
     {
         ArgumentNullException.ThrowIfNull(deleteMessage);
 
-        return new(targetChatId: null, targetMessage: null, deleteMessage, string.Empty);
+        return new(
+            chatId: null,
+            editedMessage: null,
+            deleteMessage,
+            text: string.Empty);
+    }
+
+    public static NotificationMessage EndPoll(long chatId, int pollId)
+    {
+        return new(
+            chatId,
+            editedMessage: null,
+            deletedMessage: null,
+            text: string.Empty,
+            pollMessageId: pollId);
     }
     
     public NotificationMessage AddIf(bool condition, Action<NotificationMessage> action)

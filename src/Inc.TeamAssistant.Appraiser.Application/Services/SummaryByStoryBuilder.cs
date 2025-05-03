@@ -38,7 +38,7 @@ internal sealed class SummaryByStoryBuilder
             .Build(m => summary.StoryExternalId.HasValue
                 ? NotificationMessage.Edit(new ChatMessage(summary.ChatId, summary.StoryExternalId.Value), m)
                 : NotificationMessage.Create(summary.ChatId, m)
-                    .WithHandler((c, p) => new AttachStoryCommand(c, summary.StoryId, int.Parse(p))))
+                    .WithHandler((c, mId, pId) => new AttachStoryCommand(c, summary.StoryId, mId)))
             .AddIf(!summary.Accepted, n => n.AddIfElse(
                 summary.EstimateEnded,
                 tn => OwnerActions(summary, tn),

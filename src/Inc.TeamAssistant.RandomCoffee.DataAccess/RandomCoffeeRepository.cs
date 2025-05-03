@@ -27,11 +27,16 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(pollId);
         
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT e.id AS id
             FROM random_coffee.entries AS e
-            WHERE e.poll_id = @poll_id;",
-            new { poll_id = pollId },
+            WHERE e.poll ->> 'Id' = @poll_id;
+            """,
+            new
+            {
+                poll_id = pollId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -46,11 +51,16 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
     public async Task<RandomCoffeeEntry?> Find(long chatId, CancellationToken token)
     {
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT e.id AS id
             FROM random_coffee.entries AS e
-            WHERE e.chat_id = @chat_id;",
-            new { chat_id = chatId },
+            WHERE e.chat_id = @chat_id;
+            """,
+            new
+            {
+                chat_id = chatId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -67,20 +77,25 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
     {
         ArgumentNullException.ThrowIfNull(randomCoffeeEntry);
 
+        var randomCoffeeEntryPoll = randomCoffeeEntry.Poll is not null
+            ? JsonSerializer.Serialize(randomCoffeeEntry.Poll)
+            : null;
         var historyId = new List<Guid>(randomCoffeeEntry.History.Count);
         var historyCreated = new List<DateTimeOffset>(randomCoffeeEntry.History.Count);
         var historyPairs = new List<string>(randomCoffeeEntry.History.Count);
-        var excludedPersonId = new List<long?>(randomCoffeeEntry.History.Count);
+        var historyExcludedPersonId = new List<long?>(randomCoffeeEntry.History.Count);
 
         foreach (var item in randomCoffeeEntry.History)
         {
             historyId.Add(item.Id);
             historyCreated.Add(item.Created);
             historyPairs.Add(JsonSerializer.Serialize(item.Pairs));
-            excludedPersonId.Add(item.ExcludedPersonId);
+            historyExcludedPersonId.Add(item.ExcludedPersonId);
         }
 
-        var upsertEntry = new CommandDefinition(@"
+        var participantIds = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds);
+        var upsertEntry = new CommandDefinition(
+            """
             INSERT INTO random_coffee.entries (
                 id,
                 created,
@@ -89,7 +104,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 owner_id,
                 next_round,
                 state,
-                poll_id,
+                poll,
                 participant_ids,
                 name)
             VALUES (
@@ -100,7 +115,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 @owner_id,
                 @next_round,
                 @state,
-                @poll_id,
+                @poll::jsonb,
                 @participant_ids::jsonb,
                 @name)
             ON CONFLICT (id) DO UPDATE SET
@@ -110,9 +125,10 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 owner_id = excluded.owner_id,
                 next_round = excluded.next_round,
                 state = excluded.state,
-                poll_id = excluded.poll_id,
+                poll = excluded.poll,
                 participant_ids = excluded.participant_ids,
-                name = excluded.name;",
+                name = excluded.name;
+            """,
             new
             {
                 id = randomCoffeeEntry.Id,
@@ -121,9 +137,9 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 chat_id = randomCoffeeEntry.ChatId,
                 owner_id = randomCoffeeEntry.OwnerId,
                 next_round = randomCoffeeEntry.NextRound,
-                state = randomCoffeeEntry.State,
-                poll_id = randomCoffeeEntry.PollId,
-                participant_ids = JsonSerializer.Serialize(randomCoffeeEntry.ParticipantIds),
+                state = (int)randomCoffeeEntry.State,
+                poll = randomCoffeeEntryPoll,
+                participant_ids = participantIds,
                 name = randomCoffeeEntry.Name
             },
             flags: CommandFlags.None,
@@ -137,7 +153,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
 
         if (randomCoffeeEntry.History.Any())
         {
-            var upsertHistory = new CommandDefinition(@"
+            var upsertHistory = new CommandDefinition(
+                """
                 INSERT INTO random_coffee.history (
                     id,
                     created,
@@ -151,14 +168,15 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                     created = excluded.created,
                     random_coffee_entry_id = excluded.random_coffee_entry_id,
                     pairs = excluded.pairs,
-                    excluded_person_id = excluded.excluded_person_id;",
+                    excluded_person_id = excluded.excluded_person_id;
+                """,
                 new
                 {
                     id = historyId,
                     created = historyCreated,
                     random_coffee_entry_id = randomCoffeeEntry.Id,
                     pairs = historyPairs,
-                    excluded_person_id = excludedPersonId
+                    excluded_person_id = historyExcludedPersonId
                 },
                 flags: CommandFlags.None,
                 cancellationToken: token);
@@ -174,7 +192,8 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
         ArgumentNullException.ThrowIfNull(connection);
         
         const int historyDepth = 5;
-        var command = new CommandDefinition(@"
+        var command = new CommandDefinition(
+            """
             SELECT
                 e.id AS id,
                 e.created AS created,
@@ -183,7 +202,7 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
                 e.owner_id AS ownerid,
                 e.next_round AS nextround,
                 e.state AS state,
-                e.poll_id AS pollid,
+                e.poll AS poll,
                 e.participant_ids AS participantids,
                 e.name AS name
             FROM random_coffee.entries AS e
@@ -199,10 +218,11 @@ internal sealed class RandomCoffeeRepository : IRandomCoffeeRepository
             WHERE h.random_coffee_entry_id = @id
             ORDER BY h.created DESC
             OFFSET 0
-            LIMIT @history_depth;",
+            LIMIT @history_depth;
+            """,
             new
             {
-                id,
+                id = id,
                 history_depth = historyDepth
             },
             flags: CommandFlags.None,

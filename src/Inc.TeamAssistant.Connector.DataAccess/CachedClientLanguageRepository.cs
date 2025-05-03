@@ -1,46 +1,49 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives.Languages;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Inc.TeamAssistant.Connector.DataAccess;
 
 internal sealed class CachedClientLanguageRepository : IClientLanguageRepository
 {
-    private readonly IMemoryCache _memoryCache;
+    private readonly HybridCache _cache;
     private readonly IClientLanguageRepository _clientLanguageRepository;
-    private readonly TimeSpan _cacheTimeout;
+    private readonly HybridCacheEntryOptions _cacheOptions;
 
     public CachedClientLanguageRepository(
-        IMemoryCache memoryCache,
+        HybridCache cache,
         IClientLanguageRepository clientLanguageRepository,
         TimeSpan cacheTimeout)
     {
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _clientLanguageRepository = clientLanguageRepository ?? throw new ArgumentNullException(nameof(clientLanguageRepository));
-        _cacheTimeout = cacheTimeout;
+        _cacheOptions = new HybridCacheEntryOptions
+        {
+            Expiration = cacheTimeout
+        };
     }
 
     public async Task<LanguageId> Get(Guid botId, long personId, CancellationToken token)
     {
-        return await _memoryCache.GetOrCreateAsync(GetKey(botId, personId), async c =>
-        {
-            c.AbsoluteExpirationRelativeToNow = _cacheTimeout;
-
-            return await _clientLanguageRepository.Get(botId, personId, token);
-        }) ?? await _clientLanguageRepository.Get(botId, personId, token);
+        return await _cache.GetOrCreateAsync(
+            GetKey(botId, personId),
+            (botId, personId),
+            async (s, t) => await _clientLanguageRepository.Get(s.botId, s.personId, t),
+            _cacheOptions,
+            cancellationToken: token);
     }
 
     public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
-        
-        var key = GetKey(botId, personId);
 
-        if (_memoryCache.TryGetValue(key, out LanguageId? cachedLanguageId) && cachedLanguageId?.Value == languageId)
+        var cachedLanguageId = await Get(botId, personId, token);
+        if (cachedLanguageId.Value == languageId)
             return;
-
+        
         await _clientLanguageRepository.Upsert(botId, personId, languageId, now, token);
-        _memoryCache.Remove(key);
+
+        await _cache.RemoveAsync(GetKey(botId, personId), token);
     }
 
     private string GetKey(Guid botId, long personId) => $"{nameof(CachedClientLanguageRepository)}_{botId}_{personId}";

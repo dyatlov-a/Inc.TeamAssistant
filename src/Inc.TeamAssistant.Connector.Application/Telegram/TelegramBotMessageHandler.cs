@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Connector.Application.Services;
 using Inc.TeamAssistant.Primitives.Commands;
+using Inc.TeamAssistant.Primitives.Languages;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -16,6 +17,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
     private readonly ICommandExecutor _commandExecutor;
     private readonly TelegramMessageContextFactory _messageContextFactory;
     private readonly IBotReader _botReader;
+    private readonly IMessageBuilder _messageBuilder;
     private readonly Guid _botId;
 
     public TelegramBotMessageHandler(
@@ -24,6 +26,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         ICommandExecutor commandExecutor,
         TelegramMessageContextFactory messageContextFactory,
         IBotReader botReader,
+        IMessageBuilder messageBuilder,
         Guid botId)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -31,6 +34,7 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
         _messageContextFactory = messageContextFactory ?? throw new ArgumentNullException(nameof(messageContextFactory));
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
+        _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
         _botId = botId;
     }
 
@@ -53,13 +57,9 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
                     if (command is not null)
                         await _commandExecutor.Execute(command, token);
                 }
-                
+
                 if (update.CallbackQuery is not null)
-                    await botClient.AnswerCallbackQueryAsync(
-                        update.CallbackQuery.Id,
-                        "Done",
-                        false,
-                        cancellationToken: token);
+                    await MoveToDone(botClient, update.CallbackQuery, token);
             }
         }
         catch (Exception ex)
@@ -68,13 +68,35 @@ internal sealed class TelegramBotMessageHandler : IUpdateHandler
         }
     }
 
-    public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken token)
+    public Task HandleErrorAsync(
+        ITelegramBotClient botClient,
+        Exception exception,
+        HandleErrorSource source,
+        CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(botClient);
 
         _logger.LogWarning(exception, "Bot {BotId} listened message with error", _botId);
         
         return Task.CompletedTask;
+    }
+
+    private async Task MoveToDone(ITelegramBotClient botClient, CallbackQuery query, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(botClient);
+        ArgumentNullException.ThrowIfNull(query);
+        
+        var languageId = LanguageSettings.LanguageIds.SingleOrDefault(l => l.Value.Equals(
+                             query.From.LanguageCode,
+                             StringComparison.InvariantCultureIgnoreCase))
+                         ?? LanguageSettings.DefaultLanguageId;
+        var doneMessage = _messageBuilder.Build(Messages.Connector_Done, languageId);
+                    
+        await botClient.AnswerCallbackQuery(
+            callbackQueryId: query.Id,
+            text: doneMessage,
+            showAlert: false,
+            cancellationToken: token);
     }
     
     private static string GetUserName(Update update)

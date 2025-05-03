@@ -1,12 +1,17 @@
+using System.Text.RegularExpressions;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 
 namespace Inc.TeamAssistant.Connector.Application.Parsers;
 
 internal sealed class MessageParser
 {
-    private readonly IPersonRepository _personRepository;
-    
     private const char UserNameMarker = '@';
+    private static readonly Regex WhiteSpacePattern = new(@"\s{2,}", RegexOptions.Compiled);
+    private static readonly Regex UsernamePattern = new(
+        @"@[\w]{5,32}\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    
+    private readonly IPersonRepository _personRepository;
 
     public MessageParser(IPersonRepository personRepository)
     {
@@ -21,9 +26,14 @@ internal sealed class MessageParser
         var attachedPerson = await TryGetPersonFromEntities(message, token)
             ?? (string.IsNullOrWhiteSpace(text) ? null : await TryGetPersonFromText(text, token));
 
-        return attachedPerson is null
-            ? (text, null)
-            : (text.Replace(attachedPerson.Marker, string.Empty), attachedPerson.Id);
+        if (attachedPerson is null)
+            return (text, null);
+        
+        var cleanText = WhiteSpacePattern.Replace(
+            text.Replace(attachedPerson.Marker, string.Empty),
+            " ").TrimEnd('\n');
+            
+        return (cleanText, attachedPerson.Id);
     }
 
     private async Task<ParsedPerson?> TryGetPersonFromEntities(IInputMessage message, CancellationToken token)
@@ -46,11 +56,9 @@ internal sealed class MessageParser
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
         
-        var userNames = text
-            .Split(' ')
-            .Where(i => i.StartsWith(UserNameMarker))
-            .Select(i => i.TrimStart(UserNameMarker))
-            .Where(i => !string.IsNullOrWhiteSpace(i))
+        var userNames = UsernamePattern.Matches(text)
+            .Select(i => i.Value.TrimStart(UserNameMarker))
+            .Distinct()
             .ToArray();
 
         foreach (var userName in userNames)

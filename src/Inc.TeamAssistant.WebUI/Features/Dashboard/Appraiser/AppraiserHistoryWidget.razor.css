@@ -3,3 +3,6 @@
     justify-content: right;
     margin: 10px;
 }
+::deep tr {
+    height: 1.625rem;
+}

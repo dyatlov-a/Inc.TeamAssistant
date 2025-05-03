@@ -78,18 +78,22 @@ builder.Services
 	.AddLanguageIdType()
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
-	.AddJsonType<ICollection<string>>()
-	.AddJsonType<ICollection<long>>()
-	.AddJsonType<ICollection<PersonPair>>()
-	.AddJsonType<ICollection<DashboardWidget>>()
+	
+	.AddJsonType<IReadOnlyCollection<long>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
+	.AddJsonType<IReadOnlyDictionary<string, string>>()
+	
+	.AddJsonType<IReadOnlyCollection<PersonPair>>()
+	.AddJsonType<PollEntry>()
+	
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ReviewComment>>()
-	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	
+	.AddJsonType<WorkScheduleUtc>()
 	.AddJsonType<IReadOnlyCollection<DayOfWeek>>()
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
-	.AddJsonType<IReadOnlyDictionary<string, string>>()
-	.AddJsonType<WorkScheduleUtc>()
+	.AddJsonType<IReadOnlyCollection<ContextScope>>()
+	.AddJsonType<IReadOnlyCollection<DashboardWidget>>()
 	.Build();
 
 builder.Services
@@ -121,7 +125,6 @@ builder.Services
 
 builder.Services
 	.AddHttpContextAccessor()
-	.AddMemoryCache()
 	.AddOutputCache(c => c.AddPolicy(
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
@@ -134,6 +137,9 @@ builder.Services
 	});
 
 builder.Services
+	.AddHybridCache();
+
+builder.Services
 	.AddHealthChecks();
 
 builder.Services
@@ -141,7 +147,8 @@ builder.Services
 
 builder.Services
 	.AddRazorComponents()
-	.AddInteractiveWebAssemblyComponents();
+	.AddInteractiveWebAssemblyComponents()
+	.AddAuthenticationStateSerialization(o => o.SerializeAllClaims = true);
 
 var app = builder.Build();
 
@@ -153,7 +160,6 @@ app
 	.UseRequestCulture()
 	.UseStatusCodePagesWithReExecute("/error404")
 	.UseExceptionHandler()
-	.UseStaticFiles()
 	.UseRouting()
 	.UseOutputCache()
 	.UseAuthentication()
@@ -161,8 +167,9 @@ app
 	.UseAntiforgery()
 	.UseEndpoints(e =>
 	{
+		e.MapStaticAssets();
 		e.MapDefaultControllerRoute();
-        e.MapMetrics();
+        e.MapMetrics().DisableHttpMetrics();
         e.MapHealthChecks("/health");
 	});
 

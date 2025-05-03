@@ -20,31 +20,33 @@ internal sealed class TelegramPhotoService : IPersonPhotoService
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
-    public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
+    public async Task<byte[]> GetPersonPhoto(long personId, CancellationToken token)
     {
         try
         {
             var botId = await _botReader.FindBotId(personId, token);
             if (!botId.HasValue)
-                return null;
+                return [];
             
             var telegramBotClient = await _botClientProvider.Get(botId.Value, token);
-            var userProfilePhotos = await telegramBotClient.GetUserProfilePhotosAsync(
-                personId,
+            var userProfilePhotos = await telegramBotClient.GetUserProfilePhotos(
+                userId: personId,
                 offset: 0,
                 limit: 1,
-                token);
+                cancellationToken: token);
             var userProfilePhoto = userProfilePhotos.Photos.FirstOrDefault()?.MinBy(p => p.Width * p.Height);
             if (userProfilePhoto is null)
-                return null;
+                return [];
             
-            var fileInfo = await telegramBotClient.GetFileAsync(userProfilePhoto.FileId, token);
+            var fileInfo = await telegramBotClient.GetFile(
+                fileId: userProfilePhoto.FileId,
+                cancellationToken: token);
             if (string.IsNullOrWhiteSpace(fileInfo.FilePath))
-                return null;
+                return [];
             
             using var stream = new MemoryStream();
             
-            await telegramBotClient.DownloadFileAsync(fileInfo.FilePath, stream, token);
+            await telegramBotClient.DownloadFile(fileInfo.FilePath, stream, token);
             
             return stream.ToArray();
         }
@@ -53,6 +55,6 @@ internal sealed class TelegramPhotoService : IPersonPhotoService
             _logger.LogWarning(ex, "Error on sync photo for person {PersonId}", personId);
         }
 
-        return null;
+        return [];
     }
 }

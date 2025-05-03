@@ -45,7 +45,10 @@ internal sealed class BotReader : IBotReader
             LEFT JOIN connector.teammates AS tm ON t.id = tm.team_id
             WHERE t.owner_id = @user_id OR tm.person_id = @user_id OR b.owner_id = @user_id;
             """,
-            new { user_id = userId },
+            new
+            {
+                user_id = userId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -63,7 +66,10 @@ internal sealed class BotReader : IBotReader
             FROM connector.teams AS t
             WHERE t.bot_id = ANY(@bot_ids);
             """,
-            new { bot_ids = botIds },
+            new
+            {
+                bot_ids = botIds
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
         
@@ -144,8 +150,8 @@ internal sealed class BotReader : IBotReader
             """,
             new
             {
-                id,
-                now
+                id = id,
+                now = now
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -198,7 +204,10 @@ internal sealed class BotReader : IBotReader
             WHERE tm.person_id = @person_id
             LIMIT 1;
             """,
-            new { person_id = personId },
+            new
+            {
+                person_id = personId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -215,7 +224,10 @@ internal sealed class BotReader : IBotReader
             FROM connector.bots AS b
             WHERE b.id = @bot_id;
             """,
-            new { bot_id = botId },
+            new
+            {
+                bot_id = botId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
@@ -235,7 +247,10 @@ internal sealed class BotReader : IBotReader
             JOIN connector.activated_features AS af ON f.id = af.feature_id
             WHERE af.bot_id = @bot_id;
             """,
-            new { bot_id = botId },
+            new
+            {
+                bot_id = botId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

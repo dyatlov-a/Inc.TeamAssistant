@@ -97,7 +97,8 @@
   "RandomCoffee_NotEnoughParticipants": "There are not enough participants to form pairs",
   "RandomCoffee_InviteHelp": "Start random coffee meetings",
   "RandomCoffee_RefuseHelp": "Refuse random coffee meetings",
-  "RandomCoffee_RefusedForCoffee": "Random coffee meetings are refused",
+  "RandomCoffee_RefusedForCoffee": "Random coffee meetings are refused. Please use {0} to start them again",
+  "RandomCoffee_AlreadyWaitAnswer": "Random coffee meeting is already started",
   
   "Connector_EnterTeamName": "Reply to this message with the team name",
   "Connector_SelectTeam": "Select the team:",
@@ -120,5 +121,6 @@
   "Connector_RemoveTeamSuccess": "The \"{0}\" team has been removed",
   "Connector_Help": "Display the list of available commands",
   "Connector_HasNoRights": "User has no rights to perform this action",
-  "Connector_ObjectNotFound": "{0} by id {1} was not found"
+  "Connector_ObjectNotFound": "{0} by id {1} was not found",
+  "Connector_Done": "Done"
 }

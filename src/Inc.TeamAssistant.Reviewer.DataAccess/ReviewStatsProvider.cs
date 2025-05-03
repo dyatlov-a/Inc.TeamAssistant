@@ -25,20 +25,21 @@ internal sealed class ReviewStatsProvider : IPersonStatsProvider
         
         ArgumentNullException.ThrowIfNull(personIds);
 
+        var state = (int)TaskForReviewState.Accept;
         var command = new CommandDefinition(
             """
             SELECT
                 t.reviewer_id AS personid,
                 count(*) AS eventscount
             FROM review.task_for_reviews AS t
-            WHERE t.created > @from AND t.reviewer_id = ANY(@person_ids) AND t.state = @accept_state
+            WHERE t.created > @from AND t.reviewer_id = ANY(@person_ids) AND t.state = @state
             GROUP BY t.reviewer_id;
             """,
             new
             {
-                person_ids = personIds,
+                person_ids = personIds.ToArray(),
                 from = from.UtcDateTime,
-                accept_state = (int)TaskForReviewState.Accept
+                state = state
             },
             flags: CommandFlags.None,
             cancellationToken: token);

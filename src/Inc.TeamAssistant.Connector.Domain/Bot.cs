@@ -36,9 +36,9 @@ public sealed class Bot
     {
         ArgumentNullException.ThrowIfNull(cmd);
         
-        foreach (var botCommand in Commands)
-            if (cmd.StartsWith(botCommand.Value, StringComparison.InvariantCultureIgnoreCase))
-                return botCommand;
+        foreach (var command in _commands)
+            if (cmd.StartsWith(command.Value, StringComparison.InvariantCultureIgnoreCase))
+                return command;
 
         return null;
     }

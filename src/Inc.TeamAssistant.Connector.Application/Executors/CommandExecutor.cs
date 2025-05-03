@@ -146,7 +146,10 @@ internal sealed class CommandExecutor : ICommandExecutor
 
         try
         {
-            var message = await client.SendTextMessageAsync(chatMessage.ChatId, text, cancellationToken: token);
+            var message = await client.SendMessage(
+                chatId: chatMessage.ChatId,
+                text: text,
+                cancellationToken: token);
             
             if (dialog is not null)
             {

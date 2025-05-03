@@ -1,10 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<link href="leaflet/leaflet.css?v=@_leafletVersion" rel="stylesheet"/>
-<script src="leaflet/leaflet.js?v=@_leafletVersion"></script>
+<link href="@Assets["leaflet/leaflet.css"]" rel="stylesheet"/>
+<script src="@Assets["leaflet/leaflet.js"]"></script>
 
 @Body
-
-@code {
-    private readonly string _leafletVersion = "1.9.4";
-}

@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Primitives;
 
-public interface ICurrentPersonResolver
+public interface IPersonResolver
 {
     Person GetCurrentPerson();
 }
