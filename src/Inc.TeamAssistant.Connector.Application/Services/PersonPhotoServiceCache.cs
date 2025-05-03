@@ -16,7 +16,7 @@ internal sealed class PersonPhotoServiceCache : IPersonPhotoService
         _cacheDurationInSeconds = cacheDurationInSeconds;
     }
 
-    public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
+    public async Task<byte[]> GetPersonPhoto(long personId, CancellationToken token)
     {
         return await _cache.GetOrCreateAsync(
             $"{nameof(PersonPhotoServiceCache)}__{nameof(GetPersonPhoto)}__{personId}",

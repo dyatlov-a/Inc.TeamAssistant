@@ -37,7 +37,7 @@ internal sealed class StoryReader : IStoryReader
                 s.rounds_count AS roundscount,
                 s.url AS url
             FROM appraiser.stories AS s
-            WHERE s.team_id = @team_id AND s.created <= @before AND (@from IS NULL OR s.created >= @from);
+            WHERE s.team_id = @team_id AND s.created <= @before AND (@from::timestamp IS NULL OR s.created >= @from);
             """,
             new
             {

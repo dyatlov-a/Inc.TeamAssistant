@@ -20,13 +20,13 @@ internal sealed class TelegramPhotoService : IPersonPhotoService
         _botReader = botReader ?? throw new ArgumentNullException(nameof(botReader));
     }
 
-    public async Task<byte[]?> GetPersonPhoto(long personId, CancellationToken token)
+    public async Task<byte[]> GetPersonPhoto(long personId, CancellationToken token)
     {
         try
         {
             var botId = await _botReader.FindBotId(personId, token);
             if (!botId.HasValue)
-                return null;
+                return [];
             
             var telegramBotClient = await _botClientProvider.Get(botId.Value, token);
             var userProfilePhotos = await telegramBotClient.GetUserProfilePhotos(
@@ -36,13 +36,13 @@ internal sealed class TelegramPhotoService : IPersonPhotoService
                 cancellationToken: token);
             var userProfilePhoto = userProfilePhotos.Photos.FirstOrDefault()?.MinBy(p => p.Width * p.Height);
             if (userProfilePhoto is null)
-                return null;
+                return [];
             
             var fileInfo = await telegramBotClient.GetFile(
                 fileId: userProfilePhoto.FileId,
                 cancellationToken: token);
             if (string.IsNullOrWhiteSpace(fileInfo.FilePath))
-                return null;
+                return [];
             
             using var stream = new MemoryStream();
             
@@ -55,6 +55,6 @@ internal sealed class TelegramPhotoService : IPersonPhotoService
             _logger.LogWarning(ex, "Error on sync photo for person {PersonId}", personId);
         }
 
-        return null;
+        return [];
     }
 }
