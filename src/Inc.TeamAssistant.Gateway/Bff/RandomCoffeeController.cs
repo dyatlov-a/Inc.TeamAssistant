@@ -11,9 +11,9 @@ public sealed class RandomCoffeeController : ControllerBase
 {
     private readonly IRandomCoffeeService _randomCoffeeService;
 
-    public RandomCoffeeController(IRandomCoffeeService botService)
+    public RandomCoffeeController(IRandomCoffeeService randomCoffeeService)
     {
-        _randomCoffeeService = botService ?? throw new ArgumentNullException(nameof(botService));
+        _randomCoffeeService = randomCoffeeService ?? throw new ArgumentNullException(nameof(randomCoffeeService));
     }
 
     [HttpGet("chats/{botId:Guid}")]

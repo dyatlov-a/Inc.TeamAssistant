@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped<ICalendarService, CalendarClient>()
+            .AddScoped<IRetroService, RetroClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
