@@ -27,7 +27,10 @@ internal sealed class HolidayReader : IHolidayReader
             JOIN connector.bots AS b ON b.calendar_id = c.id
             WHERE b.id = @bot_id;
             """,
-            new { bot_id = botId },
+            new
+            {
+                bot_id = botId
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 

@@ -32,17 +32,17 @@ internal sealed class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalen
             : new WorkScheduleUtc(command.Schedule.Start, command.Schedule.End);
         var currentPerson = _personResolver.GetCurrentPerson();
         var existCalendar = await _repository.Find(currentPerson.Id, token);
-        var calendar = (existCalendar?.Clear() ?? new Calendar(Guid.NewGuid(), currentPerson.Id))
+        var calendar = (existCalendar?.Clear() ?? Calendar.Create(Guid.NewGuid(), currentPerson.Id))
             .SetSchedule(schedule);
         
         foreach (var weekend in command.Weekends)
-            calendar.AddWeekend(weekend);
+            calendar = calendar.AddWeekend(weekend);
 
         foreach (var holiday in command.Holidays)
         {
             var holidayType = Enum.Parse<HolidayType>(holiday.Value);
             
-            calendar.AddHoliday(holiday.Key, holidayType);
+            calendar = calendar.AddHoliday(holiday.Key, holidayType);
         }
 
         await _repository.Upsert(calendar, token);

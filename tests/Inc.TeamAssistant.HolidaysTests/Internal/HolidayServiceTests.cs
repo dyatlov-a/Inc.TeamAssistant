@@ -12,19 +12,20 @@ public sealed class HolidayServiceTests
     private readonly Fixture _fixture = new();
     private readonly HolidayService _target;
     private readonly Calendar _calendar;
+    private readonly IHolidayReader _reader;
     
     public HolidayServiceTests()
     {
-        _calendar = new Calendar(_fixture.Create<Guid>(), _fixture.Create<long>())
+        _calendar = Calendar.Create(_fixture.Create<Guid>(), _fixture.Create<long>())
             .SetSchedule(new WorkScheduleUtc(
                 TimeOnly.FromTimeSpan(TimeSpan.FromHours(7)),
                 TimeOnly.FromTimeSpan(TimeSpan.FromHours(16))))
             .AddWeekend(DayOfWeek.Saturday)
             .AddWeekend(DayOfWeek.Sunday);
         
-        var reader = Substitute.For<IHolidayReader>();
-        reader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(_calendar);
-        _target = new(reader);
+        _reader = Substitute.For<IHolidayReader>();
+        _reader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(_calendar);
+        _target = new(_reader);
     }
 
     [Theory]
@@ -49,7 +50,8 @@ public sealed class HolidayServiceTests
     public async Task IsWorkTime_ExcludeHoliday_ShouldBeHoliday()
     {
         var value = new DateOnly(2023, 1, 23);
-        _calendar.AddHoliday(value, HolidayType.Holiday);
+        var calendar = _calendar.AddHoliday(value, HolidayType.Holiday);
+        _reader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);
         
         var actual = await _target.IsWorkTime(
             _fixture.Create<Guid>(),
@@ -63,7 +65,8 @@ public sealed class HolidayServiceTests
     public async Task IsWorkTime_ExcludeWorkday_ShouldBeWorkday()
     {
         var value = new DateOnly(2023, 1, 28);
-        _calendar.AddHoliday(value, HolidayType.Workday);
+        var calendar = _calendar.AddHoliday(value, HolidayType.Workday);
+        _reader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);
         
         var actual = await _target.IsWorkTime(
             _fixture.Create<Guid>(),

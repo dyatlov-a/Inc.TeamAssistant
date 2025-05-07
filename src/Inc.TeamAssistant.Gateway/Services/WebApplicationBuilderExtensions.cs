@@ -39,10 +39,11 @@ public static class WebApplicationBuilderExtensions
         {
             c.Enrich.FromLogContext();
             c.MinimumLevel.Is(minLogLevel);
-            c.WriteTo.Console(minLogLevel, outputTemplate);
 
-            if (!string.IsNullOrWhiteSpace(analyticsOptions.SentryDsn))
-                c.WriteTo.Sentry(s =>
+            if (string.IsNullOrWhiteSpace(analyticsOptions.SentryDsn))
+                c.WriteTo.Console(minLogLevel, outputTemplate);
+            else
+                c.WriteTo.Console(minLogLevel, outputTemplate).WriteTo.Sentry(s =>
                 {
                     s.Environment = builder.Environment.EnvironmentName;
                     s.Dsn = analyticsOptions.SentryDsn;

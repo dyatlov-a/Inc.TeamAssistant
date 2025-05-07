@@ -1,56 +1,58 @@
 namespace Inc.TeamAssistant.Holidays.Model;
 
-public sealed class Calendar
+public sealed record Calendar(
+    Guid Id,
+    long OwnerId,
+    WorkScheduleUtc? Schedule,
+    IReadOnlyCollection<DayOfWeek> Weekends,
+    IReadOnlyDictionary<DateOnly, HolidayType> Holidays)
 {
-    public Guid Id { get; private set; }
-    public long OwnerId { get; private set; }
-    public WorkScheduleUtc? Schedule { get; private set; }
-    public IReadOnlyCollection<DayOfWeek> Weekends { get; private set; } = [];
-    public IReadOnlyDictionary<DateOnly, HolidayType> Holidays { get; private set; }
-        = new Dictionary<DateOnly, HolidayType>();
-
-    private Calendar()
+    public static Calendar Create(Guid id, long ownerId)
     {
-    }
-
-    public Calendar(Guid id, long ownerId)
-        : this()
-    {
-        Id = id;
-        OwnerId = ownerId;
+        return new Calendar(
+            id,
+            ownerId,
+            Schedule: null,
+            Weekends: [],
+            Holidays: new Dictionary<DateOnly, HolidayType>());
     }
 
     public Calendar SetSchedule(WorkScheduleUtc? schedule)
     {
-        Schedule = schedule;
-        
-        return this;
+        return this with
+        {
+            Schedule = schedule
+        };
     }
 
     public Calendar Clear()
     {
-        Weekends = [];
-        Holidays = new Dictionary<DateOnly, HolidayType>();
-        
-        return this;
+        return this with
+        {
+            Weekends = [],
+            Holidays = new Dictionary<DateOnly, HolidayType>()
+        };
     }
     
     public Calendar AddWeekend(DayOfWeek dayOfWeek)
     {
-        if (!Weekends.Contains(dayOfWeek))
-            Weekends = Weekends.Append(dayOfWeek).ToArray();
-        
-        return this;
+        return this with
+        {
+            Weekends = Weekends.Contains(dayOfWeek)
+                ? Weekends
+                : Weekends.Append(dayOfWeek).ToArray()
+        };
     }
 
     public Calendar AddHoliday(DateOnly date, HolidayType holidayType)
     {
-        Holidays = new Dictionary<DateOnly, HolidayType>(Holidays)
+        return this with
         {
-            [date] = holidayType
+            Holidays = new Dictionary<DateOnly, HolidayType>(Holidays)
+            {
+                [date] = holidayType
+            }
         };
-
-        return this;
     }
     
     public (DateTimeOffset Start, DateTimeOffset End)? GetWorkTime(DateOnly date)
