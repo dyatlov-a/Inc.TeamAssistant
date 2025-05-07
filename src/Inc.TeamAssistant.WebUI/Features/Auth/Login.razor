@@ -21,9 +21,10 @@
                             data-telegram-login="@BotUserName"
                             data-size="large"
                             data-userpic="false"
+                            data-lang="@Lang"
                             data-auth-url="accounts/login-tg?return_url=@ReturnUrl"
                             data-request-access="write">
-                            </script>
+                        </script>
                     }
                 </Loading>
             </div>
@@ -72,4 +73,10 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback LoginAsSuperUser { get; set; }
+    
+    /// <summary>
+    /// Current language.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Lang { get; set; } = default!;
 }

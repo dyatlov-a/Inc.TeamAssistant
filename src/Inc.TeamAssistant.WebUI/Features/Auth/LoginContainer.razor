@@ -16,7 +16,8 @@
         BotUserName="@_botUserName"
         HasSuperUser="RenderContext.IsDevelopment()"
         Retry="Load"
-        LoginAsSuperUser="LoginAsSuperUser" />
+        LoginAsSuperUser="LoginAsSuperUser"
+        Lang="@_lang" />
 </div>
 
 @code {
@@ -25,9 +26,12 @@
     
     private readonly LoadingState _state = LoadingState.Done();
     private string _botUserName = string.Empty;
+    private string _lang = LanguageSettings.DefaultLanguageId.Value;
 
     protected override async Task OnParametersSetAsync()
     {
+        _lang = RenderContext.GetLanguageContext().CurrentLanguage.Value;
+        
         if (!RenderContext.IsDevelopment())
             await Load();
     }
