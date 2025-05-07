@@ -5,8 +5,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
 
 internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFormModel>
 {
-    private readonly HashSet<DateOnly> _dates = new();
-    
     public CalendarFromModelValidator(IStringLocalizer<ConstructorResources> localizer)
     {
         ArgumentNullException.ThrowIfNull(localizer);
@@ -19,11 +17,6 @@ internal sealed class CalendarFromModelValidator : AbstractValidator<CalendarFor
             .NotNull()
             .Must(e => e.Select(i => i.Date).Distinct().Count() == e.Count)
             .WithMessage(localizer["DuplicateHolidays"]);
-
-        _dates.Clear();
-        RuleForEach(e => e.Holidays)
-            .ChildRules(c => c.RuleFor(i => i.Date)
-                .Must(d => _dates.Add(d)));
         
         RuleFor(e => e.Start)
             .LessThan(e => e.End);

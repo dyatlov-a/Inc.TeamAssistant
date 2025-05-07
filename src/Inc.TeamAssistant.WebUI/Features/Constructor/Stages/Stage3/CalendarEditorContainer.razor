@@ -3,7 +3,12 @@
 @inject IServiceProvider ServiceProvider
 @inject IJSRuntime JsRuntime
 
-<CalendarEditor FormModel="_formModel" IsOpen="_isOpen" State="_state" Retry="Load" OnValidSubmit="SubmitForm" />
+<CalendarEditor
+    FormModel="_formModel"
+    IsOpen="_isOpen"
+    State="_state"
+    Retry="Load"
+    OnValidSubmit="SubmitForm" />
 
 @code {
     [Parameter, EditorRequired]
