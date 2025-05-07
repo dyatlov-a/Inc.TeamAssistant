@@ -106,13 +106,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "retro", "retro", "{DC14F208-45B0-43D1-8FB8-E841A282F892}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Retro.Model", "src\Inc.TeamAssistant.Retro.Model\Inc.TeamAssistant.Retro.Model.csproj", "{4F416B99-4123-4550-838D-118D5D525FB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Tenants.Model", "src\Inc.TeamAssistant.Tenants.Model\Inc.TeamAssistant.Tenants.Model.csproj", "{4F416B99-4123-4550-838D-118D5D525FB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Retro.Application", "src\Inc.TeamAssistant.Retro.Application\Inc.TeamAssistant.Retro.Application.csproj", "{1E381765-4E97-4B5F-A5C8-B728BD48A8EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Tenants.Application", "src\Inc.TeamAssistant.Tenants.Application\Inc.TeamAssistant.Tenants.Application.csproj", "{1E381765-4E97-4B5F-A5C8-B728BD48A8EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Retro.Domain", "src\Inc.TeamAssistant.Retro.Domain\Inc.TeamAssistant.Retro.Domain.csproj", "{E0D91EDC-CF02-497A-9A79-FFA7419E5351}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Tenants.Domain", "src\Inc.TeamAssistant.Tenants.Domain\Inc.TeamAssistant.Tenants.Domain.csproj", "{E0D91EDC-CF02-497A-9A79-FFA7419E5351}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Retro.DataAccess", "src\Inc.TeamAssistant.Retro.DataAccess\Inc.TeamAssistant.Retro.DataAccess.csproj", "{7EE61B5E-946E-4CC8-88DC-03AF7A5863BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Tenants.DataAccess", "src\Inc.TeamAssistant.Tenants.DataAccess\Inc.TeamAssistant.Tenants.DataAccess.csproj", "{7EE61B5E-946E-4CC8-88DC-03AF7A5863BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

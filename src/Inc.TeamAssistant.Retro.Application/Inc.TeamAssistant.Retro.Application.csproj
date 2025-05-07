@@ -1,9 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Inc.TeamAssistant.Retro.Domain\Inc.TeamAssistant.Retro.Domain.csproj" />
-    <ProjectReference Include="..\Inc.TeamAssistant.Retro.Model\Inc.TeamAssistant.Retro.Model.csproj" />
-  </ItemGroup>
-</Project>
