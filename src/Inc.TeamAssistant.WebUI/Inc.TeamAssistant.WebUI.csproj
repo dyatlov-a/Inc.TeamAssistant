@@ -21,6 +21,7 @@
         <ProjectReference Include="..\Inc.TeamAssistant.Connector.Model\Inc.TeamAssistant.Connector.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Retro.Model\Inc.TeamAssistant.Retro.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Tenants.Model\Inc.TeamAssistant.Tenants.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>

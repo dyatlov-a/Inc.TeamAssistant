@@ -10,6 +10,7 @@
         <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Constructor.DataAccess\Inc.TeamAssistant.Constructor.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.DataAccess\Inc.TeamAssistant.RandomCoffee.DataAccess.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Retro.DataAccess\Inc.TeamAssistant.Retro.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Tenants.DataAccess\Inc.TeamAssistant.Tenants.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.DataAccess\Inc.TeamAssistant.Reviewer.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.WebUI\Inc.TeamAssistant.WebUI.csproj" />

@@ -31,6 +31,8 @@ using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
+using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
@@ -62,6 +64,7 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<ITenantRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRetroRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
 		c.Lifetime = defaultLifetime;
@@ -72,6 +75,7 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
 		c.RegisterServicesFromAssemblyContaining<IBotRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITenantRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRetroRepository>();
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
@@ -116,7 +120,8 @@ builder.Services
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
-	.AddTenantsDataAccess();
+	.AddTenantsDataAccess()
+	.AddRetroDataAccess();
 
 builder.Services
 	.AddAuthentication(ApplicationContext.AuthenticationScheme)
