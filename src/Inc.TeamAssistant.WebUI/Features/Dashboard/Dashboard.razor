@@ -7,7 +7,7 @@
             </div>
         </div>
         <div class="dashboard-content">
-            <Loading State="State" Retry="Load">
+            <Loading State="State" Retry="Retry">
                 <div class="dashboard-widgets">
                     @if (BotId.HasValue)
                     {
@@ -34,12 +34,6 @@
     public Guid? BotId { get; set; }
     
     /// <summary>
-    /// TeamId.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Guid? TeamId { get; set; }
-    
-    /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
@@ -64,10 +58,10 @@
     public RenderFragment Toolbar { get; set; } = default!;
     
     /// <summary>
-    /// Action for load.
+    /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Load { get; set; } = default!;
+    public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
     /// ParametersFactory for widget by type.

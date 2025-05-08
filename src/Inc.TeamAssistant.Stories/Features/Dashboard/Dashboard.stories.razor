@@ -7,10 +7,9 @@
         <Template>
             <Dashboard
                 BotId="null"
-                TeamId="null"
                 State="LoadingState.Done()"
                 Widgets="Array.Empty<Type>()"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -29,10 +28,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Done()"
                 Widgets="_allWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -55,10 +53,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Done()"
                 Widgets="_reviewerWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -81,10 +78,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Done()"
                 Widgets="_appraiserWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -107,10 +103,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Done()"
                 Widgets="_randomCoffeeWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -133,10 +128,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Done()"
                 Widgets="_mapWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -159,10 +153,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Loading()"
                 Widgets="_allWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
@@ -185,10 +178,9 @@
         <Template>
             <Dashboard
                 BotId="BotId"
-                TeamId="TeamId"
                 State="LoadingState.Error()"
                 Widgets="_allWidgets"
-                Load="() => Task.CompletedTask"
+                Retry="() => Task.CompletedTask"
                 WidgetParametersFactory="CreateWidgetParameters">
                 <Toolbar>
                     <DashboardTeamSelector
