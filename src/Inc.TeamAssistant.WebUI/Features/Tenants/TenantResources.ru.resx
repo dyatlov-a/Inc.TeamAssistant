@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="TeamSectionTitle" xml:space="preserve">
+        <value>Команда</value>
+    </data>
+    <data name="TeamSectionHelp" xml:space="preserve">
+        <value>Команда в рамках которой осуществляется работа</value>
+    </data>
+    <data name="TeamNameField" xml:space="preserve">
+        <value>Название команды</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Сохранить</value>
+    </data>
+    <data name="TeamManagement" xml:space="preserve">
+        <value>Управление командами</value>
+    </data>
+    <data name="TeamManagementText" xml:space="preserve">
+        <value>Для проведения первого ретро необходимо создать команду</value>
+    </data>
+    <data name="Create" xml:space="preserve">
+        <value>Создать</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Изменить</value>
+    </data>
+    <data name="MoveToRetro" xml:space="preserve">
+        <value>Перейти к ретро</value>
+    </data>
+</root>

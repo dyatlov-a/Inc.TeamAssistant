@@ -1,11 +1,13 @@
+@inject IStringLocalizer<TenantResources> Localizer
+
 <EditForm id="@AnalyticEvents.ManageTeam" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <Loading State="State" Retry="Retry">
-        <FormSection Title="Команда" HelpText="Команда в рамках которой осуществляется работа">
+        <FormSection Title="@Localizer["TeamSectionTitle"]" HelpText="@Localizer["TeamSectionHelp"]">
             <ChildContent>
                 <FormFieldSet
                     FieldId="team-name"
-                    Label="Название команды">
+                    Label="@Localizer["TeamNameField"]">
                     <InputSingleLine FieldId="team-name" @bind-Value="FormModel.Name" />
                     <ValidationMessage For="@(() => FormModel.Name)"/>
                 </FormFieldSet>
@@ -13,7 +15,7 @@
         </FormSection>
     </Loading>
     <div class="content__actions">
-        <Button ButtonType="ButtonType.Submit">Сохранить</Button>
+        <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
     </div>
 </EditForm>
 

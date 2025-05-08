@@ -1,9 +1,8 @@
 using Inc.TeamAssistant.Tenants.Model.Queries.Common;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
-using Inc.TeamAssistant.WebUI.Services;
 
-namespace Inc.TeamAssistant.WebUI.Features.Tenants;
+namespace Inc.TeamAssistant.WebUI.Services.Stores;
 
 internal sealed class TenantStore
 {
@@ -20,18 +19,14 @@ internal sealed class TenantStore
     public IEnumerable<TenantTeamDto> Teams => _teams.Values;
     public event Action? OnChange;
 
-    public async Task Initialize(
-        Guid? teamId,
-        IProgress<LoadingState.State> progress,
-        bool showLoading = true)
+    public async Task Initialize(Guid? teamId, IProgress<LoadingState.State> progress)
     {
         ArgumentNullException.ThrowIfNull(progress);
         
         var result = await _requestProcessor.Process(
             () => _tenantService.GetAvailableTeams(teamId),
             nameof(TenantStore),
-            progress,
-            showLoading);
+            progress);
 
         _teams = result.Teams.ToDictionary(t => t.Id);
 

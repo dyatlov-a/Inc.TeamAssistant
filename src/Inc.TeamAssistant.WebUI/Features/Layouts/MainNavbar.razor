@@ -12,6 +12,12 @@
             </div>
         }
         <div class="navbar__divider"></div>
+        @foreach(var team in Teams)
+        {
+            <div class="navbar__item navbar__item_team">
+                <RouterLink Href="@MoveToTeamFactory(team.Id)">@team.Name</RouterLink>
+            </div>
+        }
         @if (CurrentPerson is not null)
         {
             <span class="navbar__item navbar__item_avatar">
@@ -52,7 +58,13 @@
     public string LogoutUrl { get; set; } = default!;
     
     [Parameter, EditorRequired]
+    public Func<Guid, string> MoveToTeamFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
     public EventCallback<string> Moved { get; set; }
+    
+    [Parameter]
+    public IEnumerable<TenantTeamDto> Teams { get; set; } = [];
     
     [Parameter]
     public Person? CurrentPerson { get; set; }

@@ -1,6 +1,15 @@
 <h3>Retro page</h3>
 
 @code {
+    /// <summary>
+    /// Selected TeamId.
+    /// </summary>
     [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
 }

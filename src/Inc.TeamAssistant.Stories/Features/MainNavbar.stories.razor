@@ -9,8 +9,9 @@
                 MainUrl="#"
                 LoginUrl="#"
                 LogoutUrl="#"
-                Moved="_ => { }"
-                CurrentPerson="_currentPerson" />
+                Moved="@(_ => { })"
+                CurrentPerson="_currentPerson"
+                MoveToTeamFactory="@(_ => string.Empty)" />
         </Template>
     </Story>
     <Story Name="NotAuthorized">
@@ -21,7 +22,22 @@
                 MainUrl="#"
                 LoginUrl="#"
                 LogoutUrl="#"
-                Moved="_ => { }" />
+                Moved="@(_ => { })"
+                MoveToTeamFactory="@(_ => string.Empty)" />
+        </Template>
+    </Story>
+    <Story Name="WithTeams">
+        <Template>
+            <MainNavbar
+                HasLogin="true"
+                Languages="_languages"
+                MainUrl="#"
+                LoginUrl="#"
+                LogoutUrl="#"
+                Moved="@(_ => { })"
+                CurrentPerson="_currentPerson"
+                MoveToTeamFactory="@(_ => string.Empty)"
+                Teams="_teams" />
         </Template>
     </Story>
 </Stories>
@@ -36,4 +52,8 @@
     private readonly IReadOnlyCollection<LinkModel> _languages = LanguageSettings.LanguageIds
         .Select(l => new LinkModel(l.Value, $"/{l.Value}"))
         .ToArray();
+
+    private readonly IReadOnlyCollection<TenantTeamDto> _teams = [
+        new(Guid.NewGuid(), "Team 1"),
+        new(Guid.NewGuid(), "Team 2")];
 }

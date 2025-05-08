@@ -1,10 +1,12 @@
+@inject IStringLocalizer<TenantResources> Localizer
+
 <div class="main-content">
     <div class="main-content__container">
-        <h1 class="main-content__header">Управление командами</h1>
-        <p class="main-content__text">Для проведения первого ретро необходимо создать команду</p>
+        <h1 class="main-content__header">@Localizer["TeamManagement"]</h1>
+        <p class="main-content__text">@Localizer["TeamManagementText"]</p>
         <Panel Header="Teams" IsOpen="true">
             <Actions>
-                <Button OnClick="CreateEmit">Создать</Button>
+                <Button OnClick="CreateEmit">@Localizer["Create"]</Button>
             </Actions>
             <Content>
                 <Loading State="State" Retry="Retry">
@@ -16,10 +18,10 @@
                             @context.Name
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
-                            <RouterLink OnClick="() => EditEmit(context.Id)">Изменить</RouterLink>
+                            <RouterLink OnClick="() => EditEmit(context.Id)">@Localizer["Edit"]</RouterLink>
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
-                            <RouterLink Href="@MoveToRetroFactory(context.Id)">Перейти к ретро</RouterLink>
+                            <RouterLink Href="@MoveToRetroFactory(context.Id)">@Localizer["MoveToRetro"]</RouterLink>
                         </TemplateColumn>
                     </QuickGrid>
                 </Loading>

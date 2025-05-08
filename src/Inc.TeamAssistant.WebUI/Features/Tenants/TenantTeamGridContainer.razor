@@ -1,13 +1,16 @@
-@page "/tenant"
-@page "/ru/tenant"
-@page "/en/tenant"
+@page "/teams"
+@page "/ru/teams"
+@page "/en/teams"
 
 @attribute [Authorize]
 
 @inject TenantStore TenantStore
 @inject NavRouter NavRouter
+@inject IStringLocalizer<TenantResources> Localizer
 
-<TenantTeamSelector
+<MetaDataModule />
+
+<TenantTeamGrid
     AvailableTeams="TenantStore.Teams"
     State="_state"
     Retry="Load"
@@ -15,7 +18,7 @@
     CreateEmitted="() => MoveToEdit(teamId: null)"
     MoveToRetroFactory="CreateMoveToRetroLink" />
 
-<ContentDialog Title="Управление командой" @ref="_contentDialog">
+<ContentDialog Title="@Localizer["TeamManagement"]" @ref="_contentDialog">
     <TenantTeamEditorContainer TeamId="_selectedTeam" OnEdited="Reload" />
 </ContentDialog>
 

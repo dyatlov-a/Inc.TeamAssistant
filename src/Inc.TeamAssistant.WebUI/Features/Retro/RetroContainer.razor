@@ -4,9 +4,18 @@
 
 @attribute [Authorize]
 
-<Retro TeamId="TeamId" />
+@inject TenantStore TenantStore
+
+<Retro TeamId="TeamId" State="_state" />
 
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await TenantStore.Initialize(TeamId, _state);
+    }
 }
