@@ -14,7 +14,32 @@ internal sealed class TenantRepository : ITenantRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<Team?> Find(Guid id, CancellationToken token)
+    public async Task<Tenant?> FindTenant(long ownerId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.name AS name,
+                t.owner_id AS ownerid
+            FROM tenants.tenants AS t
+            WHERE t.owner_id = @owner_id;
+            """,
+            new
+            {
+                owner_id = ownerId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(command);
+        
+        return tenant;
+    }
+
+    public async Task<Team?> FindTeam(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -33,7 +58,7 @@ internal sealed class TenantRepository : ITenantRepository
             {
                 team_id = id
             },
-            flags: CommandFlags.None,
+            flags: CommandFlags.Buffered,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
@@ -98,6 +123,7 @@ internal sealed class TenantRepository : ITenantRepository
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
+        await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
         
         await connection.ExecuteAsync(tenantCommand);

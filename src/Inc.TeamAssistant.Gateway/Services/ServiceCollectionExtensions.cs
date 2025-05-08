@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddScoped<ICalendarService, CalendarService>()
-            .AddScoped<IRetroService, RetroService>()
+            .AddScoped<ITenantService, TenantService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
             

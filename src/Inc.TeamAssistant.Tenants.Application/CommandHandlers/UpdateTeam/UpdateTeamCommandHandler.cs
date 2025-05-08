@@ -22,7 +22,7 @@ internal sealed class UpdateTeamCommandHandler : IRequestHandler<UpdateTeamComma
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var team = await command.Id.Required(_repository.Find, token);
+        var team = await command.Id.Required(_repository.FindTeam, token);
         
         team
             .CheckRights(person.Id)

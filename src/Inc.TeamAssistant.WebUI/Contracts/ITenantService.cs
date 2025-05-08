@@ -1,11 +1,16 @@
 using Inc.TeamAssistant.Tenants.Model.Commands.CreateTeam;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateTeam;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetAvailableTeams;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetTeam;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
 
-public interface IRetroService
+public interface ITenantService
 {
+    Task<GetAvailableTeamsResult> GetAvailableTeams(
+        Guid? id,
+        CancellationToken token = default);
+    
     Task<GetTeamResult> GetTeam(
         Guid id,
         CancellationToken token = default);

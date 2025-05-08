@@ -55,11 +55,11 @@ public sealed class CreateTenantsScheme : Migration
                 primaryColumnName: "id");
         
         Execute.Sql(
-            "CREATE UNIQUE INDEX tenants__uidx__name ON retro.tenants lower(name);",
+            "CREATE UNIQUE INDEX tenants__uidx__name ON tenants.tenants (lower(name));",
             "Create index by tenants name");
         
         Execute.Sql(
-            "CREATE UNIQUE INDEX teams__uidx__tenant_id__name ON retro.teams (owner_id, lower(name));",
+            "CREATE UNIQUE INDEX teams__uidx__tenant_id__name ON tenants.teams (tenant_id, lower(name));",
             "Create index by teams name");
     }
 

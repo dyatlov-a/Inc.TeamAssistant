@@ -104,7 +104,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Stories",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Connector.ApplicationTests", "tests\Inc.TeamAssistant.Connector.ApplicationTests\Inc.TeamAssistant.Connector.ApplicationTests.csproj", "{DC8CE5DD-1854-4760-99E0-D35F221ABF21}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "retro", "retro", "{DC14F208-45B0-43D1-8FB8-E841A282F892}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tenants", "tenants", "{DC14F208-45B0-43D1-8FB8-E841A282F892}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inc.TeamAssistant.Tenants.Model", "src\Inc.TeamAssistant.Tenants.Model\Inc.TeamAssistant.Tenants.Model.csproj", "{4F416B99-4123-4550-838D-118D5D525FB2}"
 EndProject

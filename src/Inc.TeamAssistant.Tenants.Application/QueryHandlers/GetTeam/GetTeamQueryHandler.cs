@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
+using Inc.TeamAssistant.Tenants.Model.Queries.Common;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetTeam;
 using MediatR;
 
@@ -18,8 +19,8 @@ internal sealed class GetTeamQueryHandler : IRequestHandler<GetTeamQuery, GetTea
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var team = await query.Id.Required(_repository.Find, token);
+        var team = await query.Id.Required(_repository.FindTeam, token);
 
-        return new GetTeamResult(team.Id, team.Name);
+        return new GetTeamResult(new TenantTeamDto(team.Id, team.Name));
     }
 }

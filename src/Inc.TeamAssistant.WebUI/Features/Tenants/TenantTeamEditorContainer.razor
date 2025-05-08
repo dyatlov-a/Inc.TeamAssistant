@@ -1,0 +1,56 @@
+@inject ITenantService TenantService
+@inject RequestProcessor RequestProcessor
+
+<TenantTeamEditor
+    FormModel="_formModel"
+    State="_state"
+    Retry="Load"
+    OnValidSubmit="Save" />
+
+@code {
+    /// <summary>
+    /// TeamId for edit.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid? TeamId { get; set; }
+    
+    /// <summary>
+    /// Team edited event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnEdited { get; set; }
+    
+    private readonly TenantTeamFormModel _formModel = new();
+    private readonly LoadingState _state = LoadingState.Done();
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+    
+    private async Task Load()
+    {
+        if (TeamId.HasValue)
+        {
+            var result = await RequestProcessor.Process(
+                async () => await TenantService.GetTeam(TeamId.Value),
+                nameof(TenantTeamEditorContainer),
+                _state);
+            
+            _formModel.Apply(result.Team);
+        }
+        else
+            _formModel.Clear();
+    }
+
+    private async Task Save()
+    {
+        if (TeamId.HasValue)
+            await RequestProcessor.Process(
+                () => TenantService.UpdateTeam(_formModel.ToCommand(TeamId.Value)),
+                _state);
+        else
+            await RequestProcessor.Process(
+                () => TenantService.CreateTeam(_formModel.ToCommand()),
+                _state);
+        
+        await OnEdited.InvokeAsync();
+    }
+}

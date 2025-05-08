@@ -10,7 +10,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ITenantRepository, TenantRepository>();
+            .AddSingleton<ITenantRepository, TenantRepository>()
+            .AddSingleton<ITenantReader, TenantReader>();
 
         return services;
     }

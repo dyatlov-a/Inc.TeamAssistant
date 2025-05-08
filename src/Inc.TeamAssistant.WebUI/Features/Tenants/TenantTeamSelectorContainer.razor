@@ -1,0 +1,52 @@
+@page "/tenant"
+@page "/ru/tenant"
+@page "/en/tenant"
+
+@attribute [Authorize]
+
+@inject TenantStore TenantStore
+@inject NavRouter NavRouter
+
+<TenantTeamSelector
+    AvailableTeams="TenantStore.Teams"
+    State="_state"
+    Retry="Load"
+    EditEmitted="tId => MoveToEdit(tId)"
+    CreateEmitted="() => MoveToEdit(teamId: null)"
+    MoveToRetroFactory="CreateMoveToRetroLink" />
+
+<ContentDialog Title="Управление командой" @ref="_contentDialog">
+    <TenantTeamEditorContainer TeamId="_selectedTeam" OnEdited="Reload" />
+</ContentDialog>
+
+@code {
+    private readonly LoadingState _state = LoadingState.Done();
+    private ContentDialog? _contentDialog;
+    private Guid? _selectedTeam;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(teamId: null, _state);
+    }
+
+    private void MoveToEdit(Guid? teamId)
+    {
+        _selectedTeam = teamId;
+        
+        _contentDialog?.Open();
+    }
+
+    private async Task Reload()
+    {
+        _contentDialog?.Close();
+
+        await Load();
+    }
+    
+    private string CreateMoveToRetroLink(Guid teamId) => NavRouter.CreateRoute($"retro/{teamId:N}");
+}

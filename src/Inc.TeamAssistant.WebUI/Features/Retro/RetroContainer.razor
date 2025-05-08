@@ -1,0 +1,12 @@
+@page "/retro/{TeamId:guid}"
+@page "/ru/retro/{TeamId:guid}"
+@page "/en/retro/{TeamId:guid}"
+
+@attribute [Authorize]
+
+<Retro TeamId="TeamId" />
+
+@code {
+    [Parameter]
+    public Guid TeamId { get; set; }
+}

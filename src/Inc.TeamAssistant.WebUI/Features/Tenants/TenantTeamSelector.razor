@@ -1,0 +1,73 @@
+<div class="main-content">
+    <div class="main-content__container">
+        <h1 class="main-content__header">Управление командами</h1>
+        <p class="main-content__text">Для проведения первого ретро необходимо создать команду</p>
+        <Panel Header="Teams" IsOpen="true">
+            <Actions>
+                <Button OnClick="CreateEmit">Создать</Button>
+            </Actions>
+            <Content>
+                <Loading State="State" Retry="Retry">
+                    <QuickGrid Items="Teams" class="quick-data-grid">
+                        <TemplateColumn
+                            Title="Name"
+                            Sortable="true"
+                            SortBy="GridSort<TenantTeamDto>.ByAscending(e => e.Name)">
+                            @context.Name
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
+                            <RouterLink OnClick="() => EditEmit(context.Id)">Изменить</RouterLink>
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
+                            <RouterLink Href="@MoveToRetroFactory(context.Id)">Перейти к ретро</RouterLink>
+                        </TemplateColumn>
+                    </QuickGrid>
+                </Loading>
+            </Content>
+        </Panel>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Available teams.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<TenantTeamDto> AvailableTeams { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Create team callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback CreateEmitted { get; set; }
+    
+    /// <summary>
+    /// Edit team callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> EditEmitted { get; set; }
+
+    /// <summary>
+    /// Factory for create link to retro.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Guid, string> MoveToRetroFactory { get; set; } = default!;
+    
+    private IQueryable<TenantTeamDto> Teams => AvailableTeams.AsQueryable();
+
+    private async Task CreateEmit() => await CreateEmitted.InvokeAsync();
+    
+    private async Task EditEmit(Guid teamId) => await EditEmitted.InvokeAsync(teamId);
+}
