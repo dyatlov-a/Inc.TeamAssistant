@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -18,5 +19,12 @@ internal sealed class RetroService : IRetroService
         ArgumentNullException.ThrowIfNull(command);
 
         return await _mediator.Send(command, token);
+    }
+
+    public async Task UpdateRetroItem(UpdateRetroItemCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _mediator.Send(command, token);
     }
 }

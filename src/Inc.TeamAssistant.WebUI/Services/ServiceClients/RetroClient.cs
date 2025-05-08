@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
 
 namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
@@ -25,5 +26,14 @@ internal sealed class RetroClient : IRetroService
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
+    }
+
+    public async Task UpdateRetroItem(UpdateRetroItemCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var response = await _client.PutAsJsonAsync("retro/items", command, token);
+
+        response.EnsureSuccessStatusCode();
     }
 }

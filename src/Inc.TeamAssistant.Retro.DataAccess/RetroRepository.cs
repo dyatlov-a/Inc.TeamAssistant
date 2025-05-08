@@ -14,6 +14,34 @@ internal sealed class RetroRepository : IRetroRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
+    public async Task<RetroItem?> FindItem(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                r.id AS id,
+                r.team_id AS teamid,
+                r.created AS created,
+                r.type AS type,
+                r.text AS text,
+                r.owner_id AS ownerid
+            FROM retro.retro_items AS r
+            WHERE r.id = @id;
+            """,
+            new
+            {
+                id = id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var tenant = await connection.QuerySingleOrDefaultAsync<RetroItem>(command);
+        
+        return tenant;
+    }
+
     public async Task Upsert(RetroItem item, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(item);

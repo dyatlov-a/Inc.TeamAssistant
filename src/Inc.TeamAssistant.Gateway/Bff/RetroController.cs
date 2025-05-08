@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,5 +24,15 @@ public sealed class RetroController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
         
         return Ok(await _retroService.CreateRetroItem(command, CancellationToken.None));
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateItem([FromBody]UpdateRetroItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.UpdateRetroItem(command, CancellationToken.None);
+        
+        return Ok();
     }
 }
