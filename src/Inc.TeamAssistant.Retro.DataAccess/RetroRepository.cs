@@ -37,9 +37,9 @@ internal sealed class RetroRepository : IRetroRepository
 
         await using var connection = _connectionFactory.Create();
 
-        var tenant = await connection.QuerySingleOrDefaultAsync<RetroItem>(command);
+        var item = await connection.QuerySingleOrDefaultAsync<RetroItem>(command);
         
-        return tenant;
+        return item;
     }
 
     public async Task Upsert(RetroItem item, CancellationToken token)

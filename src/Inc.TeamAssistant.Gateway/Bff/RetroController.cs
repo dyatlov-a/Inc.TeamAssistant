@@ -18,6 +18,12 @@ public sealed class RetroController : ControllerBase
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
     }
     
+    [HttpGet("{teamId:Guid}")]
+    public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
+    {
+        return Ok(await _retroService.GetItems(teamId, token));
+    }
+    
     [HttpPost]
     public async Task<IActionResult> CreateItem([FromBody]CreateRetroItemCommand command)
     {

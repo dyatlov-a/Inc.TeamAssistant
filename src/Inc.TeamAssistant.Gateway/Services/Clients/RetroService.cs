@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroItems;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -13,7 +14,12 @@ internal sealed class RetroService : IRetroService
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
-    
+
+    public async Task<GetRetroItemsResult> GetItems(Guid teamId, CancellationToken token)
+    {
+        return await _mediator.Send(new GetRetroItemsQuery(teamId), token);
+    }
+
     public async Task<CreateRetroItemResult> CreateRetroItem(CreateRetroItemCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
