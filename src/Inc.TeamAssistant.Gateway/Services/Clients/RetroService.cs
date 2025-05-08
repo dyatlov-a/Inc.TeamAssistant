@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroItems;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -32,5 +33,10 @@ internal sealed class RetroService : IRetroService
         ArgumentNullException.ThrowIfNull(command);
 
         await _mediator.Send(command, token);
+    }
+
+    public async Task RemoveRetroItem(Guid retroItemId, CancellationToken token)
+    {
+        await _mediator.Send(new RemoveRetroItemCommand(retroItemId), token);
     }
 }

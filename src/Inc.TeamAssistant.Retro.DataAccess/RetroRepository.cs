@@ -85,4 +85,25 @@ internal sealed class RetroRepository : IRetroRepository
         
         await connection.ExecuteAsync(command);
     }
+
+    public async Task Remove(RetroItem item, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        
+        var command = new CommandDefinition(
+            """
+            DELETE FROM retro.retro_items
+            WHERE id = @item_id;
+            """,
+            new
+            {
+                item_id = item.Id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
+    }
 }

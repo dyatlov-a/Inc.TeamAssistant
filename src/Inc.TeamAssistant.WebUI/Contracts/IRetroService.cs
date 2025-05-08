@@ -11,4 +11,6 @@ public interface IRetroService
     Task<CreateRetroItemResult> CreateRetroItem(CreateRetroItemCommand command, CancellationToken token = default);
     
     Task UpdateRetroItem(UpdateRetroItemCommand command, CancellationToken token = default);
+    
+    Task RemoveRetroItem(Guid retroItemId, CancellationToken token = default);
 }

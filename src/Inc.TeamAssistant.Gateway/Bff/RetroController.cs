@@ -41,4 +41,12 @@ public sealed class RetroController : ControllerBase
         
         return Ok();
     }
+    
+    [HttpDelete("{retroItemId:Guid}")]
+    public async Task<IActionResult> RemoveItem(Guid retroItemId)
+    {
+        await _retroService.RemoveRetroItem(retroItemId, CancellationToken.None);
+        
+        return Ok();
+    }
 }

@@ -7,4 +7,6 @@ public interface IRetroRepository
     Task<RetroItem?> FindItem(Guid id, CancellationToken token);
     
     Task Upsert(RetroItem item, CancellationToken token);
+    
+    Task Remove(RetroItem item, CancellationToken token);
 }

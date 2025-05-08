@@ -47,4 +47,11 @@ internal sealed class RetroClient : IRetroService
 
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task RemoveRetroItem(Guid retroItemId, CancellationToken token)
+    {
+        var response = await _client.DeleteAsync($"retro/items/{retroItemId:N}", token);
+        
+        response.EnsureSuccessStatusCode();
+    }
 }
