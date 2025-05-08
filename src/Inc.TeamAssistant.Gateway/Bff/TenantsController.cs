@@ -47,4 +47,12 @@ public sealed class TenantsController : ControllerBase
         
         return Ok();
     }
+    
+    [HttpDelete("{teamId:Guid}")]
+    public async Task<IActionResult> RemoveTeam(Guid teamId)
+    {
+        await _tenantService.RemoveTeam(teamId, CancellationToken.None);
+        
+        return Ok();
+    }
 }

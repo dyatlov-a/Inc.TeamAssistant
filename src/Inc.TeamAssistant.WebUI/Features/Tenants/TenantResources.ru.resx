@@ -45,4 +45,10 @@
     <data name="MoveToRetro" xml:space="preserve">
         <value>Перейти к ретро</value>
     </data>
+    <data name="Remove" xml:space="preserve">
+        <value>Удалить</value>
+    </data>
+    <data name="RemoveTeamConfirmationText" xml:space="preserve">
+        <value>Подтверждаете удаление команды {0}?</value>
+    </data>
 </root>

@@ -18,10 +18,13 @@
                             @context.Name
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
+                            <RouterLink Href="@MoveToRetroFactory(context.Id)">@Localizer["MoveToRetro"]</RouterLink>
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
                             <RouterLink OnClick="() => EditEmit(context.Id)">@Localizer["Edit"]</RouterLink>
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
-                            <RouterLink Href="@MoveToRetroFactory(context.Id)">@Localizer["MoveToRetro"]</RouterLink>
+                            <RouterLink OnClick="() => RemoveEmit(context)">@Localizer["Remove"]</RouterLink>
                         </TemplateColumn>
                     </QuickGrid>
                 </Loading>
@@ -60,6 +63,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> EditEmitted { get; set; }
+    
+    /// <summary>
+    /// Remove team callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<TenantTeamDto> RemoveEmitted { get; set; }
 
     /// <summary>
     /// Factory for create link to retro.
@@ -72,4 +81,6 @@
     private async Task CreateEmit() => await CreateEmitted.InvokeAsync();
     
     private async Task EditEmit(Guid teamId) => await EditEmitted.InvokeAsync(teamId);
+    
+    private async Task RemoveEmit(TenantTeamDto team) => await RemoveEmitted.InvokeAsync(team);
 }

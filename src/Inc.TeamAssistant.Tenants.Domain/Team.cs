@@ -26,7 +26,7 @@ public sealed class Team
     
     public Team CheckRights(long personId)
     {
-        if (OwnerId != personId)
+        if (OwnerId != personId && Tenant.OwnerId != personId)
             throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
         
         return this;

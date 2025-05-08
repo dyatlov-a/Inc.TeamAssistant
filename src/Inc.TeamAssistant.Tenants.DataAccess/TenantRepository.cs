@@ -131,4 +131,25 @@ internal sealed class TenantRepository : ITenantRepository
 
         await transaction.CommitAsync(token);
     }
+
+    public async Task Remove(Team team, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(team);
+        
+        var command = new CommandDefinition(
+            """
+            DELETE FROM tenants.teams
+            WHERE id = @team_id;
+            """,
+            new
+            {
+                team_id = team.Id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
+    }
 }

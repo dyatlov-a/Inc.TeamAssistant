@@ -44,11 +44,11 @@
     {
         if (TeamId.HasValue)
             await RequestProcessor.Process(
-                () => TenantService.UpdateTeam(_formModel.ToCommand(TeamId.Value)),
+                async () => await TenantService.UpdateTeam(_formModel.ToCommand(TeamId.Value)),
                 _state);
         else
             await RequestProcessor.Process(
-                () => TenantService.CreateTeam(_formModel.ToCommand()),
+                async () => await TenantService.CreateTeam(_formModel.ToCommand()),
                 _state);
         
         await OnEdited.InvokeAsync();

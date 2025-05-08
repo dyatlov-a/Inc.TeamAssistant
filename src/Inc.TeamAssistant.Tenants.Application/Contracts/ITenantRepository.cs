@@ -9,4 +9,6 @@ public interface ITenantRepository
     Task<Team?> FindTeam(Guid id, CancellationToken token);
 
     Task Upsert(Team team, CancellationToken token);
+
+    Task Remove(Team team, CancellationToken token);
 }

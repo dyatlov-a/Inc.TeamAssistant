@@ -7,6 +7,8 @@
 @inject TenantStore TenantStore
 @inject NavRouter NavRouter
 @inject IStringLocalizer<TenantResources> Localizer
+@inject ITenantService TenantService
+@inject RequestProcessor RequestProcessor
 
 <MetaDataModule />
 
@@ -14,41 +16,60 @@
     AvailableTeams="TenantStore.Teams"
     State="_state"
     Retry="Load"
-    EditEmitted="tId => MoveToEdit(tId)"
-    CreateEmitted="() => MoveToEdit(teamId: null)"
+    EditEmitted="tId => StartEdit(tId)"
+    CreateEmitted="() => StartEdit(teamId: null)"
+    RemoveEmitted="RemoveTeam"
     MoveToRetroFactory="CreateMoveToRetroLink" />
 
 <ContentDialog Title="@Localizer["TeamManagement"]" @ref="_contentDialog">
-    <TenantTeamEditorContainer TeamId="_selectedTeam" OnEdited="Reload" />
+    <TenantTeamEditorContainer TeamId="_selectedTeamId" OnEdited="EndEdit" />
 </ContentDialog>
+
+<ConfirmDialog @ref="_confirmDialog">
+    <p>@string.Format(Localizer["RemoveTeamConfirmationText"], _selectedTeamName)</p>
+</ConfirmDialog>
 
 @code {
     private readonly LoadingState _state = LoadingState.Done();
     private ContentDialog? _contentDialog;
-    private Guid? _selectedTeam;
+    private ConfirmDialog? _confirmDialog;
+    private string? _selectedTeamName;
+    private Guid? _selectedTeamId;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Load();
-    }
+    protected override async Task OnInitializedAsync() => await Load();
 
-    private async Task Load()
-    {
-        await TenantStore.Initialize(teamId: null, _state);
-    }
+    private async Task Load() => await TenantStore.Initialize(teamId: null, _state);
 
-    private void MoveToEdit(Guid? teamId)
+    private void StartEdit(Guid? teamId)
     {
-        _selectedTeam = teamId;
+        _selectedTeamId = teamId;
         
         _contentDialog?.Open();
     }
 
-    private async Task Reload()
+    private async Task EndEdit()
     {
         _contentDialog?.Close();
 
         await Load();
+
+        _selectedTeamId = null;
+    }
+    
+    private async Task RemoveTeam(TenantTeamDto team)
+    {
+        _selectedTeamName = team.Name;
+
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+        {
+            await RequestProcessor.Process(
+                async () => await TenantService.RemoveTeam(team.Id),
+                _state);
+        
+            await Load();
+        }
+
+        _selectedTeamName = null;
     }
     
     private string CreateMoveToRetroLink(Guid teamId) => NavRouter.CreateRoute($"retro/{teamId:N}");

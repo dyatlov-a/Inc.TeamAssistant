@@ -27,9 +27,7 @@ internal sealed class TenantClient : ITenantService
         return result;
     }
 
-    public async Task<GetTeamResult> GetTeam(
-        Guid id,
-        CancellationToken token)
+    public async Task<GetTeamResult> GetTeam(Guid id, CancellationToken token)
     {
         var result = await _client.GetFromJsonAsync<GetTeamResult>($"tenants/teams/{id:N}", token);
 
@@ -39,9 +37,7 @@ internal sealed class TenantClient : ITenantService
         return result;
     }
 
-    public async Task<CreateTeamResult> CreateTeam(
-        CreateTeamCommand command,
-        CancellationToken token)
+    public async Task<CreateTeamResult> CreateTeam(CreateTeamCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -54,13 +50,18 @@ internal sealed class TenantClient : ITenantService
         return result;
     }
 
-    public async Task UpdateTeam(
-        UpdateTeamCommand command,
-        CancellationToken token)
+    public async Task UpdateTeam(UpdateTeamCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PutAsJsonAsync("tenants/teams", command, token);
+        
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemoveTeam(Guid teamId, CancellationToken token)
+    {
+        var response = await _client.DeleteAsync($"tenants/teams/{teamId:N}", token);
         
         response.EnsureSuccessStatusCode();
     }

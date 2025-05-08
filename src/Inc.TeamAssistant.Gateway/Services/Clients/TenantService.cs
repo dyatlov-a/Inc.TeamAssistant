@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Tenants.Model.Commands.CreateTeam;
+using Inc.TeamAssistant.Tenants.Model.Commands.RemoveTeam;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateTeam;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetAvailableTeams;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetTeam;
@@ -21,28 +22,27 @@ internal sealed class TenantService : ITenantService
         return await _mediator.Send(new GetAvailableTeamsQuery(id), token);
     }
 
-    public async Task<GetTeamResult> GetTeam(
-        Guid id,
-        CancellationToken token)
+    public async Task<GetTeamResult> GetTeam(Guid id, CancellationToken token)
     {
         return await _mediator.Send(new GetTeamQuery(id), token);
     }
 
-    public async Task<CreateTeamResult> CreateTeam(
-        CreateTeamCommand command,
-        CancellationToken token)
+    public async Task<CreateTeamResult> CreateTeam(CreateTeamCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
 
         return await _mediator.Send(command, token);
     }
 
-    public async Task UpdateTeam(
-        UpdateTeamCommand command,
-        CancellationToken token)
+    public async Task UpdateTeam(UpdateTeamCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         await _mediator.Send(command, token);
+    }
+
+    public async Task RemoveTeam(Guid teamId, CancellationToken token)
+    {
+        await _mediator.Send(new RemoveTeamCommand(teamId), token);
     }
 }

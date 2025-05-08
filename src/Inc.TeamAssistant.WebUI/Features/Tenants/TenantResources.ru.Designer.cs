@@ -98,5 +98,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
                 return ResourceManager.GetString("MoveToRetro", resourceCulture);
             }
         }
+        
+        internal static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        internal static string RemoveTeamConfirmationText {
+            get {
+                return ResourceManager.GetString("RemoveTeamConfirmationText", resourceCulture);
+            }
+        }
     }
 }

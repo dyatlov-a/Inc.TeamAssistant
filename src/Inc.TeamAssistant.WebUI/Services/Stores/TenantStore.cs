@@ -24,7 +24,7 @@ internal sealed class TenantStore
         ArgumentNullException.ThrowIfNull(progress);
         
         var result = await _requestProcessor.Process(
-            () => _tenantService.GetAvailableTeams(teamId),
+            async () => await _tenantService.GetAvailableTeams(teamId),
             nameof(TenantStore),
             progress);
 
