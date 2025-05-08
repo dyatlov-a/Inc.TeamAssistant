@@ -15,7 +15,7 @@
 <TenantTeamGrid
     AvailableTeams="TenantStore.Teams"
     State="_state"
-    Retry="Load"
+    Retry="() => Load(_state)"
     EditEmitted="tId => StartEdit(tId)"
     CreateEmitted="() => StartEdit(teamId: null)"
     RemoveEmitted="RemoveTeam"
@@ -36,9 +36,9 @@
     private string? _selectedTeamName;
     private Guid? _selectedTeamId;
 
-    protected override async Task OnInitializedAsync() => await Load();
+    protected override async Task OnInitializedAsync() => await Load(_state);
 
-    private async Task Load() => await TenantStore.Initialize(teamId: null, _state);
+    private async Task Load(IProgress<LoadingState.State> state) => await TenantStore.Initialize(teamId: null, state);
 
     private void StartEdit(Guid? teamId)
     {
@@ -51,7 +51,7 @@
     {
         _contentDialog?.Close();
 
-        await Load();
+        await Load(_state);
 
         _selectedTeamId = null;
     }
@@ -62,11 +62,17 @@
 
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
         {
+            var stateWrapper = new Progress<LoadingState.State>(s =>
+            {
+                _state.Report(s);
+                StateHasChanged();
+            });
+            
             await RequestProcessor.Process(
                 async () => await TenantService.RemoveTeam(team.Id),
-                _state);
+                stateWrapper);
         
-            await Load();
+            await Load(stateWrapper);
         }
 
         _selectedTeamName = null;
