@@ -61,10 +61,22 @@ public sealed class CreateTenantsScheme : Migration
         Execute.Sql(
             "CREATE UNIQUE INDEX teams__uidx__tenant_id__name ON tenants.teams (tenant_id, lower(name));",
             "Create index by teams name");
+        
+        Alter
+            .Column("name")
+            .OnTable("teams")
+            .InSchema("connector")
+            .AsString(50).NotNullable();
     }
 
     public override void Down()
     {
+        Alter
+            .Column("name")
+            .OnTable("teams")
+            .InSchema("connector")
+            .AsString(255).NotNullable();
+        
         Delete
             .Table("teams")
             .InSchema("tenants");
