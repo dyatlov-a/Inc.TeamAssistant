@@ -12,12 +12,11 @@
 <div class="login-container">
     <Login
         State="_state"
-        ReturnUrl="@ReturnUrl"
-        BotUserName="@_botUserName"
-        HasSuperUser="RenderContext.IsDevelopment()"
+        AuthBotContext="_authBotContext"
         Retry="Load"
-        LoginAsSuperUser="LoginAsSuperUser"
-        Lang="@_lang" />
+        LoggedInAsSystemUser="LoginAsSystemUser"
+        Lang="@_lang"
+        ReturnUrl="@ReturnUrl" />
 </div>
 
 @code {
@@ -25,33 +24,28 @@
     public string? ReturnUrl { get; set; }
     
     private readonly LoadingState _state = LoadingState.Done();
-    private string _botUserName = string.Empty;
     private string _lang = LanguageSettings.DefaultLanguageId.Value;
+    private AuthBotContext _authBotContext = AuthBotContext.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
         _lang = RenderContext.GetLanguageContext().CurrentLanguage.Value;
         
-        if (!RenderContext.IsDevelopment())
-            await Load();
+        await Load();
     }
 
     private async Task Load()
     {
-        var result = await RequestProcessor.Process(
+        _authBotContext = await RequestProcessor.Process(
             () => UserService.GetAuthBotContext(),
             nameof(LoginContainer),
             _state);
-
-        _botUserName = result.UserName;
-        
-        StateHasChanged();
     }
     
-    private async Task LoginAsSuperUser()
+    private async Task LoginAsSystemUser(long personId)
     {
         await NavRouter.MoveToRoute(
-            $"/accounts/login-as-super-user?returnUrl={ReturnUrl}",
+            $"/accounts/login-as-system-user/{personId}?returnUrl={ReturnUrl}",
             RoutingType.Server);
     }
 }

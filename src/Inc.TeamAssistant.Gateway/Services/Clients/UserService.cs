@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Auth;
 
 namespace Inc.TeamAssistant.Gateway.Services.Clients;
 
@@ -15,8 +16,10 @@ internal sealed class UserService : IUserService
         _botAccessor = botAccessor ?? throw new ArgumentNullException(nameof(botAccessor));
     }
 
-    public async Task<BotContext> GetAuthBotContext(CancellationToken token)
+    public async Task<AuthBotContext> GetAuthBotContext(CancellationToken token)
     {
-        return await _botAccessor.GetBotContext(_authOptions.BotId, token);
+        var authBot = await _botAccessor.GetBotContext(_authOptions.BotId, token);
+
+        return new AuthBotContext(authBot.UserName, _authOptions.SystemUsers);
     }
 }

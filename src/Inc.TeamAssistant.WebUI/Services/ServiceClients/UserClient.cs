@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
-using Inc.TeamAssistant.Primitives.Bots;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.Auth;
 
 namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
@@ -13,17 +13,17 @@ internal sealed class UserClient : IUserService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<BotContext> GetAuthBotContext(CancellationToken token = default)
+    public async Task<AuthBotContext> GetAuthBotContext(CancellationToken token)
     {
         try
         {
-            var result = await _client.GetFromJsonAsync<BotContext>("accounts/bot", token);
+            var result = await _client.GetFromJsonAsync<AuthBotContext>("accounts/bot", token);
             
-            return result ?? BotContext.Empty;
+            return result ?? AuthBotContext.Empty;
         }
         catch
         {
-            return BotContext.Empty;
+            return AuthBotContext.Empty;
         }
     }
 }
