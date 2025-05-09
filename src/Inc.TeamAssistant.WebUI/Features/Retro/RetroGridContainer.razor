@@ -16,6 +16,7 @@
         Team="@Team"
         State="_state"
         Columns="Columns"
+        CanCreate="_canCreate"
         Retry="Load"
         ItemCreated="CreateRetroItem"
         ItemChanged="ChangeRetroItem" />
@@ -26,7 +27,8 @@
     public Guid TeamId { get; set; }
 
     private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
-    
+
+    private bool _canCreate = true;
     private readonly LoadingState _state = LoadingState.Done();
     private readonly IReadOnlyDictionary<int, RetroColumnViewModel> _columns = new Dictionary<int, RetroColumnViewModel>
     {
@@ -42,58 +44,60 @@
     private async Task Load()
     {
         await TenantStore.Initialize(TeamId, _state);
-
+        
         var result = await RequestProcessor.Process(
             async () => await RetroService.GetItems(TeamId),
             nameof(RetroGridContainer),
             _state);
-
-        Build(result);
+        
+        Bind(result);
     }
 
-    private void Build(GetRetroItemsResult result)
+    private void Bind(GetRetroItemsResult result)
     {
         foreach (var group in result.Items.GroupBy(i => i.Type))
         {
             if (!_columns.TryGetValue(group.Key, out var column))
                 continue;
-            
+
             foreach (var item in group)
-                column.Items[item.Id] = new RetroItemViewModel
-                {
-                    Id = item.Id,
-                    Created = item.Created,
-                    OwnerId = item.OwnerId,
-                    Type = item.Type,
-                    Text = item.Text
-                };
+            {
+                if (column.Items.TryGetValue(item.Id, out var viewItem))
+                    viewItem.Apply(item);
+                else
+                    column.Items.Add(item.Id, new RetroItemViewModel().Apply(item));
+            }
         }
     }
 
     private async Task CreateRetroItem(int type)
     {
-        if (_columns.TryGetValue(type, out var column))
+        if (!_columns.TryGetValue(type, out var column))
+            return;
+        
+        _canCreate = false;
+
+        try
         {
+            var command = new CreateRetroItemCommand(TeamId, type, Text: null);
             var result = await RequestProcessor.Process(
-                async () => await RetroService.CreateRetroItem(new CreateRetroItemCommand(TeamId, type, Text: null)),
+                async () => await RetroService.CreateRetroItem(command),
                 _state,
                 showLoading: false);
-            
-            column.Items.Add(result.Id, new RetroItemViewModel
-            {
-                Id = result.Id,
-                Created = DateTimeOffset.UtcNow,
-                OwnerId = 1,
-                Type = type,
-                Text = null
-            });
+            var itemId = result.Id;
+
+            column.Items.Add(itemId, RetroItemViewModel.Create(itemId, 0, type));
+        }
+        finally
+        {
+            _canCreate = true;
         }
     }
 
     private async Task ChangeRetroItem(RetroItemViewModel item)
     {
         await RequestProcessor.Process(
-            async () => await RetroService.UpdateRetroItem(new UpdateRetroItemCommand(item.Id, item.Text)),
+            async () => await RetroService.UpdateRetroItem(item.ToCommand()),
             _state,
             showLoading: false);
 

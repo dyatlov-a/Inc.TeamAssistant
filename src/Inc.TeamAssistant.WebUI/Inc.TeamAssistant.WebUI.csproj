@@ -114,6 +114,14 @@
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>TenantResources.ru.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Features\Retro\RetroResources.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>RetroResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\Retro\RetroResources.ru.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>RetroResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Features\Layouts\LayoutResources.Designer.cs">
@@ -225,6 +233,16 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>TenantResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Retro\RetroResources.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>RetroResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\Retro\RetroResources.ru.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>RetroResources.ru.resx</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>

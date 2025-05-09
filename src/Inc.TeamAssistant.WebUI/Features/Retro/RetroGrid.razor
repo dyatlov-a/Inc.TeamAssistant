@@ -1,8 +1,10 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
 <Loading State="State" Retry="Retry">
     <div class="main-content">
         <div class="main-content__container">
-            <h1 class="main-content__header">Доска для ретро команды @Team.Name</h1>
-            <p class="main-content__text">Вым необходимо описать все беспокоящие вас проблемы и предложения. На следующей ретроспективе мы совместно все обсудим и зафиксируем решения. До начала ретроспективы карточки никому недоступны кроме их автора.</p>
+            <h1 class="main-content__header">@Localizer["RetroHeader"] @Team.Name</h1>
+            <p class="main-content__text">@Localizer["RetroText"]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
                     @foreach (var column in Columns.OrderBy(c => c.Type))
@@ -10,14 +12,17 @@
                         <div class="retro-grid__column">
                             <Panel Header="@column.Name" IsOpen="true">
                                 <Actions>
-                                    <Button OnClick="() => ItemCreatedEmit(column.Type)">Добавить</Button>
+                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => ItemCreatedEmit(column.Type)">
+                                        @Localizer["Add"]
+                                    </Button>
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
                                         @foreach (var item in column.Items.Values.OrderBy(i => i.Created))
                                         {
-                                            <RetroItem
+                                            <InputRetroItem
                                                 Value="item"
+                                                ValueExpression="@(() => item)"
                                                 ValueChanged="ItemChangedEmit"
                                                 BackgroundColor="@column.ItemColor" />
                                         }
@@ -50,6 +55,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
+    
+    /// <summary>
+    /// Can create retro items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanCreate { get; set; }
     
     /// <summary>
     /// Action for retry.

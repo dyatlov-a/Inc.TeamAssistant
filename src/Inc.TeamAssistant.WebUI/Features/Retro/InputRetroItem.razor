@@ -1,0 +1,99 @@
+@inherits InputBase<RetroItemViewModel>
+
+@inject IJSRuntime JsRuntime
+@inject IRenderContext RenderContext
+@inject ILogger<InputRetroItem> Logger
+
+<div
+    style="background-color: @BackgroundColor"
+    class="retro-item"
+    contenteditable="true"
+    @oninput="InputChanged"
+    @ref="_item">
+    @if (!RenderContext.IsBrowser)
+    {
+        @_value.Text
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Background color.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string BackgroundColor { get; set; } = default!;
+    
+    private RetroItemViewModel _value = new();
+    private ElementReference _item;
+    private System.Timers.Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        if (!RenderContext.IsBrowser)
+            return;
+        
+        _timer = new System.Timers.Timer(3_000);
+        _timer.Elapsed += async (_, _) =>
+        {
+            _timer.Stop();
+            await InvokeAsync(TryEmitValueChanged);
+        };
+        _timer.AutoReset = false;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue ?? new();
+
+        InputChanged();
+    }
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+            await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+
+    private async Task TryEmitValueChanged()
+    {
+        try
+        {
+            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+
+            if (_value.Text != value)
+            {
+                _value.Text = value;
+                await ValueChanged.InvokeAsync(_value);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error on timer tick for InputRetroItem");
+        }
+    }
+
+    private void InputChanged()
+    {
+        _timer?.Stop();
+        _timer?.Start();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
+}
