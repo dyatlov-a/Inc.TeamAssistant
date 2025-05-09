@@ -5,29 +5,37 @@
 @attribute [Authorize]
 
 @inject TenantStore TenantStore
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
 
 <MetaDataModule />
 
-@if (_team is not null)
+@if (Team is not null)
 {
     <RetroGrid
-        Team="@_team"
+        Team="@Team"
         State="_state"
-        Columns="_columns"
-        Retry="Load" />
+        Columns="Columns"
+        Retry="Load"
+        ItemCreated="CreateRetroItem"
+        ItemChanged="ChangeRetroItem" />
 }
 
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
 
-    private TenantTeamDto? _team;
+    private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
     
     private readonly LoadingState _state = LoadingState.Done();
-    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns = [
-        new("Stop", 1, ItemColor: "#B22222"),
-        new("Start", 2, ItemColor: "#FF8C00"),
-        new("Continue", 3, ItemColor: "#3CB371")];
+    private readonly IReadOnlyDictionary<int, RetroColumnViewModel> _columns = new Dictionary<int, RetroColumnViewModel>
+    {
+        [1] = new("Stop", 1, ItemColor: "#B22222", new Dictionary<Guid, RetroItemViewModel>()),
+        [2] = new("Start", 2, ItemColor: "#FF8C00", new Dictionary<Guid, RetroItemViewModel>()),
+        [3] = new("Continue", 3, ItemColor: "#3CB371", new Dictionary<Guid, RetroItemViewModel>())
+    };
+
+    private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
     
     protected override async Task OnParametersSetAsync() => await Load();
 
@@ -35,6 +43,61 @@
     {
         await TenantStore.Initialize(TeamId, _state);
 
-        _team = TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetItems(TeamId),
+            nameof(RetroGridContainer),
+            _state);
+
+        Build(result);
+    }
+
+    private void Build(GetRetroItemsResult result)
+    {
+        foreach (var group in result.Items.GroupBy(i => i.Type))
+        {
+            if (!_columns.TryGetValue(group.Key, out var column))
+                continue;
+            
+            foreach (var item in group)
+                column.Items[item.Id] = new RetroItemViewModel
+                {
+                    Id = item.Id,
+                    Created = item.Created,
+                    OwnerId = item.OwnerId,
+                    Type = item.Type,
+                    Text = item.Text
+                };
+        }
+    }
+
+    private async Task CreateRetroItem(int type)
+    {
+        if (_columns.TryGetValue(type, out var column))
+        {
+            var result = await RequestProcessor.Process(
+                async () => await RetroService.CreateRetroItem(new CreateRetroItemCommand(TeamId, type, Text: null)),
+                _state,
+                showLoading: false);
+            
+            column.Items.Add(result.Id, new RetroItemViewModel
+            {
+                Id = result.Id,
+                Created = DateTimeOffset.UtcNow,
+                OwnerId = 1,
+                Type = type,
+                Text = null
+            });
+        }
+    }
+
+    private async Task ChangeRetroItem(RetroItemViewModel item)
+    {
+        await RequestProcessor.Process(
+            async () => await RetroService.UpdateRetroItem(new UpdateRetroItemCommand(item.Id, item.Text)),
+            _state,
+            showLoading: false);
+
+        if (_columns.TryGetValue(item.Type, out var column) && column.Items.TryGetValue(item.Id, out var value))
+            value.Text = item.Text;
     }
 }

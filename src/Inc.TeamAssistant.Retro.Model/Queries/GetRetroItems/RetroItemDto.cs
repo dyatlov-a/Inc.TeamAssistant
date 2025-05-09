@@ -5,5 +5,5 @@ public sealed record RetroItemDto(
     Guid TeamId,
     DateTimeOffset Created,
     int Type,
-    string Text,
+    string? Text,
     long OwnerId);

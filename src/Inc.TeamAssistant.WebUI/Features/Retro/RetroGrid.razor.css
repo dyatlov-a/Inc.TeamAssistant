@@ -11,6 +11,12 @@
     flex-shrink: 0;
     width: calc(33.33% - .6666rem);
 }
+.retro-grid__column-items {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1rem;
+}
 @media (max-width: 767.98px) {
     .retro-grid__column {
         width: calc(50% - .5rem);

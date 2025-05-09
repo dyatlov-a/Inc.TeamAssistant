@@ -8,7 +8,7 @@ public sealed class RetroItem
     public Guid TeamId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public int Type { get; private set; }
-    public string Text { get; private set; } = default!;
+    public string? Text { get; private set; }
     public long OwnerId { get; private set; }
 
     private RetroItem()
@@ -20,12 +20,10 @@ public sealed class RetroItem
         Guid teamId,
         DateTimeOffset now,
         int type,
-        string text,
+        string? text,
         long ownerId)
         : this()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        
         Id = id;
         TeamId = teamId;
         Created = now;
@@ -42,10 +40,8 @@ public sealed class RetroItem
         return this;
     }
 
-    public RetroItem ChangeText(string value)
+    public RetroItem ChangeText(string? value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value);
-
         Text = value;
 
         return this;

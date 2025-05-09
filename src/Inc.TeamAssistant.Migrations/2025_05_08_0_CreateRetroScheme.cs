@@ -36,7 +36,7 @@ public sealed class CreateRetroScheme : Migration
             .AsInt32().NotNullable()
 
             .WithColumn("text")
-            .AsString(1000).NotNullable()
+            .AsString(1000).Nullable()
 
             .WithColumn("owner_id")
             .AsInt64().NotNullable();
