@@ -17,10 +17,8 @@ internal sealed class MessageBuilder : IMessageBuilder
         ArgumentNullException.ThrowIfNull(messageId);
         ArgumentNullException.ThrowIfNull(languageId);
         ArgumentNullException.ThrowIfNull(values);
-
-        var resources = _messageProvider.Get();
-
-        if (resources[languageId.Value].TryGetValue(messageId.Value, out var message))
+        
+        if (_messageProvider.Data[languageId.Value].TryGetValue(messageId.Value, out var message))
             return values.Any() ? string.Format(message, values) : message;
 
         throw new TeamAssistantException($"Not supported message with id {messageId.Value}.");

@@ -31,11 +31,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton(authOptions)
             .AddSingleton(openGraphOptions)
-            .AddSingleton(new MessageProvider(webRootPath))
-            .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
-                sp,
-                sp.GetRequiredService<MessageProvider>(),
-                cacheTimeout))
+            .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
