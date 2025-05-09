@@ -41,13 +41,6 @@ public sealed class RetroItem
         
         return this;
     }
-    
-    public RetroItem ChangeType(int value)
-    {
-        Type = value;
-
-        return this;
-    }
 
     public RetroItem ChangeText(string value)
     {

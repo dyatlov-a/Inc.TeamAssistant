@@ -1,0 +1,40 @@
+@page "/retro/{TeamId:guid}"
+@page "/ru/retro/{TeamId:guid}"
+@page "/en/retro/{TeamId:guid}"
+
+@attribute [Authorize]
+
+@inject TenantStore TenantStore
+
+<MetaDataModule />
+
+@if (_team is not null)
+{
+    <RetroGrid
+        Team="@_team"
+        State="_state"
+        Columns="_columns"
+        Retry="Load" />
+}
+
+@code {
+    [Parameter]
+    public Guid TeamId { get; set; }
+
+    private TenantTeamDto? _team;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns = [
+        new("Stop", 1, ItemColor: "#B22222"),
+        new("Start", 2, ItemColor: "#FF8C00"),
+        new("Continue", 3, ItemColor: "#3CB371")];
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(TeamId, _state);
+
+        _team = TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
+    }
+}

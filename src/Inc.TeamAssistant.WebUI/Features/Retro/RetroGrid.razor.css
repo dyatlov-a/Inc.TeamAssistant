@@ -1,0 +1,30 @@
+.retro-grid {
+    overflow-x: auto;
+    width: 100%;
+}
+.retro-grid__columns {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+}
+.retro-grid__column {
+    flex-shrink: 0;
+    width: calc(33.33% - .6666rem);
+}
+@media (max-width: 767.98px) {
+    .retro-grid__column {
+        width: calc(50% - .5rem);
+    }
+}
+@media (max-width: 479.98px) {
+    .retro-grid {
+        overflow-x: hidden;
+    }
+    .retro-grid__columns {
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+    .retro-grid__column {
+        width: 100%;
+    }
+}
