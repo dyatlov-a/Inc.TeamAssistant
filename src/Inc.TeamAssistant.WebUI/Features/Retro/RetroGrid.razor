@@ -23,6 +23,7 @@
                                             <InputRetroItem
                                                 @key="item.Id"
                                                 DebounceDelay="500"
+                                                Editable="CanEdit(item)"
                                                 BackgroundColor="@column.ItemColor"
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
@@ -60,6 +61,12 @@
     public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
     
     /// <summary>
+    /// Current user id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
     /// Can create retro items.
     /// </summary>
     [Parameter, EditorRequired]
@@ -88,6 +95,8 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+
+    private bool CanEdit(RetroItemViewModel item) => CurrentUserId == item.OwnerId;
     
     private async Task ItemCreatedEmit(int type) => await ItemCreated.InvokeAsync(type);
     

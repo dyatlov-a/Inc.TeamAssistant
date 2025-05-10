@@ -10,18 +10,25 @@
 
 <MetaDataModule />
 
-@if (Team is not null)
-{
-    <RetroGrid
-        Team="@Team"
-        State="_state"
-        Columns="Columns"
-        CanCreate="_canCreate"
-        Retry="Load"
-        ItemCreated="CreateRetroItem"
-        ItemChanged="ChangeRetroItem"
-        ItemRemoved="RemoveRetroItem" />
-}
+<AuthorizeView>
+    <Authorized>
+        @if (Team is not null)
+        {
+            var owner = context.User.ToPerson();
+            
+            <RetroGrid
+                Team="@Team"
+                State="_state"
+                Columns="Columns"
+                CurrentUserId="owner.Id"
+                CanCreate="_canCreate"
+                Retry="Load"
+                ItemCreated="@(i => CreateRetroItem(i, owner.Id))"
+                ItemChanged="ChangeRetroItem"
+                ItemRemoved="RemoveRetroItem" />
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter]
@@ -72,7 +79,7 @@
         }
     }
 
-    private async Task CreateRetroItem(int type)
+    private async Task CreateRetroItem(int type, long ownerId)
     {
         if (!_columns.TryGetValue(type, out var column))
             return;
@@ -87,7 +94,7 @@
                 _state,
                 showLoading: false);
 
-            column.Items.Add(RetroItemViewModel.Create(result.Id, ownerId: 0, type));
+            column.Items.Add(RetroItemViewModel.Create(result.Id, ownerId, type));
         }
         finally
         {

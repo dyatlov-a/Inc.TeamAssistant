@@ -4,7 +4,7 @@
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
 
-<div style="background-color: @BackgroundColor" class="retro-item">
+<div style="background-color: @BackgroundColor" class="@CssClass @RetroItemCssClass">
     <div class="retro-item__actions">
         <RouterLink OnClick="EmitItemRemoved">x</RouterLink>
     </div>
@@ -35,6 +35,12 @@
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
     /// <summary>
+    /// Editable flag.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool Editable { get; set; }
+    
+    /// <summary>
     /// Debounce delay in milliseconds.
     /// </summary>
     [Parameter, EditorRequired]
@@ -43,6 +49,8 @@
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private System.Timers.Timer? _timer;
+
+    private string RetroItemCssClass => Editable ? "retro-item" : "retro-item retro-item_hide";
 
     protected override void OnParametersSet()
     {
@@ -70,8 +78,7 @@
     
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
-        const string enterKey = "Enter";
-        if (e.Key == enterKey)
+        if (GlobalResources.Keys.HasEnter(e.Key))
         {
             await TryEmitValueChanged();
             InputChanged();
@@ -80,6 +87,9 @@
 
     private async Task TryEmitValueChanged()
     {
+        if (!Editable)
+            return;
+        
         try
         {
             var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
@@ -102,8 +112,14 @@
         _timer?.Start();
     }
 
-    private async Task EmitItemRemoved() => await ItemRemoved.InvokeAsync(_value);
-    
+    private async Task EmitItemRemoved()
+    {
+        if (!Editable)
+            return;
+        
+        await ItemRemoved.InvokeAsync(_value);
+    }
+
     protected override bool TryParseValueFromString(
         string? value,
         out RetroItemViewModel result,

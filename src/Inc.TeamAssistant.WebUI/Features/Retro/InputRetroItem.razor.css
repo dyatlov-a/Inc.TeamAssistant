@@ -8,3 +8,8 @@
 .retro-item__text {;
     min-height: 80px;
 }
+.retro-item_hide {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+}
