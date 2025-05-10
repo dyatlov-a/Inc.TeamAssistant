@@ -1,4 +1,10 @@
 .retro-item {
-    padding: 1rem;
+    padding: .5rem;
+}
+.retro-item__actions {
+    text-align: right;
+    margin-bottom: .3rem;
+}
+.retro-item__text {;
     min-height: 80px;
 }

@@ -19,7 +19,8 @@
         CanCreate="_canCreate"
         Retry="Load"
         ItemCreated="CreateRetroItem"
-        ItemChanged="ChangeRetroItem" />
+        ItemChanged="ChangeRetroItem"
+        ItemRemoved="RemoveRetroItem" />
 }
 
 @code {
@@ -32,9 +33,9 @@
     private readonly LoadingState _state = LoadingState.Done();
     private readonly IReadOnlyDictionary<int, RetroColumnViewModel> _columns = new Dictionary<int, RetroColumnViewModel>
     {
-        [1] = new("Stop", 1, ItemColor: "#B22222", new Dictionary<Guid, RetroItemViewModel>()),
-        [2] = new("Start", 2, ItemColor: "#FF8C00", new Dictionary<Guid, RetroItemViewModel>()),
-        [3] = new("Continue", 3, ItemColor: "#3CB371", new Dictionary<Guid, RetroItemViewModel>())
+        [1] = new("Start", 1, ItemColor: "#FF8C00", new()),
+        [2] = new("Stop", 2, ItemColor: "#B22222", new()),
+        [3] = new("Continue", 3, ItemColor: "#3CB371", new())
     };
 
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
@@ -62,10 +63,11 @@
 
             foreach (var item in group)
             {
-                if (column.Items.TryGetValue(item.Id, out var viewItem))
-                    viewItem.Apply(item);
+                var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
+                if (viewItem is null)
+                    column.Items.Add(new RetroItemViewModel().Apply(item));
                 else
-                    column.Items.Add(item.Id, new RetroItemViewModel().Apply(item));
+                    viewItem.Apply(item);
             }
         }
     }
@@ -84,9 +86,8 @@
                 async () => await RetroService.CreateRetroItem(command),
                 _state,
                 showLoading: false);
-            var itemId = result.Id;
 
-            column.Items.Add(itemId, RetroItemViewModel.Create(itemId, 0, type));
+            column.Items.Add(RetroItemViewModel.Create(result.Id, ownerId: 0, type));
         }
         finally
         {
@@ -100,8 +101,16 @@
             async () => await RetroService.UpdateRetroItem(item.ToCommand()),
             _state,
             showLoading: false);
+    }
+    
+    private async Task RemoveRetroItem(RetroItemViewModel item)
+    {
+        await RequestProcessor.Process(
+            async () => await RetroService.RemoveRetroItem(item.Id),
+            _state,
+            showLoading: false);
 
-        if (_columns.TryGetValue(item.Type, out var column) && column.Items.TryGetValue(item.Id, out var value))
-            value.Text = item.Text;
+        if (_columns.TryGetValue(item.Type, out var column))
+            column.Items.Remove(item);
     }
 }

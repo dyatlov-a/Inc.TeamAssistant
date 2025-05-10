@@ -4,4 +4,4 @@ public sealed record RetroColumnViewModel(
     string Name,
     int Type,
     string ItemColor,
-    Dictionary<Guid, RetroItemViewModel> Items);
+    List<RetroItemViewModel> Items);

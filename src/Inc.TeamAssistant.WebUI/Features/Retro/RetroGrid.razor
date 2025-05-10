@@ -18,13 +18,15 @@
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
-                                        @foreach (var item in column.Items.Values.OrderBy(i => i.Created))
+                                        @foreach (var item in column.Items.OrderBy(i => i.Created))
                                         {
                                             <InputRetroItem
+                                                @key="item.Id"
+                                                BackgroundColor="@column.ItemColor"
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
                                                 ValueChanged="ItemChangedEmit"
-                                                BackgroundColor="@column.ItemColor" />
+                                                ItemRemoved="ItemRemoved" />
                                         }
                                     </div>
                                 </Content>
@@ -79,6 +81,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
     private async Task ItemCreatedEmit(int type) => await ItemCreated.InvokeAsync(type);
     

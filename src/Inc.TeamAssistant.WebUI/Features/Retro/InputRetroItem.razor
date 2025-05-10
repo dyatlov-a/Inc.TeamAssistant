@@ -4,16 +4,16 @@
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
 
-<div
-    style="background-color: @BackgroundColor"
-    class="retro-item"
-    contenteditable="true"
-    @oninput="InputChanged"
-    @ref="_item">
-    @if (!RenderContext.IsBrowser)
-    {
-        @_value.Text
-    }
+<div style="background-color: @BackgroundColor" class="retro-item">
+    <div class="retro-item__actions">
+        <RouterLink OnClick="EmitItemRemoved">x</RouterLink>
+    </div>
+    <div class="retro-item__text" contenteditable="true" @oninput="InputChanged" @ref="_item">
+        @if (!RenderContext.IsBrowser)
+        {
+            @_value.Text
+        }
+    </div>
 </div>
 
 @code {
@@ -22,6 +22,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public string BackgroundColor { get; set; } = default!;
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
     private RetroItemViewModel _value = new();
     private ElementReference _item;
@@ -32,8 +38,9 @@
         if (!RenderContext.IsBrowser)
             return;
         
-        _timer = new System.Timers.Timer(3_000);
-        _timer.Elapsed += async (_, _) =>
+        const int timerInterval = 3_000;
+        _timer = new System.Timers.Timer(timerInterval);
+        _timer.Elapsed += async (s, e) =>
         {
             _timer.Stop();
             await InvokeAsync(TryEmitValueChanged);
@@ -70,7 +77,7 @@
 
             if (_value.Text != value)
             {
-                _value.Text = value;
+                _value.ChangeText(value);
                 await ValueChanged.InvokeAsync(_value);
             }
         }
@@ -85,6 +92,8 @@
         _timer?.Stop();
         _timer?.Start();
     }
+
+    private async Task EmitItemRemoved() => await ItemRemoved.InvokeAsync(_value);
 
     protected override void Dispose(bool disposing)
     {

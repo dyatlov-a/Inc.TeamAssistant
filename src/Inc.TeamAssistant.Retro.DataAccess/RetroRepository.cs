@@ -26,11 +26,11 @@ internal sealed class RetroRepository : IRetroRepository
                 r.text AS text,
                 r.owner_id AS ownerid
             FROM retro.retro_items AS r
-            WHERE r.id = @id;
+            WHERE r.id = @item_id;
             """,
             new
             {
-                id = id
+                item_id = id
             },
             flags: CommandFlags.None,
             cancellationToken: token);

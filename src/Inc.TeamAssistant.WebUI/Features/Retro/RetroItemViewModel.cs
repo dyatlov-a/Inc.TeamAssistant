@@ -9,7 +9,7 @@ public sealed class RetroItemViewModel
     public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
     public int Type { get; private set; }
-    public string? Text { get; set; }
+    public string? Text { get; private set; }
 
     public static RetroItemViewModel Create(Guid id, long ownerId, int type)
     {
@@ -20,6 +20,13 @@ public sealed class RetroItemViewModel
             OwnerId = ownerId,
             Type = type
         };
+    }
+    
+    public RetroItemViewModel ChangeText(string? text)
+    {
+        Text = text;
+
+        return this;
     }
 
     public RetroItemViewModel Apply(RetroItemDto item)
