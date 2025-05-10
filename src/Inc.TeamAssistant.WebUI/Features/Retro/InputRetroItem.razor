@@ -8,7 +8,12 @@
     <div class="retro-item__actions">
         <RouterLink OnClick="EmitItemRemoved">x</RouterLink>
     </div>
-    <div class="retro-item__text" contenteditable="true" @oninput="InputChanged" @ref="_item">
+    <div
+        class="retro-item__text"
+        contenteditable="true"
+        @oninput="InputChanged"
+        @onkeydown="HandleKeyDown"
+        @ref="_item">
         @if (!RenderContext.IsBrowser)
         {
             @_value.Text
@@ -29,44 +34,48 @@
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int DebounceDelay { get; set; }
+    
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private System.Timers.Timer? _timer;
 
-    protected override void OnInitialized()
-    {
-        if (!RenderContext.IsBrowser)
-            return;
-        
-        const int timerInterval = 3_000;
-        _timer = new System.Timers.Timer(timerInterval);
-        _timer.Elapsed += async (s, e) =>
-        {
-            _timer.Stop();
-            await InvokeAsync(TryEmitValueChanged);
-        };
-        _timer.AutoReset = false;
-    }
-
     protected override void OnParametersSet()
     {
         _value = CurrentValue ?? new();
+        
+        if (RenderContext.IsBrowser && _timer is null)
+        {
+            _timer = new System.Timers.Timer(DebounceDelay);
+            _timer.Elapsed += async (s, e) =>
+            {
+                _timer.Stop();
+                await InvokeAsync(TryEmitValueChanged);
+            };
+            _timer.AutoReset = false;
+        }
 
         InputChanged();
-    }
-    
-    protected override bool TryParseValueFromString(
-        string? value,
-        out RetroItemViewModel result,
-        out string validationErrorMessage)
-    {
-        throw new NotImplementedException();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+    
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        const string enterKey = "Enter";
+        if (e.Key == enterKey)
+        {
+            await TryEmitValueChanged();
+            InputChanged();
+        }
     }
 
     private async Task TryEmitValueChanged()
@@ -94,6 +103,14 @@
     }
 
     private async Task EmitItemRemoved() => await ItemRemoved.InvokeAsync(_value);
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
 
     protected override void Dispose(bool disposing)
     {
