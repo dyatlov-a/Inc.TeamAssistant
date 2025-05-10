@@ -1,0 +1,95 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<Loading State="State" Retry="Retry">
+    <div class="main-content">
+        <div class="main-content__container">
+            <h1 class="main-content__header">@Localizer["RetroHeader"] @Team.Name</h1>
+            <p class="main-content__text">@Localizer["RetroText"]</p>
+            <div class="retro-grid">
+                <div class="retro-grid__columns">
+                    @foreach (var column in Columns.OrderBy(c => c.Type))
+                    {
+                        <div class="retro-grid__column">
+                            <Panel Header="@column.Name" IsOpen="true">
+                                <Actions>
+                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => ItemCreatedEmit(column.Type)">
+                                        @Localizer["Add"]
+                                    </Button>
+                                </Actions>
+                                <Content>
+                                    <div class="retro-grid__column-items">
+                                        @foreach (var item in column.Items.OrderBy(i => i.Created))
+                                        {
+                                            <InputRetroItem
+                                                @key="item.Id"
+                                                DebounceDelay="500"
+                                                BackgroundColor="@column.ItemColor"
+                                                Value="item"
+                                                ValueExpression="@(() => item)"
+                                                ValueChanged="ItemChangedEmit"
+                                                ItemRemoved="ItemRemoved" />
+                                        }
+                                    </div>
+                                </Content>
+                            </Panel>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</Loading>
+
+@code {
+    /// <summary>
+    /// Current Team.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public TenantTeamDto Team { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Retro columns.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
+    
+    /// <summary>
+    /// Can create retro items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanCreate { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Create retro item callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<int> ItemCreated { get; set; }
+    
+    /// <summary>
+    /// Change retro item callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    private async Task ItemCreatedEmit(int type) => await ItemCreated.InvokeAsync(type);
+    
+    private async Task ItemChangedEmit(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
+}

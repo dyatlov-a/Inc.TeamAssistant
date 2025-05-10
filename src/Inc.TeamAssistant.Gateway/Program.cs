@@ -31,8 +31,12 @@ using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
+using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Tenants.Application.Contracts;
+using Inc.TeamAssistant.Tenants.DataAccess;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
@@ -59,6 +63,8 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<ITeamRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ITenantRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRetroRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
 		c.Lifetime = defaultLifetime;
@@ -68,6 +74,8 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<ITeamRepository>();
 		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
 		c.RegisterServicesFromAssemblyContaining<IBotRepository>();
+		c.RegisterServicesFromAssemblyContaining<ITenantRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRetroRepository>();
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
@@ -111,7 +119,9 @@ builder.Services
 	.AddRandomCoffeeDataAccess()
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
-	.AddConstructorDataAccess();
+	.AddConstructorDataAccess()
+	.AddTenantsDataAccess()
+	.AddRetroDataAccess();
 
 builder.Services
 	.AddAuthentication(ApplicationContext.AuthenticationScheme)

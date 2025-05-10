@@ -101,7 +101,7 @@ public sealed class Bot
     public Bot CheckRights(long personId)
     {
         if (OwnerId != personId)
-            throw new TeamAssistantException($"User {personId} has not access to bot {Id}.");
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
         
         return this;
     }

@@ -1,0 +1,125 @@
+@inherits InputBase<RetroItemViewModel>
+
+@inject IJSRuntime JsRuntime
+@inject IRenderContext RenderContext
+@inject ILogger<InputRetroItem> Logger
+
+<div style="background-color: @BackgroundColor" class="retro-item">
+    <div class="retro-item__actions">
+        <RouterLink OnClick="EmitItemRemoved">x</RouterLink>
+    </div>
+    <div
+        class="retro-item__text"
+        contenteditable="true"
+        @oninput="InputChanged"
+        @onkeydown="HandleKeyDown"
+        @ref="_item">
+        @if (!RenderContext.IsBrowser)
+        {
+            @_value.Text
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Background color.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string BackgroundColor { get; set; } = default!;
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int DebounceDelay { get; set; }
+    
+    private RetroItemViewModel _value = new();
+    private ElementReference _item;
+    private System.Timers.Timer? _timer;
+
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue ?? new();
+        
+        if (RenderContext.IsBrowser && _timer is null)
+        {
+            _timer = new System.Timers.Timer(DebounceDelay);
+            _timer.Elapsed += async (s, e) =>
+            {
+                _timer.Stop();
+                await InvokeAsync(TryEmitValueChanged);
+            };
+            _timer.AutoReset = false;
+        }
+
+        InputChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser)
+            await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+    
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        const string enterKey = "Enter";
+        if (e.Key == enterKey)
+        {
+            await TryEmitValueChanged();
+            InputChanged();
+        }
+    }
+
+    private async Task TryEmitValueChanged()
+    {
+        try
+        {
+            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+
+            if (_value.Text != value)
+            {
+                _value.ChangeText(value);
+                await ValueChanged.InvokeAsync(_value);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error on timer tick for InputRetroItem");
+        }
+    }
+
+    private void InputChanged()
+    {
+        _timer?.Stop();
+        _timer?.Start();
+    }
+
+    private async Task EmitItemRemoved() => await ItemRemoved.InvokeAsync(_value);
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
+}

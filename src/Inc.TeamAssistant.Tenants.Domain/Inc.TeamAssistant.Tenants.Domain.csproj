@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <InternalsVisibleTo Include="Inc.TeamAssistant.Tenants.DataAccess" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Primitives\Inc.TeamAssistant.Primitives.csproj" />
+  </ItemGroup>
+</Project>

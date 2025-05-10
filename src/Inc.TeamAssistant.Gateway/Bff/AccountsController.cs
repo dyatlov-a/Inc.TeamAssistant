@@ -50,13 +50,14 @@ public sealed class AccountsController : ControllerBase
         return Redirect(DetectTargetUrl(returnUrl));
     }
     
-    [HttpGet("login-as-super-user")]
-    public async Task<IActionResult> LoginAsSuperUser(string? returnUrl)
+    [HttpGet("login-as-system-user/{personId}")]
+    public async Task<IActionResult> LoginAsSystemUser(long personId, string? returnUrl)
     {
-        if (_authOptions.SuperUser is null)
+        var systemUser = _authOptions.SystemUsers.SingleOrDefault(s => s.Id == personId);
+        if (systemUser is null)
             return NotFound();
 
-        var principal = _authOptions.SuperUser.ToClaimsPrincipal();
+        var principal = systemUser.ToClaimsPrincipal();
         
         await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
         

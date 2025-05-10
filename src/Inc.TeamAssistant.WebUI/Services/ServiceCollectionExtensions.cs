@@ -10,9 +10,11 @@ using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
+using Inc.TeamAssistant.WebUI.Features.Tenants;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Inc.TeamAssistant.WebUI.Services.ServiceClients;
+using Inc.TeamAssistant.WebUI.Services.Stores;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -34,6 +36,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped<ICalendarService, CalendarClient>()
+            .AddScoped<ITenantService, TenantClient>()
+            .AddScoped<IRetroService, RetroClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
@@ -60,6 +64,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()
             .AddScoped(typeof(DragAndDropService<>))
+            .AddScoped<TenantStore>()
             
             .AddScoped<IValidator<CheckBotFormModel>, CheckBotFormModelValidator>()
             .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()
@@ -69,7 +74,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<SettingsFormModel>, SettingsFormModelValidator>()
             .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
             .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
-            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>();
+            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>()
+            .AddScoped<IValidator<TenantTeamFormModel>, TenantTeamFormModelValidator>();
 
         return services;
     }
