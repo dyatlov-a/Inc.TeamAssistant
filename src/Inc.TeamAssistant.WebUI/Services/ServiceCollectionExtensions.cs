@@ -11,6 +11,7 @@ using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
+using Inc.TeamAssistant.WebUI.Features.Retro;
 using Inc.TeamAssistant.WebUI.Features.Tenants;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.Internal;
@@ -26,6 +27,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         var appVersion = ApplicationContext.GetVersion();
+        var messageLifetime = TimeSpan.FromSeconds(30);
+        var checkInterval = TimeSpan.FromSeconds(5);
 
         services
             .AddBlazoredLocalStorage()
@@ -43,7 +46,8 @@ public static class ServiceCollectionExtensions
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<AssessmentSessionEventBuilder>()
-            .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5))
+            .AddSingleton<RetroEventBuilder>()
+            .AddNotificationsService(messageLifetime, checkInterval)
 
             .AddAuthorizationCore()
             .AddCascadingAuthenticationState()

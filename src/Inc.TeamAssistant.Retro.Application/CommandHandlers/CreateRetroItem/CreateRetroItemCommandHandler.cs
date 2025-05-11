@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
@@ -10,11 +11,16 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
 {
     private readonly IRetroRepository _retroRepository;
     private readonly IPersonResolver _personResolver;
+    private readonly IRetroEventSender _eventSender;
 
-    public CreateRetroItemCommandHandler(IRetroRepository retroRepository, IPersonResolver personResolver)
+    public CreateRetroItemCommandHandler(
+        IRetroRepository retroRepository,
+        IPersonResolver personResolver,
+        IRetroEventSender eventSender)
     {
         _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
     public async Task<CreateRetroItemResult> Handle(CreateRetroItemCommand command, CancellationToken token)
@@ -31,6 +37,8 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
             person.Id);
 
         await _retroRepository.Upsert(item, token);
+
+        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item));
 
         return new CreateRetroItemResult(item.Id);
     }

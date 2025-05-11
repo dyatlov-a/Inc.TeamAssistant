@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Extensions;
+using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using MediatR;
@@ -10,11 +11,16 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
 {
     private readonly IRetroRepository _retroRepository;
     private readonly IPersonResolver _personResolver;
+    private readonly IRetroEventSender _eventSender;
 
-    public RemoveRetroItemCommandHandler(IRetroRepository retroRepository, IPersonResolver personResolver)
+    public RemoveRetroItemCommandHandler(
+        IRetroRepository retroRepository,
+        IPersonResolver personResolver,
+        IRetroEventSender eventSender)
     {
         _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
     
     public async Task Handle(RemoveRetroItemCommand command, CancellationToken token)
@@ -25,5 +31,7 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
         var item = await command.Id.Required(_retroRepository.FindItem, token);
 
         await _retroRepository.Remove(item.CheckRights(person.Id), token);
+
+        await _eventSender.RetroItemRemoved(RetroItemConverter.ConvertTo(item));
     }
 }

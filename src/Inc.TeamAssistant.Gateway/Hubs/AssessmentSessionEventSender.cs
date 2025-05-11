@@ -1,8 +1,8 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
-using Inc.TeamAssistant.Gateway.Hubs;
+using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
+namespace Inc.TeamAssistant.Gateway.Hubs;
 
 internal sealed class AssessmentSessionEventSender : IAssessmentSessionEventSender
 {

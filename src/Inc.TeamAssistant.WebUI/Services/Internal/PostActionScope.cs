@@ -1,10 +1,10 @@
 namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
-internal sealed class ActionScope : IAsyncDisposable
+internal sealed class PostActionScope : IAsyncDisposable
 {
     private readonly Func<Task> _action;
 
-    public ActionScope(Func<Task> action)
+    public PostActionScope(Func<Task> action)
     {
         _action = action ?? throw new ArgumentNullException(nameof(action));
     }

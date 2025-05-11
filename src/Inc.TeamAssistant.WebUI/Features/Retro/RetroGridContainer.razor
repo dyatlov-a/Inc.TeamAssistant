@@ -4,9 +4,12 @@
 
 @attribute [Authorize]
 
+@implements IAsyncDisposable
+
 @inject TenantStore TenantStore
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
 
 <MetaDataModule />
 
@@ -14,16 +17,16 @@
     <Authorized>
         @if (Team is not null)
         {
-            var owner = context.User.ToPerson();
+            var currentUser = context.User.ToPerson();
             
             <RetroGrid
                 Team="@Team"
                 State="_state"
                 Columns="Columns"
-                CurrentUserId="owner.Id"
+                CurrentUserId="currentUser.Id"
                 CanCreate="_canCreate"
                 Retry="Load"
-                ItemCreated="@(i => CreateRetroItem(i, owner.Id))"
+                ItemCreated="@(i => CreateRetroItem(i, currentUser.Id))"
                 ItemChanged="ChangeRetroItem"
                 ItemRemoved="RemoveRetroItem" />
         }
@@ -33,21 +36,70 @@
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
+    
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
+    private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
 
     private bool _canCreate = true;
     private readonly LoadingState _state = LoadingState.Done();
+    private RetroEventBuilder? _eventBuilder;
+    private IAsyncDisposable? _eventListener;
     private readonly IReadOnlyDictionary<int, RetroColumnViewModel> _columns = new Dictionary<int, RetroColumnViewModel>
     {
         [1] = new("Start", 1, ItemColor: "#FF8C00", new()),
         [2] = new("Stop", 2, ItemColor: "#B22222", new()),
         [3] = new("Continue", 3, ItemColor: "#3CB371", new())
     };
-
-    private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
     
-    protected override async Task OnParametersSetAsync() => await Load();
+    protected override async Task OnInitializedAsync()
+    {
+        _eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
+        if (_eventBuilder is not null)
+            await _eventBuilder.Start();
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
+        
+        await Load();
+        
+        _eventListener = await StartListenEvents();
+    }
+    
+    private async Task<IAsyncDisposable?> StartListenEvents()
+    {
+        if (_eventBuilder is null)
+            return null;
+
+        var authenticationState = await AuthenticationStateTask;
+        var currentUser = authenticationState.User.ToPerson();
+
+        return await _eventBuilder.Build(
+            TeamId,
+            b => b.OnRetroItemChanged(async i =>
+            {
+                if (currentUser.Id != i.OwnerId)
+                    await InvokeAsync(() =>
+                    {
+                        ApplyChangedEvent(i);
+                        StateHasChanged();
+                    });
+            }),
+            b => b.OnRetroItemRemoved(async i =>
+            {
+                if (currentUser.Id != i.OwnerId)
+                    await InvokeAsync(() =>
+                    {
+                        ApplyRemovedEvent(i.Type, i.Id);
+                        StateHasChanged();
+                    });
+            }));
+    }
 
     private async Task Load()
     {
@@ -58,25 +110,8 @@
             nameof(RetroGridContainer),
             _state);
         
-        Bind(result);
-    }
-
-    private void Bind(GetRetroItemsResult result)
-    {
-        foreach (var group in result.Items.GroupBy(i => i.Type))
-        {
-            if (!_columns.TryGetValue(group.Key, out var column))
-                continue;
-
-            foreach (var item in group)
-            {
-                var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
-                if (viewItem is null)
-                    column.Items.Add(new RetroItemViewModel().Apply(item));
-                else
-                    viewItem.Apply(item);
-            }
-        }
+        foreach (var item in result.Items)
+            ApplyChangedEvent(item);
     }
 
     private async Task CreateRetroItem(int type, long ownerId)
@@ -109,6 +144,18 @@
             _state,
             showLoading: false);
     }
+
+    private void ApplyChangedEvent(RetroItemDto item)
+    {
+        if (!_columns.TryGetValue(item.Type, out var column))
+            return;
+        
+        var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
+        if (viewItem is null)
+            column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.Type).Apply(item));
+        else
+            viewItem.Apply(item);
+    }
     
     private async Task RemoveRetroItem(RetroItemViewModel item)
     {
@@ -117,7 +164,25 @@
             _state,
             showLoading: false);
 
-        if (_columns.TryGetValue(item.Type, out var column))
-            column.Items.Remove(item);
+        ApplyRemovedEvent(item.Type, item.Id);
+    }
+
+    private void ApplyRemovedEvent(int type, Guid itemId)
+    {
+        if (!_columns.TryGetValue(type, out var column))
+            return;
+        
+        var viewItem = column.Items.SingleOrDefault(i => i.Id == itemId);
+        if (viewItem is not null)
+            column.Items.Remove(viewItem);
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
+        
+        if (_eventBuilder is not null)
+            await _eventBuilder.DisposeAsync();
     }
 }

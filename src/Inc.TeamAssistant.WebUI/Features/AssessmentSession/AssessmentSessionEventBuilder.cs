@@ -1,11 +1,11 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
-internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionProvider, IAsyncDisposable
+internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionEventProvider, IAsyncDisposable
 {
 	private readonly HubConnection _hubConnection;
 
@@ -14,7 +14,7 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionProvider
         ArgumentNullException.ThrowIfNull(navigationManager);
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(navigationManager.ToAbsoluteUri(GlobalResources.Hubs.AssessmentSessionEvents))
+            .WithUrl(navigationManager.ToAbsoluteUri(HubDescriptors.AssessmentSessionHub.Endpoint))
             .WithAutomaticReconnect()
             .Build();
 	}
@@ -23,7 +23,7 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionProvider
 
 	public async Task<IAsyncDisposable> Build(
 		Guid teamId,
-		params IReadOnlyCollection<Func<IAssessmentSessionProvider, IDisposable>> eventHandlers)
+		params IReadOnlyCollection<Func<IAssessmentSessionEventProvider, IDisposable>> eventHandlers)
 	{
         ArgumentNullException.ThrowIfNull(eventHandlers);
 
@@ -31,29 +31,29 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionProvider
 	        .Select(i => i(this))
 	        .ToArray();
 
-		await _hubConnection.InvokeAsync("JoinToGroup", teamId);
+		await _hubConnection.InvokeAsync(HubDescriptors.AssessmentSessionHub.JoinToAssessmentSessionMethod, teamId);
 
-		return new ActionScope(async () =>
+		return new PostActionScope(async () =>
 		{
-			await _hubConnection.InvokeAsync("RemoveFromGroup", teamId);
+			await _hubConnection.InvokeAsync(HubDescriptors.AssessmentSessionHub.RemoveFromAssessmentSessionMethod, teamId);
 			
 			foreach (var handler in handlers)
 				handler.Dispose();
 		});
 	}
 
-	IDisposable IAssessmentSessionProvider.OnStoryChanged(Func<Task> changed)
+	IDisposable IAssessmentSessionEventProvider.OnStoryChanged(Func<Task> changed)
 	{
 		ArgumentNullException.ThrowIfNull(changed);
 		
-		return _hubConnection.On("StoryChanged", changed);
+		return _hubConnection.On(nameof(IAssessmentSessionHubClient.StoryChanged), changed);
 	}
 
-	IDisposable IAssessmentSessionProvider.OnStoryAccepted(Func<string, Task> accepted)
+	IDisposable IAssessmentSessionEventProvider.OnStoryAccepted(Func<string, Task> accepted)
 	{
 		ArgumentNullException.ThrowIfNull(accepted);
 		
-		return _hubConnection.On("StoryAccepted", accepted);
+		return _hubConnection.On(nameof(IAssessmentSessionHubClient.StoryAccepted), accepted);
 	}
 
 	public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();

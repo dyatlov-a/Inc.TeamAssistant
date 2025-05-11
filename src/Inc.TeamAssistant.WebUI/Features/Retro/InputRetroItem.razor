@@ -12,9 +12,8 @@
         class="retro-item__text"
         contenteditable="true"
         @oninput="InputChanged"
-        @onkeydown="HandleKeyDown"
         @ref="_item">
-        @if (!RenderContext.IsBrowser)
+        @if (!RenderContext.IsBrowser || !Editable)
         {
             @_value.Text
         }
@@ -56,6 +55,9 @@
     {
         _value = CurrentValue ?? new();
 
+        if (!Editable)
+            return;
+        
         if (RenderContext.IsBrowser && _timer is null)
             _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
 
@@ -64,24 +66,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && RenderContext.IsBrowser)
+        if (firstRender && Editable && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
-    }
-    
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (GlobalResources.Keys.HasEnter(e.Key))
-        {
-            await TryEmitValueChanged();
-            InputChanged();
-        }
     }
 
     private async Task TryEmitValueChanged()
     {
-        if (!Editable)
-            return;
-        
         try
         {
             var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));

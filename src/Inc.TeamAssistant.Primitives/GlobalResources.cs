@@ -27,18 +27,4 @@ public static class GlobalResources
         public static readonly string Start = "⭐";
         public static readonly string Ok = "👌";
     }
-    
-    public static class Keys
-    {
-        private static readonly string Enter = "Enter";
-
-        public static bool HasEnter(string key) => HasKey(Enter, key);
-        
-        private static bool HasKey(string target, string key) => target == key;
-    }
-    
-    public static class Hubs
-    {
-        public static readonly string AssessmentSessionEvents = "/assessment-session-events";
-    }
 }

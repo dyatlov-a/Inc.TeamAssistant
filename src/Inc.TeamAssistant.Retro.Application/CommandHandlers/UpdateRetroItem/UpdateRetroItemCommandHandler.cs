@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Extensions;
+using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using MediatR;
@@ -10,11 +11,16 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
 {
     private readonly IRetroRepository _retroRepository;
     private readonly IPersonResolver _personResolver;
+    private readonly IRetroEventSender _eventSender;
 
-    public UpdateRetroItemCommandHandler(IRetroRepository retroRepository, IPersonResolver personResolver)
+    public UpdateRetroItemCommandHandler(
+        IRetroRepository retroRepository,
+        IPersonResolver personResolver,
+        IRetroEventSender eventSender)
     {
         _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
     
     public async Task Handle(UpdateRetroItemCommand command, CancellationToken token)
@@ -29,5 +35,7 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
             .ChangeText(command.Text);
         
         await _retroRepository.Upsert(item, token);
+        
+        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item));
     }
 }

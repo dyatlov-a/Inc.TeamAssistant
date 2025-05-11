@@ -26,7 +26,6 @@ using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -38,6 +37,7 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Inc.TeamAssistant.Tenants.DataAccess;
+using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
@@ -154,6 +154,7 @@ builder.Services
 	.AddHealthChecks();
 
 builder.Services
+	.AddEventSenders()
 	.AddSignalR();
 
 builder.Services
@@ -189,6 +190,7 @@ app
 	.AddInteractiveWebAssemblyRenderMode()
 	.AddAdditionalAssemblies(typeof(IRenderContext).Assembly);
 
-app.MapHub<AssessmentSessionHub>(GlobalResources.Hubs.AssessmentSessionEvents);
+app.MapHub<AssessmentSessionHub>(HubDescriptors.AssessmentSessionHub.Endpoint);
+app.MapHub<RetroHub>(HubDescriptors.RetroHub.Endpoint);
 
 app.Run();

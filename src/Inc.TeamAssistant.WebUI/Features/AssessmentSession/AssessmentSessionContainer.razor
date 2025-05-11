@@ -59,6 +59,7 @@
             await _eventListener.DisposeAsync();
         
         await Load();
+        
         _eventListener = await StartListenEvents();
     }
 
@@ -66,10 +67,16 @@
     {
         if (_eventBuilder is null)
             return null;
+        
+        var reload = async () => await InvokeAsync(async () =>
+        {
+            await Load(showLoading: false);
+            StateHasChanged();
+        });
 
         return await _eventBuilder.Build(
             Id,
-            b => b.OnStoryChanged(async () => await Load(showLoading: false)),
+            b => b.OnStoryChanged(reload),
             b => b.OnStoryAccepted(async v =>
             {
                 var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
@@ -77,7 +84,7 @@
 
                 notificationsService.Publish(Notification.Info(message));
 
-                await Load(showLoading: false);
+                await reload();
             }));
     }
 
@@ -88,8 +95,6 @@
             nameof(AssessmentSessionContainer),
             _state,
             showLoading);
-        
-        StateHasChanged();
     }
     
     private async Task OnViewChanged(AssessmentType assessmentType)

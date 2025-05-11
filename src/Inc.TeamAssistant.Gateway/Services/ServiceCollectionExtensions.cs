@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
@@ -37,7 +36,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
             .AddScoped<IAppraiserService, AppraiserService>()
-            .AddScoped<IAssessmentSessionEventSender, AssessmentSessionEventSender>()
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()

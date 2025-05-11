@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Queries.GetRetroItems;
+using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
@@ -32,12 +32,9 @@ public sealed class RetroItemViewModel
     public RetroItemViewModel Apply(RetroItemDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
-
-        Id = item.Id;
+        
         Created = item.Created;
-        OwnerId = item.OwnerId;
-        Type = item.Type;
-        Text = item.Text;
+        ChangeText(item.Text);
 
         return this;
     }

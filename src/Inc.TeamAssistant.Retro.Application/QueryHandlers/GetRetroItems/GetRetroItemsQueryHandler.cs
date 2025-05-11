@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroItems;
 using MediatR;
@@ -19,7 +20,7 @@ internal sealed class GetRetroItemsQueryHandler : IRequestHandler<GetRetroItemsQ
         
         var items = await _retroReader.GetAll(query.TeamId, token);
         var results = items
-            .Select(i => new RetroItemDto(i.Id, i.TeamId, i.Created, i.Type, i.Text, i.OwnerId))
+            .Select(RetroItemConverter.ConvertTo)
             .ToArray();
 
         return new GetRetroItemsResult(results);

@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Gateway.Hubs;
+namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IAssessmentSessionHubClient
 {
