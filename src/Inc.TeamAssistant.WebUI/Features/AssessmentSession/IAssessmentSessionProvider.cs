@@ -1,6 +1,6 @@
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
-public interface IOnGroupEventBuilder
+public interface IAssessmentSessionProvider
 {
     IDisposable OnStoryChanged(Func<Task> changed);
 

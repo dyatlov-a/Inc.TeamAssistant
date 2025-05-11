@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
             .AddScoped<IAppraiserService, AppraiserService>()
-            .AddScoped<IMessagesSender, MessagesSender>()
+            .AddScoped<IAssessmentSessionEventSender, AssessmentSessionEventSender>()
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()

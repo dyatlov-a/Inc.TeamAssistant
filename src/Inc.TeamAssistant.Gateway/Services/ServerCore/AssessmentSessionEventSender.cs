@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
-internal sealed class MessagesSender : IMessagesSender
+internal sealed class AssessmentSessionEventSender : IAssessmentSessionEventSender
 {
-	private readonly IHubContext<MessagesHub, IMessagesHubClient> _hubContext;
+	private readonly IHubContext<AssessmentSessionHub, IAssessmentSessionHubClient> _hubContext;
 
-	public MessagesSender(IHubContext<MessagesHub, IMessagesHubClient> hubContext)
+	public AssessmentSessionEventSender(IHubContext<AssessmentSessionHub, IAssessmentSessionHubClient> hubContext)
 	{
 		_hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
 	}

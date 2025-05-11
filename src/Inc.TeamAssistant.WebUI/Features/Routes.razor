@@ -1,8 +1,4 @@
-﻿@implements IAsyncDisposable
-
-@inject IServiceProvider ServiceProvider
-
-<CascadingAuthenticationState>
+﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <NotificationBar />
@@ -23,20 +19,3 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
-
-@code {
-    private EventsProvider? _eventsProvider;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        _eventsProvider = ServiceProvider.GetService<EventsProvider>();
-        if (_eventsProvider is not null)
-            await _eventsProvider.Start();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_eventsProvider is not null)
-            await _eventsProvider.DisposeAsync();
-    }
-}

@@ -4,9 +4,9 @@ using Inc.TeamAssistant.WebUI.Components.Notifications;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components;
 
-namespace Inc.TeamAssistant.WebUI.Services;
+namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
-public sealed class RequestProcessor : IDisposable
+internal sealed class RequestProcessor : IDisposable
 {
     private readonly IRenderContext _renderContext;
     private readonly PersistentComponentState _applicationState;

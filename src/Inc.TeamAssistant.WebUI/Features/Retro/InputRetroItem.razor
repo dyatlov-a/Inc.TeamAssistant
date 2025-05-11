@@ -48,24 +48,16 @@
     
     private RetroItemViewModel _value = new();
     private ElementReference _item;
-    private System.Timers.Timer? _timer;
+    private Timer? _timer;
 
     private string RetroItemCssClass => Editable ? "retro-item" : "retro-item retro-item_hide";
 
     protected override void OnParametersSet()
     {
         _value = CurrentValue ?? new();
-        
+
         if (RenderContext.IsBrowser && _timer is null)
-        {
-            _timer = new System.Timers.Timer(DebounceDelay);
-            _timer.Elapsed += async (s, e) =>
-            {
-                _timer.Stop();
-                await InvokeAsync(TryEmitValueChanged);
-            };
-            _timer.AutoReset = false;
-        }
+            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
 
         InputChanged();
     }
@@ -106,6 +98,12 @@
         }
     }
 
+    private void HandleTick(object? sender, ElapsedEventArgs e)
+    {
+        _timer?.Stop();
+        InvokeAsync(TryEmitValueChanged);
+    }
+
     private void InputChanged()
     {
         _timer?.Stop();
@@ -128,12 +126,23 @@
         throw new NotImplementedException();
     }
 
+    private Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new Timer(interval);
+
+        timer.Elapsed += HandleTick;
+        timer.AutoReset = false;
+
+        return timer;
+    }
+
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        if (disposing && _timer is not null)
         {
-            _timer?.Stop();
-            _timer?.Dispose();
+            _timer.Stop();
+            _timer.Elapsed -= HandleTick;
+            _timer.Dispose();
         }
         
         base.Dispose(disposing);

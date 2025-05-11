@@ -13,18 +13,18 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 {
 	private readonly IStoryRepository _repository;
     private readonly SummaryByStoryBuilder _summaryBuilder;
-    private readonly IMessagesSender _messagesSender;
+    private readonly IAssessmentSessionEventSender _eventSender;
     private readonly ITeamAccessor _teamAccessor;
 
 	public AcceptEstimateCommandHandler(
 		IStoryRepository repository,
 		SummaryByStoryBuilder summaryBuilder,
-		IMessagesSender messagesSender,
+		IAssessmentSessionEventSender eventSender,
 		ITeamAccessor teamAccessor)
 	{
 		_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 		_summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
-		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
+		_eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
 		_teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
 	}
 
@@ -41,7 +41,7 @@ internal sealed class AcceptEstimateCommandHandler : IRequestHandler<AcceptEstim
 		await _repository.Upsert(story, token);
 
 		var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
-		await _messagesSender.StoryAccepted(story.TeamId, estimation.DisplayValue);
+		await _eventSender.StoryAccepted(story.TeamId, estimation.DisplayValue);
 		return CommandResult.Build(notification);
     }
 }

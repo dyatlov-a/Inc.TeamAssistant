@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Appraiser.Application.Contracts;
 
-public interface IMessagesSender
+public interface IAssessmentSessionEventSender
 {
     Task StoryChanged(Guid teamId);
     

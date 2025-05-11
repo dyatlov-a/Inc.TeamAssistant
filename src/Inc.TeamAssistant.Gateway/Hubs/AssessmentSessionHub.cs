@@ -1,9 +1,8 @@
-using Inc.TeamAssistant.Primitives.Extensions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Inc.TeamAssistant.Gateway.Hubs;
 
-internal sealed class MessagesHub : Hub<IMessagesHubClient>
+internal sealed class AssessmentSessionHub : Hub<IAssessmentSessionHubClient>
 {
     public async Task JoinToGroup(Guid groupId)
     {

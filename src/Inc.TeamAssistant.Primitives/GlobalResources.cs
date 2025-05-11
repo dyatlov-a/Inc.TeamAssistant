@@ -36,4 +36,9 @@ public static class GlobalResources
         
         private static bool HasKey(string target, string key) => target == key;
     }
+    
+    public static class Hubs
+    {
+        public static readonly string AssessmentSessionEvents = "/assessment-session-events";
+    }
 }

@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Tenants.Model.Queries.Common;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Services.Internal;
 
 namespace Inc.TeamAssistant.WebUI.Services.Stores;
 

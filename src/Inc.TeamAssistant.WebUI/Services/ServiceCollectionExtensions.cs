@@ -3,6 +3,7 @@ using FluentValidation;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Components.Notifications;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddSingleton<EventsProvider>()
+            .AddSingleton<AssessmentSessionEventBuilder>()
             .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5))
 
             .AddAuthorizationCore()

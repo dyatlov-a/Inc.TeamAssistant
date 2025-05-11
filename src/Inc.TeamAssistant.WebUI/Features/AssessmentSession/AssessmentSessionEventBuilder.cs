@@ -1,37 +1,39 @@
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.WebUI.Services.Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Inc.TeamAssistant.WebUI.Services.Internal;
+namespace Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 
-internal sealed class EventsProvider : IOnGroupEventBuilder, IAsyncDisposable
+internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionProvider, IAsyncDisposable
 {
 	private readonly HubConnection _hubConnection;
 
-	public EventsProvider(NavigationManager navigationManager)
+	public AssessmentSessionEventBuilder(NavigationManager navigationManager)
 	{
         ArgumentNullException.ThrowIfNull(navigationManager);
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(navigationManager.ToAbsoluteUri("/messages"))
+            .WithUrl(navigationManager.ToAbsoluteUri(GlobalResources.Hubs.AssessmentSessionEvents))
             .WithAutomaticReconnect()
             .Build();
 	}
 
 	public Task Start() => _hubConnection.StartAsync();
 
-	public async Task<IAsyncDisposable> OnStoryChanged(
+	public async Task<IAsyncDisposable> Build(
 		Guid teamId,
-		params Func<IOnGroupEventBuilder, IDisposable>[] onGroupHandlers)
+		params IReadOnlyCollection<Func<IAssessmentSessionProvider, IDisposable>> eventHandlers)
 	{
-        ArgumentNullException.ThrowIfNull(onGroupHandlers);
+        ArgumentNullException.ThrowIfNull(eventHandlers);
 
-        var handlers = onGroupHandlers
+        var handlers = eventHandlers
 	        .Select(i => i(this))
 	        .ToArray();
 
 		await _hubConnection.InvokeAsync("JoinToGroup", teamId);
 
-		return new EventsScope(async () =>
+		return new ActionScope(async () =>
 		{
 			await _hubConnection.InvokeAsync("RemoveFromGroup", teamId);
 			
@@ -40,14 +42,14 @@ internal sealed class EventsProvider : IOnGroupEventBuilder, IAsyncDisposable
 		});
 	}
 
-	IDisposable IOnGroupEventBuilder.OnStoryChanged(Func<Task> changed)
+	IDisposable IAssessmentSessionProvider.OnStoryChanged(Func<Task> changed)
 	{
 		ArgumentNullException.ThrowIfNull(changed);
 		
 		return _hubConnection.On("StoryChanged", changed);
 	}
 
-	IDisposable IOnGroupEventBuilder.OnStoryAccepted(Func<string, Task> accepted)
+	IDisposable IAssessmentSessionProvider.OnStoryAccepted(Func<string, Task> accepted)
 	{
 		ArgumentNullException.ThrowIfNull(accepted);
 		

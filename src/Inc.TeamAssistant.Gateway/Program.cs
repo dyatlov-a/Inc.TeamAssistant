@@ -26,6 +26,7 @@ using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
@@ -188,6 +189,6 @@ app
 	.AddInteractiveWebAssemblyRenderMode()
 	.AddAdditionalAssemblies(typeof(IRenderContext).Assembly);
 
-app.MapHub<MessagesHub>("/messages");
+app.MapHub<AssessmentSessionHub>(GlobalResources.Hubs.AssessmentSessionEvents);
 
 app.Run();

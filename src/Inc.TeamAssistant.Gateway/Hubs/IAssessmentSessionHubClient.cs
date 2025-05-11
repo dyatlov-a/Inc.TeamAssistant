@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Gateway.Hubs;
 
-public interface IMessagesHubClient
+public interface IAssessmentSessionHubClient
 {
     Task StoryChanged();
 
