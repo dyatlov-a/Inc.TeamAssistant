@@ -473,7 +473,7 @@ internal sealed class WidgetsDataFactory
             ["State"] = LoadingState.Done(),
             ["FormModel"] = new AppraiserIntegrationFromModel().Apply(new GetIntegrationPropertiesResult(
                 Properties: new IntegrationProperties(
-                    AccessToken: Guid.NewGuid().ToLinkSegment(),
+                    AccessToken: Guid.NewGuid().ToString("N"),
                     ProjectKey: "test_project",
                     ScrumMasterId: 1),
                 HasManagerAccess: true,

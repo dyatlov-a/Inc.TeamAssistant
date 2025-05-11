@@ -142,7 +142,7 @@ internal sealed class SummaryByStoryBuilder
         var result = string.Format(
             _connectToDashboardLinkTemplate,
             languageId.Value,
-            teamId.ToLinkSegment());
+            teamId.ToString("N"));
         
         return result;
     }
