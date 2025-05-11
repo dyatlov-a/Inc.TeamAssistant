@@ -33,10 +33,10 @@ public sealed class CreateRetroScheme : Migration
             .AsDateTimeOffset().NotNullable()
             
             .WithColumn("type")
-            .AsInt32().NotNullable()
+            .AsString(20).NotNullable()
 
             .WithColumn("text")
-            .AsString(1000).Nullable()
+            .AsString().Nullable()
 
             .WithColumn("owner_id")
             .AsInt64().NotNullable();

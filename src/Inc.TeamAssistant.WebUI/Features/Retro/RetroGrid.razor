@@ -7,7 +7,7 @@
             <p class="main-content__text">@Localizer["RetroText"]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
-                    @foreach (var column in Columns.OrderBy(c => c.Type))
+                    @foreach (var column in Columns.OrderBy(c => c.SortOrder))
                     {
                         <div class="retro-grid__column">
                             <Panel Header="@column.Name" IsOpen="true">
@@ -82,7 +82,7 @@
     /// Create retro item callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<int> ItemCreated { get; set; }
+    public EventCallback<string> ItemCreated { get; set; }
     
     /// <summary>
     /// Change retro item callback.
@@ -98,7 +98,7 @@
 
     private bool CanEdit(RetroItemViewModel item) => CurrentUserId == item.OwnerId;
     
-    private async Task ItemCreatedEmit(int type) => await ItemCreated.InvokeAsync(type);
+    private async Task ItemCreatedEmit(string type) => await ItemCreated.InvokeAsync(type);
     
     private async Task ItemChangedEmit(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
 }

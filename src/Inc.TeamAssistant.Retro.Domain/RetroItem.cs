@@ -7,7 +7,7 @@ public sealed class RetroItem
     public Guid Id { get; private set; }
     public Guid TeamId { get; private set; }
     public DateTimeOffset Created { get; private set; }
-    public int Type { get; private set; }
+    public string Type { get; private set; } = default!;
     public string? Text { get; private set; }
     public long OwnerId { get; private set; }
 
@@ -19,7 +19,7 @@ public sealed class RetroItem
         Guid id,
         Guid teamId,
         DateTimeOffset now,
-        int type,
+        string type,
         string? text,
         long ownerId)
         : this()

@@ -11,9 +11,7 @@ internal sealed class CreateRetroItemCommandValidator : AbstractValidator<Create
             .NotEmpty();
         
         RuleFor(c => c.Type)
-            .NotEmpty();
-        
-        RuleFor(c => c.Text)
-            .MaximumLength(1000);
+            .NotEmpty()
+            .MaximumLength(20);
     }
 }

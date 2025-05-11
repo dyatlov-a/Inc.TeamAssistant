@@ -9,8 +9,5 @@ internal sealed class UpdateRetroItemCommandValidator : AbstractValidator<Update
     {
         RuleFor(c => c.Id)
             .NotEmpty();
-        
-        RuleFor(c => c.Text)
-            .MaximumLength(1000);
     }
 }

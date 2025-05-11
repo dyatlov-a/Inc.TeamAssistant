@@ -47,11 +47,11 @@
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
-    private readonly IReadOnlyDictionary<int, RetroColumnViewModel> _columns = new Dictionary<int, RetroColumnViewModel>
+    private readonly IReadOnlyDictionary<string, RetroColumnViewModel> _columns = new Dictionary<string, RetroColumnViewModel>
     {
-        [1] = new("Start", 1, ItemColor: "#FF8C00", new()),
-        [2] = new("Stop", 2, ItemColor: "#B22222", new()),
-        [3] = new("Continue", 3, ItemColor: "#3CB371", new())
+        ["Start"] = new("Start", 1, "Start", ItemColor: "#FF8C00", new()),
+        ["Stop"] = new("Stop", 2, "Stop", ItemColor: "#B22222", new()),
+        ["Continue"] = new("Continue", 3, "Continue", ItemColor: "#3CB371", new())
     };
     
     protected override async Task OnInitializedAsync()
@@ -114,7 +114,7 @@
             ApplyChangedEvent(item);
     }
 
-    private async Task CreateRetroItem(int type, long ownerId)
+    private async Task CreateRetroItem(string type, long ownerId)
     {
         if (!_columns.TryGetValue(type, out var column))
             return;
@@ -167,7 +167,7 @@
         ApplyRemovedEvent(item.Type, item.Id);
     }
 
-    private void ApplyRemovedEvent(int type, Guid itemId)
+    private void ApplyRemovedEvent(string type, Guid itemId)
     {
         if (!_columns.TryGetValue(type, out var column))
             return;
