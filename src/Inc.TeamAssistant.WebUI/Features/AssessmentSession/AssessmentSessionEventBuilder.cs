@@ -19,7 +19,12 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionEventPro
             .Build();
 	}
 
-	public Task Start() => _hubConnection.StartAsync();
+	public async Task<AssessmentSessionEventBuilder> Start()
+	{
+		await _hubConnection.StartAsync();
+
+		return this;
+	}
 
 	public async Task<IAsyncDisposable> Build(
 		Guid teamId,

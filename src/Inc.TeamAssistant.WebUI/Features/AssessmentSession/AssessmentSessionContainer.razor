@@ -43,22 +43,24 @@
     private AssessmentSessionEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     
-    protected override async Task OnInitializedAsync()
-    {
-        _eventBuilder = ServiceProvider.GetService<AssessmentSessionEventBuilder>();
-        if (_eventBuilder is not null)
-            await _eventBuilder.Start();
-    }
-    
     protected override async Task OnParametersSetAsync()
     {
         if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
             _currentView = value;
-        
+
+        await Load();
+
+        await Reconnect();
+    }
+
+    private async Task Reconnect()
+    {
         if (_eventListener is not null)
             await _eventListener.DisposeAsync();
         
-        await Load();
+        var eventBuilder = ServiceProvider.GetService<AssessmentSessionEventBuilder>();
+        if (eventBuilder is not null)
+            _eventBuilder ??= await eventBuilder.Start();
         
         _eventListener = await StartListenEvents();
     }
