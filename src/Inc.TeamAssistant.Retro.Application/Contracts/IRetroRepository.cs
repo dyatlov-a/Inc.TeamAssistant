@@ -8,5 +8,7 @@ public interface IRetroRepository
     
     Task Upsert(RetroItem item, CancellationToken token);
     
+    Task Upsert(RetroSession retro, CancellationToken token);
+    
     Task Remove(RetroItem item, CancellationToken token);
 }

@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2025_05_08_0)]
-public sealed class CreateRetroScheme : Migration
+public sealed class CreateRetroSchema : Migration
 {
     public override void Up()
     {
@@ -19,12 +19,32 @@ public sealed class CreateRetroScheme : Migration
             "add select, update, insert privileges to all tables in retro for team_assistant__api user");
 
         Create
+            .Table("retro_sessions")
+            .InSchema("retro")
+
+            .WithColumn("id")
+            .AsGuid().NotNullable()
+            .PrimaryKey("retro_sessions__pk__id")
+
+            .WithColumn("team_id")
+            .AsGuid().NotNullable()
+
+            .WithColumn("created")
+            .AsDateTimeOffset().NotNullable()
+
+            .WithColumn("state")
+            .AsInt32().NotNullable()
+
+            .WithColumn("facilitator_id")
+            .AsInt64().NotNullable();
+        
+        Create
             .Table("retro_items")
             .InSchema("retro")
 
             .WithColumn("id")
             .AsGuid().NotNullable()
-            .PrimaryKey("items__pk__id")
+            .PrimaryKey("retro_items__pk__id")
             
             .WithColumn("team_id")
             .AsGuid().NotNullable()
@@ -39,13 +59,29 @@ public sealed class CreateRetroScheme : Migration
             .AsString().Nullable()
 
             .WithColumn("owner_id")
-            .AsInt64().NotNullable();
+            .AsInt64().NotNullable()
+            
+            .WithColumn("retro_session_id")
+            .AsGuid().Nullable()
+            .ForeignKey("retro_items__fk__retro_session_id", "retro", "retro_sessions", "id");
+
+        Execute.Sql(
+            """
+            CREATE UNIQUE INDEX retro_sessions__uidx__team_id__active
+            ON retro.retro_sessions (team_id)
+            WHERE state != 4;
+            """,
+            "Create unique index on retro_sessions for active sessions");
     }
 
     public override void Down()
     {
         Delete
             .Table("retro_items")
+            .InSchema("retro");
+        
+        Delete
+            .Table("retro_sessions")
             .InSchema("retro");
         
         Delete

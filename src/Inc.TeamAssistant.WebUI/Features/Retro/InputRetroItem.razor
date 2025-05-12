@@ -57,11 +57,12 @@
 
         if (!Editable)
             return;
-        
-        if (RenderContext.IsBrowser && _timer is null)
-            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
 
-        InputChanged();
+        if (RenderContext.IsBrowser && _timer is null)
+        {
+            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
+            InputChanged();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

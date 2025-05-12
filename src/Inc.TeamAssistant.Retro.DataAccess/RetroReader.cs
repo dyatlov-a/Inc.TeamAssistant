@@ -19,14 +19,15 @@ internal sealed class RetroReader : IRetroReader
         var command = new CommandDefinition(
             """
             SELECT
-                r.id AS id,
-                r.team_id AS teamid,
-                r.created AS created,
-                r.type AS type,
-                r.text AS text,
-                r.owner_id AS ownerid
-            FROM retro.retro_items AS r
-            WHERE r.team_id = @team_id;
+                ri.id AS id,
+                ri.team_id AS teamid,
+                ri.created AS created,
+                ri.type AS type,
+                ri.text AS text,
+                ri.owner_id AS ownerid,
+                ri.retro_session_id AS retrosessionid
+            FROM retro.retro_items AS ri
+            WHERE ri.team_id = @team_id;
             """,
             new
             {
@@ -40,5 +41,32 @@ internal sealed class RetroReader : IRetroReader
         var items = await connection.QueryAsync<RetroItem>(command);
         
         return items.ToArray();
+    }
+
+    public async Task<RetroSession?> FindActive(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                rs.id AS id,
+                rs.team_id AS teamid,
+                rs.created AS created,
+                rs.state AS state,
+                rs.facilitator_id AS facilitatorid
+            FROM retro.retro_sessions AS rs
+            WHERE rs.team_id = @team_id;
+            """,
+            new
+            {
+                team_id = teamId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var result = await connection.QuerySingleOrDefaultAsync(command);
+        
+        return result;
     }
 }

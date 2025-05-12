@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
-[Route("retro/items")]
+[Route("retro")]
 [Authorize]
 public sealed class RetroController : ControllerBase
 {
@@ -18,13 +19,13 @@ public sealed class RetroController : ControllerBase
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
     }
     
-    [HttpGet("{teamId:Guid}")]
+    [HttpGet("items/{teamId:Guid}")]
     public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
     {
         return Ok(await _retroService.GetItems(teamId, token));
     }
     
-    [HttpPost]
+    [HttpPost("items")]
     public async Task<IActionResult> CreateItem([FromBody]CreateRetroItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -32,7 +33,7 @@ public sealed class RetroController : ControllerBase
         return Ok(await _retroService.CreateRetroItem(command, CancellationToken.None));
     }
     
-    [HttpPut]
+    [HttpPut("items")]
     public async Task<IActionResult> UpdateItem([FromBody]UpdateRetroItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -42,11 +43,19 @@ public sealed class RetroController : ControllerBase
         return Ok();
     }
     
-    [HttpDelete("{retroItemId:Guid}")]
+    [HttpDelete("items/{retroItemId:Guid}")]
     public async Task<IActionResult> RemoveItem(Guid retroItemId)
     {
         await _retroService.RemoveRetroItem(retroItemId, CancellationToken.None);
         
         return Ok();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> StartRetro([FromBody]StartRetroCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        return Ok(await _retroService.StartRetro(command, CancellationToken.None));
     }
 }

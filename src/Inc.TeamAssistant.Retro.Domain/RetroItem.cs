@@ -10,6 +10,7 @@ public sealed class RetroItem
     public string Type { get; private set; } = default!;
     public string? Text { get; private set; }
     public long OwnerId { get; private set; }
+    public Guid? RetroSessionId { get; private set; }
 
     private RetroItem()
     {
@@ -43,6 +44,13 @@ public sealed class RetroItem
     public RetroItem ChangeText(string? value)
     {
         Text = value;
+
+        return this;
+    }
+    
+    public RetroItem AttachToSession(Guid sessionId)
+    {
+        RetroSessionId = sessionId;
 
         return this;
     }
