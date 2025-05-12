@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
@@ -25,6 +27,25 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.StartAsync();
 
         return this;
+    }
+
+    public async Task CreateRetroItem(CreateRetroItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.CreateRetroItemMethod, command);
+    }
+    
+    public async Task UpdateRetroItem(UpdateRetroItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.UpdateRetroItemMethod, command);
+    }
+    
+    public async Task RemoveRetroItem(Guid itemId)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveRetroItemMethod, itemId);
     }
 
     public async Task<IAsyncDisposable> Build(

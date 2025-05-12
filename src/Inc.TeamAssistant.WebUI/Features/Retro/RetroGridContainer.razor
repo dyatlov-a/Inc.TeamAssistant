@@ -17,16 +17,14 @@
     <Authorized>
         @if (Team is not null)
         {
-            var currentUser = context.User.ToPerson();
-            
             <RetroGrid
                 Team="@Team"
                 State="_state"
                 Columns="Columns"
-                CurrentUserId="currentUser.Id"
+                CurrentUserId="context.User.ToPerson().Id"
                 CanCreate="_canCreate"
                 Retry="Load"
-                ItemCreated="@(i => CreateRetroItem(i, currentUser.Id))"
+                ItemCreated="CreateRetroItem"
                 ItemChanged="ChangeRetroItem"
                 ItemRemoved="RemoveRetroItem" />
         }
@@ -36,9 +34,6 @@
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
-    
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
@@ -78,28 +73,23 @@
         if (_eventBuilder is null)
             return null;
 
-        var authenticationState = await AuthenticationStateTask;
-        var currentUser = authenticationState.User.ToPerson();
-
         return await _eventBuilder.Build(
             TeamId,
             b => b.OnRetroItemChanged(async i =>
             {
-                if (currentUser.Id != i.OwnerId)
-                    await InvokeAsync(() =>
-                    {
-                        ApplyChangedEvent(i);
-                        StateHasChanged();
-                    });
+                await InvokeAsync(() =>
+                {
+                    ApplyChangedEvent(i);
+                    StateHasChanged();
+                });
             }),
             b => b.OnRetroItemRemoved(async i =>
             {
-                if (currentUser.Id != i.OwnerId)
-                    await InvokeAsync(() =>
-                    {
-                        ApplyRemovedEvent(i.Type, i.Id);
-                        StateHasChanged();
-                    });
+                await InvokeAsync(() =>
+                {
+                    ApplyRemovedEvent(i.Type, i.Id);
+                    StateHasChanged();
+                });
             }));
     }
 
@@ -116,22 +106,14 @@
             ApplyChangedEvent(item);
     }
 
-    private async Task CreateRetroItem(string type, long ownerId)
+    private async Task CreateRetroItem(string type)
     {
-        if (!_columns.TryGetValue(type, out var column))
-            return;
-        
         _canCreate = false;
 
         try
         {
-            var command = new CreateRetroItemCommand(TeamId, type, Text: null);
-            var result = await RequestProcessor.Process(
-                async () => await RetroService.CreateRetroItem(command),
-                _state,
-                showLoading: false);
-
-            column.Items.Add(RetroItemViewModel.Create(result.Id, ownerId, type));
+            if (_eventBuilder is not null)
+                await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, type, Text: null));
         }
         finally
         {
@@ -141,10 +123,8 @@
 
     private async Task ChangeRetroItem(RetroItemViewModel item)
     {
-        await RequestProcessor.Process(
-            async () => await RetroService.UpdateRetroItem(item.ToCommand()),
-            _state,
-            showLoading: false);
+        if (_eventBuilder is not null)
+            await _eventBuilder.UpdateRetroItem(item.ToCommand());
     }
 
     private void ApplyChangedEvent(RetroItemDto item)
@@ -161,12 +141,8 @@
     
     private async Task RemoveRetroItem(RetroItemViewModel item)
     {
-        await RequestProcessor.Process(
-            async () => await RetroService.RemoveRetroItem(item.Id),
-            _state,
-            showLoading: false);
-
-        ApplyRemovedEvent(item.Type, item.Id);
+        if (_eventBuilder is not null)
+            await _eventBuilder.RemoveRetroItem(item.Id);
     }
 
     private void ApplyRemovedEvent(string type, Guid itemId)
