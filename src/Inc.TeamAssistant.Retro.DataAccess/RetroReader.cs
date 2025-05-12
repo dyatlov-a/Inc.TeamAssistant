@@ -43,8 +43,14 @@ internal sealed class RetroReader : IRetroReader
         return items.ToArray();
     }
 
-    public async Task<RetroSession?> FindActive(Guid teamId, CancellationToken token)
+    public async Task<RetroSession?> Find(
+        Guid teamId,
+        IReadOnlyCollection<RetroSessionState> states,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(states);
+        
+        var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
             SELECT
@@ -54,11 +60,12 @@ internal sealed class RetroReader : IRetroReader
                 rs.state AS state,
                 rs.facilitator_id AS facilitatorid
             FROM retro.retro_sessions AS rs
-            WHERE rs.team_id = @team_id;
+            WHERE rs.team_id = @team_id AND rs.state = ANY(@states);
             """,
             new
             {
-                team_id = teamId
+                team_id = teamId,
+                states = targetStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);

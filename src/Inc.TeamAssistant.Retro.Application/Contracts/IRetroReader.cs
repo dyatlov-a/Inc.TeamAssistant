@@ -6,5 +6,5 @@ public interface IRetroReader
 {
     Task<IReadOnlyCollection<RetroItem>> GetAll(Guid teamId, CancellationToken token);
     
-    Task<RetroSession?> FindActive(Guid teamId, CancellationToken token);
+    Task<RetroSession?> Find(Guid teamId, IReadOnlyCollection<RetroSessionState> states, CancellationToken token);
 }

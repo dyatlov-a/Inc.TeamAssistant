@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 
 namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro.Validators;
@@ -20,7 +21,7 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
 
     private async Task<bool> NotHaveActiveSession(Guid teamId, CancellationToken token)
     {
-        var retroSession = await _retroReader.FindActive(teamId, token);
+        var retroSession = await _retroReader.Find(teamId, RetroSessionStateRules.Active, token);
         
         return retroSession is null;
     }
