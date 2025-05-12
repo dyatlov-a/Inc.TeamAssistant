@@ -20,7 +20,12 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
             .Build();
     }
 
-    public Task Start() => _hubConnection.StartAsync();
+    public async Task<RetroEventBuilder> Start()
+    {
+        await _hubConnection.StartAsync();
+
+        return this;
+    }
 
     public async Task<IAsyncDisposable> Build(
         Guid teamId,

@@ -111,9 +111,15 @@
     public async ValueTask DisposeAsync()
     {
         if (_eventListener is not null)
+        {
             await _eventListener.DisposeAsync();
-        
+            _eventListener = null;
+        }
+
         if (_eventBuilder is not null)
+        {
             await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
     }
 }

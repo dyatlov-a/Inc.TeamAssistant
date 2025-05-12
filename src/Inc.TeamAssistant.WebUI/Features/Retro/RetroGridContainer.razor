@@ -54,19 +54,21 @@
         ["Continue"] = new("Continue", 3, "Continue", ItemColor: "#3CB371", new())
     };
     
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        _eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
-        if (_eventBuilder is not null)
-            await _eventBuilder.Start();
+        await Load();
+
+        await Reconnect();
     }
     
-    protected override async Task OnParametersSetAsync()
+    private async Task Reconnect()
     {
         if (_eventListener is not null)
             await _eventListener.DisposeAsync();
         
-        await Load();
+        var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
+        if (eventBuilder is not null)
+            _eventBuilder ??= await eventBuilder.Start();
         
         _eventListener = await StartListenEvents();
     }
@@ -180,9 +182,15 @@
     public async ValueTask DisposeAsync()
     {
         if (_eventListener is not null)
+        {
             await _eventListener.DisposeAsync();
+            _eventListener = null;
+        }
         
         if (_eventBuilder is not null)
+        {
             await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
     }
 }
