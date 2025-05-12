@@ -91,11 +91,11 @@ internal sealed class RetroRepository : IRetroRepository
         await connection.ExecuteAsync(command);
     }
 
-    public async Task Upsert(RetroSession retro, CancellationToken token)
+    public async Task Create(RetroSession retro, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(retro);
         
-        var command = new CommandDefinition(
+        var upsertRetroCommand = new CommandDefinition(
             """
             INSERT INTO retro.retro_sessions (
                 id,
@@ -126,9 +126,29 @@ internal sealed class RetroRepository : IRetroRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = _connectionFactory.Create();
+        var attachItemsCommand = new CommandDefinition(
+            """
+            UPDATE retro.retro_items AS ri
+            SET 
+                retro_session_id = @retro_session_id
+            WHERE ri.team_id = @team_id AND ri.retro_session_id IS NULL;
+            """,
+            new
+            {
+                retro_session_id = retro.Id,
+                team_id = retro.TeamId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
         
-        await connection.ExecuteAsync(command);
+        await using var connection = _connectionFactory.Create();
+        await connection.OpenAsync(token);
+        await using var transaction = await connection.BeginTransactionAsync(token);
+        
+        await connection.ExecuteAsync(upsertRetroCommand);
+        await connection.ExecuteAsync(attachItemsCommand);
+
+        await transaction.CommitAsync(token);
     }
 
     public async Task Remove(RetroItem item, CancellationToken token)

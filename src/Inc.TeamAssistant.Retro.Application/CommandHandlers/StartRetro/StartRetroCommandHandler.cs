@@ -28,7 +28,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
             DateTimeOffset.UtcNow,
             currentPerson.Id);
 
-        await _retroRepository.Upsert(retroSession, token);
+        await _retroRepository.Create(retroSession, token);
 
         return new StartRetroResult(retroSession.Id);
     }
