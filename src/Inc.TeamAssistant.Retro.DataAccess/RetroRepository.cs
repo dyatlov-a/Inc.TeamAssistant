@@ -14,7 +14,7 @@ internal sealed class RetroRepository : IRetroRepository
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<RetroItem?> FindItem(Guid id, CancellationToken token)
+    public async Task<RetroItem?> Find(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -25,22 +25,31 @@ internal sealed class RetroRepository : IRetroRepository
                 ri.type AS type,
                 ri.text AS text,
                 ri.owner_id AS ownerid,
-                ri.retro_session_id AS retrosessionid
+                ri.retro_session_id AS retrosessionid,
+                rs.id AS id,
+                rs.team_id AS teamid,
+                rs.created AS created,
+                rs.state AS state,
+                rs.facilitator_id AS facilitatorid
             FROM retro.retro_items AS ri
+            LEFT JOIN retro.retro_sessions AS rs ON ri.retro_session_id = rs.id
             WHERE ri.id = @item_id;
             """,
             new
             {
                 item_id = id
             },
-            flags: CommandFlags.None,
+            flags: CommandFlags.Buffered,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
 
-        var item = await connection.QuerySingleOrDefaultAsync<RetroItem>(command);
+        var query = await connection.QueryAsync<RetroItem, RetroSession, RetroItem>(
+            command,
+            (ri, rs) => ri.MapRetroSession(rs),
+            "id");
         
-        return item;
+        return query.SingleOrDefault();
     }
 
     public async Task Upsert(RetroItem item, CancellationToken token)

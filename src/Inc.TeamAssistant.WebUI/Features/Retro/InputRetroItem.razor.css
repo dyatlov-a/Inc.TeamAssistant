@@ -11,6 +11,8 @@
 }
 .retro-item_hide {
     filter: blur(4px);
+}
+.retro-item_freeze {
     user-select: none;
     pointer-events: none;
 }

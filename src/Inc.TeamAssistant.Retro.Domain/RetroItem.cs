@@ -11,6 +11,7 @@ public sealed class RetroItem
     public string? Text { get; private set; }
     public long OwnerId { get; private set; }
     public Guid? RetroSessionId { get; private set; }
+    public RetroSession? RetroSession { get; private set; }
 
     private RetroItem()
     {
@@ -35,7 +36,10 @@ public sealed class RetroItem
     
     public RetroItem CheckRights(long personId)
     {
-        if (OwnerId != personId)
+        var editAsOwner = RetroSession is null && OwnerId != personId;
+        var editAsFacilitator = RetroSession is not null && RetroSession.FacilitatorId != personId;
+        
+        if (editAsOwner || editAsFacilitator)
             throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
         
         return this;
@@ -51,6 +55,13 @@ public sealed class RetroItem
     public RetroItem AttachToSession(Guid sessionId)
     {
         RetroSessionId = sessionId;
+
+        return this;
+    }
+
+    internal RetroItem MapRetroSession(RetroSession? retroSession)
+    {
+        RetroSession = retroSession;
 
         return this;
     }

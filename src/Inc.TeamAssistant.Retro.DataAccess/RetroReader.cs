@@ -72,7 +72,7 @@ internal sealed class RetroReader : IRetroReader
 
         await using var connection = _connectionFactory.Create();
 
-        var result = await connection.QuerySingleOrDefaultAsync(command);
+        var result = await connection.QuerySingleOrDefaultAsync<RetroSession>(command);
         
         return result;
     }

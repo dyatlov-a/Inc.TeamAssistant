@@ -4,16 +4,19 @@
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
 
-<div style="background-color: @BackgroundColor" class="@CssClass @RetroItemCssClass">
-    <div class="retro-item__actions">
-        <RouterLink OnClick="EmitItemRemoved">X</RouterLink>
-    </div>
+<div style="background-color: @BackgroundColor" class="retro-item @CssClass @CanEditCss @CanViewCss">
+    @if (CanRemove)
+    {
+        <div class="retro-item__actions">
+            <RouterLink OnClick="EmitItemRemoved">X</RouterLink>
+        </div>
+    }
     <div
         class="retro-item__text"
         contenteditable="true"
         @oninput="InputChanged"
         @ref="_item">
-        @if (!RenderContext.IsBrowser || !Editable)
+        @if (!RenderContext.IsBrowser || !CanEdit)
         {
             @_value.Text
         }
@@ -22,22 +25,28 @@
 
 @code {
     /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanView { get; set; }
+    
+    /// <summary>
+    /// Can edit item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanEdit { get; set; }
+    
+    /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanRemove { get; set; }
+    
+    /// <summary>
     /// Background color.
     /// </summary>
     [Parameter, EditorRequired]
     public string BackgroundColor { get; set; } = default!;
-    
-    /// <summary>
-    /// Item removed callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
-    
-    /// <summary>
-    /// Editable flag.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool Editable { get; set; }
     
     /// <summary>
     /// Debounce delay in milliseconds.
@@ -45,17 +54,24 @@
     [Parameter, EditorRequired]
     public int DebounceDelay { get; set; }
     
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private Timer? _timer;
 
-    private string RetroItemCssClass => Editable ? "retro-item" : "retro-item retro-item_hide";
+    private string CanEditCss => CanEdit ? string.Empty : "retro-item_freeze";
+    private string CanViewCss => CanView ? string.Empty : "retro-item_hide";
 
     protected override void OnParametersSet()
     {
         _value = CurrentValue ?? new();
 
-        if (!Editable)
+        if (!CanEdit)
             return;
 
         if (RenderContext.IsBrowser && _timer is null)
@@ -67,7 +83,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Editable && RenderContext.IsBrowser)
+        if (firstRender && CanEdit && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
     }
 
@@ -103,7 +119,7 @@
 
     private async Task EmitItemRemoved()
     {
-        if (!Editable)
+        if (!CanRemove)
             return;
         
         await ItemRemoved.InvokeAsync(_value);

@@ -22,13 +22,15 @@
                                         {
                                             <InputRetroItem
                                                 @key="item.Id"
-                                                DebounceDelay="500"
-                                                Editable="CanEdit(item)"
+                                                CanView="@(CanView(item))"
+                                                CanEdit="@(CanEdit(item))"
+                                                CanRemove="@(CanRemove(item))"
                                                 BackgroundColor="@column.ItemColor"
+                                                DebounceDelay="500"
+                                                ItemRemoved="ItemRemoved"
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
-                                                ValueChanged="ItemChangedEmit"
-                                                ItemRemoved="ItemRemoved" />
+                                                ValueChanged="ItemChangedEmit" />
                                         }
                                     </div>
                                 </Content>
@@ -67,6 +69,12 @@
     public long CurrentUserId { get; set; }
     
     /// <summary>
+    /// Retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroSessionDto? Session { get; set; }
+    
+    /// <summary>
     /// Can create retro items.
     /// </summary>
     [Parameter, EditorRequired]
@@ -96,8 +104,27 @@
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
 
-    private bool CanEdit(RetroItemViewModel item) => CurrentUserId == item.OwnerId;
+    private bool CanView(RetroItemViewModel item)
+    {
+        return Session is not null || CurrentUserId == item.OwnerId;
+    }
     
+    private bool CanEdit(RetroItemViewModel item)
+    {
+        if (Session is null)
+            return CurrentUserId == item.OwnerId;
+
+        if (Session?.State == "Reviewing")
+            return CurrentUserId == Session.FacilitatorId;
+        
+        return false;
+    }
+
+    private bool CanRemove(RetroItemViewModel item)
+    {
+        return Session is null && CurrentUserId == item.OwnerId;
+    }
+
     private async Task ItemCreatedEmit(string type) => await ItemCreated.InvokeAsync(type);
     
     private async Task ItemChangedEmit(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);

@@ -22,7 +22,7 @@ public sealed class RetroController : ControllerBase
     [HttpGet("items/{teamId:Guid}")]
     public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
     {
-        return Ok(await _retroService.GetItems(teamId, token));
+        return Ok(await _retroService.GetRetroState(teamId, token));
     }
     
     [HttpPost("items")]

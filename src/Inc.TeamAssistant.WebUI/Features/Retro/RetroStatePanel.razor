@@ -1,0 +1,25 @@
+<div class="retro-state-panel">
+    <Button ButtonMode="ButtonMode.Small" OnClick="MoveNext">
+        <PlayIcon Size="20px" />
+    </Button>
+</div>
+
+@code {
+    /// <summary>
+    /// Retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroSessionDto? Session { get; set; }
+
+    /// <summary>
+    /// Move to grouping stage.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MovedToGrouping { get; set; }
+
+    private async Task MoveNext()
+    {
+        if (Session is null)
+            await MovedToGrouping.InvokeAsync();
+    }
+}

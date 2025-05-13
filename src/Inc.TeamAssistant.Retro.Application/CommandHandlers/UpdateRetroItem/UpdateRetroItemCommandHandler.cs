@@ -28,7 +28,7 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var item = await command.Id.Required(_retroRepository.FindItem, token);
+        var item = await command.Id.Required(_retroRepository.Find, token);
 
         item
             .CheckRights(person.Id)
