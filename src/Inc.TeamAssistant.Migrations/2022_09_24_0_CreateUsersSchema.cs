@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2022_09_24_0)]
-public sealed class CreateUsersScheme : Migration
+public sealed class CreateUsersSchema : Migration
 {
     public override void Up()
     {

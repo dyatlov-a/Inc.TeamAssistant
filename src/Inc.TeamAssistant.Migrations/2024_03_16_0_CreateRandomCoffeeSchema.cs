@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace Inc.TeamAssistant.Migrations;
 
 [Migration(2024_03_16_0)]
-public sealed class CreateRandomCoffeeScheme : Migration
+public sealed class CreateRandomCoffeeSchema : Migration
 {
     public override void Up()
     {
