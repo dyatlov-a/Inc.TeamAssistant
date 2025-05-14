@@ -29,7 +29,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
         
         var currentPerson = _personResolver.GetCurrentPerson();
         var retroSession = new RetroSession(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             command.TeamId,
             DateTimeOffset.UtcNow,
             currentPerson.Id);

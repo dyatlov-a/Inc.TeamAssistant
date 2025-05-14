@@ -25,10 +25,10 @@ internal sealed class CreateTeamCommandHandler
         var person = _personResolver.GetCurrentPerson();
         var tenant = await _repository.FindTenant(person.Id, token);
         var team = new Team(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             command.Name,
             person.Id,
-            tenant ?? new Tenant(Guid.NewGuid(), command.Name, person.Id));
+            tenant ?? new Tenant(Guid.CreateVersion7(), command.Name, person.Id));
 
         await _repository.Upsert(team, token);
 

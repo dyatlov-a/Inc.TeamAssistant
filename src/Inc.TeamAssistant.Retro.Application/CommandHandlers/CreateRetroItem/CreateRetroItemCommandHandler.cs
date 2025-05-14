@@ -33,7 +33,7 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
         var person = _personResolver.GetCurrentPerson();
         var activeRetro = await _retroReader.FindSession(command.TeamId, RetroSessionStateRules.Active, token);
         var item = new RetroItem(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             command.TeamId,
             DateTimeOffset.UtcNow,
             command.Type,
