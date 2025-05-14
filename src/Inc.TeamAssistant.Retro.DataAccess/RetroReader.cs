@@ -14,7 +14,7 @@ internal sealed class RetroReader : IRetroReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<RetroItem>> GetAll(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<RetroItem>> ReadItems(Guid teamId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -43,7 +43,7 @@ internal sealed class RetroReader : IRetroReader
         return items.ToArray();
     }
 
-    public async Task<RetroSession?> Find(
+    public async Task<RetroSession?> FindSession(
         Guid teamId,
         IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token)

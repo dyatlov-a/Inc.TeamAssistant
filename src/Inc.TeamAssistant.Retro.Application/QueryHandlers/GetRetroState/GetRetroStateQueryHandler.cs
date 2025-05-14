@@ -19,8 +19,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var retroSession = await _retroReader.Find(query.TeamId, RetroSessionStateRules.Active, token);
-        var retroItems = await _retroReader.GetAll(query.TeamId, token);
+        var retroSession = await _retroReader.FindSession(query.TeamId, RetroSessionStateRules.Active, token);
+        var retroItems = await _retroReader.ReadItems(query.TeamId, token);
 
         var activeSession = retroSession is not null
             ? RetroSessionConverter.ConvertTo(retroSession)

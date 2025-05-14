@@ -71,6 +71,7 @@ public sealed class Build : NukeBuild
 
     private Target Compile => _ => _
         .DependsOn(Restore)
+        .DependsOn(Clean)
         .Executes(() =>
         {
             DotNetBuild(s => s

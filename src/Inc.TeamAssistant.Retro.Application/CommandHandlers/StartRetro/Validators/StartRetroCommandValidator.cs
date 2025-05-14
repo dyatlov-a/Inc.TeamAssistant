@@ -21,7 +21,7 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
 
     private async Task<bool> NotHaveActiveSession(Guid teamId, CancellationToken token)
     {
-        var retroSession = await _retroReader.Find(teamId, RetroSessionStateRules.Active, token);
+        var retroSession = await _retroReader.FindSession(teamId, RetroSessionStateRules.Active, token);
         
         return retroSession is null;
     }
