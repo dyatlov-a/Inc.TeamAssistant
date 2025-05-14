@@ -4,6 +4,8 @@ public sealed record RetroItemDto(
     Guid Id,
     Guid TeamId,
     DateTimeOffset Created,
-    string Type,
+    Guid ColumnId,
+    int Position,
     string? Text,
-    long OwnerId);
+    long OwnerId,
+    Guid? ParentId);

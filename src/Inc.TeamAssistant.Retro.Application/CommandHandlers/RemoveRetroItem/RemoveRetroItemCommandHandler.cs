@@ -9,16 +9,16 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.RemoveRetroItem;
 
 internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetroItemCommand>
 {
-    private readonly IRetroRepository _retroRepository;
+    private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
 
     public RemoveRetroItemCommandHandler(
-        IRetroRepository retroRepository,
+        IRetroItemRepository repository,
         IPersonResolver personResolver,
         IRetroEventSender eventSender)
     {
-        _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
@@ -28,9 +28,9 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var item = await command.Id.Required(_retroRepository.Find, token);
+        var item = await command.Id.Required(_repository.Find, token);
 
-        await _retroRepository.Remove(item.CheckRights(person.Id), token);
+        await _repository.Remove(item.CheckRights(person.Id), token);
 
         await _eventSender.RetroItemRemoved(RetroItemConverter.ConvertTo(item));
     }

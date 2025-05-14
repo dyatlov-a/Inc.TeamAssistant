@@ -8,19 +8,19 @@ namespace Inc.TeamAssistant.Retro.Application.QueryHandlers.GetRetroState;
 
 internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQuery, GetRetroStateResult>
 {
-    private readonly IRetroReader _retroReader;
+    private readonly IRetroReader _reader;
 
-    public GetRetroStateQueryHandler(IRetroReader retroReader)
+    public GetRetroStateQueryHandler(IRetroReader reader)
     {
-        _retroReader = retroReader ?? throw new ArgumentNullException(nameof(retroReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var retroSession = await _retroReader.FindSession(query.TeamId, RetroSessionStateRules.Active, token);
-        var retroItems = await _retroReader.ReadItems(query.TeamId, token);
+        var retroSession = await _reader.FindSession(query.TeamId, RetroSessionStateRules.Active, token);
+        var retroItems = await _reader.ReadItems(query.TeamId, token);
 
         var activeSession = retroSession is not null
             ? RetroSessionConverter.ConvertTo(retroSession)

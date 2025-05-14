@@ -10,8 +10,12 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<IRetroRepository, RetroRepository>()
-            .AddSingleton<IRetroReader, RetroReader>();
+            .AddSingleton<IRetroItemRepository, RetroItemRepository>()
+            .AddSingleton<IRetroSessionRepository, RetroSessionRepository>()
+            
+            .AddSingleton<IRetroReader, RetroReader>()
+            
+            .AddSingleton<IPositionGenerator, PositionGenerator>();
 
         return services;
     }

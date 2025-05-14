@@ -7,11 +7,13 @@ public sealed class RetroItem
     public Guid Id { get; private set; }
     public Guid TeamId { get; private set; }
     public DateTimeOffset Created { get; private set; }
-    public string Type { get; private set; } = default!;
+    public Guid ColumnId { get; private set; }
+    public int Position { get; private set; }
     public string? Text { get; private set; }
     public long OwnerId { get; private set; }
     public Guid? RetroSessionId { get; private set; }
     public RetroSession? RetroSession { get; private set; }
+    public Guid? ParentId { get; private set; }
 
     private RetroItem()
     {
@@ -21,7 +23,8 @@ public sealed class RetroItem
         Guid id,
         Guid teamId,
         DateTimeOffset now,
-        string type,
+        Guid columnId,
+        int position,
         string? text,
         long ownerId)
         : this()
@@ -29,7 +32,8 @@ public sealed class RetroItem
         Id = id;
         TeamId = teamId;
         Created = now;
-        Type = type;
+        ColumnId = columnId;
+        Position = position;
         Text = text;
         OwnerId = ownerId;
     }
@@ -55,6 +59,13 @@ public sealed class RetroItem
     public RetroItem AttachToSession(Guid sessionId)
     {
         RetroSessionId = sessionId;
+
+        return this;
+    }
+    
+    public RetroItem AttachToParent(Guid parentId)
+    {
+        ParentId = parentId;
 
         return this;
     }

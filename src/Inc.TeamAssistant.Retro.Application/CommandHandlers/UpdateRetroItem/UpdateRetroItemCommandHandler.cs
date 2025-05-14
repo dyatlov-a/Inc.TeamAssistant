@@ -9,16 +9,16 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.UpdateRetroItem;
 
 internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetroItemCommand>
 {
-    private readonly IRetroRepository _retroRepository;
+    private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
 
     public UpdateRetroItemCommandHandler(
-        IRetroRepository retroRepository,
+        IRetroItemRepository repository,
         IPersonResolver personResolver,
         IRetroEventSender eventSender)
     {
-        _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
@@ -28,13 +28,13 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var item = await command.Id.Required(_retroRepository.Find, token);
+        var item = await command.Id.Required(_repository.Find, token);
 
         item
             .CheckRights(person.Id)
             .ChangeText(command.Text);
         
-        await _retroRepository.Upsert(item, token);
+        await _repository.Upsert(item, token);
         
         await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item));
     }

@@ -9,21 +9,24 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.CreateRetroItem;
 
 internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetroItemCommand, CreateRetroItemResult>
 {
-    private readonly IRetroRepository _retroRepository;
+    private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
-    private readonly IRetroReader _retroReader;
+    private readonly IRetroReader _reader;
+    private readonly IPositionGenerator _positionGenerator;
 
     public CreateRetroItemCommandHandler(
-        IRetroRepository retroRepository,
+        IRetroItemRepository repository,
         IPersonResolver personResolver,
         IRetroEventSender eventSender,
-        IRetroReader retroReader)
+        IRetroReader reader,
+        IPositionGenerator positionGenerator)
     {
-        _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _retroReader = retroReader ?? throw new ArgumentNullException(nameof(retroReader));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _positionGenerator = positionGenerator ?? throw new ArgumentNullException(nameof(positionGenerator));
     }
 
     public async Task<CreateRetroItemResult> Handle(CreateRetroItemCommand command, CancellationToken token)
@@ -31,19 +34,21 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var activeRetro = await _retroReader.FindSession(command.TeamId, RetroSessionStateRules.Active, token);
+        var activeRetro = await _reader.FindSession(command.TeamId, RetroSessionStateRules.Active, token);
+        var position = _positionGenerator.Generate();
         var item = new RetroItem(
             Guid.CreateVersion7(),
             command.TeamId,
             DateTimeOffset.UtcNow,
-            command.Type,
+            command.ColumnId,
+            position,
             command.Text,
             person.Id);
         
         if (activeRetro is not null)
             item.AttachToSession(activeRetro.Id);
 
-        await _retroRepository.Upsert(item, token);
+        await _repository.Upsert(item, token);
 
         await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item));
 

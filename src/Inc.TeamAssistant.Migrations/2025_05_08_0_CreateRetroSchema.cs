@@ -52,8 +52,11 @@ public sealed class CreateRetroSchema : Migration
             .WithColumn("created")
             .AsDateTimeOffset().NotNullable()
             
-            .WithColumn("type")
-            .AsString(20).NotNullable()
+            .WithColumn("column_id")
+            .AsGuid().NotNullable()
+            
+            .WithColumn("position")
+            .AsInt32().NotNullable()
 
             .WithColumn("text")
             .AsString().Nullable()
@@ -63,7 +66,10 @@ public sealed class CreateRetroSchema : Migration
             
             .WithColumn("retro_session_id")
             .AsGuid().Nullable()
-            .ForeignKey("retro_items__fk__retro_session_id", "retro", "retro_sessions", "id");
+            .ForeignKey("retro_items__fk__retro_session_id", "retro", "retro_sessions", "id")
+            
+            .WithColumn("parent_id")
+            .AsGuid().Nullable();
 
         Execute.Sql(
             """

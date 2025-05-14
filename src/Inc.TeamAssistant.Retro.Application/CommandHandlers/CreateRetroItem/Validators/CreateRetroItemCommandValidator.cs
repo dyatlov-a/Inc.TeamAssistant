@@ -10,8 +10,7 @@ internal sealed class CreateRetroItemCommandValidator : AbstractValidator<Create
         RuleFor(c => c.TeamId)
             .NotEmpty();
         
-        RuleFor(c => c.Type)
-            .NotEmpty()
-            .MaximumLength(20);
+        RuleFor(c => c.ColumnId)
+            .NotEmpty();
     }
 }

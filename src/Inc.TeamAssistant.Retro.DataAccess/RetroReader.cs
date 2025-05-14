@@ -22,10 +22,12 @@ internal sealed class RetroReader : IRetroReader
                 ri.id AS id,
                 ri.team_id AS teamid,
                 ri.created AS created,
-                ri.type AS type,
+                ri.column_id AS columnid,
+                ri.position AS position,
                 ri.text AS text,
                 ri.owner_id AS ownerid,
-                ri.retro_session_id AS retrosessionid
+                ri.retro_session_id AS retrosessionid,
+                ri.parent_id AS parentid
             FROM retro.retro_items AS ri
             WHERE ri.team_id = @team_id;
             """,

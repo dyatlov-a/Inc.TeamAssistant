@@ -13,8 +13,10 @@ internal static class RetroItemConverter
             item.Id,
             item.TeamId,
             item.Created,
-            item.Type,
+            item.ColumnId,
+            item.Position,
             item.Text,
-            item.OwnerId);
+            item.OwnerId,
+            item.ParentId);
     }
 }

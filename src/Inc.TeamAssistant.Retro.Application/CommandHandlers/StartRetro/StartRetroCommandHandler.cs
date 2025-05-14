@@ -9,18 +9,18 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro;
 
 internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroCommand, StartRetroResult>
 {
-    private readonly IRetroRepository _retroRepository;
+    private readonly IRetroSessionRepository _repository;
     private readonly IPersonResolver _personResolver;
-    private readonly IRetroEventSender _retroEventSender;
+    private readonly IRetroEventSender _eventSender;
 
     public StartRetroCommandHandler(
-        IRetroRepository retroRepository,
+        IRetroSessionRepository repository,
         IPersonResolver personResolver,
-        IRetroEventSender retroEventSender)
+        IRetroEventSender eventSender)
     {
-        _retroRepository = retroRepository ?? throw new ArgumentNullException(nameof(retroRepository));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
-        _retroEventSender = retroEventSender ?? throw new ArgumentNullException(nameof(retroEventSender));
+        _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
     public async Task<StartRetroResult> Handle(StartRetroCommand command, CancellationToken token)
@@ -34,9 +34,9 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
             DateTimeOffset.UtcNow,
             currentPerson.Id);
 
-        await _retroRepository.Create(retroSession, token);
+        await _repository.Create(retroSession, token);
 
-        await _retroEventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
+        await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
 
         return new StartRetroResult(retroSession.Id);
     }

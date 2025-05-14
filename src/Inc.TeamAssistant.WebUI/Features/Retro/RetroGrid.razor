@@ -7,12 +7,12 @@
             <p class="main-content__text">@Localizer["RetroText"]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
-                    @foreach (var column in Columns.OrderBy(c => c.SortOrder))
+                    @foreach (var column in Columns.OrderByDescending(c => c.Position))
                     {
                         <div class="retro-grid__column">
                             <Panel Header="@column.Name" IsOpen="true">
                                 <Actions>
-                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => ItemCreatedEmit(column.Type)">
+                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => ItemCreatedEmit(column.Id)">
                                         @Localizer["Add"]
                                     </Button>
                                 </Actions>
@@ -90,7 +90,7 @@
     /// Create retro item callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<string> ItemCreated { get; set; }
+    public EventCallback<Guid> ItemCreated { get; set; }
     
     /// <summary>
     /// Change retro item callback.
@@ -125,7 +125,7 @@
         return Session is null && CurrentUserId == item.OwnerId;
     }
 
-    private async Task ItemCreatedEmit(string type) => await ItemCreated.InvokeAsync(type);
+    private async Task ItemCreatedEmit(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
     
     private async Task ItemChangedEmit(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
 }

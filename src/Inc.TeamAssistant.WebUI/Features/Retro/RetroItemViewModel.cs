@@ -8,17 +8,18 @@ public sealed class RetroItemViewModel
     public Guid Id { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
-    public string Type { get; private set; } = default!;
+    public Guid ColumnId { get; private set; }
+    public int Position { get; private set; }
     public string? Text { get; private set; }
 
-    public static RetroItemViewModel Create(Guid id, long ownerId, string type)
+    public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
         return new RetroItemViewModel
         {
             Id = id,
             Created = DateTimeOffset.UtcNow,
             OwnerId = ownerId,
-            Type = type
+            ColumnId = columnId
         };
     }
     
@@ -34,6 +35,8 @@ public sealed class RetroItemViewModel
         ArgumentNullException.ThrowIfNull(item);
         
         Created = item.Created;
+        Position = item.Position;
+        
         ChangeText(item.Text);
 
         return this;

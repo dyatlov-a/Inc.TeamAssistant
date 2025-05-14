@@ -65,7 +65,7 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<IRandomCoffeeRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<ITenantRepository>(defaultLifetime, includeInternalTypes: true)
-	.AddValidatorsFromAssemblyContaining<IRetroRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<IRetroItemRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
 		c.Lifetime = defaultLifetime;
@@ -76,7 +76,7 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<IRandomCoffeeRepository>();
 		c.RegisterServicesFromAssemblyContaining<IBotRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITenantRepository>();
-		c.RegisterServicesFromAssemblyContaining<IRetroRepository>();
+		c.RegisterServicesFromAssemblyContaining<IRetroItemRepository>();
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));

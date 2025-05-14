@@ -5,11 +5,11 @@ using Inc.TeamAssistant.Retro.Domain;
 
 namespace Inc.TeamAssistant.Retro.DataAccess;
 
-internal sealed class RetroRepository : IRetroRepository
+internal sealed class RetroItemRepository : IRetroItemRepository
 {
     private readonly IConnectionFactory _connectionFactory;
 
-    public RetroRepository(IConnectionFactory connectionFactory)
+    public RetroItemRepository(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
@@ -22,10 +22,12 @@ internal sealed class RetroRepository : IRetroRepository
                 ri.id AS id,
                 ri.team_id AS teamid,
                 ri.created AS created,
-                ri.type AS type,
+                ri.column_id AS columnid,
+                ri.position AS position,
                 ri.text AS text,
                 ri.owner_id AS ownerid,
                 ri.retro_session_id AS retrosessionid,
+                ri.parent_id AS parentid,
                 rs.id AS id,
                 rs.team_id AS teamid,
                 rs.created AS created,
@@ -62,35 +64,43 @@ internal sealed class RetroRepository : IRetroRepository
                 id,
                 team_id,
                 created,
-                type,
+                column_id,
+                position,
                 text,
                 owner_id,
-                retro_session_id)
+                retro_session_id,
+                parent_id)
             VALUES (
                 @id,
                 @team_id,
                 @created,
-                @type,
+                @column_id,
+                @position,
                 @text,
                 @owner_id,
-                @retro_session_id)
+                @retro_session_id,
+                @parent_id)
             ON CONFLICT (id) DO UPDATE SET
                 team_id = EXCLUDED.team_id,
                 created = EXCLUDED.created,
-                type = EXCLUDED.type,
+                column_id = EXCLUDED.column_id,
+                position = EXCLUDED.position,
                 text = EXCLUDED.text,
                 owner_id = EXCLUDED.owner_id,
-                retro_session_id = EXCLUDED.retro_session_id;
+                retro_session_id = EXCLUDED.retro_session_id,
+                parent_id = EXCLUDED.parent_id;
             """,
             new
             {
                 id = item.Id,
                 team_id = item.TeamId,
                 created = item.Created,
-                type = item.Type,
+                column_id = item.ColumnId,
+                position = item.Position,
                 text = item.Text,
                 owner_id = item.OwnerId,
-                retro_session_id = item.RetroSessionId
+                retro_session_id = item.RetroSessionId,
+                parent_id = item.ParentId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -98,66 +108,6 @@ internal sealed class RetroRepository : IRetroRepository
         await using var connection = _connectionFactory.Create();
         
         await connection.ExecuteAsync(command);
-    }
-
-    public async Task Create(RetroSession retro, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(retro);
-        
-        var upsertRetroCommand = new CommandDefinition(
-            """
-            INSERT INTO retro.retro_sessions (
-                id,
-                team_id,
-                created,
-                state,
-                facilitator_id)
-            VALUES (
-                @id,
-                @team_id,
-                @created,
-                @state,
-                @facilitator_id)
-            ON CONFLICT (id) DO UPDATE SET
-                team_id = EXCLUDED.team_id,
-                created = EXCLUDED.created,
-                state = EXCLUDED.state,
-                facilitator_id = EXCLUDED.facilitator_id;
-            """,
-            new
-            {
-                id = retro.Id,
-                team_id = retro.TeamId,
-                created = retro.Created,
-                state = retro.State,
-                facilitator_id = retro.FacilitatorId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        var attachItemsCommand = new CommandDefinition(
-            """
-            UPDATE retro.retro_items AS ri
-            SET 
-                retro_session_id = @retro_session_id
-            WHERE ri.team_id = @team_id AND ri.retro_session_id IS NULL;
-            """,
-            new
-            {
-                retro_session_id = retro.Id,
-                team_id = retro.TeamId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        await using var connection = _connectionFactory.Create();
-        await connection.OpenAsync(token);
-        await using var transaction = await connection.BeginTransactionAsync(token);
-        
-        await connection.ExecuteAsync(upsertRetroCommand);
-        await connection.ExecuteAsync(attachItemsCommand);
-
-        await transaction.CommitAsync(token);
     }
 
     public async Task Remove(RetroItem item, CancellationToken token)

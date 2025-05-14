@@ -47,12 +47,28 @@
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
-    private readonly IReadOnlyDictionary<string, RetroColumnViewModel> _columns = new Dictionary<string, RetroColumnViewModel>
+
+    private readonly IReadOnlyDictionary<Guid, RetroColumnViewModel> _columns = new[]
     {
-        ["Start"] = new("Start", 1, "Start", ItemColor: "#FF8C00", new()),
-        ["Stop"] = new("Stop", 2, "Stop", ItemColor: "#B22222", new()),
-        ["Continue"] = new("Continue", 3, "Continue", ItemColor: "#3CB371", new())
-    };
+        new RetroColumnViewModel(
+            Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"),
+            "Start",
+            Position: 1,
+            ItemColor: "#FF8C00",
+            Items: new()),
+        new RetroColumnViewModel(
+            Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"),
+            "Stop",
+            Position: 2,
+            ItemColor: "#B22222",
+            Items: new()),
+        new RetroColumnViewModel(
+            Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"),
+            "Continue",
+            Position: 3,
+            ItemColor: "#3CB371",
+            Items: new())
+    }.ToDictionary(i => i.Id);
 
     private RetroSessionDto? _activeSession;
     
@@ -107,7 +123,7 @@
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyRemovedEvent(i.Type, i.Id);
+                    ApplyRemovedEvent(i.ColumnId, i.Id);
                     StateHasChanged();
                 });
             }),
@@ -130,14 +146,14 @@
         await Load(hardReset: false);
     }
 
-    private async Task CreateRetroItem(string type)
+    private async Task CreateRetroItem(Guid columnId)
     {
         _canCreate = false;
 
         try
         {
             if (_eventBuilder is not null)
-                await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, type, Text: null));
+                await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, columnId, Text: null));
         }
         finally
         {
@@ -153,12 +169,12 @@
 
     private void ApplyChangedEvent(RetroItemDto item)
     {
-        if (!_columns.TryGetValue(item.Type, out var column))
+        if (!_columns.TryGetValue(item.ColumnId, out var column))
             return;
         
         var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
         if (viewItem is null)
-            column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.Type).Apply(item));
+            column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
         else
             viewItem.Apply(item);
     }
@@ -169,9 +185,9 @@
             await _eventBuilder.RemoveRetroItem(item.Id);
     }
 
-    private void ApplyRemovedEvent(string type, Guid itemId)
+    private void ApplyRemovedEvent(Guid columnId, Guid itemId)
     {
-        if (!_columns.TryGetValue(type, out var column))
+        if (!_columns.TryGetValue(columnId, out var column))
             return;
         
         var viewItem = column.Items.SingleOrDefault(i => i.Id == itemId);
