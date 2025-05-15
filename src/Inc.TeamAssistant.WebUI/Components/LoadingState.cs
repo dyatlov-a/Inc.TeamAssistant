@@ -15,6 +15,18 @@ public sealed class LoadingState : IProgress<LoadingState.State>
     
     public static LoadingState Done() => new(State.Done);
     
+    public static IProgress<State> Wrap(IProgress<State> innerState, Action updateView)
+    {
+        ArgumentNullException.ThrowIfNull(innerState);
+        ArgumentNullException.ThrowIfNull(updateView);
+        
+        return new Progress<State>(s =>
+        {
+            innerState.Report(s);
+            updateView.Invoke();
+        });
+    }
+    
     public void Report(State value)
     {
         Value = value;

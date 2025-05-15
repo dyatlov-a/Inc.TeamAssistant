@@ -62,17 +62,13 @@
 
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
         {
-            var stateWrapper = new Progress<LoadingState.State>(s =>
-            {
-                _state.Report(s);
-                StateHasChanged();
-            });
+            var state = LoadingState.Wrap(_state, StateHasChanged);
             
             await RequestProcessor.Process(
                 async () => await TenantService.RemoveTeam(team.Id),
-                stateWrapper);
+                state);
         
-            await Load(stateWrapper);
+            await Load(state);
         }
 
         _selectedTeamName = null;

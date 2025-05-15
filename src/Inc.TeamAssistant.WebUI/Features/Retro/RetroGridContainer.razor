@@ -28,7 +28,7 @@
                 CurrentUserId="context.User.ToPerson().Id"
                 Session="_activeSession"
                 CanCreate="_canCreate"
-                Retry="@(() => Load())"
+                Retry="@(() => Load(_state))"
                 ItemCreated="CreateRetroItem"
                 ItemChanged="ChangeRetroItem"
                 ItemRemoved="RemoveRetroItem" />
@@ -72,17 +72,17 @@
 
     private RetroSessionDto? _activeSession;
     
-    protected override async Task OnParametersSetAsync() => await Load();
+    protected override async Task OnParametersSetAsync() => await Load(_state);
     
-    private async Task Load(bool hardReset = true)
+    private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
     {
         if (hardReset)
-            await TenantStore.Initialize(TeamId, _state);
+            await TenantStore.Initialize(TeamId, state);
         
         var result = await RequestProcessor.Process(
             async () => await RetroService.GetRetroState(TeamId),
             nameof(RetroGridContainer),
-            _state);
+            state);
 
         _activeSession = result.ActiveSession;
         foreach (var item in result.Items)
@@ -129,11 +129,7 @@
             }),
             b => b.OnRetroSessionChanged(async _ =>
             {
-                await InvokeAsync(async () =>
-                {
-                    await Load(hardReset: false);
-                    StateHasChanged();
-                });
+                await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
             }));
     }
 
@@ -143,7 +139,7 @@
             () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
             _state);
 
-        await Load(hardReset: false);
+        await Load(_state, hardReset: false);
     }
 
     private async Task CreateRetroItem(Guid columnId)
