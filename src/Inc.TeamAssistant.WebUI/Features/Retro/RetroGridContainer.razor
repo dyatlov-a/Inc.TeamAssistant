@@ -85,7 +85,7 @@
             state);
 
         _activeSession = result.ActiveSession;
-        foreach (var item in result.Items)
+        foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
             ApplyChangedEvent(item);
         
         if (hardReset)
@@ -167,12 +167,17 @@
     {
         if (!_columns.TryGetValue(item.ColumnId, out var column))
             return;
-        
-        var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
-        if (viewItem is null)
-            column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
+
+        if (item.ParentId.HasValue)
+            column.Items.Single(i => i.Id == item.ParentId.Value).ApplyChild(item);
         else
-            viewItem.Apply(item);
+        {
+            var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
+            if (viewItem is null)
+                column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
+            else
+                viewItem.Apply(item);
+        }
     }
     
     private async Task RemoveRetroItem(RetroItemViewModel item)

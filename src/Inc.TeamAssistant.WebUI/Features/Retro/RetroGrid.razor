@@ -20,6 +20,8 @@
                                     <div class="retro-grid__column-items">
                                         @foreach (var item in column.Items.OrderBy(i => i.Created))
                                         {
+                                            <div class="retro-grid__slot"></div>
+                                            
                                             <InputRetroItem
                                                 @key="item.Id"
                                                 CanView="@(CanView(item))"
@@ -31,6 +33,21 @@
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
                                                 ValueChanged="ItemChangedEmit" />
+                                            
+                                            foreach (var child in item.Children)
+                                            {
+                                                <InputRetroItem
+                                                    @key="child.Id"
+                                                    CanView="@(CanView(item))"
+                                                    CanEdit="false"
+                                                    CanRemove="false"
+                                                    BackgroundColor="@column.ItemColor"
+                                                    DebounceDelay="500"
+                                                    ItemRemoved="@(_ => {})"
+                                                    Value="child"
+                                                    ValueExpression="@(() => child)"
+                                                    ValueChanged="@(_ => {})" />
+                                            }
                                         }
                                     </div>
                                 </Content>

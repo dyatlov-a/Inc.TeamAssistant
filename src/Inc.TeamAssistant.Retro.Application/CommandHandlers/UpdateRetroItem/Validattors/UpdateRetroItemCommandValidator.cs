@@ -9,5 +9,9 @@ internal sealed class UpdateRetroItemCommandValidator : AbstractValidator<Update
     {
         RuleFor(c => c.Id)
             .NotEmpty();
+
+        RuleFor(c => c.ParentId)
+            .NotEmpty()
+            .When(c => c.ParentId.HasValue);
     }
 }

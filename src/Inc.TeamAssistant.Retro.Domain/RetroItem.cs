@@ -63,7 +63,7 @@ public sealed class RetroItem
         return this;
     }
     
-    public RetroItem AttachToParent(Guid parentId)
+    public RetroItem ChangeParent(Guid? parentId)
     {
         ParentId = parentId;
 
