@@ -30,7 +30,7 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
         var person = _personResolver.GetCurrentPerson();
         var item = await command.Id.Required(_repository.Find, token);
 
-        await _repository.Remove(item.CheckRights(person.Id), token);
+        await _repository.Remove(item.CheckCanRemove(person.Id), token);
 
         await _eventSender.RetroItemRemoved(RetroItemConverter.ConvertTo(item));
     }

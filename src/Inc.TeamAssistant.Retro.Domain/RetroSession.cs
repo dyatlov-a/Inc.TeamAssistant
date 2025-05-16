@@ -21,4 +21,6 @@ public sealed class RetroSession
         State = RetroSessionState.Reviewing;
         FacilitatorId = facilitatorId;
     }
+
+    public bool HasRights(long personId) => FacilitatorId == personId;
 }

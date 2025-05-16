@@ -38,12 +38,20 @@ public sealed class RetroItem
         OwnerId = ownerId;
     }
     
-    public RetroItem CheckRights(long personId)
+    public RetroItem CheckCanChange(long personId)
     {
-        var editAsOwner = RetroSession is null && OwnerId != personId;
-        var editAsFacilitator = RetroSession is not null && RetroSession.FacilitatorId != personId;
+        var editAsOwner = RetroSession is null && OwnerId == personId;
+        var editAsFacilitator = RetroSession?.HasRights(personId) == true;
         
-        if (editAsOwner || editAsFacilitator)
+        if (!editAsOwner && !editAsFacilitator)
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
+        
+        return this;
+    }
+    
+    public RetroItem CheckCanRemove(long personId)
+    {
+        if (RetroSession is null && OwnerId == personId)
             throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
         
         return this;
@@ -52,13 +60,6 @@ public sealed class RetroItem
     public RetroItem ChangeText(string? value)
     {
         Text = value;
-
-        return this;
-    }
-    
-    public RetroItem AttachToSession(Guid sessionId)
-    {
-        RetroSessionId = sessionId;
 
         return this;
     }

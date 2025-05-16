@@ -12,20 +12,17 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
     private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
-    private readonly IRetroReader _reader;
     private readonly IPositionGenerator _positionGenerator;
 
     public CreateRetroItemCommandHandler(
         IRetroItemRepository repository,
         IPersonResolver personResolver,
         IRetroEventSender eventSender,
-        IRetroReader reader,
         IPositionGenerator positionGenerator)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _positionGenerator = positionGenerator ?? throw new ArgumentNullException(nameof(positionGenerator));
     }
 
@@ -34,7 +31,6 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
         ArgumentNullException.ThrowIfNull(command);
 
         var person = _personResolver.GetCurrentPerson();
-        var activeRetro = await _reader.FindSession(command.TeamId, RetroSessionStateRules.Active, token);
         var position = _positionGenerator.Generate();
         var item = new RetroItem(
             Guid.CreateVersion7(),
@@ -44,9 +40,6 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
             position,
             command.Text,
             person.Id);
-        
-        if (activeRetro is not null)
-            item.AttachToSession(activeRetro.Id);
 
         await _repository.Upsert(item, token);
 

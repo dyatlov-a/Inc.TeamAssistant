@@ -31,7 +31,7 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         var item = await command.Id.Required(_repository.Find, token);
 
         item
-            .CheckRights(person.Id)
+            .CheckCanChange(person.Id)
             .ChangeText(command.Text)
             .ChangeParent(command.ParentId);
         

@@ -43,7 +43,7 @@
     private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
 
-    private bool _canCreate = true;
+    private bool _canCreate;
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
@@ -85,6 +85,7 @@
             state);
 
         _activeSession = result.ActiveSession;
+        _canCreate = result.ActiveSession is null;
         foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
             ApplyChangedEvent(item);
         
