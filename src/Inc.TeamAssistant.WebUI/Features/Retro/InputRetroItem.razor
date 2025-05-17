@@ -11,7 +11,7 @@
     @ondragstart="OnDragStart"
     style="background-color: @BackgroundColor"
     class="retro-item @CssClass @CanViewCss @ChildCss"
-    @attributes="DynamicAttributes.BuildDraggable(IsDraggable)">
+    @attributes="DynamicAttributes.BuildDraggable(CanDragAndDrop)">
     @if (HasRemove)
     {
         <div class="retro-item__actions">
@@ -64,7 +64,7 @@
     /// <summary>
     /// Debounce delay in milliseconds.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter]
     public int DebounceDelay { get; set; }
     
     /// <summary>
@@ -77,14 +77,13 @@
     /// Item moved callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<RetroItemViewModel.MovedEventData> ItemMoved { get; set; }
+    public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
     
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private Timer? _timer;
 
     private bool HasRemove => CanRemove && !_value.Children.Any();
-    private bool IsDraggable => CanDragAndDrop && !_value.Children.Any();
     private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
     private string ChildCss => _value.ParentId.HasValue ? "retro-item_child" : string.Empty;
 
@@ -97,8 +96,7 @@
 
         if (RenderContext.IsBrowser && _timer is null)
         {
-            var debounceDelayInterval = TimeSpan.FromMilliseconds(DebounceDelay);
-            _timer = CreateTimer(debounceDelayInterval);
+            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
             OnInputChanged();
         }
     }
@@ -117,8 +115,9 @@
         var isOtherItem = _value.Id != movedItem.Id;
         var isSameColumn = _value.ColumnId == movedItem.ColumnId;
         var hasParent = _value.ParentId.HasValue;
+        var hasChildren = _value.Children.Any();
         
-        if (!hasParent && isOtherItem && isSameColumn)
+        if (!hasParent && !hasChildren && isOtherItem && isSameColumn)
             await ItemMoved.InvokeAsync(new(_value, movedItem));
     }
 

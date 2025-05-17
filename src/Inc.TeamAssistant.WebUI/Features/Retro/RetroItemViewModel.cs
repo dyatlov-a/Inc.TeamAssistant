@@ -5,8 +5,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
 public sealed class RetroItemViewModel
 {
-    public record MovedEventData(RetroItemViewModel Parent, RetroItemViewModel Child);
-    
     public Guid Id { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
@@ -19,7 +17,6 @@ public sealed class RetroItemViewModel
     public IReadOnlyCollection<RetroItemViewModel> Children => _children;
     public string ParentKey => $"{Id:N}-parent";
     public string ChildKey => $"{Id:N}-child";
-    public string SlotKey => $"{Id:N}-slot";
 
     public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
@@ -75,6 +72,14 @@ public sealed class RetroItemViewModel
         return this;
     }
 
+    public RetroItemViewModel MoveToSlot(Guid columnId, int maxColumnPosition)
+    {
+        ColumnId = columnId;
+        Position = maxColumnPosition + 1;
+
+        return this;
+    }
+
     public RetroItemViewModel RemoveChild(RetroItemViewModel child)
     {
         child.ParentId = null;
@@ -84,5 +89,5 @@ public sealed class RetroItemViewModel
         return this;
     }
 
-    public UpdateRetroItemCommand ToCommand() => new(Id, Text, ParentId);
+    public UpdateRetroItemCommand ToCommand() => new(Id, ColumnId, Position, Text, ParentId);
 }

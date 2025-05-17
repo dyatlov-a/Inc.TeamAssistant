@@ -17,6 +17,16 @@ internal static class RetroItemConverter
             item.Position,
             item.Text,
             item.OwnerId,
-            item.ParentId);
+            item.ParentId,
+            item.Children.Select(c => new RetroItemDto(
+                c.Id,
+                c.TeamId,
+                c.Created,
+                c.ColumnId,
+                c.Position,
+                c.Text,
+                c.OwnerId,
+                c.ParentId,
+                [])).ToArray());
     }
 }

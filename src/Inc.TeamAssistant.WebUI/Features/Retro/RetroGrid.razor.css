@@ -15,9 +15,7 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-}
-.retro-grid__slot {
-    height: 1rem;
+    gap: 1rem;
 }
 @media (max-width: 767.98px) {
     .retro-grid__column {

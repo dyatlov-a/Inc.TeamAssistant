@@ -1,0 +1,28 @@
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
+
+<div
+    ondragover="event.preventDefault();"
+    @ondrop="OnDrop"
+    class="retro-grid__slot">
+</div>
+
+@code {
+    /// <summary>
+    /// Slot column id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid ColumnId { get; set; }
+    
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ColumnId, RetroItemViewModel Item)> ItemMoved { get; set; }
+    
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+
+        await ItemMoved.InvokeAsync((ColumnId, movedItem));
+    }
+}

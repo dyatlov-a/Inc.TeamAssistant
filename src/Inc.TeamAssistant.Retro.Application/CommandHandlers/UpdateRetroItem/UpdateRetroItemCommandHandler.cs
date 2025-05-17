@@ -33,7 +33,8 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         item
             .CheckCanChange(person.Id)
             .ChangeText(command.Text)
-            .ChangeParent(command.ParentId);
+            .ChangeParent(command.ParentId)
+            .ChangePosition(command.ColumnId, command.Position);
         
         await _repository.Upsert(item, token);
         

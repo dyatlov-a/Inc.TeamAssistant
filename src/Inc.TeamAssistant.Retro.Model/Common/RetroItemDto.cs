@@ -8,4 +8,5 @@ public sealed record RetroItemDto(
     int Position,
     string? Text,
     long OwnerId,
-    Guid? ParentId);
+    Guid? ParentId,
+    IReadOnlyCollection<RetroItemDto> Children);

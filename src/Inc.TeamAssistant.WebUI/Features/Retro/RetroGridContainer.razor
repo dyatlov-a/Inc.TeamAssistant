@@ -32,7 +32,8 @@
                 ItemCreated="CreateRetroItem"
                 ItemChanged="OnItemCreated"
                 ItemRemoved="OnItemRemoved"
-                ItemMoved="OnItemMoved" />
+                ItemMoved="OnItemMoved"
+                ItemMovedToSlot="OnItemMovedToSlot" />
         }
     </Authorized>
 </AuthorizeView>
@@ -181,6 +182,9 @@
                 column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
             else
                 viewItem.Apply(item);
+            
+            foreach (var child in item.Children)
+                column.Items.Single(i => i.Id == item.Id).ApplyChild(child);
         }
     }
     
@@ -203,7 +207,7 @@
             await _eventBuilder.RemoveRetroItem(item.Id);
     }
 
-    private async Task OnItemMoved(RetroItemViewModel.MovedEventData data)
+    private async Task OnItemMoved((RetroItemViewModel Parent, RetroItemViewModel Child) data)
     {
         if (_eventBuilder is null)
             return;
@@ -215,6 +219,24 @@
             data.Parent.AddChild(child);
         
             await _eventBuilder.UpdateRetroItem(child.ToCommand());
+        }
+    }
+    
+    private async Task OnItemMovedToSlot((Guid ColumnId, RetroItemViewModel Item) data)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        var movedItem = data.Item;
+        if (_columns.TryGetValue(data.ColumnId, out var slotColumn) &&
+            _columns.TryGetValue(movedItem.ColumnId, out var itemColumn))
+        {
+            var maxColumnPosition = slotColumn.Items.Max(i => i.Position);
+            
+            itemColumn.Items.Remove(movedItem);
+            movedItem.MoveToSlot(slotColumn.Id, maxColumnPosition);
+                
+            await _eventBuilder.UpdateRetroItem(movedItem.ToCommand());
         }
     }
 

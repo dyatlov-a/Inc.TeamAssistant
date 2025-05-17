@@ -14,9 +14,11 @@ public sealed class RetroItem
     public Guid? RetroSessionId { get; private set; }
     public RetroSession? RetroSession { get; private set; }
     public Guid? ParentId { get; private set; }
+    public IReadOnlyCollection<RetroItem> Children { get; private set; }
 
     private RetroItem()
     {
+        Children = [];
     }
 
     public RetroItem(
@@ -68,12 +70,38 @@ public sealed class RetroItem
     {
         ParentId = parentId;
 
+        var position = Math.Abs(Position);
+        if (parentId.HasValue)
+            Position = position * -1;
+        else
+            Position = position;
+
+        return this;
+    }
+    
+    public RetroItem ChangePosition(Guid columnId, int position)
+    {
+        ColumnId = columnId;
+        Position = position;
+
+        foreach (var child in Children)
+            child.ColumnId = columnId;
+
         return this;
     }
 
     internal RetroItem MapRetroSession(RetroSession? retroSession)
     {
         RetroSession = retroSession;
+
+        return this;
+    }
+    
+    internal RetroItem MapChildren(IReadOnlyCollection<RetroItem> children)
+    {
+        ArgumentNullException.ThrowIfNull(children);
+        
+        Children = children;
 
         return this;
     }

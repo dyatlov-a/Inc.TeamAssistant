@@ -1,7 +1,7 @@
 using FluentValidation;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 
-namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.UpdateRetroItem.Validattors;
+namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.UpdateRetroItem.Validators;
 
 internal sealed class UpdateRetroItemCommandValidator : AbstractValidator<UpdateRetroItemCommand>
 {
@@ -13,5 +13,11 @@ internal sealed class UpdateRetroItemCommandValidator : AbstractValidator<Update
         RuleFor(c => c.ParentId)
             .NotEmpty()
             .When(c => c.ParentId.HasValue);
+        
+        RuleFor(c => c.ColumnId)
+            .NotEmpty();
+        
+        RuleFor(c => c.Position)
+            .NotEmpty();
     }
 }

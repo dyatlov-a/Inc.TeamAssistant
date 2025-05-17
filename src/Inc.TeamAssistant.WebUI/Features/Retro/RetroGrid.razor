@@ -18,42 +18,43 @@
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
+                                        @if (CanDragAndDrop)
+                                        {
+                                            <RetroGridSlot ColumnId="column.Id" ItemMoved="ItemMovedToSlot"/>
+                                        }
                                         @foreach (var item in column.Items.OrderByDescending(c => c.Position))
                                         {
-                                            const int debounceDelay = 500;
-                                            
-                                            <div @key="item.SlotKey" class="retro-grid__slot"></div>
-                                            
-                                            <InputRetroItem
-                                                @key="item.ParentKey"
-                                                CanView="@(CanView(item))"
-                                                CanEdit="@(CanEdit(item))"
-                                                CanRemove="@(CanRemove(item))"
-                                                CanDragAndDrop="CanDragAndDrop"
-                                                BackgroundColor="@column.ItemColor"
-                                                DebounceDelay="debounceDelay"
-                                                ItemRemoved="ItemRemoved"
-                                                ItemMoved="ItemMoved"
-                                                Value="item"
-                                                ValueExpression="@(() => item)"
-                                                ValueChanged="SendItemChanged" />
-                                            
-                                            foreach (var child in item.Children)
-                                            {
+                                            <div>
                                                 <InputRetroItem
-                                                    @key="child.ChildKey"
-                                                    CanView="@(CanView(child))"
-                                                    CanEdit="false"
-                                                    CanRemove="@(CanRemove(child))"
-                                                    CanDragAndDrop="false"
+                                                    @key="item.ParentKey"
+                                                    CanView="@(CanView(item))"
+                                                    CanEdit="@(CanEdit(item))"
+                                                    CanRemove="@(CanRemove(item))"
+                                                    CanDragAndDrop="CanDragAndDrop"
                                                     BackgroundColor="@column.ItemColor"
-                                                    DebounceDelay="debounceDelay"
+                                                    DebounceDelay="500"
                                                     ItemRemoved="ItemRemoved"
-                                                    ItemMoved="@(_ => { })"
-                                                    Value="child"
-                                                    ValueExpression="@(() => child)"
-                                                    ValueChanged="@(_ => { })" />
-                                            }
+                                                    ItemMoved="ItemMoved"
+                                                    Value="item"
+                                                    ValueExpression="@(() => item)"
+                                                    ValueChanged="SendItemChanged"/>
+
+                                                @foreach (var child in item.Children)
+                                                {
+                                                    <InputRetroItem
+                                                        @key="child.ChildKey"
+                                                        CanView="@(CanView(child))"
+                                                        CanEdit="false"
+                                                        CanRemove="@(CanRemove(child))"
+                                                        CanDragAndDrop="false"
+                                                        BackgroundColor="@column.ItemColor"
+                                                        ItemRemoved="ItemRemoved"
+                                                        ItemMoved="@(_ => { })"
+                                                        Value="child"
+                                                        ValueExpression="@(() => child)"
+                                                        ValueChanged="@(_ => { })"/>
+                                                }
+                                            </div>
                                         }
                                     </div>
                                 </Content>
@@ -131,7 +132,13 @@
     /// Item moved callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<RetroItemViewModel.MovedEventData> ItemMoved { get; set; }
+    public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
+    
+    /// <summary>
+    /// Item moved to slot callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ColumnId, RetroItemViewModel Item)> ItemMovedToSlot { get; set; }
 
     private bool CanDragAndDrop => Session is not null;
 
