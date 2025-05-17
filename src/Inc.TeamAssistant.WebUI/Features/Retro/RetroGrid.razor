@@ -7,18 +7,18 @@
             <p class="main-content__text">@Localizer["RetroText"]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
-                    @foreach (var column in Columns.OrderByDescending(c => c.Position))
+                    @foreach (var column in Columns)
                     {
                         <div class="retro-grid__column">
                             <Panel Header="@column.Name" IsOpen="true">
                                 <Actions>
-                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => ItemCreatedEmit(column.Id)">
+                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => SendItemCreated(column.Id)">
                                         @Localizer["Add"]
                                     </Button>
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
-                                        @foreach (var item in column.Items.OrderBy(i => i.Created))
+                                        @foreach (var item in column.Items.OrderByDescending(c => c.Position))
                                         {
                                             <div class="retro-grid__slot"></div>
                                             
@@ -32,7 +32,7 @@
                                                 ItemRemoved="ItemRemoved"
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
-                                                ValueChanged="ItemChangedEmit" />
+                                                ValueChanged="SendItemChanged" />
                                             
                                             foreach (var child in item.Children)
                                             {
@@ -142,7 +142,7 @@
         return Session is null && CurrentUserId == item.OwnerId;
     }
 
-    private async Task ItemCreatedEmit(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
+    private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
     
-    private async Task ItemChangedEmit(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
+    private async Task SendItemChanged(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
 }

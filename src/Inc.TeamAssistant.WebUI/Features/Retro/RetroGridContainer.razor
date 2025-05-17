@@ -19,7 +19,7 @@
         {
             <RetroStatePanel
                 Session="_activeSession"
-                MovedToGrouping="MoveToGrouping" />
+                MovedToGrouping="OnMoveToGrouping" />
             
             <RetroGrid
                 Team="@Team"
@@ -30,8 +30,8 @@
                 CanCreate="_canCreate"
                 Retry="@(() => Load(_state))"
                 ItemCreated="CreateRetroItem"
-                ItemChanged="ChangeRetroItem"
-                ItemRemoved="RemoveRetroItem" />
+                ItemChanged="OnItemCreated"
+                ItemRemoved="OnItemRemoved" />
         }
     </Authorized>
 </AuthorizeView>
@@ -87,7 +87,7 @@
         _activeSession = result.ActiveSession;
         _canCreate = result.ActiveSession is null;
         foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
-            ApplyChangedEvent(item);
+            ApplyItemChanged(item);
         
         if (hardReset)
             await Reconnect();
@@ -116,7 +116,7 @@
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyChangedEvent(i);
+                    ApplyItemChanged(i);
                     StateHasChanged();
                 });
             }),
@@ -124,7 +124,7 @@
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyRemovedEvent(i.ColumnId, i.Id);
+                    ApplyItemRemoved(i.ColumnId, i.Id);
                     StateHasChanged();
                 });
             }),
@@ -134,7 +134,7 @@
             }));
     }
 
-    private async Task MoveToGrouping()
+    private async Task OnMoveToGrouping()
     {
         await RequestProcessor.Process(
             () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
@@ -158,13 +158,13 @@
         }
     }
 
-    private async Task ChangeRetroItem(RetroItemViewModel item)
+    private async Task OnItemCreated(RetroItemViewModel item)
     {
         if (_eventBuilder is not null)
             await _eventBuilder.UpdateRetroItem(item.ToCommand());
     }
 
-    private void ApplyChangedEvent(RetroItemDto item)
+    private void ApplyItemChanged(RetroItemDto item)
     {
         if (!_columns.TryGetValue(item.ColumnId, out var column))
             return;
@@ -181,13 +181,13 @@
         }
     }
     
-    private async Task RemoveRetroItem(RetroItemViewModel item)
+    private async Task OnItemRemoved(RetroItemViewModel item)
     {
         if (_eventBuilder is not null)
             await _eventBuilder.RemoveRetroItem(item.Id);
     }
 
-    private void ApplyRemovedEvent(Guid columnId, Guid itemId)
+    private void ApplyItemRemoved(Guid columnId, Guid itemId)
     {
         if (!_columns.TryGetValue(columnId, out var column))
             return;

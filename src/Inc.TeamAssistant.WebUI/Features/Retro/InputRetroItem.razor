@@ -8,13 +8,13 @@
     @if (CanRemove)
     {
         <div class="retro-item__actions">
-            <RouterLink OnClick="EmitItemRemoved">X</RouterLink>
+            <RouterLink OnClick="SendItemRemoved">X</RouterLink>
         </div>
     }
     <div
         class="retro-item__text"
         contenteditable="true"
-        @oninput="InputChanged"
+        @oninput="OnInputChanged"
         @ref="_item">
         @if (!RenderContext.IsBrowser || !CanEdit)
         {
@@ -76,8 +76,9 @@
 
         if (RenderContext.IsBrowser && _timer is null)
         {
-            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
-            InputChanged();
+            var debounceDelayInterval = TimeSpan.FromMilliseconds(DebounceDelay);
+            _timer = CreateTimer(debounceDelayInterval);
+            OnInputChanged();
         }
     }
 
@@ -87,7 +88,7 @@
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
     }
 
-    private async Task TryEmitValueChanged()
+    private async Task TrySendValueChanged()
     {
         try
         {
@@ -105,19 +106,19 @@
         }
     }
 
-    private void HandleTick(object? sender, ElapsedEventArgs e)
+    private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
     {
         _timer?.Stop();
-        InvokeAsync(TryEmitValueChanged);
+        InvokeAsync(TrySendValueChanged);
     }
 
-    private void InputChanged()
+    private void OnInputChanged()
     {
         _timer?.Stop();
         _timer?.Start();
     }
 
-    private async Task EmitItemRemoved()
+    private async Task SendItemRemoved()
     {
         if (!CanRemove)
             return;
@@ -137,7 +138,7 @@
     {
         var timer = new Timer(interval);
 
-        timer.Elapsed += HandleTick;
+        timer.Elapsed += OnAfterInputChanged;
         timer.AutoReset = false;
 
         return timer;
@@ -148,7 +149,7 @@
         if (disposing && _timer is not null)
         {
             _timer.Stop();
-            _timer.Elapsed -= HandleTick;
+            _timer.Elapsed -= OnAfterInputChanged;
             _timer.Dispose();
         }
         
