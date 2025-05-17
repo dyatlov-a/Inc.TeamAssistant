@@ -3,8 +3,15 @@
 @inject IJSRuntime JsRuntime
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
 
-<div style="background-color: @BackgroundColor" class="retro-item @CssClass @CanEditCss @CanViewCss">
+<div
+    draggable="true"
+    ondragover="event.preventDefault();"
+    @ondrop="OnDrop"
+    @ondragstart="OnDragStart"
+    style="background-color: @BackgroundColor"
+    class="retro-item @CssClass @CanEditCss @CanViewCss">
     @if (CanRemove)
     {
         <div class="retro-item__actions">
@@ -60,10 +67,17 @@
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ParenntId, Guid ChildId)> ItemMoved { get; set; }
+    
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private Timer? _timer;
 
+    private bool IsDraggable => !_value.Children.Any() && !_value.ParentId.HasValue;
     private string CanEditCss => CanEdit ? string.Empty : "retro-item_freeze";
     private string CanViewCss => CanView ? string.Empty : "retro-item_hide";
 
@@ -86,6 +100,18 @@
     {
         if (firstRender && CanEdit && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+    
+    private void OnDragStart() => DragAndDropService.Start(_value);
+    
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+
+        if (!movedItem.ParentId.HasValue)
+            await ItemMoved.InvokeAsync((_value.Id, movedItem.Id));
+        
+        await ValueChanged.InvokeAsync(movedItem);
     }
 
     private async Task TrySendValueChanged()
@@ -125,15 +151,7 @@
         
         await ItemRemoved.InvokeAsync(_value);
     }
-
-    protected override bool TryParseValueFromString(
-        string? value,
-        out RetroItemViewModel result,
-        out string validationErrorMessage)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     private Timer CreateTimer(TimeSpan interval)
     {
         var timer = new Timer(interval);
@@ -142,6 +160,14 @@
         timer.AutoReset = false;
 
         return timer;
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
     }
 
     protected override void Dispose(bool disposing)

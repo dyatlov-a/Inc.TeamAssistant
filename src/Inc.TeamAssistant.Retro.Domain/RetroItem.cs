@@ -51,7 +51,7 @@ public sealed class RetroItem
     
     public RetroItem CheckCanRemove(long personId)
     {
-        if (RetroSession is null && OwnerId == personId)
+        if (RetroSession is not null || OwnerId != personId)
             throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
         
         return this;
