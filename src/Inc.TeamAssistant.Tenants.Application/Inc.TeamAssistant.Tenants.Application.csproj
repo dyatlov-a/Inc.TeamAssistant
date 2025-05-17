@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Tenants.Domain\Inc.TeamAssistant.Tenants.Domain.csproj" />
+    <ProjectReference Include="..\Inc.TeamAssistant.Tenants.Model\Inc.TeamAssistant.Tenants.Model.csproj" />
+  </ItemGroup>
+</Project>

@@ -38,6 +38,7 @@
     margin-top: 20px;
 }
 .button_telegram {
+    display: block;
     padding: 9px 21px 11px;
     border-radius: 20px;
     background-color: var(--button-telegram-color);

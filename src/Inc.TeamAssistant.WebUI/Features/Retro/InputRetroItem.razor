@@ -1,0 +1,184 @@
+@inherits InputBase<RetroItemViewModel>
+
+@inject IJSRuntime JsRuntime
+@inject IRenderContext RenderContext
+@inject ILogger<InputRetroItem> Logger
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
+
+<div
+    draggable="true"
+    ondragover="event.preventDefault();"
+    @ondrop="OnDrop"
+    @ondragstart="OnDragStart"
+    style="background-color: @BackgroundColor"
+    class="retro-item @CssClass @CanEditCss @CanViewCss">
+    @if (CanRemove)
+    {
+        <div class="retro-item__actions">
+            <RouterLink OnClick="SendItemRemoved">X</RouterLink>
+        </div>
+    }
+    <div
+        class="retro-item__text"
+        contenteditable="true"
+        @oninput="OnInputChanged"
+        @ref="_item">
+        @if (!RenderContext.IsBrowser || !CanEdit)
+        {
+            @_value.Text
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanView { get; set; }
+    
+    /// <summary>
+    /// Can edit item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanEdit { get; set; }
+    
+    /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanRemove { get; set; }
+    
+    /// <summary>
+    /// Background color.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string BackgroundColor { get; set; } = default!;
+    
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int DebounceDelay { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ParenntId, Guid ChildId)> ItemMoved { get; set; }
+    
+    private RetroItemViewModel _value = new();
+    private ElementReference _item;
+    private Timer? _timer;
+
+    private bool IsDraggable => !_value.Children.Any() && !_value.ParentId.HasValue;
+    private string CanEditCss => CanEdit ? string.Empty : "retro-item_freeze";
+    private string CanViewCss => CanView ? string.Empty : "retro-item_hide";
+
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue ?? new();
+
+        if (!CanEdit)
+            return;
+
+        if (RenderContext.IsBrowser && _timer is null)
+        {
+            var debounceDelayInterval = TimeSpan.FromMilliseconds(DebounceDelay);
+            _timer = CreateTimer(debounceDelayInterval);
+            OnInputChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CanEdit && RenderContext.IsBrowser)
+            await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+    
+    private void OnDragStart() => DragAndDropService.Start(_value);
+    
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+
+        if (!movedItem.ParentId.HasValue)
+            await ItemMoved.InvokeAsync((_value.Id, movedItem.Id));
+        
+        await ValueChanged.InvokeAsync(movedItem);
+    }
+
+    private async Task TrySendValueChanged()
+    {
+        try
+        {
+            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+
+            if (_value.Text != value)
+            {
+                _value.ChangeText(value);
+                await ValueChanged.InvokeAsync(_value);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error on timer tick for InputRetroItem");
+        }
+    }
+
+    private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
+    {
+        _timer?.Stop();
+        InvokeAsync(TrySendValueChanged);
+    }
+
+    private void OnInputChanged()
+    {
+        _timer?.Stop();
+        _timer?.Start();
+    }
+
+    private async Task SendItemRemoved()
+    {
+        if (!CanRemove)
+            return;
+        
+        await ItemRemoved.InvokeAsync(_value);
+    }
+    
+    private Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new Timer(interval);
+
+        timer.Elapsed += OnAfterInputChanged;
+        timer.AutoReset = false;
+
+        return timer;
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && _timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnAfterInputChanged;
+            _timer.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
+}

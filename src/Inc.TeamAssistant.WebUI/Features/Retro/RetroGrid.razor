@@ -1,0 +1,158 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<Loading State="State" Retry="Retry">
+    <div class="main-content">
+        <div class="main-content__container">
+            <h1 class="main-content__header">@Localizer["RetroHeader"] @Team.Name</h1>
+            <p class="main-content__text">@Localizer["RetroText"]</p>
+            <div class="retro-grid">
+                <div class="retro-grid__columns">
+                    @foreach (var column in Columns)
+                    {
+                        <div class="retro-grid__column">
+                            <Panel Header="@column.Name" IsOpen="true">
+                                <Actions>
+                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => SendItemCreated(column.Id)">
+                                        @Localizer["Add"]
+                                    </Button>
+                                </Actions>
+                                <Content>
+                                    <div class="retro-grid__column-items">
+                                        @foreach (var item in column.Items.OrderByDescending(c => c.Position))
+                                        {
+                                            const int debounceDelay = 500;
+                                            
+                                            <div @key="item.SlotKey" class="retro-grid__slot"></div>
+                                            
+                                            <InputRetroItem
+                                                @key="item.ParentKey"
+                                                CanView="@(CanView(item))"
+                                                CanEdit="@(CanEdit(item))"
+                                                CanRemove="@(CanRemove(item))"
+                                                BackgroundColor="@column.ItemColor"
+                                                DebounceDelay="debounceDelay"
+                                                ItemRemoved="ItemRemoved"
+                                                ItemMoved="ItemMoved"
+                                                Value="item"
+                                                ValueExpression="@(() => item)"
+                                                ValueChanged="SendItemChanged" />
+                                            
+                                            foreach (var child in item.Children)
+                                            {
+                                                <InputRetroItem
+                                                    @key="child.ChildKey"
+                                                    CanView="@(CanView(item))"
+                                                    CanEdit="@(CanEdit(item))"
+                                                    CanRemove="@(CanRemove(item))"
+                                                    BackgroundColor="@column.ItemColor"
+                                                    DebounceDelay="debounceDelay"
+                                                    ItemRemoved="ItemRemoved"
+                                                    ItemMoved="ItemMoved"
+                                                    Value="child"
+                                                    ValueExpression="@(() => child)"
+                                                    ValueChanged="SendItemChanged" />
+                                            }
+                                        }
+                                    </div>
+                                </Content>
+                            </Panel>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</Loading>
+
+@code {
+    /// <summary>
+    /// Current Team.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public TenantTeamDto Team { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Retro columns.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
+    
+    /// <summary>
+    /// Current user id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
+    /// Retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroSessionDto? Session { get; set; }
+    
+    /// <summary>
+    /// Can create retro items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanCreate { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Create retro item callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> ItemCreated { get; set; }
+    
+    /// <summary>
+    /// Change retro item callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ParenntId, Guid ChildId)> ItemMoved { get; set; }
+
+    private bool CanView(RetroItemViewModel item)
+    {
+        return Session is not null || CurrentUserId == item.OwnerId;
+    }
+    
+    private bool CanEdit(RetroItemViewModel item)
+    {
+        if (Session is null)
+            return CurrentUserId == item.OwnerId;
+
+        if (Session?.State == "Reviewing")
+            return CurrentUserId == Session.FacilitatorId;
+        
+        return false;
+    }
+
+    private bool CanRemove(RetroItemViewModel item)
+    {
+        return Session is null && CurrentUserId == item.OwnerId;
+    }
+
+    private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
+    
+    private async Task SendItemChanged(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
+}

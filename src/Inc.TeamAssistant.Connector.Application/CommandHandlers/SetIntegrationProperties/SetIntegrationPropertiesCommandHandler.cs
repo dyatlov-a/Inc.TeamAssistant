@@ -34,7 +34,7 @@ internal sealed class SetIntegrationPropertiesCommandHandler : IRequestHandler<S
         
         var accessToken = team.Properties.GetPropertyValueOrDefault(
             ConnectorProperties.AccessToken,
-            Guid.NewGuid().ToLinkSegment());
+            Guid.NewGuid().ToString("N"));
         
         team
             .ChangeProperty(ConnectorProperties.AccessToken, accessToken)

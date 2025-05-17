@@ -1,0 +1,18 @@
+.retro-item {
+    padding: .5rem;
+}
+.retro-item__actions {
+    float: right;
+    padding: 0 .3rem;
+}
+.retro-item__text {
+    min-height: 80px;
+    word-break: break-all;
+}
+.retro-item_hide {
+    filter: blur(4px);
+}
+.retro-item_freeze {
+    user-select: none;
+    pointer-events: none;
+}

@@ -30,7 +30,7 @@
     <data name="CreateBot" xml:space="preserve">
         <value>Создай бота для своей команды</value>
     </data>
-    <data name="LoginAsSuperuser" xml:space="preserve">
-        <value>Войти как суперпользователь</value>
+    <data name="LoginAsSystemUser" xml:space="preserve">
+        <value>Войти как</value>
     </data>
 </root>
