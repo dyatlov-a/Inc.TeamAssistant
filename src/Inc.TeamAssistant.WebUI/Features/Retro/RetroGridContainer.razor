@@ -31,7 +31,8 @@
                 Retry="@(() => Load(_state))"
                 ItemCreated="CreateRetroItem"
                 ItemChanged="OnItemCreated"
-                ItemRemoved="OnItemRemoved" />
+                ItemRemoved="OnItemRemoved"
+                ItemMoved="OnItemMoved" />
         }
     </Authorized>
 </AuthorizeView>
@@ -124,7 +125,7 @@
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyItemRemoved(i.ColumnId, i.Id);
+                    ApplyRemovedEvent(i.ColumnId, i.Id);
                     StateHasChanged();
                 });
             }),
@@ -160,8 +161,10 @@
 
     private async Task OnItemCreated(RetroItemViewModel item)
     {
-        if (_eventBuilder is not null)
-            await _eventBuilder.UpdateRetroItem(item.ToCommand());
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.UpdateRetroItem(item.ToCommand());
     }
 
     private void ApplyItemChanged(RetroItemDto item)
@@ -183,11 +186,39 @@
     
     private async Task OnItemRemoved(RetroItemViewModel item)
     {
-        if (_eventBuilder is not null)
+        if (_eventBuilder is null)
+            return;
+
+        if (item.ParentId.HasValue)
+        {
+            var parent = _columns
+                .SelectMany(c => c.Value.Items)
+                .Single(i => i.Id == item.ParentId.Value);
+
+            parent.RemoveChild(item);
+            
+            await _eventBuilder.UpdateRetroItem(item.ToCommand());
+        }
+        else
             await _eventBuilder.RemoveRetroItem(item.Id);
     }
 
-    private void ApplyItemRemoved(Guid columnId, Guid itemId)
+    private async Task OnItemMoved(RetroItemViewModel.MovedEventData data)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        var child = data.Child;
+        if (_columns.TryGetValue(child.ColumnId, out var column))
+        {
+            column.Items.Remove(child);
+            data.Parent.AddChild(child);
+        
+            await _eventBuilder.UpdateRetroItem(child.ToCommand());
+        }
+    }
+
+    private void ApplyRemovedEvent(Guid columnId, Guid itemId)
     {
         if (!_columns.TryGetValue(columnId, out var column))
             return;

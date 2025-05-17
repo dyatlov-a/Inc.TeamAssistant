@@ -3,9 +3,16 @@
 @inject IJSRuntime JsRuntime
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
 
-<div style="background-color: @BackgroundColor" class="retro-item @CssClass @CanEditCss @CanViewCss">
-    @if (CanRemove)
+<div
+    ondragover="event.preventDefault();"
+    @ondrop="OnDrop"
+    @ondragstart="OnDragStart"
+    style="background-color: @BackgroundColor"
+    class="retro-item @CssClass @CanViewCss @ChildCss"
+    @attributes="DynamicAttributes.BuildDraggable(IsDraggable)">
+    @if (HasRemove)
     {
         <div class="retro-item__actions">
             <RouterLink OnClick="SendItemRemoved">X</RouterLink>
@@ -13,8 +20,8 @@
     }
     <div
         class="retro-item__text"
-        contenteditable="true"
         @oninput="OnInputChanged"
+        @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
         @ref="_item">
         @if (!RenderContext.IsBrowser || !CanEdit)
         {
@@ -43,6 +50,12 @@
     public bool CanRemove { get; set; }
     
     /// <summary>
+    /// Can drag and drop item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanDragAndDrop { get; set; }
+    
+    /// <summary>
     /// Background color.
     /// </summary>
     [Parameter, EditorRequired]
@@ -60,12 +73,20 @@
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
     
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel.MovedEventData> ItemMoved { get; set; }
+    
     private RetroItemViewModel _value = new();
     private ElementReference _item;
     private Timer? _timer;
 
-    private string CanEditCss => CanEdit ? string.Empty : "retro-item_freeze";
-    private string CanViewCss => CanView ? string.Empty : "retro-item_hide";
+    private bool HasRemove => CanRemove && !_value.Children.Any();
+    private bool IsDraggable => CanDragAndDrop && !_value.Children.Any();
+    private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
+    private string ChildCss => _value.ParentId.HasValue ? "retro-item_child" : string.Empty;
 
     protected override void OnParametersSet()
     {
@@ -86,6 +107,19 @@
     {
         if (firstRender && CanEdit && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+    }
+    
+    private void OnDragStart() => DragAndDropService.Start(_value);
+    
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+        var isOtherItem = _value.Id != movedItem.Id;
+        var isSameColumn = _value.ColumnId == movedItem.ColumnId;
+        var hasParent = _value.ParentId.HasValue;
+        
+        if (!hasParent && isOtherItem && isSameColumn)
+            await ItemMoved.InvokeAsync(new(_value, movedItem));
     }
 
     private async Task TrySendValueChanged()
@@ -120,20 +154,12 @@
 
     private async Task SendItemRemoved()
     {
-        if (!CanRemove)
+        if (!HasRemove)
             return;
         
         await ItemRemoved.InvokeAsync(_value);
     }
-
-    protected override bool TryParseValueFromString(
-        string? value,
-        out RetroItemViewModel result,
-        out string validationErrorMessage)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     private Timer CreateTimer(TimeSpan interval)
     {
         var timer = new Timer(interval);
@@ -142,6 +168,14 @@
         timer.AutoReset = false;
 
         return timer;
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out RetroItemViewModel result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
     }
 
     protected override void Dispose(bool disposing)

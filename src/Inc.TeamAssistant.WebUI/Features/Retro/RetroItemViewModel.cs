@@ -5,6 +5,8 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
 public sealed class RetroItemViewModel
 {
+    public record MovedEventData(RetroItemViewModel Parent, RetroItemViewModel Child);
+    
     public Guid Id { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
@@ -15,6 +17,9 @@ public sealed class RetroItemViewModel
     
     private readonly List<RetroItemViewModel> _children = new();
     public IReadOnlyCollection<RetroItemViewModel> Children => _children;
+    public string ParentKey => $"{Id:N}-parent";
+    public string ChildKey => $"{Id:N}-child";
+    public string SlotKey => $"{Id:N}-slot";
 
     public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
@@ -27,13 +32,6 @@ public sealed class RetroItemViewModel
         };
     }
     
-    public RetroItemViewModel ChangeText(string? text)
-    {
-        Text = text;
-
-        return this;
-    }
-
     public RetroItemViewModel Apply(RetroItemDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
@@ -47,6 +45,23 @@ public sealed class RetroItemViewModel
         return this;
     }
     
+    public RetroItemViewModel ChangeText(string? text)
+    {
+        Text = text;
+
+        return this;
+    }
+    
+    public RetroItemViewModel AddChild(RetroItemViewModel child)
+    {
+        ArgumentNullException.ThrowIfNull(child);
+
+        child.ParentId = Id;
+        _children.Add(child);
+
+        return this;
+    }
+    
     public RetroItemViewModel ApplyChild(RetroItemDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
@@ -56,6 +71,15 @@ public sealed class RetroItemViewModel
             _children.Add(Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
         else
             child.Apply(item);
+
+        return this;
+    }
+
+    public RetroItemViewModel RemoveChild(RetroItemViewModel child)
+    {
+        child.ParentId = null;
+
+        _children.Remove(child);
 
         return this;
     }

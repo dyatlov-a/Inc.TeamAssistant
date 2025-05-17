@@ -20,16 +20,20 @@
                                     <div class="retro-grid__column-items">
                                         @foreach (var item in column.Items.OrderByDescending(c => c.Position))
                                         {
-                                            <div class="retro-grid__slot"></div>
+                                            const int debounceDelay = 500;
+                                            
+                                            <div @key="item.SlotKey" class="retro-grid__slot"></div>
                                             
                                             <InputRetroItem
-                                                @key="item.Id"
+                                                @key="item.ParentKey"
                                                 CanView="@(CanView(item))"
                                                 CanEdit="@(CanEdit(item))"
                                                 CanRemove="@(CanRemove(item))"
+                                                CanDragAndDrop="CanDragAndDrop"
                                                 BackgroundColor="@column.ItemColor"
-                                                DebounceDelay="500"
+                                                DebounceDelay="debounceDelay"
                                                 ItemRemoved="ItemRemoved"
+                                                ItemMoved="ItemMoved"
                                                 Value="item"
                                                 ValueExpression="@(() => item)"
                                                 ValueChanged="SendItemChanged" />
@@ -37,16 +41,18 @@
                                             foreach (var child in item.Children)
                                             {
                                                 <InputRetroItem
-                                                    @key="child.Id"
-                                                    CanView="@(CanView(item))"
+                                                    @key="child.ChildKey"
+                                                    CanView="@(CanView(child))"
                                                     CanEdit="false"
-                                                    CanRemove="false"
+                                                    CanRemove="@(CanRemove(child))"
+                                                    CanDragAndDrop="false"
                                                     BackgroundColor="@column.ItemColor"
-                                                    DebounceDelay="500"
-                                                    ItemRemoved="@(_ => {})"
+                                                    DebounceDelay="debounceDelay"
+                                                    ItemRemoved="ItemRemoved"
+                                                    ItemMoved="@(_ => { })"
                                                     Value="child"
                                                     ValueExpression="@(() => child)"
-                                                    ValueChanged="@(_ => {})" />
+                                                    ValueChanged="@(_ => { })" />
                                             }
                                         }
                                     </div>
@@ -120,6 +126,14 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel.MovedEventData> ItemMoved { get; set; }
+
+    private bool CanDragAndDrop => Session is not null;
 
     private bool CanView(RetroItemViewModel item)
     {
@@ -139,7 +153,7 @@
 
     private bool CanRemove(RetroItemViewModel item)
     {
-        return Session is null && CurrentUserId == item.OwnerId;
+        return (Session is null && CurrentUserId == item.OwnerId) || item.ParentId.HasValue;
     }
 
     private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
