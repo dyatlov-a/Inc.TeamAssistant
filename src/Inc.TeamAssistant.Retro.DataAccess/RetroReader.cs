@@ -14,7 +14,9 @@ internal sealed class RetroReader : IRetroReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<RetroItem>> ReadItems(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<RetroItem>> ReadItems(
+        Guid teamId,
+        CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -77,5 +79,36 @@ internal sealed class RetroReader : IRetroReader
         var result = await connection.QuerySingleOrDefaultAsync<RetroSession>(command);
         
         return result;
+    }
+
+    public async Task<IReadOnlyCollection<PersonVote>> ReadVotes(
+        Guid teamId,
+        IReadOnlyCollection<RetroSessionState> states,
+        CancellationToken token)
+    {
+        var targetStates = states.Select(s => (int)s).ToArray();
+        var command = new CommandDefinition(
+            """
+            SELECT
+                pv.retro_session_id AS retrosessionid,
+                pv.person_id AS personid,
+                pv.votes AS votes
+            FROM retro.person_votes AS pv
+            JOIN retro.retro_sessions AS rs ON pv.retro_session_id = rs.id
+            WHERE rs.team_id = @team_id AND rs.state = ANY(@states);
+            """,
+            new
+            {
+                team_id = teamId,
+                states = targetStates
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var votes = await connection.QueryAsync<PersonVote>(command);
+        
+        return votes.ToArray();
     }
 }

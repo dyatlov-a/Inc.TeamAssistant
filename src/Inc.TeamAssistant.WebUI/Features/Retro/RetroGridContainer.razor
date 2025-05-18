@@ -4,7 +4,6 @@
 
 @attribute [Authorize]
 
-@using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState
 @implements IAsyncDisposable
 
 @inject TenantStore TenantStore
@@ -29,13 +28,15 @@
                 Columns="Columns"
                 CurrentUserId="context.User.ToPerson().Id"
                 Session="_activeSession"
+                VotesTotal="6"
                 CanCreate="_canCreate"
                 Retry="@(() => Load(_state))"
                 ItemCreated="CreateRetroItem"
                 ItemChanged="OnItemCreated"
                 ItemRemoved="OnItemRemoved"
                 ItemMoved="OnItemMoved"
-                ItemMovedToSlot="OnItemMovedToSlot" />
+                ItemMovedToSlot="OnItemMovedToSlot"
+                VoteChanged="OnVoteChanged" />
         }
     </Authorized>
 </AuthorizeView>
@@ -249,6 +250,25 @@
                 
             await _eventBuilder.UpdateRetroItem(movedItem.ToCommand());
         }
+    }
+    
+    private async Task OnVoteChanged((Guid ItemId, int Votes) data)
+    {
+        if (_eventBuilder is null || _activeSession is null)
+            return;
+        
+        var votesByPerson = Columns.SelectMany(c => c.Items)
+            .Where(i => i.Id != data.ItemId)
+            .Select(i => new PersonVoteByItemDto(i.Id, i.Votes))
+            .Append(new PersonVoteByItemDto(data.ItemId, data.Votes))
+            .Where(i => i.Vote > 0)
+            .ToArray();
+        Columns
+            .SelectMany(c => c.Items)
+            .Single(i => i.Id == data.ItemId)
+            .ChangeVotes(data.Votes);
+
+        await _eventBuilder.SetVotes(new SetVotesCommand(_activeSession.Id, votesByPerson));
     }
 
     private void ApplyRemovedEvent(Guid columnId, Guid itemId)

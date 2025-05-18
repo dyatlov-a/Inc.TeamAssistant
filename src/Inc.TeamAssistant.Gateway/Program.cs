@@ -33,6 +33,7 @@ using Inc.TeamAssistant.RandomCoffee.DataAccess;
 using Inc.TeamAssistant.RandomCoffee.Domain;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.DataAccess;
+using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
@@ -97,6 +98,8 @@ builder.Services
 	
 	.AddJsonType<IReadOnlyCollection<ReviewInterval>>()
 	.AddJsonType<IReadOnlyCollection<ReviewComment>>()
+	
+	.AddJsonType<IReadOnlyCollection<PersonVoteByItem>>()
 	
 	.AddJsonType<WorkScheduleUtc>()
 	.AddJsonType<IReadOnlyCollection<DayOfWeek>>()

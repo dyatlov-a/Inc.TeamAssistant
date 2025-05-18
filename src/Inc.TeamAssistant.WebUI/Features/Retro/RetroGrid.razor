@@ -37,7 +37,17 @@
                                                     ItemMoved="ItemMoved"
                                                     Value="item"
                                                     ValueExpression="@(() => item)"
-                                                    ValueChanged="SendItemChanged"/>
+                                                    ValueChanged="SendItemChanged">
+                                                    @if (CanVote)
+                                                    {
+                                                        <InputVoting
+                                                            VotesTotal="VotesTotal"
+                                                            RemainingVotes="RemainingVotes"
+                                                            Value="item.Votes"
+                                                            ValueExpression="@(() => item.Votes)"
+                                                            ValueChanged="@((int v) => SendVotesChanged(item.Id, v))" />
+                                                    }
+                                                </InputRetroItem>
 
                                                 @foreach (var child in item.Children)
                                                 {
@@ -52,7 +62,7 @@
                                                         ItemMoved="@(_ => { })"
                                                         Value="child"
                                                         ValueExpression="@(() => child)"
-                                                        ValueChanged="@(_ => { })"/>
+                                                        ValueChanged="_ => { }" />
                                                 }
                                             </div>
                                         }
@@ -73,91 +83,105 @@
     /// </summary>
     [Parameter, EditorRequired]
     public TenantTeamDto Team { get; set; } = default!;
-    
+
     /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
     public LoadingState State { get; set; } = default!;
-    
+
     /// <summary>
     /// Retro columns.
     /// </summary>
     [Parameter, EditorRequired]
     public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
-    
+
     /// <summary>
     /// Current user id.
     /// </summary>
     [Parameter, EditorRequired]
     public long CurrentUserId { get; set; }
-    
+
     /// <summary>
     /// Retro session.
     /// </summary>
     [Parameter, EditorRequired]
     public RetroSessionDto? Session { get; set; }
+
+    /// <summary>
+    /// Votes total.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int VotesTotal { get; set; }
     
     /// <summary>
     /// Can create retro items.
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanCreate { get; set; }
-    
+
     /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
-    
+
     /// <summary>
     /// Create retro item callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> ItemCreated { get; set; }
-    
+
     /// <summary>
     /// Change retro item callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
-    
+
     /// <summary>
     /// Item removed callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
-    
+
     /// <summary>
     /// Item moved callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
-    
+
     /// <summary>
     /// Item moved to slot callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(Guid ColumnId, RetroItemViewModel Item)> ItemMovedToSlot { get; set; }
     
+    /// <summary>
+    /// Vote changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ItemId, int Vote)> VoteChanged { get; set; }
+
     private const string GroupingState = "Grouping";
-    private const string PrioritizingText = "Prioritizing";
+    private const string PrioritizingState = "Prioritizing";
 
     private string RetroTextKey => Session?.State switch
     {
         GroupingState => "GroupingText",
-        PrioritizingText => "PrioritizingText",
+        PrioritizingState => "PrioritizingText",
         _ => "StartText"
     };
 
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
+    private bool CanVote => Session?.State == PrioritizingState;
+    private int RemainingVotes => VotesTotal - Columns.SelectMany(c => c.Items).Sum(i => i.Votes);
 
     private bool CanView(RetroItemViewModel item)
     {
         var canAsUser = Session is not null;
         var canAsOwner = item.HasOwnerRights(CurrentUserId);
-        
+
         return canAsUser || canAsOwner;
     }
 
@@ -165,7 +189,7 @@
     {
         var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
         var canAsFacilitator = Session?.State == GroupingState && HasFacilitatorRights;
-        
+
         return canAsOwner || canAsFacilitator;
     }
 
@@ -178,6 +202,8 @@
     }
 
     private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
-    
+
     private async Task SendItemChanged(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
+    
+    private async Task SendVotesChanged(Guid itemId, int vote) => await VoteChanged.InvokeAsync((itemId, vote));
 }

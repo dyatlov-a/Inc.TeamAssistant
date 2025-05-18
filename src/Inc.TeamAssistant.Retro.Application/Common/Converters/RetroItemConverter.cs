@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Retro.Application.Common.Converters;
 
 internal static class RetroItemConverter
 {
-    public static RetroItemDto ConvertTo(RetroItem item)
+    public static RetroItemDto ConvertTo(RetroItem item, IDictionary<Guid, int>? votesByPerson = null)
     {
         ArgumentNullException.ThrowIfNull(item);
 
@@ -18,6 +18,7 @@ internal static class RetroItemConverter
             item.Text,
             item.OwnerId,
             item.ParentId,
+            votesByPerson?.TryGetValue(item.Id, out var value) == true ? value : 0,
             item.Children.Select(c => new RetroItemDto(
                 c.Id,
                 c.TeamId,
@@ -27,6 +28,7 @@ internal static class RetroItemConverter
                 c.Text,
                 c.OwnerId,
                 c.ParentId,
-                [])).ToArray());
+                Votes: 0,
+                Children: [])).ToArray());
     }
 }

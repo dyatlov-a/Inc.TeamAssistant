@@ -9,4 +9,5 @@ public sealed record RetroItemDto(
     string? Text,
     long OwnerId,
     Guid? ParentId,
+    int Votes,
     IReadOnlyCollection<RetroItemDto> Children);

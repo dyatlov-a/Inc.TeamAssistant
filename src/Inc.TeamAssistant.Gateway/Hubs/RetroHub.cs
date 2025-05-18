@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -47,5 +48,11 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     public async Task RemoveRetroItem(Guid retroItemId)
     {
         await _retroService.RemoveRetroItem(retroItemId);
+    }
+    
+    [HubMethodName(HubDescriptors.RetroHub.SetVotesMethod)]
+    public async Task SetVotes(SetVotesCommand command)
+    {
+        await _retroService.SetVotes(command);
     }
 }

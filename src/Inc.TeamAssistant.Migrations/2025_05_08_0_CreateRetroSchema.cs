@@ -78,10 +78,29 @@ public sealed class CreateRetroSchema : Migration
             WHERE state != 4;
             """,
             "Create unique index on retro_sessions for active sessions");
+
+        Create
+            .Table("person_votes")
+            .InSchema("retro")
+
+            .WithColumn("retro_session_id")
+            .AsGuid().NotNullable()
+            .PrimaryKey("person_votes__pk__rs_id__p_id")
+
+            .WithColumn("person_id")
+            .AsInt64().NotNullable()
+            .PrimaryKey("person_votes__pk__rs_id__p_id")
+
+            .WithColumn("votes")
+            .AsCustom("jsonb").NotNullable();
     }
 
     public override void Down()
     {
+        Delete
+            .Table("person_votes")
+            .InSchema("retro");
+        
         Delete
             .Table("retro_items")
             .InSchema("retro");

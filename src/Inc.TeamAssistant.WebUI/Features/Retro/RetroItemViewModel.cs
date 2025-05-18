@@ -15,6 +15,7 @@ public sealed class RetroItemViewModel
     
     private readonly List<RetroItemViewModel> _children = new();
     public IReadOnlyCollection<RetroItemViewModel> Children => _children;
+    public int Votes { get; private set; }
 
     public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
@@ -36,6 +37,7 @@ public sealed class RetroItemViewModel
         Created = item.Created;
         Position = item.Position;
         ParentId = item.ParentId;
+        Votes = item.Votes;
         
         ChangeText(item.Text);
 
@@ -45,6 +47,13 @@ public sealed class RetroItemViewModel
     public RetroItemViewModel ChangeText(string? text)
     {
         Text = text;
+
+        return this;
+    }
+    
+    public RetroItemViewModel ChangeVotes(int votes)
+    {
+        Votes = votes;
 
         return this;
     }

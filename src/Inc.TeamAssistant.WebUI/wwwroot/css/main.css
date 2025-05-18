@@ -216,13 +216,13 @@ html {
 .icon-star {
     width: 14px;
     aspect-ratio: 1;
-    background: var(--text-secondary-color);
+    background-color: var(--text-secondary-color);
     display: inline-block;
     vertical-align: middle;
     clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
 }
 .icon-star_checked {
-    background: var(--icon-primary-color);
+    background-color: var(--icon-primary-color);
 }
 .icon_primary {
     stroke: var(--button-primary-color);    

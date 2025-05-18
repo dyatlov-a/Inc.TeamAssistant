@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
+using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
@@ -19,4 +20,6 @@ public interface IRetroService
     Task<StartRetroResult> StartRetro(StartRetroCommand command, CancellationToken token = default);
     
     Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token = default);
+    
+    Task SetVotes(SetVotesCommand command, CancellationToken token = default);
 }

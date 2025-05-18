@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -46,6 +47,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     public async Task RemoveRetroItem(Guid itemId)
     {
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveRetroItemMethod, itemId);
+    }
+
+    public async Task SetVotes(SetVotesCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.SetVotesMethod, command);
     }
 
     public async Task<IAsyncDisposable> Build(

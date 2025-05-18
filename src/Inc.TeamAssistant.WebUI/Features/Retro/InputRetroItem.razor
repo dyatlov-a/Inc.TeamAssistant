@@ -28,6 +28,10 @@
             @_value.Text
         }
     </div>
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
 </div>
 
 @code {
@@ -78,6 +82,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
+    
+    /// <summary>
+    /// Child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
     
     private RetroItemViewModel _value = new();
     private ElementReference _item;

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
+using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -18,6 +19,24 @@ public sealed class RetroController : ControllerBase
     public RetroController(IRetroService retroService)
     {
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> StartRetro([FromBody]StartRetroCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        return Ok(await _retroService.StartRetro(command, CancellationToken.None));
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> MoveToNextRetroState([FromBody]MoveToNextRetroStateCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.MoveToNextRetroState(command, CancellationToken.None);
+        
+        return Ok();
     }
     
     [HttpGet("items/{teamId:Guid}")]
@@ -52,20 +71,12 @@ public sealed class RetroController : ControllerBase
         return Ok();
     }
     
-    [HttpPost]
-    public async Task<IActionResult> StartRetro([FromBody]StartRetroCommand command)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        return Ok(await _retroService.StartRetro(command, CancellationToken.None));
-    }
-    
-    [HttpPut]
-    public async Task<IActionResult> MoveToNextRetroState([FromBody]MoveToNextRetroStateCommand command)
+    [HttpPost("votes")]
+    public async Task<IActionResult> SetVotes([FromBody]SetVotesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _retroService.MoveToNextRetroState(command, CancellationToken.None);
+        await _retroService.SetVotes(command, CancellationToken.None);
         
         return Ok();
     }
