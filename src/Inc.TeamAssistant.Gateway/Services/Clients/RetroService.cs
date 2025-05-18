@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -46,5 +47,12 @@ internal sealed class RetroService : IRetroService
         ArgumentNullException.ThrowIfNull(command);
         
         return await _mediator.Send(command, token);
+    }
+
+    public async Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
     }
 }

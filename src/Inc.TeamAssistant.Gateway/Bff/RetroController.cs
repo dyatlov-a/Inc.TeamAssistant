@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -57,5 +58,15 @@ public sealed class RetroController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
         
         return Ok(await _retroService.StartRetro(command, CancellationToken.None));
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> MoveToNextRetroState([FromBody]MoveToNextRetroStateCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.MoveToNextRetroState(command, CancellationToken.None);
+        
+        return Ok();
     }
 }

@@ -18,13 +18,19 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="RetroHeader" xml:space="preserve">
+    <data name="MainHeader" xml:space="preserve">
         <value>Retro board for team</value>
     </data>
     <data name="Add" xml:space="preserve">
         <value>Add</value>
     </data>
-    <data name="RetroText" xml:space="preserve">
-        <value>You need to describe all the issues and suggestions that concern you. At the next retrospective, we will discuss everything together and document the decisions. Before the retrospective begins, the cards are only visible to their authors.</value>
+    <data name="StartText" xml:space="preserve">
+        <value>You need to describe all the concerns and suggestions you have. At the next retrospective, we will discuss everything together and document the decisions. Until the retrospective begins, the cards are visible only to their author.</value>
+    </data>
+    <data name="GroupingText" xml:space="preserve">
+        <value>We are now at the grouping stage. Combine cards with similar ideas into logical groups. This will help simplify the discussion during the retrospective. If necessary, edit the cards so that their meaning is clear to everyone.</value>
+    </data>
+    <data name="PrioritizingText" xml:space="preserve">
+        <value>We are now at the prioritization stage. Review the grouped cards and vote for the ones you believe are the most important to discuss. You can distribute your votes across different cards or assign multiple votes to a single one. This will help us focus on the most meaningful topics during the retrospective.</value>
     </data>
 </root>

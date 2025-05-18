@@ -45,9 +45,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string RetroHeader {
+        internal static string MainHeader {
             get {
-                return ResourceManager.GetString("RetroHeader", resourceCulture);
+                return ResourceManager.GetString("MainHeader", resourceCulture);
             }
         }
         
@@ -57,9 +57,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string RetroText {
+        internal static string StartText {
             get {
-                return ResourceManager.GetString("RetroText", resourceCulture);
+                return ResourceManager.GetString("StartText", resourceCulture);
+            }
+        }
+        
+        internal static string GroupingText {
+            get {
+                return ResourceManager.GetString("GroupingText", resourceCulture);
+            }
+        }
+        
+        internal static string PrioritizingText {
+            get {
+                return ResourceManager.GetString("PrioritizingText", resourceCulture);
             }
         }
     }

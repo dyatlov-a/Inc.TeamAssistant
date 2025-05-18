@@ -3,8 +3,8 @@
 <Loading State="State" Retry="Retry">
     <div class="main-content">
         <div class="main-content__container">
-            <h1 class="main-content__header">@Localizer["RetroHeader"] @Team.Name</h1>
-            <p class="main-content__text">@Localizer["RetroText"]</p>
+            <h1 class="main-content__header">@Localizer["MainHeader"] @Team.Name</h1>
+            <p class="main-content__text">@Localizer[RetroTextKey]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
                     @foreach (var column in Columns)
@@ -18,7 +18,7 @@
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
-                                        @if (CanDragAndDrop)
+                                        @if (CanMove)
                                         {
                                             <RetroGridSlot ColumnId="column.Id" ItemMoved="ItemMovedToSlot"/>
                                         }
@@ -26,11 +26,11 @@
                                         {
                                             <div>
                                                 <InputRetroItem
-                                                    @key="item.ParentKey"
+                                                    @key="item.Id"
                                                     CanView="@(CanView(item))"
                                                     CanEdit="@(CanEdit(item))"
                                                     CanRemove="@(CanRemove(item))"
-                                                    CanDragAndDrop="CanDragAndDrop"
+                                                    CanMove="CanMove"
                                                     BackgroundColor="@column.ItemColor"
                                                     DebounceDelay="500"
                                                     ItemRemoved="ItemRemoved"
@@ -42,11 +42,11 @@
                                                 @foreach (var child in item.Children)
                                                 {
                                                     <InputRetroItem
-                                                        @key="child.ChildKey"
+                                                        @key="child.Id"
                                                         CanView="@(CanView(child))"
                                                         CanEdit="false"
                                                         CanRemove="@(CanRemove(child))"
-                                                        CanDragAndDrop="false"
+                                                        CanMove="false"
                                                         BackgroundColor="@column.ItemColor"
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="@(_ => { })"
@@ -139,28 +139,42 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(Guid ColumnId, RetroItemViewModel Item)> ItemMovedToSlot { get; set; }
+    
+    private const string GroupingState = "Grouping";
+    private const string PrioritizingText = "Prioritizing";
 
-    private bool CanDragAndDrop => Session is not null;
+    private string RetroTextKey => Session?.State switch
+    {
+        GroupingState => "GroupingText",
+        PrioritizingText => "PrioritizingText",
+        _ => "StartText"
+    };
+
+    private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
+    private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
 
     private bool CanView(RetroItemViewModel item)
     {
-        return Session is not null || CurrentUserId == item.OwnerId;
+        var canAsUser = Session is not null;
+        var canAsOwner = item.HasOwnerRights(CurrentUserId);
+        
+        return canAsUser || canAsOwner;
     }
-    
+
     private bool CanEdit(RetroItemViewModel item)
     {
-        if (Session is null)
-            return CurrentUserId == item.OwnerId;
-
-        if (Session?.State == "Reviewing")
-            return CurrentUserId == Session.FacilitatorId;
+        var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
+        var canAsFacilitator = Session?.State == GroupingState && HasFacilitatorRights;
         
-        return false;
+        return canAsOwner || canAsFacilitator;
     }
 
     private bool CanRemove(RetroItemViewModel item)
     {
-        return (Session is null && CurrentUserId == item.OwnerId) || item.ParentId.HasValue;
+        var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
+        var canAsFacilitator = Session?.State == GroupingState && HasFacilitatorRights && item.ParentId.HasValue;
+
+        return canAsOwner || canAsFacilitator;
     }
 
     private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);

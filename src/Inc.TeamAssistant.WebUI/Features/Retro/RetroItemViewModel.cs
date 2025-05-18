@@ -15,8 +15,6 @@ public sealed class RetroItemViewModel
     
     private readonly List<RetroItemViewModel> _children = new();
     public IReadOnlyCollection<RetroItemViewModel> Children => _children;
-    public string ParentKey => $"{Id:N}-parent";
-    public string ChildKey => $"{Id:N}-child";
 
     public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
@@ -28,6 +26,8 @@ public sealed class RetroItemViewModel
             ColumnId = columnId
         };
     }
+    
+    public bool HasOwnerRights(long ownerId) => OwnerId == ownerId;
     
     public RetroItemViewModel Apply(RetroItemDto item)
     {

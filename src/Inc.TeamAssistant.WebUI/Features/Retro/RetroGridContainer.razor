@@ -4,6 +4,7 @@
 
 @attribute [Authorize]
 
+@using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState
 @implements IAsyncDisposable
 
 @inject TenantStore TenantStore
@@ -19,7 +20,8 @@
         {
             <RetroStatePanel
                 Session="_activeSession"
-                MovedToGrouping="OnMoveToGrouping" />
+                StartRetro="OnStartRetro"
+                MoveToNext="OnMoveToNext" />
             
             <RetroGrid
                 Team="@Team"
@@ -136,10 +138,19 @@
             }));
     }
 
-    private async Task OnMoveToGrouping()
+    private async Task OnStartRetro()
     {
         await RequestProcessor.Process(
             () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
+            _state);
+
+        await Load(_state, hardReset: false);
+    }
+    
+    private async Task OnMoveToNext(Guid id)
+    {
+        await RequestProcessor.Process(
+            () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
             _state);
 
         await Load(_state, hardReset: false);

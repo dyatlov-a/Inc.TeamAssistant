@@ -13,7 +13,34 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<RetroSession?> Find(Guid id, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                rs.id AS id,
+                rs.team_id AS teamid,
+                rs.created AS created,
+                rs.state AS state,
+                rs.facilitator_id AS facilitatorid
+            FROM retro.retro_sessions AS rs
+            WHERE id = @id;
+            """,
+            new
+            {
+                id = id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var retroSession = await connection.QuerySingleOrDefaultAsync<RetroSession>(command);
+        
+        return retroSession;
+    }
+
     public async Task Create(RetroSession retro, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(retro);
@@ -72,5 +99,29 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         await connection.ExecuteAsync(attachItemsCommand);
 
         await transaction.CommitAsync(token);
+    }
+
+    public async Task Update(RetroSession retro, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(retro);
+        
+        var command = new CommandDefinition(
+            """
+            UPDATE retro.retro_sessions
+            SET
+                state = @state
+            WHERE id = @id;
+            """,
+            new
+            {
+                id = retro.Id,
+                state = retro.State
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
     }
 }

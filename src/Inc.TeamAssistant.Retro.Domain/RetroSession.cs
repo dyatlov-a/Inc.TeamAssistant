@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives.Exceptions;
+
 namespace Inc.TeamAssistant.Retro.Domain;
 
 public sealed class RetroSession
@@ -18,9 +20,30 @@ public sealed class RetroSession
         Id = id;
         TeamId = teamId;
         Created = created;
-        State = RetroSessionState.Reviewing;
+        State = RetroSessionState.Grouping;
         FacilitatorId = facilitatorId;
     }
+    
+    internal bool HasRights(long personId) => FacilitatorId == personId;
 
-    public bool HasRights(long personId) => FacilitatorId == personId;
+    public RetroSession EnsureRights(long personId)
+    {
+        if (!HasRights(personId))
+            throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);
+        
+        return this;
+    }
+    
+    public RetroSession MoveToNextState()
+    {
+        State = State switch
+        {
+            RetroSessionState.Grouping => RetroSessionState.Prioritizing,
+            RetroSessionState.Prioritizing => RetroSessionState.Discussing,
+            RetroSessionState.Discussing => RetroSessionState.Finished,
+            _ => throw new InvalidOperationException($"Invalid state transition from {State}")
+        };
+
+        return this;
+    }
 }

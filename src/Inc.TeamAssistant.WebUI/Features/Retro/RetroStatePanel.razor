@@ -12,14 +12,22 @@
     public RetroSessionDto? Session { get; set; }
 
     /// <summary>
-    /// Move to grouping stage.
+    /// Start retro action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback MovedToGrouping { get; set; }
+    public EventCallback StartRetro { get; set; }
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> MoveToNext { get; set; }
 
     private async Task OnMoveNext()
     {
         if (Session is null)
-            await MovedToGrouping.InvokeAsync();
+            await StartRetro.InvokeAsync();
+        else
+            await MoveToNext.InvokeAsync(Session.Id);
     }
 }

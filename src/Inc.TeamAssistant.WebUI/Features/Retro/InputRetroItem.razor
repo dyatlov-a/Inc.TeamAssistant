@@ -11,7 +11,7 @@
     @ondragstart="OnDragStart"
     style="background-color: @BackgroundColor"
     class="retro-item @CssClass @CanViewCss @ChildCss"
-    @attributes="DynamicAttributes.BuildDraggable(CanDragAndDrop)">
+    @attributes="DynamicAttributes.BuildDraggable(CanMove)">
     @if (HasRemove)
     {
         <div class="retro-item__actions">
@@ -53,7 +53,7 @@
     /// Can drag and drop item.
     /// </summary>
     [Parameter, EditorRequired]
-    public bool CanDragAndDrop { get; set; }
+    public bool CanMove { get; set; }
     
     /// <summary>
     /// Background color.

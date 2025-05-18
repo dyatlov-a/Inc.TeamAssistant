@@ -4,7 +4,7 @@ public static class RetroSessionStateRules
 {
     public static readonly IReadOnlyCollection<RetroSessionState> Active =
     [
-        RetroSessionState.Reviewing,
+        RetroSessionState.Grouping,
         RetroSessionState.Prioritizing,
         RetroSessionState.Discussing
     ];
