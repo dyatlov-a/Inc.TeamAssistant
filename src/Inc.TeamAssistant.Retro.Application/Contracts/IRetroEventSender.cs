@@ -1,5 +1,5 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
-using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 
 namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
@@ -10,4 +10,6 @@ public interface IRetroEventSender
     Task RetroItemRemoved(RetroItemDto item);
     
     Task RetroSessionChanged(RetroSessionDto session);
+
+    Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
 }

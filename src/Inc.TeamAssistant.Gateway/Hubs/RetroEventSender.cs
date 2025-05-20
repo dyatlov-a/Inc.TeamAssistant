@@ -1,6 +1,6 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Common;
-using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.SignalR;
 
@@ -30,5 +30,12 @@ internal sealed class RetroEventSender : IRetroEventSender
     public async Task RetroSessionChanged(RetroSessionDto session)
     {
         await _hubContext.Clients.Group(session.TeamId.ToString("N")).RetroSessionChanged(session);
+    }
+
+    public async Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons)
+    {
+        ArgumentNullException.ThrowIfNull(persons);
+        
+        await _hubContext.Clients.Group(teamId.ToString("N")).PersonsChanged(persons);
     }
 }

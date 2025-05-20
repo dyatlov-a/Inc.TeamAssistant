@@ -3,29 +3,37 @@ using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Inc.TeamAssistant.Gateway.Hubs;
 
+[Authorize]
 internal sealed class RetroHub : Hub<IRetroHubClient>
 {
     private readonly IRetroService _retroService;
+    private readonly OnlinePersonService _personService;
 
-    public RetroHub(IRetroService retroService)
+    public RetroHub(IRetroService retroService, OnlinePersonService personService)
     {
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
+        _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
-    [HubMethodName(HubDescriptors.RetroHub.JoinToRetroMethod)]
-    public async Task JoinToRetro(Guid groupId)
+    [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
+    public async Task JoinRetro(Guid groupId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString("N"));
+        
+        await _personService.AddToTeam(Context.ConnectionId, groupId);
     }
     
-    [HubMethodName(HubDescriptors.RetroHub.RemoveFromRetroMethod)]
-    public async Task RemoveFromRetro(Guid groupId)
+    [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
+    public async Task LeaveRetro(Guid groupId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString("N"));
+        
+        await _personService.LeaveFromTeam(Context.ConnectionId, groupId);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -54,5 +62,15 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     public async Task SetVotes(SetVotesCommand command)
     {
         await _retroService.SetVotes(command);
+    }
+    
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var teamIds = await _personService.LeaveFromAllTeams(Context.ConnectionId);
+
+        foreach (var teamId in teamIds)
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, teamId.ToString("N"));
+
+        await base.OnDisconnectedAsync(exception);
     }
 }

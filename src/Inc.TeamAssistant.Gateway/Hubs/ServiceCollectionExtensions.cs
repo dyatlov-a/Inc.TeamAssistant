@@ -10,6 +10,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
+            .AddScoped<OnlinePersonService>()
+                
             .AddScoped<IAssessmentSessionEventSender, AssessmentSessionEventSender>()
             .AddScoped<IRetroEventSender, RetroEventSender>();
         

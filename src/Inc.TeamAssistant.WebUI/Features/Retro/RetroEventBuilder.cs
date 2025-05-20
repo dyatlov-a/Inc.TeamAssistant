@@ -66,11 +66,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
             .Select(i => i(this))
             .ToArray();
 
-        await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinToRetroMethod, teamId);
+        await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinRetroMethod, teamId);
 
         return new PostActionScope(async () =>
         {
-            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.RemoveFromRetroMethod, teamId);
+            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.LeaveRetroMethod, teamId);
 			
             foreach (var handler in handlers)
                 handler.Dispose();
