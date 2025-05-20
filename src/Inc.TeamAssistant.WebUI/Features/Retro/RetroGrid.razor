@@ -20,7 +20,10 @@
                                     <div class="retro-grid__column-items">
                                         @if (CanMove)
                                         {
-                                            <RetroGridSlot ColumnId="column.Id" ItemMoved="ItemMovedToSlot"/>
+                                            <RetroGridSlot
+                                                ColumnId="column.Id"
+                                                CanMove="CanMove"
+                                                ItemMoved="ItemMovedToSlot"/>
                                         }
                                         @foreach (var item in column.Items.OrderByDescending(c => c.Position))
                                         {

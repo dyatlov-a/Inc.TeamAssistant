@@ -6,7 +6,6 @@
 @inject DragAndDropService<RetroItemViewModel> DragAndDropService
 
 <div
-    ondragover="event.preventDefault();"
     @ondrop="OnDrop"
     @ondragstart="OnDragStart"
     style="background-color: @BackgroundColor"

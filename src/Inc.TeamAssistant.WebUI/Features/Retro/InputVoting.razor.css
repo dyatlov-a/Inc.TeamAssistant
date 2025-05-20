@@ -9,6 +9,9 @@
     vertical-align: middle;
     clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
 }
+.vote_active {
+    cursor: pointer;
+}
 .vote_checked, .vote_active:hover, .vote_active:hover ~ .vote_active {
     background-color: var(--block-priority-color);
 }

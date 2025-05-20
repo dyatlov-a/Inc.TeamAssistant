@@ -243,7 +243,7 @@
         if (_columns.TryGetValue(data.ColumnId, out var slotColumn) &&
             _columns.TryGetValue(movedItem.ColumnId, out var itemColumn))
         {
-            var maxColumnPosition = slotColumn.Items.Max(i => i.Position);
+            var maxColumnPosition = slotColumn.Items.Any() ? slotColumn.Items.Max(i => i.Position) : 0;
             
             itemColumn.Items.Remove(movedItem);
             movedItem.MoveToSlot(slotColumn.Id, maxColumnPosition);

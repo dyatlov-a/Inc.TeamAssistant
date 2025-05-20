@@ -1,7 +1,7 @@
 @inject DragAndDropService<RetroItemViewModel> DragAndDropService
 
 <div
-    ondragover="event.preventDefault();"
+    @attributes="DynamicAttributes.BuildOnDragOver(CanMove)"
     @ondrop="OnDrop"
     class="retro-grid__slot">
 </div>
@@ -12,6 +12,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid ColumnId { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanMove { get; set; }
     
     /// <summary>
     /// Item moved callback.

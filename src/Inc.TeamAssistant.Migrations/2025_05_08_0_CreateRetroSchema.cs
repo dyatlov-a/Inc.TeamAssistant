@@ -66,14 +66,14 @@ public sealed class CreateRetroSchema : Migration
             
             .WithColumn("retro_session_id")
             .AsGuid().Nullable()
-            .ForeignKey("retro_items__fk__retro_session_id", "retro", "retro_sessions", "id")
+            .ForeignKey("retro_items__fk__rs_id", "retro", "retro_sessions", "id")
             
             .WithColumn("parent_id")
             .AsGuid().Nullable();
 
         Execute.Sql(
             """
-            CREATE UNIQUE INDEX retro_sessions__uidx__team_id__active
+            CREATE UNIQUE INDEX retro_sessions__uidx__t_id__active
             ON retro.retro_sessions (team_id)
             WHERE state != 4;
             """,
@@ -86,6 +86,7 @@ public sealed class CreateRetroSchema : Migration
             .WithColumn("retro_session_id")
             .AsGuid().NotNullable()
             .PrimaryKey("person_votes__pk__rs_id__p_id")
+            .ForeignKey("person_votes__fk__rs_id", "retro", "retro_sessions", "id")
 
             .WithColumn("person_id")
             .AsInt64().NotNullable()
