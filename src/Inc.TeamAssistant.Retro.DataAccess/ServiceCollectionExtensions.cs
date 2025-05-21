@@ -12,11 +12,8 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<IRetroItemRepository, RetroItemRepository>()
             .AddSingleton<IRetroSessionRepository, RetroSessionRepository>()
-            .AddSingleton<IPersonVoteRepository, PersonVoteRepository>()
             
-            .AddSingleton<IRetroReader, RetroReader>()
-            
-            .AddSingleton<IPositionGenerator, PositionGenerator>();
+            .AddSingleton<IRetroReader, RetroReader>();
 
         return services;
     }

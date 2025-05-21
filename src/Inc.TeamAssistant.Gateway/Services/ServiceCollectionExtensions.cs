@@ -2,8 +2,10 @@ using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
+using Inc.TeamAssistant.Gateway.Services.Stores;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -32,6 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
+            .AddSingleton<IPositionGenerator, PositionGenerator>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
@@ -47,15 +50,18 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRetroService, RetroService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
-            
             .AddSingleton<QuickResponseCodeGenerator>()
-            .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
-                sp,
-                sp.GetRequiredService<QuickResponseCodeGenerator>(),
-                cacheTimeout))
+            .AddSingleton<IQuickResponseCodeGenerator>(sp =>
+                ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
+                    sp,
+                    sp.GetRequiredService<QuickResponseCodeGenerator>(),
+                    cacheTimeout))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
-            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>();
+            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
+            
+            .AddSingleton<IOnlinePersonStore, OnlinePersonStore>()
+            .AddSingleton<IVoteStore, VoteStore>();
 
         return services;
 	}

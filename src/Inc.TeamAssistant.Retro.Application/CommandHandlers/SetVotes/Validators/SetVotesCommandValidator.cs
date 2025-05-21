@@ -1,6 +1,5 @@
 using FluentValidation;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
-using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.SetVotes.Validators;
 
@@ -10,7 +9,7 @@ internal sealed class SetVotesCommandValidator : AbstractValidator<SetVotesComma
     {
         ArgumentNullException.ThrowIfNull(voteValidator);
 
-        RuleFor(c => c.RetroSessionId)
+        RuleFor(c => c.TeamId)
             .NotEmpty();
         
         RuleFor(c => c.Votes)

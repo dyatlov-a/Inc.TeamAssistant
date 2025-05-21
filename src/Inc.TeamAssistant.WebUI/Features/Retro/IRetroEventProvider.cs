@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
@@ -9,4 +10,8 @@ public interface IRetroEventProvider
     IDisposable OnRetroItemRemoved(Func<RetroItemDto, Task> removed);
     
     IDisposable OnRetroSessionChanged(Func<RetroSessionDto, Task> changed);
+    
+    IDisposable OnVotesChanged(Func<long, int, Task> changed);
+    
+    IDisposable OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed);
 }

@@ -1,10 +1,7 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
-using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
-using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
-using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 
@@ -21,41 +18,12 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/items/{teamId:N}", token);
+        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/state/{teamId:N}", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
-    }
-
-    public async Task<CreateRetroItemResult> CreateRetroItem(CreateRetroItemCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        var response = await _client.PostAsJsonAsync("retro/items", command, token);
-        
-        var result = await response.Content.ReadFromJsonAsync<CreateRetroItemResult>(token);
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
-    }
-
-    public async Task UpdateRetroItem(UpdateRetroItemCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        var response = await _client.PutAsJsonAsync("retro/items", command, token);
-
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task RemoveRetroItem(Guid retroItemId, CancellationToken token)
-    {
-        var response = await _client.DeleteAsync($"retro/items/{retroItemId:N}", token);
-        
-        response.EnsureSuccessStatusCode();
     }
 
     public async Task<StartRetroResult> StartRetro(StartRetroCommand command, CancellationToken token)
@@ -76,15 +44,6 @@ internal sealed class RetroClient : IRetroService
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PutAsJsonAsync("retro", command, token);
-        
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task SetVotes(SetVotesCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        var response = await _client.PostAsJsonAsync("retro/votes", command, token);
         
         response.EnsureSuccessStatusCode();
     }

@@ -27,7 +27,8 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 ri.text AS text,
                 ri.owner_id AS ownerid,
                 ri.retro_session_id AS retrosessionid,
-                ri.parent_id AS parentid
+                ri.parent_id AS parentid,
+                ri.votes AS votes
             FROM retro.retro_items AS ri
             WHERE ri.id = @id;
 
@@ -50,7 +51,8 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 ri.text AS text,
                 ri.owner_id AS ownerid,
                 ri.retro_session_id AS retrosessionid,
-                ri.parent_id AS parentid
+                ri.parent_id AS parentid,
+                ri.votes AS votes
             FROM retro.retro_items AS ri
             WHERE ri.parent_id = @id;
             """,
@@ -87,6 +89,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
         var ownerId = new List<long>();
         var retroSessionId = new List<Guid?>();
         var parentId = new List<Guid?>();
+        var votes = new List<int?>();
 
         foreach (var data in item.Children.Append(item))
         {
@@ -99,6 +102,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
             ownerId.Add(data.OwnerId);
             retroSessionId.Add(data.RetroSessionId);
             parentId.Add(data.ParentId);
+            votes.Add(data.Votes);
         }
         
         var command = new CommandDefinition(
@@ -112,7 +116,8 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 text,
                 owner_id,
                 retro_session_id,
-                parent_id)
+                parent_id,
+                votes)
             SELECT
                 id,
                 team_id,
@@ -122,9 +127,10 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 text,
                 owner_id,
                 retro_session_id,
-                parent_id
-            FROM UNNEST(@id, @team_id, @created, @column_id, @position, @text, @owner_id, @retro_session_id, @parent_id)
-                AS i(id, team_id, created, column_id, position, text, owner_id, retro_session_id, parent_id)
+                parent_id,
+                votes
+            FROM UNNEST(@id, @team_id, @created, @column_id, @position, @text, @owner_id, @retro_session_id, @parent_id, @votes)
+                AS i(id, team_id, created, column_id, position, text, owner_id, retro_session_id, parent_id, votes)
             ON CONFLICT (id) DO UPDATE SET
                 team_id = EXCLUDED.team_id,
                 created = EXCLUDED.created,
@@ -133,7 +139,8 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 text = EXCLUDED.text,
                 owner_id = EXCLUDED.owner_id,
                 retro_session_id = EXCLUDED.retro_session_id,
-                parent_id = EXCLUDED.parent_id;
+                parent_id = EXCLUDED.parent_id,
+                votes = EXCLUDED.votes;
             """,
             new
             {
@@ -145,7 +152,8 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 text = text,
                 owner_id = ownerId,
                 retro_session_id = retroSessionId,
-                parent_id = parentId
+                parent_id = parentId,
+                votes = votes
             },
             flags: CommandFlags.None,
             cancellationToken: token);

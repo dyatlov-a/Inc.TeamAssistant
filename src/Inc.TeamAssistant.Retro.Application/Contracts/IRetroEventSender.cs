@@ -10,6 +10,8 @@ public interface IRetroEventSender
     Task RetroItemRemoved(RetroItemDto item);
     
     Task RetroSessionChanged(RetroSessionDto session);
+    
+    Task VotesChanged(Guid teamId, long personId, int votesCount);
 
     Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
 }

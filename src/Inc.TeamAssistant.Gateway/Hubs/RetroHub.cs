@@ -1,8 +1,13 @@
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
+using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
+using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
+using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -11,29 +16,27 @@ namespace Inc.TeamAssistant.Gateway.Hubs;
 [Authorize]
 internal sealed class RetroHub : Hub<IRetroHubClient>
 {
-    private readonly IRetroService _retroService;
-    private readonly OnlinePersonService _personService;
+    private readonly IMediator _mediator;
 
-    public RetroHub(IRetroService retroService, OnlinePersonService personService)
+    public RetroHub(IMediator mediator)
     {
-        _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
-        _personService = personService ?? throw new ArgumentNullException(nameof(personService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
-    public async Task JoinRetro(Guid groupId)
+    public async Task JoinRetro(Guid teamId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString("N"));
-        
-        await _personService.AddToTeam(Context.ConnectionId, groupId);
+        await Groups.AddToGroupAsync(Context.ConnectionId, teamId.ToString("N"));
+
+        await _mediator.Send(new JoinToRetroCommand(Context.ConnectionId, teamId), CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
-    public async Task LeaveRetro(Guid groupId)
+    public async Task LeaveRetro(Guid teamId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString("N"));
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, teamId.ToString("N"));
         
-        await _personService.LeaveFromTeam(Context.ConnectionId, groupId);
+        await _mediator.Send(new LeaveFromRetroCommand(Context.ConnectionId, teamId), CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -41,7 +44,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        await _retroService.CreateRetroItem(command);
+        await _mediator.Send(command, CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.UpdateRetroItemMethod)]
@@ -49,26 +52,26 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        await _retroService.UpdateRetroItem(command);
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.RemoveRetroItemMethod)]
     public async Task RemoveRetroItem(Guid retroItemId)
     {
-        await _retroService.RemoveRetroItem(retroItemId);
+        await _mediator.Send(new RemoveRetroItemCommand(retroItemId), CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.SetVotesMethod)]
     public async Task SetVotes(SetVotesCommand command)
     {
-        await _retroService.SetVotes(command);
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var teamIds = await _personService.LeaveFromAllTeams(Context.ConnectionId);
+        var result = await _mediator.Send(new LeaveFromAllCommand(Context.ConnectionId), CancellationToken.None);
 
-        foreach (var teamId in teamIds)
+        foreach (var teamId in result.TeamIds)
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, teamId.ToString("N"));
 
         await base.OnDisconnectedAsync(exception);

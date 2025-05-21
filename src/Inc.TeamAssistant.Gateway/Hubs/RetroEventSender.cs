@@ -32,6 +32,11 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.Group(session.TeamId.ToString("N")).RetroSessionChanged(session);
     }
 
+    public async Task VotesChanged(Guid teamId, long personId, int votesCount)
+    {
+        await _hubContext.Clients.Group(teamId.ToString("N")).VotesChanged(personId, votesCount);
+    }
+
     public async Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons)
     {
         ArgumentNullException.ThrowIfNull(persons);

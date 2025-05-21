@@ -133,6 +133,18 @@
                     StateHasChanged();
                 });
             }),
+            b => b.OnVotesChanged(async (p, v) =>
+                await InvokeAsync(() =>
+                {
+                    ApplyVotes(p, v);
+                    StateHasChanged();
+                })),
+            b => b.OnPersonsChanged(async p =>
+                await InvokeAsync(() =>
+                {
+                    ApplyPersons(p);
+                    StateHasChanged();
+                })),
             b => b.OnRetroSessionChanged(async _ =>
             {
                 await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
@@ -198,6 +210,16 @@
             foreach (var child in item.Children)
                 column.Items.Single(i => i.Id == item.Id).ApplyChild(child);
         }
+    }
+
+    private void ApplyVotes(long personId, int votesCount)
+    {
+        // TODO: implement
+    }
+    
+    private void ApplyPersons(IReadOnlyCollection<Person> persons)
+    {
+        // TODO: implement
     }
     
     private async Task OnItemRemoved(RetroItemViewModel item)
@@ -268,7 +290,7 @@
             .Single(i => i.Id == data.ItemId)
             .ChangeVotes(data.Votes);
 
-        await _eventBuilder.SetVotes(new SetVotesCommand(_activeSession.Id, votesByPerson));
+        await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, votesByPerson));
     }
 
     private void ApplyRemovedEvent(Guid columnId, Guid itemId)

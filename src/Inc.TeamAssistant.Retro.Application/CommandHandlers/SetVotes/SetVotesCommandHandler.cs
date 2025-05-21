@@ -8,13 +8,18 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.SetVotes;
 
 internal sealed class SetVotesCommandHandler : IRequestHandler<SetVotesCommand>
 {
-    private readonly IPersonVoteRepository _repository;
+    private readonly IVoteStore _voteStore;
     private readonly IPersonResolver _personResolver;
+    private readonly IRetroEventSender _eventSender;
 
-    public SetVotesCommandHandler(IPersonVoteRepository repository, IPersonResolver personResolver)
+    public SetVotesCommandHandler(
+        IVoteStore voteStore,
+        IPersonResolver personResolver,
+        IRetroEventSender eventSender)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
     public async Task Handle(SetVotesCommand command, CancellationToken token)
@@ -23,10 +28,12 @@ internal sealed class SetVotesCommandHandler : IRequestHandler<SetVotesCommand>
         
         var currentPerson = _personResolver.GetCurrentPerson();
         var votes = command.Votes
-            .Select(v => new PersonVoteByItem(v.ItemId, v.Vote))
+            .Select(v => new VoteTicket(v.ItemId, currentPerson.Id, v.Vote))
             .ToArray();
-        var personVote = new PersonVote(command.RetroSessionId, currentPerson.Id, votes);
+        var votesCount = votes.Sum(v => v.Vote);
+        
+        _voteStore.SetVotes(command.TeamId, currentPerson.Id, votes);
 
-        await _repository.Upsert(personVote, token);
+        await _eventSender.VotesChanged(command.TeamId, currentPerson.Id, votesCount);
     }
 }

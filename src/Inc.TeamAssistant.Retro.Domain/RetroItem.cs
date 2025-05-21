@@ -13,6 +13,7 @@ public sealed class RetroItem
     public long OwnerId { get; private set; }
     public Guid? RetroSessionId { get; private set; }
     public RetroSession? RetroSession { get; private set; }
+    public int? Votes { get; private set; }
     public Guid? ParentId { get; private set; }
     public IReadOnlyCollection<RetroItem> Children { get; private set; }
 
@@ -86,6 +87,13 @@ public sealed class RetroItem
 
         foreach (var child in Children)
             child.ColumnId = columnId;
+
+        return this;
+    }
+
+    public RetroItem SetVotes(int votes)
+    {
+        Votes = votes;
 
         return this;
     }

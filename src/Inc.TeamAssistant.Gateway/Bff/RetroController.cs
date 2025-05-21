@@ -1,8 +1,5 @@
-using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
-using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
-using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +18,12 @@ public sealed class RetroController : ControllerBase
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
     }
     
+    [HttpGet("state/{teamId:Guid}")]
+    public async Task<IActionResult> GetRetroState(Guid teamId, CancellationToken token)
+    {
+        return Ok(await _retroService.GetRetroState(teamId, token));
+    }
+    
     [HttpPost]
     public async Task<IActionResult> StartRetro([FromBody]StartRetroCommand command)
     {
@@ -35,48 +38,6 @@ public sealed class RetroController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
 
         await _retroService.MoveToNextRetroState(command, CancellationToken.None);
-        
-        return Ok();
-    }
-    
-    [HttpGet("items/{teamId:Guid}")]
-    public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
-    {
-        return Ok(await _retroService.GetRetroState(teamId, token));
-    }
-    
-    [HttpPost("items")]
-    public async Task<IActionResult> CreateItem([FromBody]CreateRetroItemCommand command)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
-        return Ok(await _retroService.CreateRetroItem(command, CancellationToken.None));
-    }
-    
-    [HttpPut("items")]
-    public async Task<IActionResult> UpdateItem([FromBody]UpdateRetroItemCommand command)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-
-        await _retroService.UpdateRetroItem(command, CancellationToken.None);
-        
-        return Ok();
-    }
-    
-    [HttpDelete("items/{retroItemId:Guid}")]
-    public async Task<IActionResult> RemoveItem(Guid retroItemId)
-    {
-        await _retroService.RemoveRetroItem(retroItemId, CancellationToken.None);
-        
-        return Ok();
-    }
-    
-    [HttpPost("votes")]
-    public async Task<IActionResult> SetVotes([FromBody]SetVotesCommand command)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-
-        await _retroService.SetVotes(command, CancellationToken.None);
         
         return Ok();
     }

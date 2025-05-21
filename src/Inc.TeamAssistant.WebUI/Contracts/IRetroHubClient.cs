@@ -11,5 +11,7 @@ public interface IRetroHubClient
 
     Task RetroSessionChanged(RetroSessionDto session);
     
+    Task VotesChanged(long personId, int votesCount);
+    
     Task PersonsChanged(IReadOnlyCollection<Person> persons);
 }

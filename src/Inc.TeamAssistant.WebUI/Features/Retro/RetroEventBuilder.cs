@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -96,6 +97,20 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(changed);
 		
         return _hubConnection.On(nameof(IRetroHubClient.RetroSessionChanged), changed);
+    }
+
+    IDisposable IRetroEventProvider.OnVotesChanged(Func<long, int, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+		
+        return _hubConnection.On(nameof(IRetroHubClient.VotesChanged), changed);
+    }
+
+    IDisposable IRetroEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(IRetroHubClient.PersonsChanged), changed);
     }
 
     public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();

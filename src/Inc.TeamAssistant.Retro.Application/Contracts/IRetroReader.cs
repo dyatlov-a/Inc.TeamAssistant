@@ -12,9 +12,4 @@ public interface IRetroReader
         Guid teamId,
         IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token);
-    
-    Task<IReadOnlyCollection<PersonVote>> ReadVotes(
-        Guid teamId,
-        IReadOnlyCollection<RetroSessionState> states,
-        CancellationToken token);
 }

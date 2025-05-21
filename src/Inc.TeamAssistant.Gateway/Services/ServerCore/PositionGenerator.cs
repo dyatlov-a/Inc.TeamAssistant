@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Retro.Application.Contracts;
 
-namespace Inc.TeamAssistant.Retro.DataAccess;
+namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class PositionGenerator : IPositionGenerator
 {
