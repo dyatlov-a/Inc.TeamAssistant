@@ -9,17 +9,24 @@ namespace Inc.TeamAssistant.Gateway.Hubs;
 internal sealed class RetroEventSender : IRetroEventSender
 {
     private readonly IHubContext<RetroHub, IRetroHubClient> _hubContext;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
-    public RetroEventSender(IHubContext<RetroHub, IRetroHubClient> hubContext)
+    public RetroEventSender(IHubContext<RetroHub, IRetroHubClient> hubContext, IOnlinePersonStore onlinePersonStore)
     {
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
     
-    public async Task RetroItemChanged(RetroItemDto item)
+    public async Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        await _hubContext.Clients.Group(item.TeamId.ToString("N")).RetroItemChanged(item);
+        var ownerConnectionId = _onlinePersonStore.FindConnectionId(item.TeamId, item.OwnerId);
+
+        if (excludedOwner && !string.IsNullOrWhiteSpace(ownerConnectionId))
+            await _hubContext.Clients.GroupExcept(item.TeamId.ToString("N"), ownerConnectionId).RetroItemChanged(item);
+        else
+            await _hubContext.Clients.Group(item.TeamId.ToString("N")).RetroItemChanged(item);
     }
 
     public async Task RetroItemRemoved(RetroItemDto item)

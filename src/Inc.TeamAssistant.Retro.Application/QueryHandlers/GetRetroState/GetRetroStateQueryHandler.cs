@@ -31,15 +31,15 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         ArgumentNullException.ThrowIfNull(query);
         
         var states = RetroSessionStateRules.Active;
-        var person = _personResolver.GetCurrentPerson();
-        var votes = _voteStore.GetVotes(query.TeamId, person.Id);
+        var currentPerson = _personResolver.GetCurrentPerson();
+        var votes = _voteStore.GetVotes(query.TeamId, currentPerson.Id);
         var onlinePersons = _onlinePersonStore.GetPersons(query.TeamId);
         
         var activeSession = await _reader.FindSession(query.TeamId, states, token);
         var retroItems = await _reader.ReadItems(query.TeamId, token);
         
         var votesByPerson = votes
-            .Where(v => v.PersonId == person.Id)
+            .Where(v => v.PersonId == currentPerson.Id)
             .ToDictionary(v => v.ItemId, v => v.Vote);
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
@@ -51,7 +51,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? RetroSessionConverter.ConvertTo(activeSession)
             : null;
         var items = retroItems
-            .Select(i => RetroItemConverter.ConvertTo(i, activeSession?.State, votesByPerson))
+            .Select(i => RetroItemConverter.ConvertTo(i, currentPerson.Id, activeSession?.State, votesByPerson))
             .ToArray();
         
         return new GetRetroStateResult(session, items, participants);

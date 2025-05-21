@@ -9,6 +9,16 @@ internal sealed class OnlinePersonStore : IOnlinePersonStore
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, Person>> _state = new();
 
+    public string? FindConnectionId(Guid teamId, long personId)
+    {
+        if (_state.TryGetValue(teamId, out var persons))
+            foreach (var person in persons)
+                if (person.Value.Id == personId)
+                    return person.Key;
+        
+        return null;
+    }
+
     public IReadOnlyCollection<Person> GetPersons(Guid teamId)
     {
         var result = _state.TryGetValue(teamId, out var persons)

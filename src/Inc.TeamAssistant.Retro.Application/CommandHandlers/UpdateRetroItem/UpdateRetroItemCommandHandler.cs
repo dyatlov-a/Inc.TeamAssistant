@@ -38,6 +38,6 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         
         await _repository.Upsert(item, token);
         
-        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item));
+        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item), excludedOwner: true);
     }
 }

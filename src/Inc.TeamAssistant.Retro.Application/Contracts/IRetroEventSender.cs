@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroEventSender
 {
-    Task RetroItemChanged(RetroItemDto item);
+    Task RetroItemChanged(RetroItemDto item, bool excludedOwner);
 
     Task RetroItemRemoved(RetroItemDto item);
     
