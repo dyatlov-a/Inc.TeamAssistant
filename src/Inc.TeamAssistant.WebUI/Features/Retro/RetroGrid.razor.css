@@ -17,6 +17,18 @@
     flex-direction: column;
     gap: 1rem;
 }
+.retro-participants {
+    display: flex;
+    overflow: hidden;
+    gap: 1rem;
+    margin-bottom: 10px;
+}
+.retro-participant {
+    flex: 0 0 auto;
+}
+.retro-participant__card {
+    padding: 5px 0;
+}
 @media (max-width: 767.98px) {
     .retro-grid__column {
         width: calc(50% - .5rem);

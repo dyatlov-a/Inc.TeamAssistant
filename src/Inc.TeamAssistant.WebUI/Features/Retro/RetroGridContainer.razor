@@ -28,6 +28,7 @@
                 Columns="Columns"
                 CurrentUserId="context.User.ToPerson().Id"
                 Session="_activeSession"
+                Participants="Participants"
                 VotesTotal="6"
                 CanCreate="_canCreate"
                 Retry="@(() => Load(_state))"
@@ -76,6 +77,11 @@
     }.ToDictionary(i => i.Id);
 
     private RetroSessionDto? _activeSession;
+    private Dictionary<long, ParticipantViewModel> _participants = new();
+    private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .OrderBy(p => p.TotalVotes)
+        .ThenBy(p => p.Person.DisplayName)
+        .ToArray();
     
     protected override async Task OnParametersSetAsync() => await Load(_state);
     
@@ -90,6 +96,9 @@
             state);
 
         _activeSession = result.ActiveSession;
+        _participants = result.Participants
+            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
+            .ToDictionary(p => p.Person.Id);
         _canCreate = result.ActiveSession is null;
         foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
             ApplyItemChanged(item);
@@ -142,7 +151,7 @@
             b => b.OnPersonsChanged(async p =>
                 await InvokeAsync(() =>
                 {
-                    ApplyPersons(p);
+                    ApplyParticipants(p);
                     StateHasChanged();
                 })),
             b => b.OnRetroSessionChanged(async _ =>
@@ -214,12 +223,14 @@
 
     private void ApplyVotes(long personId, int votesCount)
     {
-        // TODO: implement
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeTotalVotes(votesCount);
     }
     
-    private void ApplyPersons(IReadOnlyCollection<Person> persons)
+    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
     {
-        // TODO: implement
+        foreach (var person in persons)
+            _participants.TryAdd(person.Id, new ParticipantViewModel(person, 0));
     }
     
     private async Task OnItemRemoved(RetroItemViewModel item)

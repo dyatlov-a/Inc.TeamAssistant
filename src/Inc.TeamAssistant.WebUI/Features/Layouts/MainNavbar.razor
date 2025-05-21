@@ -20,12 +20,9 @@
         }
         @if (CurrentPerson is not null)
         {
-            <span class="navbar__item navbar__item_avatar">
-                <img src="@CurrentPerson.AvatarUrl" alt="user avatar" class="user-avatar"/>
-                @CurrentPerson.Name
-                <br/>
-                @CurrentPerson.Username
-            </span>
+            <div class="navbar__item navbar__item_avatar">
+                <PersonCard Person="CurrentPerson" />
+            </div>
             <div class="navbar__item">
                 <RouterLink Href="@LogoutUrl">@Localizer["Logout"]</RouterLink>
             </div>

@@ -5,9 +5,33 @@
         <div class="main-content__container">
             <h1 class="main-content__header">@Localizer["MainHeader"] @Team.Name</h1>
             <p class="main-content__text">@Localizer[RetroTextKey]</p>
+            @if (CanVote)
+            {
+                <div class="retro-participants">
+                    @foreach (var participant in Participants)
+                    {
+                        var remainingVotes = VotesTotal - participant.TotalVotes;
+
+                        if (remainingVotes > 0)
+                        {
+                            <div class="retro-participant">
+                                <div class="retro-participant__card">
+                                    <PersonCard Person="participant.Person"/>
+                                </div>
+                                <InputVoting
+                                    VotesTotal="remainingVotes"
+                                    RemainingVotes="0"
+                                    Value="0"
+                                    ValueExpression="@(() => remainingVotes)"
+                                    ValueChanged="@((int v) => { })"/>
+                            </div>
+                        }
+                    }
+                </div>
+            }
             <div class="retro-grid">
                 <div class="retro-grid__columns">
-                    @foreach (var column in Columns)
+                    @foreach (var column in Columns.OrderBy(c => c.Position))
                     {
                         <div class="retro-grid__column">
                             <Panel Header="@column.Name" IsOpen="true">
@@ -110,6 +134,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public RetroSessionDto? Session { get; set; }
+
+    /// <summary>
+    /// Retro session participants.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
 
     /// <summary>
     /// Votes total.

@@ -1,5 +1,6 @@
 .vote-items {
     direction: rtl;
+    display: inline-block;
 }
 .vote {
     width: 20px;
