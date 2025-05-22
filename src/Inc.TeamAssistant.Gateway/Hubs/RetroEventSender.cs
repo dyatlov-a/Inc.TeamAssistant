@@ -29,9 +29,9 @@ internal sealed class RetroEventSender : IRetroEventSender
             await _hubContext.Clients.Group(item.TeamId.ToString("N")).RetroItemChanged(item);
     }
 
-    public async Task RetroItemRemoved(RetroItemDto item)
+    public async Task RetroItemRemoved(Guid teamId, Guid columnId, Guid itemId)
     {
-        await _hubContext.Clients.Group(item.TeamId.ToString("N")).RetroItemRemoved(item);
+        await _hubContext.Clients.Group(teamId.ToString("N")).RetroItemRemoved(columnId, itemId);
     }
 
     public async Task RetroSessionChanged(RetroSessionDto session)

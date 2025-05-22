@@ -6,23 +6,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 public sealed class RetroItemViewModel
 {
     public Guid Id { get; private set; }
-    public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
     public Guid ColumnId { get; private set; }
     public int Position { get; private set; }
     public string? Text { get; private set; }
     public Guid? ParentId { get; private set; }
+    public int Votes { get; private set; }
     
     private readonly List<RetroItemViewModel> _children = new();
     public IReadOnlyCollection<RetroItemViewModel> Children => _children;
-    public int Votes { get; private set; }
 
     public static RetroItemViewModel Create(Guid id, long ownerId, Guid columnId)
     {
         return new RetroItemViewModel
         {
             Id = id,
-            Created = DateTimeOffset.UtcNow,
             OwnerId = ownerId,
             ColumnId = columnId
         };
@@ -34,7 +32,7 @@ public sealed class RetroItemViewModel
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        Created = item.Created;
+        ColumnId = item.ColumnId;
         Position = item.Position;
         ParentId = item.ParentId;
         Votes = item.Votes;

@@ -5,9 +5,9 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroEventSender
 {
-    Task RetroItemChanged(RetroItemDto item, bool excludedOwner);
+    Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false);
 
-    Task RetroItemRemoved(RetroItemDto item);
+    Task RetroItemRemoved(Guid teamId, Guid columnId, Guid itemId);
     
     Task RetroSessionChanged(RetroSessionDto session);
     

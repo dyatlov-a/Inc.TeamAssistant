@@ -51,7 +51,11 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? RetroSessionConverter.ConvertTo(activeSession)
             : null;
         var items = retroItems
-            .Select(i => RetroItemConverter.ConvertTo(i, currentPerson.Id, activeSession?.State, votesByPerson))
+            .Select(i => RetroItemConverter.ConvertFromReadModel(
+                i,
+                currentPerson.Id,
+                activeSession?.State,
+                votesByPerson))
             .ToArray();
         
         return new GetRetroStateResult(session, items, participants);

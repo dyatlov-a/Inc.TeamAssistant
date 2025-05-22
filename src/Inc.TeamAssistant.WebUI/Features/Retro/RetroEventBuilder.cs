@@ -85,7 +85,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.RetroItemChanged), changed);
     }
 
-    IDisposable IRetroEventProvider.OnRetroItemRemoved(Func<RetroItemDto, Task> removed)
+    IDisposable IRetroEventProvider.OnRetroItemRemoved(Func<Guid, Guid, Task> removed)
     {
         ArgumentNullException.ThrowIfNull(removed);
 		

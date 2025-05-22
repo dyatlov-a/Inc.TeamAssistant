@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Extensions;
-using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using MediatR;
@@ -32,6 +31,6 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
 
         await _repository.Remove(item.CheckCanRemove(person.Id), token);
 
-        await _eventSender.RetroItemRemoved(RetroItemConverter.ConvertTo(item));
+        await _eventSender.RetroItemRemoved(item.TeamId, item.ColumnId, item.Id);
     }
 }

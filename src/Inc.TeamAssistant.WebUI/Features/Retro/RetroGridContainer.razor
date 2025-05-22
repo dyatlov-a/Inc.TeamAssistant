@@ -134,11 +134,11 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroItemRemoved(async i =>
+            b => b.OnRetroItemRemoved(async (cId, iId) =>
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyRemovedEvent(i.ColumnId, i.Id);
+                    ApplyRemovedEvent(cId, iId);
                     StateHasChanged();
                 });
             }),

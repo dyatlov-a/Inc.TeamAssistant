@@ -37,7 +37,8 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
             .ChangePosition(command.ColumnId, command.Position);
         
         await _repository.Upsert(item, token);
-        
-        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertTo(item), excludedOwner: true);
+
+        var excludedOwner = item.RetroSession is null;
+        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertFromEvent(item), excludedOwner);
     }
 }

@@ -7,12 +7,30 @@ namespace Inc.TeamAssistant.Retro.Application.Common.Converters;
 internal static class RetroItemConverter
 {
     private static readonly Regex LetterPattern = new(@"\p{L}", RegexOptions.Compiled);
-    
-    public static RetroItemDto ConvertTo(
+
+    public static RetroItemDto ConvertFromEvent(RetroItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        
+        return ConvertFrom(item, currentPersonId: null, state: item.RetroSession?.State, votesByPerson: null);
+    }
+
+    public static RetroItemDto ConvertFromReadModel(
         RetroItem item,
-        long? currentPersonId = null,
-        RetroSessionState? state = null,
-        IDictionary<Guid, int>? votesByPerson = null)
+        long currentPersonId,
+        RetroSessionState? state,
+        IDictionary<Guid, int> votesByPerson)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        return ConvertFrom(item, currentPersonId, state, votesByPerson);
+    }
+    
+    private static RetroItemDto ConvertFrom(
+        RetroItem item,
+        long? currentPersonId,
+        RetroSessionState? state,
+        IDictionary<Guid, int>? votesByPerson)
     {
         ArgumentNullException.ThrowIfNull(item);
 
@@ -23,8 +41,8 @@ internal static class RetroItemConverter
             RetroSessionState.Discussing or RetroSessionState.Finished => item.Votes,
             _ => null
         };
-        var parentText = state is null && currentPersonId.HasValue
-            ? ToObfuscate(item, currentPersonId.Value)
+        var parentText = state is null
+            ? ToObfuscate(item, currentPersonId)
             : item.Text;
         
         return new RetroItemDto(
@@ -50,14 +68,17 @@ internal static class RetroItemConverter
                 Children: [])).ToArray());
     }
 
-    private static string? ToObfuscate(RetroItem item, long currentPersonId)
+    private static string? ToObfuscate(RetroItem item, long? currentPersonId)
     {
         ArgumentNullException.ThrowIfNull(item);
+
+        if (string.IsNullOrWhiteSpace(item.Text))
+            return null;
         
         const string obfuscatedLetter = "А";
         const string obfuscatedLetterLower = "а";
 
-        var obfuscatedText = currentPersonId == item.OwnerId || string.IsNullOrWhiteSpace(item.Text)
+        var obfuscatedText = currentPersonId == item.OwnerId
             ? item.Text
             : LetterPattern.Replace(
                 item.Text,

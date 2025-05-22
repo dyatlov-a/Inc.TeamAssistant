@@ -7,7 +7,7 @@ public interface IRetroEventProvider
 {
     IDisposable OnRetroItemChanged(Func<RetroItemDto, Task> changed);
     
-    IDisposable OnRetroItemRemoved(Func<RetroItemDto, Task> removed);
+    IDisposable OnRetroItemRemoved(Func<Guid, Guid, Task> removed);
     
     IDisposable OnRetroSessionChanged(Func<RetroSessionDto, Task> changed);
     
