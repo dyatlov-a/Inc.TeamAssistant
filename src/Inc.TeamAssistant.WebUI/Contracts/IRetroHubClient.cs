@@ -7,7 +7,7 @@ public interface IRetroHubClient
 {
     Task RetroItemChanged(RetroItemDto item);
     
-    Task RetroItemRemoved(Guid columnId, Guid itemId);
+    Task RetroItemRemoved(Guid itemId);
 
     Task RetroSessionChanged(RetroSessionDto session);
     

@@ -39,6 +39,10 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         await _repository.Upsert(item, token);
 
         var excludedOwner = item.RetroSession is null;
-        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertFromEvent(item), excludedOwner);
+
+        foreach (var changed in item.Children.Append(item))
+            await _eventSender.RetroItemChanged(
+                RetroItemConverter.ConvertFromChanged(changed, item.RetroSession?.State),
+                excludedOwner);
     }
 }
