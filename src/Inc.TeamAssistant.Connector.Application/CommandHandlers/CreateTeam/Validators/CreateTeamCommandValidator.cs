@@ -13,7 +13,7 @@ internal sealed class CreateTeamCommandValidator : AbstractValidator<CreateTeamC
         
         RuleFor(e => e.Name)
             .NotEmpty()
-            .MaximumLength(255)
+            .MaximumLength(50)
             .Must(e => !e.Contains(' '))
             .WithMessage("'PropertyName' must not contain spaces.")
             .Must(e => !e.HasCommand())

@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Bots;
-using Inc.TeamAssistant.Primitives.Extensions;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
@@ -24,7 +23,7 @@ internal sealed class TeamLinkBuilder : ITeamLinkBuilder
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(botName);
         
-        return string.Format(GlobalResources.Settings.LinkForConnectTemplate, botName, teamId.ToLinkSegment());
+        return string.Format(GlobalResources.Settings.LinkForConnectTemplate, botName, teamId.ToString("N"));
     }
 
     public async Task<(string TeamName, string Link, string Code)> GenerateTeamConnector(

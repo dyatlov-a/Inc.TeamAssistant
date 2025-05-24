@@ -1,0 +1,19 @@
+.retro-item {
+    padding: .5rem;
+}
+.retro-item__actions {
+    float: right;
+    padding: 0 .3rem;
+}
+.retro-item__text {
+    min-height: 80px;
+    word-break: break-all;
+}
+.retro-item_freeze {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+}
+.retro-item_child {
+    border-top: 3px var(--block-secondary-color) dashed;
+}

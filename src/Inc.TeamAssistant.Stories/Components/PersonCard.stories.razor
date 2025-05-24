@@ -1,0 +1,17 @@
+@attribute [Stories("Components/PersonCard")]
+
+<Stories TComponent="PersonCard" Layout="typeof(DarkLayout)">
+    <Story Name="Default">
+        <Template>
+            <PersonCard Person="_currentPerson" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly Person _currentPerson = new StubPerson(
+        Id: 1,
+        Name: "Aleksandr",
+        ImageName: "user_avatar",
+        Username: "adiatlov");
+}

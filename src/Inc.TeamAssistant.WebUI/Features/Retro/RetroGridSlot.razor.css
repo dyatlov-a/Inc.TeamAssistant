@@ -1,0 +1,4 @@
+.retro-grid__slot {
+    height: 2rem;
+    border: 3px var(--block-secondary-color) dashed;
+}

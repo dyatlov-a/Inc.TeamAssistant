@@ -13,16 +13,16 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 {
 	private readonly IStoryRepository _storyRepository;
     private readonly SummaryByStoryBuilder _summaryBuilder;
-    private readonly IMessagesSender _messagesSender;
+    private readonly IAssessmentSessionEventSender _eventSender;
 
 	public SetEstimateForStoryCommandHandler(
 		IStoryRepository storyRepository,
 		SummaryByStoryBuilder summaryBuilder,
-		IMessagesSender messagesSender)
+		IAssessmentSessionEventSender eventSender)
 	{
 		_storyRepository = storyRepository ?? throw new ArgumentNullException(nameof(storyRepository));
 		_summaryBuilder = summaryBuilder ?? throw new ArgumentNullException(nameof(summaryBuilder));
-		_messagesSender = messagesSender ?? throw new ArgumentNullException(nameof(messagesSender));
+		_eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
 	}
 
     public async Task<CommandResult> Handle(SetEstimateForStoryCommand command, CancellationToken token)
@@ -42,7 +42,7 @@ internal sealed class SetEstimateForStoryCommandHandler : IRequestHandler<SetEst
 		        return CommandResult.Empty;
 	        default:
 		        var notification = _summaryBuilder.Build(SummaryByStoryConverter.ConvertTo(story));
-		        await _messagesSender.StoryChanged(story.TeamId);
+		        await _eventSender.StoryChanged(story.TeamId);
 		        return CommandResult.Build(notification);
         }
     }

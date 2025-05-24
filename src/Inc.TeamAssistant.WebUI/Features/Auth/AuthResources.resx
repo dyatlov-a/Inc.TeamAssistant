@@ -27,8 +27,8 @@
     <data name="LoginHelp" xml:space="preserve">
         <value>To start working, please log in to Telegram.</value>
     </data>
-    <data name="LoginAsSuperuser" xml:space="preserve">
-        <value>Log in as superuser</value>
+    <data name="LoginAsSystemUser" xml:space="preserve">
+        <value>Login as</value>
     </data>
     <data name="CreateBot" xml:space="preserve">
         <value>Create your bot</value>

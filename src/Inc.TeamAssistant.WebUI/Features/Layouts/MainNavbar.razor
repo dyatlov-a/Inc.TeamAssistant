@@ -12,14 +12,17 @@
             </div>
         }
         <div class="navbar__divider"></div>
+        @foreach(var team in Teams)
+        {
+            <div class="navbar__item navbar__item_team">
+                <RouterLink Href="@MoveToTeamFactory(team.Id)">@team.Name</RouterLink>
+            </div>
+        }
         @if (CurrentPerson is not null)
         {
-            <span class="navbar__item navbar__item_avatar">
-                <img src="@CurrentPerson.AvatarUrl" alt="user avatar" class="user-avatar"/>
-                @CurrentPerson.Name
-                <br/>
-                @CurrentPerson.Username
-            </span>
+            <div class="navbar__item navbar__item_avatar">
+                <PersonCard Person="CurrentPerson" />
+            </div>
             <div class="navbar__item">
                 <RouterLink Href="@LogoutUrl">@Localizer["Logout"]</RouterLink>
             </div>
@@ -52,7 +55,13 @@
     public string LogoutUrl { get; set; } = default!;
     
     [Parameter, EditorRequired]
+    public Func<Guid, string> MoveToTeamFactory { get; set; } = default!;
+    
+    [Parameter, EditorRequired]
     public EventCallback<string> Moved { get; set; }
+    
+    [Parameter]
+    public IEnumerable<TenantTeamDto> Teams { get; set; } = [];
     
     [Parameter]
     public Person? CurrentPerson { get; set; }

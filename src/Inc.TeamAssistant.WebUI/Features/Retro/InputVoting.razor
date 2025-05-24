@@ -1,0 +1,51 @@
+@inherits InputBase<int>
+
+<div class="vote-items @CssClass">
+    @foreach (var i in Enumerable.Range(1, VotesTotal).Reverse())
+    {
+        <i class="vote @SelectedCssClass(i) @ActiveCssClass(i)" @onclick="@(() => OnVoteClick(i))"></i>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Maximum number of votes.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int VotesTotal { get; set; }
+    
+    /// <summary>
+    /// Remaining votes.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int RemainingVotes { get; set; }
+    
+    private int AvailableVotes => RemainingVotes + _value;
+    private string SelectedCssClass(int value) => value <= _value ? "vote_checked" : string.Empty;
+    private string ActiveCssClass(int value) => value <= AvailableVotes ? "vote_active" : string.Empty;
+
+    private int _value;
+    
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue;
+    }
+    
+    private async Task OnVoteClick(int vote)
+    {
+        if (vote == _value)
+            _value = 0;
+        else if (vote <= AvailableVotes)
+            _value = vote;
+
+        await ValueChanged.InvokeAsync(_value);
+    }
+    
+    protected override bool TryParseValueFromString(
+        string? value, 
+        out int result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

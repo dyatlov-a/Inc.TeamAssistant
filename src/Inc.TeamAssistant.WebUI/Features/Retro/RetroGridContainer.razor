@@ -1,0 +1,310 @@
+@page "/retro/{TeamId:guid}"
+@page "/ru/retro/{TeamId:guid}"
+@page "/en/retro/{TeamId:guid}"
+
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+@inject TenantStore TenantStore
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
+
+<MetaDataModule />
+
+<AuthorizeView>
+    <Authorized>
+        @if (Team is not null)
+        {
+            <RetroStatePanel
+                Session="_activeSession"
+                StartRetro="OnStartRetro"
+                MoveToNext="OnMoveToNext" />
+            
+            <RetroGrid
+                Team="@Team"
+                State="_state"
+                Columns="Columns"
+                CurrentUserId="context.User.ToPerson().Id"
+                Session="_activeSession"
+                Items="_items"
+                Participants="Participants"
+                VotesTotal="6"
+                CanCreate="_canCreate"
+                Retry="@(() => Load(_state))"
+                ItemCreated="OnItemCreated"
+                ItemChanged="OnItemChanged"
+                ItemRemoved="OnItemRemoved"
+                ItemMoved="OnItemMoved"
+                ItemMovedToSlot="OnItemMovedToSlot"
+                VoteChanged="OnVoteChanged" />
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public Guid TeamId { get; set; }
+
+    private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
+    private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
+
+    private bool _canCreate;
+    private readonly LoadingState _state = LoadingState.Done();
+    private RetroEventBuilder? _eventBuilder;
+    private IAsyncDisposable? _eventListener;
+
+    private readonly IReadOnlyDictionary<Guid, RetroColumnViewModel> _columns = new[]
+    {
+        new RetroColumnViewModel(
+            Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"),
+            "Start",
+            Position: 1,
+            ItemColor: "#FF8C00"),
+        new RetroColumnViewModel(
+            Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"),
+            "Stop",
+            Position: 2,
+            ItemColor: "#B22222"),
+        new RetroColumnViewModel(
+            Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"),
+            "Continue",
+            Position: 3,
+            ItemColor: "#3CB371")
+    }.ToDictionary(i => i.Id);
+
+    private RetroSessionDto? _activeSession;
+    private readonly List<RetroItemViewModel> _items = new();
+    private Dictionary<long, ParticipantViewModel> _participants = new();
+    private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .OrderBy(p => p.TotalVotes)
+        .ThenBy(p => p.Person.DisplayName)
+        .ToArray();
+    
+    protected override async Task OnParametersSetAsync() => await Load(_state);
+    
+    private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
+    {
+        if (hardReset)
+            await TenantStore.Initialize(TeamId, state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetRetroState(TeamId),
+            nameof(RetroGridContainer),
+            state);
+
+        _activeSession = result.ActiveSession;
+        _participants = result.Participants
+            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
+            .ToDictionary(p => p.Person.Id);
+        _canCreate = result.ActiveSession is null;
+        foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
+            ApplyItemChanged(item);
+        
+        if (hardReset)
+            await Reconnect();
+    }
+    
+    private async Task Reconnect()
+    {
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
+        
+        var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
+        if (eventBuilder is not null)
+            _eventBuilder ??= await eventBuilder.Start();
+        
+        _eventListener = await StartListenEvents();
+    }
+    
+    private async Task<IAsyncDisposable?> StartListenEvents()
+    {
+        if (_eventBuilder is null)
+            return null;
+
+        return await _eventBuilder.Build(
+            TeamId,
+            b => b.OnRetroItemChanged(async i =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyItemChanged(i);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroItemRemoved(async i =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyRemovedEvent(i);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnVotesChanged(async (p, v) =>
+                await InvokeAsync(() =>
+                {
+                    ApplyVotes(p, v);
+                    StateHasChanged();
+                })),
+            b => b.OnPersonsChanged(async p =>
+                await InvokeAsync(() =>
+                {
+                    ApplyParticipants(p);
+                    StateHasChanged();
+                })),
+            b => b.OnRetroSessionChanged(async _ =>
+            {
+                await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
+            }));
+    }
+
+    private async Task OnStartRetro()
+    {
+        await RequestProcessor.Process(
+            () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
+            _state);
+
+        await Load(_state, hardReset: false);
+    }
+    
+    private async Task OnMoveToNext(Guid id)
+    {
+        await RequestProcessor.Process(
+            () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
+            _state);
+
+        await Load(_state, hardReset: false);
+    }
+
+    private async Task OnItemCreated(Guid columnId)
+    {
+        _canCreate = false;
+
+        try
+        {
+            if (_eventBuilder is not null)
+                await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, columnId, Text: null));
+        }
+        finally
+        {
+            _canCreate = true;
+        }
+    }
+
+    private async Task OnItemChanged(RetroItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.UpdateRetroItem(item.ToCommand());
+    }
+
+    private void ApplyItemChanged(RetroItemDto changed)
+    {
+        var viewItem = _items.SingleOrDefault(i => i.Id == changed.Id) 
+            ?? RetroItemViewModel.Create(changed.Id, changed.OwnerId);
+        
+        viewItem.Apply(changed);
+    }
+
+    private void ApplyVotes(long personId, int votesCount)
+    {
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeTotalVotes(votesCount);
+    }
+    
+    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    {
+        foreach (var person in persons)
+            _participants.TryAdd(person.Id, new ParticipantViewModel(person, 0));
+    }
+    
+    private async Task OnItemRemoved(RetroItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        if (item.ParentId.HasValue)
+        {
+            var command = item.ToCommand() with
+            {
+                ParentId = null
+            };
+            
+            await _eventBuilder.UpdateRetroItem(command);
+        }
+        else
+            await _eventBuilder.RemoveRetroItem(item.Id);
+    }
+
+    private async Task OnItemMoved((RetroItemViewModel Parent, RetroItemViewModel Child) data)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var command = data.Child.ToCommand() with
+        {
+            ParentId = data.Parent.Id
+        };
+        
+        await _eventBuilder.UpdateRetroItem(command);
+    }
+
+    private async Task OnItemMovedToSlot((Guid ColumnId, RetroItemViewModel Item) data)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var itemWithMaxPosition = _items
+            .Where(i => i.ColumnId == data.ColumnId)
+            .MaxBy(i => i.Position);
+        var command = data.Item.ToCommand() with
+        {
+            ColumnId = data.ColumnId,
+            Position = (itemWithMaxPosition?.Position ?? 0) + 1
+        };
+
+        await _eventBuilder.UpdateRetroItem(command);
+    }
+
+    private async Task OnVoteChanged((Guid ItemId, int Votes) data)
+    {
+        if (_eventBuilder is null || _activeSession is null)
+            return;
+        
+        var votesByPerson = _items
+            .Where(i => i.Id != data.ItemId)
+            .Select(i => new PersonVoteByItemDto(i.Id, i.Votes))
+            .Append(new PersonVoteByItemDto(data.ItemId, data.Votes))
+            .Where(i => i.Vote > 0)
+            .ToArray();
+        _items
+            .Single(i => i.Id == data.ItemId)
+            .ChangeVotes(data.Votes);
+
+        await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, votesByPerson));
+    }
+
+    private void ApplyRemovedEvent(Guid itemId)
+    {
+        var viewItem = _items.SingleOrDefault(i => i.Id == itemId);
+        if (viewItem is not null)
+            _items.Remove(viewItem);
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+        {
+            await _eventListener.DisposeAsync();
+            _eventListener = null;
+        }
+        
+        if (_eventBuilder is not null)
+        {
+            await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
+    }
+}
