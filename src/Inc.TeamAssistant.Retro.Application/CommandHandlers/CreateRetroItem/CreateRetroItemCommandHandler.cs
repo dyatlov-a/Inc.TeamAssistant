@@ -43,7 +43,7 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
 
         await _repository.Upsert(item, token);
 
-        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertFromEvent(item));
+        await _eventSender.RetroItemChanged(RetroItemConverter.ConvertFromCreated(item));
 
         return new CreateRetroItemResult(item.Id);
     }

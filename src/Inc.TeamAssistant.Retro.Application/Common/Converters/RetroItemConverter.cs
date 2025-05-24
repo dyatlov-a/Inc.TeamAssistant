@@ -8,11 +8,18 @@ internal static class RetroItemConverter
 {
     private static readonly Regex LetterPattern = new(@"\p{L}", RegexOptions.Compiled);
 
-    public static RetroItemDto ConvertFromEvent(RetroItem item)
+    public static RetroItemDto ConvertFromCreated(RetroItem item)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        return ConvertFrom(item, currentPersonId: null, state: item.RetroSession?.State, votesByPerson: null);
+        return ConvertFrom(item, currentPersonId: null, state: null, votesByPerson: null);
+    }
+    
+    public static RetroItemDto ConvertFromChanged(RetroItem item, RetroSessionState? state)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        
+        return ConvertFrom(item, currentPersonId: null, state, votesByPerson: null);
     }
 
     public static RetroItemDto ConvertFromReadModel(
@@ -48,24 +55,12 @@ internal static class RetroItemConverter
         return new RetroItemDto(
             item.Id,
             item.TeamId,
-            item.Created,
             item.ColumnId,
             item.Position,
             parentText,
             item.OwnerId,
             item.ParentId,
-            votes ?? defaultVotes,
-            item.Children.Select(c => new RetroItemDto(
-                c.Id,
-                c.TeamId,
-                c.Created,
-                c.ColumnId,
-                c.Position,
-                c.Text,
-                c.OwnerId,
-                c.ParentId,
-                Votes: defaultVotes,
-                Children: [])).ToArray());
+            votes ?? defaultVotes);
     }
 
     private static string? ToObfuscate(RetroItem item, long? currentPersonId)

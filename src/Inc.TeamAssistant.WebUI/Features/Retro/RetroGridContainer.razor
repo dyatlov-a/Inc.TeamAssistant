@@ -28,12 +28,13 @@
                 Columns="Columns"
                 CurrentUserId="context.User.ToPerson().Id"
                 Session="_activeSession"
+                Items="_items"
                 Participants="Participants"
                 VotesTotal="6"
                 CanCreate="_canCreate"
                 Retry="@(() => Load(_state))"
-                ItemCreated="CreateRetroItem"
-                ItemChanged="OnItemCreated"
+                ItemCreated="OnItemCreated"
+                ItemChanged="OnItemChanged"
                 ItemRemoved="OnItemRemoved"
                 ItemMoved="OnItemMoved"
                 ItemMovedToSlot="OnItemMovedToSlot"
@@ -60,23 +61,21 @@
             Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"),
             "Start",
             Position: 1,
-            ItemColor: "#FF8C00",
-            Items: new()),
+            ItemColor: "#FF8C00"),
         new RetroColumnViewModel(
             Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"),
             "Stop",
             Position: 2,
-            ItemColor: "#B22222",
-            Items: new()),
+            ItemColor: "#B22222"),
         new RetroColumnViewModel(
             Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"),
             "Continue",
             Position: 3,
-            ItemColor: "#3CB371",
-            Items: new())
+            ItemColor: "#3CB371")
     }.ToDictionary(i => i.Id);
 
     private RetroSessionDto? _activeSession;
+    private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
         .OrderBy(p => p.TotalVotes)
@@ -134,11 +133,11 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroItemRemoved(async (cId, iId) =>
+            b => b.OnRetroItemRemoved(async i =>
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyRemovedEvent(cId, iId);
+                    ApplyRemovedEvent(i);
                     StateHasChanged();
                 });
             }),
@@ -178,7 +177,7 @@
         await Load(_state, hardReset: false);
     }
 
-    private async Task CreateRetroItem(Guid columnId)
+    private async Task OnItemCreated(Guid columnId)
     {
         _canCreate = false;
 
@@ -193,7 +192,7 @@
         }
     }
 
-    private async Task OnItemCreated(RetroItemViewModel item)
+    private async Task OnItemChanged(RetroItemViewModel item)
     {
         if (_eventBuilder is null)
             return;
@@ -201,24 +200,13 @@
         await _eventBuilder.UpdateRetroItem(item.ToCommand());
     }
 
-    private void ApplyItemChanged(RetroItemDto item)
+    private void ApplyItemChanged(RetroItemDto changed)
     {
-        if (!_columns.TryGetValue(item.ColumnId, out var column))
-            return;
-
-        if (item.ParentId.HasValue)
-            column.Items.Single(i => i.Id == item.ParentId.Value).ApplyChild(item);
+        var viewItem = _items.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewItem is null)
+            _items.Add(new RetroItemViewModel(changed.Id, changed.OwnerId).Apply(changed));
         else
-        {
-            var viewItem = column.Items.SingleOrDefault(i => i.Id == item.Id);
-            if (viewItem is null)
-                column.Items.Add(RetroItemViewModel.Create(item.Id, item.OwnerId, item.ColumnId).Apply(item));
-            else
-                viewItem.Apply(item);
-            
-            foreach (var child in item.Children)
-                column.Items.Single(i => i.Id == item.Id).ApplyChild(child);
-        }
+            viewItem.Apply(changed);
     }
 
     private void ApplyVotes(long personId, int votesCount)
@@ -240,13 +228,12 @@
 
         if (item.ParentId.HasValue)
         {
-            var parent = _columns
-                .SelectMany(c => c.Value.Items)
-                .Single(i => i.Id == item.ParentId.Value);
-
-            parent.RemoveChild(item);
+            var command = item.ToCommand() with
+            {
+                ParentId = null
+            };
             
-            await _eventBuilder.UpdateRetroItem(item.ToCommand());
+            await _eventBuilder.UpdateRetroItem(command);
         }
         else
             await _eventBuilder.RemoveRetroItem(item.Id);
@@ -256,62 +243,55 @@
     {
         if (_eventBuilder is null)
             return;
-        
-        var child = data.Child;
-        if (_columns.TryGetValue(child.ColumnId, out var column))
+
+        var command = data.Child.ToCommand() with
         {
-            column.Items.Remove(child);
-            data.Parent.AddChild(child);
+            ParentId = data.Parent.Id
+        };
         
-            await _eventBuilder.UpdateRetroItem(child.ToCommand());
-        }
+        await _eventBuilder.UpdateRetroItem(command);
     }
-    
+
     private async Task OnItemMovedToSlot((Guid ColumnId, RetroItemViewModel Item) data)
     {
         if (_eventBuilder is null)
             return;
-        
-        var movedItem = data.Item;
-        if (_columns.TryGetValue(data.ColumnId, out var slotColumn) &&
-            _columns.TryGetValue(movedItem.ColumnId, out var itemColumn))
+
+        var itemWithMaxPosition = _items
+            .Where(i => i.ColumnId == data.ColumnId)
+            .MaxBy(i => i.Position);
+        var command = data.Item.ToCommand() with
         {
-            var maxColumnPosition = slotColumn.Items.Any() ? slotColumn.Items.Max(i => i.Position) : 0;
-            
-            itemColumn.Items.Remove(movedItem);
-            movedItem.MoveToSlot(slotColumn.Id, maxColumnPosition);
-                
-            await _eventBuilder.UpdateRetroItem(movedItem.ToCommand());
-        }
+            ColumnId = data.ColumnId,
+            Position = (itemWithMaxPosition?.Position ?? 0) + 1
+        };
+
+        await _eventBuilder.UpdateRetroItem(command);
     }
-    
+
     private async Task OnVoteChanged((Guid ItemId, int Votes) data)
     {
         if (_eventBuilder is null || _activeSession is null)
             return;
         
-        var votesByPerson = Columns.SelectMany(c => c.Items)
+        var votesByPerson = _items
             .Where(i => i.Id != data.ItemId)
             .Select(i => new PersonVoteByItemDto(i.Id, i.Votes))
             .Append(new PersonVoteByItemDto(data.ItemId, data.Votes))
             .Where(i => i.Vote > 0)
             .ToArray();
-        Columns
-            .SelectMany(c => c.Items)
+        _items
             .Single(i => i.Id == data.ItemId)
             .ChangeVotes(data.Votes);
 
         await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, votesByPerson));
     }
 
-    private void ApplyRemovedEvent(Guid columnId, Guid itemId)
+    private void ApplyRemovedEvent(Guid itemId)
     {
-        if (!_columns.TryGetValue(columnId, out var column))
-            return;
-        
-        var viewItem = column.Items.SingleOrDefault(i => i.Id == itemId);
+        var viewItem = _items.SingleOrDefault(i => i.Id == itemId);
         if (viewItem is not null)
-            column.Items.Remove(viewItem);
+            _items.Remove(viewItem);
     }
     
     public async ValueTask DisposeAsync()

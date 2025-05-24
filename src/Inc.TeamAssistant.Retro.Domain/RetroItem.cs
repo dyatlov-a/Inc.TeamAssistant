@@ -71,11 +71,8 @@ public sealed class RetroItem
     {
         ParentId = parentId;
 
-        var position = Math.Abs(Position);
-        if (parentId.HasValue)
-            Position = position * -1;
-        else
-            Position = position;
+        foreach (var child in Children)
+            child.ChangeParent(parentId);
 
         return this;
     }

@@ -7,7 +7,7 @@ public interface IRetroEventSender
 {
     Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false);
 
-    Task RetroItemRemoved(Guid teamId, Guid columnId, Guid itemId);
+    Task RetroItemRemoved(Guid teamId, Guid itemId);
     
     Task RetroSessionChanged(RetroSessionDto session);
     

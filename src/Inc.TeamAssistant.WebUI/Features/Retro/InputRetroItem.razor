@@ -11,7 +11,7 @@
     style="background-color: @BackgroundColor"
     class="retro-item @CssClass @CanViewCss @ChildCss"
     @attributes="DynamicAttributes.BuildDraggable(CanMove)">
-    @if (HasRemove)
+    @if (CanRemove)
     {
         <div class="retro-item__actions">
             <RouterLink OnClick="SendItemRemoved">X</RouterLink>
@@ -22,7 +22,7 @@
         @oninput="OnInputChanged"
         @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
         @ref="_item">
-        @if (!RenderContext.IsBrowser || !CanEdit)
+        @if (!RenderContext.IsBrowser)
         {
             @_value.Text
         }
@@ -88,17 +88,16 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
     
-    private RetroItemViewModel _value = new();
+    private RetroItemViewModel _value = RetroItemViewModel.Empty;
     private ElementReference _item;
     private Timer? _timer;
-
-    private bool HasRemove => CanRemove && !_value.Children.Any();
+    
     private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
     private string ChildCss => _value.ParentId.HasValue ? "retro-item_child" : string.Empty;
 
     protected override void OnParametersSet()
     {
-        _value = CurrentValue ?? new();
+        _value = CurrentValue ?? RetroItemViewModel.Empty;
 
         if (!CanEdit)
             return;
@@ -112,7 +111,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && CanEdit && RenderContext.IsBrowser)
+        if (firstRender && RenderContext.IsBrowser)
             await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
     }
     
@@ -122,11 +121,9 @@
     {
         var movedItem = DragAndDropService.End();
         var isOtherItem = _value.Id != movedItem.Id;
-        var isSameColumn = _value.ColumnId == movedItem.ColumnId;
         var hasParent = _value.ParentId.HasValue;
-        var hasChildren = _value.Children.Any();
         
-        if (!hasParent && !hasChildren && isOtherItem && isSameColumn)
+        if (!hasParent && isOtherItem)
             await ItemMoved.InvokeAsync(new(_value, movedItem));
     }
 
@@ -137,10 +134,7 @@
             var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
 
             if (_value.Text != value)
-            {
-                _value.ChangeText(value);
-                await ValueChanged.InvokeAsync(_value);
-            }
+                await ValueChanged.InvokeAsync(_value.ChangeText(value));
         }
         catch (Exception ex)
         {
@@ -162,7 +156,7 @@
 
     private async Task SendItemRemoved()
     {
-        if (!HasRemove)
+        if (!CanRemove)
             return;
         
         await ItemRemoved.InvokeAsync(_value);
