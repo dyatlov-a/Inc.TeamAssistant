@@ -1,0 +1,44 @@
+@if (_isOpen)
+{
+    <div class="inline-dialog">
+        <div class="inline-dialog__content">
+            <p>@Text</p>
+        </div>
+        <div class="inline-dialog__actions">
+            <Button OnClick="Confirmed">@ButtonText</Button>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// MessageId for localization.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+    
+    /// <summary>
+    /// Button MessageId for localization.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string ButtonText { get; set; } = default!;
+        
+    private bool _isOpen;
+    private readonly TaskCompletionSource<bool> _state = new();
+
+    public Task<bool> IsConfirmed()
+    {
+        _isOpen = true;
+        
+        StateHasChanged();
+
+        return _state.Task;
+    }
+
+    private void Confirmed()
+    {
+        _isOpen = false;
+        
+        _state.SetResult(true);
+    }
+}

@@ -10,20 +10,15 @@
                 <div class="retro-participants">
                     @foreach (var participant in Participants)
                     {
-                        var remainingVotes = VotesTotal - participant.TotalVotes;
-
-                        if (remainingVotes > 0)
-                        {
-                            <div class="retro-participant">
-                                <PersonCard Person="participant.Person"/>
-                                <InputVoting
-                                    VotesTotal="remainingVotes"
-                                    RemainingVotes="0"
-                                    Value="0"
-                                    ValueExpression="@(() => remainingVotes)"
-                                    ValueChanged="@((int v) => { })"/>
-                            </div>
-                        }
+                        <div class="retro-participant">
+                            <PersonCard Person="participant.Person"/>
+                            <InputVoting
+                                VotesTotal="@(VotesTotal - participant.TotalVotes)"
+                                RemainingVotes="0"
+                                Value="0"
+                                ValueExpression="@(() => participant.TotalVotes)"
+                                ValueChanged="@((int v) => { })"/>
+                        </div>
                     }
                 </div>
             }

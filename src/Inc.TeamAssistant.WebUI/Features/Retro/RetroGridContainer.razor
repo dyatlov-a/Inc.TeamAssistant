@@ -30,7 +30,7 @@
                 Session="_activeSession"
                 Items="_items"
                 Participants="Participants"
-                VotesTotal="6"
+                VotesTotal="_votesTotal"
                 CanCreate="_canCreate"
                 Retry="@(() => Load(_state))"
                 ItemCreated="OnItemCreated"
@@ -51,6 +51,7 @@
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
 
     private bool _canCreate;
+    private readonly int _votesTotal = 6;
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
@@ -78,6 +79,7 @@
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .Where(p => p.TotalVotes < _votesTotal)
         .OrderBy(p => p.TotalVotes)
         .ThenBy(p => p.Person.DisplayName)
         .ToArray();
