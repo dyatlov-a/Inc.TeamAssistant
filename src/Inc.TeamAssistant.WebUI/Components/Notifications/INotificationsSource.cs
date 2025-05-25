@@ -1,10 +1,10 @@
 namespace Inc.TeamAssistant.WebUI.Components.Notifications;
 
-public interface INotificationsSource
+public interface INotificationsSource : IDisposable
 {
     IReadOnlyCollection<Notification> Notifications { get; }
     
-    IDisposable OnChanged(Action action);
+    void OnChanged(Action action);
 
     void Remove(Notification notification);
 }

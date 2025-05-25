@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
 
         var appVersion = ApplicationContext.GetVersion();
         var messageLifetime = TimeSpan.FromSeconds(30);
-        var checkInterval = TimeSpan.FromSeconds(5);
 
         services
             .AddBlazoredLocalStorage()
@@ -47,7 +46,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IRenderContext, ClientRenderContext>()
             .AddSingleton<AssessmentSessionEventBuilder>()
             .AddSingleton<RetroEventBuilder>()
-            .AddNotificationsService(messageLifetime, checkInterval)
+            .AddNotificationsService(messageLifetime)
 
             .AddAuthorizationCore()
             .AddCascadingAuthenticationState()
@@ -87,16 +86,14 @@ public static class ServiceCollectionExtensions
     
     private static IServiceCollection AddNotificationsService(
         this IServiceCollection services,
-        TimeSpan messageLifetime,
-        TimeSpan checkInterval)
+        TimeSpan messageLifetime)
     {
         ArgumentNullException.ThrowIfNull(services);
         
-        var notificationsService = new NotificationsService(messageLifetime, checkInterval);
-        
         services
-            .AddSingleton<INotificationsSource>(notificationsService)
-            .AddSingleton<INotificationsService>(notificationsService);
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<NotificationsService>(sp, messageLifetime))
+            .AddSingleton<INotificationsSource>(sp => sp.GetRequiredService<NotificationsService>())
+            .AddSingleton<INotificationsService>(sp => sp.GetRequiredService<NotificationsService>());
         
         return services;
     }

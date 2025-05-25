@@ -145,6 +145,7 @@
     private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
     {
         _timer?.Stop();
+        
         InvokeAsync(TrySendValueChanged);
     }
 

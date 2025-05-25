@@ -1,18 +1,19 @@
+using System.Timers;
+
 namespace Inc.TeamAssistant.WebUI.Components.Notifications;
 
 internal sealed class NotificationsService : INotificationsSource, INotificationsService
 {
+    private readonly ILogger<NotificationsService> _logger;
     private readonly List<Notification> _notifications = new();
-    
-    private readonly TimeSpan _messageLifetime;
-    private readonly TimeSpan _checkInterval;
+    private readonly System.Timers.Timer _timer;
     
     private Action? _changed;
 
-    public NotificationsService(TimeSpan messageLifetime, TimeSpan checkInterval)
+    public NotificationsService(ILogger<NotificationsService> logger, TimeSpan messageLifetime)
     {
-        _messageLifetime = messageLifetime;
-        _checkInterval = checkInterval;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _timer = CreateTimer(messageLifetime);
     }
     
     public IReadOnlyCollection<Notification> Notifications => _notifications;
@@ -24,6 +25,9 @@ internal sealed class NotificationsService : INotificationsSource, INotification
         _notifications.Add(notification);
 
         _changed?.Invoke();
+        
+        _timer.Stop();
+        _timer.Start();
     }
     
     public void Remove(Notification notification)
@@ -33,7 +37,7 @@ internal sealed class NotificationsService : INotificationsSource, INotification
         _notifications.Remove(notification);
     }
     
-    public IDisposable OnChanged(Action action)
+    public void OnChanged(Action action)
     {
         ArgumentNullException.ThrowIfNull(action);
         
@@ -41,20 +45,48 @@ internal sealed class NotificationsService : INotificationsSource, INotification
             throw new ApplicationException("Only one listener is supported");
         
         _changed = action;
-
-        return new TimerScope(CheckMessages, _checkInterval);
     }
     
-    private void CheckMessages()
+    private void TryCheckMessages()
     {
-        var from = DateTimeOffset.UtcNow.Subtract(_messageLifetime);
-        var notifications = _notifications
-            .Where(n => n.Type != NotificationType.Error && n.Created < from)
-            .ToArray();
+        try
+        {
+            var notifications = _notifications
+                .Where(n => n.Type != NotificationType.Error)
+                .ToArray();
 
-        foreach (var notification in notifications)
-            Remove(notification);
+            foreach (var notification in notifications)
+                Remove(notification);
         
-        _changed?.Invoke();
+            _changed?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error on timer tick for NotificationsService");
+        }
+    }
+    
+    private void HandleTick(object? sender, ElapsedEventArgs e)
+    {
+        _timer.Stop();
+        
+        TryCheckMessages();
+    }
+
+    private System.Timers.Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new System.Timers.Timer(interval);
+        
+        timer.Elapsed += HandleTick;
+        timer.AutoReset = false;
+
+        return timer;
+    }
+
+    public void Dispose()
+    {
+        _timer.Stop();
+        _timer.Elapsed -= HandleTick;
+        _timer.Dispose();
     }
 }

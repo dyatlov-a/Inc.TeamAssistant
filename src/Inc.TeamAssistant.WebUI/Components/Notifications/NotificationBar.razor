@@ -18,14 +18,13 @@
 
 @code {
     private INotificationsSource? _notificationsSource;
-    private IDisposable? _notificationsScope;
 
     private IReadOnlyCollection<Notification> Notifications => _notificationsSource?.Notifications ?? [];
 
     protected override void OnInitialized()
     {
         _notificationsSource = ServiceProvider.GetService<INotificationsSource>();
-        _notificationsScope = _notificationsSource?.OnChanged(StateHasChanged);
+        _notificationsSource?.OnChanged(StateHasChanged);
     }
 
     private string CssClass(Notification notification)
@@ -40,5 +39,5 @@
     
     private void Remove(Notification notification) => _notificationsSource?.Remove(notification);
     
-    public void Dispose() => _notificationsScope?.Dispose();
+    public void Dispose() => _notificationsSource?.Dispose();
 }
