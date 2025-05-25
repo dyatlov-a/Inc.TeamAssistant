@@ -74,5 +74,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("PrioritizingText", resourceCulture);
             }
         }
+        
+        internal static string ConnectionLost {
+            get {
+                return ResourceManager.GetString("ConnectionLost", resourceCulture);
+            }
+        }
+        
+        internal static string Reconnect {
+            get {
+                return ResourceManager.GetString("Reconnect", resourceCulture);
+            }
+        }
     }
 }

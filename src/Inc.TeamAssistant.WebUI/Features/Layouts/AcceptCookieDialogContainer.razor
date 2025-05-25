@@ -5,17 +5,18 @@
 @inject IStringLocalizer<LayoutResources> Localizer
 
 <InlineDialog
+    IsOpen="_isOpen"
     Text="@Localizer["AcceptCookieText"]"
     ButtonText="@Localizer["AcceptCookieButton"]"
-    @ref="_dialog" />
+    OnAction="Accepted" />
 
 @code {
     private IJSObjectReference? _cookieModule;
-
-    private InlineDialog? _dialog;
+    
     private readonly string _rightsCookieName = "rights";
     private readonly string _rightsCookieValue = "accept";
     private readonly int _rightsCookieLifetime = 365;
+    private bool _isOpen;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -25,10 +26,13 @@
                 "import",
                 "./Features/Layouts/AcceptCookieDialogContainer.razor.js");
             var rightsValue = await _cookieModule.InvokeAsync<string>("readCookie", _rightsCookieName);
-            
-            if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase)
-                && _dialog is not null && await _dialog.IsConfirmed())
-                await Accepted();
+
+            if (!_rightsCookieValue.Equals(rightsValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                _isOpen = true;
+                
+                StateHasChanged();
+            }
         }
     }
 
@@ -42,6 +46,8 @@
             _rightsCookieName,
             _rightsCookieValue,
             _rightsCookieLifetime);
+
+        _isOpen = false;
     }
 
     public async ValueTask DisposeAsync()

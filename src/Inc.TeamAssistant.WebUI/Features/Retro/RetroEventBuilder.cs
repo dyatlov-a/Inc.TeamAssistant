@@ -13,6 +13,7 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
+    private Action? _changed;
 
     public RetroEventBuilder(NavigationManager navigationManager)
     {
@@ -22,11 +23,29 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
             .WithUrl(navigationManager.ToAbsoluteUri(HubDescriptors.RetroHub.Endpoint))
             .WithAutomaticReconnect()
             .Build();
-    }
 
-    public async Task<RetroEventBuilder> Start()
+        _hubConnection.Closed += Closed;
+        _hubConnection.Reconnected += Reconnected;
+    }
+    
+    public bool IsDisconnected { get; private set; }
+
+    public async Task<RetroEventBuilder> Start(Action changed)
     {
-        await _hubConnection.StartAsync();
+        _changed = changed ?? throw new ArgumentNullException(nameof(changed));
+        
+        try
+        {
+            await _hubConnection.StartAsync();
+
+            IsDisconnected = false;
+        }
+        catch
+        {
+            IsDisconnected = true;
+        }
+
+        _changed();
 
         return this;
     }
@@ -112,6 +131,30 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         
         return _hubConnection.On(nameof(IRetroHubClient.PersonsChanged), changed);
     }
+    
+    private Task Closed(Exception? ex)
+    {
+        IsDisconnected = true;
 
-    public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();
+        _changed?.Invoke();
+        
+        return Task.CompletedTask;
+    }
+    
+    private Task Reconnected(string? connectionId)
+    {
+        IsDisconnected = false;
+        
+        _changed?.Invoke();
+        
+        return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _hubConnection.Closed -= Closed;
+        _hubConnection.Reconnected -= Reconnected;
+        
+        return _hubConnection.DisposeAsync();
+    }
 }

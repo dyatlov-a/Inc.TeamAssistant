@@ -1,16 +1,22 @@
-@if (_isOpen)
+@if (IsOpen)
 {
     <div class="inline-dialog">
         <div class="inline-dialog__content">
             <p>@Text</p>
         </div>
         <div class="inline-dialog__actions">
-            <Button OnClick="Confirmed">@ButtonText</Button>
+            <Button OnClick="OnAction">@ButtonText</Button>
         </div>
     </div>
 }
 
 @code {
+    /// <summary>
+    /// Is the dialog open?
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+    
     /// <summary>
     /// MessageId for localization.
     /// </summary>
@@ -22,23 +28,10 @@
     /// </summary>
     [Parameter, EditorRequired]
     public string ButtonText { get; set; } = default!;
-        
-    private bool _isOpen;
-    private readonly TaskCompletionSource<bool> _state = new();
-
-    public Task<bool> IsConfirmed()
-    {
-        _isOpen = true;
-        
-        StateHasChanged();
-
-        return _state.Task;
-    }
-
-    private void Confirmed()
-    {
-        _isOpen = false;
-        
-        _state.SetResult(true);
-    }
+    
+    /// <summary>
+    /// Callback when the button is clicked.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnAction { get; set; }
 }

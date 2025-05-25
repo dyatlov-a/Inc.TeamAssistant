@@ -4,15 +4,14 @@
     <Story Name="Default">
         <Template>
             <InlineDialog
+                IsOpen="_isOpen"
                 Text="We use cookies to make your experience on our site as convenient as possible. By continuing to browse our site, you are agreeing to the use of these cookies"
                 ButtonText="Accept"
-                @ref="_dialog" />
+                OnAction="@(() => _isOpen = false)" />
         </Template>
     </Story>
 </Stories>
 
 @code {
-    private InlineDialog? _dialog;
-
-    protected override Task OnAfterRenderAsync(bool firstRender) => _dialog?.IsConfirmed() ?? Task.CompletedTask;
+    private bool _isOpen = true;
 }

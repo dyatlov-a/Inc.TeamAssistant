@@ -10,6 +10,7 @@
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<RetroResources> Localizer
 
 <MetaDataModule />
 
@@ -39,6 +40,12 @@
                 ItemMoved="OnItemMoved"
                 ItemMovedToSlot="OnItemMovedToSlot"
                 VoteChanged="OnVoteChanged" />
+            
+            <InlineDialog
+                IsOpen="IsDisconnected"
+                Text="@Localizer["ConnectionLost"]"
+                ButtonText="@Localizer["Reconnect"]"
+                OnAction="Reconnect" />
         }
     </Authorized>
 </AuthorizeView>
@@ -55,6 +62,7 @@
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
+    private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
 
     private readonly IReadOnlyDictionary<Guid, RetroColumnViewModel> _columns = new[]
     {
@@ -105,19 +113,25 @@
             ApplyItemChanged(item);
         
         if (hardReset)
-            await Reconnect();
+            await Connect();
     }
     
-    private async Task Reconnect()
+    private async Task Connect()
     {
         if (_eventListener is not null)
             await _eventListener.DisposeAsync();
         
         var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
         if (eventBuilder is not null)
-            _eventBuilder ??= await eventBuilder.Start();
+            _eventBuilder ??= await eventBuilder.Start(StateHasChanged);
         
         _eventListener = await StartListenEvents();
+    }
+
+    private async Task Reconnect()
+    {
+        if (_eventBuilder is not null)
+            await _eventBuilder.Start(StateHasChanged);
     }
     
     private async Task<IAsyncDisposable?> StartListenEvents()
