@@ -201,14 +201,16 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(Guid ItemId, int Vote)> VoteChanged { get; set; }
-
+    
     private const string GroupingState = "Grouping";
     private const string PrioritizingState = "Prioritizing";
+    private const string DiscussingState = "Discussing";
 
     private string RetroTextKey => Session?.State switch
     {
         GroupingState => "GroupingText",
         PrioritizingState => "PrioritizingText",
+        DiscussingState => "DiscussingText",
         _ => "StartText"
     };
 

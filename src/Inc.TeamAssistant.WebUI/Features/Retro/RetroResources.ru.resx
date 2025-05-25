@@ -39,4 +39,10 @@
     <data name="Reconnect" xml:space="preserve">
         <value>Повторить подключение</value>
     </data>
+    <data name="ConfirmMoveToDiscussing" xml:space="preserve">
+        <value>Досрочное завершение голосования. Перейти к обсуждению?</value>
+    </data>
+    <data name="DiscussingText" xml:space="preserve">
+        <value>На этом этапе участники команды последовательно обсуждают карточки, которые были созданы и поддержаны во время голосования. Цель — глубже понять суть каждой карточки, выявить проблемы, поделиться мнениями и предложить решения.</value>
+    </data>
 </root>

@@ -86,5 +86,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("Reconnect", resourceCulture);
             }
         }
+        
+        internal static string ConfirmMoveToDiscussing {
+            get {
+                return ResourceManager.GetString("ConfirmMoveToDiscussing", resourceCulture);
+            }
+        }
+        
+        internal static string DiscussingText {
+            get {
+                return ResourceManager.GetString("DiscussingText", resourceCulture);
+            }
+        }
     }
 }

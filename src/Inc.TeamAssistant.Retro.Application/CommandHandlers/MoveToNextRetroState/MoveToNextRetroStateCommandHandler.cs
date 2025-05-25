@@ -32,7 +32,7 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
         var retroSession = await command.Id.Required(_repository.Find, token);
 
         // TODO: Impl next state
-        if (retroSession.State == RetroSessionState.Prioritizing)
+        if (retroSession.State == RetroSessionState.Discussing)
             return;
         
         retroSession
