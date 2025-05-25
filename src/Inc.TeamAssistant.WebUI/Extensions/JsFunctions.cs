@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Inc.TeamAssistant.WebUI.Extensions;
 
-public static class JsFunctions
+internal static class JsFunctions
 {
     public static IJsFunction<int> GetTimezone()
     {

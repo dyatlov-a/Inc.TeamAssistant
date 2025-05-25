@@ -33,6 +33,8 @@ public static class WebApplicationBuilderExtensions
         builder.Services
             .AddSingleton(analyticsOptions)
             .AddProblemDetails()
+            .AddExceptionHandler<TeamAssistantUserExceptionHandler>()
+            .AddExceptionHandler<ValidationExceptionHandler>()
             .AddExceptionHandler<UnhandledExceptionHandler>();
         
         builder.Host.UseSerilog((_, c) =>

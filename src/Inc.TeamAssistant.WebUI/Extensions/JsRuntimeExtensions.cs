@@ -2,7 +2,7 @@ using Microsoft.JSInterop;
 
 namespace Inc.TeamAssistant.WebUI.Extensions;
 
-public static class JsRuntimeExtensions
+internal static class JsRuntimeExtensions
 {
     public static async ValueTask<TValue> Execute<TValue>(this IJSRuntime jsRuntime, IJsFunction<TValue> jsFunction)
     {

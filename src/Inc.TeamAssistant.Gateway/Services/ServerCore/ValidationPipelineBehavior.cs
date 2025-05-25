@@ -26,11 +26,9 @@ internal sealed class ValidationPipelineBehavior<TRequest, TResponse> : IPipelin
             var result = await validator.ValidateAsync(request, token);
 
             if (!result.IsValid)
-            {
                 throw new ValidationException(result.Errors);
-            }
         }
 
-        return await next();
+        return await next(token);
     }
 }

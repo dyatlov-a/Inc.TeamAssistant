@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Extensions;
 
 namespace Inc.TeamAssistant.WebUI.Services.ServiceClients;
 
@@ -44,7 +45,7 @@ internal sealed class RetroClient : IRetroService
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PutAsJsonAsync("retro", command, token);
-        
-        response.EnsureSuccessStatusCode();
+
+        await response.HandleValidation(token);
     }
 }

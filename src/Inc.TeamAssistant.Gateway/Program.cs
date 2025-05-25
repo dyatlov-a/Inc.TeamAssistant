@@ -140,12 +140,7 @@ builder.Services
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
-	.AddMvc(o => 
-	{
-		var outputFormatter = o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
-		if (outputFormatter is not null)
-			outputFormatter.TreatNullValueAsNoContent = false;
-	});
+	.AddMvc(o => o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false);
 
 builder.Services
 	.AddHybridCache();

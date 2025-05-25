@@ -113,6 +113,13 @@ internal sealed class RequestProcessor : IDisposable
 
             return handler.Result;
         }
+        catch (ClientException ex)
+        {
+            foreach (var error in ex.Detail.Errors.SelectMany(e => e.Value))
+                _notificationsService?.Publish(Notification.Error(error));
+            
+            progress.Report(LoadingState.State.Error);
+        }
         catch (Exception ex)
         {
             _notificationsService?.Publish(Notification.Error(ex.Message));
