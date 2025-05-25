@@ -8,11 +8,11 @@ public interface IOnlinePersonStore
     
     IReadOnlyCollection<Person> GetPersons(Guid teamId);
     
-    IReadOnlyCollection<Person> JoinToTeam(string connectionId, Guid teamId, Person person);
+    IReadOnlyCollection<Person> JoinToTeam(Guid teamId, string connectionId, Person person);
 
-    IReadOnlyCollection<Person> LeaveFromTeam(string connectionId, Guid teamId);
+    IReadOnlyCollection<Person> LeaveFromTeam(Guid teamId, string connectionId);
 
-    IAsyncEnumerable<Guid> LeaveFromAllTeams(
+    IAsyncEnumerable<Guid> LeaveFromTeams(
         string connectionId,
         Func<Guid, IReadOnlyCollection<Person>, CancellationToken, Task> notify,
         CancellationToken token);

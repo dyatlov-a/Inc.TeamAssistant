@@ -28,7 +28,7 @@ internal sealed class OnlinePersonStore : IOnlinePersonStore
         return result;
     }
     
-    public IReadOnlyCollection<Person> JoinToTeam(string connectionId, Guid teamId, Person person)
+    public IReadOnlyCollection<Person> JoinToTeam(Guid teamId, string connectionId, Person person)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         ArgumentNullException.ThrowIfNull(person);
@@ -40,7 +40,7 @@ internal sealed class OnlinePersonStore : IOnlinePersonStore
         return GetPersons(teamId);
     }
 
-    public IReadOnlyCollection<Person> LeaveFromTeam(string connectionId, Guid teamId)
+    public IReadOnlyCollection<Person> LeaveFromTeam(Guid teamId, string connectionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         
@@ -50,7 +50,7 @@ internal sealed class OnlinePersonStore : IOnlinePersonStore
         return GetPersons(teamId);
     }
 
-    public async IAsyncEnumerable<Guid> LeaveFromAllTeams(
+    public async IAsyncEnumerable<Guid> LeaveFromTeams(
         string connectionId,
         Func<Guid, IReadOnlyCollection<Person>, CancellationToken, Task> notify,
         [EnumeratorCancellation] CancellationToken token)

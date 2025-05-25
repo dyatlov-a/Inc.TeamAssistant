@@ -19,7 +19,7 @@ internal sealed class LeaveFromRetroCommandHandler : IRequestHandler<LeaveFromRe
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var persons = _store.LeaveFromTeam(command.ConnectionId, command.TeamId);
+        var persons = _store.LeaveFromTeam(command.TeamId, command.ConnectionId);
         
         await _eventSender.PersonsChanged(command.TeamId, persons);
     }

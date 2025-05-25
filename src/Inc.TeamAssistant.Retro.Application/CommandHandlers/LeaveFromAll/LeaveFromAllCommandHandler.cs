@@ -20,7 +20,7 @@ internal sealed class LeaveFromAllCommandHandler : IRequestHandler<LeaveFromAllC
         ArgumentNullException.ThrowIfNull(command);
 
         var teamIds = new List<Guid>();
-        var teams = _store.LeaveFromAllTeams(
+        var teams = _store.LeaveFromTeams(
             command.ConnectionId,
             (tId, p, t) => _eventSender.PersonsChanged(tId, p),
             token);
