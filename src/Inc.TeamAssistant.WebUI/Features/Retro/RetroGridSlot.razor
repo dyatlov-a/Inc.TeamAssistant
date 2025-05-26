@@ -28,7 +28,7 @@
     private async Task OnDrop()
     {
         var movedItem = DragAndDropService.End();
-
-        await ItemMoved.InvokeAsync((ColumnId, movedItem));
+        if (movedItem is not null)
+            await ItemMoved.InvokeAsync((ColumnId, movedItem));
     }
 }

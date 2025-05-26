@@ -1,6 +1,6 @@
-@inject DragAndDropService<Guid> DragAndDropService
+@inject DragAndDropService<FeatureDto> DragAndDropService
 
-<div draggable="true" @ondragstart="@(() => HandleDragStart(FeatureId))" class="feature-card draggable">
+<div draggable="true" @ondragstart="HandleDragStart" class="feature-card draggable">
     <div class="feature-card__header">
         <div class="feature-card__drag">
             <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary" />
@@ -19,18 +19,33 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Icon to display in the feature card.
+    /// </summary>
     [Parameter, EditorRequired]
     public Type Icon { get; set; } = default!;
     
+    /// <summary>
+    /// Feature data transfer object.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Guid FeatureId { get; set; }
+    public FeatureDto Feature { get; set; } = default!;
     
+    /// <summary>
+    /// Title of the feature card.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Title { get; set; } = default!;
     
+    /// <summary>
+    /// Description of the feature card.
+    /// </summary>
     [Parameter, EditorRequired]
     public string Description { get; set; } = default!;
     
+    /// <summary>
+    /// Buttons to display in the feature card.
+    /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Buttons { get; set; } = default!;
     
@@ -40,5 +55,5 @@
         ["ComponentStyle"] = ComponentStyle.Secondary
     };
     
-    private void HandleDragStart(Guid id) => DragAndDropService.Start(id);
+    private void HandleDragStart() => DragAndDropService.Start(Feature);
 }

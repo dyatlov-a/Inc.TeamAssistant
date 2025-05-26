@@ -120,10 +120,10 @@
     private async Task OnDrop()
     {
         var movedItem = DragAndDropService.End();
-        var isOtherItem = _value.Id != movedItem.Id;
+        var isOtherItem = _value.Id != movedItem?.Id;
         var hasParent = _value.ParentId.HasValue;
         
-        if (!hasParent && isOtherItem)
+        if (movedItem is not null && !hasParent && isOtherItem)
             await ItemMoved.InvokeAsync(new(_value, movedItem));
     }
 
