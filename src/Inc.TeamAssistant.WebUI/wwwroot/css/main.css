@@ -172,7 +172,7 @@ html {
 /* GRID */
 .quick-data-grid {
     width: 100%;
-    font-size: 13px;
+    font-size: .8125rem;
     border-spacing: 0;
     word-break: break-all;
 }
@@ -180,11 +180,14 @@ html {
     white-space: normal !important;
 }
 .quick-data-grid .link {
-    font-size: 13px;
+    font-size: .8125rem;
 }
 .quick-data-grid .col-title {
     color: var(--text-secondary-color);
-    font-size: 14px;
+    font-size: .875rem;
+}
+.quick-data-grid tr {
+    height: 1.625rem;
 }
 .quick-data-grid tbody tr:nth-child(2n - 1){
     background-color: var(--bg-secondary-color);

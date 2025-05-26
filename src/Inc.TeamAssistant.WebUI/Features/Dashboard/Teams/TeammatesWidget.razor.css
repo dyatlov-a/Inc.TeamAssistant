@@ -1,6 +1,3 @@
 .component-container {
     height: calc(100% - 30px);
 }
-::deep tr {
-    height: 1.625rem;
-}
