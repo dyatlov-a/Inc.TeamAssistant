@@ -1,0 +1,38 @@
+<div class="retro-participants">
+    @foreach (var participant in Participants)
+    {
+        <div class="retro-participant">
+            <PersonCard Person="participant.Person"/>
+            @if (CanVote)
+            {
+                <InputVoting
+                    VotesTotal="@(VotesTotal - participant.TotalVotes)"
+                    RemainingVotes="0"
+                    Value="0"
+                    ValueExpression="@(() => participant.TotalVotes)"
+                    ValueChanged="@((int v) => { })"/>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Can the user vote in the retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanVote { get; set; }
+    
+    /// <summary>
+    /// Votes total for the retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int VotesTotal { get; set; }
+
+    /// <summary>
+    /// Retro session participants.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
+
+}

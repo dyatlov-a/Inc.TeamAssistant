@@ -1,116 +1,109 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
-<Loading State="State" Retry="Retry">
-    <div class="main-content">
-        <div class="main-content__container">
-            <h1 class="main-content__header">@Localizer["MainHeader"] @Team.Name</h1>
-            <p class="main-content__text">@Localizer[RetroTextKey]</p>
-            @if (CanVote)
-            {
-                <div class="retro-participants">
-                    @foreach (var participant in Participants)
-                    {
-                        <div class="retro-participant">
-                            <PersonCard Person="participant.Person"/>
-                            <InputVoting
-                                VotesTotal="@(VotesTotal - participant.TotalVotes)"
-                                RemainingVotes="0"
-                                Value="0"
-                                ValueExpression="@(() => participant.TotalVotes)"
-                                ValueChanged="@((int v) => { })"/>
-                        </div>
-                    }
-                </div>
-            }
-            <div class="retro-grid">
-                <div class="retro-grid__columns">
-                    @foreach (var column in Columns.OrderBy(c => c.Position))
-                    {
-                        <div class="retro-grid__column">
-                            <Panel Header="@column.Name" IsOpen="true">
-                                <Actions>
-                                    <Button IsDisabled="@(!CanCreate)" OnClick="() => SendItemCreated(column.Id)">
-                                        @Localizer["Add"]
-                                    </Button>
-                                </Actions>
-                                <Content>
-                                    <div class="retro-grid__column-items">
-                                        @if (CanMove)
-                                        {
-                                            <RetroGridSlot
-                                                ColumnId="column.Id"
-                                                CanMove="CanMove"
-                                                ItemMoved="ItemMovedToSlot"/>
-                                        }
-                                        @foreach (var item in Items
-                                                      .Where(i => i.ColumnId == column.Id && !i.ParentId.HasValue)
-                                                      .OrderByDescending(c => c.Position))
-                                        {
-                                            var children = Items
-                                                .Where(i => i.ParentId == item.Id)
-                                                .OrderByDescending(c => c.Position)
-                                                .ToArray();
-                                            var hasChildren = children.Any();
-                                            
-                                            <div>
-                                                <InputRetroItem
-                                                    @key="item.Id"
-                                                    CanView="@(CanView(item))"
-                                                    CanEdit="@(CanEdit(item))"
-                                                    CanRemove="@(CanRemove(item) && !hasChildren)"
-                                                    CanMove="CanMove"
-                                                    BackgroundColor="@column.ItemColor"
-                                                    DebounceDelay="500"
-                                                    ItemRemoved="ItemRemoved"
-                                                    ItemMoved="ItemMoved"
-                                                    Value="item"
-                                                    ValueExpression="@(() => item)"
-                                                    ValueChanged="SendItemChanged">
-                                                    @if (CanVote)
-                                                    {
-                                                        <InputVoting
-                                                            VotesTotal="VotesTotal"
-                                                            RemainingVotes="RemainingVotes"
-                                                            Value="item.Votes"
-                                                            ValueExpression="@(() => item.Votes)"
-                                                            ValueChanged="@((int v) => SendVotesChanged(item.Id, v))" />
-                                                    }
-                                                </InputRetroItem>
-
-                                                @foreach (var child in children)
-                                                {
-                                                    <InputRetroItem
-                                                        @key="child.Id"
-                                                        CanView="@(CanView(child))"
-                                                        CanEdit="false"
-                                                        CanRemove="@(CanRemove(child))"
-                                                        CanMove="false"
-                                                        BackgroundColor="@column.ItemColor"
-                                                        ItemRemoved="ItemRemoved"
-                                                        ItemMoved="@(_ => { })"
-                                                        Value="child"
-                                                        ValueExpression="@(() => child)"
-                                                        ValueChanged="_ => { }" />
-                                                }
-                                            </div>
-                                        }
-                                    </div>
-                                </Content>
-                            </Panel>
-                        </div>
-                    }
-                </div>
+<div class="retro__fluent-container">
+    <div class="retro">
+        <div class="retro-toolbar">
+            <div class="retro-toolbar__content">
+                <RetroStatePanel
+                    Session="Session"
+                    StartRetro="RetroStarted"
+                    MoveToNext="ToNextMoved"
+                    IsPrioritizing="IsPrioritizing" />
+                <RetroParticipants
+                    CanVote="CanVote"
+                    VotesTotal="VotesTotal"
+                    Participants="Participants"/>
             </div>
         </div>
+        <div class="retro-content">
+            <Loading State="State" Retry="Retry">
+                <Breadcrumbs Items="Breadcrumbs" />
+                <p class="retro__text">@Localizer[RetroTextKey]</p>
+                <div class="retro-grid">
+                    <div class="retro-grid__columns">
+                        @foreach (var column in Columns.OrderBy(c => c.Position))
+                        {
+                            <div class="retro-grid__column">
+                                <Panel Header="@column.Name" IsOpen="true">
+                                    <Actions>
+                                        <Button IsDisabled="@(!CanCreate)" OnClick="() => SendItemCreated(column.Id)">
+                                            @Localizer["Add"]
+                                        </Button>
+                                    </Actions>
+                                    <Content>
+                                        <div class="retro-grid__column-items">
+                                            @if (CanMove)
+                                            {
+                                                <RetroGridSlot
+                                                    ColumnId="column.Id"
+                                                    CanMove="CanMove"
+                                                    ItemMoved="ItemMovedToSlot"/>
+                                            }
+                                            @foreach (var item in Items
+                                                          .Where(i => i.ColumnId == column.Id && !i.ParentId.HasValue)
+                                                          .OrderByDescending(c => c.Position))
+                                            {
+                                                var children = Items
+                                                    .Where(i => i.ParentId == item.Id)
+                                                    .OrderByDescending(c => c.Position)
+                                                    .ToArray();
+                                                var hasChildren = children.Any();
+
+                                                <div>
+                                                    <InputRetroItem
+                                                        @key="item.Id"
+                                                        CanView="@(CanView(item))"
+                                                        CanEdit="@(CanEdit(item))"
+                                                        CanRemove="@(CanRemove(item) && !hasChildren)"
+                                                        CanMove="CanMove"
+                                                        BackgroundColor="@column.ItemColor"
+                                                        DebounceDelay="500"
+                                                        ItemRemoved="ItemRemoved"
+                                                        ItemMoved="ItemMoved"
+                                                        Value="item"
+                                                        ValueExpression="@(() => item)"
+                                                        ValueChanged="SendItemChanged">
+                                                        @if (CanVote)
+                                                        {
+                                                            <InputVoting
+                                                                VotesTotal="VotesTotal"
+                                                                RemainingVotes="RemainingVotes"
+                                                                Value="item.Votes"
+                                                                ValueExpression="@(() => item.Votes)"
+                                                                ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
+                                                        }
+                                                    </InputRetroItem>
+
+                                                    @foreach (var child in children)
+                                                    {
+                                                        <InputRetroItem
+                                                            @key="child.Id"
+                                                            CanView="@(CanView(child))"
+                                                            CanEdit="false"
+                                                            CanRemove="@(CanRemove(child))"
+                                                            CanMove="false"
+                                                            BackgroundColor="@column.ItemColor"
+                                                            ItemRemoved="ItemRemoved"
+                                                            ItemMoved="@(_ => { })"
+                                                            Value="child"
+                                                            ValueExpression="@(() => child)"
+                                                            ValueChanged="_ => { }"/>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </Content>
+                                </Panel>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </Loading>
+        </div>
     </div>
-</Loading>
+</div>
 
 @code {
-    /// <summary>
-    /// Current Team.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public TenantTeamDto Team { get; set; } = default!;
 
     /// <summary>
     /// Component state.
@@ -161,6 +154,12 @@
     public bool CanCreate { get; set; }
 
     /// <summary>
+    /// Link factory for breadcrumbs.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string?, string> LinkFactory { get; set; } = default!;
+
+    /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
@@ -202,6 +201,18 @@
     [Parameter, EditorRequired]
     public EventCallback<(Guid ItemId, int Vote)> VoteChanged { get; set; }
     
+    /// <summary>
+    /// Retro started callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RetroStarted { get; set; }
+    
+    /// <summary>
+    /// To next moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> ToNextMoved { get; set; }
+
     private const string GroupingState = "Grouping";
     private const string PrioritizingState = "Prioritizing";
     private const string DiscussingState = "Discussing";
@@ -214,10 +225,19 @@
         _ => "StartText"
     };
 
+    private IReadOnlyDictionary<string, string> Breadcrumbs => new Dictionary<string, string>
+    {
+        [Localizer["CollectingTitle"]] = LinkFactory(null),
+        [Localizer["GroupingTitle"]] = LinkFactory("Grouping"),
+        [Localizer["PrioritizingTitle"]] = LinkFactory("Prioritizing"),
+        [Localizer["DiscussingTitle"]] = LinkFactory("Discussing")
+    };
+
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
     private bool CanVote => Session?.State == PrioritizingState;
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
+    private bool IsPrioritizing => Participants.Any(p => p.TotalVotes < VotesTotal);
 
     private bool CanView(RetroItemViewModel item)
     {

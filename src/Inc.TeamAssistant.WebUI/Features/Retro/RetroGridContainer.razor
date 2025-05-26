@@ -11,55 +11,46 @@
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<RetroResources> Localizer
+@inject NavRouter NavRouter
 
 <MetaDataModule />
 
 <AuthorizeView>
     <Authorized>
-        @if (Team is not null)
-        {
-            <RetroStatePanel
-                Session="_activeSession"
-                StartRetro="OnStartRetro"
-                MoveToNext="OnMoveToNext"
-                IsPrioritizing="Participants.Any()" />
-            
-            <RetroGrid
-                Team="@Team"
-                State="_state"
-                Columns="Columns"
-                CurrentUserId="context.User.ToPerson().Id"
-                Session="_activeSession"
-                Items="_items"
-                Participants="Participants"
-                VotesTotal="_votesTotal"
-                CanCreate="_canCreate"
-                Retry="@(() => Load(_state))"
-                ItemCreated="OnItemCreated"
-                ItemChanged="OnItemChanged"
-                ItemRemoved="OnItemRemoved"
-                ItemMoved="OnItemMoved"
-                ItemMovedToSlot="OnItemMovedToSlot"
-                VoteChanged="OnVoteChanged" />
-            
-            <InlineDialog
-                IsOpen="IsDisconnected"
-                Text="@Localizer["ConnectionLost"]"
-                ButtonText="@Localizer["Reconnect"]"
-                OnAction="Reconnect" />
-        }
+        <RetroGrid
+            State="_state"
+            Columns="Columns"
+            CurrentUserId="context.User.ToPerson().Id"
+            Session="_activeSession"
+            Items="_items"
+            Participants="Participants"
+            VotesTotal="6"
+            CanCreate="_canCreate"
+            LinkFactory="MoveTo"
+            Retry="@(() => Load(_state))"
+            ItemCreated="OnItemCreated"
+            ItemChanged="OnItemChanged"
+            ItemRemoved="OnItemRemoved"
+            ItemMoved="OnItemMoved"
+            ItemMovedToSlot="OnItemMovedToSlot"
+            VoteChanged="OnVoteChanged"
+            RetroStarted="OnRetroStarted"
+            ToNextMoved="OnToNextMoved" />
+        <InlineDialog
+            IsOpen="IsDisconnected"
+            Text="@Localizer["ConnectionLost"]"
+            ButtonText="@Localizer["Reconnect"]"
+            OnAction="Reconnect" />
     </Authorized>
 </AuthorizeView>
 
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
-
-    private TenantTeamDto? Team => TenantStore.Teams.SingleOrDefault(t => t.Id == TeamId);
+    
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
 
     private bool _canCreate;
-    private readonly int _votesTotal = 6;
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
@@ -88,7 +79,6 @@
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
-        .Where(p => p.TotalVotes < _votesTotal)
         .OrderBy(p => p.TotalVotes)
         .ThenBy(p => p.Person.DisplayName)
         .ToArray();
@@ -176,7 +166,9 @@
             }));
     }
 
-    private async Task OnStartRetro()
+    private string MoveTo(string? stage) => NavRouter.CreateRoute($"retro/{TeamId:N}");
+
+    private async Task OnRetroStarted()
     {
         await RequestProcessor.Process(
             () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
@@ -185,7 +177,7 @@
         await Load(_state, hardReset: false);
     }
     
-    private async Task OnMoveToNext(Guid id)
+    private async Task OnToNextMoved(Guid id)
     {
         await RequestProcessor.Process(
             () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),

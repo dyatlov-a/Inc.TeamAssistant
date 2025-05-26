@@ -18,9 +18,6 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="MainHeader" xml:space="preserve">
-        <value>Retro board for team</value>
-    </data>
     <data name="Add" xml:space="preserve">
         <value>Add</value>
     </data>
@@ -44,5 +41,17 @@
     </data>
     <data name="DiscussingText" xml:space="preserve">
         <value>At this stage, team members sequentially discuss the cards that were created and supported during voting. The goal is to gain a deeper understanding of each card, identify issues, share perspectives, and suggest solutions.</value>
+    </data>
+    <data name="CollectingTitle" xml:space="preserve">
+        <value>Collecting</value>
+    </data>
+    <data name="GroupingTitle" xml:space="preserve">
+        <value>Grouping</value>
+    </data>
+    <data name="PrioritizingTitle" xml:space="preserve">
+        <value>Prioritizing</value>
+    </data>
+    <data name="DiscussingTitle" xml:space="preserve">
+        <value>Discussing</value>
     </data>
 </root>

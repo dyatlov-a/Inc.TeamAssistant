@@ -16,7 +16,7 @@
     [Parameter, EditorRequired]
     public Func<Stage?, Task> MoveToNext { get; set; } = default!;
 
-    private IReadOnlyCollection<Stage> _stages = Enum.GetValues<Stage>();
+    private readonly IReadOnlyCollection<Stage> _stages = Enum.GetValues<Stage>();
     
     private bool CanMove(Stage stage) => Current > stage;
 
@@ -30,9 +30,7 @@
 
     private void MoveTo(Stage stage)
     {
-        if (!CanMove(stage))
-            return;
-
-        MoveToNext(stage);
+        if (CanMove(stage))
+            MoveToNext(stage);
     }
 }

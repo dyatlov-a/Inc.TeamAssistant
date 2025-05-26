@@ -45,12 +45,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string MainHeader {
-            get {
-                return ResourceManager.GetString("MainHeader", resourceCulture);
-            }
-        }
-        
         internal static string Add {
             get {
                 return ResourceManager.GetString("Add", resourceCulture);
@@ -96,6 +90,30 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string DiscussingText {
             get {
                 return ResourceManager.GetString("DiscussingText", resourceCulture);
+            }
+        }
+        
+        internal static string CollectingTitle {
+            get {
+                return ResourceManager.GetString("CollectingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string GroupingTitle {
+            get {
+                return ResourceManager.GetString("GroupingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string PrioritizingTitle {
+            get {
+                return ResourceManager.GetString("PrioritizingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string DiscussingTitle {
+            get {
+                return ResourceManager.GetString("DiscussingTitle", resourceCulture);
             }
         }
     }
