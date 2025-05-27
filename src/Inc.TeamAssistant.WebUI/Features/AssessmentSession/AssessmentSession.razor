@@ -105,17 +105,23 @@
         _ => typeof(AssessmentGroup)
     };
     
-    private IReadOnlyDictionary<string, string> Breadcrumbs
+    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs
     {
         get
         {
             var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
-            
-            return new Dictionary<string, string>
-            {
-                [Localizer["AssessmentSession"]] = LinkFactory($"assessment-session/{TeamId:N}"),
-                [date] = LinkFactory($"assessment-history/{TeamId:N}/{date}")
-            };
+
+            return
+            [
+                new BreadcrumbItem(
+                    Localizer["AssessmentSession"],
+                    Selected: true,
+                    LinkFactory($"assessment-session/{TeamId:N}")),
+                new BreadcrumbItem(
+                    date,
+                    Selected: false,
+                    LinkFactory($"assessment-history/{TeamId:N}/{date}"))
+            ];
         }
     }
 }

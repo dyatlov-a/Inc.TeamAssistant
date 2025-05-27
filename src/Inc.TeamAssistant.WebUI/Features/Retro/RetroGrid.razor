@@ -225,13 +225,15 @@
         _ => "StartText"
     };
 
-    private IReadOnlyDictionary<string, string> Breadcrumbs => new Dictionary<string, string>
-    {
-        [Localizer["CollectingTitle"]] = LinkFactory(null),
-        [Localizer["GroupingTitle"]] = LinkFactory("Grouping"),
-        [Localizer["PrioritizingTitle"]] = LinkFactory("Prioritizing"),
-        [Localizer["DiscussingTitle"]] = LinkFactory("Discussing")
-    };
+    private bool Selected(string? stage) => Session?.State == stage;
+
+    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs =>
+    [
+        new(Localizer["CollectingTitle"], Selected(null), LinkFactory(null)),
+        new(Localizer["GroupingTitle"], Selected(GroupingState), LinkFactory(GroupingState)),
+        new(Localizer["PrioritizingTitle"], Selected(PrioritizingState), LinkFactory(PrioritizingState)),
+        new(Localizer["DiscussingTitle"], Selected(DiscussingState), LinkFactory(DiscussingState))
+    ];
 
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;

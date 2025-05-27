@@ -42,10 +42,18 @@ else
     [Parameter]
     public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
     
-    private string CssClass => ComponentStyle switch
+    /// <summary>
+    /// Selected state of the link.
+    /// </summary>
+    [Parameter]
+    public bool Selected { get; set; }
+    
+    private string CssClass => (ComponentStyle, Selected) switch
     {
-        ComponentStyle.Primary => "link_primary",
-        _ => "link_secondary"
+        (ComponentStyle.Primary, true) => "link_primary link_selected",
+        (ComponentStyle.Primary, false) => "link_primary",
+        (_, true) => "link_secondary link_selected",
+        (_, _) => "link_secondary"
     };
     
     private async Task EmitOnClick()
