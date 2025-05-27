@@ -1,5 +1,5 @@
 .navbar {
-    background: rgba(0, 0, 0, .3);
+    background-color: var(--bg-secondary-color);
     position: relative;
     z-index: 999;
     padding: 10px 0;
