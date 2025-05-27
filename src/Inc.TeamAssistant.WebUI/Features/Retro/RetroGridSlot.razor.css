@@ -1,4 +1,6 @@
 .retro-grid__slot {
-    height: 2rem;
     border: 3px var(--block-secondary-color) dashed;
+    color: var(--block-secondary-color);
+    text-align: center;
+    padding: 1rem 0;
 }

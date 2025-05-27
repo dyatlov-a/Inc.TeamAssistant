@@ -116,5 +116,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("DiscussingTitle", resourceCulture);
             }
         }
+        
+        internal static string SlotDropText {
+            get {
+                return ResourceManager.GetString("SlotDropText", resourceCulture);
+            }
+        }
     }
 }

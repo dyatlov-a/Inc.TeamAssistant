@@ -54,4 +54,7 @@
     <data name="DiscussingTitle" xml:space="preserve">
         <value>Обсуждение</value>
     </data>
+    <data name="SlotDropText" xml:space="preserve">
+        <value>Перетащите сюда, чтобы изменить тип</value>
+    </data>
 </root>

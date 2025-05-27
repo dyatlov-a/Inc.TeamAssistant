@@ -1,9 +1,11 @@
 @inject DragAndDropService<RetroItemViewModel> DragAndDropService
+@inject IStringLocalizer<RetroResources> Localizer
 
 <div
     @attributes="DynamicAttributes.BuildOnDragOver(CanMove)"
     @ondrop="OnDrop"
     class="retro-grid__slot">
+    @Localizer["SlotDropText"]
 </div>
 
 @code {

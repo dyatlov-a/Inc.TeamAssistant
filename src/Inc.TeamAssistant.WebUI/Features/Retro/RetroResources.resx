@@ -54,4 +54,7 @@
     <data name="DiscussingTitle" xml:space="preserve">
         <value>Discussing</value>
     </data>
+    <data name="SlotDropText" xml:space="preserve">
+        <value>Drag here to change the type</value>
+    </data>
 </root>
