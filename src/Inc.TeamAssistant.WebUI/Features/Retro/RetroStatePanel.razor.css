@@ -1,3 +1,9 @@
 .retro-state-panel {
     padding: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+.retro-state-panel__action {
+    padding-right: 5px;
 }

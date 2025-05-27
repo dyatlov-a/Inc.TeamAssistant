@@ -30,15 +30,23 @@
     {
         _value = CurrentValue;
     }
-    
-    private async Task OnVoteClick(int vote)
+
+    private bool CheckVote(int vote)
     {
         if (vote == _value)
             _value = 0;
         else if (vote <= AvailableVotes)
             _value = vote;
+        else
+            return false;
 
-        await ValueChanged.InvokeAsync(_value);
+        return true;
+    }
+    
+    private async Task OnVoteClick(int vote)
+    {
+        if (CheckVote(vote))
+            await ValueChanged.InvokeAsync(_value);
     }
     
     protected override bool TryParseValueFromString(

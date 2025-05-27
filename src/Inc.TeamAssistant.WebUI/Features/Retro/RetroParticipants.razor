@@ -1,12 +1,14 @@
 <div class="retro-participants">
     @foreach (var participant in Participants)
     {
+        var votesTotal = VotesTotal - participant.TotalVotes;
+        
         <div class="retro-participant">
             <PersonCard Person="participant.Person"/>
-            @if (CanVote)
+            @if (CanVote && votesTotal > 0)
             {
                 <InputVoting
-                    VotesTotal="@(VotesTotal - participant.TotalVotes)"
+                    VotesTotal="votesTotal"
                     RemainingVotes="0"
                     Value="0"
                     ValueExpression="@(() => participant.TotalVotes)"
@@ -34,5 +36,4 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
-
 }

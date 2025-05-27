@@ -57,4 +57,7 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Перетащите сюда, чтобы изменить тип</value>
     </data>
+    <data name="Next" xml:space="preserve">
+        <value>Далее</value>
+    </data>
 </root>

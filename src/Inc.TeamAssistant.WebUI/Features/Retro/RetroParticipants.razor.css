@@ -1,10 +1,12 @@
 .retro-participants {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 .retro-participant {
     padding: .5rem;
+}
+.retro-participant:nth-child(2n - 1){
+    background-color: var(--bg-secondary-color);
 }
 @media (max-width: 767.98px) {
     .retro-participants {

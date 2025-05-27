@@ -215,6 +215,7 @@ html {
 /* ICONS */
 .icon {
     transition: stroke 0.3s ease 0s;
+    vertical-align: middle;
 }
 .icon-star {
     width: 14px;
