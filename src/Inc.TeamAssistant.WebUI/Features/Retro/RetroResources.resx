@@ -21,7 +21,7 @@
     <data name="Add" xml:space="preserve">
         <value>Add</value>
     </data>
-    <data name="StartText" xml:space="preserve">
+    <data name="CollectingText" xml:space="preserve">
         <value>You need to describe all the concerns and suggestions you have. At the next retrospective, we will discuss everything together and document the decisions. Until the retrospective begins, the cards are visible only to their author.</value>
     </data>
     <data name="GroupingText" xml:space="preserve">

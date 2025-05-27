@@ -28,8 +28,10 @@ public sealed class RetroController : ControllerBase
     public async Task<IActionResult> StartRetro([FromBody]StartRetroCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.StartRetro(command, CancellationToken.None);
         
-        return Ok(await _retroService.StartRetro(command, CancellationToken.None));
+        return Ok();
     }
     
     [HttpPut]

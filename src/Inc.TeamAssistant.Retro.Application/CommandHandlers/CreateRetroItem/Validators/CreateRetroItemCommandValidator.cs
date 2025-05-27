@@ -12,16 +12,17 @@ internal sealed class CreateRetroItemCommandValidator : AbstractValidator<Create
     public CreateRetroItemCommandValidator(IRetroReader reader)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        
+
         RuleFor(c => c.TeamId)
             .NotEmpty()
-            .MustAsync(HasNotSession);
+            .MustAsync(HasNotActiveSession)
+            .WithMessage(c => $"There is already an active retro session for this team {c.TeamId}.");
         
         RuleFor(c => c.ColumnId)
             .NotEmpty();
     }
 
-    private async Task<bool> HasNotSession(Guid teamId, CancellationToken token)
+    private async Task<bool> HasNotActiveSession(Guid teamId, CancellationToken token)
     {
         var activeSession = await _reader.FindSession(teamId, RetroSessionStateRules.Active, token);
         

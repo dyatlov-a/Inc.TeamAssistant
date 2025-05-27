@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro;
 
-internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroCommand, StartRetroResult>
+internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroCommand>
 {
     private readonly IRetroSessionRepository _repository;
     private readonly IPersonResolver _personResolver;
@@ -23,7 +23,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
-    public async Task<StartRetroResult> Handle(StartRetroCommand command, CancellationToken token)
+    public async Task Handle(StartRetroCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -37,7 +37,5 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
         await _repository.Create(retroSession, token);
 
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
-
-        return new StartRetroResult(retroSession.Id);
     }
 }

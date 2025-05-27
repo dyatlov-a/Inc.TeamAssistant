@@ -27,17 +27,13 @@ internal sealed class RetroClient : IRetroService
         return result;
     }
 
-    public async Task<StartRetroResult> StartRetro(StartRetroCommand command, CancellationToken token)
+    public async Task StartRetro(StartRetroCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PostAsJsonAsync("retro", command, token);
         
-        var result = await response.Content.ReadFromJsonAsync<StartRetroResult>(token);
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        await response.HandleValidation(token);
     }
 
     public async Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token)

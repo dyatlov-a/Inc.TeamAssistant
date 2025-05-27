@@ -51,9 +51,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string StartText {
+        internal static string CollectingText {
             get {
-                return ResourceManager.GetString("StartText", resourceCulture);
+                return ResourceManager.GetString("CollectingText", resourceCulture);
             }
         }
         

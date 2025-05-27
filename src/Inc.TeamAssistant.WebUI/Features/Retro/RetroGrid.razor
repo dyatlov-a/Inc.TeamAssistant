@@ -104,7 +104,6 @@
 </div>
 
 @code {
-
     /// <summary>
     /// Component state.
     /// </summary>
@@ -213,33 +212,23 @@
     [Parameter, EditorRequired]
     public EventCallback<Guid> ToNextMoved { get; set; }
 
+    private const string CollectingState = "Collecting";
     private const string GroupingState = "Grouping";
     private const string PrioritizingState = "Prioritizing";
     private const string DiscussingState = "Discussing";
-
-    private string RetroTextKey => Session?.State switch
-    {
-        GroupingState => "GroupingText",
-        PrioritizingState => "PrioritizingText",
-        DiscussingState => "DiscussingText",
-        _ => "StartText"
-    };
-
-    private bool Selected(string? stage) => Session?.State == stage;
-
-    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs =>
-    [
-        new(Localizer["CollectingTitle"], Selected(null), LinkFactory(null)),
-        new(Localizer["GroupingTitle"], Selected(GroupingState), LinkFactory(GroupingState)),
-        new(Localizer["PrioritizingTitle"], Selected(PrioritizingState), LinkFactory(PrioritizingState)),
-        new(Localizer["DiscussingTitle"], Selected(DiscussingState), LinkFactory(DiscussingState))
-    ];
-
+    private string RetroState => Session?.State ?? CollectingState;
+    private string RetroTextKey => $"{RetroState}Text";
+    
+    private IReadOnlyCollection<string> Stages => [CollectingState, GroupingState, PrioritizingState, DiscussingState];
+    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs => Stages
+        .Select(s => new BreadcrumbItem(Localizer[$"{s}Title"], s == RetroState, LinkFactory(s)))
+        .ToArray();
+    
+    private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
     private bool CanVote => Session?.State == PrioritizingState;
-    private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
-    private bool IsPrioritizing => Participants.Any(p => p.TotalVotes < VotesTotal);
+    private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
 
     private bool CanView(RetroItemViewModel item)
     {

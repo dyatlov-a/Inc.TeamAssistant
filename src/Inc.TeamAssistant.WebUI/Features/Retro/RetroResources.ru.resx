@@ -21,7 +21,7 @@
     <data name="Add" xml:space="preserve">
         <value>Добавить</value>
     </data>
-    <data name="StartText" xml:space="preserve">
+    <data name="CollectingText" xml:space="preserve">
         <value>Вам необходимо описать все волнующие вас проблемы и предложения. На следующей ретроспективе мы совместно всё обсудим и зафиксируем решения. До начала ретроспективы карточки недоступны никому, кроме их автора.</value>
     </data>
     <data name="GroupingText" xml:space="preserve">

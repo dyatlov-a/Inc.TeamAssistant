@@ -36,7 +36,6 @@
     public bool IsPrioritizing { get; set; }
     
     private ConfirmDialog? _confirmDialog;
-    private const string PrioritizingState = "Prioritizing";
 
     private async Task OnMoveNext()
     {
@@ -46,10 +45,9 @@
             return;
         }
             
-        if (Session.State == PrioritizingState && IsPrioritizing)
-            if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
-                await MoveToNext.InvokeAsync(Session.Id);
-        else 
-            await MoveToNext.InvokeAsync(Session.Id);
+        if (IsPrioritizing && _confirmDialog is not null && !await _confirmDialog.IsConfirmed())
+            return;
+        
+        await MoveToNext.InvokeAsync(Session.Id);
     }
 }

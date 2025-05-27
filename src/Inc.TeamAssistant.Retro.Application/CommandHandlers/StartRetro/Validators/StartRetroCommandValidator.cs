@@ -16,7 +16,9 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
         RuleFor(x => x.TeamId)
             .NotEmpty()
             .MustAsync(NotHaveActiveSession)
-            .WithMessage(c => $"There is already an active retro session for this team {c.TeamId}.");
+            .WithMessage(c => $"There is already an active retro session for this team {c.TeamId}.")
+            .MustAsync(HasItems)
+            .WithMessage(c => $"There are no items to create a retro from team {c.TeamId}.");
     }
 
     private async Task<bool> NotHaveActiveSession(Guid teamId, CancellationToken token)
@@ -24,5 +26,12 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
         var retroSession = await _reader.FindSession(teamId, RetroSessionStateRules.Active, token);
         
         return retroSession is null;
+    }
+    
+    private async Task<bool> HasItems(Guid teamId, CancellationToken token)
+    {
+        var items = await _reader.ReadItems(teamId, token);
+        
+        return items.Any();
     }
 }

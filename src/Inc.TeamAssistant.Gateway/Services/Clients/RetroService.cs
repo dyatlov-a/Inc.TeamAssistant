@@ -43,11 +43,11 @@ internal sealed class RetroService : IRetroService
         await _mediator.Send(new RemoveRetroItemCommand(retroItemId), token);
     }
 
-    public async Task<StartRetroResult> StartRetro(StartRetroCommand command, CancellationToken token)
+    public async Task StartRetro(StartRetroCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        return await _mediator.Send(command, token);
+        await _mediator.Send(command, token);
     }
 
     public async Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token)

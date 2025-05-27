@@ -8,7 +8,7 @@ public interface IRetroService
 {
     Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token = default);
     
-    Task<StartRetroResult> StartRetro(StartRetroCommand command, CancellationToken token = default);
+    Task StartRetro(StartRetroCommand command, CancellationToken token = default);
     
     Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token = default);
 }
