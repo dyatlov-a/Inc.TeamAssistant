@@ -11,7 +11,6 @@
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<RetroResources> Localizer
-@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -26,7 +25,6 @@
             Participants="Participants"
             VotesTotal="6"
             CanCreate="_canCreate"
-            LinkFactory="MoveTo"
             Retry="@(() => Load(_state))"
             ItemCreated="OnItemCreated"
             ItemChanged="OnItemChanged"
@@ -47,6 +45,9 @@
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
+    
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
     
     private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
 
@@ -94,11 +95,13 @@
             nameof(RetroGridContainer),
             state);
 
+        _items.Clear();
         _activeSession = result.ActiveSession;
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
             .ToDictionary(p => p.Person.Id);
         _canCreate = result.ActiveSession is null;
+        
         foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
             ApplyItemChanged(item);
         
@@ -165,8 +168,6 @@
             }));
     }
 
-    private string MoveTo(string? stage) => NavRouter.CreateRoute($"retro/{TeamId:N}");
-
     private async Task OnRetroStarted()
     {
         await RequestProcessor.Process(
@@ -187,12 +188,14 @@
 
     private async Task OnItemCreated(Guid columnId)
     {
+        if (_eventBuilder is null)
+            return;
+        
         _canCreate = false;
 
         try
         {
-            if (_eventBuilder is not null)
-                await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, columnId, Text: null));
+            await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, columnId, Text: null));
         }
         finally
         {

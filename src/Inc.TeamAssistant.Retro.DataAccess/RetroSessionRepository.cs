@@ -76,6 +76,18 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
+        var removeEmptyItemsCommand = new CommandDefinition(
+            """
+            DELETE FROM retro.retro_items AS ri
+            WHERE ri.team_id = @team_id AND COALESCE(trim(ri.text), '') = '';
+            """,
+            new
+            {
+                team_id = retro.TeamId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
         var attachItemsCommand = new CommandDefinition(
             """
             UPDATE retro.retro_items AS ri
@@ -96,6 +108,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         await using var transaction = await connection.BeginTransactionAsync(token);
         
         await connection.ExecuteAsync(upsertRetroCommand);
+        await connection.ExecuteAsync(removeEmptyItemsCommand);
         await connection.ExecuteAsync(attachItemsCommand);
 
         await transaction.CommitAsync(token);

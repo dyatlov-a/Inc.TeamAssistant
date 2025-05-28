@@ -74,7 +74,16 @@
                 set: (element, value) => {
                     element.innerText = value;
                 }
-            } 
+            },
+            focusElement: element => {
+                element.focus();
+            },
+            addClassToElement: (selector, className) => {
+                let element = document.querySelector(selector);
+                if (element) {
+                    element.classList.add(className);
+                }
+            },
         };
 
         Blazor.start({

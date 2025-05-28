@@ -1,0 +1,52 @@
+@typeparam TValue
+
+<div class="nav-items">
+    @foreach (var stage in _items)
+    {
+        <div class="nav-items__item @CssClass(stage)" @onclick="() => MoveTo(stage)">
+            @stage.Text
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Item for navigation.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<NavigationItem<TValue>> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TValue> MoveToNext { get; set; }
+
+    private readonly List<NavigationItem<TValue>> _items = new();
+
+    protected override void OnParametersSet()
+    {
+        _items.Clear();
+        _items.AddRange(Items);
+    }
+
+    private string CssClass(NavigationItem<TValue> value)
+    {
+        if (value.Selected)
+            return "nav-items__item_active";
+
+        if (value.CanMove)
+            return "nav-items__item_can-move";
+
+        var valuePosition = _items.IndexOf(value);
+        return _items.Skip(valuePosition).Any(i => i.Selected)
+            ? "nav-items__item_previous"
+            : string.Empty;
+    }
+
+    private async Task MoveTo(NavigationItem<TValue> item)
+    {
+        if (item.CanMove)
+            await MoveToNext.InvokeAsync(item.Value);
+    }
+}

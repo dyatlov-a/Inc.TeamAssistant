@@ -6,7 +6,10 @@
 .retro__text {
     font-size: 1.2rem;
     line-height: 1.6rem;
-    margin-bottom: 40px;
+    margin: 20px 0;
+}
+.retro-toolbar {
+    margin-bottom: 20px;
 }
 .retro-toolbar__content {
     width: 260px;

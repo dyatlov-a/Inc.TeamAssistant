@@ -47,6 +47,26 @@ internal static class JsFunctions
             postAction: null);
     }
     
+    public static IJsFunction<dynamic> FocusElement(ElementReference element)
+    {
+        return new JsFunction<dynamic>(
+            "window.browserJsFunctions.focusElement",
+            postAction: null,
+            element);
+    }
+    
+    public static IJsFunction<dynamic> AddClassToElement(string selector, string className)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(selector);
+        ArgumentException.ThrowIfNullOrWhiteSpace(className);
+        
+        return new JsFunction<dynamic>(
+            "window.browserJsFunctions.addClassToElement",
+            postAction: null,
+            selector,
+            className);
+    }
+    
     private sealed record JsFunction<TResult> : IJsFunction<TResult>
     {
         public string Identifier { get; }

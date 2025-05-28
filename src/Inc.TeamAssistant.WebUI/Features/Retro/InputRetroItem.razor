@@ -18,8 +18,10 @@
         </div>
     }
     <div
+        id="@_value.Id"
         class="retro-item__text"
         @oninput="OnInputChanged"
+        @onblur="OnBlur"
         @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
         @ref="_item">
         @if (!RenderContext.IsBrowser)
@@ -112,7 +114,12 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && RenderContext.IsBrowser)
-            await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+        {
+            if (CanEdit && string.IsNullOrWhiteSpace(_value.Text))
+                await JsRuntime.Execute(JsFunctions.FocusElement(_item));
+            else
+                await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
+        }
     }
     
     private void OnDragStart() => DragAndDropService.Start(_value);
@@ -147,6 +154,13 @@
         _timer?.Stop();
         
         InvokeAsync(TrySendValueChanged);
+    }
+
+    private async Task OnBlur()
+    {
+        await TrySendValueChanged();
+        
+        _timer?.Stop();
     }
 
     private void OnInputChanged()

@@ -2,7 +2,7 @@
 @inject IStringLocalizer<ConstructorResources> Localizer
 
 <div class="constructor__container">
-    <NavigationStages Current="CurrentStage" MoveToNext="MoveToNext" />
+    <Navigations Items="NavItems" MoveToNext="@((Stage i) => OnMoveToNext(i))" />
     <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
     @if (RenderContext.IsBrowser)
     {
@@ -59,4 +59,10 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
+
+    private async Task OnMoveToNext(Stage value) => await MoveToNext(value);
+    
+    private IReadOnlyCollection<NavigationItem<Stage>> NavItems => Enum.GetValues<Stage>()
+        .Select(s => new NavigationItem<Stage>(Localizer[$"Stage{s}"], s, CurrentStage == s, CurrentStage > s))
+        .ToArray();
 }

@@ -1,4 +1,6 @@
 @inject IStringLocalizer<RetroResources> Localizer
+@inject IJSRuntime JsRuntime
+@inject IRenderContext RenderContext
 
 <div class="retro__fluent-container">
     <div class="retro">
@@ -17,7 +19,7 @@
         </div>
         <div class="retro-content">
             <Loading State="State" Retry="Retry">
-                <Breadcrumbs Items="Breadcrumbs" />
+                <Navigations Items="NavItems" />
                 <p class="retro__text">@Localizer[RetroTextKey]</p>
                 <div class="retro-grid">
                     <div class="retro-grid__columns">
@@ -153,12 +155,6 @@
     public bool CanCreate { get; set; }
 
     /// <summary>
-    /// Link factory for breadcrumbs.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string?, string> LinkFactory { get; set; } = default!;
-
-    /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
@@ -220,8 +216,8 @@
     private string RetroTextKey => $"{RetroState}Text";
     
     private IReadOnlyCollection<string> Stages => [CollectingState, GroupingState, PrioritizingState, DiscussingState];
-    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs => Stages
-        .Select(s => new BreadcrumbItem(Localizer[$"{s}Title"], s == RetroState, LinkFactory(s)))
+    private IReadOnlyCollection<NavigationItem<object?>> NavItems => Stages
+        .Select(s => new NavigationItem<object?>(Localizer[$"{s}Title"], Value: null, s == RetroState, CanMove: false))
         .ToArray();
     
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
@@ -229,6 +225,12 @@
     private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
     private bool CanVote => Session?.State == PrioritizingState;
     private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (RenderContext.IsBrowser && RetroState == GroupingState)
+            await JsRuntime.Execute(JsFunctions.AddClassToElement(".retro-item", "animation__draggable-hint"));
+    }
 
     private bool CanView(RetroItemViewModel item)
     {

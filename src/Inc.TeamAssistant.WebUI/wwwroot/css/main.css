@@ -212,6 +212,16 @@ html {
     0% { opacity: 0; }
     100% { opacity: 1; }
 }
+.animation__draggable-hint {
+    animation: nudgeLeftRight .6s ease-in-out;
+}
+@keyframes nudgeLeftRight {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-5px); }
+    50%  { transform: translateX(5px); }
+    75%  { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
 /* ICONS */
 .icon {
     transition: stroke 0.3s ease 0s;
