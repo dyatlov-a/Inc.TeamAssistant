@@ -79,8 +79,7 @@
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
-        .OrderBy(p => p.TotalVotes)
-        .ThenBy(p => p.Person.DisplayName)
+        .OrderBy(p => p.Person.DisplayName)
         .ToArray();
     
     protected override async Task OnParametersSetAsync() => await Load(_state);

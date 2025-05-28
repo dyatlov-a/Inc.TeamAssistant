@@ -4,15 +4,13 @@
         @ChildContent
     </a>
 }
-else if (IsDisabled)
-{
-    <button type="@ButtonTypeAsString" class="button @CssClass @ModeCssClass" disabled="disabled">
-        @ChildContent
-    </button>
-}
 else
 {
-    <button type="@ButtonTypeAsString" @onclick="EmitOnClick" class="button @CssClass @ModeCssClass">
+    <button
+        type="@ButtonTypeAsString"
+        class="button @CssClass @ModeCssClass"
+        @attributes="DynamicAttributes.BuildDisabled(IsDisabled)"
+        @onclick="EmitOnClick">
         @ChildContent
     </button>
 }
@@ -76,7 +74,7 @@ else
     
     private async Task EmitOnClick()
     {
-        if (!OnClick.Equals(default(EventCallback)))
+        if (!IsDisabled && !OnClick.Equals(default(EventCallback)))
             await OnClick.InvokeAsync();
     }
 }

@@ -4,6 +4,13 @@
     align-items: center;
     justify-content: end;
 }
-.retro-state-panel__action {
-    padding-right: 5px;
+.retro-state-panel__link {
+    display: flex;
+    align-items: center;
+    color: var(--block-priority-color);
+    text-transform: uppercase;
+    transition: color 0.3s ease 0s;
+}
+.retro-state-panel__link:hover {
+    color: var(--button-secondary-color);
 }

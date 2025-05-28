@@ -8,6 +8,7 @@ public static class DynamicAttributes
     private static readonly ImmutableDictionary<string, object> Draggable;
     private static readonly ImmutableDictionary<string, object> Contenteditable;
     private static readonly ImmutableDictionary<string, object> OnDragOver;
+    private static readonly ImmutableDictionary<string, object> Disabled;
     
     private const string DisableDefaultHandler = "event.preventDefault();";
     private const string ActiveValue = "true";
@@ -17,6 +18,7 @@ public static class DynamicAttributes
         Draggable = Build(("draggable", ActiveValue), ("ondragover", DisableDefaultHandler));
         Contenteditable = Build(("contenteditable", ActiveValue));
         OnDragOver = Build(("ondragover", DisableDefaultHandler));
+        Disabled = Build(("disabled", "disabled"));
     }
     
     public static ImmutableDictionary<string, object> BuildDraggable(bool value)
@@ -32,6 +34,11 @@ public static class DynamicAttributes
     public static ImmutableDictionary<string, object> BuildOnDragOver(bool value)
     {
         return value ? OnDragOver : ImmutableDictionary<string, object>.Empty;
+    }
+    
+    public static ImmutableDictionary<string, object> BuildDisabled(bool value)
+    {
+        return value ? Disabled : ImmutableDictionary<string, object>.Empty;
     }
     
     private static ImmutableDictionary<string, object> Build(
