@@ -5,7 +5,7 @@ using Inc.TeamAssistant.Retro.Application.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Services.Stores;
 
-internal sealed class OnlinePersonStore : IOnlinePersonStore
+internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, Person>> _state = new();
 

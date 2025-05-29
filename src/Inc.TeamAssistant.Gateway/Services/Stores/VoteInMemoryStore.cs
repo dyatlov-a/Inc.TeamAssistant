@@ -4,7 +4,7 @@ using Inc.TeamAssistant.Retro.Domain;
 
 namespace Inc.TeamAssistant.Gateway.Services.Stores;
 
-internal sealed class VoteStore : IVoteStore
+internal sealed class VoteInMemoryStore : IVoteStore
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<long, IReadOnlyCollection<VoteTicket>>> _state = new();
     

@@ -116,7 +116,7 @@
     /// Retro columns.
     /// </summary>
     [Parameter, EditorRequired]
-    public IEnumerable<RetroColumnViewModel> Columns { get; set; } = default!;
+    public IReadOnlyCollection<RetroColumnViewModel> Columns { get; set; } = default!;
 
     /// <summary>
     /// Current user id.

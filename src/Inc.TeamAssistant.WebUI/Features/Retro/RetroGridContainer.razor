@@ -18,7 +18,7 @@
     <Authorized>
         <RetroGrid
             State="_state"
-            Columns="Columns"
+            Columns="_columns"
             CurrentUserId="context.User.ToPerson().Id"
             Session="_activeSession"
             Items="_items"
@@ -45,36 +45,19 @@
 @code {
     [Parameter]
     public Guid TeamId { get; set; }
-    
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
-    
-    private IEnumerable<RetroColumnViewModel> Columns => _columns.Values;
+
+    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns =
+    [
+        new (Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"), "Start", Position: 1, ItemColor: "#FF8C00"),
+        new (Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"), "Stop", Position: 2, ItemColor: "#B22222"),
+        new (Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"), "Continue", Position: 3, ItemColor: "#3CB371")
+    ];
 
     private bool _canCreate;
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
-
-    private readonly IReadOnlyDictionary<Guid, RetroColumnViewModel> _columns = new[]
-    {
-        new RetroColumnViewModel(
-            Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"),
-            "Start",
-            Position: 1,
-            ItemColor: "#FF8C00"),
-        new RetroColumnViewModel(
-            Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"),
-            "Stop",
-            Position: 2,
-            ItemColor: "#B22222"),
-        new RetroColumnViewModel(
-            Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"),
-            "Continue",
-            Position: 3,
-            ItemColor: "#3CB371")
-    }.ToDictionary(i => i.Id);
 
     private RetroSessionDto? _activeSession;
     private readonly List<RetroItemViewModel> _items = new();

@@ -60,8 +60,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
             
-            .AddSingleton<IOnlinePersonStore, OnlinePersonStore>()
-            .AddSingleton<IVoteStore, VoteStore>();
+            .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
+            .AddSingleton<IVoteStore, VoteInMemoryStore>();
 
         return services;
 	}
