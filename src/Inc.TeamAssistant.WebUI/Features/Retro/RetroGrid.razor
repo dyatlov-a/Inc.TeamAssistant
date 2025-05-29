@@ -28,9 +28,12 @@
                             <div class="retro-grid__column">
                                 <Panel Header="@column.Name" IsOpen="true">
                                     <Actions>
-                                        <Button IsDisabled="@(!CanCreate)" OnClick="() => SendItemCreated(column.Id)">
-                                            @Localizer["Add"]
-                                        </Button>
+                                        @if (CanCreate)
+                                        {
+                                            <Button IsDisabled="IsCreating" OnClick="() => SendItemCreated(column.Id)">
+                                                @Localizer["Add"]
+                                            </Button>
+                                        }
                                     </Actions>
                                     <Content>
                                         <div class="retro-grid__column-items">
@@ -153,6 +156,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanCreate { get; set; }
+    
+    /// <summary>
+    /// Is creating retro item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsCreating { get; set; }
 
     /// <summary>
     /// Action for retry.

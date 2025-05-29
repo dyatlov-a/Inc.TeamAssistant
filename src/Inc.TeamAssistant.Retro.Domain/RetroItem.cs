@@ -69,10 +69,13 @@ public sealed class RetroItem
     
     public RetroItem ChangeParent(Guid? parentId)
     {
-        ParentId = parentId;
+        if (ParentId != parentId)
+        {
+            ParentId = parentId;
 
-        foreach (var child in Children)
-            child.ChangeParent(parentId);
+            foreach (var child in Children)
+                child.ChangeParent(parentId);
+        }
 
         return this;
     }

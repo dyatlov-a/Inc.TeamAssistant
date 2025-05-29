@@ -24,7 +24,8 @@
             Items="_items"
             Participants="Participants"
             VotesTotal="6"
-            CanCreate="_canCreate"
+            CanCreate="CanCreate"
+            IsCreating="_isCreating"
             Retry="@(() => Load(_state))"
             ItemCreated="OnItemCreated"
             ItemChanged="OnItemChanged"
@@ -53,7 +54,8 @@
         new (Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"), "Continue", Position: 3, ItemColor: "#3CB371")
     ];
 
-    private bool _canCreate;
+    private bool CanCreate => _activeSession is null;
+    private bool _isCreating;
     private readonly LoadingState _state = LoadingState.Done();
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
@@ -83,7 +85,6 @@
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
             .ToDictionary(p => p.Person.Id);
-        _canCreate = result.ActiveSession is null;
         
         foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
             ApplyItemChanged(item);
@@ -174,7 +175,7 @@
         if (_eventBuilder is null)
             return;
         
-        _canCreate = false;
+        _isCreating = true;
 
         try
         {
@@ -182,7 +183,7 @@
         }
         finally
         {
-            _canCreate = true;
+            _isCreating = false;
         }
     }
 

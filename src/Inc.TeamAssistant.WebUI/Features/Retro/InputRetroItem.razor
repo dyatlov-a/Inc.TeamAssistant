@@ -4,6 +4,7 @@
 @inject IRenderContext RenderContext
 @inject ILogger<InputRetroItem> Logger
 @inject DragAndDropService<RetroItemViewModel> DragAndDropService
+@inject IStringLocalizer<RetroResources> Localizer
 
 <div
     @ondrop="OnDrop"
@@ -11,10 +12,25 @@
     style="background-color: @BackgroundColor"
     class="retro-item @CssClass @CanViewCss @ChildCss"
     @attributes="DynamicAttributes.BuildDraggable(CanMove)">
+    @if (CanMove)
+    {
+        <div class="retro-item__icons">
+            <DragVerticalIcon Size="30px" />
+        </div>
+    }
     @if (CanRemove)
     {
         <div class="retro-item__actions">
-            <RouterLink OnClick="SendItemRemoved">X</RouterLink>
+            <Button ButtonMode="ButtonMode.Small" OnClick="SendItemRemoved">
+                @if (_value.ParentId.HasValue)
+                {
+                    <PaperclipSlashIcon Size="20px"/>
+                }
+                else
+                {
+                    <TrashIcon Size="20px"/>
+                }
+            </Button>
         </div>
     }
     <div
@@ -34,6 +50,9 @@
         @ChildContent
     }
 </div>
+<ConfirmDialog @ref="_confirmDialog">
+    @Localizer["RetroItemRemoveConfirm"]
+</ConfirmDialog>
 
 @code {
     /// <summary>
@@ -93,6 +112,7 @@
     private RetroItemViewModel _value = RetroItemViewModel.Empty;
     private ElementReference _item;
     private Timer? _timer;
+    private ConfirmDialog? _confirmDialog;
     
     private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
     private string ChildCss => _value.ParentId.HasValue ? "retro-item_child" : string.Empty;
@@ -174,7 +194,13 @@
         if (!CanRemove)
             return;
         
-        await ItemRemoved.InvokeAsync(_value);
+        var hasParent = _value.ParentId.HasValue;
+        var isEmpty = string.IsNullOrWhiteSpace(_value.Text);
+        
+        if (hasParent || isEmpty)
+            await ItemRemoved.InvokeAsync(_value);
+        else if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await ItemRemoved.InvokeAsync(_value);
     }
     
     private Timer CreateTimer(TimeSpan interval)

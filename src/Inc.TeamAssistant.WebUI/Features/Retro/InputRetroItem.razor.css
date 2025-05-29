@@ -1,9 +1,12 @@
 .retro-item {
     padding: .5rem;
 }
-.retro-item__actions {
+.retro-item__actions, .retro-item__icons {
     float: right;
-    padding: 0 .3rem;
+    padding-left: .3rem;
+}
+.retro-item__icons {
+    cursor: move;
 }
 .retro-item__text {
     min-height: 80px;

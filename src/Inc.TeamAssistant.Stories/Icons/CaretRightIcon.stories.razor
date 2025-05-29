@@ -1,9 +1,9 @@
-@attribute [Stories("Icons/PlayIcon")]
+@attribute [Stories("Icons/CaretRightIcon")]
 
-<Stories TComponent="PlayIcon">
+<Stories TComponent="CaretRightIcon">
     <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <PlayIcon Size="80px" @attributes="context.Args" />
+            <CaretRightIcon Size="80px" @attributes="context.Args" />
         </Template>
     </Story>
     <Story Name="Secondary" Layout="typeof(LightLayout)">
@@ -11,12 +11,12 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
-            <PlayIcon Size="80px" @attributes="context.Args"/>
+            <CaretRightIcon Size="80px" @attributes="context.Args"/>
         </Template>
     </Story>
     <Story Name="Small" Layout="typeof(DarkLayout)">
         <Template>
-            <PlayIcon Size="40px" @attributes="context.Args" />
+            <CaretRightIcon Size="40px" @attributes="context.Args" />
         </Template>
     </Story>
 </Stories>

@@ -1,0 +1,23 @@
+<svg class="icon @CssClass" width="@Size" height="@Size" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14.9999 16.0686V7.9313C14.9999 7.32548 14.9999 7.02257 14.8801 6.88231C14.7762 6.76061 14.6203 6.69602 14.4607 6.70858C14.2768 6.72305 14.0626 6.93724 13.6342 7.36561L9.56561 11.4342C9.3676 11.6322 9.2686 11.7313 9.2315 11.8454C9.19887 11.9458 9.19887 12.054 9.2315 12.1544C9.2686 12.2686 9.3676 12.3676 9.56561 12.5656L13.6342 16.6342C14.0626 17.0626 14.2768 17.2768 14.4607 17.2913C14.6203 17.3038 14.7762 17.2392 14.8801 17.1175C14.9999 16.9773 14.9999 16.6744 14.9999 16.0686Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+@code {
+    /// <summary>
+    /// Size of the icon.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Size { get; set; } = default!;
+    
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass  => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "icon_primary",
+        _ => "icon_secondary"
+    };
+}
