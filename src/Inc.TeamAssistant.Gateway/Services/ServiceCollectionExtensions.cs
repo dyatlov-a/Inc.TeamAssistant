@@ -1,8 +1,8 @@
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
+using Inc.TeamAssistant.Gateway.Services.InMemory;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
-using Inc.TeamAssistant.Gateway.Services.Stores;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Retro.Application.Contracts;
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
-            .AddSingleton<IPositionGenerator, PositionGenerator>()
+            .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()

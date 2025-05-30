@@ -5,9 +5,19 @@
 </ConfirmDialog>
 
 <div class="retro-state-panel">
+    @if (IsDiscussing)
+    {
+        <a
+            href="#"
+            class="retro__link link"
+            @onclick="OnMoveToPrevious"
+            @onclick:preventDefault="true">
+            <CaretLeftIcon Size="30px"/> @Localizer["Previous"]
+        </a>
+    }
     <a
         href="#"
-        class="retro-state-panel__link link"
+        class="retro__link retro__link_right link"
         @onclick="OnMoveNext"
         @onclick:preventDefault="true">
         @Localizer["Next"] <CaretRightIcon Size="30px"/>
@@ -34,10 +44,22 @@
     public EventCallback<Guid> MoveToNext { get; set; }
     
     /// <summary>
+    /// Move to previous action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveToPrevious { get; set; }
+    
+    /// <summary>
     /// Is prioritizing state.
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsPrioritizing { get; set; }
+    
+    /// <summary>
+    ///  Is discussing state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsDiscussing { get; set; }
     
     private ConfirmDialog? _confirmDialog;
 
@@ -54,4 +76,6 @@
         
         await MoveToNext.InvokeAsync(Session.Id);
     }
+
+    private async Task OnMoveToPrevious() => await MoveToPrevious.InvokeAsync();
 }

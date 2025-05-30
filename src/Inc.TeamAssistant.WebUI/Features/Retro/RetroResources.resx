@@ -63,4 +63,7 @@
     <data name="RetroItemRemoveConfirm" xml:space="preserve">
         <value>Are you sure you want to delete the card?</value>
     </data>
+    <data name="Previous" xml:space="preserve">
+        <value>Prev</value>
+    </data>
 </root>

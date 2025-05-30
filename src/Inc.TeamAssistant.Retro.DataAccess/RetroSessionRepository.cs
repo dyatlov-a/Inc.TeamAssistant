@@ -114,11 +114,21 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         await transaction.CommitAsync(token);
     }
 
-    public async Task Update(RetroSession retro, CancellationToken token)
+    public async Task Update(RetroSession retro, IReadOnlyCollection<VoteTicket> voteTickets, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(retro);
+        ArgumentNullException.ThrowIfNull(voteTickets);
+
+        var itemId = new List<Guid>();
+        var votes = new List<int>();
         
-        var command = new CommandDefinition(
+        foreach (var ticketsByItem in voteTickets.GroupBy(t => t.ItemId))
+        {
+            itemId.Add(ticketsByItem.Key);
+            votes.Add(ticketsByItem.Sum(t => t.Vote));
+        }
+        
+        var commandSession = new CommandDefinition(
             """
             UPDATE retro.retro_sessions
             SET
@@ -133,8 +143,31 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             flags: CommandFlags.None,
             cancellationToken: token);
         
-        await using var connection = _connectionFactory.Create();
+        var commandItems = new CommandDefinition(
+            """
+            UPDATE retro.retro_items AS ri
+            SET
+                votes = v.votes
+            FROM UNNEST(@item_id, @votes) AS v(item_id, votes)
+            WHERE ri.id = v.item_id;
+            """,
+            new
+            {
+                item_id = itemId,
+                votes = votes
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
         
-        await connection.ExecuteAsync(command);
+        await using var connection = _connectionFactory.Create();
+        await connection.OpenAsync(token);
+        await using var transaction = await connection.BeginTransactionAsync(token);
+        
+        await connection.ExecuteAsync(commandSession);
+
+        if (itemId.Any())
+            await connection.ExecuteAsync(commandItems);
+        
+        await transaction.CommitAsync(token);
     }
 }

@@ -8,9 +8,11 @@
             <div class="retro-toolbar__content">
                 <RetroStatePanel
                     Session="Session"
+                    IsPrioritizing="IsPrioritizing"
+                    IsDiscussing="IsDiscussing"
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
-                    IsPrioritizing="IsPrioritizing" />
+                    MoveToPrevious="ToPreviousMoved" />
                 <RetroParticipants
                     CanVote="CanVote"
                     VotesTotal="VotesTotal"
@@ -26,14 +28,11 @@
                         @foreach (var column in Columns.OrderBy(c => c.Position))
                         {
                             <div class="retro-grid__column">
-                                <Panel Header="@column.Name" IsOpen="true">
+                                <Panel Header="@column.Name" IsOpen="true" HasActions="CanCreate">
                                     <Actions>
-                                        @if (CanCreate)
-                                        {
-                                            <Button IsDisabled="IsCreating" OnClick="() => SendItemCreated(column.Id)">
-                                                @Localizer["Add"]
-                                            </Button>
-                                        }
+                                        <Button IsDisabled="IsCreating" OnClick="() => SendItemCreated(column.Id)">
+                                            @Localizer["Add"]
+                                        </Button>
                                     </Actions>
                                     <Content>
                                         <div class="retro-grid__column-items">
@@ -68,11 +67,11 @@
                                                         Value="item"
                                                         ValueExpression="@(() => item)"
                                                         ValueChanged="SendItemChanged">
-                                                        @if (CanVote)
+                                                        @if (CanVote || IsDiscussing)
                                                         {
                                                             <InputVoting
                                                                 VotesTotal="VotesTotal"
-                                                                RemainingVotes="RemainingVotes"
+                                                                RemainingVotes="@(CanVote ? RemainingVotes : 0)"
                                                                 Value="item.Votes"
                                                                 ValueExpression="@(() => item.Votes)"
                                                                 ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
@@ -216,28 +215,30 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> ToNextMoved { get; set; }
-
-    private const string CollectingState = "Collecting";
-    private const string GroupingState = "Grouping";
-    private const string PrioritizingState = "Prioritizing";
-    private const string DiscussingState = "Discussing";
-    private string RetroState => Session?.State ?? CollectingState;
+    
+    /// <summary>
+    /// To previous moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback ToPreviousMoved { get; set; }
+    
+    private string RetroState => Session?.State ?? RetroStages.CollectingState;
     private string RetroTextKey => $"{RetroState}Text";
     
-    private IReadOnlyCollection<string> Stages => [CollectingState, GroupingState, PrioritizingState, DiscussingState];
-    private IReadOnlyCollection<NavigationItem<object?>> NavItems => Stages
+    private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.All
         .Select(s => new NavigationItem<object?>(Localizer[$"{s}Title"], Value: null, s == RetroState, CanMove: false))
         .ToArray();
     
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
-    private bool CanMove => Session?.State == GroupingState && HasFacilitatorRights;
-    private bool CanVote => Session?.State == PrioritizingState;
+    private bool CanMove => Session?.State == RetroStages.GroupingState && HasFacilitatorRights;
+    private bool CanVote => Session?.State == RetroStages.PrioritizingState;
     private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
+    private bool IsDiscussing => Session?.State == RetroStages.DiscussingState;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (RenderContext.IsBrowser && RetroState == GroupingState)
+        if (RenderContext.IsBrowser && RetroState == RetroStages.GroupingState)
             await JsRuntime.Execute(JsFunctions.AddClassToElement(".retro-item", "animation__draggable-hint"));
     }
 
@@ -252,7 +253,7 @@
     private bool CanEdit(RetroItemViewModel item)
     {
         var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
-        var canAsFacilitator = Session?.State == GroupingState && HasFacilitatorRights;
+        var canAsFacilitator = Session?.State == RetroStages.GroupingState && HasFacilitatorRights;
 
         return canAsOwner || canAsFacilitator;
     }
@@ -260,7 +261,7 @@
     private bool CanRemove(RetroItemViewModel item)
     {
         var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
-        var canAsFacilitator = Session?.State == GroupingState && HasFacilitatorRights && item.ParentId.HasValue;
+        var canAsFacilitator = Session?.State == RetroStages.GroupingState && HasFacilitatorRights && item.ParentId.HasValue;
 
         return canAsOwner || canAsFacilitator;
     }

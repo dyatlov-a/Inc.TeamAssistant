@@ -134,5 +134,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("RetroItemRemoveConfirm", resourceCulture);
             }
         }
+        
+        internal static string Previous {
+            get {
+                return ResourceManager.GetString("Previous", resourceCulture);
+            }
+        }
     }
 }

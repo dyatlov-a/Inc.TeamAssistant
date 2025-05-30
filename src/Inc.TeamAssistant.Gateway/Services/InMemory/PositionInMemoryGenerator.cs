@@ -1,8 +1,8 @@
 using Inc.TeamAssistant.Retro.Application.Contracts;
 
-namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
+namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
-internal sealed class PositionGenerator : IPositionGenerator
+internal sealed class PositionInMemoryGenerator : IPositionGenerator
 {
     private int _position;
     

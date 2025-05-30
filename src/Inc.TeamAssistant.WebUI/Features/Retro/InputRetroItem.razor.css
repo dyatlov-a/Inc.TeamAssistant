@@ -18,5 +18,5 @@
     pointer-events: none;
 }
 .retro-item_child {
-    border-top: 3px var(--block-secondary-color) dashed;
+    border-top: 2px var(--block-secondary-color) dashed;
 }

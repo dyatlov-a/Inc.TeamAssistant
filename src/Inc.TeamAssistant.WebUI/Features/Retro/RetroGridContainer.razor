@@ -1,6 +1,9 @@
 @page "/retro/{TeamId:guid}"
 @page "/ru/retro/{TeamId:guid}"
 @page "/en/retro/{TeamId:guid}"
+@page "/retro/{TeamId:guid}/{ItemId:guid}"
+@page "/ru/retro/{TeamId:guid}/{ItemId:guid}"
+@page "/en/retro/{TeamId:guid}/{ItemId:guid}"
 
 @attribute [Authorize]
 
@@ -11,6 +14,7 @@
 @inject RequestProcessor RequestProcessor
 @inject IServiceProvider ServiceProvider
 @inject IStringLocalizer<RetroResources> Localizer
+@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -18,7 +22,7 @@
     <Authorized>
         <RetroGrid
             State="_state"
-            Columns="_columns"
+            Columns="Columns"
             CurrentUserId="context.User.ToPerson().Id"
             Session="_activeSession"
             Items="_items"
@@ -34,7 +38,8 @@
             ItemMovedToSlot="OnItemMovedToSlot"
             VoteChanged="OnVoteChanged"
             RetroStarted="OnRetroStarted"
-            ToNextMoved="OnToNextMoved" />
+            ToNextMoved="OnToNextMoved"
+            ToPreviousMoved="OnToPreviousMoved"/>
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -44,32 +49,36 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public Guid TeamId { get; set; }
-
-    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns =
-    [
-        new (Guid.Parse("290fb89e-93a6-485e-bcc2-a10af9fab1d1"), "Start", Position: 1, ItemColor: "#FF8C00"),
-        new (Guid.Parse("01d48058-afbb-4beb-9b03-80075bed4c11"), "Stop", Position: 2, ItemColor: "#B22222"),
-        new (Guid.Parse("99634086-7a5a-46ee-94de-2f7ecfab17aa"), "Continue", Position: 3, ItemColor: "#3CB371")
-    ];
-
-    private bool CanCreate => _activeSession is null;
-    private bool _isCreating;
-    private readonly LoadingState _state = LoadingState.Done();
+    
+    [Parameter]
+    public Guid? ItemId { get; set; }
+    
+    private LinkedListNode<RetroItemDto>? _currentItem;
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
-    private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
-
     private RetroSessionDto? _activeSession;
+    private bool _isCreating;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns = RetroColumnsFactory.Create();
+    private LinkedList<RetroItemDto> _orderedItems = new();
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
+    
+    private bool CanCreate => _activeSession is null;
+    private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
+    private bool IsDiscussing => _activeSession?.State == RetroStages.DiscussingState;
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
         .OrderBy(p => p.Person.DisplayName)
         .ToArray();
+    private IReadOnlyCollection<RetroColumnViewModel> Columns => _columns
+        .Where(c => _currentItem is null || _currentItem.Value.ColumnId == c.Id)
+        .ToArray();
     
     protected override async Task OnParametersSetAsync() => await Load(_state);
-    
+
     private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
     {
         if (hardReset)
@@ -79,18 +88,38 @@
             async () => await RetroService.GetRetroState(TeamId),
             nameof(RetroGridContainer),
             state);
-
-        _items.Clear();
+        
         _activeSession = result.ActiveSession;
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
             .ToDictionary(p => p.Person.Id);
+        _orderedItems = new(result.Items
+            .OrderByDescending(i => i.Votes)
+            .ThenBy(i => i.ColumnId)
+            .ThenByDescending(i => i.Position));
+
+        if (IsDiscussing && _currentItem is null)
+            _currentItem = ItemId.HasValue ? _orderedItems.Find(i => i.Id == ItemId.Value) : _orderedItems.First;
+        var items = _currentItem is not null ? [_currentItem.Value] : result.Items;
         
-        foreach (var item in result.Items.OrderBy(i => i.ParentId.HasValue))
+        _items.Clear();
+        foreach (var item in items.OrderBy(i => i.ParentId.HasValue))
             ApplyItemChanged(item);
         
         if (hardReset)
             await Connect();
+    }
+    
+    private async Task MoveToItem(LinkedListNode<RetroItemDto> item)
+    {
+        var routeSegment = $"retro/{TeamId:N}/{item.Value.Id:N}".ToLowerInvariant();
+        
+        _currentItem = item;
+        
+        _items.Clear();
+        ApplyItemChanged(_currentItem.Value);
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
     }
     
     private async Task Connect()
@@ -163,11 +192,33 @@
     
     private async Task OnToNextMoved(Guid id)
     {
-        await RequestProcessor.Process(
-            () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
-            _state);
+        if (IsDiscussing)
+        {
+            if (_currentItem?.Next is not null)
+                await MoveToItem(_currentItem.Next);
+            else
+            {
+                await RequestProcessor.Process(
+                    () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
+                    _state);
 
-        await Load(_state, hardReset: false);
+                await NavRouter.MoveToRoute("teams");
+            }
+        }
+        else
+        {
+            await RequestProcessor.Process(
+                () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
+                _state);
+            
+            await Load(_state, hardReset: false);
+        }
+    }
+
+    private async Task OnToPreviousMoved()
+    {
+        if (_currentItem?.Previous is not null)
+            await MoveToItem(_currentItem.Previous);
     }
 
     private async Task OnItemCreated(Guid columnId)

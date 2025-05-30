@@ -2,15 +2,17 @@
     padding: .3125rem;
     display: flex;
     align-items: center;
-    justify-content: end;
 }
-.retro-state-panel__link {
+.retro__link {
     display: flex;
     align-items: center;
     color: var(--block-priority-color);
     text-transform: uppercase;
     transition: color 0.3s ease 0s;
 }
-.retro-state-panel__link:hover {
+.retro__link:hover {
     color: var(--button-secondary-color);
+}
+.retro__link_right {
+    margin-left: auto;
 }

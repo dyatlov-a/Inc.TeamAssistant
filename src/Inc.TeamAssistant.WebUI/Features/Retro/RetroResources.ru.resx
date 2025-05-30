@@ -63,4 +63,7 @@
     <data name="RetroItemRemoveConfirm" xml:space="preserve">
         <value>Вы действительно желаете удалить карточку?</value>
     </data>
+    <data name="Previous" xml:space="preserve">
+        <value>Назад</value>
+    </data>
 </root>

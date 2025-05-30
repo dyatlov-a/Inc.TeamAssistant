@@ -19,7 +19,7 @@
     background-color: var(--text-primary-color);
     color: var(--text-secondary-color);
 }
-.nav-items__item_active::after {
+.nav-items__item_active:not(:last-child)::after {
     content: "";
     position: absolute;
     top: 0;

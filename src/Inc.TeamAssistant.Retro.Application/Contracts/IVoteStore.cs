@@ -4,7 +4,11 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IVoteStore
 {
-    IReadOnlyCollection<VoteTicket> GetVotes(Guid teamId, long personId);
+    IReadOnlyCollection<VoteTicket> Get(Guid teamId);
     
-    void SetVotes(Guid teamId, long personId, IReadOnlyCollection<VoteTicket> votes);
+    IReadOnlyCollection<VoteTicket> Get(Guid teamId, long personId);
+    
+    void Set(Guid teamId, long personId, IReadOnlyCollection<VoteTicket> votes);
+    
+    void Clear(Guid teamId);
 }

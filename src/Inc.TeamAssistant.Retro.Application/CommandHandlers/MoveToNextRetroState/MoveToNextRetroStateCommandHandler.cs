@@ -13,15 +13,18 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
     private readonly IRetroSessionRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
+    private readonly IVoteStore _voteStore;
 
     public MoveToNextRetroStateCommandHandler(
         IRetroSessionRepository repository,
         IPersonResolver personResolver,
-        IRetroEventSender eventSender)
+        IRetroEventSender eventSender,
+        IVoteStore voteStore)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
+        _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
     }
 
     public async Task Handle(MoveToNextRetroStateCommand command, CancellationToken token)
@@ -30,16 +33,18 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
 
         var currentPerson = _personResolver.GetCurrentPerson();
         var retroSession = await command.Id.Required(_repository.Find, token);
-
-        // TODO: Impl next state
-        if (retroSession.State == RetroSessionState.Discussing)
-            return;
         
         retroSession
             .EnsureRights(currentPerson.Id)
             .MoveToNextState();
+        
+        var votes = retroSession.State == RetroSessionState.Discussing
+            ? _voteStore.Get(retroSession.TeamId)
+            : [];
 
-        await _repository.Update(retroSession, token);
+        await _repository.Update(retroSession, votes, token);
+
+        _voteStore.Clear(retroSession.TeamId);
         
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
     }

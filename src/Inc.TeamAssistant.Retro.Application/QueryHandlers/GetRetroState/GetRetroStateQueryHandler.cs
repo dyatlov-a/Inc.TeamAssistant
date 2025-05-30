@@ -32,7 +32,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         
         var states = RetroSessionStateRules.Active;
         var currentPerson = _personResolver.GetCurrentPerson();
-        var votes = _voteStore.GetVotes(query.TeamId, currentPerson.Id);
+        var votes = _voteStore.Get(query.TeamId, currentPerson.Id);
         var onlinePersons = _onlinePersonStore.GetPersons(query.TeamId);
         
         var activeSession = await _reader.FindSession(query.TeamId, states, token);

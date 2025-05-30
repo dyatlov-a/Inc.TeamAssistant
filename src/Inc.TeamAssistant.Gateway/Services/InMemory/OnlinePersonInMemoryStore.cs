@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 
-namespace Inc.TeamAssistant.Gateway.Services.Stores;
+namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
 internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 {

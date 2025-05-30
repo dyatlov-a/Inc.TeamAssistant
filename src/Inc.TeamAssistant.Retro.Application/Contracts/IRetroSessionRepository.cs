@@ -8,5 +8,5 @@ public interface IRetroSessionRepository
     
     Task Create(RetroSession retro, CancellationToken token);
 
-    Task Update(RetroSession retro, CancellationToken token);
+    Task Update(RetroSession retro, IReadOnlyCollection<VoteTicket> voteTickets, CancellationToken token);
 }
