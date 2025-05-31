@@ -13,6 +13,6 @@
 .vote_active {
     cursor: pointer;
 }
-.vote_checked, .vote_active:hover, .vote_active:hover ~ .vote_active {
+.vote_selected, .vote_active:hover, .vote_active:hover ~ .vote_active {
     background-color: var(--block-priority-color);
 }

@@ -20,9 +20,21 @@
     [Parameter, EditorRequired]
     public int RemainingVotes { get; set; }
     
+    /// <summary>
+    /// Can the user vote
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanVote { get; set; }
+    
     private int AvailableVotes => RemainingVotes + _value;
-    private string SelectedCssClass(int value) => value <= _value ? "vote_checked" : string.Empty;
-    private string ActiveCssClass(int value) => value <= AvailableVotes ? "vote_active" : string.Empty;
+    
+    private string SelectedCssClass(int value) => value <= _value
+        ? "vote_selected"
+        : string.Empty;
+    
+    private string ActiveCssClass(int value) => CanVote && value <= AvailableVotes
+        ? "vote_active"
+        : string.Empty;
 
     private int _value;
     
@@ -45,7 +57,7 @@
     
     private async Task OnVoteClick(int vote)
     {
-        if (CheckVote(vote))
+        if (CanVote && CheckVote(vote))
             await ValueChanged.InvokeAsync(_value);
     }
     

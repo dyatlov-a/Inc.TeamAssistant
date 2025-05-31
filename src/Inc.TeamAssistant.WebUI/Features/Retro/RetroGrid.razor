@@ -70,8 +70,9 @@
                                                         @if (CanVote || IsDiscussing)
                                                         {
                                                             <InputVoting
-                                                                VotesTotal="VotesTotal"
-                                                                RemainingVotes="@(CanVote ? RemainingVotes : 0)"
+                                                                VotesTotal="@(IsDiscussing ? item.Votes : VotesTotal)"
+                                                                RemainingVotes="RemainingVotes"
+                                                                CanVote="CanVote"
                                                                 Value="item.Votes"
                                                                 ValueExpression="@(() => item.Votes)"
                                                                 ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
