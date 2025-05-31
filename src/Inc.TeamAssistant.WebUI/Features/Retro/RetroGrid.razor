@@ -10,6 +10,7 @@
                     Session="Session"
                     IsPrioritizing="IsPrioritizing"
                     IsDiscussing="IsDiscussing"
+                    IsFacilitator="IsFacilitator"
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
                     MoveToPrevious="ToPreviousMoved" />
@@ -222,7 +223,8 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback ToPreviousMoved { get; set; }
-    
+
+    private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.CollectingState;
     private string RetroTextKey => $"{RetroState}Text";
     
@@ -236,11 +238,16 @@
     private bool CanVote => Session?.State == RetroStages.PrioritizingState;
     private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
     private bool IsDiscussing => Session?.State == RetroStages.DiscussingState;
+    private bool IsFacilitator => CurrentUserId == Session?.FacilitatorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (RenderContext.IsBrowser && RetroState == RetroStages.GroupingState)
+        if (RenderContext.IsBrowser && IsFacilitator && RetroState == RetroStages.GroupingState && !_isGrouping)
+        {
             await JsRuntime.Execute(JsFunctions.AddClassToElement(".retro-item", "animation__draggable-hint"));
+
+            _isGrouping = true;
+        }
     }
 
     private bool CanView(RetroItemViewModel item)

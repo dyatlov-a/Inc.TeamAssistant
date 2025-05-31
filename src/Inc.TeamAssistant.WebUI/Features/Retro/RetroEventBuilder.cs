@@ -13,12 +13,15 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
-    private Action? _changed;
+    private readonly ILogger<RetroEventBuilder> _logger;
+    private Action? _rerender;
+    private Func<Task>? _reload;
 
-    public RetroEventBuilder(NavigationManager navigationManager)
+    public RetroEventBuilder(NavigationManager navigationManager, ILogger<RetroEventBuilder> logger)
     {
         ArgumentNullException.ThrowIfNull(navigationManager);
 
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri(HubDescriptors.RetroHub.Endpoint))
             .WithAutomaticReconnect()
@@ -30,9 +33,12 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     
     public bool IsDisconnected { get; private set; }
 
-    public async Task<RetroEventBuilder> Start(Action changed)
+    public async Task<RetroEventBuilder> Start(Action rerender, Func<Task> reload)
     {
-        _changed = changed ?? throw new ArgumentNullException(nameof(changed));
+        _rerender = rerender ?? throw new ArgumentNullException(nameof(rerender));
+        _reload = reload ?? throw new ArgumentNullException(nameof(reload));
+        
+        var hasDisconnect = IsDisconnected;
         
         try
         {
@@ -40,12 +46,15 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 
             IsDisconnected = false;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Error while starting RetroEventBuilder");
+            
             IsDisconnected = true;
         }
 
-        _changed();
+        if (hasDisconnect)
+            await _reload();
 
         return this;
     }
@@ -136,18 +145,17 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     {
         IsDisconnected = true;
 
-        _changed?.Invoke();
+        _rerender?.Invoke();
         
         return Task.CompletedTask;
     }
     
-    private Task Reconnected(string? connectionId)
+    private async Task Reconnected(string? connectionId)
     {
         IsDisconnected = false;
-        
-        _changed?.Invoke();
-        
-        return Task.CompletedTask;
+
+        if (_reload is not null)
+            await _reload();
     }
 
     public ValueTask DisposeAsync()

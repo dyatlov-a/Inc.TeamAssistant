@@ -129,7 +129,7 @@
         
         var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
         if (eventBuilder is not null)
-            _eventBuilder ??= await eventBuilder.Start(StateHasChanged);
+            _eventBuilder ??= await eventBuilder.Start(StateHasChanged, OnReconnect);
         
         _eventListener = await StartListenEvents();
     }
@@ -137,8 +137,10 @@
     private async Task Reconnect()
     {
         if (_eventBuilder is not null)
-            await _eventBuilder.Start(StateHasChanged);
+            await _eventBuilder.Start(StateHasChanged, OnReconnect);
     }
+
+    private async Task OnReconnect() => await Load(LoadingState.Wrap(_state, StateHasChanged));
     
     private async Task<IAsyncDisposable?> StartListenEvents()
     {

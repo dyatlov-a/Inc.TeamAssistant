@@ -5,7 +5,7 @@
 </ConfirmDialog>
 
 <div class="retro-state-panel">
-    @if (IsDiscussing)
+    @if (IsDiscussing && IsFacilitator)
     {
         <a
             href="#"
@@ -61,6 +61,12 @@
     [Parameter, EditorRequired]
     public bool IsDiscussing { get; set; }
     
+    /// <summary>
+    /// Is facilitator flag.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsFacilitator { get; set; }
+    
     private ConfirmDialog? _confirmDialog;
 
     private async Task OnMoveNext()
@@ -70,6 +76,9 @@
             await StartRetro.InvokeAsync();
             return;
         }
+        
+        if (!IsFacilitator)
+            return;
             
         if (IsPrioritizing && _confirmDialog is not null && !await _confirmDialog.IsConfirmed())
             return;
@@ -77,5 +86,11 @@
         await MoveToNext.InvokeAsync(Session.Id);
     }
 
-    private async Task OnMoveToPrevious() => await MoveToPrevious.InvokeAsync();
+    private async Task OnMoveToPrevious()
+    {
+        if (!IsFacilitator)
+            return;
+        
+        await MoveToPrevious.InvokeAsync();
+    }
 }
