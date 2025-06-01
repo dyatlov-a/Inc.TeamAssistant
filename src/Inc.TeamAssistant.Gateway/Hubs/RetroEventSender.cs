@@ -50,4 +50,11 @@ internal sealed class RetroEventSender : IRetroEventSender
         
         await _hubContext.Clients.Group(teamId.ToString("N")).PersonsChanged(persons);
     }
+
+    public async Task ActionItemChanged(Guid teamId, ActionItemDto item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        
+        await _hubContext.Clients.Group(teamId.ToString("N")).ActionItemChanged(item);
+    }
 }

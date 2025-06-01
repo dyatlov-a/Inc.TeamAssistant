@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -88,6 +89,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     public async Task MoveItem(Guid teamId, Guid itemId)
     {
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.MoveItemMethod, teamId, itemId);
+    }
+    
+    public async Task ChangeActionItem(ChangeActionItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeActionItemMethod, command);
     }
 
     public async Task<IAsyncDisposable> Build(

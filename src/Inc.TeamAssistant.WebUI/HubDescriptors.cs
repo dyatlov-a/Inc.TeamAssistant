@@ -19,5 +19,6 @@ public static class HubDescriptors
         public const string RemoveRetroItemMethod = "RemoveRetroItem";
         public const string SetVotesMethod = "SetVotes";
         public const string MoveItemMethod = "MoveItem";
+        public const string ChangeActionItemMethod = "ChangeActionItem";
     }
 }

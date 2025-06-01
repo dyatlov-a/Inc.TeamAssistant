@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<IRetroItemRepository, RetroItemRepository>()
             .AddSingleton<IRetroSessionRepository, RetroSessionRepository>()
+            .AddSingleton<IActionItemRepository, ActionItemRepository>()
             
             .AddSingleton<IRetroReader, RetroReader>();
 

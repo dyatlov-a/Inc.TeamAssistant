@@ -16,4 +16,6 @@ public interface IRetroHubClient
     Task PersonsChanged(IReadOnlyCollection<Person> persons);
 
     Task ItemMoved(Guid itemId);
+    
+    Task ActionItemChanged(ActionItemDto item);
 }

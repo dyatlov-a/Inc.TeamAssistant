@@ -25,7 +25,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
                 rs.state AS state,
                 rs.facilitator_id AS facilitatorid
             FROM retro.retro_sessions AS rs
-            WHERE id = @id;
+            WHERE rs.id = @id;
             """,
             new
             {
@@ -130,10 +130,10 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         
         var commandSession = new CommandDefinition(
             """
-            UPDATE retro.retro_sessions
+            UPDATE retro.retro_sessions AS rs
             SET
                 state = @state
-            WHERE id = @id;
+            WHERE rs.id = @id;
             """,
             new
             {

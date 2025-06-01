@@ -14,4 +14,6 @@ public interface IRetroEventSender
     Task VotesChanged(Guid teamId, long personId, int votesCount);
 
     Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
+
+    Task ActionItemChanged(Guid teamId, ActionItemDto item);
 }

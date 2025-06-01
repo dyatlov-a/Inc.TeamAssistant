@@ -66,7 +66,7 @@ public sealed class CreateRetroSchema : Migration
             
             .WithColumn("retro_session_id")
             .AsGuid().Nullable()
-            .ForeignKey("retro_items__fk__rs_id", "retro", "retro_sessions", "id")
+            .ForeignKey("retro_items__fk__retro_session_id", "retro", "retro_sessions", "id")
             
             .WithColumn("parent_id")
             .AsGuid().Nullable()

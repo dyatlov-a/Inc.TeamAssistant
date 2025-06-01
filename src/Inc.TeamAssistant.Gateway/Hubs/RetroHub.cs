@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
@@ -71,6 +72,14 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     public async Task MoveItem(Guid teamId, Guid itemId)
     {
         await Clients.GroupExcept(teamId.ToString("N"), Context.ConnectionId).ItemMoved(itemId);
+    }
+    
+    [HubMethodName(HubDescriptors.RetroHub.ChangeActionItemMethod)]
+    public async Task ChangeActionItem(ChangeActionItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)
