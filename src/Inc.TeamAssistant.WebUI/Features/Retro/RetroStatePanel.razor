@@ -5,11 +5,11 @@
 </ConfirmDialog>
 
 <div class="retro-state-panel">
-    @if (IsDiscussing && IsFacilitator)
+    @if (CanMoveToPrevious)
     {
         <a
             href="#"
-            class="retro__link link"
+            class="retro__link retro__link_active"
             @onclick="OnMoveToPrevious"
             @onclick:preventDefault="true">
             <CaretLeftIcon Size="30px"/> @Localizer["Previous"]
@@ -17,7 +17,7 @@
     }
     <a
         href="#"
-        class="retro__link retro__link_right link"
+        class="retro__link @MoveNextActiveCss retro__link_right"
         @onclick="OnMoveNext"
         @onclick:preventDefault="true">
         @Localizer["Next"] <CaretRightIcon Size="30px"/>
@@ -68,6 +68,9 @@
     public bool IsFacilitator { get; set; }
     
     private ConfirmDialog? _confirmDialog;
+    private bool CanMoveToPrevious => IsDiscussing && IsFacilitator;
+    private bool CanMoveNext => Session is null || IsFacilitator;
+    private string MoveNextActiveCss => CanMoveNext ? "retro__link_active" : string.Empty;
 
     private async Task OnMoveNext()
     {

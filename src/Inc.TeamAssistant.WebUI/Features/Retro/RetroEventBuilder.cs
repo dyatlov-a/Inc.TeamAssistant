@@ -84,6 +84,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.SetVotesMethod, command);
     }
+    
+    public async Task MoveItem(Guid teamId, Guid itemId)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.MoveItemMethod, teamId, itemId);
+    }
 
     public async Task<IAsyncDisposable> Build(
         Guid teamId,
@@ -140,7 +145,14 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         
         return _hubConnection.On(nameof(IRetroHubClient.PersonsChanged), changed);
     }
-    
+
+    public IDisposable OnItemMoved(Func<Guid, Task> moved)
+    {
+        ArgumentNullException.ThrowIfNull(moved);
+        
+        return _hubConnection.On(nameof(IRetroHubClient.ItemMoved), moved);
+    }
+
     private Task Closed(Exception? ex)
     {
         IsDisconnected = true;

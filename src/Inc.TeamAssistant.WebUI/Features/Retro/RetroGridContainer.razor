@@ -110,7 +110,7 @@
             await Connect();
     }
     
-    private async Task MoveToItem(LinkedListNode<RetroItemDto> item)
+    private async Task MoveItem(LinkedListNode<RetroItemDto> item)
     {
         var routeSegment = $"retro/{TeamId:N}/{item.Value.Id:N}".ToLowerInvariant();
         
@@ -166,21 +166,37 @@
                 });
             }),
             b => b.OnVotesChanged(async (p, v) =>
+            {
                 await InvokeAsync(() =>
                 {
                     ApplyVotes(p, v);
                     StateHasChanged();
-                })),
+                });
+            }),
             b => b.OnPersonsChanged(async p =>
+            {
                 await InvokeAsync(() =>
                 {
                     ApplyParticipants(p);
                     StateHasChanged();
-                })),
+                });
+            }),
             b => b.OnRetroSessionChanged(async _ =>
             {
                 await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
-            }));
+            }),
+            b => b.OnItemMoved(async iId =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    var item = _orderedItems.Find(i => i.Id == iId);
+                    if (item is not null)
+                        await MoveItem(item);
+                    
+                    StateHasChanged();
+                });
+            })
+        );
     }
 
     private async Task OnRetroStarted()
@@ -197,7 +213,12 @@
         if (IsDiscussing)
         {
             if (_currentItem?.Next is not null)
-                await MoveToItem(_currentItem.Next);
+            {
+                if (_eventBuilder is not null)
+                    await _eventBuilder.MoveItem(TeamId, _currentItem.Next.Value.Id);
+                
+                await MoveItem(_currentItem.Next);
+            }
             else
             {
                 await RequestProcessor.Process(
@@ -220,7 +241,12 @@
     private async Task OnToPreviousMoved()
     {
         if (_currentItem?.Previous is not null)
-            await MoveToItem(_currentItem.Previous);
+        {
+            if (_eventBuilder is not null)
+                await _eventBuilder.MoveItem(TeamId, _currentItem.Previous.Value.Id);
+            
+            await MoveItem(_currentItem.Previous);
+        }
     }
 
     private async Task OnItemCreated(Guid columnId)

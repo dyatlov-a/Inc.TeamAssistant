@@ -14,4 +14,6 @@ public interface IRetroEventProvider
     IDisposable OnVotesChanged(Func<long, int, Task> changed);
     
     IDisposable OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed);
+    
+    IDisposable OnItemMoved(Func<Guid, Task> moved);
 }

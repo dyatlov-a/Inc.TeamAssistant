@@ -67,6 +67,12 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         await _mediator.Send(command, CancellationToken.None);
     }
     
+    [HubMethodName(HubDescriptors.RetroHub.MoveItemMethod)]
+    public async Task MoveItem(Guid teamId, Guid itemId)
+    {
+        await Clients.GroupExcept(teamId.ToString("N"), Context.ConnectionId).ItemMoved(itemId);
+    }
+    
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var result = await _mediator.Send(new LeaveFromAllCommand(Context.ConnectionId), CancellationToken.None);
