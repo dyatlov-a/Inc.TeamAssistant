@@ -1,8 +1,3 @@
-@inherits InputBase<RetroItemViewModel>
-
-@inject IJSRuntime JsRuntime
-@inject IRenderContext RenderContext
-@inject ILogger<InputRetroItem> Logger
 @inject DragAndDropService<RetroItemViewModel> DragAndDropService
 @inject IStringLocalizer<RetroResources> Localizer
 
@@ -10,7 +5,7 @@
     @ondrop="OnDrop"
     @ondragstart="OnDragStart"
     style="background-color: @BackgroundColor"
-    class="retro-item @CssClass @CanViewCss @ChildCss"
+    class="retro-item @CanViewCss @ChildCss"
     @attributes="DynamicAttributes.BuildDraggable(CanMove)">
     @if (CanMove)
     {
@@ -22,7 +17,7 @@
     {
         <div class="retro-item__actions">
             <Button ButtonMode="ButtonMode.Small" OnClick="SendItemRemoved">
-                @if (_value.ParentId.HasValue)
+                @if (Value.ParentId.HasValue)
                 {
                     <PaperclipSlashIcon Size="20px"/>
                 }
@@ -33,18 +28,13 @@
             </Button>
         </div>
     }
-    <div
-        id="@_value.Id"
-        class="retro-item__text"
-        @oninput="OnInputChanged"
-        @onblur="OnBlur"
-        @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
-        @ref="_item">
-        @if (!RenderContext.IsBrowser)
-        {
-            @_value.Text
-        }
-    </div>
+    <InlineEditor
+        Id="@Value.Id"
+        CanEdit="CanEdit"
+        DebounceDelay="DebounceDelay"
+        Value="@Value.Text"
+        ValueExpression="@(() => Value.Text)"
+        ValueChanged="@(v => OnValueChanged(v))" />
     @if (ChildContent is not null)
     {
         @ChildContent
@@ -55,24 +45,25 @@
 </ConfirmDialog>
 
 @code {
+
     /// <summary>
     /// Can remove item.
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanView { get; set; }
-    
+
     /// <summary>
     /// Can edit item.
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanEdit { get; set; }
-    
+
     /// <summary>
     /// Can remove item.
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanRemove { get; set; }
-    
+
     /// <summary>
     /// Can drag and drop item.
     /// </summary>
@@ -80,156 +71,80 @@
     public bool CanMove { get; set; }
     
     /// <summary>
+    /// Value of the item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroItemViewModel Value { get; set; } = default!;
+
+    /// <summary>
     /// Background color.
     /// </summary>
     [Parameter, EditorRequired]
     public string BackgroundColor { get; set; } = default!;
-    
+
     /// <summary>
     /// Debounce delay in milliseconds.
     /// </summary>
     [Parameter]
     public int DebounceDelay { get; set; }
-    
-    /// <summary>
-    /// Item removed callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
-    
-    /// <summary>
-    /// Item moved callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
-    
+
     /// <summary>
     /// Child content.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
     
-    private RetroItemViewModel _value = RetroItemViewModel.Empty;
-    private ElementReference _item;
-    private Timer? _timer;
+    /// <summary>
+    /// Value changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
+    
     private ConfirmDialog? _confirmDialog;
-    
+
     private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
-    private string ChildCss => _value.ParentId.HasValue ? "retro-item_child" : string.Empty;
+    private string ChildCss => Value.ParentId.HasValue ? "retro-item_child" : string.Empty;
 
-    protected override void OnParametersSet()
-    {
-        _value = CurrentValue ?? RetroItemViewModel.Empty;
+    private void OnDragStart() => DragAndDropService.Start(Value);
 
-        if (!CanEdit)
-            return;
-
-        if (RenderContext.IsBrowser && _timer is null)
-        {
-            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
-            OnInputChanged();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && RenderContext.IsBrowser)
-        {
-            if (CanEdit && string.IsNullOrWhiteSpace(_value.Text))
-                await JsRuntime.Execute(JsFunctions.FocusElement(_item));
-            else
-                await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value.Text));
-        }
-    }
-    
-    private void OnDragStart() => DragAndDropService.Start(_value);
-    
     private async Task OnDrop()
     {
         var movedItem = DragAndDropService.End();
-        var isOtherItem = _value.Id != movedItem?.Id;
-        var hasParent = _value.ParentId.HasValue;
-        
+        var isOtherItem = Value.Id != movedItem?.Id;
+        var hasParent = Value.ParentId.HasValue;
+
         if (movedItem is not null && !hasParent && isOtherItem)
-            await ItemMoved.InvokeAsync(new(_value, movedItem));
+            await ItemMoved.InvokeAsync(new(Value, movedItem));
     }
 
-    private async Task TrySendValueChanged()
+    private async Task OnValueChanged(string? value)
     {
-        try
-        {
-            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
-
-            if (_value.Text != value)
-                await ValueChanged.InvokeAsync(_value.ChangeText(value));
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error on timer tick for InputRetroItem");
-        }
-    }
-
-    private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
-    {
-        _timer?.Stop();
-        
-        InvokeAsync(TrySendValueChanged);
-    }
-
-    private async Task OnBlur()
-    {
-        await TrySendValueChanged();
-        
-        _timer?.Stop();
-    }
-
-    private void OnInputChanged()
-    {
-        _timer?.Stop();
-        _timer?.Start();
+        await ValueChanged.InvokeAsync(Value.ChangeText(value));
     }
 
     private async Task SendItemRemoved()
     {
         if (!CanRemove)
             return;
-        
-        var hasParent = _value.ParentId.HasValue;
-        var isEmpty = string.IsNullOrWhiteSpace(_value.Text);
-        
+
+        var hasParent = Value.ParentId.HasValue;
+        var isEmpty = string.IsNullOrWhiteSpace(Value.Text);
+
         if (hasParent || isEmpty)
-            await ItemRemoved.InvokeAsync(_value);
+            await ItemRemoved.InvokeAsync(Value);
         else if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
-            await ItemRemoved.InvokeAsync(_value);
-    }
-    
-    private Timer CreateTimer(TimeSpan interval)
-    {
-        var timer = new Timer(interval);
-
-        timer.Elapsed += OnAfterInputChanged;
-        timer.AutoReset = false;
-
-        return timer;
-    }
-
-    protected override bool TryParseValueFromString(
-        string? value,
-        out RetroItemViewModel result,
-        out string validationErrorMessage)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && _timer is not null)
-        {
-            _timer.Stop();
-            _timer.Elapsed -= OnAfterInputChanged;
-            _timer.Dispose();
-        }
-        
-        base.Dispose(disposing);
+            await ItemRemoved.InvokeAsync(Value);
     }
 }

@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Common;
 
-namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeActionItem.Converters;
+namespace Inc.TeamAssistant.Retro.Application.Common.Converters;
 
 internal static class ActionItemConverter
 {

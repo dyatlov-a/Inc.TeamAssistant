@@ -66,4 +66,7 @@
     <data name="Previous" xml:space="preserve">
         <value>Назад</value>
     </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Действия</value>
+    </data>
 </root>

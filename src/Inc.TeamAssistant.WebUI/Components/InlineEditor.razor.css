@@ -1,0 +1,4 @@
+.inline-editor__text {
+    min-height: 80px;
+    word-break: break-all;
+}

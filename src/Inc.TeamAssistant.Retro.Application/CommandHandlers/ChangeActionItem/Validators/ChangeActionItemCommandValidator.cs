@@ -7,14 +7,13 @@ internal sealed class ChangeActionItemCommandValidator : AbstractValidator<Chang
 {
     public ChangeActionItemCommandValidator()
     {
-        RuleFor(e => e.TeamId)
-            .NotEmpty();
-        
         RuleFor(e => e.Id)
-            .NotEmpty()
-            .When(e => e.Id.HasValue);
+            .NotEmpty();
 
         RuleFor(e => e.RetroItemId)
+            .NotEmpty();
+        
+        RuleFor(e => e.TeamId)
             .NotEmpty();
 
         RuleFor(e => e.Text)

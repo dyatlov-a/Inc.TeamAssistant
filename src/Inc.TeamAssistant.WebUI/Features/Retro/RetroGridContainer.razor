@@ -26,9 +26,9 @@
             CurrentUserId="context.User.ToPerson().Id"
             Session="_activeSession"
             Items="_items"
+            ActionItems="_actionItems"
             Participants="Participants"
             VotesTotal="6"
-            CanCreate="CanCreate"
             IsCreating="_isCreating"
             Retry="@(() => Load(_state))"
             ItemCreated="OnItemCreated"
@@ -36,6 +36,7 @@
             ItemRemoved="OnItemRemoved"
             ItemMoved="OnItemMoved"
             ItemMovedToSlot="OnItemMovedToSlot"
+            ActionItemCreated="OnActionItemCreated"
             VoteChanged="OnVoteChanged"
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
@@ -66,8 +67,8 @@
     private LinkedList<RetroItemDto> _orderedItems = new();
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
+    private readonly List<ActionItemViewModel> _actionItems = new();
     
-    private bool CanCreate => _activeSession is null;
     private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
     private bool IsDiscussing => _activeSession?.State == RetroStages.DiscussingState;
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
@@ -105,6 +106,10 @@
         _items.Clear();
         foreach (var item in items.OrderBy(i => i.ParentId.HasValue))
             ApplyItemChanged(item);
+
+        _actionItems.Clear();
+        foreach (var actionItem in result.ActionItems)
+            ApplyActionItemChanged(actionItem);
         
         if (hardReset)
             await Connect();
@@ -185,16 +190,20 @@
             {
                 await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
             }),
-            b => b.OnItemMoved(async iId =>
+            b => b.OnItemMoved(async id =>
             {
                 await InvokeAsync(async () =>
                 {
-                    var item = _orderedItems.Find(i => i.Id == iId);
+                    var item = _orderedItems.Find(i => i.Id == id);
                     if (item is not null)
                         await MoveItem(item);
-                    
+
                     StateHasChanged();
                 });
+            }),
+            b => b.OnActionItemChanged(async a =>
+            {
+                await InvokeAsync(() => ApplyActionItemChanged(a));
             })
         );
     }
@@ -266,6 +275,17 @@
         }
     }
 
+    private void OnActionItemCreated()
+    {
+        if (_currentItem is null)
+            return;
+        
+        _actionItems.Add(new ActionItemViewModel(
+            Guid.CreateVersion7(),
+            _currentItem.Value.Id,
+            DateTimeOffset.UtcNow));
+    }
+
     private async Task OnItemChanged(RetroItemViewModel item)
     {
         if (_eventBuilder is null)
@@ -281,6 +301,15 @@
             _items.Add(new RetroItemViewModel(changed.Id, changed.OwnerId).Apply(changed));
         else
             viewItem.Apply(changed);
+    }
+
+    private void ApplyActionItemChanged(ActionItemDto changed)
+    {
+        var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewActionItem is null)
+            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).ChangeText(changed.Text));
+        else
+            viewActionItem.ChangeText(changed.Text);
     }
 
     private void ApplyVotes(long personId, int votesCount)

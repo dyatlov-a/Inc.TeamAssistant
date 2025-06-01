@@ -16,4 +16,6 @@ public interface IRetroEventProvider
     IDisposable OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed);
     
     IDisposable OnItemMoved(Func<Guid, Task> moved);
+    
+    IDisposable OnActionItemChanged(Func<ActionItemDto, Task> changed);
 }

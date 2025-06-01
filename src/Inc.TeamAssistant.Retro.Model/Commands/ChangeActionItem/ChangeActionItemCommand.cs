@@ -3,8 +3,8 @@ using MediatR;
 namespace Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 
 public sealed record ChangeActionItemCommand(
-    Guid TeamId,
-    Guid? Id,
+    Guid Id,
     Guid RetroItemId,
+    Guid TeamId,
     string Text)
     : IRequest;

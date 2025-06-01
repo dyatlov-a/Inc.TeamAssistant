@@ -1,5 +1,4 @@
-using Inc.TeamAssistant.Primitives.Extensions;
-using Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeActionItem.Converters;
+using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
@@ -22,10 +21,11 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var item = command.Id.HasValue
-            ? await command.Id.Value.Required(_repository.Find, token)
-            : new ActionItem(Guid.CreateVersion7(), command.RetroItemId, DateTimeOffset.UtcNow);
-
+        var item = await _repository.Find(command.Id, token) ?? new ActionItem(
+            command.Id,
+            command.RetroItemId,
+            DateTimeOffset.UtcNow);
+        
         await _repository.Upsert(item.ChangeText(command.Text), token);
 
         await _eventSender.ActionItemChanged(command.TeamId, ActionItemConverter.ConvertTo(item));

@@ -161,6 +161,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.ItemMoved), moved);
     }
 
+    public IDisposable OnActionItemChanged(Func<ActionItemDto, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(IRetroHubClient.ActionItemChanged), changed);
+    }
+
     private Task Closed(Exception? ex)
     {
         IsDisconnected = true;

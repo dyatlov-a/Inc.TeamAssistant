@@ -12,4 +12,8 @@ public interface IRetroReader
         Guid teamId,
         IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token);
+    
+    Task<IReadOnlyCollection<ActionItem>> ReadActionItems(
+        Guid teamId,
+        CancellationToken token);
 }

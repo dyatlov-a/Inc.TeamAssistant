@@ -29,9 +29,12 @@
                         @foreach (var column in Columns.OrderBy(c => c.Position))
                         {
                             <div class="retro-grid__column">
-                                <Panel Header="@column.Name" IsOpen="true" HasActions="CanCreate">
+                                <Panel
+                                    Header="@column.Name"
+                                    IsOpen="true"
+                                    HasActions="@(CanCreateRetroItem)">
                                     <Actions>
-                                        <Button IsDisabled="IsCreating" OnClick="() => SendItemCreated(column.Id)">
+                                        <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
                                             @Localizer["Add"]
                                         </Button>
                                     </Actions>
@@ -66,7 +69,6 @@
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="ItemMoved"
                                                         Value="item"
-                                                        ValueExpression="@(() => item)"
                                                         ValueChanged="SendItemChanged">
                                                         @if (CanVote || IsDiscussing)
                                                         {
@@ -92,12 +94,29 @@
                                                             ItemRemoved="ItemRemoved"
                                                             ItemMoved="@(_ => { })"
                                                             Value="child"
-                                                            ValueExpression="@(() => child)"
                                                             ValueChanged="_ => { }"/>
                                                     }
                                                 </div>
                                             }
                                         </div>
+                                    </Content>
+                                </Panel>
+                            </div>
+                        }
+                        @if (IsDiscussing)
+                        {
+                            <div class="retro-grid__column">
+                                <Panel Header="@Localizer["Actions"]" IsOpen="true" HasActions="CanCreateActionItem">
+                                    <Actions>
+                                        <Button OnClick="SendActionItemCreated">
+                                            @Localizer["Add"]
+                                        </Button>
+                                    </Actions>
+                                    <Content>
+                                        @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
+                                        {
+                                            
+                                        }
                                     </Content>
                                 </Panel>
                             </div>
@@ -139,6 +158,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<RetroItemViewModel> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Action items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
 
     /// <summary>
     /// Retro session participants.
@@ -151,12 +176,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int VotesTotal { get; set; }
-
-    /// <summary>
-    /// Can create retro items.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool CanCreate { get; set; }
     
     /// <summary>
     /// Is creating retro item.
@@ -175,6 +194,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> ItemCreated { get; set; }
+    
+    /// <summary>
+    /// Action item created callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback ActionItemCreated { get; set; }
 
     /// <summary>
     /// Change retro item callback.
@@ -234,6 +259,8 @@
     
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
+    private bool CanCreateRetroItem => Session is null;
+    private bool CanCreateActionItem => Session?.State == RetroStages.DiscussingState && IsFacilitator;
     private bool CanMove => Session?.State == RetroStages.GroupingState && HasFacilitatorRights;
     private bool CanVote => Session?.State == RetroStages.PrioritizingState;
     private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
@@ -274,9 +301,11 @@
         return canAsOwner || canAsFacilitator;
     }
 
-    private async Task SendItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
+    private async Task SendRetroItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
 
     private async Task SendItemChanged(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
 
     private async Task SendVotesChanged(Guid itemId, int vote) => await VoteChanged.InvokeAsync((itemId, vote));
+
+    private async Task SendActionItemCreated() => await ActionItemCreated.InvokeAsync();
 }

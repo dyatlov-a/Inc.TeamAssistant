@@ -81,4 +81,32 @@ internal sealed class RetroReader : IRetroReader
         
         return result;
     }
+
+    public async Task<IReadOnlyCollection<ActionItem>> ReadActionItems(Guid teamId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                ai.id AS id,
+                ai.retro_item_id AS retroitemid,
+                ai.created AS created,
+                ai.text AS text,
+                ai.state AS state
+            FROM retro.action_items AS ai
+            JOIN retro.retro_items AS ri ON ai.retro_item_id = ri.id
+            WHERE ri.team_id = @team_id;
+            """,
+            new
+            {
+                team_id = teamId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var items = await connection.QueryAsync<ActionItem>(command);
+        
+        return items.ToArray();
+    }
 }

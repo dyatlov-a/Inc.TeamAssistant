@@ -6,11 +6,13 @@ namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 public sealed record GetRetroStateResult(
     RetroSessionDto? ActiveSession,
     IReadOnlyCollection<RetroItemDto> Items,
-    IReadOnlyCollection<ParticipantDto> Participants)
+    IReadOnlyCollection<ParticipantDto> Participants,
+    IReadOnlyCollection<ActionItemDto> ActionItems)
     : IWithEmpty<GetRetroStateResult>
 {
     public static GetRetroStateResult Empty { get; } = new(
         ActiveSession: null,
         Items: [],
-        Participants: []);
+        Participants: [],
+        ActionItems: []);
 }

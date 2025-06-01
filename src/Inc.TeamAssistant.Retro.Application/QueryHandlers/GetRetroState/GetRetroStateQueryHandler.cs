@@ -37,6 +37,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         
         var activeSession = await _reader.FindSession(query.TeamId, states, token);
         var retroItems = await _reader.ReadItems(query.TeamId, token);
+        var actions = await _reader.ReadActionItems(query.TeamId, token);
         
         var votesByPerson = votes
             .Where(v => v.PersonId == currentPerson.Id)
@@ -57,7 +58,10 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 activeSession?.State,
                 votesByPerson))
             .ToArray();
+        var actionItems = actions
+            .Select(ActionItemConverter.ConvertTo)
+            .ToArray();
         
-        return new GetRetroStateResult(session, items, participants);
+        return new GetRetroStateResult(session, items, participants, actionItems);
     }
 }

@@ -18,8 +18,6 @@ public sealed class RetroItemViewModel
         Id = id;
         OwnerId = ownerId;
     }
-
-    public static RetroItemViewModel Empty { get; } = new(id: Guid.Empty, ownerId: 0);
     
     public bool HasOwnerRights(long ownerId) => OwnerId == ownerId;
     

@@ -36,9 +36,32 @@
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
         window.browserJsFunctions = {
+            getTimezone: () => {
+                return new Date().getTimezoneOffset();
+            },
+            changeUrl: url => {
+                history.pushState(null, '', url);
+            },
             scrollToTop: () => {
                 document.documentElement.scrollTop = 0;
-            }
+            },
+            editableText: {
+                get: element => {
+                    return element.innerText
+                },
+                set: (element, value) => {
+                    element.innerText = value;
+                }
+            },
+            focusElement: element => {
+                element.focus();
+            },
+            addClassToElement: (selector, className) => {
+                let element = document.querySelector(selector);
+                if (element) {
+                    element.classList.add(className);
+                }
+            },
         };
         
         Blazor.start({
