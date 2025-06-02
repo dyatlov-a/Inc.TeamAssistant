@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
@@ -98,6 +99,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeActionItemMethod, command);
     }
 
+    public async Task RemoveActionItem(Guid teamId, Guid itemId)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveActionItemMethod, teamId, itemId);
+    }
+
     public async Task<IAsyncDisposable> Build(
         Guid teamId,
         params IReadOnlyCollection<Func<IRetroEventProvider, IDisposable>> eventHandlers)
@@ -166,6 +172,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(changed);
         
         return _hubConnection.On(nameof(IRetroHubClient.ActionItemChanged), changed);
+    }
+    
+    public IDisposable OnActionItemRemoved(Func<Guid, Task> removed)
+    {
+        ArgumentNullException.ThrowIfNull(removed);
+        
+        return _hubConnection.On(nameof(IRetroHubClient.ActionItemRemoved), removed);
     }
 
     private Task Closed(Exception? ex)

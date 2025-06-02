@@ -58,14 +58,14 @@
                                                 var hasChildren = children.Any();
 
                                                 <div>
-                                                    <InputRetroItem
+                                                    <RetroItem
                                                         @key="item.Id"
                                                         CanView="@(CanView(item))"
                                                         CanEdit="@(CanEdit(item))"
                                                         CanRemove="@(CanRemove(item) && !hasChildren)"
                                                         CanMove="CanMove"
                                                         BackgroundColor="@column.ItemColor"
-                                                        DebounceDelay="500"
+                                                        DebounceDelay="DebounceDelay"
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="ItemMoved"
                                                         Value="item"
@@ -80,11 +80,11 @@
                                                                 ValueExpression="@(() => item.Votes)"
                                                                 ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
                                                         }
-                                                    </InputRetroItem>
+                                                    </RetroItem>
 
                                                     @foreach (var child in children)
                                                     {
-                                                        <InputRetroItem
+                                                        <RetroItem
                                                             @key="child.Id"
                                                             CanView="@(CanView(child))"
                                                             CanEdit="false"
@@ -113,10 +113,18 @@
                                         </Button>
                                     </Actions>
                                     <Content>
-                                        @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
-                                        {
-                                            
-                                        }
+                                        <div class="retro-grid__column-items">
+                                            @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
+                                            {
+                                                <ActionItem
+                                                    CanEdit="IsFacilitator"
+                                                    CanRemove="IsFacilitator"
+                                                    Value="actionItem"
+                                                    DebounceDelay="DebounceDelay"
+                                                    ValueChanged="SendActionItemChanged"
+                                                    ItemRemoved="SendActionItemRemoved"/>
+                                            }
+                                        </div>
                                     </Content>
                                 </Panel>
                             </div>
@@ -202,16 +210,28 @@
     public EventCallback ActionItemCreated { get; set; }
 
     /// <summary>
-    /// Change retro item callback.
+    /// Retro item changed callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
+    
+    /// <summary>
+    /// Action item changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
 
     /// <summary>
     /// Item removed callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+    
+    /// <summary>
+    /// Action item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ActionItemRemoved { get; set; }
 
     /// <summary>
     /// Item moved callback.
@@ -256,7 +276,8 @@
     private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.All
         .Select(s => new NavigationItem<object?>(Localizer[$"{s}Title"], Value: null, s == RetroState, CanMove: false))
         .ToArray();
-    
+
+    private const int DebounceDelay = 500;
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanCreateRetroItem => Session is null;
@@ -302,10 +323,9 @@
     }
 
     private async Task SendRetroItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
-
     private async Task SendItemChanged(RetroItemViewModel item) => await ItemChanged.InvokeAsync(item);
-
     private async Task SendVotesChanged(Guid itemId, int vote) => await VoteChanged.InvokeAsync((itemId, vote));
-
     private async Task SendActionItemCreated() => await ActionItemCreated.InvokeAsync();
+    private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);
+    private async Task SendActionItemRemoved(ActionItemViewModel item) => await ActionItemRemoved.InvokeAsync(item);
 }

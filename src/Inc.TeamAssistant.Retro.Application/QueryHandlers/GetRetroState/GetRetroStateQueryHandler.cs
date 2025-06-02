@@ -35,9 +35,11 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var votes = _voteStore.Get(query.TeamId, currentPerson.Id);
         var onlinePersons = _onlinePersonStore.GetPersons(query.TeamId);
         
-        var activeSession = await _reader.FindSession(query.TeamId, states, token);
-        var retroItems = await _reader.ReadItems(query.TeamId, token);
-        var actions = await _reader.ReadActionItems(query.TeamId, token);
+        var session = await _reader.FindSession(query.TeamId, states, token);
+        var items = await _reader.ReadRetroItems(query.TeamId, states, token);
+        var actions = session is not null
+            ? await _reader.ReadActionItems(session.Id, token)
+            : [];
         
         var votesByPerson = votes
             .Where(v => v.PersonId == currentPerson.Id)
@@ -48,20 +50,20 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var participants = onlinePersons
             .Select(op => new ParticipantDto(op, totalVotes.GetValueOrDefault(op.Id, 0)))
             .ToArray();
-        var session = activeSession is not null
-            ? RetroSessionConverter.ConvertTo(activeSession)
+        var activeSession = session is not null
+            ? RetroSessionConverter.ConvertTo(session)
             : null;
-        var items = retroItems
+        var retroItems = items
             .Select(i => RetroItemConverter.ConvertFromReadModel(
                 i,
                 currentPerson.Id,
-                activeSession?.State,
+                session?.State,
                 votesByPerson))
             .ToArray();
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();
         
-        return new GetRetroStateResult(session, items, participants, actionItems);
+        return new GetRetroStateResult(activeSession, retroItems, participants, actionItems);
     }
 }

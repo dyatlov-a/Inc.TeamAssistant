@@ -1,9 +1,9 @@
-@attribute [Stories("Components/InlineEditor")]
+@attribute [Stories("Components/InputInlineEditor")]
 
-<Stories TComponent="InlineEditor">
+<Stories TComponent="InputInlineEditor">
     <Story Name="Default">
         <Template>
-            <InlineEditor
+            <InputInlineEditor
                 Id="_editableId"
                 CanEdit="true"
                 DebounceDelay="_debounceDelay"
@@ -14,7 +14,7 @@
     </Story>
     <Story Name="ReadOnly">
         <Template>
-            <InlineEditor
+            <InputInlineEditor
                 Id="_readOnlyId"
                 CanEdit="false"
                 DebounceDelay="_debounceDelay"

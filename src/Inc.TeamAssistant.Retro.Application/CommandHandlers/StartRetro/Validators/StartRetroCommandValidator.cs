@@ -30,7 +30,7 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
     
     private async Task<bool> HasItems(Guid teamId, CancellationToken token)
     {
-        var items = await _reader.ReadItems(teamId, token);
+        var items = await _reader.ReadRetroItems(teamId, [], token);
         
         return items.Any();
     }

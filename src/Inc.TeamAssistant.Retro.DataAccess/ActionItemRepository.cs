@@ -81,4 +81,25 @@ internal sealed class ActionItemRepository : IActionItemRepository
         
         await connection.ExecuteAsync(command);
     }
+
+    public async Task Remove(ActionItem item, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        
+        var command = new CommandDefinition(
+            """
+            DELETE FROM retro.action_items AS ai
+            WHERE ai.id = @item_id;
+            """,
+            new
+            {
+                item_id = item.Id
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
+    }
 }

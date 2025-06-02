@@ -4,8 +4,9 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroReader
 {
-    Task<IReadOnlyCollection<RetroItem>> ReadItems(
+    Task<IReadOnlyCollection<RetroItem>> ReadRetroItems(
         Guid teamId,
+        IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token);
     
     Task<RetroSession?> FindSession(

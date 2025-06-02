@@ -14,10 +14,14 @@ internal sealed class RetroReader : IRetroReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<RetroItem>> ReadItems(
+    public async Task<IReadOnlyCollection<RetroItem>> ReadRetroItems(
         Guid teamId,
+        IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(states);
+        
+        var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
             SELECT
@@ -32,11 +36,13 @@ internal sealed class RetroReader : IRetroReader
                 ri.parent_id AS parentid,
                 ri.votes AS votes
             FROM retro.retro_items AS ri
-            WHERE ri.team_id = @team_id;
+            LEFT JOIN retro.retro_sessions AS rs ON ri.retro_session_id = rs.id
+            WHERE ri.team_id = @team_id AND (rs.id IS NULL OR rs.state = ANY(@states));
             """,
             new
             {
-                team_id = teamId
+                team_id = teamId,
+                states = targetStates
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -82,7 +88,7 @@ internal sealed class RetroReader : IRetroReader
         return result;
     }
 
-    public async Task<IReadOnlyCollection<ActionItem>> ReadActionItems(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<ActionItem>> ReadActionItems(Guid retroSessionId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -94,11 +100,11 @@ internal sealed class RetroReader : IRetroReader
                 ai.state AS state
             FROM retro.action_items AS ai
             JOIN retro.retro_items AS ri ON ai.retro_item_id = ri.id
-            WHERE ri.team_id = @team_id;
+            WHERE ri.retro_session_id = @retro_session_id;
             """,
             new
             {
-                team_id = teamId
+                retro_session_id = retroSessionId
             },
             flags: CommandFlags.None,
             cancellationToken: token);

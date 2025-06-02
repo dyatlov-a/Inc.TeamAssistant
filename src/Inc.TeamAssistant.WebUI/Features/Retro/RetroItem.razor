@@ -28,7 +28,7 @@
             </Button>
         </div>
     }
-    <InlineEditor
+    <InputInlineEditor
         Id="@Value.Id"
         CanEdit="CanEdit"
         DebounceDelay="DebounceDelay"
@@ -41,11 +41,10 @@
     }
 </div>
 <ConfirmDialog @ref="_confirmDialog">
-    @Localizer["RetroItemRemoveConfirm"]
+    @Localizer["ItemRemoveConfirm"]
 </ConfirmDialog>
 
 @code {
-
     /// <summary>
     /// Can remove item.
     /// </summary>

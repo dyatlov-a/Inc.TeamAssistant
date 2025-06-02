@@ -18,4 +18,6 @@ public interface IRetroHubClient
     Task ItemMoved(Guid itemId);
     
     Task ActionItemChanged(ActionItemDto item);
+
+    Task ActionItemRemoved(Guid itemId);
 }

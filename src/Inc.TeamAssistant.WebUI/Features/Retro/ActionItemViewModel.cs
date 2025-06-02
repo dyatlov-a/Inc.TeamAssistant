@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
+
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
 public sealed class ActionItemViewModel
@@ -23,4 +25,6 @@ public sealed class ActionItemViewModel
 
         return this;
     }
+    
+    public ChangeActionItemCommand ToCommand(Guid teamId) => new(Id, RetroItemId, teamId, Text);
 }

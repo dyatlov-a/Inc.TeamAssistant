@@ -16,4 +16,6 @@ public interface IRetroEventSender
     Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
 
     Task ActionItemChanged(Guid teamId, ActionItemDto item);
+    
+    Task ActionItemRemoved(Guid teamId, Guid itemId, string connectionId);
 }

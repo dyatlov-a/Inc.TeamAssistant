@@ -129,9 +129,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string RetroItemRemoveConfirm {
+        internal static string ItemRemoveConfirm {
             get {
-                return ResourceManager.GetString("RetroItemRemoveConfirm", resourceCulture);
+                return ResourceManager.GetString("ItemRemoveConfirm", resourceCulture);
             }
         }
         

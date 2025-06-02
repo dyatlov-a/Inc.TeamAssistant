@@ -60,7 +60,7 @@
     <data name="Next" xml:space="preserve">
         <value>Next</value>
     </data>
-    <data name="RetroItemRemoveConfirm" xml:space="preserve">
+    <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Are you sure you want to delete the card?</value>
     </data>
     <data name="Previous" xml:space="preserve">

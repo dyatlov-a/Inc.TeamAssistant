@@ -1,0 +1,8 @@
+.action-item {
+    padding: .5rem;
+    background-color: var(--block-secondary-color);
+}
+.action-item__actions {
+    float: right;
+    padding-left: .3rem;
+}

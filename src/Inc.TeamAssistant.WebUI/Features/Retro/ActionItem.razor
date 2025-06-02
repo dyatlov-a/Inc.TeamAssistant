@@ -1,0 +1,83 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div class="action-item">
+    @if (CanRemove)
+    {
+        <div class="action-item__actions">
+            <Button ButtonMode="ButtonMode.Small" OnClick="SendItemRemoved">
+                <TrashIcon Size="20px"/>
+            </Button>
+        </div>
+    }
+    <InputInlineEditor
+        Id="@Value.Id"
+        CanEdit="CanEdit"
+        DebounceDelay="DebounceDelay"
+        Value="@Value.Text"
+        ValueExpression="@(() => Value.Text)"
+        ValueChanged="@((string? v) => OnValueChanged(v))" />
+</div>
+<ConfirmDialog @ref="_confirmDialog">
+    @Localizer["ItemRemoveConfirm"]
+</ConfirmDialog>
+
+@code {
+    /// <summary>
+    /// Can edit item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanEdit { get; set; }
+
+    /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanRemove { get; set; }
+    
+    /// <summary>
+    /// Value of the item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public ActionItemViewModel Value { get; set; } = default!;
+    
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; }
+    
+    /// <summary>
+    /// Value changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ValueChanged { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
+    
+    private ConfirmDialog? _confirmDialog;
+    
+    private async Task OnValueChanged(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+        
+        await ValueChanged.InvokeAsync(Value.ChangeText(value));
+    }
+
+    private async Task SendItemRemoved()
+    {
+        if (!CanRemove)
+            return;
+        
+        var isEmpty = string.IsNullOrWhiteSpace(Value.Text);
+        
+        if (isEmpty)
+            await ItemRemoved.InvokeAsync(Value);
+        else if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await ItemRemoved.InvokeAsync(Value);
+    }
+}

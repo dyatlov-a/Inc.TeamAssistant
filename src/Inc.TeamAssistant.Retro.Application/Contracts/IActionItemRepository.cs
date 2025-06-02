@@ -7,4 +7,6 @@ public interface IActionItemRepository
     Task<ActionItem?> Find(Guid id, CancellationToken token);
 
     Task Upsert(ActionItem item, CancellationToken token);
+    
+    Task Remove(ActionItem item, CancellationToken token);
 }

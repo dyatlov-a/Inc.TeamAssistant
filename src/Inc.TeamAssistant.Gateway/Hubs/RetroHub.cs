@@ -3,6 +3,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
+using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -57,9 +58,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.RemoveRetroItemMethod)]
-    public async Task RemoveRetroItem(Guid retroItemId)
+    public async Task RemoveRetroItem(Guid itemId)
     {
-        await _mediator.Send(new RemoveRetroItemCommand(retroItemId), CancellationToken.None);
+        await _mediator.Send(new RemoveRetroItemCommand(itemId), CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.SetVotesMethod)]
@@ -80,6 +81,12 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         ArgumentNullException.ThrowIfNull(command);
         
         await _mediator.Send(command, CancellationToken.None);
+    }
+    
+    [HubMethodName(HubDescriptors.RetroHub.RemoveActionItemMethod)]
+    public async Task RemoveActionItem(Guid teamId, Guid itemId)
+    {
+        await _mediator.Send(new RemoveActionItemCommand(itemId, teamId, Context.ConnectionId), CancellationToken.None);
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)
