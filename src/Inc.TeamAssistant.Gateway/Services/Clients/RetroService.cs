@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
@@ -38,5 +39,12 @@ internal sealed class RetroService : IRetroService
     public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
     {
         return await _mediator.Send(new GetActionItemsQuery(teamId), token);
+    }
+
+    public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
     }
 }

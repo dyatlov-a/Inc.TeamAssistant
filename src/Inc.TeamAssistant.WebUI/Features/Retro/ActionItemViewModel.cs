@@ -26,5 +26,5 @@ public sealed class ActionItemViewModel
         return this;
     }
     
-    public ChangeActionItemCommand ToCommand(Guid teamId) => new(Id, RetroItemId, teamId, Text);
+    public ChangeActionItemCommand ToCommand(Guid teamId) => new(Id, RetroItemId, teamId, Text, State: null);
 }

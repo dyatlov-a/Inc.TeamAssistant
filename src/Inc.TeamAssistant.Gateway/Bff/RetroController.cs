@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -44,9 +45,19 @@ public sealed class RetroController : ControllerBase
         return Ok();
     }
     
-    [HttpGet("{teamId:Guid}/actions")]
+    [HttpGet("actions/{teamId:Guid}")]
     public async Task<IActionResult> GetActionItems(Guid teamId, CancellationToken token)
     {
         return Ok(await _retroService.GetActionItems(teamId, token));
+    }
+    
+    [HttpPut("actions")]
+    public async Task<IActionResult> ChangeActionItem([FromBody]ChangeActionItemCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.ChangeActionItem(command, CancellationToken.None);
+        
+        return Ok();
     }
 }

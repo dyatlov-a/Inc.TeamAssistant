@@ -32,4 +32,11 @@ public sealed class ActionItem
         
         return this;
     }
+
+    public ActionItem ChangeState(ActionItemState state)
+    {
+        State = state;
+
+        return this;
+    }
 }

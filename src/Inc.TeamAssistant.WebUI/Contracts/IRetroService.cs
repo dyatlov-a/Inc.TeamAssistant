@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
@@ -14,4 +15,6 @@ public interface IRetroService
     Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token = default);
 
     Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token = default);
+    
+    Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token = default);
 }

@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
@@ -48,11 +49,20 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/{teamId:N}/actions", token);
+        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/actions/{teamId:N}", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
 
         return result;
+    }
+
+    public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var response = await _client.PutAsJsonAsync("retro/actions", command, token);
+
+        await response.HandleValidation(token);
     }
 }

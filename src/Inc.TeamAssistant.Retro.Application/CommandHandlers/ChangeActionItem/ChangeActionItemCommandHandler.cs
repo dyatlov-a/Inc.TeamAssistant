@@ -25,9 +25,15 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
             command.Id,
             command.RetroItemId,
             DateTimeOffset.UtcNow);
-        
-        await _repository.Upsert(item.ChangeText(command.Text), token);
 
-        await _eventSender.ActionItemChanged(command.TeamId, ActionItemConverter.ConvertTo(item));
+        item.ChangeText(command.Text);
+        
+        if (!string.IsNullOrWhiteSpace(command.State))
+            item.ChangeState(Enum.Parse<ActionItemState>(command.State, ignoreCase: true));
+        
+        await _repository.Upsert(item, token);
+
+        if (command.TeamIdForNotify.HasValue)
+            await _eventSender.ActionItemChanged(command.TeamIdForNotify.Value, ActionItemConverter.ConvertTo(item));
     }
 }
