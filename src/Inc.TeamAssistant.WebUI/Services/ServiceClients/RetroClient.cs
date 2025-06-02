@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
+using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -19,7 +20,7 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/state/{teamId:N}", token);
+        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{teamId:N}", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
@@ -43,5 +44,15 @@ internal sealed class RetroClient : IRetroService
         var response = await _client.PutAsJsonAsync("retro", command, token);
 
         await response.HandleValidation(token);
+    }
+
+    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/{teamId:N}/actions", token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
     }
 }

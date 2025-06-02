@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
+using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
@@ -11,4 +12,6 @@ public interface IRetroService
     Task StartRetro(StartRetroCommand command, CancellationToken token = default);
     
     Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token = default);
+
+    Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token = default);
 }
