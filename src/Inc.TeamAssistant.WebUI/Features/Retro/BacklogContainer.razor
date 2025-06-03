@@ -1,0 +1,57 @@
+@page "/backlog/{TeamId:guid}"
+@page "/ru/backlog/{TeamId:guid}"
+@page "/en/backlog/{TeamId:guid}"
+
+@attribute [Authorize]
+
+@inject TenantStore TenantStore
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule />
+
+<Backlog
+    State="_state"
+    ActionItems="_actionItems"
+    Retry="Load"
+    ActionItemChanged="OnActionItemChanged" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid TeamId { get; set; }
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<ActionItemViewModel> _actionItems = new();
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+    
+    private async Task Load()
+    {
+        await TenantStore.Initialize(TeamId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetActionItems(TeamId),
+            nameof(BacklogContainer),
+            _state);
+        
+        _actionItems.Clear();
+        foreach (var actionItem in result.Items)
+            ApplyActionItemChanged(actionItem);
+    }
+    
+    private void ApplyActionItemChanged(ActionItemDto changed)
+    {
+        var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewActionItem is null)
+            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, changed.Created).Apply(changed));
+        else
+            viewActionItem.Apply(changed);
+    }
+    
+    private async Task OnActionItemChanged(ActionItemViewModel item)
+    {
+        await RequestProcessor.Process(
+            async () => await RetroService.ChangeActionItem(item.ToCommand()),
+            _state);
+    }
+}

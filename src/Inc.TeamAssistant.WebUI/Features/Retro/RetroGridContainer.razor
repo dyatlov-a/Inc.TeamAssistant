@@ -42,7 +42,7 @@
             VoteChanged="OnVoteChanged"
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
-            ToPreviousMoved="OnToPreviousMoved"/>
+            ToPreviousMoved="OnToPreviousMoved" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -254,7 +254,7 @@
                     () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
                     _state);
 
-                await NavRouter.MoveToRoute("teams");
+                await NavRouter.MoveToRoute($"backlog/{TeamId}");
             }
         }
         else
@@ -343,9 +343,9 @@
     {
         var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
         if (viewActionItem is null)
-            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).ChangeText(changed.Text));
+            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).Apply(changed));
         else
-            viewActionItem.ChangeText(changed.Text);
+            viewActionItem.Apply(changed);
     }
 
     private void ApplyVotes(long personId, int votesCount)

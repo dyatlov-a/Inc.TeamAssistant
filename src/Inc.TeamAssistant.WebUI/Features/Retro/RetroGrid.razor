@@ -32,7 +32,7 @@
                                 <Panel
                                     Header="@column.Name"
                                     IsOpen="true"
-                                    HasActions="@(CanCreateRetroItem)">
+                                    HasActions="CanCreateRetroItem">
                                     <Actions>
                                         <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
                                             @Localizer["Add"]

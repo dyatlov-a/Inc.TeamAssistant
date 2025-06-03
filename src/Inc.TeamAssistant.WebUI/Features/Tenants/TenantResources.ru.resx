@@ -51,4 +51,7 @@
     <data name="RemoveTeamConfirmationText" xml:space="preserve">
         <value>Подтверждаете удаление команды {0}?</value>
     </data>
+    <data name="MoveToBacklog" xml:space="preserve">
+        <value>Перейти к списку задач</value>
+    </data>
 </root>

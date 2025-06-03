@@ -146,5 +146,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("Actions", resourceCulture);
             }
         }
+        
+        internal static string ActionItemStageDone {
+            get {
+                return ResourceManager.GetString("ActionItemStageDone", resourceCulture);
+            }
+        }
+        
+        internal static string ActionItemStageNew {
+            get {
+                return ResourceManager.GetString("ActionItemStageNew", resourceCulture);
+            }
+        }
     }
 }

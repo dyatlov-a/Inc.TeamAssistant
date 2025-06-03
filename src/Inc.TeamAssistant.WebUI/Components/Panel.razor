@@ -5,7 +5,7 @@
         <h2 class="panel__header-text">@Header</h2>
         @if (IsOpen)
         {
-            if (HasActions)
+            if (HasActions && Actions is not null)
             {
                 <div class="panel__actions">
                     @Actions
@@ -37,8 +37,8 @@
     /// <summary>
     /// Actions to be displayed in the header.
     /// </summary>
-    [Parameter, EditorRequired]
-    public RenderFragment Actions { get; set; } = default!;
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
     
     /// <summary>
     /// HTML content.

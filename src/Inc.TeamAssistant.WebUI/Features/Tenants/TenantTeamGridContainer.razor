@@ -19,7 +19,8 @@
     EditEmitted="tId => StartEdit(tId)"
     CreateEmitted="() => StartEdit(teamId: null)"
     RemoveEmitted="RemoveTeam"
-    MoveToRetroFactory="CreateMoveToRetroLink" />
+    MoveToRetroFactory="CreateMoveToRetroLink"
+    MoveToBacklogFactory="CreateMoveToBacklogLink" />
 
 <ContentDialog Title="@Localizer["TeamManagement"]" @ref="_contentDialog">
     <TenantTeamEditorContainer TeamId="_selectedTeamId" OnEdited="EndEdit" />
@@ -75,4 +76,5 @@
     }
     
     private string CreateMoveToRetroLink(Guid teamId) => NavRouter.CreateRoute($"retro/{teamId:N}");
+    private string CreateMoveToBacklogLink(Guid teamId) => NavRouter.CreateRoute($"backlog/{teamId:N}");
 }

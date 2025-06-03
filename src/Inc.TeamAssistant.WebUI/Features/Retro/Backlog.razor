@@ -1,0 +1,66 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div class="backlog">
+    <div class="backlog__container">
+        <Loading State="State" Retry="Retry">
+            <div class="backlog-grid__columns">
+                @foreach(var stage in ActionItemStages.All)
+                {
+                    <div class="backlog-grid__column">
+                        <Panel
+                            Header="@GetStateTitle(stage)"
+                            IsOpen="true"
+                            HasActions="false">
+                            <Content>
+                                <div class="backlog-grid__column-items">
+                                    @foreach (var item in ActionItems
+                                                  .Where(i => i.State == stage)
+                                                  .OrderByDescending(i => i.Created))
+                                    {
+                                        <ActionItem
+                                            CanEdit="true"
+                                            CanRemove="false"
+                                            Value="item"
+                                            DebounceDelay="500"
+                                            ValueChanged="SendActionItemChanged"
+                                            ItemRemoved="@(_ => { })"/>
+                                    }
+                                </div>
+                            </Content>
+                        </Panel>
+                    </div>
+                }
+            </div>
+        </Loading>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action items for the backlog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Action item changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
+
+    private string GetStateTitle(string stage) => Localizer[$"ActionItemStage{stage}"];
+    
+    private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);
+}

@@ -51,4 +51,7 @@
     <data name="RemoveTeamConfirmationText" xml:space="preserve">
         <value>Confirming the deletion of the {0}?</value>
     </data>
+    <data name="MoveToBacklog" xml:space="preserve">
+        <value>Move to backlog</value>
+    </data>
 </root>

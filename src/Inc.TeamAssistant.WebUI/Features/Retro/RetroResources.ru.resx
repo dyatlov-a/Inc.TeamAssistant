@@ -69,4 +69,10 @@
     <data name="Actions" xml:space="preserve">
         <value>Действия</value>
     </data>
+    <data name="ActionItemStageDone" xml:space="preserve">
+        <value>Готово</value>
+    </data>
+    <data name="ActionItemStageNew" xml:space="preserve">
+        <value>В работу</value>
+    </data>
 </root>

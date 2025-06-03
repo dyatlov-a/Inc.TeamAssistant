@@ -69,4 +69,10 @@
     <data name="Actions" xml:space="preserve">
         <value>Actions</value>
     </data>
+    <data name="ActionItemStageNew" xml:space="preserve">
+        <value>TODO</value>
+    </data>
+    <data name="ActionItemStageDone" xml:space="preserve">
+        <value>Done</value>
+    </data>
 </root>

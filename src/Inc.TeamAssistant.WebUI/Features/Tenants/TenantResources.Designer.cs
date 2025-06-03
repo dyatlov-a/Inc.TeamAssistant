@@ -110,5 +110,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
                 return ResourceManager.GetString("RemoveTeamConfirmationText", resourceCulture);
             }
         }
+        
+        internal static string MoveToBacklog {
+            get {
+                return ResourceManager.GetString("MoveToBacklog", resourceCulture);
+            }
+        }
     }
 }

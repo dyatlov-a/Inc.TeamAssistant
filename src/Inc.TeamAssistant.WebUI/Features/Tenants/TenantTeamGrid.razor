@@ -18,6 +18,9 @@
                             @context.Name
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
+                            <RouterLink Href="@MoveToBacklogFactory(context.Id)">@Localizer["MoveToBacklog"]</RouterLink>
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
                             <RouterLink Href="@MoveToRetroFactory(context.Id)">@Localizer["MoveToRetro"]</RouterLink>
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
@@ -75,6 +78,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Guid, string> MoveToRetroFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// Factory for create link to backlog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Guid, string> MoveToBacklogFactory { get; set; } = default!;
     
     private IQueryable<TenantTeamDto> Teams => AvailableTeams.AsQueryable();
 
