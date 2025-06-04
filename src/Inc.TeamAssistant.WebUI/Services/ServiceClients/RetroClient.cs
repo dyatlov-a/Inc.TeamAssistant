@@ -21,7 +21,7 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{teamId:N}", token);
+        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{teamId:N}/state", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
@@ -49,7 +49,7 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/actions/{teamId:N}", token);
+        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/{teamId:N}/actions", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");

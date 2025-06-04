@@ -19,7 +19,7 @@ public sealed class RetroController : ControllerBase
         _retroService = retroService ?? throw new ArgumentNullException(nameof(retroService));
     }
     
-    [HttpGet("{teamId:Guid}")]
+    [HttpGet("{teamId:Guid}/state")]
     public async Task<IActionResult> Get(Guid teamId, CancellationToken token)
     {
         return Ok(await _retroService.GetRetroState(teamId, token));
@@ -45,7 +45,7 @@ public sealed class RetroController : ControllerBase
         return Ok();
     }
     
-    [HttpGet("actions/{teamId:Guid}")]
+    [HttpGet("{teamId:Guid}/actions")]
     public async Task<IActionResult> GetActionItems(Guid teamId, CancellationToken token)
     {
         return Ok(await _retroService.GetActionItems(teamId, token));
