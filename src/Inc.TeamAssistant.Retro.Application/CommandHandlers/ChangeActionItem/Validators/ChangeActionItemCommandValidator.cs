@@ -15,14 +15,14 @@ internal sealed class ChangeActionItemCommandValidator : AbstractValidator<Chang
             .NotEmpty();
         
         RuleFor(e => e.TeamIdForNotify)
-            .NotEmpty();
+            .NotEmpty()
+            .When(e => e.TeamIdForNotify.HasValue);
 
         RuleFor(e => e.Text)
             .NotEmpty();
 
         RuleFor(e => e.State)
             .Must(e => Enum.TryParse<ActionItemState>(e, ignoreCase: true, out _))
-            .WithMessage("Invalid action item state.")
-            .When(e => !string.IsNullOrWhiteSpace(e.State));
+            .WithMessage("Invalid action item state.");
     }
 }

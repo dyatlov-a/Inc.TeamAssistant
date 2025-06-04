@@ -7,5 +7,5 @@ public sealed record ChangeActionItemCommand(
     Guid RetroItemId,
     Guid? TeamIdForNotify,
     string Text,
-    string? State)
+    string State)
     : IRequest;

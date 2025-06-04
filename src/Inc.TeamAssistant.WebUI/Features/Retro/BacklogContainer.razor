@@ -52,6 +52,7 @@
     {
         await RequestProcessor.Process(
             async () => await RetroService.ChangeActionItem(item.ToCommand()),
-            _state);
+            _state,
+            showLoading: false);
     }
 }

@@ -1,6 +1,9 @@
 .action-item {
     padding: .5rem;
-    background-color: var(--block-secondary-color);
+    background-color: var(--accent-color);
+}
+.action-item_done {
+    background-color: var(--message-valid-color);
 }
 .action-item__actions {
     float: right;

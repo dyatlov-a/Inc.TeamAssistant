@@ -2,16 +2,10 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
 public static class RetroStages
 {
-    public const string CollectingState = "Collecting";
-    public const string GroupingState = "Grouping";
-    public const string PrioritizingState = "Prioritizing";
-    public const string DiscussingState = "Discussing";
+    public const string Collecting = "Collecting";
+    public const string Grouping = "Grouping";
+    public const string Prioritizing = "Prioritizing";
+    public const string Discussing = "Discussing";
 
-    public static readonly IReadOnlyCollection<string> All =
-    [
-        CollectingState,
-        GroupingState,
-        PrioritizingState,
-        DiscussingState
-    ];
+    public static readonly IReadOnlyCollection<string> All = [Collecting, Grouping, Prioritizing, Discussing];
 }

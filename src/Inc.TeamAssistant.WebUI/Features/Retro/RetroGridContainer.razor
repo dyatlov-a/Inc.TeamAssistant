@@ -72,7 +72,7 @@
     private readonly List<ActionItemViewModel> _actionItems = new();
     
     private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
-    private bool IsDiscussing => _activeSession?.State == RetroStages.DiscussingState;
+    private bool IsDiscussing => _activeSession?.State == RetroStages.Discussing;
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
         .OrderBy(p => p.Person.DisplayName)
         .ToArray();

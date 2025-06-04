@@ -1,11 +1,19 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
-<div class="action-item">
+<div class="action-item @CssClass">
     @if (CanRemove)
     {
         <div class="action-item__actions">
-            <Button ButtonMode="ButtonMode.Small" OnClick="SendItemRemoved">
+            <Button ButtonMode="ButtonMode.Small" OnClick="OnItemRemoved">
                 <TrashIcon Size="20px"/>
+            </Button>
+        </div>
+    }
+    @if (CanMoveToState)
+    {
+        <div class="action-item__actions">
+            <Button ButtonMode="ButtonMode.Small" OnClick="OnStateChanged">
+                <CheckIcon Size="20px" />
             </Button>
         </div>
     }
@@ -35,6 +43,12 @@
     public bool CanRemove { get; set; }
     
     /// <summary>
+    /// Can move to state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanMoveToState { get; set; }
+    
+    /// <summary>
     /// Value of the item.
     /// </summary>
     [Parameter, EditorRequired]
@@ -57,6 +71,8 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
+
+    private string CssClass => Value.State == ActionItemStages.Done ? "action-item_done" : string.Empty;
     
     private ConfirmDialog? _confirmDialog;
     
@@ -68,7 +84,7 @@
         await ValueChanged.InvokeAsync(Value.ChangeText(value));
     }
 
-    private async Task SendItemRemoved()
+    private async Task OnItemRemoved()
     {
         if (!CanRemove)
             return;
@@ -80,4 +96,6 @@
         else if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
             await ItemRemoved.InvokeAsync(Value);
     }
+    
+    private async Task OnStateChanged() => await ValueChanged.InvokeAsync(Value.MoveToDone());
 }

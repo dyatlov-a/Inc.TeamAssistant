@@ -119,6 +119,7 @@
                                                 <ActionItem
                                                     CanEdit="IsFacilitator"
                                                     CanRemove="IsFacilitator"
+                                                    CanMoveToState="false"
                                                     Value="actionItem"
                                                     DebounceDelay="DebounceDelay"
                                                     ValueChanged="SendActionItemChanged"
@@ -270,7 +271,7 @@
     public EventCallback ToPreviousMoved { get; set; }
 
     private bool _isGrouping;
-    private string RetroState => Session?.State ?? RetroStages.CollectingState;
+    private string RetroState => Session?.State ?? RetroStages.Collecting;
     private string RetroTextKey => $"{RetroState}Text";
     
     private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.All
@@ -281,16 +282,16 @@
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool HasFacilitatorRights => CurrentUserId == Session?.FacilitatorId;
     private bool CanCreateRetroItem => Session is null;
-    private bool CanCreateActionItem => Session?.State == RetroStages.DiscussingState && IsFacilitator;
-    private bool CanMove => Session?.State == RetroStages.GroupingState && HasFacilitatorRights;
-    private bool CanVote => Session?.State == RetroStages.PrioritizingState;
+    private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
+    private bool CanMove => Session?.State == RetroStages.Grouping && HasFacilitatorRights;
+    private bool CanVote => Session?.State == RetroStages.Prioritizing;
     private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
-    private bool IsDiscussing => Session?.State == RetroStages.DiscussingState;
+    private bool IsDiscussing => Session?.State == RetroStages.Discussing;
     private bool IsFacilitator => CurrentUserId == Session?.FacilitatorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (RenderContext.IsBrowser && IsFacilitator && RetroState == RetroStages.GroupingState && !_isGrouping)
+        if (RenderContext.IsBrowser && IsFacilitator && RetroState == RetroStages.Grouping && !_isGrouping)
         {
             await JsRuntime.Execute(JsFunctions.AddClassToElement(".retro-item", "animation__draggable-hint"));
 
@@ -309,7 +310,7 @@
     private bool CanEdit(RetroItemViewModel item)
     {
         var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
-        var canAsFacilitator = Session?.State == RetroStages.GroupingState && HasFacilitatorRights;
+        var canAsFacilitator = Session?.State == RetroStages.Grouping && HasFacilitatorRights;
 
         return canAsOwner || canAsFacilitator;
     }
@@ -317,7 +318,7 @@
     private bool CanRemove(RetroItemViewModel item)
     {
         var canAsOwner = Session is null && item.HasOwnerRights(CurrentUserId);
-        var canAsFacilitator = Session?.State == RetroStages.GroupingState && HasFacilitatorRights && item.ParentId.HasValue;
+        var canAsFacilitator = Session?.State == RetroStages.Grouping && HasFacilitatorRights && item.ParentId.HasValue;
 
         return canAsOwner || canAsFacilitator;
     }

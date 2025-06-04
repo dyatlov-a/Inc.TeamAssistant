@@ -1,6 +1,8 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 :root {
+    --accent-color: #54a9eb;
+    --accent-text-color: #fff;
     --bg-primary-color: #616161;
     --bg-secondary-color: #555;
     --block-priority-color: #fff;
@@ -8,10 +10,8 @@
     --block-secondary-color: #000;
     --text-primary-color: #dfdfdf;
     --text-secondary-color: #000;
-    --text-telegram-color: #fff;
     --button-primary-color: #dfdfdf;
     --button-secondary-color: #000;
-    --button-telegram-color: #54a9eb;
     --control-disabled-color: #aaa;
     --icon-primary-color: #F8CA00;
     --message-valid-color: #28a745;

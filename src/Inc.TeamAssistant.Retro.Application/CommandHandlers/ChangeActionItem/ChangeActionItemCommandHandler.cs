@@ -26,10 +26,9 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
             command.RetroItemId,
             DateTimeOffset.UtcNow);
 
-        item.ChangeText(command.Text);
-        
-        if (!string.IsNullOrWhiteSpace(command.State))
-            item.ChangeState(Enum.Parse<ActionItemState>(command.State, ignoreCase: true));
+        item
+            .ChangeText(command.Text)
+            .ChangeState(Enum.Parse<ActionItemState>(command.State, ignoreCase: true));
         
         await _repository.Upsert(item, token);
 

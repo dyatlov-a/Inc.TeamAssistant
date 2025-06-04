@@ -17,7 +17,7 @@ public sealed class ActionItemViewModel
         RetroItemId = retroItemId;
         Created = created;
         Text = string.Empty;
-        State = ActionItemStages.NewState;
+        State = ActionItemStages.New;
     }
     
     public ActionItemViewModel ChangeText(string text)
@@ -26,6 +26,13 @@ public sealed class ActionItemViewModel
         
         Text = text;
 
+        return this;
+    }
+
+    public ActionItemViewModel MoveToDone()
+    {
+        State = ActionItemStages.Done;
+        
         return this;
     }
 
@@ -44,5 +51,5 @@ public sealed class ActionItemViewModel
         RetroItemId,
         teamIdForNotify,
         Text,
-        State: null);
+        State);
 }
