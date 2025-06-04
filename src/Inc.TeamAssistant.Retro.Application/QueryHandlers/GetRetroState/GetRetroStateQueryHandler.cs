@@ -13,17 +13,20 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IPersonResolver _personResolver;
     private readonly IOnlinePersonStore _onlinePersonStore;
     private readonly IVoteStore _voteStore;
+    private readonly ITimerService _timerService;
 
     public GetRetroStateQueryHandler(
         IRetroReader reader,
         IPersonResolver personResolver,
         IOnlinePersonStore onlinePersonStore,
-        IVoteStore voteStore)
+        IVoteStore voteStore,
+        ITimerService timerService)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
+        _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
@@ -63,7 +66,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();
+        var currentTimer = _timerService.TryGetValue(query.TeamId);
         
-        return new GetRetroStateResult(activeSession, retroItems, participants, actionItems);
+        return new GetRetroStateResult(activeSession, retroItems, participants, actionItems, currentTimer);
     }
 }

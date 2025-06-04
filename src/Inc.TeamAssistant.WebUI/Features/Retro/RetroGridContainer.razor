@@ -44,7 +44,8 @@
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
             ToPreviousMoved="OnToPreviousMoved"
-            TimerToggled="OnTimerToggled" />
+            TimerToggled="OnTimerToggled"
+            TimerChanged="@(t => _currentTimer = t)" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -99,6 +100,7 @@
             .ToLookup(i => i.ParentId!.Value);
         
         _activeSession = result.ActiveSession;
+        _currentTimer = result.CurrentTimer;
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
             .ToDictionary(p => p.Person.Id);
@@ -225,6 +227,14 @@
                 await InvokeAsync(() =>
                 {
                     ApplyActionItemRemovedEvent(a);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnTimerChanged(async t =>
+            {
+                await InvokeAsync(() =>
+                {
+                    _currentTimer = t;
                     StateHasChanged();
                 });
             })
@@ -431,7 +441,10 @@
 
     public async Task OnTimerToggled(TimeSpan? changed)
     {
-        _currentTimer = changed;
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.ChangeTimer(TeamId, changed);
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)

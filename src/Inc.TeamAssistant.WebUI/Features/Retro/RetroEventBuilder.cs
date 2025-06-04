@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
@@ -103,6 +102,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     {
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveActionItemMethod, teamId, itemId);
     }
+    
+    public async Task ChangeTimer(Guid teamId, TimeSpan? duration)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, teamId, duration);
+    }
 
     public async Task<IAsyncDisposable> Build(
         Guid teamId,
@@ -179,6 +183,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(removed);
         
         return _hubConnection.On(nameof(IRetroHubClient.ActionItemRemoved), removed);
+    }
+
+    public IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
     }
 
     private Task Closed(Exception? ex)

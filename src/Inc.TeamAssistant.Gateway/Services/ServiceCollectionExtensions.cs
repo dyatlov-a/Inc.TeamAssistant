@@ -34,7 +34,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
-            .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
@@ -61,6 +60,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
             
             .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
+            .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
+            .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>();
 
         return services;

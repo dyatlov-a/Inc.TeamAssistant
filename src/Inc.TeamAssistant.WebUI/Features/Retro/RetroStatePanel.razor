@@ -91,6 +91,12 @@
     [Parameter, EditorRequired]
     public EventCallback<TimeSpan?> TimerToggled { get; set; }
     
+    /// <summary>
+    /// Timer changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<TimeSpan?> TimerChanged { get; set; }
+    
     private readonly TimeSpan _timerRefreshInterval = TimeSpan.FromSeconds(1);
     private TimeSpan? _currentTimer;
     private Timer? _timer;
@@ -111,7 +117,7 @@
             _timer = CreateTimer(_timerRefreshInterval);
             _timer.Start();
         }
-        else
+        else if (!CurrentTimer.HasValue)
         {
             _currentTimer = null;
             TryStopTimer();
@@ -143,7 +149,7 @@
             }
         }
         
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(async () => await TimerChanged.InvokeAsync(_currentTimer));
     }
 
     private async Task OnMoveNext()
@@ -173,8 +179,6 @@
     
     private async Task ToggleTimer()
     {
-        TryStopTimer();
-        
         var changedValue = _currentTimer.HasValue
             ? (TimeSpan?)null
             : TimeSpan.FromMinutes(15);

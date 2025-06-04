@@ -7,12 +7,14 @@ public sealed record GetRetroStateResult(
     RetroSessionDto? ActiveSession,
     IReadOnlyCollection<RetroItemDto> Items,
     IReadOnlyCollection<ParticipantDto> Participants,
-    IReadOnlyCollection<ActionItemDto> ActionItems)
+    IReadOnlyCollection<ActionItemDto> ActionItems,
+    TimeSpan? CurrentTimer)
     : IWithEmpty<GetRetroStateResult>
 {
     public static GetRetroStateResult Empty { get; } = new(
         ActiveSession: null,
         Items: [],
         Participants: [],
-        ActionItems: []);
+        ActionItems: [],
+        CurrentTimer: null);
 }

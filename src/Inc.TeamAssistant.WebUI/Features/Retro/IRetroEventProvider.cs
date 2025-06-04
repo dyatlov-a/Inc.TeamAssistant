@@ -20,4 +20,6 @@ public interface IRetroEventProvider
     IDisposable OnActionItemChanged(Func<ActionItemDto, Task> changed);
 
     IDisposable OnActionItemRemoved(Func<Guid, Task> removed);
+    
+    IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed);
 }

@@ -20,4 +20,6 @@ public interface IRetroHubClient
     Task ActionItemChanged(ActionItemDto item);
 
     Task ActionItemRemoved(Guid itemId);
+    
+    Task TimerChanged(TimeSpan? duration);
 }
