@@ -75,4 +75,10 @@
     <data name="ActionItemStageDone" xml:space="preserve">
         <value>Done</value>
     </data>
+    <data name="TimerStart" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="TimerStop" xml:space="preserve">
+        <value>Stop</value>
+    </data>
 </root>

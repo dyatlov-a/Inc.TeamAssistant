@@ -1,3 +1,5 @@
+@implements IDisposable
+
 @inject IStringLocalizer<RetroResources> Localizer
 
 <ConfirmDialog @ref="_confirmDialog">
@@ -15,6 +17,16 @@
             <CaretLeftIcon Size="30px"/> @Localizer["Previous"]
         </a>
     }
+    else if (CanAsFacilitator)
+    {
+        <a
+            href="#"
+            class="retro__link retro__link_active"
+            @onclick="ToggleTimer"
+            @onclick:preventDefault="true">
+            <ClockCheckIcon Size="30px"/> @TimerValue
+        </a>
+    }
     <a
         href="#"
         class="retro__link @MoveNextActiveCss retro__link_right"
@@ -30,24 +42,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public RetroSessionDto? Session { get; set; }
-
-    /// <summary>
-    /// Start retro action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback StartRetro { get; set; }
-    
-    /// <summary>
-    /// Move to next action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<Guid> MoveToNext { get; set; }
-    
-    /// <summary>
-    /// Move to previous action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback MoveToPrevious { get; set; }
     
     /// <summary>
     /// Is prioritizing state.
@@ -67,10 +61,90 @@
     [Parameter, EditorRequired]
     public bool IsFacilitator { get; set; }
     
+    /// <summary>
+    /// Current timer value.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public TimeSpan? CurrentTimer { get; set; }
+    
+    /// <summary>
+    /// Start retro action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback StartRetro { get; set; }
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<Guid> MoveToNext { get; set; }
+    
+    /// <summary>
+    /// Move to previous action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveToPrevious { get; set; }
+    
+    /// <summary>
+    /// Timer toggled action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<TimeSpan?> TimerToggled { get; set; }
+    
+    private readonly TimeSpan _timerRefreshInterval = TimeSpan.FromSeconds(1);
+    private TimeSpan? _currentTimer;
+    private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
     private bool CanMoveToPrevious => IsDiscussing && IsFacilitator;
-    private bool CanMoveNext => Session is null || IsFacilitator;
-    private string MoveNextActiveCss => CanMoveNext ? "retro__link_active" : string.Empty;
+    private bool CanAsFacilitator => Session is null || IsFacilitator;
+    private string MoveNextActiveCss => CanAsFacilitator ? "retro__link_active" : string.Empty;
+    private string TimerValue => _currentTimer.HasValue
+        ? _currentTimer.Value.ToString(@"mm\:ss")
+        : Localizer["TimerStart"];
+
+    protected override void OnParametersSet()
+    {
+        if (!_currentTimer.HasValue && CurrentTimer.HasValue)
+        {
+            _currentTimer = CurrentTimer;
+            
+            _timer = CreateTimer(_timerRefreshInterval);
+            _timer.Start();
+        }
+        else
+        {
+            _currentTimer = null;
+            TryStopTimer();
+        }
+    }
+    
+    private Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new Timer(interval);
+
+        timer.Elapsed += OnTimerTick;
+        timer.AutoReset = true;
+
+        return timer;
+    }
+
+    private void OnTimerTick(object? sender, ElapsedEventArgs e)
+    {
+        if (_currentTimer.HasValue)
+        {
+            var changed = _currentTimer.Value.Subtract(_timerRefreshInterval);
+
+            if (changed > TimeSpan.Zero)
+                _currentTimer = changed;
+            else
+            {
+                _currentTimer = null;
+                TryStopTimer();
+            }
+        }
+        
+        InvokeAsync(StateHasChanged);
+    }
 
     private async Task OnMoveNext()
     {
@@ -96,4 +170,28 @@
         
         await MoveToPrevious.InvokeAsync();
     }
+    
+    private async Task ToggleTimer()
+    {
+        TryStopTimer();
+        
+        var changedValue = _currentTimer.HasValue
+            ? (TimeSpan?)null
+            : TimeSpan.FromMinutes(15);
+
+        await TimerToggled.InvokeAsync(changedValue);
+    }
+
+    private void TryStopTimer()
+    {
+        if (_timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnTimerTick;
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
+
+    public void Dispose() => TryStopTimer();
 }

@@ -11,9 +11,11 @@
                     IsPrioritizing="IsPrioritizing"
                     IsDiscussing="IsDiscussing"
                     IsFacilitator="IsFacilitator"
+                    CurrentTimer="CurrentTimer"
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
-                    MoveToPrevious="ToPreviousMoved" />
+                    MoveToPrevious="ToPreviousMoved"
+                    TimerToggled="TimerToggled" />
                 <RetroParticipants
                     CanVote="CanVote"
                     VotesTotal="VotesTotal"
@@ -191,6 +193,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsCreating { get; set; }
+    
+    /// <summary>
+    /// Current timer value.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public TimeSpan? CurrentTimer { get; set; }
 
     /// <summary>
     /// Action for retry.
@@ -269,6 +277,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback ToPreviousMoved { get; set; }
+    
+    /// <summary>
+    /// Timer toggled action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<TimeSpan?> TimerToggled { get; set; }
 
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;

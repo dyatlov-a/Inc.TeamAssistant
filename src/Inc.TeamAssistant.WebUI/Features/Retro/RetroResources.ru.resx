@@ -75,4 +75,10 @@
     <data name="ActionItemStageNew" xml:space="preserve">
         <value>В работу</value>
     </data>
+    <data name="TimerStart" xml:space="preserve">
+        <value>Запустить</value>
+    </data>
+    <data name="TimerStop" xml:space="preserve">
+        <value>Остановить</value>
+    </data>
 </root>

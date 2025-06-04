@@ -29,6 +29,7 @@
             ActionItems="_actionItems"
             Participants="Participants"
             VotesTotal="6"
+            CurrentTimer="_currentTimer"
             IsCreating="_isCreating"
             Retry="@(() => Load(_state))"
             ItemCreated="OnRetroItemCreated"
@@ -42,7 +43,8 @@
             VoteChanged="OnVoteChanged"
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
-            ToPreviousMoved="OnToPreviousMoved" />
+            ToPreviousMoved="OnToPreviousMoved"
+            TimerToggled="OnTimerToggled" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -62,6 +64,7 @@
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     private RetroSessionDto? _activeSession;
+    private TimeSpan? _currentTimer;
     private bool _isCreating;
     
     private readonly LoadingState _state = LoadingState.Done();
@@ -424,6 +427,11 @@
             .ChangeVotes(data.Votes);
 
         await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, votesByPerson));
+    }
+
+    public async Task OnTimerToggled(TimeSpan? changed)
+    {
+        _currentTimer = changed;
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)
