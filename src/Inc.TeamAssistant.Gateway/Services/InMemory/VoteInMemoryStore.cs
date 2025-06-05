@@ -6,27 +6,36 @@ namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
 internal sealed class VoteInMemoryStore : IVoteStore
 {
-    private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<long, IReadOnlyCollection<VoteTicket>>> _state = new();
+    private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<long, IReadOnlyCollection<VoteTicket>>> _state
+        = new();
 
-    public IReadOnlyCollection<VoteTicket> Get(Guid teamId)
+    public IReadOnlyCollection<VoteTicket> Get(Guid sessionId)
     {
-        return _state.TryGetValue(teamId, out var tickets) ? tickets.SelectMany(t => t.Value).ToArray() : [];
+        var result = _state.TryGetValue(sessionId, out var tickets)
+            ? tickets.SelectMany(t => t.Value).ToArray()
+            : [];
+
+        return result;
     }
 
-    public void Clear(Guid teamId) => _state.TryRemove(teamId, out _);
+    public void Clear(Guid sessionId) => _state.TryRemove(sessionId, out _);
 
-    public IReadOnlyCollection<VoteTicket> Get(Guid teamId, long personId)
+    public IReadOnlyCollection<VoteTicket> Get(Guid sessionId, long personId)
     {
-        var result = _state.TryGetValue(teamId, out var tickets) && tickets.TryGetValue(personId, out var byPerson)
+        var result = _state.TryGetValue(sessionId, out var tickets) && tickets.TryGetValue(personId, out var byPerson)
             ? byPerson
             : [];
         
         return result;
     }
     
-    public void Set(Guid teamId, long personId, IReadOnlyCollection<VoteTicket> votes)
+    public void Set(Guid sessionId, long personId, IReadOnlyCollection<VoteTicket> votes)
     {
-        var tickets = _state.GetOrAdd(teamId, _ => new ConcurrentDictionary<long, IReadOnlyCollection<VoteTicket>>());
+        ArgumentNullException.ThrowIfNull(votes);
+        
+        var tickets = _state.GetOrAdd(
+            sessionId,
+            _ => new ConcurrentDictionary<long, IReadOnlyCollection<VoteTicket>>());
         
         tickets.AddOrUpdate(personId, k => votes, (k, v) => votes);
     }

@@ -123,9 +123,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string Next {
+        internal static string NextHint {
             get {
-                return ResourceManager.GetString("Next", resourceCulture);
+                return ResourceManager.GetString("NextHint", resourceCulture);
             }
         }
         
@@ -135,9 +135,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string Previous {
+        internal static string PreviousHint {
             get {
-                return ResourceManager.GetString("Previous", resourceCulture);
+                return ResourceManager.GetString("PreviousHint", resourceCulture);
             }
         }
         
@@ -168,6 +168,12 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string TimerStop {
             get {
                 return ResourceManager.GetString("TimerStop", resourceCulture);
+            }
+        }
+        
+        internal static string TimerStartHint {
+            get {
+                return ResourceManager.GetString("TimerStartHint", resourceCulture);
             }
         }
     }

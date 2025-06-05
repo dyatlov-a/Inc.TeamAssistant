@@ -57,14 +57,14 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Drag here to change the type</value>
     </data>
-    <data name="Next" xml:space="preserve">
+    <data name="NextHint" xml:space="preserve">
         <value>Next</value>
     </data>
     <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Are you sure you want to delete the card?</value>
     </data>
-    <data name="Previous" xml:space="preserve">
-        <value>Prev</value>
+    <data name="PreviousHint" xml:space="preserve">
+        <value>Previous</value>
     </data>
     <data name="Actions" xml:space="preserve">
         <value>Actions</value>
@@ -80,5 +80,8 @@
     </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Stop</value>
+    </data>
+    <data name="TimerStartHint" xml:space="preserve">
+        <value>Start timer</value>
     </data>
 </root>

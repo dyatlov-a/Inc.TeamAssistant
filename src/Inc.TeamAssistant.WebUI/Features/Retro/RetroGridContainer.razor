@@ -44,8 +44,7 @@
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
             ToPreviousMoved="OnToPreviousMoved"
-            TimerToggled="OnTimerToggled"
-            TimerChanged="@(t => _currentTimer = t)" />
+            TimerChanged="OnTimerChanged" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -436,15 +435,19 @@
             .Single(i => i.Id == data.ItemId)
             .ChangeVotes(data.Votes);
 
-        await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, votesByPerson));
+        await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, _activeSession.Id, votesByPerson));
     }
 
-    public async Task OnTimerToggled(TimeSpan? changed)
+    public async Task OnTimerChanged(TimeSpan? changed)
     {
         if (_eventBuilder is null)
             return;
-        
-        await _eventBuilder.ChangeTimer(TeamId, changed);
+
+        var timerChanged = new [] { _currentTimer, changed }.Count(t => t.HasValue) == 1;
+        if (timerChanged)
+            await _eventBuilder.ChangeTimer(TeamId, changed);
+        else
+            _currentTimer = changed;
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)

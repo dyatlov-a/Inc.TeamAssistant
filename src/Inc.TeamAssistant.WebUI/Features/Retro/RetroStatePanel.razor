@@ -10,29 +10,29 @@
     @if (CanMoveToPrevious)
     {
         <a
+            title="@Localizer["PreviousHint"]"
             href="#"
             class="retro__link retro__link_active"
             @onclick="OnMoveToPrevious"
             @onclick:preventDefault="true">
-            <CaretLeftIcon Size="30px"/> @Localizer["Previous"]
-        </a>
-    }
-    else if (CanAsFacilitator)
-    {
-        <a
-            href="#"
-            class="retro__link retro__link_active"
-            @onclick="ToggleTimer"
-            @onclick:preventDefault="true">
-            <ClockCheckIcon Size="30px"/> @TimerValue
+            <CaretLeftIcon Size="30px"/>
         </a>
     }
     <a
+        title="@Localizer["TimerStartHint"]"
+        href="#"
+        class="retro__link retro__link_active"
+        @onclick="ToggleTimer"
+        @onclick:preventDefault="true">
+        <ClockCheckIcon Size="30px"/> @TimerValue
+    </a>
+    <a
+        title="@Localizer["NextHint"]"
         href="#"
         class="retro__link @MoveNextActiveCss retro__link_right"
         @onclick="OnMoveNext"
         @onclick:preventDefault="true">
-        @Localizer["Next"] <CaretRightIcon Size="30px"/>
+        <CaretRightIcon Size="30px"/>
     </a>
 </div>
 
@@ -66,6 +66,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public TimeSpan? CurrentTimer { get; set; }
+
+    /// <summary>
+    /// Timer interval.
+    /// </summary>
+    [Parameter]
+    public TimeSpan TimerInterval { get; set; } = TimeSpan.FromMinutes(15);
     
     /// <summary>
     /// Start retro action.
@@ -86,12 +92,6 @@
     public EventCallback MoveToPrevious { get; set; }
     
     /// <summary>
-    /// Timer toggled action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<TimeSpan?> TimerToggled { get; set; }
-    
-    /// <summary>
     /// Timer changed action.
     /// </summary>
     [Parameter, EditorRequired]
@@ -102,8 +102,7 @@
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
     private bool CanMoveToPrevious => IsDiscussing && IsFacilitator;
-    private bool CanAsFacilitator => Session is null || IsFacilitator;
-    private string MoveNextActiveCss => CanAsFacilitator ? "retro__link_active" : string.Empty;
+    private string MoveNextActiveCss => Session is null || IsFacilitator ? "retro__link_active" : string.Empty;
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToString(@"mm\:ss")
         : Localizer["TimerStart"];
@@ -181,9 +180,9 @@
     {
         var changedValue = _currentTimer.HasValue
             ? (TimeSpan?)null
-            : TimeSpan.FromMinutes(15);
+            : TimerInterval;
 
-        await TimerToggled.InvokeAsync(changedValue);
+        await TimerChanged.InvokeAsync(changedValue);
     }
 
     private void TryStopTimer()

@@ -57,13 +57,13 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Перетащите сюда, чтобы изменить тип</value>
     </data>
-    <data name="Next" xml:space="preserve">
+    <data name="NextHint" xml:space="preserve">
         <value>Далее</value>
     </data>
     <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Вы действительно желаете удалить карточку?</value>
     </data>
-    <data name="Previous" xml:space="preserve">
+    <data name="PreviousHint" xml:space="preserve">
         <value>Назад</value>
     </data>
     <data name="Actions" xml:space="preserve">
@@ -80,5 +80,8 @@
     </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Остановить</value>
+    </data>
+    <data name="TimerStartHint" xml:space="preserve">
+        <value>Запустить таймер</value>
     </data>
 </root>

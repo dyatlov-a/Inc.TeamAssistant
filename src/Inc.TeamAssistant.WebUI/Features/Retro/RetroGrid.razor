@@ -15,7 +15,6 @@
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
                     MoveToPrevious="ToPreviousMoved"
-                    TimerToggled="TimerToggled"
                     TimerChanged="TimerChanged" />
                 <RetroParticipants
                     CanVote="CanVote"
@@ -278,12 +277,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback ToPreviousMoved { get; set; }
-    
-    /// <summary>
-    /// Timer toggled action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<TimeSpan?> TimerToggled { get; set; }
     
     /// <summary>
     /// Timer changed action.

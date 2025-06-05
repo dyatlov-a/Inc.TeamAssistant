@@ -39,12 +39,12 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
             .MoveToNextState();
         
         var votes = retroSession.State == RetroSessionState.Discussing
-            ? _voteStore.Get(retroSession.TeamId)
+            ? _voteStore.Get(retroSession.Id)
             : [];
 
         await _repository.Update(retroSession, votes, token);
 
-        _voteStore.Clear(retroSession.TeamId);
+        _voteStore.Clear(retroSession.Id);
         
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
     }

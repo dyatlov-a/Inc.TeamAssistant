@@ -32,7 +32,7 @@ internal sealed class SetVotesCommandHandler : IRequestHandler<SetVotesCommand>
             .ToArray();
         var votesCount = votes.Sum(v => v.Vote);
         
-        _voteStore.Set(command.TeamId, currentPerson.Id, votes);
+        _voteStore.Set(command.RetroSessionId, currentPerson.Id, votes);
 
         await _eventSender.VotesChanged(command.TeamId, currentPerson.Id, votesCount);
     }
