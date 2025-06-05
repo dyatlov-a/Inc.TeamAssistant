@@ -15,7 +15,8 @@
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
                     MoveToPrevious="ToPreviousMoved"
-                    TimerChanged="TimerChanged" />
+                    TimerChanged="TimerChanged"
+                    RetroStateChanged="RetroStateChanged" />
                 <RetroParticipants
                     CanVote="CanVote"
                     VotesTotal="VotesTotal"
@@ -283,6 +284,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<TimeSpan?> TimerChanged { get; set; }
+    
+    /// <summary>
+    /// Retro state changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<bool> RetroStateChanged { get; set; }
 
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;

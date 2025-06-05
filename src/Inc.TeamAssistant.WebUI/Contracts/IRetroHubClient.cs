@@ -13,6 +13,8 @@ public interface IRetroHubClient
     
     Task VotesChanged(long personId, int votesCount);
     
+    Task RetroStateChanged(long personId, bool finished);
+    
     Task PersonsChanged(IReadOnlyCollection<Person> persons);
 
     Task ItemMoved(Guid itemId);

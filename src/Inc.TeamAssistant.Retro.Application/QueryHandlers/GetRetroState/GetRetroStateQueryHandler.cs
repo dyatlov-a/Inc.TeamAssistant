@@ -14,19 +14,22 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IOnlinePersonStore _onlinePersonStore;
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
+    private readonly IRetroStage _retroStage;
 
     public GetRetroStateQueryHandler(
         IRetroReader reader,
         IPersonResolver personResolver,
         IOnlinePersonStore onlinePersonStore,
         IVoteStore voteStore,
-        ITimerService timerService)
+        ITimerService timerService,
+        IRetroStage retroStage)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+        _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
@@ -44,7 +47,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             : [];
 
         var votes = session is not null
-            ? _voteStore.Get(session.Id, currentPerson.Id)
+            ? _voteStore.Get(session.Id)
             : [];
         var votesByPerson = votes
             .Where(v => v.PersonId == currentPerson.Id)
@@ -52,6 +55,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
             .ToDictionary(v => v.Key, v => v.Sum(i => i));
+        var retroStages = _retroStage.Get(query.TeamId).ToDictionary(t => t.PersonId, t => t.Finished);
         
         var activeSession = session is not null
             ? RetroSessionConverter.ConvertTo(session)
@@ -64,7 +68,10 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 votesByPerson))
             .ToArray();
         var participants = onlinePersons
-            .Select(op => new ParticipantDto(op, totalVotes.GetValueOrDefault(op.Id, 0)))
+            .Select(op => new RetroParticipantDto(
+                op,
+                totalVotes.GetValueOrDefault(op.Id, 0),
+                retroStages.GetValueOrDefault(op.Id, false)))
             .ToArray();
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)

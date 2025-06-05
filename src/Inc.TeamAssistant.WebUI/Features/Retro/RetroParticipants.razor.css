@@ -8,6 +8,10 @@
 .retro-participant:nth-child(2n - 1){
     background-color: var(--bg-secondary-color);
 }
+.retro-participant__state {
+    float: right;
+    margin: 0 0 .3rem .3rem;
+}
 @media (max-width: 767.98px) {
     .retro-participants {
         display: none;

@@ -6,8 +6,6 @@ public interface IVoteStore
 {
     IReadOnlyCollection<VoteTicket> Get(Guid sessionId);
     
-    IReadOnlyCollection<VoteTicket> Get(Guid sessionId, long personId);
-    
     void Set(Guid sessionId, long personId, IReadOnlyCollection<VoteTicket> votes);
     
     void Clear(Guid sessionId);

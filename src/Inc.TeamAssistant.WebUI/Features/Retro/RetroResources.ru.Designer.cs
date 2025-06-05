@@ -176,5 +176,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("TimerStartHint", resourceCulture);
             }
         }
+        
+        internal static string FinishHint {
+            get {
+                return ResourceManager.GetString("FinishHint", resourceCulture);
+            }
+        }
     }
 }

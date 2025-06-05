@@ -6,7 +6,7 @@ namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 public sealed record GetRetroStateResult(
     RetroSessionDto? ActiveSession,
     IReadOnlyCollection<RetroItemDto> Items,
-    IReadOnlyCollection<ParticipantDto> Participants,
+    IReadOnlyCollection<RetroParticipantDto> Participants,
     IReadOnlyCollection<ActionItemDto> ActionItems,
     TimeSpan? CurrentTimer)
     : IWithEmpty<GetRetroStateResult>

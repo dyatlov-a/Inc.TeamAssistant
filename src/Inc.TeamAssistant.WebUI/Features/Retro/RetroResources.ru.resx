@@ -84,4 +84,7 @@
     <data name="TimerStartHint" xml:space="preserve">
         <value>Запустить таймер</value>
     </data>
+    <data name="FinishHint" xml:space="preserve">
+        <value>Я завершил</value>
+    </data>
 </root>

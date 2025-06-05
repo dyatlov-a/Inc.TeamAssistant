@@ -12,6 +12,8 @@ public interface IRetroEventSender
     Task RetroSessionChanged(RetroSessionDto session);
     
     Task VotesChanged(Guid teamId, long personId, int votesCount);
+    
+    Task RetroStateChanged(Guid teamId, long personId, bool finished);
 
     Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
 

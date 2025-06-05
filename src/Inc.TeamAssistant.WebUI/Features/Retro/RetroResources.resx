@@ -84,4 +84,7 @@
     <data name="TimerStartHint" xml:space="preserve">
         <value>Start timer</value>
     </data>
+    <data name="FinishHint" xml:space="preserve">
+        <value>I am finished</value>
+    </data>
 </root>

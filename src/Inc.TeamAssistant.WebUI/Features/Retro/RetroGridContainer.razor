@@ -44,7 +44,8 @@
             RetroStarted="OnRetroStarted"
             ToNextMoved="OnToNextMoved"
             ToPreviousMoved="OnToPreviousMoved"
-            TimerChanged="OnTimerChanged" />
+            TimerChanged="OnTimerChanged"
+            RetroStateChanged="OnRetroStateChanged" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -101,7 +102,7 @@
         _activeSession = result.ActiveSession;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
-            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote))
+            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished))
             .ToDictionary(p => p.Person.Id);
         _orderedItems = new(result.Items
             .Where(i => !i.ParentId.HasValue)
@@ -187,6 +188,14 @@
                 await InvokeAsync(() =>
                 {
                     ApplyVotes(p, v);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroStateChanged(async (p, s) =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyRetroState(p, s);
                     StateHasChanged();
                 });
             }),
@@ -366,10 +375,16 @@
             participant.ChangeTotalVotes(votesCount);
     }
     
+    private void ApplyRetroState(long personId, bool finished)
+    {
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeFinished(finished);
+    }
+    
     private void ApplyParticipants(IReadOnlyCollection<Person> persons)
     {
         foreach (var person in persons)
-            _participants.TryAdd(person.Id, new ParticipantViewModel(person, 0));
+            _participants.TryAdd(person.Id, new ParticipantViewModel(person, 0, false));
     }
     
     private async Task OnRetroItemRemoved(RetroItemViewModel item)
@@ -436,6 +451,14 @@
             .ChangeVotes(data.Votes);
 
         await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, _activeSession.Id, votesByPerson));
+    }
+
+    private async Task OnRetroStateChanged(bool finished)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.SetRetroState(new SetRetroStateCommand(TeamId, finished));
     }
 
     public async Task OnTimerChanged(TimeSpan? changed)

@@ -6,6 +6,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.WebUI;
@@ -68,6 +69,12 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     
     [HubMethodName(HubDescriptors.RetroHub.SetVotesMethod)]
     public async Task SetVotes(SetVotesCommand command)
+    {
+        await _mediator.Send(command, CancellationToken.None);
+    }
+    
+    [HubMethodName(HubDescriptors.RetroHub.SetRetroStateMethod)]
+    public async Task SetRetroState(SetRetroStateCommand command)
     {
         await _mediator.Send(command, CancellationToken.None);
     }

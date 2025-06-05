@@ -17,17 +17,6 @@ internal sealed class VoteInMemoryStore : IVoteStore
 
         return result;
     }
-
-    public void Clear(Guid sessionId) => _state.TryRemove(sessionId, out _);
-
-    public IReadOnlyCollection<VoteTicket> Get(Guid sessionId, long personId)
-    {
-        var result = _state.TryGetValue(sessionId, out var tickets) && tickets.TryGetValue(personId, out var byPerson)
-            ? byPerson
-            : [];
-        
-        return result;
-    }
     
     public void Set(Guid sessionId, long personId, IReadOnlyCollection<VoteTicket> votes)
     {
@@ -39,4 +28,6 @@ internal sealed class VoteInMemoryStore : IVoteStore
         
         tickets.AddOrUpdate(personId, k => votes, (k, v) => votes);
     }
+    
+    public void Clear(Guid sessionId) => _state.TryRemove(sessionId, out _);
 }

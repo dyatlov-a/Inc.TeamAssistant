@@ -4,7 +4,13 @@
         var votesTotal = VotesTotal - participant.TotalVotes;
         
         <div class="retro-participant">
-            <PersonCard Person="participant.Person"/>
+            @if (participant.Finished)
+            {
+                <div class="retro-participant__state">
+                    <CheckIcon Size="26px"/>
+                </div>
+            }
+            <PersonCard Person="participant.Person" />
             @if (CanVote && votesTotal > 0)
             {
                 <InputVoting

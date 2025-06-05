@@ -7,29 +7,37 @@
 </ConfirmDialog>
 
 <div class="retro-state-panel">
-    @if (CanMoveToPrevious)
-    {
-        <a
-            title="@Localizer["PreviousHint"]"
-            href="#"
-            class="retro__link retro__link_active"
-            @onclick="OnMoveToPrevious"
-            @onclick:preventDefault="true">
-            <CaretLeftIcon Size="30px"/>
-        </a>
-    }
+    <a
+        title="@Localizer["FinishHint"]"
+        href="#"
+        class="retro__link retro__link_active"
+        @onclick="MoveToFinish"
+        @onclick:preventDefault="true">
+        <CheckIcon Size="26px"/>
+    </a>
     <a
         title="@Localizer["TimerStartHint"]"
         href="#"
         class="retro__link retro__link_active"
         @onclick="ToggleTimer"
         @onclick:preventDefault="true">
-        <ClockCheckIcon Size="30px"/> @TimerValue
+        <ClockCheckIcon Size="26px"/> @TimerValue
     </a>
+    @if (CanMoveToPrevious)
+    {
+        <a
+            title="@Localizer["PreviousHint"]"
+            href="#"
+            class="retro__link retro__link_active retro__link_right"
+            @onclick="OnMoveToPrevious"
+            @onclick:preventDefault="true">
+            <CaretLeftIcon Size="30px"/>
+        </a>
+    }
     <a
         title="@Localizer["NextHint"]"
         href="#"
-        class="retro__link @MoveNextActiveCss retro__link_right"
+        class="retro__link @MoveNextActiveCss @MoveNextRightCss"
         @onclick="OnMoveNext"
         @onclick:preventDefault="true">
         <CaretRightIcon Size="30px"/>
@@ -97,11 +105,18 @@
     [Parameter, EditorRequired]
     public EventCallback<TimeSpan?> TimerChanged { get; set; }
     
+    /// <summary>
+    /// Retro state changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<bool> RetroStateChanged { get; set; }
+    
     private readonly TimeSpan _timerRefreshInterval = TimeSpan.FromSeconds(1);
     private TimeSpan? _currentTimer;
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
     private bool CanMoveToPrevious => IsDiscussing && IsFacilitator;
+    private string MoveNextRightCss => CanMoveToPrevious ? string.Empty : "retro__link_right";
     private string MoveNextActiveCss => Session is null || IsFacilitator ? "retro__link_active" : string.Empty;
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToString(@"mm\:ss")
@@ -196,5 +211,7 @@
         }
     }
 
+    private async Task MoveToFinish() => await RetroStateChanged.InvokeAsync(true);
+    
     public void Dispose() => TryStopTimer();
 }
