@@ -61,6 +61,9 @@
     [Parameter]
     public Guid? ItemId { get; set; }
     
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    
     private LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)>? _currentItem;
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
@@ -453,12 +456,19 @@
         await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, _activeSession.Id, votesByPerson));
     }
 
-    private async Task OnRetroStateChanged(bool finished)
+    private async Task OnRetroStateChanged()
     {
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.SetRetroState(new SetRetroStateCommand(TeamId, finished));
+        var authenticationState = await AuthenticationStateTask;
+
+        if (_participants.TryGetValue(authenticationState.User.ToPerson().Id, out var participant))
+        {
+            participant.ChangeFinished(!participant.Finished);
+            
+            await _eventBuilder.SetRetroState(new SetRetroStateCommand(TeamId, participant.Finished));
+        }
     }
 
     public async Task OnTimerChanged(TimeSpan? changed)

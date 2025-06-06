@@ -109,7 +109,7 @@
     /// Retro state changed action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<bool> RetroStateChanged { get; set; }
+    public EventCallback RetroStateChanged { get; set; }
     
     private readonly TimeSpan _timerRefreshInterval = TimeSpan.FromSeconds(1);
     private TimeSpan? _currentTimer;
@@ -211,7 +211,7 @@
         }
     }
 
-    private async Task MoveToFinish() => await RetroStateChanged.InvokeAsync(true);
-    
+    private async Task MoveToFinish() => await RetroStateChanged.InvokeAsync();
+
     public void Dispose() => TryStopTimer();
 }

@@ -289,7 +289,7 @@
     /// Retro state changed action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<bool> RetroStateChanged { get; set; }
+    public EventCallback RetroStateChanged { get; set; }
 
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;
