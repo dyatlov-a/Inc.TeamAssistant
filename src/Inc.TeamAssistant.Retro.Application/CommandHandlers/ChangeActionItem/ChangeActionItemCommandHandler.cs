@@ -20,7 +20,7 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
     public async Task Handle(ChangeActionItemCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
+        
         var item = await _repository.Find(command.Id, token) ?? new ActionItem(
             command.Id,
             command.RetroItemId,
@@ -32,7 +32,7 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
         
         await _repository.Upsert(item, token);
 
-        if (command.TeamIdForNotify.HasValue)
-            await _eventSender.ActionItemChanged(command.TeamIdForNotify.Value, ActionItemConverter.ConvertTo(item));
+        if (command.Notify)
+            await _eventSender.ActionItemChanged(command.TeamId, ActionItemConverter.ConvertTo(item));
     }
 }

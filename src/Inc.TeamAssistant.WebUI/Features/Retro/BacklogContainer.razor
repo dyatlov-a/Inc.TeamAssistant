@@ -51,7 +51,7 @@
     private async Task OnActionItemChanged(ActionItemViewModel item)
     {
         await RequestProcessor.Process(
-            async () => await RetroService.ChangeActionItem(item.ToCommand()),
+            async () => await RetroService.ChangeActionItem(item.ToCommand(TeamId)),
             _state,
             showLoading: false);
     }

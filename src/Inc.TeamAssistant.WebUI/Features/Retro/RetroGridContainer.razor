@@ -351,7 +351,7 @@
         if (_eventBuilder is null)
             return;
         
-        await _eventBuilder.ChangeActionItem(item.ToCommand(TeamId));
+        await _eventBuilder.ChangeActionItem(item.ToCommand(TeamId, notify: true));
     }
 
     private async Task OnActionItemRemoved(ActionItemViewModel item)
