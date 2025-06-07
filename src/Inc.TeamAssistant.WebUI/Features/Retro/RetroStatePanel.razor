@@ -2,8 +2,6 @@
 
 @inject IStringLocalizer<RetroResources> Localizer
 
-<ConfirmDialog @ref="_confirmDialog" />
-
 <div class="retro-state-panel">
     <a
         title="@Localizer["FinishHint"]"
@@ -13,27 +11,24 @@
         @onclick:preventDefault="true">
         <CheckIcon Size="26px"/>
     </a>
-    @if (!IsFacilitator)
-    {
-        <a
-            title="@Localizer["GiveFacilitatorHint"]"
-            href="#"
-            class="retro__link"
-            @onclick="GiveFacilitator"
-            @onclick:preventDefault="true">
-            <UserIcon Size="26px"/>
-        </a>
-    }
     <a
-        title="@Localizer["TimerStartHint"]"
+        title="@Localizer["RaiseHandHint"]"
         href="#"
         class="retro__link"
-        @onclick="ToggleTimer"
+        @onclick="RaiseHand"
         @onclick:preventDefault="true">
-        <ClockCheckIcon Size="26px"/> @TimerValue
+        <UserQuestionIcon Size="26px"/>
     </a>
     @if (IsFacilitator)
     {
+        <a
+            title="@Localizer["TimerStartHint"]"
+            href="#"
+            class="retro__link"
+            @onclick="ToggleTimer"
+            @onclick:preventDefault="true">
+            <ClockCheckIcon Size="26px"/> @TimerValue
+        </a>
         if (IsDiscussing)
         {
             <a
@@ -54,7 +49,19 @@
             <CaretRightIcon Size="30px"/>
         </a>
     }
+    else
+    {
+        <a
+            title="@Localizer["GiveFacilitatorHint"]"
+            href="#"
+            class="retro__link"
+            @onclick="GiveFacilitator"
+            @onclick:preventDefault="true">
+            <UserIcon Size="26px"/>
+        </a>
+    }
 </div>
+<ConfirmDialog @ref="_confirmDialog" />
 
 @code {
     /// <summary>
@@ -124,10 +131,16 @@
     public EventCallback<TimeSpan?> TimerChanged { get; set; }
     
     /// <summary>
-    /// Retro state changed action.
+    /// Finish action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback RetroStateChanged { get; set; }
+    public EventCallback Finished { get; set; }
+    
+    /// <summary>
+    /// Hand raised action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback HandRaised { get; set; }
     
     /// <summary>
     /// Facilitator given action.
@@ -239,7 +252,8 @@
             await FacilitatorGiven.InvokeAsync();
     }
 
-    private async Task MoveToFinish() => await RetroStateChanged.InvokeAsync();
+    private async Task MoveToFinish() => await Finished.InvokeAsync();
+    private async Task RaiseHand() => await HandRaised.InvokeAsync();
 
     public void Dispose() => TryStopTimer();
 }

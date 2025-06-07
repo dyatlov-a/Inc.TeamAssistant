@@ -93,4 +93,10 @@
     <data name="GiveFacilitatorHint" xml:space="preserve">
         <value>Request permission to facilitate</value>
     </data>
+    <data name="RaiseHandHint" xml:space="preserve">
+        <value>Raise hand</value>
+    </data>
+    <data name="LowerHandHint" xml:space="preserve">
+        <value>Lower hand</value>
+    </data>
 </root>

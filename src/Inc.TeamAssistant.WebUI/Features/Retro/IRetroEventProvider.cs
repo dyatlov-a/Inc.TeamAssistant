@@ -13,7 +13,7 @@ public interface IRetroEventProvider
     
     IDisposable OnVotesChanged(Func<long, int, Task> changed);
     
-    IDisposable OnRetroStateChanged(Func<long, bool, Task> changed);
+    IDisposable OnRetroStateChanged(Func<long, bool, bool, Task> changed);
     
     IDisposable OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed);
     

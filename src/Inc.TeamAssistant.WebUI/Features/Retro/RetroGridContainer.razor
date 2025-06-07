@@ -46,8 +46,10 @@
             ToNextMoved="OnToNextMoved"
             ToPreviousMoved="OnToPreviousMoved"
             TimerChanged="OnTimerChanged"
-            RetroStateChanged="OnRetroStateChanged"
-            FacilitatorGiven="FacilitatorGiven" />
+            Finished="OnFinished"
+            HandRaised="OnHandRaised"
+            FacilitatorGiven="FacilitatorGiven"
+            HandLowered="OnHandLowered" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -109,7 +111,7 @@
         _facilitatorId = result.FacilitatorId;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
-            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished))
+            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished, p.HandRaised))
             .ToDictionary(p => p.Person.Id);
         _orderedItems = new(result.Items
             .Where(i => !i.ParentId.HasValue)
@@ -120,7 +122,9 @@
 
         if (IsDiscussing && _currentItem is null)
             _currentItem = ItemId.HasValue ? _orderedItems.Find(i => i.Item.Id == ItemId.Value) : _orderedItems.First;
-        var items = _currentItem is not null ? _currentItem.Value.Children.Append(_currentItem.Value.Item) : result.Items;
+        var items = _currentItem is not null
+            ? _currentItem.Value.Children.Append(_currentItem.Value.Item)
+            : result.Items;
         
         _items.Clear();
         foreach (var item in items)
@@ -198,11 +202,11 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroStateChanged(async (p, s) =>
+            b => b.OnRetroStateChanged(async (p, f, hr) =>
             {
                 await InvokeAsync(() =>
                 {
-                    ApplyRetroState(p, s);
+                    ApplyRetroState(p, f, hr);
                     StateHasChanged();
                 });
             }),
@@ -379,7 +383,8 @@
     {
         var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
         if (viewActionItem is null)
-            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).Apply(changed));
+            _actionItems.Add(
+                new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).Apply(changed));
         else
             viewActionItem.Apply(changed);
     }
@@ -390,16 +395,20 @@
             participant.ChangeTotalVotes(votesCount);
     }
     
-    private void ApplyRetroState(long personId, bool finished)
+    private void ApplyRetroState(long personId, bool finished, bool handRaised)
     {
         if (_participants.TryGetValue(personId, out var participant))
-            participant.ChangeFinished(finished);
+            participant.ChangeFinished(finished).ChangeHandRaised(handRaised);
     }
     
     private void ApplyParticipants(IReadOnlyCollection<Person> persons)
     {
         foreach (var person in persons)
-            _participants.TryAdd(person.Id, new ParticipantViewModel(person, 0, false));
+            _participants.TryAdd(person.Id, new ParticipantViewModel(
+                person,
+                totalVotes: 0,
+                finished: false,
+                handRaised: false));
     }
     
     private async Task OnRetroItemRemoved(RetroItemViewModel item)
@@ -468,19 +477,37 @@
         await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, _activeSession.Id, votesByPerson));
     }
 
-    private async Task OnRetroStateChanged()
+    private async Task OnFinished()
     {
         if (_eventBuilder is null)
             return;
 
         var authenticationState = await AuthenticationStateTask;
+        var currentUser = authenticationState.User.ToPerson();
 
-        if (_participants.TryGetValue(authenticationState.User.ToPerson().Id, out var participant))
-        {
-            participant.ChangeFinished(!participant.Finished);
-            
-            await _eventBuilder.SetRetroState(new SetRetroStateCommand(TeamId, participant.Finished));
-        }
+        if (_participants.TryGetValue(currentUser.Id, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeFinished(!participant.Finished).ToCommand(TeamId));
+    }
+
+    private async Task OnHandRaised()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var currentUser = authenticationState.User.ToPerson();
+
+        if (_participants.TryGetValue(currentUser.Id, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(!participant.HandRaised).ToCommand(TeamId));
+    }
+
+    private async Task OnHandLowered(long personId)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        if (_participants.TryGetValue(personId, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(TeamId));
     }
 
     public async Task OnTimerChanged(TimeSpan? changed)

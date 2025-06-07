@@ -59,7 +59,9 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
             .ToDictionary(v => v.Key, v => v.Sum(i => i));
-        var retroStages = _retroStage.Get(query.TeamId).ToDictionary(t => t.PersonId, t => t.Finished);
+        var retroStage = _retroStage.Get(query.TeamId);
+        var finishedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.Finished);
+        var handRaisedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.HandRaised);
         
         var activeSession = session is not null
             ? RetroSessionConverter.ConvertTo(session)
@@ -75,7 +77,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             .Select(op => new RetroParticipantDto(
                 op,
                 totalVotes.GetValueOrDefault(op.Id, 0),
-                retroStages.GetValueOrDefault(op.Id, false)))
+                finishedLookup.GetValueOrDefault(op.Id, false),
+                handRaisedLookup.GetValueOrDefault(op.Id, false)))
             .ToArray();
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)

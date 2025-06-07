@@ -9,5 +9,8 @@ internal sealed class SetRetroStateCommandValidator : AbstractValidator<SetRetro
     {
         RuleFor(c => c.TeamId)
             .NotEmpty();
+        
+        RuleFor(c => c.PersonId)
+            .NotEmpty();
     }
 }

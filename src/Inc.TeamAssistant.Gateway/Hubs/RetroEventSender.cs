@@ -44,9 +44,9 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.Group(teamId.ToString("N")).VotesChanged(personId, votesCount);
     }
 
-    public async Task RetroStateChanged(Guid teamId, long personId, bool finished)
+    public async Task RetroStateChanged(Guid teamId, long personId, bool finished, bool handRaised)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).RetroStateChanged(personId, finished);
+        await _hubContext.Clients.Group(teamId.ToString("N")).RetroStateChanged(personId, finished, handRaised);
     }
 
     public async Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons)

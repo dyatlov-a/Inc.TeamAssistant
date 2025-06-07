@@ -194,5 +194,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("GiveFacilitatorHint", resourceCulture);
             }
         }
+        
+        internal static string RaiseHandHint {
+            get {
+                return ResourceManager.GetString("RaiseHandHint", resourceCulture);
+            }
+        }
+        
+        internal static string LowerHandHint {
+            get {
+                return ResourceManager.GetString("LowerHandHint", resourceCulture);
+            }
+        }
     }
 }

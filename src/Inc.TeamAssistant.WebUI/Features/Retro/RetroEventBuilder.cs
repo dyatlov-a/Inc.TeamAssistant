@@ -173,7 +173,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.VotesChanged), changed);
     }
 
-    public IDisposable OnRetroStateChanged(Func<long, bool, Task> changed)
+    public IDisposable OnRetroStateChanged(Func<long, bool, bool, Task> changed)
     {
         ArgumentNullException.ThrowIfNull(changed);
 		

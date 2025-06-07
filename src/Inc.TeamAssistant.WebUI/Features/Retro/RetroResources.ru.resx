@@ -93,4 +93,10 @@
     <data name="ConfirmGiveFacilitator" xml:space="preserve">
         <value>Вы уверены, что хотите стать фасилитатором?</value>
     </data>
+    <data name="RaiseHandHint" xml:space="preserve">
+        <value>Поднять руку</value>
+    </data>
+    <data name="LowerHandHint" xml:space="preserve">
+        <value>Опустить руку</value>
+    </data>
 </root>

@@ -13,7 +13,7 @@ public interface IRetroHubClient
     
     Task VotesChanged(long personId, int votesCount);
     
-    Task RetroStateChanged(long personId, bool finished);
+    Task RetroStateChanged(long personId, bool finished, bool handRaised);
     
     Task PersonsChanged(IReadOnlyCollection<Person> persons);
 

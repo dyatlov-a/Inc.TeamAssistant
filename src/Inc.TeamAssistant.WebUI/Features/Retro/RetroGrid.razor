@@ -16,12 +16,15 @@
                     MoveToNext="ToNextMoved"
                     MoveToPrevious="ToPreviousMoved"
                     TimerChanged="TimerChanged"
-                    RetroStateChanged="RetroStateChanged"
+                    Finished="Finished"
+                    HandRaised="HandRaised"
                     FacilitatorGiven="FacilitatorGiven" />
                 <RetroParticipants
                     CanVote="CanVote"
                     VotesTotal="VotesTotal"
-                    Participants="Participants"/>
+                    Participants="Participants"
+                    IsFacilitator="IsFacilitator"
+                    HandLowered="HandLowered" />
             </div>
         </div>
         <div class="retro-content">
@@ -293,16 +296,28 @@
     public EventCallback<TimeSpan?> TimerChanged { get; set; }
     
     /// <summary>
-    /// Retro state changed action.
+    /// Finished action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback RetroStateChanged { get; set; }
+    public EventCallback Finished { get; set; }
+    
+    /// <summary>
+    /// Hand raised action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback HandRaised { get; set; }
     
     /// <summary>
     /// Facilitator given action.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback FacilitatorGiven { get; set; }
+    
+    /// <summary>
+    /// Hand raised event callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<long> HandLowered { get; set; }
 
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;
