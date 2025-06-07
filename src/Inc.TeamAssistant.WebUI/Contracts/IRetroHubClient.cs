@@ -24,4 +24,6 @@ public interface IRetroHubClient
     Task ActionItemRemoved(Guid itemId);
     
     Task TimerChanged(TimeSpan? duration);
+    
+    Task FacilitatorChanged(long facilitatorId);
 }

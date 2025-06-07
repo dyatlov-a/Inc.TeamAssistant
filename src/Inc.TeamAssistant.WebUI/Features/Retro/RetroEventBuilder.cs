@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -115,6 +116,13 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     {
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, teamId, duration);
     }
+    
+    public async Task GiveFacilitator(GiveFacilitatorCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.GiveFacilitatorMethod, command);
+    }
 
     public async Task<IAsyncDisposable> Build(
         Guid teamId,
@@ -205,6 +213,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(changed);
         
         return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
+    }
+
+    public IDisposable OnFacilitatorChanged(Func<long, Task> changed)
+    {
+        return _hubConnection.On(nameof(IRetroHubClient.FacilitatorChanged), changed);
     }
 
     private Task Closed(Exception? ex)

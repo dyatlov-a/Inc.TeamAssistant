@@ -87,4 +87,10 @@
     <data name="FinishHint" xml:space="preserve">
         <value>I am finished</value>
     </data>
+    <data name="ConfirmGiveFacilitator" xml:space="preserve">
+        <value>Are you sure you want to become a facilitator?</value>
+    </data>
+    <data name="GiveFacilitatorHint" xml:space="preserve">
+        <value>Request permission to facilitate</value>
+    </data>
 </root>

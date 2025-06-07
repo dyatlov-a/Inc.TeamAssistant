@@ -63,7 +63,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>()
-            .AddSingleton<IRetroStage, RetroStageInMemory>();
+            .AddSingleton<IRetroStage, RetroStageInMemory>()
+            .AddSingleton<IFacilitatorProvider, FacilitatorInMemoryProvider>();
 
         return services;
 	}

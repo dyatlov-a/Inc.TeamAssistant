@@ -46,4 +46,11 @@ public sealed class RetroSession
 
         return this;
     }
+    
+    public RetroSession ChangeFacilitator(long personId)
+    {
+        FacilitatorId = personId;
+        
+        return this;
+    }
 }

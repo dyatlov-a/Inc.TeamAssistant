@@ -15,6 +15,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
     private readonly IRetroStage _retroStage;
+    private readonly IFacilitatorProvider _facilitatorProvider;
 
     public GetRetroStateQueryHandler(
         IRetroReader reader,
@@ -22,7 +23,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IOnlinePersonStore onlinePersonStore,
         IVoteStore voteStore,
         ITimerService timerService,
-        IRetroStage retroStage)
+        IRetroStage retroStage,
+        IFacilitatorProvider facilitatorProvider)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
@@ -30,6 +32,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
         _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
+        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
@@ -45,6 +48,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var actions = session is not null
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
+        var facilitatorId = _facilitatorProvider.Get(query.TeamId) ?? session?.FacilitatorId;
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)
@@ -78,6 +82,12 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             .ToArray();
         var currentTimer = _timerService.TryGetValue(query.TeamId);
         
-        return new GetRetroStateResult(activeSession, retroItems, participants, actionItems, currentTimer);
+        return new GetRetroStateResult(
+            activeSession,
+            retroItems,
+            participants,
+            actionItems,
+            currentTimer,
+            facilitatorId);
     }
 }

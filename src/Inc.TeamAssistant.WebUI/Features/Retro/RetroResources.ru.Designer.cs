@@ -182,5 +182,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("FinishHint", resourceCulture);
             }
         }
+        
+        internal static string GiveFacilitatorHint {
+            get {
+                return ResourceManager.GetString("GiveFacilitatorHint", resourceCulture);
+            }
+        }
+        
+        internal static string ConfirmGiveFacilitator {
+            get {
+                return ResourceManager.GetString("ConfirmGiveFacilitator", resourceCulture);
+            }
+        }
     }
 }

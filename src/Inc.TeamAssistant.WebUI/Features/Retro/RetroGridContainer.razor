@@ -25,6 +25,7 @@
             Columns="Columns"
             CurrentUserId="context.User.ToPerson().Id"
             Session="_activeSession"
+            FacilitatorId="_facilitatorId"
             Items="_items"
             ActionItems="_actionItems"
             Participants="Participants"
@@ -45,7 +46,8 @@
             ToNextMoved="OnToNextMoved"
             ToPreviousMoved="OnToPreviousMoved"
             TimerChanged="OnTimerChanged"
-            RetroStateChanged="OnRetroStateChanged" />
+            RetroStateChanged="OnRetroStateChanged"
+            FacilitatorGiven="FacilitatorGiven" />
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
@@ -68,6 +70,7 @@
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     private RetroSessionDto? _activeSession;
+    private long? _facilitatorId;
     private TimeSpan? _currentTimer;
     private bool _isCreating;
     
@@ -103,6 +106,7 @@
             .ToLookup(i => i.ParentId!.Value);
         
         _activeSession = result.ActiveSession;
+        _facilitatorId = result.FacilitatorId;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished))
@@ -246,6 +250,14 @@
                 await InvokeAsync(() =>
                 {
                     _currentTimer = t;
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnFacilitatorChanged(async f =>
+            {
+                await InvokeAsync(() =>
+                {
+                    _facilitatorId = f;
                     StateHasChanged();
                 });
             })
@@ -481,6 +493,14 @@
             await _eventBuilder.ChangeTimer(TeamId, changed);
         else
             _currentTimer = changed;
+    }
+
+    public async Task FacilitatorGiven()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.GiveFacilitator(new GiveFacilitatorCommand(TeamId, _activeSession?.Id));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)

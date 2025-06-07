@@ -1,6 +1,7 @@
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
+using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
@@ -108,6 +109,14 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
             _timerService.Stop(teamId);
 
         await Clients.Group(teamId.ToString("N")).TimerChanged(duration);
+    }
+    
+    [HubMethodName(HubDescriptors.RetroHub.GiveFacilitatorMethod)]
+    public async Task GiveFacilitator(GiveFacilitatorCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)

@@ -13,7 +13,6 @@ internal static class RetroSessionConverter
             retroSession.Id,
             retroSession.TeamId,
             retroSession.Created,
-            retroSession.State.ToString(),
-            retroSession.FacilitatorId);
+            retroSession.State.ToString());
     }
 }

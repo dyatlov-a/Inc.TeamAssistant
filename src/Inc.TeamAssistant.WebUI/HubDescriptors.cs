@@ -23,5 +23,6 @@ public static class HubDescriptors
         public const string ChangeActionItemMethod = "ChangeActionItem";
         public const string RemoveActionItemMethod = "RemoveActionItem";
         public const string ChangeTimerMethod = "ChangeTimer";
+        public const string GiveFacilitatorMethod = "GiveFacilitator";
     }
 }

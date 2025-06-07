@@ -2,46 +2,58 @@
 
 @inject IStringLocalizer<RetroResources> Localizer
 
-<ConfirmDialog @ref="_confirmDialog">
-    @Localizer["ConfirmMoveToDiscussing"]
-</ConfirmDialog>
+<ConfirmDialog @ref="_confirmDialog" />
 
 <div class="retro-state-panel">
     <a
         title="@Localizer["FinishHint"]"
         href="#"
-        class="retro__link retro__link_active"
+        class="retro__link"
         @onclick="MoveToFinish"
         @onclick:preventDefault="true">
         <CheckIcon Size="26px"/>
     </a>
+    @if (!IsFacilitator)
+    {
+        <a
+            title="@Localizer["GiveFacilitatorHint"]"
+            href="#"
+            class="retro__link"
+            @onclick="GiveFacilitator"
+            @onclick:preventDefault="true">
+            <UserIcon Size="26px"/>
+        </a>
+    }
     <a
         title="@Localizer["TimerStartHint"]"
         href="#"
-        class="retro__link retro__link_active"
+        class="retro__link"
         @onclick="ToggleTimer"
         @onclick:preventDefault="true">
         <ClockCheckIcon Size="26px"/> @TimerValue
     </a>
-    @if (CanMoveToPrevious)
+    @if (IsFacilitator)
     {
+        if (IsDiscussing)
+        {
+            <a
+                title="@Localizer["PreviousHint"]"
+                href="#"
+                class="retro__link retro__link_right"
+                @onclick="OnMoveToPrevious"
+                @onclick:preventDefault="true">
+                <CaretLeftIcon Size="30px"/>
+            </a>
+        }
         <a
-            title="@Localizer["PreviousHint"]"
+            title="@Localizer["NextHint"]"
             href="#"
-            class="retro__link retro__link_active retro__link_right"
-            @onclick="OnMoveToPrevious"
+            class="retro__link @MoveNextRightCss"
+            @onclick="OnMoveNext"
             @onclick:preventDefault="true">
-            <CaretLeftIcon Size="30px"/>
+            <CaretRightIcon Size="30px"/>
         </a>
     }
-    <a
-        title="@Localizer["NextHint"]"
-        href="#"
-        class="retro__link @MoveNextActiveCss @MoveNextRightCss"
-        @onclick="OnMoveNext"
-        @onclick:preventDefault="true">
-        <CaretRightIcon Size="30px"/>
-    </a>
 </div>
 
 @code {
@@ -82,6 +94,12 @@
     public TimeSpan TimerInterval { get; set; } = TimeSpan.FromMinutes(15);
     
     /// <summary>
+    /// Timer refresh interval.
+    /// </summary>
+    [Parameter]
+    public TimeSpan TimerRefreshInterval { get; set; } = TimeSpan.FromSeconds(1);
+    
+    /// <summary>
     /// Start retro action.
     /// </summary>
     [Parameter, EditorRequired]
@@ -111,13 +129,16 @@
     [Parameter, EditorRequired]
     public EventCallback RetroStateChanged { get; set; }
     
-    private readonly TimeSpan _timerRefreshInterval = TimeSpan.FromSeconds(1);
+    /// <summary>
+    /// Facilitator given action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback FacilitatorGiven { get; set; }
+    
     private TimeSpan? _currentTimer;
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
-    private bool CanMoveToPrevious => IsDiscussing && IsFacilitator;
-    private string MoveNextRightCss => CanMoveToPrevious ? string.Empty : "retro__link_right";
-    private string MoveNextActiveCss => Session is null || IsFacilitator ? "retro__link_active" : string.Empty;
+    private string MoveNextRightCss => IsDiscussing ? string.Empty : "retro__link_right";
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToString(@"mm\:ss")
         : Localizer["TimerStart"];
@@ -128,7 +149,7 @@
         {
             _currentTimer = CurrentTimer;
             
-            _timer = CreateTimer(_timerRefreshInterval);
+            _timer = CreateTimer(TimerRefreshInterval);
             _timer.Start();
         }
         else if (!CurrentTimer.HasValue)
@@ -152,7 +173,7 @@
     {
         if (_currentTimer.HasValue)
         {
-            var changed = _currentTimer.Value.Subtract(_timerRefreshInterval);
+            var changed = _currentTimer.Value.Subtract(TimerRefreshInterval);
 
             if (changed > TimeSpan.Zero)
                 _currentTimer = changed;
@@ -164,6 +185,17 @@
         }
         
         InvokeAsync(async () => await TimerChanged.InvokeAsync(_currentTimer));
+    }
+    
+    private void TryStopTimer()
+    {
+        if (_timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnTimerTick;
+            _timer.Dispose();
+            _timer = null;
+        }
     }
 
     private async Task OnMoveNext()
@@ -177,7 +209,8 @@
         if (!IsFacilitator)
             return;
             
-        if (IsPrioritizing && _confirmDialog is not null && !await _confirmDialog.IsConfirmed())
+        if (IsPrioritizing && _confirmDialog is not null &&
+            !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
             return;
         
         await MoveToNext.InvokeAsync(Session.Id);
@@ -199,16 +232,11 @@
 
         await TimerChanged.InvokeAsync(changedValue);
     }
-
-    private void TryStopTimer()
+    
+    private async Task GiveFacilitator()
     {
-        if (_timer is not null)
-        {
-            _timer.Stop();
-            _timer.Elapsed -= OnTimerTick;
-            _timer.Dispose();
-            _timer = null;
-        }
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed(Localizer["ConfirmGiveFacilitator"]))
+            await FacilitatorGiven.InvokeAsync();
     }
 
     private async Task MoveToFinish() => await RetroStateChanged.InvokeAsync();

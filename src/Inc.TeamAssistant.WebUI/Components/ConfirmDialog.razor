@@ -6,7 +6,14 @@
     <div class="confirm-dialog">
         <div class="confirm-dialog__body">
             <div class="confirm-dialog__content">
-                @ChildContent
+                @if (string.IsNullOrWhiteSpace(_message))
+                {
+                    @ChildContent
+                }
+                else
+                {
+                    @_message
+                }
             </div>
             <div class="confirm-dialog__actions">
                 <Button OnClick="() => Close(true)">@Localizer["Yes"]</Button>
@@ -20,14 +27,16 @@
     /// <summary>
     /// HTML content
     /// </summary>
-    [Parameter, EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
-    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? _message;
     private bool _isOpen;
     private TaskCompletionSource<bool>? _state;
 
-    public Task<bool> IsConfirmed()
+    public Task<bool> IsConfirmed(string? message = null)
     {
+        _message = message;
         _isOpen = true;
         
         StateHasChanged();
@@ -40,6 +49,7 @@
     private void Close(bool confirmed)
     {
         _isOpen = false;
+        _message = null;
         
         _state?.SetResult(confirmed);
     }

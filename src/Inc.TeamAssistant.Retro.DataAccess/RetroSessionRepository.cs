@@ -132,13 +132,15 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             """
             UPDATE retro.retro_sessions AS rs
             SET
-                state = @state
+                state = @state,
+                facilitator_id = @facilitator_id
             WHERE rs.id = @id;
             """,
             new
             {
                 id = retro.Id,
-                state = retro.State
+                state = retro.State,
+                facilitator_id = retro.FacilitatorId
             },
             flags: CommandFlags.None,
             cancellationToken: token);

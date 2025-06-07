@@ -24,4 +24,6 @@ public interface IRetroEventProvider
     IDisposable OnActionItemRemoved(Func<Guid, Task> removed);
     
     IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed);
+    
+    IDisposable OnFacilitatorChanged(Func<long, Task> changed);
 }
