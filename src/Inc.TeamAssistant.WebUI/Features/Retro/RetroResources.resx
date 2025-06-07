@@ -99,4 +99,13 @@
     <data name="LowerHandHint" xml:space="preserve">
         <value>Lower hand</value>
     </data>
+    <data name="RetroAssessmentTitle" xml:space="preserve">
+        <value>Rate the time invested!</value>
+    </data>
+    <data name="RetroAssessmentQuestion" xml:space="preserve">
+        <value>Was the retro worth our time?</value>
+    </data>
+    <data name="RetroAssessmentValueHint" xml:space="preserve">
+        <value>Rate the retro 1-5.</value>
+    </data>
 </root>

@@ -206,5 +206,23 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("LowerHandHint", resourceCulture);
             }
         }
+        
+        internal static string RetroAssessmentQuestion {
+            get {
+                return ResourceManager.GetString("RetroAssessmentQuestion", resourceCulture);
+            }
+        }
+        
+        internal static string RetroAssessmentTitle {
+            get {
+                return ResourceManager.GetString("RetroAssessmentTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RetroAssessmentValueHint {
+            get {
+                return ResourceManager.GetString("RetroAssessmentValueHint", resourceCulture);
+            }
+        }
     }
 }

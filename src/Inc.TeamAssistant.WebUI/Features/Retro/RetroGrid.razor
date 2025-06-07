@@ -85,7 +85,7 @@
                                                                 CanVote="CanVote"
                                                                 Value="item.Votes"
                                                                 ValueExpression="@(() => item.Votes)"
-                                                                ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
+                                                                ValueChanged="@((int v) => SendVotesChanged(item.Id, v))" />
                                                         }
                                                     </RetroItem>
 
@@ -101,7 +101,7 @@
                                                             ItemRemoved="ItemRemoved"
                                                             ItemMoved="@(_ => { })"
                                                             Value="child"
-                                                            ValueChanged="_ => { }"/>
+                                                            ValueChanged="_ => { }" />
                                                     }
                                                 </div>
                                             }
@@ -130,7 +130,7 @@
                                                     Value="actionItem"
                                                     DebounceDelay="DebounceDelay"
                                                     ValueChanged="SendActionItemChanged"
-                                                    ItemRemoved="SendActionItemRemoved"/>
+                                                    ItemRemoved="SendActionItemRemoved" />
                                             }
                                         </div>
                                     </Content>

@@ -1,0 +1,27 @@
+.retro-assessment {
+    margin: 60px 0 40px 0;
+}
+.retro-assessment__body {
+    width: 400px;
+    margin: 0 auto;
+}
+.retro-assessment__title {
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+}
+.assessment-session__text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+    margin-top: 10px;
+}
+.retro-assessment__value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+}
+@media (max-width: 479.98px) {
+    .retro-assessment__body {
+        width: 100%;
+    }
+}

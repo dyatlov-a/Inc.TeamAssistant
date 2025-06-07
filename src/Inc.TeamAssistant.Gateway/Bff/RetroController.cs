@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
+using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -57,6 +58,22 @@ public sealed class RetroController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
 
         await _retroService.ChangeActionItem(command, CancellationToken.None);
+        
+        return Ok();
+    }
+    
+    [HttpGet("{sessionId:Guid}/assessments")]
+    public async Task<IActionResult> GetAssessments(Guid sessionId, CancellationToken token)
+    {
+        return Ok(await _retroService.GetRetroAssessment(sessionId, token));
+    }
+    
+    [HttpPut("assessments")]
+    public async Task<IActionResult> SetAssessment([FromBody]SetRetroAssessmentCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _retroService.SetRetroAssessment(command, CancellationToken.None);
         
         return Ok();
     }

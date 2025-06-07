@@ -1,7 +1,9 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
+using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -42,6 +44,18 @@ internal sealed class RetroService : IRetroService
     }
 
     public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, token);
+    }
+
+    public async Task<GetRetroAssessmentResult> GetRetroAssessment(Guid sessionId, CancellationToken token)
+    {
+        return await _mediator.Send(new GetRetroAssessmentQuery(sessionId), token);
+    }
+
+    public async Task SetRetroAssessment(SetRetroAssessmentCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         

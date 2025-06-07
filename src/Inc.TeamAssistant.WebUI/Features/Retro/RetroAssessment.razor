@@ -1,0 +1,58 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div class="retro-assessment">
+    <div class="retro-assessment__container">
+        <div class="retro-assessment__body">
+            <h1 class="retro-assessment__title">@Localizer["RetroAssessmentTitle"]</h1>
+            <p class="assessment-session__text">
+                @Localizer["RetroAssessmentQuestion"]
+                <br/>
+                @Localizer["RetroAssessmentValueHint"]
+            </p>
+            <Loading State="State" Retry="Retry">
+                <div class="retro-assessment__value">
+                    <InputVoting
+                        VotesTotal="VotesCount"
+                        RemainingVotes="VotesCount"
+                        CanVote="true"
+                        Value="Value"
+                        ValueExpression="@(() => Value)"
+                        ValueChanged="ValueChanged"/>
+                </div>
+            </Loading>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    /// <summary>
+    /// State of the loading operation.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Value of the assessment.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int Value { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Votes count for the assessment.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int VotesCount { get; set; }
+    
+    /// <summary>
+    /// Value changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<int> ValueChanged { get; set; }
+}

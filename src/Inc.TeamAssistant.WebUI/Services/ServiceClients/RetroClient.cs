@@ -2,8 +2,10 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
+using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -62,6 +64,27 @@ internal sealed class RetroClient : IRetroService
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PutAsJsonAsync("retro/actions", command, token);
+
+        await response.HandleValidation(token);
+    }
+
+    public async Task<GetRetroAssessmentResult> GetRetroAssessment(Guid sessionId, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetRetroAssessmentResult>(
+            $"retro/{sessionId:N}/assessments",
+            token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
+    }
+
+    public async Task SetRetroAssessment(SetRetroAssessmentCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var response = await _client.PutAsJsonAsync("retro/assessments", command, token);
 
         await response.HandleValidation(token);
     }

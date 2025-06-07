@@ -1,0 +1,47 @@
+@page "/retro-assessment/{SessionId:guid}"
+@page "/ru/retro-assessment/{SessionId:guid}"
+@page "/en/retro-assessment/{SessionId:guid}"
+
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+
+@attribute [Authorize]
+
+<MetaDataModule />
+
+<RetroAssessment
+    State="_state"
+    Retry="Load"
+    Value="_value"
+    VotesCount="5"
+    ValueChanged="OnValueChanged" />
+
+@code {
+    [Parameter]
+    public Guid SessionId { get; set; }
+
+    private readonly LoadingState _state = LoadingState.Done();
+    private int _value;
+
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetRetroAssessment(SessionId),
+            nameof(RetroAssessmentContainer),
+            _state);
+
+        _value = result.Value;
+    }
+    
+    private async Task OnValueChanged(int value)
+    {
+        _value = value;
+        
+        await RequestProcessor.Process(
+            async () => await RetroService.SetRetroAssessment(new SetRetroAssessmentCommand(SessionId, _value)),
+            _state,
+            showLoading: false);
+    }
+}

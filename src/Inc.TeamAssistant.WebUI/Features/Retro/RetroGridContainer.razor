@@ -288,13 +288,13 @@
                 
                 await MoveItem(_currentItem.Next);
             }
-            else
+            else if (_activeSession?.Id is not null)
             {
                 await RequestProcessor.Process(
                     () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
                     _state);
 
-                await NavRouter.MoveToRoute($"backlog/{TeamId}");
+                await NavRouter.MoveToRoute($"retro-assessment/{_activeSession.Id:N}");
             }
         }
         else

@@ -99,4 +99,13 @@
     <data name="LowerHandHint" xml:space="preserve">
         <value>Опустить руку</value>
     </data>
+    <data name="RetroAssessmentQuestion" xml:space="preserve">
+        <value>Стоило ли это ретро нашего времени?</value>
+    </data>
+    <data name="RetroAssessmentTitle" xml:space="preserve">
+        <value>Оцените потраченное время!</value>
+    </data>
+    <data name="RetroAssessmentValueHint" xml:space="preserve">
+        <value>Оцените ретро от 1 до 5 баллов.</value>
+    </data>
 </root>
