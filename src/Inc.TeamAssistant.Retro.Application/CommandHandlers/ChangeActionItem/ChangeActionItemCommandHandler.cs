@@ -20,15 +20,14 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
     public async Task Handle(ChangeActionItemCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        var item = await _repository.Find(command.Id, token) ?? new ActionItem(
-            command.Id,
-            command.RetroItemId,
-            DateTimeOffset.UtcNow);
+
+        var now = DateTimeOffset.UtcNow;
+        var item = await _repository.Find(command.Id, token)
+            ?? new ActionItem(command.Id, command.RetroItemId, now);
 
         item
             .ChangeText(command.Text)
-            .ChangeState(Enum.Parse<ActionItemState>(command.State, ignoreCase: true));
+            .ChangeState(Enum.Parse<ActionItemState>(command.State, ignoreCase: true), now);
         
         await _repository.Upsert(item, token);
 

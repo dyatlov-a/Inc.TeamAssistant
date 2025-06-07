@@ -14,6 +14,7 @@ internal static class ActionItemConverter
             item.RetroItemId,
             item.Created,
             item.Text,
-            item.State.ToString());
+            item.State.ToString(),
+            item.Modified);
     }
 }

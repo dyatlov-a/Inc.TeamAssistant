@@ -23,7 +23,8 @@ internal sealed class ActionItemReader : IActionItemReader
                 ai.retro_item_id AS retroitemid,
                 ai.created AS created,
                 ai.text AS text,
-                ai.state AS state
+                ai.state AS state,
+                ai.modified as modified
             FROM retro.action_items AS ai
             JOIN retro.retro_items AS ri ON ai.retro_item_id = ri.id
             WHERE ri.team_id = @team_id;

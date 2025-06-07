@@ -5,4 +5,5 @@ public sealed record ActionItemDto(
     Guid RetroItemId,
     DateTimeOffset Created,
     string Text,
-    string State);
+    string State,
+    DateTimeOffset? Modified);

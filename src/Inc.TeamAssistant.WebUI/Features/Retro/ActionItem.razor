@@ -24,6 +24,10 @@
         Value="@Value.Text"
         ValueExpression="@(() => Value.Text)"
         ValueChanged="@((string? v) => OnValueChanged(v))" />
+    @if (!CanRemove)
+    {
+        <span class="action-item__data">@Date.ToString("dd.MM.yyyy")</span>
+    }
 </div>
 <ConfirmDialog @ref="_confirmDialog">
     @Localizer["ItemRemoveConfirm"]
@@ -72,6 +76,7 @@
     [Parameter, EditorRequired]
     public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
 
+    private DateTimeOffset Date => Value.Modified ?? Value.Created;
     private string CssClass => Value.State == ActionItemStages.Done ? "action-item_done" : string.Empty;
     
     private ConfirmDialog? _confirmDialog;

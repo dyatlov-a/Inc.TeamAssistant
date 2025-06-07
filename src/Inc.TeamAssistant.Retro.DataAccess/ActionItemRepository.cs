@@ -23,7 +23,8 @@ internal sealed class ActionItemRepository : IActionItemRepository
                 ai.retro_item_id AS retroitemid,
                 ai.created AS created,
                 ai.text AS text,
-                ai.state AS state
+                ai.state AS state,
+                ai.modified as modified
             FROM retro.action_items AS ai
             WHERE ai.id = @id;
             """,
@@ -52,19 +53,22 @@ internal sealed class ActionItemRepository : IActionItemRepository
                 retro_item_id,
                 created,
                 text,
-                state)
+                state,
+                modified)
             VALUES (
                 @id,
                 @retro_item_id,
                 @created,
                 @text,
-                @state)
+                @state,
+                @modified)
             ON CONFLICT (id)
             DO UPDATE SET 
                 retro_item_id = EXCLUDED.retro_item_id,
                 created = EXCLUDED.created,
                 text = EXCLUDED.text,
-                state = EXCLUDED.state;
+                state = EXCLUDED.state,
+                modified = EXCLUDED.modified;
             """,
             new
             {
@@ -72,7 +76,8 @@ internal sealed class ActionItemRepository : IActionItemRepository
                 retro_item_id = item.RetroItemId,
                 created = item.Created,
                 text = item.Text,
-                state = item.State
+                state = item.State,
+                modified = item.Modified
             },
             flags: CommandFlags.None,
             cancellationToken: token);

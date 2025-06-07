@@ -26,7 +26,10 @@ public sealed class CreateBacklog : Migration
             .AsString().Nullable()
             
             .WithColumn("state")
-            .AsInt32().NotNullable();
+            .AsInt32().NotNullable()
+            
+            .WithColumn("modified")
+            .AsDateTimeOffset().Nullable();
     }
 
     public override void Down()

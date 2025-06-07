@@ -9,3 +9,9 @@
     float: right;
     padding-left: .3rem;
 }
+.action-item__data {
+    display: block;
+    text-align: right;
+    color: var(--block-secondary-color);
+    font-size: .8rem;
+}

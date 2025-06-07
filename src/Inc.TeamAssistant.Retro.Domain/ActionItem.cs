@@ -7,6 +7,7 @@ public sealed class ActionItem
     public DateTimeOffset Created { get; private set; }
     public string Text { get; private set; } = default!;
     public ActionItemState State { get; private set; }
+    public DateTimeOffset? Modified { get; private set; }
 
     private ActionItem()
     {
@@ -33,9 +34,10 @@ public sealed class ActionItem
         return this;
     }
 
-    public ActionItem ChangeState(ActionItemState state)
+    public ActionItem ChangeState(ActionItemState state, DateTimeOffset modified)
     {
         State = state;
+        Modified = modified;
 
         return this;
     }

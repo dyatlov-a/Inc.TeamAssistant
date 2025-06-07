@@ -10,6 +10,7 @@ public sealed class ActionItemViewModel
     public DateTimeOffset Created { get; private set; }
     public string Text { get; private set; }
     public string State { get; private set; }
+    public DateTimeOffset? Modified { get; private set; }
 
     public ActionItemViewModel(Guid id, Guid retroItemId, DateTimeOffset created)
     {
@@ -32,6 +33,7 @@ public sealed class ActionItemViewModel
     public ActionItemViewModel MoveToDone()
     {
         State = ActionItemStages.Done;
+        Modified = DateTimeOffset.UtcNow;
         
         return this;
     }
@@ -42,6 +44,7 @@ public sealed class ActionItemViewModel
 
         Text = item.Text;
         State = item.State;
+        Modified = item.Modified;
         
         return this;
     }
