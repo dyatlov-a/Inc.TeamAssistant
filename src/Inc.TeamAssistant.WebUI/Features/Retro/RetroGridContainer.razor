@@ -517,7 +517,7 @@
 
         var timerChanged = new [] { _currentTimer, changed }.Count(t => t.HasValue) == 1;
         if (timerChanged)
-            await _eventBuilder.ChangeTimer(TeamId, changed);
+            await _eventBuilder.ChangeTimer(new ChangeTimerCommand(TeamId, changed));
         else
             _currentTimer = changed;
     }

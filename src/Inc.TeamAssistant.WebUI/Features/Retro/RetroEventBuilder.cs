@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
@@ -112,9 +113,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveActionItemMethod, teamId, itemId);
     }
     
-    public async Task ChangeTimer(Guid teamId, TimeSpan? duration)
+    public async Task ChangeTimer(ChangeTimerCommand command)
     {
-        await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, teamId, duration);
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, command);
     }
     
     public async Task GiveFacilitator(GiveFacilitatorCommand command)

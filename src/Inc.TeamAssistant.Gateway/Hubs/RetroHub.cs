@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
@@ -22,12 +22,10 @@ namespace Inc.TeamAssistant.Gateway.Hubs;
 internal sealed class RetroHub : Hub<IRetroHubClient>
 {
     private readonly IMediator _mediator;
-    private readonly ITimerService _timerService;
 
-    public RetroHub(IMediator mediator, ITimerService timerService)
+    public RetroHub(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
@@ -101,14 +99,11 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
 
     [HubMethodName(HubDescriptors.RetroHub.ChangeTimerMethod)]
-    public async Task ChangeTimer(Guid teamId, TimeSpan? duration)
+    public async Task ChangeTimer(ChangeTimerCommand command)
     {
-        if (duration.HasValue)
-            _timerService.Start(teamId, duration.Value);
-        else
-            _timerService.Stop(teamId);
-
-        await Clients.Group(teamId.ToString("N")).TimerChanged(duration);
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.GiveFacilitatorMethod)]

@@ -74,4 +74,9 @@ internal sealed class RetroEventSender : IRetroEventSender
     {
         await _hubContext.Clients.Group(teamId.ToString("N")).FacilitatorChanged(facilitatorId);
     }
+
+    public async Task TimerChanged(Guid teamId, TimeSpan? duration)
+    {
+        await _hubContext.Clients.Group(teamId.ToString("N")).TimerChanged(duration);
+    }
 }
