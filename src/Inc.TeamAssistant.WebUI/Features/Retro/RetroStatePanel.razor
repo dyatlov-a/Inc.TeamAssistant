@@ -6,35 +6,35 @@
     <a
         title="@Localizer["FinishHint"]"
         href="#"
-        class="retro__link"
+        class="retro__link retro__link_active"
         @onclick="MoveToFinish"
         @onclick:preventDefault="true">
-        <CheckIcon Size="26px"/>
+        <CheckIcon Size="30px"/>
     </a>
     <a
         title="@Localizer["RaiseHandHint"]"
         href="#"
-        class="retro__link"
+        class="retro__link retro__link_active"
         @onclick="RaiseHand"
         @onclick:preventDefault="true">
-        <UserQuestionIcon Size="26px"/>
+        <UserQuestionIcon Size="30px"/>
     </a>
     @if (IsFacilitator)
     {
         <a
             title="@Localizer["TimerStartHint"]"
             href="#"
-            class="retro__link"
+            class="retro__link retro__link_active"
             @onclick="ToggleTimer"
             @onclick:preventDefault="true">
-            <ClockCheckIcon Size="26px"/> @TimerValue
+            <ClockCheckIcon Size="30px"/> @TimerValue
         </a>
         if (IsDiscussing)
         {
             <a
                 title="@Localizer["PreviousHint"]"
                 href="#"
-                class="retro__link retro__link_right"
+                class="retro__link retro__link_active retro__link_right"
                 @onclick="OnMoveToPrevious"
                 @onclick:preventDefault="true">
                 <CaretLeftIcon Size="30px"/>
@@ -43,7 +43,7 @@
         <a
             title="@Localizer["NextHint"]"
             href="#"
-            class="retro__link @MoveNextRightCss"
+            class="retro__link retro__link_active @MoveNextRightCss"
             @onclick="OnMoveNext"
             @onclick:preventDefault="true">
             <CaretRightIcon Size="30px"/>
@@ -51,13 +51,16 @@
     }
     else
     {
+        <i class="retro__link">
+            <ClockCheckIcon Size="30px"/> @TimerValue
+        </i>
         <a
             title="@Localizer["GiveFacilitatorHint"]"
             href="#"
-            class="retro__link"
+            class="retro__link retro__link_active retro__link_right"
             @onclick="GiveFacilitator"
             @onclick:preventDefault="true">
-            <UserIcon Size="26px"/>
+            <UsersIcon Size="30px"/>
         </a>
     }
 </div>
@@ -71,10 +74,10 @@
     public RetroSessionDto? Session { get; set; }
     
     /// <summary>
-    /// Is prioritizing state.
+    /// Prioritizing state.
     /// </summary>
     [Parameter, EditorRequired]
-    public bool IsPrioritizing { get; set; }
+    public bool PrioritizingInProgress { get; set; }
     
     /// <summary>
     ///  Is discussing state.
@@ -199,17 +202,6 @@
         
         InvokeAsync(async () => await TimerChanged.InvokeAsync(_currentTimer));
     }
-    
-    private void TryStopTimer()
-    {
-        if (_timer is not null)
-        {
-            _timer.Stop();
-            _timer.Elapsed -= OnTimerTick;
-            _timer.Dispose();
-            _timer = null;
-        }
-    }
 
     private async Task OnMoveNext()
     {
@@ -218,23 +210,12 @@
             await StartRetro.InvokeAsync();
             return;
         }
-        
-        if (!IsFacilitator)
-            return;
             
-        if (IsPrioritizing && _confirmDialog is not null &&
+        if (PrioritizingInProgress && _confirmDialog is not null &&
             !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
             return;
         
         await MoveToNext.InvokeAsync(Session.Id);
-    }
-
-    private async Task OnMoveToPrevious()
-    {
-        if (!IsFacilitator)
-            return;
-        
-        await MoveToPrevious.InvokeAsync();
     }
     
     private async Task ToggleTimer()
@@ -251,7 +232,19 @@
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed(Localizer["ConfirmGiveFacilitator"]))
             await FacilitatorGiven.InvokeAsync();
     }
+    
+    private void TryStopTimer()
+    {
+        if (_timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnTimerTick;
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
 
+    private async Task OnMoveToPrevious() => await MoveToPrevious.InvokeAsync();
     private async Task MoveToFinish() => await Finished.InvokeAsync();
     private async Task RaiseHand() => await HandRaised.InvokeAsync();
 

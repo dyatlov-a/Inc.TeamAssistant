@@ -11,10 +11,10 @@
     text-transform: uppercase;
     transition: color 0.3s ease 0s;
 }
-.retro__link:hover {
+.retro__link_active:hover {
     color: var(--button-secondary-color);
 }
-.retro__link:hover ::deep .icon_primary {
+.retro__link_active:hover ::deep .icon_primary {
     stroke: var(--button-secondary-color);
 }
 .retro__link_right {

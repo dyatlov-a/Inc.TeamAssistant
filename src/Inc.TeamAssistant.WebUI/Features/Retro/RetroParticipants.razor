@@ -10,7 +10,7 @@
                 @if (participant.Finished)
                 {
                     <i class="participant__state-item">
-                        <CheckIcon Size="26px"/>
+                        <CheckIcon Size="30px"/>
                     </i>
                 }
                 @if (participant.HandRaised)
@@ -23,13 +23,13 @@
                             class="participant__state-item participant__state-item_active"
                             @onclick="() => SendHandLowered(participant.Person.Id)"
                             @onclick:preventDefault="true">
-                            <UserQuestionIcon Size="26px" />
+                            <UserQuestionIcon Size="30px" />
                         </a>
                     }
                     else
                     {
                         <i class="participant__state-item">
-                            <UserQuestionIcon Size="26px"/>
+                            <UserQuestionIcon Size="30px"/>
                         </i>
                     }
                 }

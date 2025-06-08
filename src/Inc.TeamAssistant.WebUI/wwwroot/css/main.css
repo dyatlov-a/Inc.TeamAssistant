@@ -43,6 +43,11 @@ li {
 img {
 	vertical-align: top;
 }
+i {
+    all: unset;
+    font-style: normal;
+    display: inline;
+}
 h1,
 h2,
 h3,

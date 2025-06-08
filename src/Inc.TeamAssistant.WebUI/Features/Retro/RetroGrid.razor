@@ -8,7 +8,7 @@
             <div class="retro-toolbar__content">
                 <RetroStatePanel
                     Session="Session"
-                    IsPrioritizing="IsPrioritizing"
+                    PrioritizingInProgress="PrioritizingInProgress"
                     IsDiscussing="IsDiscussing"
                     IsFacilitator="IsFacilitator"
                     CurrentTimer="CurrentTimer"
@@ -333,7 +333,7 @@
     private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
     private bool CanMove => Session?.State == RetroStages.Grouping && IsFacilitator;
     private bool CanVote => Session?.State == RetroStages.Prioritizing;
-    private bool IsPrioritizing => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
+    private bool PrioritizingInProgress => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
     private bool IsDiscussing => Session?.State == RetroStages.Discussing;
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
 
