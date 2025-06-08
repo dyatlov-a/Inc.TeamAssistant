@@ -84,6 +84,28 @@
                     element.classList.add(className);
                 }
             },
+            addObserver: (elementSelector, anchorSelector, modificatorClass) => {
+                const anchor = document.querySelector(anchorSelector);
+                const element = document.querySelector(elementSelector);
+                const placeholder = document.querySelector(elementSelector + '_placeholder')
+
+                const observer = new IntersectionObserver(es => {
+                    es.forEach(e => {
+                        if (e.isIntersecting)
+                        {
+                            element.classList.remove(modificatorClass);
+                            placeholder.style.height = '0px';
+                        }
+                        else {
+                            element.classList.add(modificatorClass);
+                            placeholder.style.height = element.offsetHeight + 'px';
+                        }
+                    });
+                }, { threshold: 0 });
+
+                if (anchor && element && placeholder)
+                    observer.observe(anchor);
+            }
         };
 
         Blazor.start({

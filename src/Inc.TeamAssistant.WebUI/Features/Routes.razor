@@ -1,4 +1,6 @@
-﻿<CascadingAuthenticationState>
+﻿@inject IJSRuntime JsRuntime
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <NotificationBar />
@@ -19,3 +21,11 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JsRuntime.Execute(JsFunctions.AddObserver(".inline__dialogs", ".footer", "inline__dialogs_fixed"));
+    }
+}

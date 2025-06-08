@@ -79,7 +79,7 @@ html {
 	padding: 0 1rem;
 }
 [class*="__fluent-container"] {
-    max-width: 1880px;
+    width: 1880px;
     margin: 0 auto;
 }
 .wrapper {
@@ -89,6 +89,8 @@ html {
     min-height: 100%;
 }
 .main {
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
 }
 .main-content {
@@ -108,10 +110,16 @@ html {
     justify-content: right;
     margin: 10px;
 }
+.inline__dialogs_fixed {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+}
 /* GRAND PC  */
 @media (max-width: 1919.98px) {
     [class*="__fluent-container"] {
-        max-width: 100%;
+        width: 100%;
     }
 }
 /* PC */
@@ -135,33 +143,6 @@ html {
 /* MOBILE SMALL */
 @media (max-width: 479.98px) {
 }
-/* MAP */
-.marker-btn {
-    background-color: transparent;
-    color: var(--text-secondary-color);
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: .825rem;
-    line-height: 1.5rem;
-}
-.marker-btn:hover {
-    text-decoration: none;
-}
-.map_navbar .leaflet-top {
-    top: 80px;
-}
-.map-popup {
-    overflow: hidden;
-    width: 290px;
-    color: var(--text-secondary-color);
-}
-.map-popup__user-avatar {
-    width: 50px;
-    border-radius: 50%;
-    float: left;
-    margin: 0 10px 10px 0;
-}
 /* VALIDATION */
 .input_valid {
     border: 3px solid var(--message-valid-color);
@@ -173,29 +154,6 @@ html {
     margin-top: 5px;
     font-size: 1rem;
     color: var(--message-invalid-color);
-}
-/* GRID */
-.quick-data-grid {
-    width: 100%;
-    font-size: .8125rem;
-    border-spacing: 0;
-    word-break: break-all;
-}
-.col-title-text {
-    white-space: normal !important;
-}
-.quick-data-grid .link {
-    font-size: .8125rem;
-}
-.quick-data-grid .col-title {
-    color: var(--text-secondary-color);
-    font-size: .875rem;
-}
-.quick-data-grid tr {
-    height: 1.625rem;
-}
-.quick-data-grid tbody tr:nth-child(2n - 1){
-    background-color: var(--bg-secondary-color);
 }
 /* ANIMATIONS */
 .hidden {
@@ -260,4 +218,54 @@ html {
 }
 .button:disabled:hover .icon_secondary, .link:disabled:hover .icon_secondary {
     stroke: var(--button-secondary-color);
+}
+/* GRID */
+.quick-data-grid {
+    width: 100%;
+    font-size: .8125rem;
+    border-spacing: 0;
+    word-break: break-all;
+}
+.col-title-text {
+    white-space: normal !important;
+}
+.quick-data-grid .link {
+    font-size: .8125rem;
+}
+.quick-data-grid .col-title {
+    color: var(--text-secondary-color);
+    font-size: .875rem;
+}
+.quick-data-grid tr {
+    height: 1.625rem;
+}
+.quick-data-grid tbody tr:nth-child(2n - 1){
+    background-color: var(--bg-secondary-color);
+}
+/* MAP */
+.marker-btn {
+    background-color: transparent;
+    color: var(--text-secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: .825rem;
+    line-height: 1.5rem;
+}
+.marker-btn:hover {
+    text-decoration: none;
+}
+.map_navbar .leaflet-top {
+    top: 80px;
+}
+.map-popup {
+    overflow: hidden;
+    width: 290px;
+    color: var(--text-secondary-color);
+}
+.map-popup__user-avatar {
+    width: 50px;
+    border-radius: 50%;
+    float: left;
+    margin: 0 10px 10px 0;
 }

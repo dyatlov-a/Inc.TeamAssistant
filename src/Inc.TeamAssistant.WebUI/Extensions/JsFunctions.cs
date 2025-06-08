@@ -67,6 +67,23 @@ internal static class JsFunctions
             className);
     }
     
+    public static IJsFunction<dynamic> AddObserver(
+        string elementSelector,
+        string anchorSelector,
+        string modificatorClass)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(elementSelector);
+        ArgumentException.ThrowIfNullOrWhiteSpace(anchorSelector);
+        ArgumentException.ThrowIfNullOrWhiteSpace(modificatorClass);
+        
+        return new JsFunction<dynamic>(
+            "window.browserJsFunctions.addObserver",
+            postAction: null,
+            elementSelector,
+            anchorSelector,
+            modificatorClass);
+    }
+    
     private sealed record JsFunction<TResult> : IJsFunction<TResult>
     {
         public string Identifier { get; }

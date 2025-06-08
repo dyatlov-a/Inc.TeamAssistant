@@ -1,11 +1,7 @@
 .inline-dialog {
     padding: 1rem;
     background-color: var(--block-primary-color);
-    position: fixed;
-    bottom: 0;
     display: flex;
-    width: 100%;
-    z-index: 1000;
 }
 .inline-dialog__content {
     flex: 1 1 auto;
@@ -13,12 +9,4 @@
 .inline-dialog__actions {
     flex: 0 0 150px;
     text-align: right;
-}
-@media (max-width: 767.98px) {
-    .inline-dialog {
-        display: block;
-    }
-    .inline-dialog__actions {
-        margin: .5rem 0 0 0;
-    }
 }

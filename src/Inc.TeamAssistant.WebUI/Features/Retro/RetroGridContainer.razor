@@ -16,47 +16,55 @@
 @inject IStringLocalizer<RetroResources> Localizer
 @inject NavRouter NavRouter
 
+@layout EmptyLayout
+
 <MetaDataModule />
 
-<AuthorizeView>
-    <Authorized>
-        <RetroGrid
-            State="_state"
-            Columns="Columns"
-            CurrentUserId="context.User.ToPerson().Id"
-            Session="_activeSession"
-            FacilitatorId="_facilitatorId"
-            Items="_items"
-            ActionItems="_actionItems"
-            Participants="Participants"
-            VotesTotal="6"
-            CurrentTimer="_currentTimer"
-            IsCreating="_isCreating"
-            Retry="@(() => Load(_state))"
-            ItemCreated="OnRetroItemCreated"
-            ItemChanged="OnRetroItemChanged"
-            ItemRemoved="OnRetroItemRemoved"
-            ItemMoved="OnItemMoved"
-            ItemMovedToSlot="OnItemMovedToSlot"
-            ActionItemCreated="OnActionItemCreated"
-            ActionItemChanged="OnActionItemChanged"
-            ActionItemRemoved="OnActionItemRemoved"
-            VoteChanged="OnVoteChanged"
-            RetroStarted="OnRetroStarted"
-            ToNextMoved="OnToNextMoved"
-            ToPreviousMoved="OnToPreviousMoved"
-            TimerChanged="OnTimerChanged"
-            Finished="OnFinished"
-            HandRaised="OnHandRaised"
-            FacilitatorGiven="FacilitatorGiven"
-            HandLowered="OnHandLowered" />
+<MainLayout>
+    <Body>
+        <AuthorizeView>
+            <Authorized>
+                <RetroGrid
+                    State="_state"
+                    Columns="Columns"
+                    CurrentUserId="context.User.ToPerson().Id"
+                    Session="_activeSession"
+                    FacilitatorId="_facilitatorId"
+                    Items="_items"
+                    ActionItems="_actionItems"
+                    Participants="Participants"
+                    VotesTotal="6"
+                    CurrentTimer="_currentTimer"
+                    IsCreating="_isCreating"
+                    Retry="@(() => Load(_state))"
+                    ItemCreated="OnRetroItemCreated"
+                    ItemChanged="OnRetroItemChanged"
+                    ItemRemoved="OnRetroItemRemoved"
+                    ItemMoved="OnItemMoved"
+                    ItemMovedToSlot="OnItemMovedToSlot"
+                    ActionItemCreated="OnActionItemCreated"
+                    ActionItemChanged="OnActionItemChanged"
+                    ActionItemRemoved="OnActionItemRemoved"
+                    VoteChanged="OnVoteChanged"
+                    RetroStarted="OnRetroStarted"
+                    ToNextMoved="OnToNextMoved"
+                    ToPreviousMoved="OnToPreviousMoved"
+                    TimerChanged="OnTimerChanged"
+                    Finished="OnFinished"
+                    HandRaised="OnHandRaised"
+                    FacilitatorGiven="FacilitatorGiven"
+                    HandLowered="OnHandLowered"/>
+            </Authorized>
+        </AuthorizeView>
+    </Body>
+    <DialogSlot>
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
             ButtonText="@Localizer["Reconnect"]"
-            OnAction="Reconnect" />
-    </Authorized>
-</AuthorizeView>
+            OnAction="Reconnect"/>
+    </DialogSlot>
+</MainLayout>
 
 @code {
     [Parameter, EditorRequired]
