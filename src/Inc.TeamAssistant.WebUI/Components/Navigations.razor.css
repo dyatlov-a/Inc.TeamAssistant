@@ -19,13 +19,13 @@
     background-color: var(--text-primary-color);
     color: var(--text-secondary-color);
 }
-.nav-items__item_active:not(:last-child)::after {
+.nav-items__item_active::after {
     content: "";
     position: absolute;
     top: 0;
-    right: -20px;
+    right: -1rem;
     height: 100%;
-    width: 20px;
+    width: 1rem;
     background-color: var(--text-primary-color);
     clip-path: polygon(0 0, 100% 50%, 0 100%);
 }

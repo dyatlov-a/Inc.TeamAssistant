@@ -1,4 +1,4 @@
-@attribute [Stories("Components/InputInlineEditor")]
+@attribute [Stories("Components/Forms/InputInlineEditor")]
 
 <Stories TComponent="InputInlineEditor">
     <Story Name="Default">
@@ -29,8 +29,8 @@
     private readonly int _debounceDelay = 500;
     
     private readonly Guid _editableId = Guid.NewGuid();
-    private string? _editableValue = string.Empty;
+    private string? _editableValue = "Editable text";
     
     private readonly Guid _readOnlyId = Guid.NewGuid();
-    private string? _readOnlyValue = string.Empty;
+    private string? _readOnlyValue = "Readonly text";
 }

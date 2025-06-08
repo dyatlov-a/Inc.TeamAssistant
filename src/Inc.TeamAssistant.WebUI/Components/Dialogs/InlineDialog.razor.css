@@ -6,7 +6,6 @@
     display: flex;
     width: 100%;
     z-index: 1000;
-    min-height: 160px;
 }
 .inline-dialog__content {
     flex: 1 1 auto;
