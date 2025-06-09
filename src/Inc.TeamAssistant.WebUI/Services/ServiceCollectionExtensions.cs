@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
             .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
             .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>()
-            .AddScoped<IValidator<TenantTeamFormModel>, TenantTeamFormModelValidator>();
+            .AddScoped<IValidator<RoomFormModel>, RoomFormModelValidator>();
 
         return services;
     }

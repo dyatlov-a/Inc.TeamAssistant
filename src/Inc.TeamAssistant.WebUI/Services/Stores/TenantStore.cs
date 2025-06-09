@@ -7,7 +7,7 @@ namespace Inc.TeamAssistant.WebUI.Services.Stores;
 
 internal sealed class TenantStore
 {
-    private IDictionary<Guid, TenantTeamDto> _teams = new Dictionary<Guid, TenantTeamDto>();
+    private IDictionary<Guid, RoomDto> _rooms = new Dictionary<Guid, RoomDto>();
     private readonly ITenantService _tenantService;
     private readonly RequestProcessor _requestProcessor;
 
@@ -17,19 +17,19 @@ internal sealed class TenantStore
         _requestProcessor = requestProcessor ?? throw new ArgumentNullException(nameof(requestProcessor));
     }
 
-    public IEnumerable<TenantTeamDto> Teams => _teams.Values;
+    public IEnumerable<RoomDto> Rooms => _rooms.Values;
     public event Action? OnChange;
 
-    public async Task Initialize(Guid? teamId, IProgress<LoadingState.State> progress)
+    public async Task Initialize(Guid? roomId, IProgress<LoadingState.State> progress)
     {
         ArgumentNullException.ThrowIfNull(progress);
         
         var result = await _requestProcessor.Process(
-            async () => await _tenantService.GetAvailableTeams(teamId),
+            async () => await _tenantService.GetAvailableRooms(roomId),
             nameof(TenantStore),
             progress);
 
-        _teams = result.Teams.ToDictionary(t => t.Id);
+        _rooms = result.Rooms.ToDictionary(t => t.Id);
 
         NotifyStateHasChanged();
     }

@@ -18,23 +18,23 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="TeamSectionTitle" xml:space="preserve">
-        <value>Команда</value>
+    <data name="RoomSectionTitle" xml:space="preserve">
+        <value>Комната</value>
     </data>
-    <data name="TeamSectionHelp" xml:space="preserve">
-        <value>Команда в рамках которой осуществляется работа</value>
+    <data name="RoomSectionHelp" xml:space="preserve">
+        <value>Комната в рамках которой осуществляется работа</value>
     </data>
-    <data name="TeamNameField" xml:space="preserve">
-        <value>Название команды</value>
+    <data name="RoomNameField" xml:space="preserve">
+        <value>Название комнаты</value>
     </data>
     <data name="Save" xml:space="preserve">
         <value>Сохранить</value>
     </data>
-    <data name="TeamManagement" xml:space="preserve">
-        <value>Управление командами</value>
+    <data name="RoomManagement" xml:space="preserve">
+        <value>Управление комнатами</value>
     </data>
-    <data name="TeamManagementText" xml:space="preserve">
-        <value>Для проведения первого ретро необходимо создать команду</value>
+    <data name="RoomManagementText" xml:space="preserve">
+        <value>Для проведения первого ретро необходимо создать комнату</value>
     </data>
     <data name="Create" xml:space="preserve">
         <value>Создать</value>
@@ -48,10 +48,13 @@
     <data name="Remove" xml:space="preserve">
         <value>Удалить</value>
     </data>
-    <data name="RemoveTeamConfirmationText" xml:space="preserve">
+    <data name="RemoveRoomConfirm" xml:space="preserve">
         <value>Подтверждаете удаление команды {0}?</value>
     </data>
     <data name="MoveToBacklog" xml:space="preserve">
         <value>Перейти к списку задач</value>
+    </data>
+    <data name="Rooms" xml:space="preserve">
+        <value>Комнаты</value>
     </data>
 </root>

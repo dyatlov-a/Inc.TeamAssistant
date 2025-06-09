@@ -14,7 +14,7 @@ internal sealed class TenantReader : ITenantReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
 
-    public async Task<IReadOnlyCollection<Team>> GetAvailableTeams(
+    public async Task<IReadOnlyCollection<Room>> GetAvailableRooms(
         Guid? teamId,
         long personId,
         CancellationToken token)
@@ -22,15 +22,15 @@ internal sealed class TenantReader : ITenantReader
         var command = new CommandDefinition(
             """
             SELECT
-                tt.id AS id,
-                tt.name AS name,
-                tt.owner_id AS ownerid,
+                r.id AS id,
+                r.name AS name,
+                r.owner_id AS ownerid,
                 t.id AS id,
                 t.name AS name,
                 t.owner_id AS ownerid
-            FROM tenants.teams AS tt
-            JOIN tenants.tenants AS t ON t.id = tt.tenant_id
-            WHERE tt.id = @team_id OR tt.owner_id = @person_id OR t.owner_id = @person_id;
+            FROM tenants.rooms AS r
+            JOIN tenants.tenants AS t ON t.id = r.tenant_id
+            WHERE r.id = @team_id OR r.owner_id = @person_id OR t.owner_id = @person_id;
             """,
             new
             {
@@ -42,8 +42,8 @@ internal sealed class TenantReader : ITenantReader
         
         await using var connection = _connectionFactory.Create();
 
-        var teams = await connection.QueryAsync<Team, Tenant, Team>(command, (tt, t) => tt.MapTenant(t));
+        var rooms = await connection.QueryAsync<Room, Tenant, Room>(command, (tt, t) => tt.MapTenant(t));
 
-        return teams.ToArray();
+        return rooms.ToArray();
     }
 }

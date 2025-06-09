@@ -18,23 +18,23 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="TeamSectionTitle" xml:space="preserve">
-        <value>Team</value>
+    <data name="RoomSectionTitle" xml:space="preserve">
+        <value>Room</value>
     </data>
-    <data name="TeamSectionHelp" xml:space="preserve">
-        <value>The team carrying out the work.</value>
+    <data name="RoomSectionHelp" xml:space="preserve">
+        <value>The room carrying out the work.</value>
     </data>
-    <data name="TeamNameField" xml:space="preserve">
-        <value>Team name</value>
+    <data name="RoomNameField" xml:space="preserve">
+        <value>Room name</value>
     </data>
     <data name="Save" xml:space="preserve">
         <value>Save</value>
     </data>
-    <data name="TeamManagement" xml:space="preserve">
-        <value>Team management</value>
+    <data name="RoomManagement" xml:space="preserve">
+        <value>Room management</value>
     </data>
-    <data name="TeamManagementText" xml:space="preserve">
-        <value>We need to form a team to run the first retro.</value>
+    <data name="RoomManagementText" xml:space="preserve">
+        <value>We need to form a room to run the first retro.</value>
     </data>
     <data name="Create" xml:space="preserve">
         <value>Create</value>
@@ -48,10 +48,13 @@
     <data name="Remove" xml:space="preserve">
         <value>Remove</value>
     </data>
-    <data name="RemoveTeamConfirmationText" xml:space="preserve">
+    <data name="RemoveRoomConfirm" xml:space="preserve">
         <value>Confirming the deletion of the {0}?</value>
     </data>
     <data name="MoveToBacklog" xml:space="preserve">
         <value>Move to backlog</value>
+    </data>
+    <data name="Rooms" xml:space="preserve">
+        <value>Rooms</value>
     </data>
 </root>

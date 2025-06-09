@@ -53,7 +53,7 @@
         .Select(l => new LinkModel(l.Value, $"/{l.Value}"))
         .ToArray();
 
-    private readonly IReadOnlyCollection<TenantTeamDto> _teams = [
+    private readonly IReadOnlyCollection<RoomDto> _teams = [
         new(Guid.NewGuid(), "Team 1"),
         new(Guid.NewGuid(), "Team 2")];
 }

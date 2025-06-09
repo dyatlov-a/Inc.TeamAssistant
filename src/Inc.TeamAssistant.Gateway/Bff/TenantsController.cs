@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Tenants.Model.Commands.CreateTeam;
-using Inc.TeamAssistant.Tenants.Model.Commands.UpdateTeam;
+using Inc.TeamAssistant.Tenants.Model.Commands.CreateRoom;
+using Inc.TeamAssistant.Tenants.Model.Commands.UpdateRoom;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,29 +21,29 @@ public sealed class TenantsController : ControllerBase
     [HttpGet("{teamId:Guid}")]
     public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
     {
-        return Ok(await _tenantService.GetTeam(teamId, token));
+        return Ok(await _tenantService.GetRoom(teamId, token));
     }
     
     [HttpGet("available/{teamId:Guid?}")]
     public async Task<IActionResult> GetTeams(Guid? teamId, CancellationToken token)
     {
-        return Ok(await _tenantService.GetAvailableTeams(teamId, token));
+        return Ok(await _tenantService.GetAvailableRooms(teamId, token));
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTeam([FromBody]CreateTeamCommand command)
+    public async Task<IActionResult> CreateTeam([FromBody]CreateRoomCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        return Ok(await _tenantService.CreateTeam(command, CancellationToken.None));
+        return Ok(await _tenantService.CreateRoom(command, CancellationToken.None));
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateTeam([FromBody]UpdateTeamCommand command)
+    public async Task<IActionResult> UpdateTeam([FromBody]UpdateRoomCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _tenantService.UpdateTeam(command, CancellationToken.None);
+        await _tenantService.UpdateRoom(command, CancellationToken.None);
         
         return Ok();
     }
@@ -51,7 +51,7 @@ public sealed class TenantsController : ControllerBase
     [HttpDelete("{teamId:Guid}")]
     public async Task<IActionResult> RemoveTeam(Guid teamId)
     {
-        await _tenantService.RemoveTeam(teamId, CancellationToken.None);
+        await _tenantService.RemoveRoom(teamId, CancellationToken.None);
         
         return Ok();
     }

@@ -39,20 +39,20 @@ internal sealed class TenantRepository : ITenantRepository
         return tenant;
     }
 
-    public async Task<Team?> FindTeam(Guid id, CancellationToken token)
+    public async Task<Room?> FindRoom(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
             SELECT
-                tt.id AS id,
-                tt.name AS name,
-                tt.owner_id AS ownerid,
+                r.id AS id,
+                r.name AS name,
+                r.owner_id AS ownerid,
                 t.id AS id,
                 t.name AS name,
                 t.owner_id AS ownerid
-            FROM tenants.teams AS tt
-            JOIN tenants.tenants AS t ON t.id = tt.tenant_id
-            WHERE tt.id = @team_id;
+            FROM tenants.rooms AS r
+            JOIN tenants.tenants AS t ON t.id = r.tenant_id
+            WHERE r.id = @team_id;
             """,
             new
             {
@@ -63,14 +63,14 @@ internal sealed class TenantRepository : ITenantRepository
 
         await using var connection = _connectionFactory.Create();
 
-        var teams = await connection.QueryAsync<Team, Tenant, Team>(command, (tt, t) => tt.MapTenant(t));
+        var rooms = await connection.QueryAsync<Room, Tenant, Room>(command, (tt, t) => tt.MapTenant(t));
         
-        return teams.SingleOrDefault();
+        return rooms.SingleOrDefault();
     }
 
-    public async Task Upsert(Team team, CancellationToken token)
+    public async Task Upsert(Room room, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(team);
+        ArgumentNullException.ThrowIfNull(room);
         
         var tenantCommand = new CommandDefinition(
             """
@@ -88,16 +88,16 @@ internal sealed class TenantRepository : ITenantRepository
             """,
             new
             {
-                id = team.Tenant.Id,
-                name = team.Tenant.Name,
-                owner_id = team.Tenant.OwnerId
+                id = room.Tenant.Id,
+                name = room.Tenant.Name,
+                owner_id = room.Tenant.OwnerId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
         
         var teamCommand = new CommandDefinition(
             """
-            INSERT INTO tenants.teams (
+            INSERT INTO tenants.rooms (
                 id,
                 name,
                 owner_id,
@@ -114,10 +114,10 @@ internal sealed class TenantRepository : ITenantRepository
             """,
             new
             {
-                id = team.Id,
-                name = team.Name,
-                owner_id = team.OwnerId,
-                tenant_id = team.Tenant.Id
+                id = room.Id,
+                name = room.Name,
+                owner_id = room.OwnerId,
+                tenant_id = room.Tenant.Id
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -132,18 +132,18 @@ internal sealed class TenantRepository : ITenantRepository
         await transaction.CommitAsync(token);
     }
 
-    public async Task Remove(Team team, CancellationToken token)
+    public async Task Remove(Room room, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(team);
+        ArgumentNullException.ThrowIfNull(room);
         
         var command = new CommandDefinition(
             """
-            DELETE FROM tenants.teams
-            WHERE id = @team_id;
+            DELETE FROM tenants.rooms AS r
+            WHERE r.id = @team_id;
             """,
             new
             {
-                team_id = team.Id
+                team_id = room.Id
             },
             flags: CommandFlags.None,
             cancellationToken: token);

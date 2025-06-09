@@ -45,21 +45,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
             }
         }
         
-        internal static string TeamSectionTitle {
+        internal static string RoomSectionTitle {
             get {
-                return ResourceManager.GetString("TeamSectionTitle", resourceCulture);
+                return ResourceManager.GetString("RoomSectionTitle", resourceCulture);
             }
         }
         
-        internal static string TeamSectionHelp {
+        internal static string RoomSectionHelp {
             get {
-                return ResourceManager.GetString("TeamSectionHelp", resourceCulture);
+                return ResourceManager.GetString("RoomSectionHelp", resourceCulture);
             }
         }
         
-        internal static string TeamNameField {
+        internal static string RoomNameField {
             get {
-                return ResourceManager.GetString("TeamNameField", resourceCulture);
+                return ResourceManager.GetString("RoomNameField", resourceCulture);
             }
         }
         
@@ -69,15 +69,15 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
             }
         }
         
-        internal static string TeamManagement {
+        internal static string RoomManagement {
             get {
-                return ResourceManager.GetString("TeamManagement", resourceCulture);
+                return ResourceManager.GetString("RoomManagement", resourceCulture);
             }
         }
         
-        internal static string TeamManagementText {
+        internal static string RoomManagementText {
             get {
-                return ResourceManager.GetString("TeamManagementText", resourceCulture);
+                return ResourceManager.GetString("RoomManagementText", resourceCulture);
             }
         }
         
@@ -105,15 +105,21 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
             }
         }
         
-        internal static string RemoveTeamConfirmationText {
+        internal static string RemoveRoomConfirm {
             get {
-                return ResourceManager.GetString("RemoveTeamConfirmationText", resourceCulture);
+                return ResourceManager.GetString("RemoveRoomConfirm", resourceCulture);
             }
         }
         
         internal static string MoveToBacklog {
             get {
                 return ResourceManager.GetString("MoveToBacklog", resourceCulture);
+            }
+        }
+        
+        internal static string Rooms {
+            get {
+                return ResourceManager.GetString("Rooms", resourceCulture);
             }
         }
     }

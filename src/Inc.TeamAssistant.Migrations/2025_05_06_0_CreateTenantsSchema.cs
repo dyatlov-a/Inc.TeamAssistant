@@ -33,12 +33,12 @@ public sealed class CreateTenantsSchema : Migration
             .AsInt64().NotNullable();
 
         Create
-            .Table("teams")
+            .Table("rooms")
             .InSchema("tenants")
 
             .WithColumn("id")
             .AsGuid().NotNullable()
-            .PrimaryKey("teams__pk__id")
+            .PrimaryKey("rooms__pk__id")
 
             .WithColumn("name")
             .AsString(50).NotNullable()
@@ -49,7 +49,7 @@ public sealed class CreateTenantsSchema : Migration
             .WithColumn("tenant_id")
             .AsGuid().NotNullable()
             .ForeignKey(
-                foreignKeyName: "teams__tenants__fk__tenant_id__id",
+                foreignKeyName: "rooms__tenants__fk__tenant_id__id",
                 primaryTableSchema: "tenants",
                 primaryTableName: "tenants",
                 primaryColumnName: "id");
@@ -59,7 +59,7 @@ public sealed class CreateTenantsSchema : Migration
             "Create index by tenants name");
         
         Execute.Sql(
-            "CREATE UNIQUE INDEX teams__uidx__tenant_id__name ON tenants.teams (tenant_id, lower(name));",
+            "CREATE UNIQUE INDEX rooms__uidx__tenant_id__name ON tenants.rooms (tenant_id, lower(name));",
             "Create index by teams name");
         
         Alter
@@ -78,7 +78,7 @@ public sealed class CreateTenantsSchema : Migration
             .AsString(255).NotNullable();
         
         Delete
-            .Table("teams")
+            .Table("rooms")
             .InSchema("tenants");
         
         Delete

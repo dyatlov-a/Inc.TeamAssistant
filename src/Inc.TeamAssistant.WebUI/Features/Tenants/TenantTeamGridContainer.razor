@@ -1,6 +1,6 @@
-@page "/teams"
-@page "/ru/teams"
-@page "/en/teams"
+@page "/rooms"
+@page "/ru/rooms"
+@page "/en/rooms"
 
 @attribute [Authorize]
 
@@ -12,38 +12,38 @@
 
 <MetaDataModule />
 
-<TenantTeamGrid
-    AvailableTeams="TenantStore.Teams"
+<RoomGrid
+    AvailableRooms="TenantStore.Rooms"
     State="_state"
     Retry="() => Load(_state)"
     EditEmitted="tId => StartEdit(tId)"
-    CreateEmitted="() => StartEdit(teamId: null)"
-    RemoveEmitted="RemoveTeam"
+    CreateEmitted="() => StartEdit(roomId: null)"
+    RemoveEmitted="RemoveRoom"
     MoveToRetroFactory="CreateMoveToRetroLink"
     MoveToBacklogFactory="CreateMoveToBacklogLink" />
 
-<ContentDialog Title="@Localizer["TeamManagement"]" @ref="_contentDialog">
-    <TenantTeamEditorContainer TeamId="_selectedTeamId" OnEdited="EndEdit" />
+<ContentDialog Title="@Localizer["RoomManagement"]" @ref="_contentDialog">
+    <RoomEditorContainer RoomId="_selectedRoomId" OnEdited="EndEdit" />
 </ContentDialog>
 
 <ConfirmDialog @ref="_confirmDialog">
-    <p>@string.Format(Localizer["RemoveTeamConfirmationText"], _selectedTeamName)</p>
+    <p>@string.Format(Localizer["RemoveRoomConfirm"], _selectedRoomName)</p>
 </ConfirmDialog>
 
 @code {
     private readonly LoadingState _state = LoadingState.Done();
     private ContentDialog? _contentDialog;
     private ConfirmDialog? _confirmDialog;
-    private string? _selectedTeamName;
-    private Guid? _selectedTeamId;
+    private string? _selectedRoomName;
+    private Guid? _selectedRoomId;
 
     protected override async Task OnInitializedAsync() => await Load(_state);
 
-    private async Task Load(IProgress<LoadingState.State> state) => await TenantStore.Initialize(teamId: null, state);
+    private async Task Load(IProgress<LoadingState.State> state) => await TenantStore.Initialize(roomId: null, state);
 
-    private void StartEdit(Guid? teamId)
+    private void StartEdit(Guid? roomId)
     {
-        _selectedTeamId = teamId;
+        _selectedRoomId = roomId;
         
         _contentDialog?.Open();
     }
@@ -54,27 +54,27 @@
 
         await Load(_state);
 
-        _selectedTeamId = null;
+        _selectedRoomId = null;
     }
     
-    private async Task RemoveTeam(TenantTeamDto team)
+    private async Task RemoveRoom(RoomDto room)
     {
-        _selectedTeamName = team.Name;
+        _selectedRoomName = room.Name;
 
         if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
         {
             var state = LoadingState.Wrap(_state, StateHasChanged);
             
             await RequestProcessor.Process(
-                async () => await TenantService.RemoveTeam(team.Id),
+                async () => await TenantService.RemoveRoom(room.Id),
                 state);
         
             await Load(state);
         }
 
-        _selectedTeamName = null;
+        _selectedRoomName = null;
     }
     
-    private string CreateMoveToRetroLink(Guid teamId) => NavRouter.CreateRoute($"retro/{teamId:N}");
-    private string CreateMoveToBacklogLink(Guid teamId) => NavRouter.CreateRoute($"backlog/{teamId:N}");
+    private string CreateMoveToRetroLink(Guid roomId) => NavRouter.CreateRoute($"retro/{roomId:N}");
+    private string CreateMoveToBacklogLink(Guid roomId) => NavRouter.CreateRoute($"backlog/{roomId:N}");
 }
