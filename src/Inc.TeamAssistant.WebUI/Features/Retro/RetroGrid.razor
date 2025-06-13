@@ -323,7 +323,7 @@
     private string RetroState => Session?.State ?? RetroStages.Collecting;
     private string RetroTextKey => $"{RetroState}Text";
     
-    private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.All
+    private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.Stages
         .Select(s => new NavigationItem<object?>(Localizer[$"{s}Title"], Value: null, s == RetroState, CanMove: false))
         .ToArray();
 

@@ -4,6 +4,8 @@
 
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<RetroResources> Localizer
+@inject INotificationsService NotificationsService
 
 @attribute [Authorize]
 
@@ -43,5 +45,7 @@
             async () => await RetroService.SetRetroAssessment(new SetRetroAssessmentCommand(SessionId, _value)),
             _state,
             showLoading: false);
+
+        NotificationsService.Publish(Notification.Info(Localizer["AssessmentSuccess"]));
     }
 }

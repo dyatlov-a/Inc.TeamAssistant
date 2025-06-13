@@ -226,9 +226,15 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroSessionChanged(async _ =>
+            b => b.OnRetroSessionChanged(async r =>
             {
-                await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
+                await InvokeAsync(async () =>
+                {
+                    if (r.State == RetroStages.Finished)
+                        await NavRouter.MoveToRoute($"retro-assessment/{r.Id:N}");
+                    else
+                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                });
             }),
             b => b.OnItemMoved(async id =>
             {
@@ -297,13 +303,9 @@
                 await MoveItem(_currentItem.Next);
             }
             else if (_activeSession?.Id is not null)
-            {
                 await RequestProcessor.Process(
                     () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
                     _state);
-
-                await NavRouter.MoveToRoute($"retro-assessment/{_activeSession.Id:N}");
-            }
         }
         else
         {

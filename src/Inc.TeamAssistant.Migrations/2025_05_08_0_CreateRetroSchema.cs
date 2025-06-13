@@ -73,8 +73,8 @@ public sealed class CreateRetroSchema : Migration
 
         Execute.Sql(
             """
-            CREATE UNIQUE INDEX retro_sessions__uidx__t_id__active
-            ON retro.retro_sessions (team_id)
+            CREATE UNIQUE INDEX retro_sessions__uidx__room_id__active
+            ON retro.retro_sessions (room_id)
             WHERE state != 4;
             """,
             "Create unique index on retro_sessions for active sessions");

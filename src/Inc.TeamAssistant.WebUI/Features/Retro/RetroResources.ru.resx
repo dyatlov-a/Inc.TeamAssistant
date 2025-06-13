@@ -108,4 +108,7 @@
     <data name="RetroAssessmentValueHint" xml:space="preserve">
         <value>Оцените ретро от 1 до 5 баллов.</value>
     </data>
+    <data name="AssessmentSuccess" xml:space="preserve">
+        <value>Спасибо, что поделились своим мнением</value>
+    </data>
 </root>

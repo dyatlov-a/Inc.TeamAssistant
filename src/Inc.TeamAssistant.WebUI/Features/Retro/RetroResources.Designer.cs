@@ -224,5 +224,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("RetroAssessmentValueHint", resourceCulture);
             }
         }
+        
+        internal static string AssessmentSuccess {
+            get {
+                return ResourceManager.GetString("AssessmentSuccess", resourceCulture);
+            }
+        }
     }
 }

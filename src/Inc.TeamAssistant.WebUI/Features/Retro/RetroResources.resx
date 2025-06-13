@@ -108,4 +108,7 @@
     <data name="RetroAssessmentValueHint" xml:space="preserve">
         <value>Rate the retro 1-5.</value>
     </data>
+    <data name="AssessmentSuccess" xml:space="preserve">
+        <value>Thank you for sharing your opinion</value>
+    </data>
 </root>

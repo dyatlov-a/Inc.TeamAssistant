@@ -47,7 +47,7 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
         var command = new CommandDefinition(
             """
             UPDATE tenants.rooms AS r
-            SET r.properties = @properties::JSONB
+            SET properties = @properties::JSONB
             WHERE r.id = @room_id;
             """, new
             {

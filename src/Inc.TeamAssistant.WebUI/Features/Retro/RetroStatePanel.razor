@@ -155,9 +155,12 @@
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
     private string MoveNextRightCss => IsDiscussing ? string.Empty : "retro__link_right";
+
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToString(@"mm\:ss")
-        : Localizer["TimerStart"];
+        : IsFacilitator
+            ? Localizer["TimerStart"]
+            : string.Empty;
 
     protected override void OnParametersSet()
     {

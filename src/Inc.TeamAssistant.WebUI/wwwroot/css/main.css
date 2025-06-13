@@ -176,13 +176,13 @@ html {
     100% { opacity: 1; }
 }
 .animation__draggable-hint {
-    animation: nudgeLeftRight .6s ease-in-out;
+    animation: nudgeLeftRight .7s ease-in-out;
 }
 @keyframes nudgeLeftRight {
     0%   { transform: translateX(0); }
-    25%  { transform: translateX(-5px); }
-    50%  { transform: translateX(5px); }
-    75%  { transform: translateX(-3px); }
+    25%  { transform: translateX(-1rem); }
+    50%  { transform: translateX(1rem); }
+    75%  { transform: translateX(-.5rem); }
     100% { transform: translateX(0); }
 }
 /* ICONS */

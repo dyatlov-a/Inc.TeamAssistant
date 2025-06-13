@@ -27,7 +27,7 @@ internal sealed class GiveFacilitatorCommandHandler : IRequestHandler<GiveFacili
         
         var currentPerson = _personResolver.GetCurrentPerson();
         
-        await _propertiesProvider.Set(command.RoomId, new (){ FacilitatorId =currentPerson.Id }, token);
+        await _propertiesProvider.Set(command.RoomId, new (){ FacilitatorId = currentPerson.Id }, token);
 
         await _eventSender.FacilitatorChanged(command.RoomId, currentPerson.Id);
     }
