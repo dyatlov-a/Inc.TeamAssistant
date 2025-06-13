@@ -85,7 +85,7 @@
     private bool _isCreating;
     
     private readonly LoadingState _state = LoadingState.Done();
-    private readonly IReadOnlyCollection<RetroColumnViewModel> _columns = RetroColumnsFactory.Create();
+    private readonly List<RetroColumnDto> _columns = new();
     private LinkedList<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)> _orderedItems = new();
     private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
@@ -96,7 +96,7 @@
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
         .OrderBy(p => p.Person.DisplayName)
         .ToArray();
-    private IReadOnlyCollection<RetroColumnViewModel> Columns => _columns
+    private IReadOnlyCollection<RetroColumnDto> Columns => _columns
         .Where(c => _currentItem is null || _currentItem.Value.Item.ColumnId == c.Id)
         .ToArray();
     
@@ -114,7 +114,9 @@
         var children = result.Items
             .Where(i => i.ParentId.HasValue)
             .ToLookup(i => i.ParentId!.Value);
-        
+
+        _columns.Clear();
+        _columns.AddRange(result.Columns);
         _activeSession = result.ActiveSession;
         _facilitatorId = result.FacilitatorId;
         _currentTimer = result.CurrentTimer;

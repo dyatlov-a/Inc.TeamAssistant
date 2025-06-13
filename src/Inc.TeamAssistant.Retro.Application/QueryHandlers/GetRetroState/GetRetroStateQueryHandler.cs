@@ -16,6 +16,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly ITimerService _timerService;
     private readonly IRetroStage _retroStage;
     private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRetroTemplateReader _retroTemplateReader;
 
     public GetRetroStateQueryHandler(
         IRetroReader reader,
@@ -24,7 +25,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IVoteStore voteStore,
         ITimerService timerService,
         IRetroStage retroStage,
-        IRetroPropertiesProvider propertiesProvider)
+        IRetroPropertiesProvider propertiesProvider,
+        IRetroTemplateReader retroTemplateReader)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
@@ -33,6 +35,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
         _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
+        _retroTemplateReader = retroTemplateReader ?? throw new ArgumentNullException(nameof(retroTemplateReader));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
@@ -49,6 +52,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
+        var columns = await _retroTemplateReader.GetColumns(Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c"), token);
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)
@@ -83,6 +87,9 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();
+        var retroColumns = columns
+            .Select(c => new RetroColumnDto(c.Id, c.Name, c.Position, c.Color, c.Description))
+            .ToArray();
         var currentTimer = _timerService.TryGetValue(query.RoomId);
         
         return new GetRetroStateResult(
@@ -90,6 +97,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             retroItems,
             participants,
             actionItems,
+            retroColumns,
             currentTimer,
             properties.FacilitatorId);
     }

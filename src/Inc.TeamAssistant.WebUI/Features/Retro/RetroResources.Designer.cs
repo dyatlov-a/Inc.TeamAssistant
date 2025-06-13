@@ -230,5 +230,89 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("AssessmentSuccess", resourceCulture);
             }
         }
+        
+        internal static string TemplateStartStopContinue {
+            get {
+                return ResourceManager.GetString("TemplateStartStopContinue", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnStartTitle {
+            get {
+                return ResourceManager.GetString("ColumnStartTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnStopTitle {
+            get {
+                return ResourceManager.GetString("ColumnStopTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnContinueTitle {
+            get {
+                return ResourceManager.GetString("ColumnContinueTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnStartDescription {
+            get {
+                return ResourceManager.GetString("ColumnStartDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnStopDescription {
+            get {
+                return ResourceManager.GetString("ColumnStopDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnContinueDescription {
+            get {
+                return ResourceManager.GetString("ColumnContinueDescription", resourceCulture);
+            }
+        }
+        
+        internal static string TemplateToDiscussDiscussingDiscussed {
+            get {
+                return ResourceManager.GetString("TemplateToDiscussDiscussingDiscussed", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnToDiscussTitle {
+            get {
+                return ResourceManager.GetString("ColumnToDiscussTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussingTitle {
+            get {
+                return ResourceManager.GetString("ColumnDiscussingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussedTitle {
+            get {
+                return ResourceManager.GetString("ColumnDiscussedTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnToDiscussDescription {
+            get {
+                return ResourceManager.GetString("ColumnToDiscussDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussingDescription {
+            get {
+                return ResourceManager.GetString("ColumnDiscussingDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussedDescription {
+            get {
+                return ResourceManager.GetString("ColumnDiscussedDescription", resourceCulture);
+            }
+        }
     }
 }

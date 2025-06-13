@@ -8,6 +8,7 @@ public sealed record GetRetroStateResult(
     IReadOnlyCollection<RetroItemDto> Items,
     IReadOnlyCollection<RetroParticipantDto> Participants,
     IReadOnlyCollection<ActionItemDto> ActionItems,
+    IReadOnlyCollection<RetroColumnDto> Columns,
     TimeSpan? CurrentTimer,
     long? FacilitatorId)
     : IWithEmpty<GetRetroStateResult>
@@ -17,6 +18,7 @@ public sealed record GetRetroStateResult(
         Items: [],
         Participants: [],
         ActionItems: [],
+        Columns: [],
         CurrentTimer: null,
         FacilitatorId: null);
 }

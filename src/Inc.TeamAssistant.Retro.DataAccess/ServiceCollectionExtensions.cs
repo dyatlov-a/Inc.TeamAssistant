@@ -16,7 +16,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IRetroAssessmentRepository, RetroAssessmentRepository>()
             
             .AddSingleton<IRetroReader, RetroReader>()
-            .AddSingleton<IActionItemReader, ActionItemReader>();
+            .AddSingleton<IActionItemReader, ActionItemReader>()
+            .AddSingleton<IRetroTemplateReader, RetroTemplateReader>();
 
         return services;
     }

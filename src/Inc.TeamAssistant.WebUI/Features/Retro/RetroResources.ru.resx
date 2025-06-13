@@ -76,7 +76,7 @@
         <value>В работу</value>
     </data>
     <data name="TimerStart" xml:space="preserve">
-        <value>Запустить</value>
+        <value>Старт</value>
     </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Остановить</value>
@@ -110,5 +110,38 @@
     </data>
     <data name="AssessmentSuccess" xml:space="preserve">
         <value>Спасибо, что поделились своим мнением</value>
+    </data>
+    <data name="TemplateStartStopContinue" xml:space="preserve">
+        <value>Начать, прекратить, продолжать</value>
+    </data>
+    <data name="ColumnStartTitle" xml:space="preserve">
+        <value>Начать</value>
+    </data>
+    <data name="ColumnStartDescription" xml:space="preserve">
+        <value>Добавьте заметки о вещах, которые положительно повлияли бы на команду, но пока не реализованы.</value>
+    </data>
+    <data name="ColumnStopTitle" xml:space="preserve">
+        <value>Прекратить</value>
+    </data>
+    <data name="ColumnStopDescription" xml:space="preserve">
+        <value>Добавьте заметки о вещах в рабочем процессе вашей команды, которые не помогают достигать целей и которые следует прекратить.</value>
+    </data>
+    <data name="ColumnContinueDescription" xml:space="preserve">
+        <value>Добавьте заметки о вещах, которые хорошо сработали в предыдущей итерации и должны остаться в рабочем процессе.</value>
+    </data>
+    <data name="TemplateToDiscussDiscussingDiscussed" xml:space="preserve">
+        <value>Обсудить, обсуждение, обсудили</value>
+    </data>
+    <data name="ColumnToDiscussTitle" xml:space="preserve">
+        <value>Обсудить</value>
+    </data>
+    <data name="ColumnDiscussingTitle" xml:space="preserve">
+        <value>Обсуждение</value>
+    </data>
+    <data name="ColumnDiscussedTitle" xml:space="preserve">
+        <value>Обсудили</value>
+    </data>
+    <data name="ColumnContinueTitle" xml:space="preserve">
+        <value>Продолжать</value>
     </data>
 </root>

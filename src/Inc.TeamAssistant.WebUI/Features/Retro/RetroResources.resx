@@ -111,4 +111,46 @@
     <data name="AssessmentSuccess" xml:space="preserve">
         <value>Thank you for sharing your opinion</value>
     </data>
+    <data name="TemplateStartStopContinue" xml:space="preserve">
+        <value>Start, stop, continue</value>
+    </data>
+    <data name="ColumnStartTitle" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="ColumnStopTitle" xml:space="preserve">
+        <value>Stop</value>
+    </data>
+    <data name="ColumnContinueTitle" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="ColumnStartDescription" xml:space="preserve">
+        <value>Add notes about things that would have a positive impact on the team that aren't already implemented.</value>
+    </data>
+    <data name="ColumnStopDescription" xml:space="preserve">
+        <value>Add notes about things within your team's workflow or process that aren't helping the team to achieve their goals and should be stopped.</value>
+    </data>
+    <data name="ColumnContinueDescription" xml:space="preserve">
+        <value>Add notes about things that worked well in the previous iteration and should stay in the workflow.</value>
+    </data>
+    <data name="TemplateToDiscussDiscussingDiscussed" xml:space="preserve">
+        <value>To discuss, discussing, discussed</value>
+    </data>
+    <data name="ColumnToDiscussTitle" xml:space="preserve">
+        <value>To Discuss</value>
+    </data>
+    <data name="ColumnDiscussingTitle" xml:space="preserve">
+        <value>Discussing</value>
+    </data>
+    <data name="ColumnDiscussedTitle" xml:space="preserve">
+        <value>Discussed</value>
+    </data>
+    <data name="ColumnToDiscussDescription" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ColumnDiscussingDescription" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ColumnDiscussedDescription" xml:space="preserve">
+        <value />
+    </data>
 </root>

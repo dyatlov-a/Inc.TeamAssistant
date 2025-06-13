@@ -35,9 +35,11 @@
                     <div class="retro-grid__columns">
                         @foreach (var column in Columns.OrderBy(c => c.Position))
                         {
+                            var description = GetColumnDescription(column);
+                            
                             <div class="retro-grid__column">
                                 <Panel
-                                    Header="@column.Name"
+                                    Header="@Localizer[column.Name]"
                                     IsOpen="true"
                                     HasActions="CanCreateRetroItem">
                                     <Actions>
@@ -46,6 +48,10 @@
                                         </Button>
                                     </Actions>
                                     <Content>
+                                        @if (!string.IsNullOrWhiteSpace(description))
+                                        {
+                                            <p>@description</p>
+                                        }
                                         <div class="retro-grid__column-items">
                                             @if (CanMove)
                                             {
@@ -71,7 +77,7 @@
                                                         CanEdit="@(CanEdit(item))"
                                                         CanRemove="@(CanRemove(item) && !hasChildren)"
                                                         CanMove="CanMove"
-                                                        BackgroundColor="@column.ItemColor"
+                                                        BackgroundColor="@column.Color"
                                                         DebounceDelay="DebounceDelay"
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="ItemMoved"
@@ -85,7 +91,7 @@
                                                                 CanVote="CanVote"
                                                                 Value="item.Votes"
                                                                 ValueExpression="@(() => item.Votes)"
-                                                                ValueChanged="@((int v) => SendVotesChanged(item.Id, v))" />
+                                                                ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
                                                         }
                                                     </RetroItem>
 
@@ -97,11 +103,11 @@
                                                             CanEdit="false"
                                                             CanRemove="@(CanRemove(child))"
                                                             CanMove="false"
-                                                            BackgroundColor="@column.ItemColor"
+                                                            BackgroundColor="@column.Color"
                                                             ItemRemoved="ItemRemoved"
                                                             ItemMoved="@(_ => { })"
                                                             Value="child"
-                                                            ValueChanged="_ => { }" />
+                                                            ValueChanged="_ => { }"/>
                                                     }
                                                 </div>
                                             }
@@ -155,7 +161,7 @@
     /// Retro columns.
     /// </summary>
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<RetroColumnViewModel> Columns { get; set; } = default!;
+    public IReadOnlyCollection<RetroColumnDto> Columns { get; set; } = default!;
 
     /// <summary>
     /// Current user id.
@@ -369,6 +375,19 @@
         var canAsFacilitator = Session?.State == RetroStages.Grouping && IsFacilitator && item.ParentId.HasValue;
 
         return canAsOwner || canAsFacilitator;
+    }
+    
+    private string? GetColumnDescription(RetroColumnDto column)
+    {
+        if (string.IsNullOrWhiteSpace(column.Description))
+            return null;
+        
+        var localizedDescription = Localizer[column.Description];
+        var result = string.IsNullOrWhiteSpace(localizedDescription)
+            ? column.Description
+            : localizedDescription;
+        
+        return result;
     }
 
     private async Task SendRetroItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);
