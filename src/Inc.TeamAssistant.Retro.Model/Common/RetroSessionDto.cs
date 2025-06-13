@@ -2,6 +2,6 @@ namespace Inc.TeamAssistant.Retro.Model.Common;
 
 public sealed record RetroSessionDto(
     Guid Id,
-    Guid TeamId,
+    Guid RoomId,
     DateTimeOffset Created,
     string State);

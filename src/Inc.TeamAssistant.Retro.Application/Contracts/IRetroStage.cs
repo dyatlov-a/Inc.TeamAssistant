@@ -4,9 +4,9 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroStage
 {
-    IReadOnlyCollection<RetroStageTicket> Get(Guid teamId);
+    IReadOnlyCollection<RetroStageTicket> Get(Guid roomId);
     
-    void Set(Guid teamId, RetroStageTicket ticket);
+    void Set(Guid roomId, RetroStageTicket ticket);
     
-    void Clear(Guid teamId);
+    void Clear(Guid roomId);
 }

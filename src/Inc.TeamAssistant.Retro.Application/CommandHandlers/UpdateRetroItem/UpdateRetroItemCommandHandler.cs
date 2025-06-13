@@ -12,15 +12,18 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
     private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
 
     public UpdateRetroItemCommandHandler(
         IRetroItemRepository repository,
         IPersonResolver personResolver,
-        IRetroEventSender eventSender)
+        IRetroEventSender eventSender,
+        IRetroPropertiesProvider propertiesProvider)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
     
     public async Task Handle(UpdateRetroItemCommand command, CancellationToken token)
@@ -29,9 +32,10 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
 
         var person = _personResolver.GetCurrentPerson();
         var item = await command.Id.Required(_repository.Find, token);
+        var properties = await _propertiesProvider.Get(item.RoomId, token);
 
         item
-            .CheckCanChange(person.Id)
+            .CheckCanChange(person.Id, properties.FacilitatorId)
             .ChangeText(command.Text)
             .ChangeParent(command.ParentId)
             .ChangePosition(command.ColumnId, command.Position);

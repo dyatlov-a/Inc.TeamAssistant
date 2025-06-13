@@ -29,19 +29,19 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
-    public async Task JoinRetro(Guid teamId)
+    public async Task JoinRetro(Guid roomId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, teamId.ToString("N"));
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString("N"));
 
-        await _mediator.Send(new JoinToRetroCommand(Context.ConnectionId, teamId), CancellationToken.None);
+        await _mediator.Send(new JoinToRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
-    public async Task LeaveRetro(Guid teamId)
+    public async Task LeaveRetro(Guid roomId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, teamId.ToString("N"));
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));
         
-        await _mediator.Send(new LeaveFromRetroCommand(Context.ConnectionId, teamId), CancellationToken.None);
+        await _mediator.Send(new LeaveFromRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -79,9 +79,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.MoveItemMethod)]
-    public async Task MoveItem(Guid teamId, Guid itemId)
+    public async Task MoveItem(Guid roomId, Guid itemId)
     {
-        await Clients.GroupExcept(teamId.ToString("N"), Context.ConnectionId).ItemMoved(itemId);
+        await Clients.GroupExcept(roomId.ToString("N"), Context.ConnectionId).ItemMoved(itemId);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.ChangeActionItemMethod)]
@@ -93,9 +93,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.RemoveActionItemMethod)]
-    public async Task RemoveActionItem(Guid teamId, Guid itemId)
+    public async Task RemoveActionItem(Guid roomId, Guid itemId)
     {
-        await _mediator.Send(new RemoveActionItemCommand(itemId, teamId, Context.ConnectionId), CancellationToken.None);
+        await _mediator.Send(new RemoveActionItemCommand(itemId, roomId, Context.ConnectionId), CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.ChangeTimerMethod)]
@@ -118,8 +118,8 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         var result = await _mediator.Send(new LeaveFromAllCommand(Context.ConnectionId), CancellationToken.None);
 
-        foreach (var teamId in result.TeamIds)
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, teamId.ToString("N"));
+        foreach (var roomId in result.RoomIds)
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));
 
         await base.OnDisconnectedAsync(exception);
     }

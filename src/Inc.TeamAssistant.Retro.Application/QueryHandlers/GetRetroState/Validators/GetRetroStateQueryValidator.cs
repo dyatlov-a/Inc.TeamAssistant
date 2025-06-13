@@ -7,7 +7,7 @@ internal sealed class GetRetroStateQueryValidator : AbstractValidator<GetRetroSt
 {
     public GetRetroStateQueryValidator()
     {
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty();
     }
 }

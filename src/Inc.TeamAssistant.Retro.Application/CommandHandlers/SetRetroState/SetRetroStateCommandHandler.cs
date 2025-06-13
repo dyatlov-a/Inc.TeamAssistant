@@ -22,10 +22,10 @@ internal sealed class SetRetroStateCommandHandler : IRequestHandler<SetRetroStat
         
         var ticket = new RetroStageTicket(command.PersonId, command.Finished, command.HandRaised);
         
-        _retroStage.Set(command.TeamId, ticket);
+        _retroStage.Set(command.RoomId, ticket);
 
         await _eventSender.RetroStateChanged(
-            command.TeamId,
+            command.RoomId,
             command.PersonId,
             command.Finished,
             command.HandRaised);

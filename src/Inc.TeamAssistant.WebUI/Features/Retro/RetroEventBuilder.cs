@@ -96,9 +96,9 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.SetRetroStateMethod, command);
     }
     
-    public async Task MoveItem(Guid teamId, Guid itemId)
+    public async Task MoveItem(Guid roomId, Guid itemId)
     {
-        await _hubConnection.SendAsync(HubDescriptors.RetroHub.MoveItemMethod, teamId, itemId);
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.MoveItemMethod, roomId, itemId);
     }
     
     public async Task ChangeActionItem(ChangeActionItemCommand command)
@@ -108,9 +108,9 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeActionItemMethod, command);
     }
 
-    public async Task RemoveActionItem(Guid teamId, Guid itemId)
+    public async Task RemoveActionItem(Guid roomId, Guid itemId)
     {
-        await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveActionItemMethod, teamId, itemId);
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.RemoveActionItemMethod, roomId, itemId);
     }
     
     public async Task ChangeTimer(ChangeTimerCommand command)
@@ -128,7 +128,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
     }
 
     public async Task<IAsyncDisposable> Build(
-        Guid teamId,
+        Guid roomId,
         params IReadOnlyCollection<Func<IRetroEventProvider, IDisposable>> eventHandlers)
     {
         ArgumentNullException.ThrowIfNull(eventHandlers);
@@ -137,11 +137,11 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
             .Select(i => i(this))
             .ToArray();
 
-        await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinRetroMethod, teamId);
+        await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinRetroMethod, roomId);
 
         return new PostActionScope(async () =>
         {
-            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.LeaveRetroMethod, teamId);
+            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.LeaveRetroMethod, roomId);
 			
             foreach (var handler in handlers)
                 handler.Dispose();

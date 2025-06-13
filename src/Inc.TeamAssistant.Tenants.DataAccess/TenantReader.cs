@@ -25,6 +25,7 @@ internal sealed class TenantReader : ITenantReader
                 r.id AS id,
                 r.name AS name,
                 r.owner_id AS ownerid,
+                r.properties AS properties,
                 t.id AS id,
                 t.name AS name,
                 t.owner_id AS ownerid

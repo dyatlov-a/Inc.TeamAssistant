@@ -52,7 +52,10 @@ public sealed class CreateTenantsSchema : Migration
                 foreignKeyName: "rooms__tenants__fk__tenant_id__id",
                 primaryTableSchema: "tenants",
                 primaryTableName: "tenants",
-                primaryColumnName: "id");
+                primaryColumnName: "id")
+            
+            .WithColumn("properties")
+            .AsCustom("jsonb").NotNullable();
         
         Execute.Sql(
             "CREATE UNIQUE INDEX tenants__uidx__name ON tenants.tenants (lower(name));",

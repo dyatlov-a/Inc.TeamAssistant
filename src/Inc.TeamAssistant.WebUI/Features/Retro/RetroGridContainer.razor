@@ -1,9 +1,9 @@
-@page "/retro/{TeamId:guid}"
-@page "/ru/retro/{TeamId:guid}"
-@page "/en/retro/{TeamId:guid}"
-@page "/retro/{TeamId:guid}/{ItemId:guid}"
-@page "/ru/retro/{TeamId:guid}/{ItemId:guid}"
-@page "/en/retro/{TeamId:guid}/{ItemId:guid}"
+@page "/retro/{RoomId:guid}"
+@page "/ru/retro/{RoomId:guid}"
+@page "/en/retro/{RoomId:guid}"
+@page "/retro/{RoomId:guid}/{ItemId:guid}"
+@page "/ru/retro/{RoomId:guid}/{ItemId:guid}"
+@page "/en/retro/{RoomId:guid}/{ItemId:guid}"
 
 @attribute [Authorize]
 
@@ -68,7 +68,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public Guid TeamId { get; set; }
+    public Guid RoomId { get; set; }
     
     [Parameter]
     public Guid? ItemId { get; set; }
@@ -105,10 +105,10 @@
     private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
     {
         if (hardReset)
-            await TenantStore.Initialize(TeamId, state);
+            await TenantStore.Initialize(RoomId, state);
         
         var result = await RequestProcessor.Process(
-            async () => await RetroService.GetRetroState(TeamId),
+            async () => await RetroService.GetRetroState(RoomId),
             nameof(RetroGridContainer),
             state);
         var children = result.Items
@@ -148,7 +148,7 @@
     
     private async Task MoveItem(LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)> node)
     {
-        var routeSegment = $"retro/{TeamId:N}/{node.Value.Item.Id:N}".ToLowerInvariant();
+        var routeSegment = $"retro/{RoomId:N}/{node.Value.Item.Id:N}".ToLowerInvariant();
         
         _currentItem = node;
         
@@ -185,7 +185,7 @@
             return null;
 
         return await _eventBuilder.Build(
-            TeamId,
+            RoomId,
             b => b.OnRetroItemChanged(async i =>
             {
                 await InvokeAsync(() =>
@@ -279,7 +279,7 @@
     private async Task OnRetroStarted()
     {
         await RequestProcessor.Process(
-            () => RetroService.StartRetro(new StartRetroCommand(TeamId)),
+            () => RetroService.StartRetro(new StartRetroCommand(RoomId)),
             _state);
 
         await Load(_state, hardReset: false);
@@ -292,14 +292,14 @@
             if (_currentItem?.Next is not null)
             {
                 if (_eventBuilder is not null)
-                    await _eventBuilder.MoveItem(TeamId, _currentItem.Next.Value.Item.Id);
+                    await _eventBuilder.MoveItem(RoomId, _currentItem.Next.Value.Item.Id);
                 
                 await MoveItem(_currentItem.Next);
             }
             else if (_activeSession?.Id is not null)
             {
                 await RequestProcessor.Process(
-                    () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
+                    () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
                     _state);
 
                 await NavRouter.MoveToRoute($"retro-assessment/{_activeSession.Id:N}");
@@ -308,7 +308,7 @@
         else
         {
             await RequestProcessor.Process(
-                () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id)),
+                () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
                 _state);
             
             await Load(_state, hardReset: false);
@@ -320,7 +320,7 @@
         if (_currentItem?.Previous is not null)
         {
             if (_eventBuilder is not null)
-                await _eventBuilder.MoveItem(TeamId, _currentItem.Previous.Value.Item.Id);
+                await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
             
             await MoveItem(_currentItem.Previous);
         }
@@ -335,7 +335,7 @@
 
         try
         {
-            await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(TeamId, columnId, Text: null));
+            await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(RoomId, columnId, Text: null));
         }
         finally
         {
@@ -359,7 +359,7 @@
         if (_eventBuilder is null)
             return;
         
-        await _eventBuilder.ChangeActionItem(item.ToCommand(TeamId, notify: true));
+        await _eventBuilder.ChangeActionItem(item.ToCommand(RoomId, notify: true));
     }
 
     private async Task OnActionItemRemoved(ActionItemViewModel item)
@@ -367,7 +367,7 @@
         if (_eventBuilder is null)
             return;
         
-        await _eventBuilder.RemoveActionItem(TeamId, item.Id);
+        await _eventBuilder.RemoveActionItem(RoomId, item.Id);
     }
 
     private async Task OnRetroItemChanged(RetroItemViewModel item)
@@ -482,7 +482,7 @@
             .Single(i => i.Id == data.ItemId)
             .ChangeVotes(data.Votes);
 
-        await _eventBuilder.SetVotes(new SetVotesCommand(TeamId, _activeSession.Id, votesByPerson));
+        await _eventBuilder.SetVotes(new SetVotesCommand(RoomId, _activeSession.Id, votesByPerson));
     }
 
     private async Task OnFinished()
@@ -494,7 +494,7 @@
         var currentUser = authenticationState.User.ToPerson();
 
         if (_participants.TryGetValue(currentUser.Id, out var participant))
-            await _eventBuilder.SetRetroState(participant.ChangeFinished(!participant.Finished).ToCommand(TeamId));
+            await _eventBuilder.SetRetroState(participant.ChangeFinished(!participant.Finished).ToCommand(RoomId));
     }
 
     private async Task OnHandRaised()
@@ -506,7 +506,7 @@
         var currentUser = authenticationState.User.ToPerson();
 
         if (_participants.TryGetValue(currentUser.Id, out var participant))
-            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(!participant.HandRaised).ToCommand(TeamId));
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(!participant.HandRaised).ToCommand(RoomId));
     }
 
     private async Task OnHandLowered(long personId)
@@ -515,7 +515,7 @@
             return;
         
         if (_participants.TryGetValue(personId, out var participant))
-            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(TeamId));
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(RoomId));
     }
 
     public async Task OnTimerChanged(TimeSpan? changed)
@@ -525,7 +525,7 @@
 
         var timerChanged = new [] { _currentTimer, changed }.Count(t => t.HasValue) == 1;
         if (timerChanged)
-            await _eventBuilder.ChangeTimer(new ChangeTimerCommand(TeamId, changed));
+            await _eventBuilder.ChangeTimer(new ChangeTimerCommand(RoomId, changed));
         else
             _currentTimer = changed;
     }
@@ -535,7 +535,7 @@
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.GiveFacilitator(new GiveFacilitatorCommand(TeamId, _activeSession?.Id));
+        await _eventBuilder.GiveFacilitator(new GiveFacilitatorCommand(RoomId, _activeSession?.Id));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)

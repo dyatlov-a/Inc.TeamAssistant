@@ -15,7 +15,7 @@ internal sealed class RetroReader : IRetroReader
     }
     
     public async Task<IReadOnlyCollection<RetroItem>> ReadRetroItems(
-        Guid teamId,
+        Guid roomId,
         IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token)
     {
@@ -26,7 +26,7 @@ internal sealed class RetroReader : IRetroReader
             """
             SELECT
                 ri.id AS id,
-                ri.team_id AS teamid,
+                ri.room_id AS roomid,
                 ri.created AS created,
                 ri.column_id AS columnid,
                 ri.position AS position,
@@ -37,11 +37,11 @@ internal sealed class RetroReader : IRetroReader
                 ri.votes AS votes
             FROM retro.retro_items AS ri
             LEFT JOIN retro.retro_sessions AS rs ON ri.retro_session_id = rs.id
-            WHERE ri.team_id = @team_id AND (rs.id IS NULL OR rs.state = ANY(@states));
+            WHERE ri.room_id = @room_id AND (rs.id IS NULL OR rs.state = ANY(@states));
             """,
             new
             {
-                team_id = teamId,
+                room_id = roomId,
                 states = targetStates
             },
             flags: CommandFlags.None,
@@ -55,7 +55,7 @@ internal sealed class RetroReader : IRetroReader
     }
 
     public async Task<RetroSession?> FindSession(
-        Guid teamId,
+        Guid roomId,
         IReadOnlyCollection<RetroSessionState> states,
         CancellationToken token)
     {
@@ -66,16 +66,15 @@ internal sealed class RetroReader : IRetroReader
             """
             SELECT
                 rs.id AS id,
-                rs.team_id AS teamid,
+                rs.room_id AS roomid,
                 rs.created AS created,
-                rs.state AS state,
-                rs.facilitator_id AS facilitatorid
+                rs.state AS state
             FROM retro.retro_sessions AS rs
-            WHERE rs.team_id = @team_id AND rs.state = ANY(@states);
+            WHERE rs.room_id = @room_id AND rs.state = ANY(@states);
             """,
             new
             {
-                team_id = teamId,
+                room_id = roomId,
                 states = targetStates
             },
             flags: CommandFlags.None,

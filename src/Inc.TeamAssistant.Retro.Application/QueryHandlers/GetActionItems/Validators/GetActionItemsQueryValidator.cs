@@ -7,7 +7,7 @@ internal sealed class GetActionItemsQueryValidator : AbstractValidator<GetAction
 {
     public GetActionItemsQueryValidator()
     {
-        RuleFor(q => q.TeamId)
+        RuleFor(q => q.RoomId)
             .NotEmpty();
     }
 }

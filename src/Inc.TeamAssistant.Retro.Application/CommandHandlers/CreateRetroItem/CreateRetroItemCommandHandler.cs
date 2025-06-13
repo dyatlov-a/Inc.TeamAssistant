@@ -34,7 +34,7 @@ internal sealed class CreateRetroItemCommandHandler : IRequestHandler<CreateRetr
         var position = _positionGenerator.Generate();
         var item = new RetroItem(
             Guid.CreateVersion7(),
-            command.TeamId,
+            command.RoomId,
             DateTimeOffset.UtcNow,
             command.ColumnId,
             position,

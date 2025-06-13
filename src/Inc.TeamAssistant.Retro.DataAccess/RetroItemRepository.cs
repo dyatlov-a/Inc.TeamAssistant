@@ -20,7 +20,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
             """
             SELECT
                 ri.id AS id,
-                ri.team_id AS teamid,
+                ri.room_id AS roomid,
                 ri.created AS created,
                 ri.column_id AS columnid,
                 ri.position AS position,
@@ -34,17 +34,16 @@ internal sealed class RetroItemRepository : IRetroItemRepository
 
             SELECT
                 rs.id AS id,
-                rs.team_id AS teamid,
+                rs.room_id AS roomid,
                 rs.created AS created,
-                rs.state AS state,
-                rs.facilitator_id AS facilitatorid
+                rs.state AS state
             FROM retro.retro_items AS ri
             JOIN retro.retro_sessions AS rs ON ri.retro_session_id = rs.id
             WHERE ri.id = @id;
 
             SELECT
                 ri.id AS id,
-                ri.team_id AS teamid,
+                ri.room_id AS roomid,
                 ri.created AS created,
                 ri.column_id AS columnid,
                 ri.position AS position,
@@ -81,7 +80,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
         ArgumentNullException.ThrowIfNull(item);
 
         var id = new List<Guid>();
-        var teamId = new List<Guid>();
+        var roomId = new List<Guid>();
         var created = new List<DateTimeOffset>();
         var columnId = new List<Guid>();
         var position = new List<int>();
@@ -94,7 +93,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
         foreach (var data in item.Children.Append(item))
         {
             id.Add(data.Id);
-            teamId.Add(data.TeamId);
+            roomId.Add(data.RoomId);
             created.Add(data.Created);
             columnId.Add(data.ColumnId);
             position.Add(data.Position);
@@ -109,7 +108,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
             """
             INSERT INTO retro.retro_items (
                 id,
-                team_id,
+                room_id,
                 created,
                 column_id,
                 position,
@@ -120,7 +119,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 votes)
             SELECT
                 id,
-                team_id,
+                room_id,
                 created,
                 column_id,
                 position,
@@ -129,10 +128,10 @@ internal sealed class RetroItemRepository : IRetroItemRepository
                 retro_session_id,
                 parent_id,
                 votes
-            FROM UNNEST(@id, @team_id, @created, @column_id, @position, @text, @owner_id, @retro_session_id, @parent_id, @votes)
-                AS i(id, team_id, created, column_id, position, text, owner_id, retro_session_id, parent_id, votes)
+            FROM UNNEST(@id, @room_id, @created, @column_id, @position, @text, @owner_id, @retro_session_id, @parent_id, @votes)
+                AS i(id, room_id, created, column_id, position, text, owner_id, retro_session_id, parent_id, votes)
             ON CONFLICT (id) DO UPDATE SET
-                team_id = EXCLUDED.team_id,
+                room_id = EXCLUDED.room_id,
                 created = EXCLUDED.created,
                 column_id = EXCLUDED.column_id,
                 position = EXCLUDED.position,
@@ -145,7 +144,7 @@ internal sealed class RetroItemRepository : IRetroItemRepository
             new
             {
                 id = id,
-                team_id = teamId,
+                room_id = roomId,
                 created = created,
                 column_id = columnId,
                 position = position,

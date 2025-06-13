@@ -9,26 +9,26 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro.Validat
 internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroCommand>
 {
     private readonly IRetroReader _reader;
-    private readonly IFacilitatorProvider _facilitatorProvider;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
     public StartRetroCommandValidator(
         IRetroReader reader,
-        IFacilitatorProvider facilitatorProvider,
+        IRetroPropertiesProvider propertiesProvider,
         IPersonResolver personResolver)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
 
-        RuleFor(x => x.TeamId)
+        RuleFor(x => x.RoomId)
             .NotEmpty()
-            .Must(HasFacilitationRights)
-            .WithMessage(c => $"You do not have facilitation rights for team {c.TeamId}.")
+            .MustAsync(HasFacilitationRights)
+            .WithMessage(c => $"You do not have facilitation rights for team {c.RoomId}.")
             .MustAsync(NotHaveActiveSession)
-            .WithMessage(c => $"There is already an active retro session for this team {c.TeamId}.")
+            .WithMessage(c => $"There is already an active retro session for this team {c.RoomId}.")
             .MustAsync(HasItems)
-            .WithMessage(c => $"There are no items to create a retro from team {c.TeamId}.");
+            .WithMessage(c => $"There are no items to create a retro from team {c.RoomId}.");
     }
 
     private async Task<bool> NotHaveActiveSession(Guid teamId, CancellationToken token)
@@ -45,11 +45,11 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
         return items.Any();
     }
     
-    private bool HasFacilitationRights(Guid teamId)
+    private async Task<bool> HasFacilitationRights(Guid teamId, CancellationToken token)
     {
-        var facilitator = _facilitatorProvider.Get(teamId);
+        var properties = await _propertiesProvider.Get(teamId, token);
         var currentPerson = _personResolver.GetCurrentPerson();
 
-        return facilitator == currentPerson.Id;
+        return properties.FacilitatorId == currentPerson.Id;
     }
 }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
@@ -47,6 +48,7 @@ internal sealed class TenantRepository : ITenantRepository
                 r.id AS id,
                 r.name AS name,
                 r.owner_id AS ownerid,
+                r.properties AS properties,
                 t.id AS id,
                 t.name AS name,
                 t.owner_id AS ownerid
@@ -101,23 +103,27 @@ internal sealed class TenantRepository : ITenantRepository
                 id,
                 name,
                 owner_id,
-                tenant_id)
+                tenant_id,
+                properties)
             VALUES (
                 @id,
                 @name,
                 @owner_id,
-                @tenant_id)
+                @tenant_id,
+                @properties::JSONB)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
                 owner_id = EXCLUDED.owner_id,
-                tenant_id = EXCLUDED.tenant_id;
+                tenant_id = EXCLUDED.tenant_id,
+                properties = EXCLUDED.properties;
             """,
             new
             {
                 id = room.Id,
                 name = room.Name,
                 owner_id = room.OwnerId,
-                tenant_id = room.Tenant.Id
+                tenant_id = room.Tenant.Id,
+                properties = JsonSerializer.Serialize(room.Properties)
             },
             flags: CommandFlags.None,
             cancellationToken: token);

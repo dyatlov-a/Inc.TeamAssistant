@@ -7,7 +7,7 @@ internal sealed class ChangeTimerCommandValidator : AbstractValidator<ChangeTime
 {
     public ChangeTimerCommandValidator()
     {
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty();
 
         RuleFor(c => c.Duration)

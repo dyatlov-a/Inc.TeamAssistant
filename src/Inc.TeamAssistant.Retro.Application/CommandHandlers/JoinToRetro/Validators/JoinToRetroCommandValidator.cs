@@ -10,7 +10,7 @@ internal sealed class JoinToRetroCommandValidator : AbstractValidator<JoinToRetr
         RuleFor(c => c.ConnectionId)
             .NotEmpty();
         
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty();
     }
 }

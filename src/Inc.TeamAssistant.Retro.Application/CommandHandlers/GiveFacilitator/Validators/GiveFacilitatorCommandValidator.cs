@@ -7,7 +7,7 @@ internal sealed class GiveFacilitatorCommandValidator : AbstractValidator<GiveFa
 {
     public GiveFacilitatorCommandValidator()
     {
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty();
         
         RuleFor(c => c.RetroSessionId)

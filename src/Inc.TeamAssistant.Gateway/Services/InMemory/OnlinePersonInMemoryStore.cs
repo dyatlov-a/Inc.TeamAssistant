@@ -9,9 +9,9 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, Person>> _state = new();
 
-    public string? FindConnectionId(Guid teamId, long personId)
+    public string? FindConnectionId(Guid roomId, long personId)
     {
-        if (_state.TryGetValue(teamId, out var persons))
+        if (_state.TryGetValue(roomId, out var persons))
             foreach (var person in persons)
                 if (person.Value.Id == personId)
                     return person.Key;
@@ -19,35 +19,35 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         return null;
     }
 
-    public IReadOnlyCollection<Person> GetPersons(Guid teamId)
+    public IReadOnlyCollection<Person> GetPersons(Guid roomId)
     {
-        var result = _state.TryGetValue(teamId, out var persons)
+        var result = _state.TryGetValue(roomId, out var persons)
             ? persons.Values.ToArray()
             : [];
         
         return result;
     }
     
-    public IReadOnlyCollection<Person> JoinToTeam(Guid teamId, string connectionId, Person person)
+    public IReadOnlyCollection<Person> JoinToTeam(Guid roomId, string connectionId, Person person)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         ArgumentNullException.ThrowIfNull(person);
         
-        var persons = _state.GetOrAdd(teamId, _ => new ConcurrentDictionary<string, Person>());
+        var persons = _state.GetOrAdd(roomId, _ => new ConcurrentDictionary<string, Person>());
         
         persons.TryAdd(connectionId, person);
 
-        return GetPersons(teamId);
+        return GetPersons(roomId);
     }
 
-    public IReadOnlyCollection<Person> LeaveFromTeam(Guid teamId, string connectionId)
+    public IReadOnlyCollection<Person> LeaveFromTeam(Guid roomId, string connectionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         
-        if (_state.TryGetValue(teamId, out var persons))
+        if (_state.TryGetValue(roomId, out var persons))
             persons.TryRemove(connectionId, out _);
         
-        return GetPersons(teamId);
+        return GetPersons(roomId);
     }
 
     public async IAsyncEnumerable<Guid> LeaveFromTeams(

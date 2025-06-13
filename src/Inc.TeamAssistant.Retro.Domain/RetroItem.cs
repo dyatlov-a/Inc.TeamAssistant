@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Retro.Domain;
 public sealed class RetroItem
 {
     public Guid Id { get; private set; }
-    public Guid TeamId { get; private set; }
+    public Guid RoomId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public Guid ColumnId { get; private set; }
     public int Position { get; private set; }
@@ -24,7 +24,7 @@ public sealed class RetroItem
 
     public RetroItem(
         Guid id,
-        Guid teamId,
+        Guid roomId,
         DateTimeOffset now,
         Guid columnId,
         int position,
@@ -33,7 +33,7 @@ public sealed class RetroItem
         : this()
     {
         Id = id;
-        TeamId = teamId;
+        RoomId = roomId;
         Created = now;
         ColumnId = columnId;
         Position = position;
@@ -41,10 +41,10 @@ public sealed class RetroItem
         OwnerId = ownerId;
     }
     
-    public RetroItem CheckCanChange(long personId)
+    public RetroItem CheckCanChange(long personId, long? facilitatorId)
     {
         var editAsOwner = RetroSession is null && OwnerId == personId;
-        var editAsFacilitator = RetroSession?.HasRights(personId) == true;
+        var editAsFacilitator = personId == facilitatorId;
         
         if (!editAsOwner && !editAsFacilitator)
             throw new TeamAssistantUserException(Messages.Connector_HasNoRights, personId);

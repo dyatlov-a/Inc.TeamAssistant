@@ -13,10 +13,10 @@ internal sealed class CreateRetroItemCommandValidator : AbstractValidator<Create
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
 
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty()
             .MustAsync(HasNotActiveSession)
-            .WithMessage(c => $"There is already an active retro session for this team {c.TeamId}.");
+            .WithMessage(c => $"There is already an active retro session for this team {c.RoomId}.");
         
         RuleFor(c => c.ColumnId)
             .NotEmpty();

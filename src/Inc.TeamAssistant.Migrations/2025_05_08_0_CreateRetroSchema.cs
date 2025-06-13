@@ -26,17 +26,14 @@ public sealed class CreateRetroSchema : Migration
             .AsGuid().NotNullable()
             .PrimaryKey("retro_sessions__pk__id")
 
-            .WithColumn("team_id")
+            .WithColumn("room_id")
             .AsGuid().NotNullable()
 
             .WithColumn("created")
             .AsDateTimeOffset().NotNullable()
 
             .WithColumn("state")
-            .AsInt32().NotNullable()
-
-            .WithColumn("facilitator_id")
-            .AsInt64().NotNullable();
+            .AsInt32().NotNullable();
         
         Create
             .Table("retro_items")
@@ -46,7 +43,7 @@ public sealed class CreateRetroSchema : Migration
             .AsGuid().NotNullable()
             .PrimaryKey("retro_items__pk__id")
             
-            .WithColumn("team_id")
+            .WithColumn("room_id")
             .AsGuid().NotNullable()
             
             .WithColumn("created")

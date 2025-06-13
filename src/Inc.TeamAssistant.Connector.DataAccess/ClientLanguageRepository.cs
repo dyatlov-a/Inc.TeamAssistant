@@ -57,9 +57,14 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
         return result;
     }
 
-    public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
+    public async Task Upsert(
+        Guid botId,
+        long personId,
+        LanguageId languageId,
+        DateTimeOffset now,
+        CancellationToken token)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
+        ArgumentNullException.ThrowIfNull(languageId);
 
         var command = new CommandDefinition(
             """
@@ -71,7 +76,7 @@ internal sealed class ClientLanguageRepository : IClientLanguageRepository
             new
             {
                 person_id = personId,
-                language_id = languageId,
+                language_id = languageId.Value,
                 last_use = now
             },
             flags: CommandFlags.None,

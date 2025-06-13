@@ -31,6 +31,6 @@ internal sealed class RemoveRetroItemCommandHandler : IRequestHandler<RemoveRetr
 
         await _repository.Remove(item.CheckCanRemove(person.Id), token);
 
-        await _eventSender.RetroItemRemoved(item.TeamId, item.Id);
+        await _eventSender.RetroItemRemoved(item.RoomId, item.Id);
     }
 }

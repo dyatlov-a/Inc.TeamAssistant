@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
@@ -10,16 +9,11 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro;
 internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroCommand>
 {
     private readonly IRetroSessionRepository _repository;
-    private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
 
-    public StartRetroCommandHandler(
-        IRetroSessionRepository repository,
-        IPersonResolver personResolver,
-        IRetroEventSender eventSender)
+    public StartRetroCommandHandler(IRetroSessionRepository repository, IRetroEventSender eventSender)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
@@ -27,12 +21,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var currentPerson = _personResolver.GetCurrentPerson();
-        var retroSession = new RetroSession(
-            Guid.CreateVersion7(),
-            command.TeamId,
-            DateTimeOffset.UtcNow,
-            currentPerson.Id);
+        var retroSession = new RetroSession(Guid.CreateVersion7(), command.RoomId, DateTimeOffset.UtcNow);
 
         await _repository.Create(retroSession, token);
 

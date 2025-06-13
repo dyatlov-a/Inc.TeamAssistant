@@ -26,8 +26,8 @@ internal sealed class JoinToRetroCommandHandler : IRequestHandler<JoinToRetroCom
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _personResolver.GetCurrentPerson();
-        var persons = _store.JoinToTeam(command.TeamId, command.ConnectionId, currentPerson);
+        var persons = _store.JoinToTeam(command.RoomId, command.ConnectionId, currentPerson);
         
-        await _eventSender.PersonsChanged(command.TeamId, persons);
+        await _eventSender.PersonsChanged(command.RoomId, persons);
     }
 }

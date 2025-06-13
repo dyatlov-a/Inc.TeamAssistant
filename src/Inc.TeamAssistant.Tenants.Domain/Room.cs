@@ -7,6 +7,7 @@ public sealed class Room
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
     public long OwnerId { get; private set; }
+    public IReadOnlyDictionary<string, string> Properties { get; private set; } = default!;
     public Tenant Tenant { get; private set; } = default!;
 
     private Room()

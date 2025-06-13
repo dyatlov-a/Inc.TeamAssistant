@@ -49,10 +49,10 @@ public sealed class ActionItemViewModel
         return this;
     }
     
-    public ChangeActionItemCommand ToCommand(Guid teamId, bool notify = false) => new(
+    public ChangeActionItemCommand ToCommand(Guid roomId, bool notify = false) => new(
         Id,
         RetroItemId,
-        teamId,
+        roomId,
         Text,
         State,
         notify);

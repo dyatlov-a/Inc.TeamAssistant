@@ -7,35 +7,35 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.RemoveActionItem.V
 
 internal sealed class RemoveActionItemCommandValidator : AbstractValidator<RemoveActionItemCommand>
 {
-    private readonly IFacilitatorProvider _facilitatorProvider;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
-    public RemoveActionItemCommandValidator(IFacilitatorProvider facilitatorProvider, IPersonResolver personResolver)
+    public RemoveActionItemCommandValidator(IRetroPropertiesProvider propertiesProvider, IPersonResolver personResolver)
     {
-        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         
         RuleFor(e => e.Id)
             .NotEmpty();
         
-        RuleFor(e => e.TeamId)
+        RuleFor(e => e.RoomId)
             .NotEmpty();
         
         RuleFor(e => e.ConnectionId)
             .NotEmpty();
         
         RuleFor(e => e)
-            .Must(HasRights)
+            .MustAsync(HasRights)
             .WithMessage("You do not have rights to change this action item.");
     }
     
-    private bool HasRights(RemoveActionItemCommand command)
+    private async Task<bool> HasRights(RemoveActionItemCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _personResolver.GetCurrentPerson();
-        var facilitator = _facilitatorProvider.Get(command.TeamId);
+        var properties = await _propertiesProvider.Get(command.RoomId, token);
 
-        return currentPerson.Id == facilitator;
+        return currentPerson.Id == properties.FacilitatorId;
     }
 }

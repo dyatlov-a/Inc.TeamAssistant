@@ -58,13 +58,13 @@ public static class ServiceCollectionExtensions
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
+            .AddSingleton<IRetroPropertiesProvider, RetroPropertiesProviderAdapter>()
             
             .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
             .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>()
-            .AddSingleton<IRetroStage, RetroStageInMemory>()
-            .AddSingleton<IFacilitatorProvider, FacilitatorInMemoryProvider>();
+            .AddSingleton<IRetroStage, RetroStageInMemory>();
 
         return services;
 	}

@@ -34,6 +34,6 @@ internal sealed class SetVotesCommandHandler : IRequestHandler<SetVotesCommand>
         
         _voteStore.Set(command.RetroSessionId, currentPerson.Id, votes);
 
-        await _eventSender.VotesChanged(command.TeamId, currentPerson.Id, votesCount);
+        await _eventSender.VotesChanged(command.RoomId, currentPerson.Id, votesCount);
     }
 }

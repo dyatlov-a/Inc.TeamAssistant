@@ -20,10 +20,10 @@ internal sealed class ChangeTimerCommandHandler : IRequestHandler<ChangeTimerCom
         ArgumentNullException.ThrowIfNull(command);
         
         if (command.Duration.HasValue)
-            _timerService.Start(command.TeamId, command.Duration.Value);
+            _timerService.Start(command.RoomId, command.Duration.Value);
         else
-            _timerService.Stop(command.TeamId);
+            _timerService.Stop(command.RoomId);
 
-        await _eventSender.TimerChanged(command.TeamId, command.Duration);
+        await _eventSender.TimerChanged(command.RoomId, command.Duration);
     }
 }

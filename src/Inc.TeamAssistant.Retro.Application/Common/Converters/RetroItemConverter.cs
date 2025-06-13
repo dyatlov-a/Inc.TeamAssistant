@@ -54,7 +54,7 @@ internal static class RetroItemConverter
         
         return new RetroItemDto(
             item.Id,
-            item.TeamId,
+            item.RoomId,
             item.ColumnId,
             item.Position,
             parentText,

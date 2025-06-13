@@ -16,7 +16,7 @@ internal sealed class GetActionItemsQueryHandler : IRequestHandler<GetActionItem
 
     public async Task<GetActionItemsResult> Handle(GetActionItemsQuery query, CancellationToken token)
     {
-        var items = await _reader.Read(query.TeamId, token);
+        var items = await _reader.Read(query.RoomId, token);
         var actionItems = items
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();

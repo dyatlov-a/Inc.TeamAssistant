@@ -32,6 +32,6 @@ internal sealed class ChangeActionItemCommandHandler : IRequestHandler<ChangeAct
         await _repository.Upsert(item, token);
 
         if (command.Notify)
-            await _eventSender.ActionItemChanged(command.TeamId, ActionItemConverter.ConvertTo(item));
+            await _eventSender.ActionItemChanged(command.RoomId, ActionItemConverter.ConvertTo(item));
     }
 }

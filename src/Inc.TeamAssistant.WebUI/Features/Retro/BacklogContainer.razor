@@ -1,6 +1,6 @@
-@page "/backlog/{TeamId:guid}"
-@page "/ru/backlog/{TeamId:guid}"
-@page "/en/backlog/{TeamId:guid}"
+@page "/backlog/{RoomId:guid}"
+@page "/ru/backlog/{RoomId:guid}"
+@page "/en/backlog/{RoomId:guid}"
 
 @attribute [Authorize]
 
@@ -18,7 +18,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public Guid TeamId { get; set; }
+    public Guid RoomId { get; set; }
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<ActionItemViewModel> _actionItems = new();
@@ -27,10 +27,10 @@
     
     private async Task Load()
     {
-        await TenantStore.Initialize(TeamId, _state);
+        await TenantStore.Initialize(RoomId, _state);
         
         var result = await RequestProcessor.Process(
-            async () => await RetroService.GetActionItems(TeamId),
+            async () => await RetroService.GetActionItems(RoomId),
             nameof(BacklogContainer),
             _state);
         
@@ -51,7 +51,7 @@
     private async Task OnActionItemChanged(ActionItemViewModel item)
     {
         await RequestProcessor.Process(
-            async () => await RetroService.ChangeActionItem(item.ToCommand(TeamId)),
+            async () => await RetroService.ChangeActionItem(item.ToCommand(RoomId)),
             _state,
             showLoading: false);
     }

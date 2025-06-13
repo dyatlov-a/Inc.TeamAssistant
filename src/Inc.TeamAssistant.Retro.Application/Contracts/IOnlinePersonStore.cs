@@ -4,13 +4,13 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IOnlinePersonStore
 {
-    string? FindConnectionId(Guid teamId, long personId);
+    string? FindConnectionId(Guid roomId, long personId);
     
-    IReadOnlyCollection<Person> GetPersons(Guid teamId);
+    IReadOnlyCollection<Person> GetPersons(Guid roomId);
     
-    IReadOnlyCollection<Person> JoinToTeam(Guid teamId, string connectionId, Person person);
+    IReadOnlyCollection<Person> JoinToTeam(Guid roomId, string connectionId, Person person);
 
-    IReadOnlyCollection<Person> LeaveFromTeam(Guid teamId, string connectionId);
+    IReadOnlyCollection<Person> LeaveFromTeam(Guid roomId, string connectionId);
 
     IAsyncEnumerable<Guid> LeaveFromTeams(
         string connectionId,

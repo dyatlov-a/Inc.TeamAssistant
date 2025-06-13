@@ -121,7 +121,7 @@ builder.Services
 	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
-	.AddTenantsDataAccess()
+	.AddTenantsDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddRetroDataAccess();
 
 builder.Services

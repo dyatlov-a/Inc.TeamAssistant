@@ -20,10 +20,9 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             """
             SELECT
                 rs.id AS id,
-                rs.team_id AS teamid,
+                rs.room_id AS roomid,
                 rs.created AS created,
-                rs.state AS state,
-                rs.facilitator_id AS facilitatorid
+                rs.state AS state
             FROM retro.retro_sessions AS rs
             WHERE rs.id = @id;
             """,
@@ -49,29 +48,25 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             """
             INSERT INTO retro.retro_sessions (
                 id,
-                team_id,
+                room_id,
                 created,
-                state,
-                facilitator_id)
+                state)
             VALUES (
                 @id,
-                @team_id,
+                @room_id,
                 @created,
-                @state,
-                @facilitator_id)
+                @state)
             ON CONFLICT (id) DO UPDATE SET
-                team_id = EXCLUDED.team_id,
+                room_id = EXCLUDED.room_id,
                 created = EXCLUDED.created,
-                state = EXCLUDED.state,
-                facilitator_id = EXCLUDED.facilitator_id;
+                state = EXCLUDED.state;
             """,
             new
             {
                 id = retro.Id,
-                team_id = retro.TeamId,
+                room_id = retro.RoomId,
                 created = retro.Created,
-                state = retro.State,
-                facilitator_id = retro.FacilitatorId
+                state = retro.State
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -79,11 +74,11 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         var removeEmptyItemsCommand = new CommandDefinition(
             """
             DELETE FROM retro.retro_items AS ri
-            WHERE ri.team_id = @team_id AND COALESCE(trim(ri.text), '') = '';
+            WHERE ri.room_id = @room_id AND COALESCE(trim(ri.text), '') = '';
             """,
             new
             {
-                team_id = retro.TeamId
+                room_id = retro.RoomId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -93,12 +88,12 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             UPDATE retro.retro_items AS ri
             SET 
                 retro_session_id = @retro_session_id
-            WHERE ri.team_id = @team_id AND ri.retro_session_id IS NULL;
+            WHERE ri.room_id = @room_id AND ri.retro_session_id IS NULL;
             """,
             new
             {
                 retro_session_id = retro.Id,
-                team_id = retro.TeamId
+                room_id = retro.RoomId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -132,15 +127,13 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             """
             UPDATE retro.retro_sessions AS rs
             SET
-                state = @state,
-                facilitator_id = @facilitator_id
+                state = @state
             WHERE rs.id = @id;
             """,
             new
             {
                 id = retro.Id,
-                state = retro.State,
-                facilitator_id = retro.FacilitatorId
+                state = retro.State
             },
             flags: CommandFlags.None,
             cancellationToken: token);

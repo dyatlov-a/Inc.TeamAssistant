@@ -11,7 +11,7 @@ internal static class RetroSessionConverter
 
         return new RetroSessionDto(
             retroSession.Id,
-            retroSession.TeamId,
+            retroSession.RoomId,
             retroSession.Created,
             retroSession.State.ToString());
     }

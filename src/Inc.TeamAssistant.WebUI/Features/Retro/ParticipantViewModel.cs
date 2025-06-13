@@ -41,8 +41,8 @@ public sealed class ParticipantViewModel
         return this;
     }
 
-    public SetRetroStateCommand ToCommand(Guid teamId)
+    public SetRetroStateCommand ToCommand(Guid roomId)
     {
-        return new SetRetroStateCommand(teamId, Person.Id, Finished, HandRaised);
+        return new SetRetroStateCommand(roomId, Person.Id, Finished, HandRaised);
     }
 }

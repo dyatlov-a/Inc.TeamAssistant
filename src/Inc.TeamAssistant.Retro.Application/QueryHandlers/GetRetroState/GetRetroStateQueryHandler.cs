@@ -15,7 +15,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
     private readonly IRetroStage _retroStage;
-    private readonly IFacilitatorProvider _facilitatorProvider;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
 
     public GetRetroStateQueryHandler(
         IRetroReader reader,
@@ -24,7 +24,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IVoteStore voteStore,
         ITimerService timerService,
         IRetroStage retroStage,
-        IFacilitatorProvider facilitatorProvider)
+        IRetroPropertiesProvider propertiesProvider)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
@@ -32,7 +32,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
         _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
-        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
 
     public async Task<GetRetroStateResult> Handle(GetRetroStateQuery query, CancellationToken token)
@@ -41,14 +41,14 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         
         var states = RetroSessionStateRules.Active;
         var currentPerson = _personResolver.GetCurrentPerson();
-        var onlinePersons = _onlinePersonStore.GetPersons(query.TeamId);
+        var onlinePersons = _onlinePersonStore.GetPersons(query.RoomId);
         
-        var session = await _reader.FindSession(query.TeamId, states, token);
-        var items = await _reader.ReadRetroItems(query.TeamId, states, token);
+        var session = await _reader.FindSession(query.RoomId, states, token);
+        var items = await _reader.ReadRetroItems(query.RoomId, states, token);
         var actions = session is not null
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
-        var facilitatorId = _facilitatorProvider.Get(query.TeamId) ?? session?.FacilitatorId;
+        var properties = await _propertiesProvider.Get(query.RoomId, token);
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)
@@ -59,7 +59,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
             .ToDictionary(v => v.Key, v => v.Sum(i => i));
-        var retroStage = _retroStage.Get(query.TeamId);
+        var retroStage = _retroStage.Get(query.RoomId);
         var finishedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.Finished);
         var handRaisedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.HandRaised);
         
@@ -83,7 +83,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var actionItems = actions
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();
-        var currentTimer = _timerService.TryGetValue(query.TeamId);
+        var currentTimer = _timerService.TryGetValue(query.RoomId);
         
         return new GetRetroStateResult(
             activeSession,
@@ -91,6 +91,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             participants,
             actionItems,
             currentTimer,
-            facilitatorId);
+            properties.FacilitatorId);
     }
 }

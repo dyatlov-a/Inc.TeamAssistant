@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
 using MediatR;
@@ -8,20 +7,17 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.GiveFacilitator;
 
 internal sealed class GiveFacilitatorCommandHandler : IRequestHandler<GiveFacilitatorCommand>
 {
-    private readonly IFacilitatorProvider _facilitatorProvider;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
-    private readonly IRetroSessionRepository _repository;
     private readonly IRetroEventSender _eventSender;
 
     public GiveFacilitatorCommandHandler(
-        IFacilitatorProvider facilitatorProvider,
+        IRetroPropertiesProvider propertiesProvider,
         IPersonResolver personResolver,
-        IRetroSessionRepository repository,
         IRetroEventSender eventSender)
     {
-        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
@@ -31,18 +27,8 @@ internal sealed class GiveFacilitatorCommandHandler : IRequestHandler<GiveFacili
         
         var currentPerson = _personResolver.GetCurrentPerson();
         
-        _facilitatorProvider.Set(command.TeamId, currentPerson.Id);
+        await _propertiesProvider.Set(command.RoomId, new (){ FacilitatorId =currentPerson.Id }, token);
 
-        if (command.RetroSessionId.HasValue)
-        {
-            var retroSession = await command.RetroSessionId.Value.Required(_repository.Find, token);
-
-            await _repository.Update(
-                retroSession.ChangeFacilitator(currentPerson.Id),
-                voteTickets: [],
-                token);
-        }
-
-        await _eventSender.FacilitatorChanged(command.TeamId, currentPerson.Id);
+        await _eventSender.FacilitatorChanged(command.RoomId, currentPerson.Id);
     }
 }

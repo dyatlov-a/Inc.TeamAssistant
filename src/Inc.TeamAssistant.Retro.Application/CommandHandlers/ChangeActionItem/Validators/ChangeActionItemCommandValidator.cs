@@ -8,12 +8,12 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeActionItem.V
 
 internal sealed class ChangeActionItemCommandValidator : AbstractValidator<ChangeActionItemCommand>
 {
-    private readonly IFacilitatorProvider _facilitatorProvider;
+    private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
-    public ChangeActionItemCommandValidator(IFacilitatorProvider facilitatorProvider, IPersonResolver personResolver)
+    public ChangeActionItemCommandValidator(IRetroPropertiesProvider provider, IPersonResolver personResolver)
     {
-        _facilitatorProvider = facilitatorProvider ?? throw new ArgumentNullException(nameof(facilitatorProvider));
+        _propertiesProvider = provider ?? throw new ArgumentNullException(nameof(provider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         
         RuleFor(e => e.Id)
@@ -22,7 +22,7 @@ internal sealed class ChangeActionItemCommandValidator : AbstractValidator<Chang
         RuleFor(e => e.RetroItemId)
             .NotEmpty();
         
-        RuleFor(e => e.TeamId)
+        RuleFor(e => e.RoomId)
             .NotEmpty();
 
         RuleFor(e => e.Text)
@@ -33,17 +33,17 @@ internal sealed class ChangeActionItemCommandValidator : AbstractValidator<Chang
             .WithMessage("Invalid action item state.");
 
         RuleFor(e => e)
-            .Must(HasRights)
+            .MustAsync(HasRights)
             .WithMessage("You do not have rights to change this action item.");
     }
 
-    private bool HasRights(ChangeActionItemCommand command)
+    private async Task<bool> HasRights(ChangeActionItemCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _personResolver.GetCurrentPerson();
-        var facilitator = _facilitatorProvider.Get(command.TeamId);
+        var properties = await _propertiesProvider.Get(command.RoomId, token);
 
-        return currentPerson.Id == facilitator;
+        return currentPerson.Id == properties.FacilitatorId;
     }
 }

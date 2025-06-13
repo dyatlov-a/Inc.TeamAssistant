@@ -4,5 +4,5 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IActionItemReader
 {
-    Task<IReadOnlyCollection<ActionItem>> Read(Guid teamId, CancellationToken token);
+    Task<IReadOnlyCollection<ActionItem>> Read(Guid roomId, CancellationToken token);
 }

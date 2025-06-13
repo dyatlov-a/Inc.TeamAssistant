@@ -9,7 +9,7 @@ internal sealed class SetVotesCommandValidator : AbstractValidator<SetVotesComma
     {
         ArgumentNullException.ThrowIfNull(voteValidator);
 
-        RuleFor(c => c.TeamId)
+        RuleFor(c => c.RoomId)
             .NotEmpty();
         
         RuleFor(c => c.Votes)

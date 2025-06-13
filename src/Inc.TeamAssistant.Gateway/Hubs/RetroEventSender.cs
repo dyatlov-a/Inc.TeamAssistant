@@ -21,62 +21,62 @@ internal sealed class RetroEventSender : IRetroEventSender
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        var ownerConnectionId = _onlinePersonStore.FindConnectionId(item.TeamId, item.OwnerId);
+        var ownerConnectionId = _onlinePersonStore.FindConnectionId(item.RoomId, item.OwnerId);
 
         if (excludedOwner && !string.IsNullOrWhiteSpace(ownerConnectionId))
-            await _hubContext.Clients.GroupExcept(item.TeamId.ToString("N"), ownerConnectionId).RetroItemChanged(item);
+            await _hubContext.Clients.GroupExcept(item.RoomId.ToString("N"), ownerConnectionId).RetroItemChanged(item);
         else
-            await _hubContext.Clients.Group(item.TeamId.ToString("N")).RetroItemChanged(item);
+            await _hubContext.Clients.Group(item.RoomId.ToString("N")).RetroItemChanged(item);
     }
 
-    public async Task RetroItemRemoved(Guid teamId, Guid itemId)
+    public async Task RetroItemRemoved(Guid roomId, Guid itemId)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).RetroItemRemoved(itemId);
+        await _hubContext.Clients.Group(roomId.ToString("N")).RetroItemRemoved(itemId);
     }
 
     public async Task RetroSessionChanged(RetroSessionDto session)
     {
-        await _hubContext.Clients.Group(session.TeamId.ToString("N")).RetroSessionChanged(session);
+        await _hubContext.Clients.Group(session.RoomId.ToString("N")).RetroSessionChanged(session);
     }
 
-    public async Task VotesChanged(Guid teamId, long personId, int votesCount)
+    public async Task VotesChanged(Guid roomId, long personId, int votesCount)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).VotesChanged(personId, votesCount);
+        await _hubContext.Clients.Group(roomId.ToString("N")).VotesChanged(personId, votesCount);
     }
 
-    public async Task RetroStateChanged(Guid teamId, long personId, bool finished, bool handRaised)
+    public async Task RetroStateChanged(Guid roomId, long personId, bool finished, bool handRaised)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).RetroStateChanged(personId, finished, handRaised);
+        await _hubContext.Clients.Group(roomId.ToString("N")).RetroStateChanged(personId, finished, handRaised);
     }
 
-    public async Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons)
+    public async Task PersonsChanged(Guid roomId, IReadOnlyCollection<Person> persons)
     {
         ArgumentNullException.ThrowIfNull(persons);
         
-        await _hubContext.Clients.Group(teamId.ToString("N")).PersonsChanged(persons);
+        await _hubContext.Clients.Group(roomId.ToString("N")).PersonsChanged(persons);
     }
 
-    public async Task ActionItemChanged(Guid teamId, ActionItemDto item)
+    public async Task ActionItemChanged(Guid roomId, ActionItemDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        await _hubContext.Clients.Group(teamId.ToString("N")).ActionItemChanged(item);
+        await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemChanged(item);
     }
 
-    public async Task ActionItemRemoved(Guid teamId, Guid itemId, string connectionId)
+    public async Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         
-        await _hubContext.Clients.GroupExcept(teamId.ToString("N"), connectionId).ActionItemRemoved(itemId);
+        await _hubContext.Clients.GroupExcept(roomId.ToString("N"), connectionId).ActionItemRemoved(itemId);
     }
 
-    public async Task FacilitatorChanged(Guid teamId, long facilitatorId)
+    public async Task FacilitatorChanged(Guid roomId, long facilitatorId)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).FacilitatorChanged(facilitatorId);
+        await _hubContext.Clients.Group(roomId.ToString("N")).FacilitatorChanged(facilitatorId);
     }
 
-    public async Task TimerChanged(Guid teamId, TimeSpan? duration)
+    public async Task TimerChanged(Guid roomId, TimeSpan? duration)
     {
-        await _hubContext.Clients.Group(teamId.ToString("N")).TimerChanged(duration);
+        await _hubContext.Clients.Group(roomId.ToString("N")).TimerChanged(duration);
     }
 }

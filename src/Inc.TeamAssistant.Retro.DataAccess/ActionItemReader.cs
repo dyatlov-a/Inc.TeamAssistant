@@ -14,7 +14,7 @@ internal sealed class ActionItemReader : IActionItemReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<ActionItem>> Read(Guid teamId, CancellationToken token)
+    public async Task<IReadOnlyCollection<ActionItem>> Read(Guid roomId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -27,11 +27,11 @@ internal sealed class ActionItemReader : IActionItemReader
                 ai.modified as modified
             FROM retro.action_items AS ai
             JOIN retro.retro_items AS ri ON ai.retro_item_id = ri.id
-            WHERE ri.team_id = @team_id;
+            WHERE ri.room_id = @room_id;
             """,
             new
             {
-                team_id = teamId
+                room_id = roomId
             },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -7,21 +7,21 @@ public interface IRetroEventSender
 {
     Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false);
 
-    Task RetroItemRemoved(Guid teamId, Guid itemId);
+    Task RetroItemRemoved(Guid roomId, Guid itemId);
     
     Task RetroSessionChanged(RetroSessionDto session);
     
-    Task VotesChanged(Guid teamId, long personId, int votesCount);
+    Task VotesChanged(Guid roomId, long personId, int votesCount);
     
-    Task RetroStateChanged(Guid teamId, long personId, bool finished, bool handRaised);
+    Task RetroStateChanged(Guid roomId, long personId, bool finished, bool handRaised);
 
-    Task PersonsChanged(Guid teamId, IReadOnlyCollection<Person> persons);
+    Task PersonsChanged(Guid roomId, IReadOnlyCollection<Person> persons);
 
-    Task ActionItemChanged(Guid teamId, ActionItemDto item);
+    Task ActionItemChanged(Guid roomId, ActionItemDto item);
     
-    Task ActionItemRemoved(Guid teamId, Guid itemId, string connectionId);
+    Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId);
     
-    Task FacilitatorChanged(Guid teamId, long facilitatorId);
+    Task FacilitatorChanged(Guid roomId, long facilitatorId);
 
-    Task TimerChanged(Guid teamId, TimeSpan? duration);
+    Task TimerChanged(Guid roomId, TimeSpan? duration);
 }
