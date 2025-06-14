@@ -21,7 +21,10 @@ public interface IRetroEventSender
     
     Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId);
     
-    Task RoomPropertiesChanged(Guid roomId);
+    Task RetroPropertiesChanged(
+        Guid roomId,
+        RetroPropertiesDto properties,
+        IReadOnlyCollection<RetroColumnDto> columns);
 
     Task TimerChanged(Guid roomId, TimeSpan? duration);
 }

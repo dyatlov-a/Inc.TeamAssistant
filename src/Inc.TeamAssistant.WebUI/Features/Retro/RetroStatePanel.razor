@@ -29,12 +29,20 @@
             @onclick:preventDefault="true">
             <ClockCheckIcon Size="30px"/> @TimerValue
         </a>
+        <a
+            title="@Localizer["RetroPropertiesHint"]"
+            href="#"
+            class="retro__link retro__link_active retro__link_right"
+            @onclick="OnRetroPropertiesOpened"
+            @onclick:preventDefault="true">
+            <SettingsIcon Size="30px"/>
+        </a>
         if (IsDiscussing)
         {
             <a
                 title="@Localizer["PreviousHint"]"
                 href="#"
-                class="retro__link retro__link_active retro__link_right"
+                class="retro__link retro__link_active"
                 @onclick="OnMoveToPrevious"
                 @onclick:preventDefault="true">
                 <CaretLeftIcon Size="30px"/>
@@ -43,7 +51,7 @@
         <a
             title="@Localizer["NextHint"]"
             href="#"
-            class="retro__link retro__link_active @MoveNextRightCss"
+            class="retro__link retro__link_active"
             @onclick="OnMoveNext"
             @onclick:preventDefault="true">
             <CaretRightIcon Size="30px"/>
@@ -151,10 +159,15 @@
     [Parameter, EditorRequired]
     public EventCallback FacilitatorGiven { get; set; }
     
+    /// <summary>
+    /// Retro properties opened action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RetroPropertiesOpened { get; set; }
+    
     private TimeSpan? _currentTimer;
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;
-    private string MoveNextRightCss => IsDiscussing ? string.Empty : "retro__link_right";
 
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToString(@"mm\:ss")
@@ -247,6 +260,7 @@
         }
     }
 
+    private async Task OnRetroPropertiesOpened() => await RetroPropertiesOpened.InvokeAsync();
     private async Task OnMoveToPrevious() => await MoveToPrevious.InvokeAsync();
     private async Task MoveToFinish() => await Finished.InvokeAsync();
     private async Task RaiseHand() => await HandRaised.InvokeAsync();

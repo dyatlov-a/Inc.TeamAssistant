@@ -1,17 +1,15 @@
 @inject IStringLocalizer<TenantResources> Localizer
 
-<EditForm id="@AnalyticEvents.ManageTeam" EditContext="_editContext" OnSubmit="SubmitForm">
+<EditForm id="@AnalyticEvents.ManageRoom" EditContext="_editContext" OnSubmit="SubmitForm">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
     <Loading State="State" Retry="Retry">
         <FormSection Title="@Localizer["RoomSectionTitle"]" HelpText="@Localizer["RoomSectionHelp"]">
-            <ChildContent>
-                <FormFieldSet
-                    FieldId="room-name"
-                    Label="@Localizer["RoomNameField"]">
-                    <InputSingleLine FieldId="room-name" @bind-Value="FormModel.Name" />
-                    <ValidationMessage For="@(() => FormModel.Name)"/>
-                </FormFieldSet>
-            </ChildContent>
+            <FormFieldSet
+                FieldId="room-name"
+                Label="@Localizer["RoomNameField"]">
+                <InputSingleLine FieldId="room-name" @bind-Value="FormModel.Name" />
+                <ValidationMessage For="@(() => FormModel.Name)"/>
+            </FormFieldSet>
         </FormSection>
     </Loading>
     <div class="content__actions">

@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace Inc.TeamAssistant.Retro.Model.Commands.ChangeRoomProperties;
+namespace Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 
-public sealed record ChangeRoomPropertiesCommand(
+public sealed record ChangeRetroPropertiesCommand(
     Guid RoomId,
     bool? IsFacilitator,
     Guid? TemplateId,
@@ -10,9 +10,9 @@ public sealed record ChangeRoomPropertiesCommand(
     int? VoteCount)
     : IRequest
 {
-    public static ChangeRoomPropertiesCommand ChangeFacilitator(Guid roomId)
+    public static ChangeRetroPropertiesCommand ChangeFacilitator(Guid roomId)
     {
-        return new ChangeRoomPropertiesCommand(
+        return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
             TemplateId: null,
@@ -20,13 +20,13 @@ public sealed record ChangeRoomPropertiesCommand(
             VoteCount: null);
     }
     
-    public static ChangeRoomPropertiesCommand ChangeProperties(
+    public static ChangeRetroPropertiesCommand ChangeProperties(
         Guid roomId,
         Guid templateId,
         TimeSpan timerDuration,
         int voteCount)
     {
-        return new ChangeRoomPropertiesCommand(
+        return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
             templateId,

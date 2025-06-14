@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Retro.Domain;
+
 namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroPropertiesProvider

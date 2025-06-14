@@ -5,4 +5,6 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 public interface IRetroTemplateReader
 {
     Task<IReadOnlyCollection<RetroColumn>> GetColumns(Guid templateId, CancellationToken token);
+    
+    Task<IReadOnlyCollection<RetroTemplate>> GetTemplates(CancellationToken token);
 }

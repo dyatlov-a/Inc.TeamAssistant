@@ -1,0 +1,93 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<EditForm id="@AnalyticEvents.ChangeRetroProperties" EditContext="_editContext" OnSubmit="SubmitForm">
+    <Loading State="State" Retry="Retry">
+        <FormSection
+            Title="@Localizer["RetroPropertiesSectionTitle"]"
+            HelpText="@Localizer["RetroPropertiesSectionHelp"]">
+            <FormFieldSet
+                FieldId="template-id"
+                Label="@Localizer["RetroTemplateField"]">
+                <InputSelectList
+                    FieldId="template-id"
+                    Items="Templates"
+                    TitleSelector="@(t => Localizer[t.Name])"
+                    ValueSelector="t => t.Id"
+                    Value="FormModel.TemplateId"
+                    ValueExpression="@(() => FormModel.TemplateId)"
+                    ValueChanged="@((Guid v) => FormModel.ChangeTemplate(v))"/>
+            </FormFieldSet>
+            <FormFieldSet
+                FieldId="timer-duration"
+                Label="@Localizer["TimerDurationField"]">
+                <InputSelectList
+                    FieldId="timer-duration"
+                    Items="_timerDurations"
+                    TitleSelector="@(t => string.Format(Localizer["TimerDurationTemplate"], t))"
+                    ValueSelector="@(t => TimeSpan.FromMinutes(t))"
+                    Value="FormModel.TimerDuration"
+                    ValueExpression="@(() => FormModel.TimerDuration)"
+                    ValueChanged="@((TimeSpan v) => FormModel.ChangeTimerDuration(v))" />
+            </FormFieldSet>
+            <FormFieldSet
+                FieldId="vote-count"
+                Label="@Localizer["VoteCountField"]">
+                <InputSelectList
+                    FieldId="vote-count"
+                    Items="_votes"
+                    TitleSelector="@(t => t.ToString())"
+                    ValueSelector="t => t"
+                    Value="FormModel.VoteCount"
+                    ValueExpression="@(() => FormModel.VoteCount)"
+                    ValueChanged="@((int v) => FormModel.ChangeVoteCount(v))" />
+            </FormFieldSet>
+        </FormSection>
+    </Loading>
+    <div class="content__actions">
+        <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
+    </div>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Model for the retro properties.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroPropertiesFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Templates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<RetroTemplateDto> Templates { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private readonly IReadOnlyCollection<int> _timerDurations = [5, 10, 15];
+    private readonly IReadOnlyCollection<int> _votes = Enumerable.Range(1, 10).ToArray();
+    
+    private EditContext? _editContext;
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(FormModel);
+    }
+    
+    private async Task SubmitForm() => await OnValidSubmit.InvokeAsync();
+}

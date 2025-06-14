@@ -296,5 +296,59 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("ColumnContinueTitle", resourceCulture);
             }
         }
+        
+        internal static string RetroPropertiesHint {
+            get {
+                return ResourceManager.GetString("RetroPropertiesHint", resourceCulture);
+            }
+        }
+        
+        internal static string RetroProperties {
+            get {
+                return ResourceManager.GetString("RetroProperties", resourceCulture);
+            }
+        }
+        
+        internal static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        internal static string VoteCountField {
+            get {
+                return ResourceManager.GetString("VoteCountField", resourceCulture);
+            }
+        }
+        
+        internal static string TimerDurationTemplate {
+            get {
+                return ResourceManager.GetString("TimerDurationTemplate", resourceCulture);
+            }
+        }
+        
+        internal static string TimerDurationField {
+            get {
+                return ResourceManager.GetString("TimerDurationField", resourceCulture);
+            }
+        }
+        
+        internal static string RetroTemplateField {
+            get {
+                return ResourceManager.GetString("RetroTemplateField", resourceCulture);
+            }
+        }
+        
+        internal static string RetroPropertiesSectionTitle {
+            get {
+                return ResourceManager.GetString("RetroPropertiesSectionTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RetroPropertiesSectionHelp {
+            get {
+                return ResourceManager.GetString("RetroPropertiesSectionHelp", resourceCulture);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 
-namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
+namespace Inc.TeamAssistant.Retro.Model.Common;
 
 public sealed record RetroPropertiesDto(
     long? FacilitatorId,

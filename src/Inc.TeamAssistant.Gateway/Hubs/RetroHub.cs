@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRoomProperties;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
@@ -107,7 +107,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.GiveFacilitatorMethod)]
-    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
+    public async Task GiveFacilitator(ChangeRetroPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         

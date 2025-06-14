@@ -153,4 +153,31 @@
     <data name="ColumnDiscussedDescription" xml:space="preserve">
         <value />
     </data>
+    <data name="RetroPropertiesHint" xml:space="preserve">
+        <value>Change retro properties</value>
+    </data>
+    <data name="RetroProperties" xml:space="preserve">
+        <value>Retro properties</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="VoteCountField" xml:space="preserve">
+        <value>Vote count</value>
+    </data>
+    <data name="TimerDurationTemplate" xml:space="preserve">
+        <value>{0} minutes</value>
+    </data>
+    <data name="TimerDurationField" xml:space="preserve">
+        <value>Timer duration</value>
+    </data>
+    <data name="RetroTemplateField" xml:space="preserve">
+        <value>Retro template</value>
+    </data>
+    <data name="RetroPropertiesSectionTitle" xml:space="preserve">
+        <value>Retro properties</value>
+    </data>
+    <data name="RetroPropertiesSectionHelp" xml:space="preserve">
+        <value>Please configure retro properties</value>
+    </data>
 </root>

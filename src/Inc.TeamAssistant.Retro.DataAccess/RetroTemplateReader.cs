@@ -40,4 +40,23 @@ internal sealed class RetroTemplateReader : IRetroTemplateReader
         
         return columns.ToArray();
     }
+
+    public async Task<IReadOnlyCollection<RetroTemplate>> GetTemplates(CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.name AS name
+            FROM retro.templates AS t;
+            """,
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var templates = await connection.QueryAsync<RetroTemplate>(command);
+        
+        return templates.ToArray();
+    }
 }

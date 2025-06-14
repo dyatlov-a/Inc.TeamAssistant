@@ -19,7 +19,8 @@
                     TimerChanged="TimerChanged"
                     Finished="Finished"
                     HandRaised="HandRaised"
-                    FacilitatorGiven="FacilitatorGiven" />
+                    FacilitatorGiven="FacilitatorGiven"
+                    RetroPropertiesOpened="RetroPropertiesOpened" />
                 <RetroParticipants
                     CanVote="CanVote"
                     VotesTotal="VotesTotal"
@@ -331,6 +332,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<long> HandLowered { get; set; }
+    
+    /// <summary>
+    /// Retro properties opened action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RetroPropertiesOpened { get; set; }
 
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;

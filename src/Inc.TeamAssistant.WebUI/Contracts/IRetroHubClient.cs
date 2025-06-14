@@ -25,5 +25,5 @@ public interface IRetroHubClient
     
     Task TimerChanged(TimeSpan? duration);
     
-    Task RoomPropertiesChanged();
+    Task RetroPropertiesChanged(RetroPropertiesDto properties, IReadOnlyCollection<RetroColumnDto> columns);
 }

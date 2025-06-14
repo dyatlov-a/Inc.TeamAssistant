@@ -1,12 +1,14 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroTemplates;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
 
@@ -85,6 +87,27 @@ internal sealed class RetroClient : IRetroService
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PutAsJsonAsync("retro/assessments", command, token);
+
+        await response.HandleValidation(token);
+    }
+
+    public async Task<GetRetroTemplatesResult> GetRetroTemplates(CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetRetroTemplatesResult>(
+            $"retro/templates",
+            token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
+    }
+
+    public async Task ChangeRetroProperties(ChangeRetroPropertiesCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var response = await _client.PutAsJsonAsync("retro/properties", command, token);
 
         await response.HandleValidation(token);
     }

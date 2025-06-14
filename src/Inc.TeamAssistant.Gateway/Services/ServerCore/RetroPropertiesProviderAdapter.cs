@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;

@@ -22,41 +22,42 @@
 
 <MainLayout>
     <Body>
-        <AuthorizeView>
-            <Authorized>
-                <RetroGrid
-                    State="_state"
-                    Columns="Columns"
-                    CurrentUserId="context.User.ToPerson().Id"
-                    Session="_activeSession"
-                    FacilitatorId="_retroProperties.FacilitatorId"
-                    Items="_items"
-                    ActionItems="_actionItems"
-                    Participants="Participants"
-                    VotesTotal="_retroProperties.VoteCount"
-                    TimerDuration="_retroProperties.TimerDuration"
-                    CurrentTimer="_currentTimer"
-                    IsCreating="_isCreating"
-                    Retry="@(() => Load(_state))"
-                    ItemCreated="OnRetroItemCreated"
-                    ItemChanged="OnRetroItemChanged"
-                    ItemRemoved="OnRetroItemRemoved"
-                    ItemMoved="OnItemMoved"
-                    ItemMovedToSlot="OnItemMovedToSlot"
-                    ActionItemCreated="OnActionItemCreated"
-                    ActionItemChanged="OnActionItemChanged"
-                    ActionItemRemoved="OnActionItemRemoved"
-                    VoteChanged="OnVoteChanged"
-                    RetroStarted="OnRetroStarted"
-                    ToNextMoved="OnToNextMoved"
-                    ToPreviousMoved="OnToPreviousMoved"
-                    TimerChanged="OnTimerChanged"
-                    Finished="OnFinished"
-                    HandRaised="OnHandRaised"
-                    FacilitatorGiven="FacilitatorGiven"
-                    HandLowered="OnHandLowered"/>
-            </Authorized>
-        </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <RetroGrid
+                State="_state"
+                Columns="Columns"
+                CurrentUserId="context.User.ToPerson().Id"
+                Session="_activeSession"
+                FacilitatorId="_retroProperties.FacilitatorId"
+                Items="_items"
+                ActionItems="_actionItems"
+                Participants="Participants"
+                VotesTotal="_retroProperties.VoteCount"
+                TimerDuration="_retroProperties.TimerDuration"
+                CurrentTimer="_currentTimer"
+                IsCreating="_isCreating"
+                Retry="@(() => Load(_state))"
+                ItemCreated="OnRetroItemCreated"
+                ItemChanged="OnRetroItemChanged"
+                ItemRemoved="OnRetroItemRemoved"
+                ItemMoved="OnItemMoved"
+                ItemMovedToSlot="OnItemMovedToSlot"
+                ActionItemCreated="OnActionItemCreated"
+                ActionItemChanged="OnActionItemChanged"
+                ActionItemRemoved="OnActionItemRemoved"
+                VoteChanged="OnVoteChanged"
+                RetroStarted="OnRetroStarted"
+                ToNextMoved="OnToNextMoved"
+                ToPreviousMoved="OnToPreviousMoved"
+                TimerChanged="OnTimerChanged"
+                Finished="OnFinished"
+                HandRaised="OnHandRaised"
+                FacilitatorGiven="FacilitatorGiven"
+                HandLowered="OnHandLowered"
+                RetroPropertiesOpened="OnRetroPropertiesOpened" />
+        </Authorized>
+    </AuthorizeView>
     </Body>
     <DialogSlot>
         <InlineDialog
@@ -66,6 +67,12 @@
             OnAction="Reconnect"/>
     </DialogSlot>
 </MainLayout>
+<ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
+    <RetroPropertiesEditorContainer
+        RoomId="RoomId"
+        RetroProperties="_retroProperties"
+        RetroPropertiesChanged="OnRetroPropertiesChanged" />
+</ContentDialog>
 
 @code {
     [Parameter, EditorRequired]
@@ -84,6 +91,7 @@
     private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
     private TimeSpan? _currentTimer;
     private bool _isCreating;
+    private ContentDialog? _retroPropertiesEditor;
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroColumnDto> _columns = new();
@@ -102,7 +110,7 @@
         .ToArray();
     
     protected override async Task OnParametersSetAsync() => await Load(_state);
-
+    
     private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
     {
         if (hardReset)
@@ -274,9 +282,20 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRoomPropertiesChanged(async () =>
+            b => b.OnRetroPropertiesChanged(async (p, c) =>
             {
-                await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
+                await InvokeAsync(() =>
+                {
+                    _retroProperties = p;
+
+                    if (c.Any())
+                    {
+                        _columns.Clear();
+                        _columns.AddRange(c);
+                    }
+                    
+                    StateHasChanged();
+                });
             })
         );
     }
@@ -536,7 +555,7 @@
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.GiveFacilitator(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId));
+        await _eventBuilder.GiveFacilitator(ChangeRetroPropertiesCommand.ChangeFacilitator(RoomId));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)
@@ -552,6 +571,9 @@
         if (viewItem is not null)
             _actionItems.Remove(viewItem);
     }
+    
+    private void OnRetroPropertiesChanged() => _retroPropertiesEditor?.Close();
+    private void OnRetroPropertiesOpened() => _retroPropertiesEditor?.Open();
     
     public async ValueTask DisposeAsync()
     {

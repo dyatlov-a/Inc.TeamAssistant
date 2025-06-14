@@ -52,10 +52,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
-        var templateId = properties.TemplateId ?? Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c");
-        var timerDuration = properties.TimerDuration ?? TimeSpan.FromMinutes(10);
-        var voteCount = properties.VoteCount ?? 5;
-        var columns = await _retroTemplateReader.GetColumns(templateId, token);
+        var retroProperties = RetroPropertiesConverter.ConvertTo(properties);
+        var columns = await _retroTemplateReader.GetColumns(retroProperties.TemplateId, token);
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)
@@ -87,12 +85,8 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 finishedLookup.GetValueOrDefault(op.Id, false),
                 handRaisedLookup.GetValueOrDefault(op.Id, false)))
             .ToArray();
-        var actionItems = actions
-            .Select(ActionItemConverter.ConvertTo)
-            .ToArray();
-        var retroColumns = columns
-            .Select(c => new RetroColumnDto(c.Id, c.Name, c.Position, c.Color, c.Description))
-            .ToArray();
+        var actionItems = actions.Select(ActionItemConverter.ConvertTo).ToArray();
+        var retroColumns = columns.Select(RetroColumnConverter.ConvertTo).ToArray();
         var currentTimer = _timerService.TryGetValue(query.RoomId);
         
         return new GetRetroStateResult(
@@ -101,7 +95,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             participants,
             actionItems,
             retroColumns,
-            new RetroPropertiesDto(properties.FacilitatorId, templateId, timerDuration, voteCount),
+            retroProperties,
             currentTimer);
     }
 }

@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Retro.Application.Contracts;
+namespace Inc.TeamAssistant.Retro.Domain;
 
 public sealed class RetroProperties
 {

@@ -1,11 +1,11 @@
 using FluentValidation;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRoomProperties;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 
-namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeRoomProperties.Validators;
+namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeRetroProperties.Validators;
 
-internal sealed class ChangeRoomPropertiesCommandValidator : AbstractValidator<ChangeRoomPropertiesCommand>
+internal sealed class ChangeRetroPropertiesCommandValidator : AbstractValidator<ChangeRetroPropertiesCommand>
 {
-    public ChangeRoomPropertiesCommandValidator()
+    public ChangeRetroPropertiesCommandValidator()
     {
         RuleFor(c => c.RoomId)
             .NotEmpty();

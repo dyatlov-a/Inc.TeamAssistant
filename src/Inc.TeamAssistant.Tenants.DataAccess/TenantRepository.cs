@@ -123,7 +123,7 @@ internal sealed class TenantRepository : ITenantRepository
                 name = room.Name,
                 owner_id = room.OwnerId,
                 tenant_id = room.Tenant.Id,
-                properties = JsonSerializer.Serialize(room.Properties)
+                properties = room.Properties
             },
             flags: CommandFlags.None,
             cancellationToken: token);
