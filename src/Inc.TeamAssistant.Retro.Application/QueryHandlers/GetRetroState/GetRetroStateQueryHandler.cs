@@ -52,7 +52,10 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
-        var columns = await _retroTemplateReader.GetColumns(Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c"), token);
+        var templateId = properties.TemplateId ?? Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c");
+        var timerDuration = properties.TimerDuration ?? TimeSpan.FromMinutes(10);
+        var voteCount = properties.VoteCount ?? 5;
+        var columns = await _retroTemplateReader.GetColumns(templateId, token);
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)
@@ -98,7 +101,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             participants,
             actionItems,
             retroColumns,
-            currentTimer,
-            properties.FacilitatorId);
+            new RetroPropertiesDto(properties.FacilitatorId, templateId, timerDuration, voteCount),
+            currentTimer);
     }
 }

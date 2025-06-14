@@ -29,11 +29,12 @@
                     Columns="Columns"
                     CurrentUserId="context.User.ToPerson().Id"
                     Session="_activeSession"
-                    FacilitatorId="_facilitatorId"
+                    FacilitatorId="_retroProperties.FacilitatorId"
                     Items="_items"
                     ActionItems="_actionItems"
                     Participants="Participants"
-                    VotesTotal="6"
+                    VotesTotal="_retroProperties.VoteCount"
+                    TimerDuration="_retroProperties.TimerDuration"
                     CurrentTimer="_currentTimer"
                     IsCreating="_isCreating"
                     Retry="@(() => Load(_state))"
@@ -80,7 +81,7 @@
     private RetroEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     private RetroSessionDto? _activeSession;
-    private long? _facilitatorId;
+    private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
     private TimeSpan? _currentTimer;
     private bool _isCreating;
     
@@ -118,7 +119,7 @@
         _columns.Clear();
         _columns.AddRange(result.Columns);
         _activeSession = result.ActiveSession;
-        _facilitatorId = result.FacilitatorId;
+        _retroProperties = result.RetroProperties;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
             .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished, p.HandRaised))
@@ -273,13 +274,9 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnFacilitatorChanged(async f =>
+            b => b.OnRoomPropertiesChanged(async () =>
             {
-                await InvokeAsync(() =>
-                {
-                    _facilitatorId = f;
-                    StateHasChanged();
-                });
+                await InvokeAsync(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false));
             })
         );
     }
@@ -539,7 +536,7 @@
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.GiveFacilitator(new GiveFacilitatorCommand(RoomId, _activeSession?.Id));
+        await _eventBuilder.GiveFacilitator(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)

@@ -19,24 +19,26 @@ internal sealed class CachedRoomPropertiesProvider : IRoomPropertiesProvider
         };
     }
 
-    public async Task<IReadOnlyDictionary<string, string>> Get(Guid roomId, CancellationToken token)
+    public async Task<T> Get<T>(Guid roomId, CancellationToken token)
+        where T : class, new()
     {
         return await _cache.GetOrCreateAsync(
-            GetKey(roomId),
+            GetKey<T>(roomId),
             roomId,
-            async (k, t) => await _provider.Get(k, t),
+            async (k, t) => await _provider.Get<T>(k, t),
             _cacheOptions,
             cancellationToken: token);
     }
 
-    public async Task Set(Guid roomId, IReadOnlyDictionary<string, string> properties, CancellationToken token)
+    public async Task Set<T>(Guid roomId, T properties, CancellationToken token)
+        where T : class, new()
     {
         ArgumentNullException.ThrowIfNull(properties);
 
         await _provider.Set(roomId, properties, token);
         
-        await _cache.SetAsync(GetKey(roomId), _cacheOptions, cancellationToken: token);
+        await _cache.SetAsync(GetKey<T>(roomId), _cacheOptions, cancellationToken: token);
     }
     
-    private string GetKey(Guid roomId) => $"{nameof(CachedRoomPropertiesProvider)}_{roomId}";
+    private string GetKey<T>(Guid roomId) => $"{nameof(CachedRoomPropertiesProvider)}_{typeof(T).Name}_{roomId}";
 }

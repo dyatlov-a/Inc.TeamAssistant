@@ -21,7 +21,7 @@ public interface IRetroEventSender
     
     Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId);
     
-    Task FacilitatorChanged(Guid roomId, long facilitatorId);
+    Task RoomPropertiesChanged(Guid roomId);
 
     Task TimerChanged(Guid roomId, TimeSpan? duration);
 }

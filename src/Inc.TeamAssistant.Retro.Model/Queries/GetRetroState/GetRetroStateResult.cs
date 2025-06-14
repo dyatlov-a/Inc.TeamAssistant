@@ -9,8 +9,8 @@ public sealed record GetRetroStateResult(
     IReadOnlyCollection<RetroParticipantDto> Participants,
     IReadOnlyCollection<ActionItemDto> ActionItems,
     IReadOnlyCollection<RetroColumnDto> Columns,
-    TimeSpan? CurrentTimer,
-    long? FacilitatorId)
+    RetroPropertiesDto RetroProperties,
+    TimeSpan? CurrentTimer)
     : IWithEmpty<GetRetroStateResult>
 {
     public static GetRetroStateResult Empty { get; } = new(
@@ -19,6 +19,6 @@ public sealed record GetRetroStateResult(
         Participants: [],
         ActionItems: [],
         Columns: [],
-        CurrentTimer: null,
-        FacilitatorId: null);
+        RetroPropertiesDto.Empty,
+        CurrentTimer: null);
 }

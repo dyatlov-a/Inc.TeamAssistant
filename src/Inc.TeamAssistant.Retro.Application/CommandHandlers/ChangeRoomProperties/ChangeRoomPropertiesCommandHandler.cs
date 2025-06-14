@@ -1,17 +1,17 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Application.Contracts;
-using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeRoomProperties;
 using MediatR;
 
-namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.GiveFacilitator;
+namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeRoomProperties;
 
-internal sealed class GiveFacilitatorCommandHandler : IRequestHandler<GiveFacilitatorCommand>
+internal sealed class ChangeRoomPropertiesCommandHandler : IRequestHandler<ChangeRoomPropertiesCommand>
 {
     private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
 
-    public GiveFacilitatorCommandHandler(
+    public ChangeRoomPropertiesCommandHandler(
         IRetroPropertiesProvider propertiesProvider,
         IPersonResolver personResolver,
         IRetroEventSender eventSender)
@@ -21,14 +21,21 @@ internal sealed class GiveFacilitatorCommandHandler : IRequestHandler<GiveFacili
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
     }
 
-    public async Task Handle(GiveFacilitatorCommand command, CancellationToken token)
+    public async Task Handle(ChangeRoomPropertiesCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _personResolver.GetCurrentPerson();
+        var roomProperties = new RetroProperties
+        {
+            FacilitatorId = command.IsFacilitator == true ? currentPerson.Id : null,
+            TemplateId = command.TemplateId,
+            TimerDuration = command.TimerDuration,
+            VoteCount = command.VoteCount
+        };
         
-        await _propertiesProvider.Set(command.RoomId, new (){ FacilitatorId = currentPerson.Id }, token);
+        await _propertiesProvider.Set(command.RoomId, roomProperties, token);
 
-        await _eventSender.FacilitatorChanged(command.RoomId, currentPerson.Id);
+        await _eventSender.RoomPropertiesChanged(command.RoomId);
     }
 }

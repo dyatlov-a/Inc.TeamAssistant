@@ -70,9 +70,9 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.GroupExcept(roomId.ToString("N"), connectionId).ActionItemRemoved(itemId);
     }
 
-    public async Task FacilitatorChanged(Guid roomId, long facilitatorId)
+    public async Task RoomPropertiesChanged(Guid roomId)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).FacilitatorChanged(facilitatorId);
+        await _hubContext.Clients.Group(roomId.ToString("N")).RoomPropertiesChanged();
     }
 
     public async Task TimerChanged(Guid roomId, TimeSpan? duration)

@@ -11,6 +11,7 @@
                     PrioritizingInProgress="PrioritizingInProgress"
                     IsDiscussing="IsDiscussing"
                     IsFacilitator="IsFacilitator"
+                    TimerDuration="TimerDuration"
                     CurrentTimer="CurrentTimer"
                     StartRetro="RetroStarted"
                     MoveToNext="ToNextMoved"
@@ -204,6 +205,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int VotesTotal { get; set; }
+    
+    /// <summary>
+    /// Timer duration.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public TimeSpan TimerDuration { get; set; }
     
     /// <summary>
     /// Is creating retro item.

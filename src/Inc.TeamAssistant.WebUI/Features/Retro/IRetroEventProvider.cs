@@ -25,5 +25,5 @@ public interface IRetroEventProvider
     
     IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed);
     
-    IDisposable OnFacilitatorChanged(Func<long, Task> changed);
+    IDisposable OnRoomPropertiesChanged(Func<Task> changed);
 }

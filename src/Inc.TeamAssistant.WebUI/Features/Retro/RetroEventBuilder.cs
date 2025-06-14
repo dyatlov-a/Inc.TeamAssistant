@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.GiveFacilitator;
+using Inc.TeamAssistant.Retro.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
@@ -120,7 +120,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, command);
     }
     
-    public async Task GiveFacilitator(GiveFacilitatorCommand command)
+    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -218,9 +218,9 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
     }
 
-    public IDisposable OnFacilitatorChanged(Func<long, Task> changed)
+    public IDisposable OnRoomPropertiesChanged(Func<Task> changed)
     {
-        return _hubConnection.On(nameof(IRetroHubClient.FacilitatorChanged), changed);
+        return _hubConnection.On(nameof(IRetroHubClient.RoomPropertiesChanged), changed);
     }
 
     private Task Closed(Exception? ex)

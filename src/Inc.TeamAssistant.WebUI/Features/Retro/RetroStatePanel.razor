@@ -98,10 +98,10 @@
     public TimeSpan? CurrentTimer { get; set; }
 
     /// <summary>
-    /// Timer interval.
+    /// Timer duration.
     /// </summary>
-    [Parameter]
-    public TimeSpan TimerInterval { get; set; } = TimeSpan.FromMinutes(15);
+    [Parameter, EditorRequired]
+    public TimeSpan TimerDuration { get; set; }
     
     /// <summary>
     /// Timer refresh interval.
@@ -225,7 +225,7 @@
     {
         var changedValue = _currentTimer.HasValue
             ? (TimeSpan?)null
-            : TimerInterval;
+            : TimerDuration;
 
         await TimerChanged.InvokeAsync(changedValue);
     }

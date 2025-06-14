@@ -25,5 +25,5 @@ public interface IRetroHubClient
     
     Task TimerChanged(TimeSpan? duration);
     
-    Task FacilitatorChanged(long facilitatorId);
+    Task RoomPropertiesChanged();
 }
