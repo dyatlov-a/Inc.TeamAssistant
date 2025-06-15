@@ -7,7 +7,8 @@ public sealed record ChangeRetroPropertiesCommand(
     bool? IsFacilitator,
     Guid? TemplateId,
     TimeSpan? TimerDuration,
-    int? VoteCount)
+    int? VoteCount,
+    string? RetroType)
     : IRequest
 {
     public static ChangeRetroPropertiesCommand ChangeFacilitator(Guid roomId)
@@ -17,20 +18,23 @@ public sealed record ChangeRetroPropertiesCommand(
             IsFacilitator: true,
             TemplateId: null,
             TimerDuration: null,
-            VoteCount: null);
+            VoteCount: null,
+            RetroType: string.Empty);
     }
     
     public static ChangeRetroPropertiesCommand ChangeProperties(
         Guid roomId,
         Guid templateId,
         TimeSpan timerDuration,
-        int voteCount)
+        int voteCount,
+        string retroType)
     {
         return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
             templateId,
             timerDuration,
-            voteCount);
+            voteCount,
+            retroType);
     }
 }

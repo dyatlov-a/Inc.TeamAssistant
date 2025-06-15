@@ -35,6 +35,7 @@
                 Participants="Participants"
                 VotesTotal="_retroProperties.VoteCount"
                 TimerDuration="_retroProperties.TimerDuration"
+                RetroType="@_retroProperties.RetroType"
                 CurrentTimer="_currentTimer"
                 IsCreating="_isCreating"
                 Retry="@(() => Load(_state))"
@@ -282,19 +283,17 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroPropertiesChanged(async (p, c) =>
+            b => b.OnRetroPropertiesChanged(async p =>
             {
-                await InvokeAsync(() =>
+                await InvokeAsync(async () =>
                 {
-                    _retroProperties = p;
-
-                    if (c.Any())
+                    if (_retroProperties.TemplateId == p.TemplateId && _retroProperties.RetroType == p.RetroType)
                     {
-                        _columns.Clear();
-                        _columns.AddRange(c);
+                        _retroProperties = p;
+                        StateHasChanged();
                     }
-                    
-                    StateHasChanged();
+                    else
+                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
                 });
             })
         );

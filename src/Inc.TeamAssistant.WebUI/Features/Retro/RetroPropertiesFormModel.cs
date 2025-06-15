@@ -8,6 +8,7 @@ public sealed class RetroPropertiesFormModel
     public Guid TemplateId { get; private set; }
     public TimeSpan TimerDuration { get; private set; }
     public int VoteCount { get; private set; }
+    public string RetroType { get; private set; } = default!;
     
     public RetroPropertiesFormModel ChangeTemplate(Guid value)
     {
@@ -30,6 +31,13 @@ public sealed class RetroPropertiesFormModel
         return this;
     }
     
+    public RetroPropertiesFormModel ChangeRetroType(string value)
+    {
+        RetroType = value;
+        
+        return this;
+    }
+    
     public RetroPropertiesFormModel Apply(RetroPropertiesDto model)
     {
         ArgumentNullException.ThrowIfNull(model);
@@ -37,12 +45,18 @@ public sealed class RetroPropertiesFormModel
         TemplateId = model.TemplateId;
         TimerDuration = model.TimerDuration;
         VoteCount = model.VoteCount;
+        RetroType = model.RetroType;
         
         return this;
     }
     
     public ChangeRetroPropertiesCommand ToCommand(Guid roomId)
     {
-        return ChangeRetroPropertiesCommand.ChangeProperties(roomId, TemplateId, TimerDuration, VoteCount);
+        return ChangeRetroPropertiesCommand.ChangeProperties(
+            roomId,
+            TemplateId,
+            TimerDuration,
+            VoteCount,
+            RetroType);
     }
 }

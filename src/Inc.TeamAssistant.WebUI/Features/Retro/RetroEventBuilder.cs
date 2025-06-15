@@ -218,8 +218,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
     }
 
-    public IDisposable OnRetroPropertiesChanged(
-        Func<RetroPropertiesDto, IReadOnlyCollection<RetroColumnDto>, Task> changed)
+    public IDisposable OnRetroPropertiesChanged(Func<RetroPropertiesDto, Task> changed)
     {
         return _hubConnection.On(nameof(IRetroHubClient.RetroPropertiesChanged), changed);
     }

@@ -180,4 +180,16 @@
     <data name="RetroPropertiesSectionHelp" xml:space="preserve">
         <value>Please configure retro properties</value>
     </data>
+    <data name="RetroTypeField" xml:space="preserve">
+        <value>Retro type</value>
+    </data>
+    <data name="RetroTypeHidden" xml:space="preserve">
+        <value>Hidden</value>
+    </data>
+    <data name="RetroTypeClosed" xml:space="preserve">
+        <value>Closed</value>
+    </data>
+    <data name="RetroTypeOpened" xml:space="preserve">
+        <value>Opened</value>
+    </data>
 </root>

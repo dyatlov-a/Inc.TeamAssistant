@@ -5,7 +5,7 @@ namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
 public interface IRetroEventSender
 {
-    Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false);
+    Task RetroItemChanged(RetroItemDto item, EventTarget eventTarget);
 
     Task RetroItemRemoved(Guid roomId, Guid itemId);
     
@@ -21,10 +21,7 @@ public interface IRetroEventSender
     
     Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId);
     
-    Task RetroPropertiesChanged(
-        Guid roomId,
-        RetroPropertiesDto properties,
-        IReadOnlyCollection<RetroColumnDto> columns);
+    Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties);
 
     Task TimerChanged(Guid roomId, TimeSpan? duration);
 }

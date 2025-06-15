@@ -5,14 +5,19 @@ namespace Inc.TeamAssistant.Retro.Application.Common.Converters;
 
 internal static class RetroPropertiesConverter
 {
+    private static readonly Guid DefaultTemplateId = Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c");
+    private static readonly TimeSpan DefaultTimerDuration = TimeSpan.FromMinutes(10);
+    private static readonly int DefaultVoteCount = 5;
+    
     public static RetroPropertiesDto ConvertTo(RetroProperties properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
-        
-        var templateId = properties.TemplateId ?? Guid.Parse("41c7a7b9-044f-46aa-b94e-e3bb06aed70c");
-        var timerDuration = properties.TimerDuration ?? TimeSpan.FromMinutes(10);
-        var voteCount = properties.VoteCount ?? 5;
 
-        return new RetroPropertiesDto(properties.FacilitatorId, templateId, timerDuration, voteCount);
+        return new RetroPropertiesDto(
+            properties.FacilitatorId,
+            properties.TemplateId ?? DefaultTemplateId,
+            properties.TimerDuration ?? DefaultTimerDuration,
+            properties.VoteCount ?? DefaultVoteCount,
+            properties.RequiredRetroType().ToString());
     }
 }

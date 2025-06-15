@@ -17,16 +17,21 @@ internal sealed class RetroEventSender : IRetroEventSender
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
     
-    public async Task RetroItemChanged(RetroItemDto item, bool excludedOwner = false)
+    public async Task RetroItemChanged(RetroItemDto item, EventTarget eventTarget)
     {
         ArgumentNullException.ThrowIfNull(item);
         
         var ownerConnectionId = _onlinePersonStore.FindConnectionId(item.RoomId, item.OwnerId);
+        var client = eventTarget switch
+        {
+            EventTarget.Owner when !string.IsNullOrWhiteSpace(ownerConnectionId)
+                => _hubContext.Clients.Client(ownerConnectionId),
+            EventTarget.Participants when !string.IsNullOrWhiteSpace(ownerConnectionId)
+                => _hubContext.Clients.GroupExcept(item.RoomId.ToString("N"), ownerConnectionId),
+            _ => _hubContext.Clients.Group(item.RoomId.ToString("N"))
+        };
 
-        if (excludedOwner && !string.IsNullOrWhiteSpace(ownerConnectionId))
-            await _hubContext.Clients.GroupExcept(item.RoomId.ToString("N"), ownerConnectionId).RetroItemChanged(item);
-        else
-            await _hubContext.Clients.Group(item.RoomId.ToString("N")).RetroItemChanged(item);
+        await client.RetroItemChanged(item);
     }
 
     public async Task RetroItemRemoved(Guid roomId, Guid itemId)
@@ -70,15 +75,11 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.GroupExcept(roomId.ToString("N"), connectionId).ActionItemRemoved(itemId);
     }
 
-    public async Task RetroPropertiesChanged(
-        Guid roomId,
-        RetroPropertiesDto properties,
-        IReadOnlyCollection<RetroColumnDto> columns)
+    public async Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
-        ArgumentNullException.ThrowIfNull(columns);
         
-        await _hubContext.Clients.Group(roomId.ToString("N")).RetroPropertiesChanged(properties, columns);
+        await _hubContext.Clients.Group(roomId.ToString("N")).RetroPropertiesChanged(properties);
     }
 
     public async Task TimerChanged(Guid roomId, TimeSpan? duration)

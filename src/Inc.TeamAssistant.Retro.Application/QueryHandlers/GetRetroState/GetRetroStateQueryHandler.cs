@@ -52,6 +52,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
+        var retroType = properties.RequiredRetroType();
         var retroProperties = RetroPropertiesConverter.ConvertTo(properties);
         var columns = await _retroTemplateReader.GetColumns(retroProperties.TemplateId, token);
 
@@ -72,11 +73,13 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? RetroSessionConverter.ConvertTo(session)
             : null;
         var retroItems = items
+            .Where(i => retroType != RetroTypes.Closed || i.OwnerId == currentPerson.Id)
             .Select(i => RetroItemConverter.ConvertFromReadModel(
                 i,
                 currentPerson.Id,
                 session?.State,
-                votesByPerson))
+                votesByPerson,
+                retroType))
             .ToArray();
         var participants = onlinePersons
             .Select(op => new RetroParticipantDto(
@@ -86,7 +89,14 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 handRaisedLookup.GetValueOrDefault(op.Id, false)))
             .ToArray();
         var actionItems = actions.Select(ActionItemConverter.ConvertTo).ToArray();
-        var retroColumns = columns.Select(RetroColumnConverter.ConvertTo).ToArray();
+        var retroColumns = columns
+            .Select(c => new RetroColumnDto(
+                c.Id,
+                c.Name,
+                c.Position,
+                c.Color,
+                c.Description))
+            .ToArray();
         var currentTimer = _timerService.TryGetValue(query.RoomId);
         
         return new GetRetroStateResult(

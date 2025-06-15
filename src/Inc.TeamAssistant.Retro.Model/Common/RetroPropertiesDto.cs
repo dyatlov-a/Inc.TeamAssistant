@@ -6,12 +6,14 @@ public sealed record RetroPropertiesDto(
     long? FacilitatorId,
     Guid TemplateId,
     TimeSpan TimerDuration,
-    int VoteCount)
+    int VoteCount,
+    string RetroType)
     : IWithEmpty<RetroPropertiesDto>
 {
     public static RetroPropertiesDto Empty { get; } = new(
         FacilitatorId: null,
         TemplateId: Guid.Empty,
         TimerDuration: TimeSpan.Zero,
-        VoteCount: 0);
+        VoteCount: 0,
+        RetroType: string.Empty);
 }

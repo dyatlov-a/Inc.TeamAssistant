@@ -368,5 +368,29 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("RetroPropertiesSectionHelp", resourceCulture);
             }
         }
+        
+        internal static string RetroTypeField {
+            get {
+                return ResourceManager.GetString("RetroTypeField", resourceCulture);
+            }
+        }
+        
+        internal static string RetroTypeHidden {
+            get {
+                return ResourceManager.GetString("RetroTypeHidden", resourceCulture);
+            }
+        }
+        
+        internal static string RetroTypeClosed {
+            get {
+                return ResourceManager.GetString("RetroTypeClosed", resourceCulture);
+            }
+        }
+        
+        internal static string RetroTypeOpened {
+            get {
+                return ResourceManager.GetString("RetroTypeOpened", resourceCulture);
+            }
+        }
     }
 }

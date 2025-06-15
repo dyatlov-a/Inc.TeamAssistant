@@ -12,18 +12,15 @@ internal sealed class ChangeRetroPropertiesCommandHandler : IRequestHandler<Chan
     private readonly IRetroPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
-    private readonly IRetroTemplateReader _retroTemplateReader;
 
     public ChangeRetroPropertiesCommandHandler(
         IRetroPropertiesProvider propertiesProvider,
         IPersonResolver personResolver,
-        IRetroEventSender eventSender,
-        IRetroTemplateReader retroTemplateReader)
+        IRetroEventSender eventSender)
     {
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _retroTemplateReader = retroTemplateReader ?? throw new ArgumentNullException(nameof(retroTemplateReader));
     }
 
     public async Task Handle(ChangeRetroPropertiesCommand command, CancellationToken token)
@@ -31,23 +28,21 @@ internal sealed class ChangeRetroPropertiesCommandHandler : IRequestHandler<Chan
         ArgumentNullException.ThrowIfNull(command);
         
         var currentPerson = _personResolver.GetCurrentPerson();
-        var currentProperties = await _propertiesProvider.Get(command.RoomId, token);
         var retroProperties = new RetroProperties
         {
             FacilitatorId = command.IsFacilitator == true ? currentPerson.Id : null,
             TemplateId = command.TemplateId,
             TimerDuration = command.TimerDuration,
-            VoteCount = command.VoteCount
+            VoteCount = command.VoteCount,
+            RetroType = string.IsNullOrWhiteSpace(command.RetroType)
+                ? null
+                : Enum.Parse<RetroTypes>(command.RetroType, ignoreCase: true)
         };
-        var columns = retroProperties.TemplateId.HasValue && currentProperties.TemplateId != retroProperties.TemplateId
-            ? await _retroTemplateReader.GetColumns(retroProperties.TemplateId.Value, token)
-            : [];
         
         await _propertiesProvider.Set(command.RoomId, retroProperties, token);
 
         await _eventSender.RetroPropertiesChanged(
             command.RoomId,
-            RetroPropertiesConverter.ConvertTo(retroProperties),
-            columns.Select(RetroColumnConverter.ConvertTo).ToArray());
+            RetroPropertiesConverter.ConvertTo(retroProperties));
     }
 }

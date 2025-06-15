@@ -171,4 +171,16 @@
     <data name="RetroPropertiesSectionHelp" xml:space="preserve">
         <value>Пожалуйста, укажите свойства</value>
     </data>
+    <data name="RetroTypeField" xml:space="preserve">
+        <value>Способ проведения ретро</value>
+    </data>
+    <data name="RetroTypeClosed" xml:space="preserve">
+        <value>Скрыто наличие карточек</value>
+    </data>
+    <data name="RetroTypeHidden" xml:space="preserve">
+        <value>Текст карточек скрыт</value>
+    </data>
+    <data name="RetroTypeOpened" xml:space="preserve">
+        <value>Все карточки открыты</value>
+    </data>
 </root>

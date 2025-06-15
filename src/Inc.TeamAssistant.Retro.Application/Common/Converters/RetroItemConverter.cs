@@ -8,36 +8,38 @@ internal static class RetroItemConverter
 {
     private static readonly Regex LetterPattern = new(@"\p{L}", RegexOptions.Compiled);
 
-    public static RetroItemDto ConvertFromCreated(RetroItem item)
+    public static RetroItemDto ConvertFromCreated(RetroItem item, RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        return ConvertFrom(item, currentPersonId: null, state: null, votesByPerson: null);
+        return ConvertFrom(item, currentPersonId: null, state: null, votesByPerson: null, retroType);
     }
     
-    public static RetroItemDto ConvertFromChanged(RetroItem item, RetroSessionState? state)
+    public static RetroItemDto ConvertFromChanged(RetroItem item, RetroSessionState? state, RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        return ConvertFrom(item, currentPersonId: null, state, votesByPerson: null);
+        return ConvertFrom(item, currentPersonId: null, state, votesByPerson: null, retroType);
     }
 
     public static RetroItemDto ConvertFromReadModel(
         RetroItem item,
         long currentPersonId,
         RetroSessionState? state,
-        IDictionary<Guid, int> votesByPerson)
+        IDictionary<Guid, int> votesByPerson,
+        RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        return ConvertFrom(item, currentPersonId, state, votesByPerson);
+        return ConvertFrom(item, currentPersonId, state, votesByPerson, retroType);
     }
     
     private static RetroItemDto ConvertFrom(
         RetroItem item,
         long? currentPersonId,
         RetroSessionState? state,
-        IDictionary<Guid, int>? votesByPerson)
+        IDictionary<Guid, int>? votesByPerson,
+        RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
 
@@ -48,7 +50,7 @@ internal static class RetroItemConverter
             RetroSessionState.Discussing or RetroSessionState.Finished => item.Votes,
             _ => null
         };
-        var parentText = state is null
+        var parentText = state is null && retroType == RetroTypes.Hidden
             ? ToObfuscate(item, currentPersonId)
             : item.Text;
         

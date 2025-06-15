@@ -18,16 +18,16 @@
                     ValueChanged="@((Guid v) => FormModel.ChangeTemplate(v))"/>
             </FormFieldSet>
             <FormFieldSet
-                FieldId="timer-duration"
-                Label="@Localizer["TimerDurationField"]">
+                FieldId="retro-type"
+                Label="@Localizer["RetroTypeField"]">
                 <InputSelectList
-                    FieldId="timer-duration"
-                    Items="_timerDurations"
-                    TitleSelector="@(t => string.Format(Localizer["TimerDurationTemplate"], t))"
-                    ValueSelector="@(t => TimeSpan.FromMinutes(t))"
-                    Value="FormModel.TimerDuration"
-                    ValueExpression="@(() => FormModel.TimerDuration)"
-                    ValueChanged="@((TimeSpan v) => FormModel.ChangeTimerDuration(v))" />
+                    FieldId="retro-type"
+                    Items="RetroTypes.All"
+                    TitleSelector="@(t => Localizer[$"RetroType{t}"])"
+                    ValueSelector="t => t"
+                    Value="FormModel.RetroType"
+                    ValueExpression="@(() => FormModel.RetroType)"
+                    ValueChanged="@((string v) => FormModel.ChangeRetroType(v))" />
             </FormFieldSet>
             <FormFieldSet
                 FieldId="vote-count"
@@ -40,6 +40,18 @@
                     Value="FormModel.VoteCount"
                     ValueExpression="@(() => FormModel.VoteCount)"
                     ValueChanged="@((int v) => FormModel.ChangeVoteCount(v))" />
+            </FormFieldSet>
+            <FormFieldSet
+                FieldId="timer-duration"
+                Label="@Localizer["TimerDurationField"]">
+                <InputSelectList
+                    FieldId="timer-duration"
+                    Items="_timerDurations"
+                    TitleSelector="@(t => string.Format(Localizer["TimerDurationTemplate"], t))"
+                    ValueSelector="@(t => TimeSpan.FromMinutes(t))"
+                    Value="FormModel.TimerDuration"
+                    ValueExpression="@(() => FormModel.TimerDuration)"
+                    ValueChanged="@((TimeSpan v) => FormModel.ChangeTimerDuration(v))" />
             </FormFieldSet>
         </FormSection>
     </Loading>

@@ -37,9 +37,7 @@
                     <div class="retro-grid__columns">
                         @foreach (var column in Columns.OrderBy(c => c.Position))
                         {
-                            var description = GetColumnDescription(column);
-                            
-                            <div class="retro-grid__column">
+                            <div class="retro-grid__column" title="@GetColumnDescription(column)">
                                 <Panel
                                     Header="@Localizer[column.Name]"
                                     IsOpen="true"
@@ -50,10 +48,6 @@
                                         </Button>
                                     </Actions>
                                     <Content>
-                                        @if (!string.IsNullOrWhiteSpace(description))
-                                        {
-                                            <p>@description</p>
-                                        }
                                         <div class="retro-grid__column-items">
                                             @if (CanMove)
                                             {
@@ -214,6 +208,12 @@
     public TimeSpan TimerDuration { get; set; }
     
     /// <summary>
+    /// Retro type.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string RetroType { get; set; } = default!;
+    
+    /// <summary>
     /// Is creating retro item.
     /// </summary>
     [Parameter, EditorRequired]
@@ -369,7 +369,7 @@
 
     private bool CanView(RetroItemViewModel item)
     {
-        var canAsUser = Session is not null;
+        var canAsUser = Session is not null || RetroType == RetroTypes.Opened;
         var canAsOwner = item.HasOwnerRights(CurrentUserId);
 
         return canAsUser || canAsOwner;
