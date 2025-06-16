@@ -183,4 +183,13 @@
     <data name="RetroTypeOpened" xml:space="preserve">
         <value>Все карточки открыты</value>
     </data>
+    <data name="ColumnToDiscussDescription" xml:space="preserve">
+        <value>Задачи, вопросы или темы, которые ещё не обсуждались. Ожидают рассмотрения на ближайшем собрании или в ходе диалога.</value>
+    </data>
+    <data name="ColumnDiscussingDescription" xml:space="preserve">
+        <value>Активно обсуждаемые в данный момент темы. Участники обмениваются мнениями, ищут решения или уточняют детали.</value>
+    </data>
+    <data name="ColumnDiscussedDescription" xml:space="preserve">
+        <value>Темы, которые уже были рассмотрены. Решения приняты, дальнейшее обсуждение не требуется.</value>
+    </data>
 </root>

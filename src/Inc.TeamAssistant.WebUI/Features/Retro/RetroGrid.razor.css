@@ -21,6 +21,7 @@
 .retro-grid {
     overflow-x: auto;
     width: 100%;
+    min-height: 240px;
 }
 .retro-grid__columns {
     display: flex;

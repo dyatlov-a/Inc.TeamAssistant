@@ -1,9 +1,9 @@
-@attribute [Stories("Icons/UnknownIcon")]
+@attribute [Stories("Icons/CircleQuestionIcon")]
 
-<Stories TComponent="UnknownIcon">
+<Stories TComponent="CircleQuestionIcon">
     <Story Name="Primary" Layout="typeof(DarkLayout)">
         <Template>
-            <UnknownIcon Size="80px" @attributes="context.Args" />
+            <CircleQuestionIcon Size="80px" @attributes="context.Args" />
         </Template>
     </Story>
     <Story Name="Secondary" Layout="typeof(LightLayout)">
@@ -11,12 +11,12 @@
             <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
         </Arguments>
         <Template>
-            <UnknownIcon Size="80px" @attributes="context.Args"/>
+            <CircleQuestionIcon Size="80px" @attributes="context.Args"/>
         </Template>
     </Story>
     <Story Name="Small" Layout="typeof(DarkLayout)">
         <Template>
-            <UnknownIcon Size="40px" @attributes="context.Args" />
+            <CircleQuestionIcon Size="40px" @attributes="context.Args" />
         </Template>
     </Story>
 </Stories>

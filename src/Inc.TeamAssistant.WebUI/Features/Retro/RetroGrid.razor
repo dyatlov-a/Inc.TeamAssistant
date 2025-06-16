@@ -37,15 +37,27 @@
                     <div class="retro-grid__columns">
                         @foreach (var column in Columns.OrderBy(c => c.Position))
                         {
-                            <div class="retro-grid__column" title="@GetColumnDescription(column)">
+                            var description = GetColumnDescription(column);
+                            var hasDescription = !string.IsNullOrWhiteSpace(description);
+                            
+                            <div class="retro-grid__column">
                                 <Panel
                                     Header="@Localizer[column.Name]"
                                     IsOpen="true"
-                                    HasActions="CanCreateRetroItem">
+                                    HasActions="@(CanCreateRetroItem || hasDescription)">
                                     <Actions>
-                                        <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
-                                            @Localizer["Add"]
-                                        </Button>
+                                        @if (CanCreateRetroItem)
+                                        {
+                                            <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
+                                                @Localizer["Add"]
+                                            </Button>
+                                        }
+                                        @if (hasDescription)
+                                        {
+                                            <i data-hint="@description">
+                                                <CircleQuestionIcon Size="20px"/>
+                                            </i>
+                                        }
                                     </Actions>
                                     <Content>
                                         <div class="retro-grid__column-items">

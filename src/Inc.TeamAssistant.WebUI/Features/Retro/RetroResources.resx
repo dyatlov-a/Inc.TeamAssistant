@@ -145,13 +145,13 @@
         <value>Discussed</value>
     </data>
     <data name="ColumnToDiscussDescription" xml:space="preserve">
-        <value />
+        <value>Tasks, questions, or topics that haven’t been addressed yet. Waiting to be reviewed at an upcoming meeting or during a conversation.</value>
     </data>
     <data name="ColumnDiscussingDescription" xml:space="preserve">
-        <value />
+        <value>Topics currently being discussed. Team members are exchanging opinions, seeking solutions, or clarifying details.</value>
     </data>
     <data name="ColumnDiscussedDescription" xml:space="preserve">
-        <value />
+        <value>Topics that have already been reviewed. Decisions have been made, and no further discussion is needed.</value>
     </data>
     <data name="RetroPropertiesHint" xml:space="preserve">
         <value>Change retro properties</value>

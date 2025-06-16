@@ -13,3 +13,8 @@
 .panel__body {
     padding: 10px;
 }
+.panel__actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}

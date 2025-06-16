@@ -374,5 +374,23 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("RetroTypeOpened", resourceCulture);
             }
         }
+        
+        internal static string ColumnToDiscussDescription {
+            get {
+                return ResourceManager.GetString("ColumnToDiscussDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussingDescription {
+            get {
+                return ResourceManager.GetString("ColumnDiscussingDescription", resourceCulture);
+            }
+        }
+        
+        internal static string ColumnDiscussedDescription {
+            get {
+                return ResourceManager.GetString("ColumnDiscussedDescription", resourceCulture);
+            }
+        }
     }
 }
