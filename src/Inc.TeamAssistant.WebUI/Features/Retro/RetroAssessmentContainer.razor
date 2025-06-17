@@ -15,13 +15,14 @@
     State="_state"
     Retry="Load"
     Value="_value"
-    VotesCount="5"
+    VotesCount="VotesCount"
     ValueChanged="OnValueChanged" />
 
 @code {
     [Parameter]
     public Guid SessionId { get; set; }
 
+    private const int VotesCount = 5;
     private readonly LoadingState _state = LoadingState.Done();
     private int _value;
 

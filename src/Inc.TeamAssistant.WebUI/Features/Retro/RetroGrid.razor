@@ -53,10 +53,8 @@
                                             </Button>
                                         }
                                         @if (hasDescription)
-                                        {
-                                            <i data-hint="@description">
-                                                <CircleQuestionIcon Size="20px"/>
-                                            </i>
+                                        {    
+                                            <Hint Text="@description" />
                                         }
                                     </Actions>
                                     <Content>

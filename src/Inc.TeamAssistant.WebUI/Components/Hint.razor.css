@@ -1,0 +1,22 @@
+.hint {
+    position: relative;
+    cursor: pointer;
+}
+.hint::after {
+    content: attr(data-hint);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 220px;
+    word-wrap: break-word;
+    background: var(--block-secondary-color);
+    color: var(--accent-text-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+.hint:hover::after {
+    opacity: .8;
+}

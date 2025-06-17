@@ -392,5 +392,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("RetroTypeOpened", resourceCulture);
             }
         }
+        
+        internal static string BacklogText {
+            get {
+                return ResourceManager.GetString("BacklogText", resourceCulture);
+            }
+        }
     }
 }

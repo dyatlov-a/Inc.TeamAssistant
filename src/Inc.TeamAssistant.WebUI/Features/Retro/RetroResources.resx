@@ -192,4 +192,8 @@
     <data name="RetroTypeOpened" xml:space="preserve">
         <value>Opened</value>
     </data>
+    <data name="BacklogText" xml:space="preserve">
+        <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.
+Review the list, pick what still matters, and add it to the work plan.</value>
+    </data>
 </root>

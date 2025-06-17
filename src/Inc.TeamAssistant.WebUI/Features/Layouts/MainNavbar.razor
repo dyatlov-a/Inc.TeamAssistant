@@ -8,14 +8,20 @@
         @foreach (var language in Languages)
         {
             <div class="navbar__item">
-                <RouterLink OnClick="() => Moved.InvokeAsync(language.Url)">@language.Title</RouterLink>
+                <RouterLink OnClick="() => LanguageChanged.InvokeAsync(language.Url)">@language.Title</RouterLink>
             </div>
         }
         <div class="navbar__divider"></div>
-        @foreach(var team in Teams)
+        @if (HasRoomManager)
         {
-            <div class="navbar__item navbar__item_team">
-                <RouterLink Href="@MoveToTeamFactory(team.Id)">@team.Name</RouterLink>
+            <div class="navbar__item navbar__item_room">
+                <RouterLink Href="@MoveToLinkFactory("/rooms")">@Localizer["Rooms"]</RouterLink>
+            </div>
+        }
+        @foreach(var room in Rooms)
+        {
+            <div class="navbar__item navbar__item_room">
+                <RouterLink Href="@MoveToLinkFactory($"retro/{room.Id:N}")">@room.Name</RouterLink>
             </div>
         }
         @if (CurrentPerson is not null)
@@ -39,30 +45,59 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Has login.
+    /// </summary>
     [Parameter, EditorRequired]
     public bool HasLogin { get; set; }
     
+    /// <summary>
+    /// Supported languages.
+    /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<LinkModel> Languages { get; set; } = default!;
     
+    /// <summary>
+    /// Main page url.
+    /// </summary>
     [Parameter, EditorRequired]
     public string MainUrl { get; set; } = default!;
     
+    /// <summary>
+    /// Login page url.
+    /// </summary>
     [Parameter, EditorRequired]
     public string LoginUrl { get; set; } = default!;
     
+    /// <summary>
+    /// Logout url.
+    /// </summary>
     [Parameter, EditorRequired]
     public string LogoutUrl { get; set; } = default!;
     
+    /// <summary>
+    /// Move to link factory.
+    /// </summary>
     [Parameter, EditorRequired]
-    public Func<Guid, string> MoveToTeamFactory { get; set; } = default!;
+    public Func<string, string> MoveToLinkFactory { get; set; } = default!;
     
+    /// <summary>
+    /// Language changed callback.
+    /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<string> Moved { get; set; }
+    public EventCallback<string> LanguageChanged { get; set; }
     
+    /// <summary>
+    /// Room list.
+    /// </summary>
     [Parameter]
-    public IEnumerable<RoomDto> Teams { get; set; } = [];
+    public IEnumerable<RoomDto> Rooms { get; set; } = [];
     
+    /// <summary>
+    /// Current person.
+    /// </summary>
     [Parameter]
     public Person? CurrentPerson { get; set; }
+
+    private bool HasRoomManager => CurrentPerson is not null;
 }

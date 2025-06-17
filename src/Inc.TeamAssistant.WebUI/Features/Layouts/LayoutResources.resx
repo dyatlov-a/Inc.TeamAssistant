@@ -51,4 +51,7 @@
     <data name="AcceptCookieButton" xml:space="preserve">
         <value>Accept</value>
     </data>
+    <data name="Rooms" xml:space="preserve">
+        <value>Rooms</value>
+    </data>
 </root>

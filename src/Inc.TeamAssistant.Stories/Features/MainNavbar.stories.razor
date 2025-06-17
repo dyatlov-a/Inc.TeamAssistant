@@ -9,9 +9,9 @@
                 MainUrl="#"
                 LoginUrl="#"
                 LogoutUrl="#"
-                Moved="@(_ => { })"
+                LanguageChanged="@(_ => { })"
                 CurrentPerson="_currentPerson"
-                MoveToTeamFactory="@(_ => string.Empty)" />
+                MoveToLinkFactory="@(_ => string.Empty)" />
         </Template>
     </Story>
     <Story Name="NotAuthorized">
@@ -22,8 +22,8 @@
                 MainUrl="#"
                 LoginUrl="#"
                 LogoutUrl="#"
-                Moved="@(_ => { })"
-                MoveToTeamFactory="@(_ => string.Empty)" />
+                LanguageChanged="@(_ => { })"
+                MoveToLinkFactory="@(_ => string.Empty)" />
         </Template>
     </Story>
     <Story Name="WithTeams">
@@ -34,10 +34,10 @@
                 MainUrl="#"
                 LoginUrl="#"
                 LogoutUrl="#"
-                Moved="@(_ => { })"
+                LanguageChanged="@(_ => { })"
                 CurrentPerson="_currentPerson"
-                MoveToTeamFactory="@(_ => string.Empty)"
-                Teams="_teams" />
+                MoveToLinkFactory="@(_ => string.Empty)"
+                Rooms="_teams" />
         </Template>
     </Story>
 </Stories>

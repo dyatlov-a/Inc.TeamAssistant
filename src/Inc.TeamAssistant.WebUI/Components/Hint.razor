@@ -1,0 +1,11 @@
+<i data-hint="@Text" class="hint">
+    <CircleQuestionIcon Size="20px"/>
+</i>
+
+@code {
+    /// <summary>
+    /// Text for hint.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+}

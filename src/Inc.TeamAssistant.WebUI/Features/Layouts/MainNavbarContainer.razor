@@ -11,10 +11,10 @@
             MainUrl="@MainUrl"
             LoginUrl="@LoginUrl"
             LogoutUrl="@_logoutUrl"
-            Moved="p => MoveTo(p)"
+            LanguageChanged="p => MoveTo(p)"
             CurrentPerson="context.User.ToPerson()"
-            Teams="TenantStore.Rooms"
-            MoveToTeamFactory="CreateMoveToRetroLink" />
+            Rooms="TenantStore.Rooms"
+            MoveToLinkFactory="CreateMoveToLink" />
     </Authorized>
     <NotAuthorized>
         <MainNavbar
@@ -23,8 +23,8 @@
             LoginUrl="@LoginUrl"
             LogoutUrl="@_logoutUrl"
             MainUrl="@MainUrl"
-            Moved="p => MoveTo(p)"
-            MoveToTeamFactory="CreateMoveToRetroLink" />
+            LanguageChanged="p => MoveTo(p)"
+            MoveToLinkFactory="CreateMoveToLink" />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -64,7 +64,7 @@
 
     private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
     
-    private string CreateMoveToRetroLink(Guid teamId) => NavRouter.CreateRoute($"retro/{teamId:N}");
+    private string CreateMoveToLink(string routeSegment) => NavRouter.CreateRoute(routeSegment);
 
     public void Dispose()
     {
