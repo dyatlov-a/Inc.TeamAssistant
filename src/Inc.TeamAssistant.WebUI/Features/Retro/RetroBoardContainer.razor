@@ -24,7 +24,7 @@
     <Body>
     <AuthorizeView>
         <Authorized>
-            <RetroGrid
+            <RetroBoard
                 State="_state"
                 Columns="Columns"
                 CurrentUserId="context.User.ToPerson().Id"
@@ -119,7 +119,7 @@
         
         var result = await RequestProcessor.Process(
             async () => await RetroService.GetRetroState(RoomId),
-            nameof(RetroGridContainer),
+            nameof(RetroBoardContainer),
             state);
         var children = result.Items
             .Where(i => i.ParentId.HasValue)

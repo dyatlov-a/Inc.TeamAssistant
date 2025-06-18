@@ -2,13 +2,15 @@
     position: relative;
     cursor: pointer;
 }
-.hint::after {
+.hint:after {
     content: attr(data-hint);
     position: absolute;
     top: 100%;
     right: 0;
     width: 220px;
     word-wrap: break-word;
+    font-size: .8rem;
+    line-height: 1rem;
     background: var(--block-secondary-color);
     color: var(--accent-text-color);
     padding: 5px 10px;
@@ -17,6 +19,6 @@
     pointer-events: none;
     transition: opacity .3s;
 }
-.hint:hover::after {
+.hint_open:after {
     opacity: .8;
 }

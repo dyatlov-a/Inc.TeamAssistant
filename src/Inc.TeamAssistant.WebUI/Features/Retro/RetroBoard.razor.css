@@ -1,22 +1,7 @@
-.retro {
-    display: flex;
-    margin: 1rem;
-    gap: 1rem;
-}
 .retro__text {
     font-size: 1.2rem;
     line-height: 1.6rem;
     margin: 20px 0;
-}
-.retro-toolbar {
-    margin-bottom: 20px;
-}
-.retro-toolbar__content {
-    width: 260px;
-    background-color: var(--block-primary-color);
-}
-.retro-content {
-    flex-grow: 1;
 }
 .retro-grid {
     overflow-x: auto;
@@ -41,14 +26,6 @@
 @media (max-width: 991.98px) {
     .retro-grid__column {
         width: calc(50% - .5rem);
-    }
-}
-@media (max-width: 767.98px) {
-    .retro {
-        display: block;
-    }
-    .retro-toolbar__content {
-        width: 100%;
     }
 }
 @media (max-width: 479.98px) {

@@ -3,6 +3,7 @@
     display: flex;
     align-items: center;
     gap: .5rem;
+    background-color: var(--block-primary-color);
 }
 .retro__link {
     display: flex;

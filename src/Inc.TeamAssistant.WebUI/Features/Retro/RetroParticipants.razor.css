@@ -4,6 +4,7 @@
 }
 .participant {
     padding: .5rem;
+    background-color: var(--block-primary-color);
 }
 .participant:nth-child(2n - 1){
     background-color: var(--bg-secondary-color);

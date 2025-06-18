@@ -1,0 +1,22 @@
+.dashboard-grid {
+    display: flex;
+    margin: 1rem;
+    gap: 1rem;
+}
+.dashboard-grid-toolbar {
+    margin-bottom: 20px;
+}
+.dashboard-grid-toolbar__content {
+    width: 260px;
+}
+.dashboard-grid-content {
+    flex-grow: 1;
+}
+@media (max-width: 767.98px) {
+    .dashboard-grid {
+        display: block;
+    }
+    .dashboard-grid-toolbar__content {
+        width: 100%;
+    }
+}

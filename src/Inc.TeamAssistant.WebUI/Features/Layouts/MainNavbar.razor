@@ -12,16 +12,16 @@
             </div>
         }
         <div class="navbar__divider"></div>
+        @foreach(var room in Rooms)
+        {
+            <div class="navbar__item navbar__item_room">
+                <RouterLink Href="@MoveToLinkFactory($"retro/{room.Id:N}")">@room.Name.ToLowerInvariant()</RouterLink>
+            </div>
+        }
         @if (HasRoomManager)
         {
             <div class="navbar__item navbar__item_room">
                 <RouterLink Href="@MoveToLinkFactory("/rooms")">@Localizer["Rooms"]</RouterLink>
-            </div>
-        }
-        @foreach(var room in Rooms)
-        {
-            <div class="navbar__item navbar__item_room">
-                <RouterLink Href="@MoveToLinkFactory($"retro/{room.Id:N}")">@room.Name</RouterLink>
             </div>
         }
         @if (CurrentPerson is not null)
