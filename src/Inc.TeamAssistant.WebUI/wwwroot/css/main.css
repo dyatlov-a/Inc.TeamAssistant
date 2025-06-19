@@ -74,7 +74,7 @@ html {
 	scroll-behavior: smooth;
 }
 [class*="__container"] {
-	max-width: 1080px;
+	width: 1080px;
 	margin: 0 auto;
 	padding: 0 1rem;
 }
@@ -125,19 +125,19 @@ html {
 /* PC */
 @media (max-width: 1080px) {
 	[class*="__container"] {
-		max-width: 970px;
+        width: 970px;
 	}
 }
 /* TABLET */
 @media (max-width: 991.98px) {
 	[class*="__container"] {
-		max-width: 750px;
+        width: 750px;
 	}
 }
 /* MOBILE */
 @media (max-width: 767.98px) {
 	[class*="__container"] {
-		max-width: none;
+        width: 100%;
 	}
 }
 /* MOBILE SMALL */

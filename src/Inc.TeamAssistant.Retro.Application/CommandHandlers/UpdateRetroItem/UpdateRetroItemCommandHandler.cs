@@ -45,9 +45,15 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
         await _repository.Upsert(item, token);
 
         if (item.RetroSession is not null || retroType != RetroTypes.Closed)
+        {
+            var eventTarget = item.RetroSession is null
+                ? EventTarget.Participants
+                : EventTarget.All;
+            
             foreach (var changed in item.Children.Append(item))
                 await _eventSender.RetroItemChanged(
                     RetroItemConverter.ConvertFromChanged(changed, item.RetroSession?.State, retroType),
-                    EventTarget.Participants);
+                    eventTarget);
+        }
     }
 }

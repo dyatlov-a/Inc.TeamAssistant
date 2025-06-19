@@ -196,4 +196,13 @@
         <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.
 Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
+    <data name="RetroBoard" xml:space="preserve">
+        <value>Retro board</value>
+    </data>
+    <data name="RetroBacklog" xml:space="preserve">
+        <value>Retro backlog</value>
+    </data>
+    <data name="Participants" xml:space="preserve">
+        <value>Participants</value>
+    </data>
 </root>

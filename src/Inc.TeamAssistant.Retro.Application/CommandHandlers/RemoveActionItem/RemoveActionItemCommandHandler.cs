@@ -24,6 +24,6 @@ internal sealed class RemoveActionItemCommandHandler : IRequestHandler<RemoveAct
         if (item is not null)
             await _repository.Remove(item, token);
         
-        await _eventSender.ActionItemRemoved(command.RoomId, command.Id, command.ConnectionId);
+        await _eventSender.ActionItemRemoved(command.RoomId, command.Id);
     }
 }

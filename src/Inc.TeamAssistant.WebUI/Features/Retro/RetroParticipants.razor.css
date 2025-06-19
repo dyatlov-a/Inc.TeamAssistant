@@ -2,6 +2,9 @@
     display: flex;
     flex-direction: column;
 }
+.participants__header {
+    margin: 1rem .5rem .5rem 0;
+}
 .participant {
     padding: .5rem;
     background-color: var(--block-primary-color);

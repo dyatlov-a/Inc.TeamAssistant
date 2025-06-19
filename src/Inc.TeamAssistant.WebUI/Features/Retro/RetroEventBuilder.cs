@@ -240,11 +240,14 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
             await _reload();
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         _hubConnection.Closed -= Closed;
         _hubConnection.Reconnected -= Reconnected;
+
+        if (_hubConnection.State == HubConnectionState.Connected)
+            await _hubConnection.StopAsync();
         
-        return _hubConnection.DisposeAsync();
+        await _hubConnection.DisposeAsync();
     }
 }

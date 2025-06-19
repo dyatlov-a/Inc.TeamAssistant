@@ -13,7 +13,7 @@
     @ref="_item">
     @if (!RenderContext.IsBrowser || !CanEdit)
     {
-        @_value
+        @HtmlValue
     }
 </div>
 
@@ -39,6 +39,8 @@
     private string _value = string.Empty;
     private ElementReference _item;
     private Timer? _timer;
+
+    private MarkupString HtmlValue => (MarkupString)_value.Replace("\n", "<br/>");
     
     protected override void OnParametersSet()
     {
@@ -62,6 +64,8 @@
                 await JsRuntime.Execute(JsFunctions.FocusElement(_item));
             else
                 await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value));
+
+            await JsRuntime.Execute(JsFunctions.AddCleanStyleActionToPasteListener(_item));
         }
     }
     

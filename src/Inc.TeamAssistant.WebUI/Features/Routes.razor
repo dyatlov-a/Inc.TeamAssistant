@@ -26,6 +26,6 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JsRuntime.Execute(JsFunctions.AddObserver(".inline__dialogs", ".footer", "inline__dialogs_fixed"));
+            await JsRuntime.Execute(JsFunctions.AddPageScrollObserver(".inline__dialogs", ".footer", "inline__dialogs_fixed"));
     }
 }

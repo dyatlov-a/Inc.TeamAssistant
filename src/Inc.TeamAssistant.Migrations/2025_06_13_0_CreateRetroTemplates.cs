@@ -59,9 +59,7 @@ public sealed class CreateRetroTemplates : Migration
                 ('7855aa98-c74f-4104-aecd-339a3794aa8d', '41c7a7b9-044f-46aa-b94e-e3bb06aed70c', 'ColumnStopTitle', 2, '#B22222', 'ColumnStopDescription'),
                 ('fc62de57-158d-490a-aaf9-3ec67f1f8583', '41c7a7b9-044f-46aa-b94e-e3bb06aed70c', 'ColumnContinueTitle', 3, '#3CB371', 'ColumnContinueDescription'),
                 
-                ('785859ec-6ea4-4d54-b69a-0323ce5844b0', 'fc00fd5c-4db6-4760-b9e3-78814b60d392', 'ColumnToDiscussTitle', 1, '#FF8C00', 'ColumnToDiscussDescription'),
-                ('0f0549cc-8c7e-4694-b00e-6dc402e03825', 'fc00fd5c-4db6-4760-b9e3-78814b60d392', 'ColumnDiscussingTitle', 2, '#B22222', 'ColumnDiscussingDescription'),
-                ('f94217cd-f405-451d-87b1-f58e50e56089', 'fc00fd5c-4db6-4760-b9e3-78814b60d392', 'ColumnDiscussedTitle', 3, '#3CB371', 'ColumnDiscussedDescription');
+                ('785859ec-6ea4-4d54-b69a-0323ce5844b0', 'fc00fd5c-4db6-4760-b9e3-78814b60d392', 'ColumnToDiscussTitle', 1, '#FF8C00', 'ColumnToDiscussDescription');
             """,
             "");
     }

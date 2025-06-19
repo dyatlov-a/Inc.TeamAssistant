@@ -1,10 +1,12 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
 <div class="participants">
+    <h2 class="participants__header">@Localizer["Participants"]</h2>
+    
     @foreach (var participant in Participants)
     {
         var votesTotal = VotesTotal - participant.TotalVotes;
-        
+
         <div @key="participant.Person.Id" class="participant">
             <div class="participant__state">
                 @if (participant.Finished)
@@ -23,7 +25,7 @@
                             class="participant__state-item participant__state-item_active"
                             @onclick="() => SendHandLowered(participant.Person.Id)"
                             @onclick:preventDefault="true">
-                            <UserQuestionIcon Size="30px" />
+                            <UserQuestionIcon Size="30px"/>
                         </a>
                     }
                     else
@@ -34,7 +36,7 @@
                     }
                 }
             </div>
-            <PersonCard Person="participant.Person" />
+            <PersonCard Person="participant.Person"/>
             @if (CanVote && votesTotal > 0)
             {
                 <InputVoting

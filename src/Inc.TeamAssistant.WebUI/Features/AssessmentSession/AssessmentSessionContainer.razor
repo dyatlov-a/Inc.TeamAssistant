@@ -50,19 +50,18 @@
 
         await Load();
 
-        await Reconnect();
+        await Connect();
     }
 
-    private async Task Reconnect()
+    private async Task Connect()
     {
-        if (_eventListener is not null)
-            await _eventListener.DisposeAsync();
-        
         var eventBuilder = ServiceProvider.GetService<AssessmentSessionEventBuilder>();
-        if (eventBuilder is not null)
-            _eventBuilder ??= await eventBuilder.Start();
-        
-        _eventListener = await StartListenEvents();
+
+        if (eventBuilder is not null && _eventListener is null)
+        {
+            _eventBuilder = await eventBuilder.Start();
+            _eventListener = await StartListenEvents();
+        }
     }
 
     private async Task<IAsyncDisposable?> StartListenEvents()

@@ -21,9 +21,6 @@ internal sealed class RemoveActionItemCommandValidator : AbstractValidator<Remov
         RuleFor(e => e.RoomId)
             .NotEmpty();
         
-        RuleFor(e => e.ConnectionId)
-            .NotEmpty();
-        
         RuleFor(e => e)
             .MustAsync(HasRights)
             .WithMessage("You do not have rights to change this action item.");

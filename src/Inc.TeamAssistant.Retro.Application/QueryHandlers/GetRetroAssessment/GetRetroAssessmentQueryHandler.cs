@@ -9,12 +9,12 @@ internal sealed class GetRetroAssessmentQueryHandler
     : IRequestHandler<GetRetroAssessmentQuery, GetRetroAssessmentResult>
 {
     private readonly IPersonResolver _personResolver;
-    private readonly IRetroAssessmentRepository _repository;
+    private readonly IRetroAssessmentReader _reader;
 
-    public GetRetroAssessmentQueryHandler(IPersonResolver personResolver, IRetroAssessmentRepository repository)
+    public GetRetroAssessmentQueryHandler(IPersonResolver personResolver, IRetroAssessmentReader reader)
     {
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task<GetRetroAssessmentResult> Handle(GetRetroAssessmentQuery query, CancellationToken token)
@@ -22,8 +22,8 @@ internal sealed class GetRetroAssessmentQueryHandler
         ArgumentNullException.ThrowIfNull(query);
         
         var currentPerson = _personResolver.GetCurrentPerson();
-        var assessment = await _repository.Find(query.SessionId, currentPerson.Id, token);
+        var assessment = await _reader.Read(query.SessionId, currentPerson.Id, token);
 
-        return new GetRetroAssessmentResult(assessment?.Value ?? 0);
+        return new GetRetroAssessmentResult(assessment.RoomId, assessment.Value ?? 0);
     }
 }

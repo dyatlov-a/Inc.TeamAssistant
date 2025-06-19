@@ -195,4 +195,13 @@
     <data name="BacklogText" xml:space="preserve">
         <value>Здесь собраны пункты, которые поднимались на прошлых ретроспективах, но пока не были реализованы. Это может быть хорошая возможность вернуться к идеям, которые всё ещё актуальны, и довести их до результата. Просмотрите список, выберите то, что по-прежнему важно, и добавьте в план работы.</value>
     </data>
+    <data name="RetroBoard" xml:space="preserve">
+        <value>Доска для ретро</value>
+    </data>
+    <data name="RetroBacklog" xml:space="preserve">
+        <value>Список задач с ретро</value>
+    </data>
+    <data name="Participants" xml:space="preserve">
+        <value>Участники</value>
+    </data>
 </root>

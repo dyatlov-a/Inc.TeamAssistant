@@ -398,5 +398,23 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("BacklogText", resourceCulture);
             }
         }
+        
+        internal static string RetroBoard {
+            get {
+                return ResourceManager.GetString("RetroBoard", resourceCulture);
+            }
+        }
+        
+        internal static string RetroBacklog {
+            get {
+                return ResourceManager.GetString("RetroBacklog", resourceCulture);
+            }
+        }
+        
+        internal static string Participants {
+            get {
+                return ResourceManager.GetString("Participants", resourceCulture);
+            }
+        }
     }
 }

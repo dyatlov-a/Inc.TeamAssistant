@@ -9,7 +9,7 @@
         class="retro__link retro__link_active"
         @onclick="MoveToFinish"
         @onclick:preventDefault="true">
-        <CheckIcon Size="30px"/>
+        <CheckIcon Size="@IconSize" />
     </a>
     <a
         title="@Localizer["RaiseHandHint"]"
@@ -17,7 +17,7 @@
         class="retro__link retro__link_active"
         @onclick="RaiseHand"
         @onclick:preventDefault="true">
-        <UserQuestionIcon Size="30px"/>
+        <UserQuestionIcon Size="@IconSize" />
     </a>
     @if (IsFacilitator)
     {
@@ -27,7 +27,7 @@
             class="retro__link retro__link_active"
             @onclick="ToggleTimer"
             @onclick:preventDefault="true">
-            <ClockCheckIcon Size="30px"/> @TimerValue
+            <ClockCheckIcon Size="@IconSize" /> @TimerValue
         </a>
         <a
             title="@Localizer["RetroPropertiesHint"]"
@@ -35,7 +35,7 @@
             class="retro__link retro__link_active retro__link_right"
             @onclick="OnRetroPropertiesOpened"
             @onclick:preventDefault="true">
-            <SettingsIcon Size="30px"/>
+            <SettingsIcon Size="@IconSize" />
         </a>
         if (IsDiscussing)
         {
@@ -45,7 +45,7 @@
                 class="retro__link retro__link_active"
                 @onclick="OnMoveToPrevious"
                 @onclick:preventDefault="true">
-                <CaretLeftIcon Size="30px"/>
+                <CaretLeftIcon Size="@IconSize" />
             </a>
         }
         <a
@@ -54,13 +54,13 @@
             class="retro__link retro__link_active"
             @onclick="OnMoveNext"
             @onclick:preventDefault="true">
-            <CaretRightIcon Size="30px"/>
+            <CaretRightIcon Size="@IconSize" />
         </a>
     }
     else
     {
         <i class="retro__link">
-            <ClockCheckIcon Size="30px"/> @TimerValue
+            <ClockCheckIcon Size="@IconSize" /> @TimerValue
         </i>
         <a
             title="@Localizer["GiveFacilitatorHint"]"
@@ -68,7 +68,7 @@
             class="retro__link retro__link_active retro__link_right"
             @onclick="GiveFacilitator"
             @onclick:preventDefault="true">
-            <UsersIcon Size="30px"/>
+            <UsersIcon Size="@IconSize" />
         </a>
     }
 </div>
@@ -164,7 +164,8 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback RetroPropertiesOpened { get; set; }
-    
+
+    private const string IconSize = "26px";
     private TimeSpan? _currentTimer;
     private Timer? _timer;
     private ConfirmDialog? _confirmDialog;

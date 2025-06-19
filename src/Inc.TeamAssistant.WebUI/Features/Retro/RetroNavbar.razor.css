@@ -1,0 +1,14 @@
+.retro-navbar {
+    background-color: var(--block-primary-color);
+    display: flex;
+    flex-direction: column;
+}
+.retro-navbar__item {
+    display: flex;
+    align-items: center;
+    padding: .5rem;
+    color: var(--accent-text-color);
+}
+.retro-navbar__item:hover {
+    background-color: var(--bg-secondary-color);
+}

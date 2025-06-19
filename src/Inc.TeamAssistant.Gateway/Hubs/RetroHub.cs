@@ -95,7 +95,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     [HubMethodName(HubDescriptors.RetroHub.RemoveActionItemMethod)]
     public async Task RemoveActionItem(Guid roomId, Guid itemId)
     {
-        await _mediator.Send(new RemoveActionItemCommand(itemId, roomId, Context.ConnectionId), CancellationToken.None);
+        await _mediator.Send(new RemoveActionItemCommand(itemId, roomId), CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.ChangeTimerMethod)]

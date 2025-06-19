@@ -61,5 +61,11 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionEventPro
 		return _hubConnection.On(nameof(IAssessmentSessionHubClient.StoryAccepted), accepted);
 	}
 
-	public ValueTask DisposeAsync() => _hubConnection.DisposeAsync();
+	public async ValueTask DisposeAsync()
+	{
+		if (_hubConnection.State == HubConnectionState.Connected)
+			await _hubConnection.StopAsync();
+		
+		await _hubConnection.DisposeAsync();
+	}
 }

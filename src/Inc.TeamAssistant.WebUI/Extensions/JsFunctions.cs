@@ -67,7 +67,7 @@ internal static class JsFunctions
             className);
     }
     
-    public static IJsFunction<dynamic> AddObserver(
+    public static IJsFunction<dynamic> AddPageScrollObserver(
         string elementSelector,
         string anchorSelector,
         string modificatorClass)
@@ -77,11 +77,19 @@ internal static class JsFunctions
         ArgumentException.ThrowIfNullOrWhiteSpace(modificatorClass);
         
         return new JsFunction<dynamic>(
-            "window.browserJsFunctions.addObserver",
+            "window.browserJsFunctions.addPageScrollObserver",
             postAction: null,
             elementSelector,
             anchorSelector,
             modificatorClass);
+    }
+    
+    public static IJsFunction<dynamic> AddCleanStyleActionToPasteListener(ElementReference element)
+    {
+        return new JsFunction<dynamic>(
+            "window.browserJsFunctions.addCleanStyleActionToPasteListener",
+            postAction: null,
+            element);
     }
     
     private sealed record JsFunction<TResult> : IJsFunction<TResult>

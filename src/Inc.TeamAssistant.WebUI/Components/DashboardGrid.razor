@@ -1,4 +1,4 @@
-<div class="dashboard-grid__fluent-container">
+<div class="@CssClass">
     @Header
     <div class="dashboard-grid">
         <div class="dashboard-grid-toolbar">
@@ -30,4 +30,12 @@
     /// </summary>
     [Parameter]
     public RenderFragment? Header { get; set; }
+    
+    /// <summary>
+    /// Has fixed width.
+    /// </summary>
+    [Parameter]
+    public bool HasFixedWidth { get; set; }
+    
+    private string CssClass => HasFixedWidth ? "dashboard-grid__container" : "dashboard-grid__fluent-container";
 }

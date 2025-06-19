@@ -6,16 +6,19 @@
 @inject RequestProcessor RequestProcessor
 @inject IStringLocalizer<RetroResources> Localizer
 @inject INotificationsService NotificationsService
+@inject NavRouter NavRouter
 
 @attribute [Authorize]
 
 <MetaDataModule />
 
 <RetroAssessment
+    RoomId="_roomId"
     State="_state"
     Retry="Load"
     Value="_value"
     VotesCount="VotesCount"
+    LinkFactory="@(v => NavRouter.CreateRoute(v))"
     ValueChanged="OnValueChanged" />
 
 @code {
@@ -24,6 +27,7 @@
 
     private const int VotesCount = 5;
     private readonly LoadingState _state = LoadingState.Done();
+    private Guid? _roomId;
     private int _value;
 
     protected override async Task OnParametersSetAsync() => await Load();
@@ -35,6 +39,7 @@
             nameof(RetroAssessmentContainer),
             _state);
 
+        _roomId = result.RoomId;
         _value = result.Value;
     }
     

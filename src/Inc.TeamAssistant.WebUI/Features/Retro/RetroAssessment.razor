@@ -1,7 +1,13 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
-<div class="retro-assessment">
-    <div class="retro-assessment__container">
+<DashboardGrid>
+    <Toolbar>
+        @if (RoomId.HasValue)
+        {
+            <RetroNavbar RoomId="RoomId.Value" LinkFactory="LinkFactory"/>
+        }
+    </Toolbar>
+    <Content>
         <div class="retro-assessment__body">
             <h1 class="retro-assessment__title">@Localizer["RetroAssessmentTitle"]</h1>
             <p class="assessment-session__text">
@@ -21,11 +27,16 @@
                 </div>
             </Loading>
         </div>
-    </div>
-</div>
+    </Content>
+</DashboardGrid>
 
 @code {
-
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid? RoomId { get; set; }
+    
     /// <summary>
     /// State of the loading operation.
     /// </summary>
@@ -49,6 +60,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int VotesCount { get; set; }
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
     
     /// <summary>
     /// Value changed callback.

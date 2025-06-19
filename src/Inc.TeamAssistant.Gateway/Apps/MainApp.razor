@@ -84,7 +84,7 @@
                     element.classList.add(className);
                 }
             },
-            addObserver: (elementSelector, anchorSelector, modificatorClass) => {
+            addPageScrollObserver: (elementSelector, anchorSelector, modificatorClass) => {
                 const anchor = document.querySelector(anchorSelector);
                 const element = document.querySelector(elementSelector);
                 const placeholder = document.querySelector(elementSelector + '_placeholder')
@@ -105,6 +105,26 @@
 
                 if (anchor && element && placeholder)
                     observer.observe(anchor);
+            },
+            addCleanStyleActionToPasteListener: element => {
+                element.addEventListener("paste", function(e) {
+                    e.preventDefault();
+                    
+                    const text = e.clipboardData.getData("text/plain");
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+
+                    const textNode = document.createTextNode(text);
+                    range.insertNode(textNode);
+                    
+                    range.setStartAfter(textNode);
+                    range.setEndAfter(textNode);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                });
             }
         };
 

@@ -7,14 +7,23 @@
 @inject TenantStore TenantStore
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
 
 <MetaDataModule />
 
-<Backlog
-    State="_state"
-    ActionItems="_actionItems"
-    Retry="Load"
-    ActionItemChanged="OnActionItemChanged" />
+<AuthorizeView>
+    <Authorized>
+        <Backlog
+            RoomId="RoomId"
+            State="_state"
+            ActionItems="_actionItems"
+            CurrentPersonId="context.User.ToPerson().Id"
+            FacilitatorId="_facilitatorId"
+            Retry="Load"
+            LinkFactory="@(v => NavRouter.CreateRoute(v))"
+            ActionItemChanged="OnActionItemChanged" />
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter, EditorRequired]
@@ -22,6 +31,7 @@
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<ActionItemViewModel> _actionItems = new();
+    private long? _facilitatorId;
     
     protected override async Task OnParametersSetAsync() => await Load();
     
@@ -33,7 +43,9 @@
             async () => await RetroService.GetActionItems(RoomId),
             nameof(BacklogContainer),
             _state);
-        
+
+        _facilitatorId = result.FacilitatorId;
+            
         _actionItems.Clear();
         foreach (var actionItem in result.Items)
             ApplyActionItemChanged(actionItem);

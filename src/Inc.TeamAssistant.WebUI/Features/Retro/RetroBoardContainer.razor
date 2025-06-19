@@ -25,6 +25,7 @@
     <AuthorizeView>
         <Authorized>
             <RetroBoard
+                RoomId="RoomId"
                 State="_state"
                 Columns="Columns"
                 CurrentUserId="context.User.ToPerson().Id"
@@ -39,6 +40,7 @@
                 CurrentTimer="_currentTimer"
                 IsCreating="_isCreating"
                 Retry="@(() => Load(_state))"
+                LinkFactory="@(v => NavRouter.CreateRoute(v))"
                 ItemCreated="OnRetroItemCreated"
                 ItemChanged="OnRetroItemChanged"
                 ItemRemoved="OnRetroItemRemoved"
@@ -173,14 +175,13 @@
     
     private async Task Connect()
     {
-        if (_eventListener is not null)
-            await _eventListener.DisposeAsync();
-        
         var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
-        if (eventBuilder is not null)
-            _eventBuilder ??= await eventBuilder.Start(StateHasChanged, OnReconnect);
         
-        _eventListener = await StartListenEvents();
+        if (eventBuilder is not null && _eventBuilder is null)
+        {
+            _eventBuilder = await eventBuilder.Start(StateHasChanged, OnReconnect);
+            _eventListener = await StartListenEvents(eventBuilder);
+        }
     }
 
     private async Task Reconnect()
@@ -191,12 +192,9 @@
 
     private async Task OnReconnect() => await Load(LoadingState.Wrap(_state, StateHasChanged));
     
-    private async Task<IAsyncDisposable?> StartListenEvents()
+    private async Task<IAsyncDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
     {
-        if (_eventBuilder is null)
-            return null;
-
-        return await _eventBuilder.Build(
+        return await eventBuilder.Build(
             RoomId,
             b => b.OnRetroItemChanged(async i =>
             {

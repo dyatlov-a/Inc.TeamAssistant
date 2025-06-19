@@ -68,11 +68,9 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemChanged(item);
     }
 
-    public async Task ActionItemRemoved(Guid roomId, Guid itemId, string connectionId)
+    public async Task ActionItemRemoved(Guid roomId, Guid itemId)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
-        
-        await _hubContext.Clients.GroupExcept(roomId.ToString("N"), connectionId).ActionItemRemoved(itemId);
+        await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemRemoved(itemId);
     }
 
     public async Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties)

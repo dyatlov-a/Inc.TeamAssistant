@@ -1,7 +1,10 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
-<div class="backlog">
-    <div class="backlog__container">
+<DashboardGrid HasFixedWidth="true">
+    <Toolbar>
+        <RetroNavbar RoomId="RoomId" LinkFactory="LinkFactory" />
+    </Toolbar>
+    <Content>
         <Loading State="State" Retry="Retry">
             <p class="backlog__text">@Localizer["BacklogText"]</p>
             <div class="backlog-grid__columns">
@@ -17,11 +20,12 @@
                                               .OrderByDescending(i => i.Created))
                                 {
                                     <ActionItem
-                                        CanEdit="true"
+                                        @key="item.Id"
+                                        CanEdit="CanEdit"
                                         CanRemove="false"
-                                        CanMoveToState="true"
+                                        CanMoveToState="CanEdit"
                                         Value="item"
-                                        DebounceDelay="500"
+                                        DebounceDelay="DebounceDelay"
                                         ValueChanged="SendActionItemChanged"
                                         ItemRemoved="@(_ => { })"/>
                                 }
@@ -41,11 +45,12 @@
                                               .OrderByDescending(i => i.Modified))
                                 {
                                     <ActionItem
-                                        CanEdit="true"
+                                        @key="item.Id"
+                                        CanEdit="false"
                                         CanRemove="false"
                                         CanMoveToState="false"
                                         Value="item"
-                                        DebounceDelay="500"
+                                        DebounceDelay="DebounceDelay"
                                         ValueChanged="SendActionItemChanged"
                                         ItemRemoved="@(_ => { })"/>
                                 }
@@ -55,10 +60,16 @@
                 </div>
             </div>
         </Loading>
-    </div>
-</div>
+    </Content>
+</DashboardGrid>
 
 @code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
     /// <summary>
     /// Component state.
     /// </summary>
@@ -72,17 +83,37 @@
     public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
     
     /// <summary>
+    /// Current person id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentPersonId { get; set; }
+    
+    /// <summary>
+    /// Facilitator id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long? FacilitatorId { get; set; }
+    
+    /// <summary>
     /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
     /// Action item changed callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
-    
+
+    private bool CanEdit => FacilitatorId == CurrentPersonId;
+    private const int DebounceDelay = 500;
     private readonly string _stageNew = ActionItemStages.New;
     private readonly string _stageDone = ActionItemStages.Done;
 

@@ -3,7 +3,7 @@
     align-items: center;
     padding: 10px;
     background-color: var(--bg-secondary-color);
-    gap: 20px;
+    gap: 1rem;
     min-height: 70px;
 }
 .panel__header-text {

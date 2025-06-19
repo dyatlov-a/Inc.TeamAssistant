@@ -20,6 +20,7 @@
                 HandRaised="HandRaised"
                 FacilitatorGiven="FacilitatorGiven"
                 RetroPropertiesOpened="RetroPropertiesOpened" />
+            <RetroNavbar RoomId="RoomId" LinkFactory="LinkFactory" />
             <RetroParticipants
                 CanVote="CanVote"
                 VotesTotal="VotesTotal"
@@ -157,6 +158,12 @@
 
 @code {
     /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
@@ -239,6 +246,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
 
     /// <summary>
     /// Create retro item callback.

@@ -1,10 +1,7 @@
-.backlog {
-    margin: 20px 0;
-}
 .backlog__text {
     font-size: 1.2rem;
     line-height: 1.6rem;
-    margin: 20px 0;
+    margin-bottom: 1rem;
 }
 .backlog-grid__columns {
     display: flex;
