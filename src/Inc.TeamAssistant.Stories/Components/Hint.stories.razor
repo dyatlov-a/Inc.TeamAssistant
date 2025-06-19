@@ -1,0 +1,15 @@
+@attribute [Stories("Components/Hint")]
+
+<Stories TComponent="Hint">
+    <Story Name="Default">
+        <Template>
+            <div style="float: right;">
+                <Hint Text="@_text"/>
+            </div>
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly string _text = "Add notes about things within your team's workflow or process that aren't helping the team to achieve their goals and should be stopped.";
+}

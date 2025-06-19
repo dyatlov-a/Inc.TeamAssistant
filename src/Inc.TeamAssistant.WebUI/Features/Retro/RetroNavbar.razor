@@ -1,0 +1,26 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<nav aria-label="Retro navigation">
+    <ul class="retro-navbar">
+        <li>
+            <a href="@LinkFactory($"retro/{RoomId:N}")" class="retro-navbar__item">@Localizer["RetroBoard"]</a>
+        </li>
+        <li>
+            <a href="@LinkFactory($"backlog/{RoomId:N}")" class="retro-navbar__item">@Localizer["RetroBacklog"]</a>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
+}

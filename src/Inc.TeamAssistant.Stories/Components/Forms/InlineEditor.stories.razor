@@ -1,0 +1,36 @@
+@attribute [Stories("Components/Forms/InputInlineEditor")]
+
+<Stories TComponent="InputInlineEditor">
+    <Story Name="Default">
+        <Template>
+            <InputInlineEditor
+                Id="_editableId"
+                CanEdit="true"
+                DebounceDelay="_debounceDelay"
+                Value="@_editableValue" 
+                ValueExpression="() => _editableValue"
+                ValueChanged="@(v => _editableValue = v)" />
+        </Template>
+    </Story>
+    <Story Name="ReadOnly">
+        <Template>
+            <InputInlineEditor
+                Id="_readOnlyId"
+                CanEdit="false"
+                DebounceDelay="_debounceDelay"
+                Value="@_readOnlyValue" 
+                ValueExpression="() => _readOnlyValue"
+                ValueChanged="@(v => _readOnlyValue = v)" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly int _debounceDelay = 500;
+    
+    private readonly Guid _editableId = Guid.NewGuid();
+    private string? _editableValue = "Editable text";
+    
+    private readonly Guid _readOnlyId = Guid.NewGuid();
+    private string? _readOnlyValue = "Readonly text";
+}

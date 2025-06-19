@@ -1,0 +1,56 @@
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+
+<RetroPropertiesEditor
+    FormModel="_formModel"
+    Templates="_templates"
+    State="_state"
+    Retry="Load"
+    OnValidSubmit="Save" />
+
+@code {
+    /// <summary>
+    /// RoomId for edit.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+
+    /// <summary>
+    /// Retro properties.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroPropertiesDto RetroProperties { get; set; } = default!;
+    
+    /// <summary>
+    /// Retro properties changed event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RetroPropertiesChanged { get; set; }
+    
+    private readonly RetroPropertiesFormModel _formModel = new();
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<RetroTemplateDto> _templates = new();
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+    
+    private async Task Load()
+    {
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetRetroTemplates(),
+            nameof(RetroPropertiesEditorContainer),
+            _state);
+            
+        _formModel.Apply(RetroProperties);
+        _templates.Clear();
+        _templates.AddRange(result.Templates);
+    }
+
+    private async Task Save()
+    {
+        await RequestProcessor.Process(
+            async () => await RetroService.ChangeRetroProperties(_formModel.ToCommand(RoomId)),
+            _state);
+
+        await RetroPropertiesChanged.InvokeAsync();
+    }
+}

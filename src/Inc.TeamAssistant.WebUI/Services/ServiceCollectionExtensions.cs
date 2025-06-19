@@ -3,6 +3,7 @@ using FluentValidation;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Components.Notifications;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Features.AssessmentSession;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage1;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage2;
 using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage3;
@@ -10,9 +11,12 @@ using Inc.TeamAssistant.WebUI.Features.Constructor.Stages.Stage4;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
+using Inc.TeamAssistant.WebUI.Features.Retro;
+using Inc.TeamAssistant.WebUI.Features.Tenants;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Inc.TeamAssistant.WebUI.Services.ServiceClients;
+using Inc.TeamAssistant.WebUI.Services.Stores;
 
 namespace Inc.TeamAssistant.WebUI.Services;
 
@@ -23,6 +27,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         var appVersion = ApplicationContext.GetVersion();
+        var messageLifetime = TimeSpan.FromSeconds(30);
 
         services
             .AddBlazoredLocalStorage()
@@ -34,11 +39,15 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewClient>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeClient>()
             .AddScoped<ICalendarService, CalendarClient>()
+            .AddScoped<ITenantService, TenantClient>()
+            .AddScoped<IRetroService, RetroClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()
-            .AddSingleton<EventsProvider>()
-            .AddNotificationsService(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(5))
+            .AddNotificationsService(messageLifetime)
+            
+            .AddTransient<AssessmentSessionEventBuilder>()
+            .AddTransient<RetroEventBuilder>()
 
             .AddAuthorizationCore()
             .AddCascadingAuthenticationState()
@@ -60,6 +69,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<RequestProcessor>()
             .AddScoped<NavRouter>()
             .AddScoped(typeof(DragAndDropService<>))
+            .AddScoped<TenantStore>()
             
             .AddScoped<IValidator<CheckBotFormModel>, CheckBotFormModelValidator>()
             .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()
@@ -69,23 +79,22 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<SettingsFormModel>, SettingsFormModelValidator>()
             .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
             .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
-            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>();
+            .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>()
+            .AddScoped<IValidator<RoomFormModel>, RoomFormModelValidator>();
 
         return services;
     }
     
     private static IServiceCollection AddNotificationsService(
         this IServiceCollection services,
-        TimeSpan messageLifetime,
-        TimeSpan checkInterval)
+        TimeSpan messageLifetime)
     {
         ArgumentNullException.ThrowIfNull(services);
         
-        var notificationsService = new NotificationsService(messageLifetime, checkInterval);
-        
         services
-            .AddSingleton<INotificationsSource>(notificationsService)
-            .AddSingleton<INotificationsService>(notificationsService);
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<NotificationsService>(sp, messageLifetime))
+            .AddSingleton<INotificationsSource>(sp => sp.GetRequiredService<NotificationsService>())
+            .AddSingleton<INotificationsService>(sp => sp.GetRequiredService<NotificationsService>());
         
         return services;
     }

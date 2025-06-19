@@ -110,5 +110,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Layouts {
                 return ResourceManager.GetString("AcceptCookieButton", resourceCulture);
             }
         }
+        
+        internal static string Rooms {
+            get {
+                return ResourceManager.GetString("Rooms", resourceCulture);
+            }
+        }
     }
 }

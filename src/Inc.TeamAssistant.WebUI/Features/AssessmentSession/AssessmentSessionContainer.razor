@@ -22,7 +22,7 @@
     Item="_item"
     CurrentView="_currentView"
     State="_state"
-    Retry="() => Load()"
+    Retry="@(() => Load())"
     LinkFactory="s => NavRouter.CreateRoute(s).ToString()"
     ViewChanged="OnViewChanged">
     <Footer>
@@ -38,39 +38,55 @@
     public string View { get; set; } = string.Empty;
     
     private AssessmentType _currentView = Enum.GetValues<AssessmentType>().First();
-    
     private readonly LoadingState _state = LoadingState.Done();
     private GetActiveStoryResult _item = GetActiveStoryResult.Empty;
+    private AssessmentSessionEventBuilder? _eventBuilder;
     private IAsyncDisposable? _eventListener;
     
     protected override async Task OnParametersSetAsync()
     {
         if (Enum.TryParse<AssessmentType>(View, ignoreCase: true, out var value))
             _currentView = value;
-        
+
         await Load();
-        
-        await StartListenEvents();
+
+        await Connect();
     }
 
-    private async Task StartListenEvents()
+    private async Task Connect()
     {
-        var showLoading = false;
-        var eventsProvider = ServiceProvider.GetService<EventsProvider>();
+        var eventBuilder = ServiceProvider.GetService<AssessmentSessionEventBuilder>();
+
+        if (eventBuilder is not null && _eventListener is null)
+        {
+            _eventBuilder = await eventBuilder.Start();
+            _eventListener = await StartListenEvents();
+        }
+    }
+
+    private async Task<IAsyncDisposable?> StartListenEvents()
+    {
+        if (_eventBuilder is null)
+            return null;
         
-        if (eventsProvider is not null)
-            _eventListener = await eventsProvider.OnStoryChanged(
-                Id,
-                b => b.OnStoryChanged(() => Load(showLoading)),
-                b => b.OnStoryAccepted(async v =>
-                {
-                    var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-                    var message = string.Format(Localizer["EstimationAcceptedTemplate"], v);
+        var reload = async () => await InvokeAsync(async () =>
+        {
+            await Load(showLoading: false);
+            StateHasChanged();
+        });
 
-                    notificationsService.Publish(Notification.Info(message));
+        return await _eventBuilder.Build(
+            Id,
+            b => b.OnStoryChanged(reload),
+            b => b.OnStoryAccepted(async v =>
+            {
+                var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+                var message = string.Format(Localizer["EstimationAcceptedTemplate"], v);
 
-                    await Load(showLoading);
-                }));
+                notificationsService.Publish(Notification.Info(message));
+
+                await reload();
+            }));
     }
 
     private async Task Load(bool showLoading = true)
@@ -80,8 +96,6 @@
             nameof(AssessmentSessionContainer),
             _state,
             showLoading);
-        
-        StateHasChanged();
     }
     
     private async Task OnViewChanged(AssessmentType assessmentType)
@@ -96,6 +110,15 @@
     public async ValueTask DisposeAsync()
     {
         if (_eventListener is not null)
+        {
             await _eventListener.DisposeAsync();
+            _eventListener = null;
+        }
+
+        if (_eventBuilder is not null)
+        {
+            await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
     }
 }

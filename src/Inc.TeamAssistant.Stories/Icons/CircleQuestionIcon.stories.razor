@@ -1,0 +1,22 @@
+@attribute [Stories("Icons/CircleQuestionIcon")]
+
+<Stories TComponent="CircleQuestionIcon">
+    <Story Name="Primary" Layout="typeof(DarkLayout)">
+        <Template>
+            <CircleQuestionIcon Size="80px" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Secondary" Layout="typeof(LightLayout)">
+        <Arguments>
+            <Arg For="c => c.ComponentStyle" Value="ComponentStyle.Secondary" />
+        </Arguments>
+        <Template>
+            <CircleQuestionIcon Size="80px" @attributes="context.Args"/>
+        </Template>
+    </Story>
+    <Story Name="Small" Layout="typeof(DarkLayout)">
+        <Template>
+            <CircleQuestionIcon Size="40px" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>

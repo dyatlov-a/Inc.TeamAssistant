@@ -11,6 +11,6 @@ jobs:
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.205'
       - name: Run deploy
         run: ./build.sh Deploy --hubusername ${{ secrets.HUB_USERNAME }} --hubpassword ${{ secrets.HUB_PASSWORD }} --servername ${{ secrets.SERVER_NAME }} --serverusername ${{ secrets.SERVER_USERNAME }} --serverpassword ${{ secrets.SERVER_PASSWORD }}

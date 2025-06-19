@@ -16,11 +16,8 @@
     gap: 10px;
     cursor: grab;
 }
-.widget-settings_no-drag .widget-settings__item {
+.widget-settings__item {
     border: 3px var(--bg-secondary-color) solid;
-}
-.widget-settings_on-drag .widget-settings__item {
-    border: 3px var(--control-disabled-color) dashed;
 }
 .widget-settings__actions {
     display: flex;

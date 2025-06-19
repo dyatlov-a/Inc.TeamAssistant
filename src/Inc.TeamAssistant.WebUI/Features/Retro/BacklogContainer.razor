@@ -1,0 +1,70 @@
+@page "/backlog/{RoomId:guid}"
+@page "/ru/backlog/{RoomId:guid}"
+@page "/en/backlog/{RoomId:guid}"
+
+@attribute [Authorize]
+
+@inject TenantStore TenantStore
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
+
+<MetaDataModule />
+
+<AuthorizeView>
+    <Authorized>
+        <Backlog
+            RoomId="RoomId"
+            State="_state"
+            ActionItems="_actionItems"
+            CurrentPersonId="context.User.ToPerson().Id"
+            FacilitatorId="_facilitatorId"
+            Retry="Load"
+            LinkFactory="@(v => NavRouter.CreateRoute(v))"
+            ActionItemChanged="OnActionItemChanged" />
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<ActionItemViewModel> _actionItems = new();
+    private long? _facilitatorId;
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+    
+    private async Task Load()
+    {
+        await TenantStore.Initialize(RoomId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetActionItems(RoomId),
+            nameof(BacklogContainer),
+            _state);
+
+        _facilitatorId = result.FacilitatorId;
+            
+        _actionItems.Clear();
+        foreach (var actionItem in result.Items)
+            ApplyActionItemChanged(actionItem);
+    }
+    
+    private void ApplyActionItemChanged(ActionItemDto changed)
+    {
+        var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewActionItem is null)
+            _actionItems.Add(new ActionItemViewModel(changed.Id, changed.RetroItemId, changed.Created).Apply(changed));
+        else
+            viewActionItem.Apply(changed);
+    }
+    
+    private async Task OnActionItemChanged(ActionItemViewModel item)
+    {
+        await RequestProcessor.Process(
+            async () => await RetroService.ChangeActionItem(item.ToCommand(RoomId)),
+            _state,
+            showLoading: false);
+    }
+}

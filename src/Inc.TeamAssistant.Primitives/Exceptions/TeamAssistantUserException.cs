@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Primitives.Languages;
 
 namespace Inc.TeamAssistant.Primitives.Exceptions;
 
-public class TeamAssistantUserException : TeamAssistantException
+public sealed class TeamAssistantUserException : TeamAssistantException
 {
     public MessageId MessageId { get; }
     public object[] Values { get; }

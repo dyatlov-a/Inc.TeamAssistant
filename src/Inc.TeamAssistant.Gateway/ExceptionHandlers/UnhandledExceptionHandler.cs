@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Mime;
+using System.Text.Json;
+using Inc.TeamAssistant.Primitives.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace Inc.TeamAssistant.Gateway.ExceptionHandlers;
@@ -11,20 +13,22 @@ internal sealed class UnhandledExceptionHandler : IExceptionHandler
         ArgumentNullException.ThrowIfNull(context);
 
         var statusCode = (int)HttpStatusCode.InternalServerError;
-        var content = $$"""
-                        {
-                            "type": "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
-                            "title": "Internal server error.",
-                            "status": {{statusCode}},
-                            "traceId": "{{context.TraceIdentifier}}",
-                            "errors": {"message":["See logs for details."]}
-                        }
-                        """;
+        var errorDetails = new ErrorDetails(
+            "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
+            "Internal server error.",
+            statusCode,
+            context.TraceIdentifier,
+            new Dictionary<string, string[]>
+            {
+                {
+                    "message", ["See logs for details."]
+                }
+            });
 
         context.Response.Clear();
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = MediaTypeNames.Application.Json;
-        await context.Response.WriteAsync(content, token);
+        await context.Response.WriteAsync(JsonSerializer.Serialize(errorDetails), token);
 
         return true;
     }

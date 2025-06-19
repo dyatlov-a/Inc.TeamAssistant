@@ -21,10 +21,9 @@
 
 <Dashboard
     BotId="_botId"
-    TeamId="_teamId"
     State="_state"
     Widgets="_widgetTypes"
-    Load="Load"
+    Retry="Load"
     WidgetParametersFactory="WidgetParametersFactory">
     <Settings>
         <DashboardSettingsContainer BotId="_botId" Widgets="_widgets" Changed="Load" />
@@ -50,8 +49,8 @@
     private Guid? _teamId;
     
     private readonly LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<Type> _widgetTypes = Array.Empty<Type>();
-    private IReadOnlyCollection<WidgetDto> _widgets = Array.Empty<WidgetDto>();
+    private IReadOnlyCollection<Type> _widgetTypes = [];
+    private IReadOnlyCollection<WidgetDto> _widgets = [];
     
     private readonly Dictionary<string, Type> _widgetsLookup = new()
     {
@@ -91,8 +90,8 @@
         }
         else
         {
-            _widgets = Array.Empty<WidgetDto>();
-            _widgetTypes = Array.Empty<Type>();
+            _widgets = [];
+            _widgetTypes = [];
         }
         
         StateHasChanged();

@@ -33,17 +33,22 @@ internal sealed class CachedClientLanguageRepository : IClientLanguageRepository
             cancellationToken: token);
     }
 
-    public async Task Upsert(Guid botId, long personId, string languageId, DateTimeOffset now, CancellationToken token)
+    public async Task Upsert(
+        Guid botId,
+        long personId,
+        LanguageId languageId,
+        DateTimeOffset now,
+        CancellationToken token)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(languageId);
+        ArgumentNullException.ThrowIfNull(languageId);
 
         var cachedLanguageId = await Get(botId, personId, token);
-        if (cachedLanguageId.Value == languageId)
+        if (cachedLanguageId == languageId)
             return;
         
         await _clientLanguageRepository.Upsert(botId, personId, languageId, now, token);
 
-        await _cache.RemoveAsync(GetKey(botId, personId), token);
+        await _cache.SetAsync(GetKey(botId, personId), languageId, _cacheOptions, cancellationToken: token);
     }
 
     private string GetKey(Guid botId, long personId) => $"{nameof(CachedClientLanguageRepository)}_{botId}_{personId}";

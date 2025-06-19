@@ -16,7 +16,7 @@
                 @foreach (var bot in Bots)
                 {
                     <div class="bot-selector__item">
-                        <BotCard Icon="@typeof(BotIcon)" Name="@bot.Name">
+                        <BotCard Icon="@typeof(UserIcon)" Name="@bot.Name">
                             <Content>
                                 <RouterLink Href="@LinkFactory(bot)" ComponentStyle="ComponentStyle.Secondary">
                                     @Localizer["MoveToDashboard"]

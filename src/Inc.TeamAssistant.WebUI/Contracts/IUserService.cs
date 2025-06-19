@@ -1,8 +1,8 @@
-using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.WebUI.Features.Auth;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IUserService
 {
-    Task<BotContext> GetAuthBotContext(CancellationToken token = default);
+    Task<AuthBotContext> GetAuthBotContext(CancellationToken token = default);
 }

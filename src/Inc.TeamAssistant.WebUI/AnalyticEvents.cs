@@ -10,4 +10,6 @@ internal static class AnalyticEvents
     public const string BotCreated = "bot-created";
     public const string BotUpdated = "bot-updated";
     public const string AppraiserIntegrationEnabled = "appraiser-integration-enabled";
+    public const string ManageRoom = "manage-room";
+    public const string ChangeRetroProperties = "change-retro-properties";
 }

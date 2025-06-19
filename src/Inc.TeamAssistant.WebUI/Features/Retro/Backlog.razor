@@ -1,0 +1,123 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<DashboardGrid HasFixedWidth="true">
+    <Toolbar>
+        <RetroNavbar RoomId="RoomId" LinkFactory="LinkFactory" />
+    </Toolbar>
+    <Content>
+        <Loading State="State" Retry="Retry">
+            <p class="backlog__text">@Localizer["BacklogText"]</p>
+            <div class="backlog-grid__columns">
+                <div class="backlog-grid__column">
+                    <Panel
+                        Header="@GetStateTitle(_stageNew)"
+                        IsOpen="true"
+                        HasActions="false">
+                        <Content>
+                            <div class="backlog-grid__column-items">
+                                @foreach (var item in ActionItems
+                                              .Where(i => i.State == _stageNew)
+                                              .OrderByDescending(i => i.Created))
+                                {
+                                    <ActionItem
+                                        @key="item.Id"
+                                        CanEdit="CanEdit"
+                                        CanRemove="false"
+                                        CanMoveToState="CanEdit"
+                                        Value="item"
+                                        DebounceDelay="DebounceDelay"
+                                        ValueChanged="SendActionItemChanged"
+                                        ItemRemoved="@(_ => { })"/>
+                                }
+                            </div>
+                        </Content>
+                    </Panel>
+                </div>
+                <div class="backlog-grid__column">
+                    <Panel
+                        Header="@GetStateTitle(_stageDone)"
+                        IsOpen="true"
+                        HasActions="false">
+                        <Content>
+                            <div class="backlog-grid__column-items">
+                                @foreach (var item in ActionItems
+                                              .Where(i => i.State == _stageDone)
+                                              .OrderByDescending(i => i.Modified))
+                                {
+                                    <ActionItem
+                                        @key="item.Id"
+                                        CanEdit="false"
+                                        CanRemove="false"
+                                        CanMoveToState="false"
+                                        Value="item"
+                                        DebounceDelay="DebounceDelay"
+                                        ValueChanged="SendActionItemChanged"
+                                        ItemRemoved="@(_ => { })"/>
+                                }
+                            </div>
+                        </Content>
+                    </Panel>
+                </div>
+            </div>
+        </Loading>
+    </Content>
+</DashboardGrid>
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action items for the backlog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Current person id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentPersonId { get; set; }
+    
+    /// <summary>
+    /// Facilitator id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long? FacilitatorId { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
+    
+    /// <summary>
+    /// Action item changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
+
+    private bool CanEdit => FacilitatorId == CurrentPersonId;
+    private const int DebounceDelay = 500;
+    private readonly string _stageNew = ActionItemStages.New;
+    private readonly string _stageDone = ActionItemStages.Done;
+
+    private string GetStateTitle(string stage) => Localizer[$"ActionItemStage{stage}"];
+    
+    private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);
+}

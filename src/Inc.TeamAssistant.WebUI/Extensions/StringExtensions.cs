@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.WebUI.Extensions;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     private const int DefaultLength = 50;
     

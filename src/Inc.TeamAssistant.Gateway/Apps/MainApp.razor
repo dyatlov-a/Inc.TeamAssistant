@@ -66,6 +66,65 @@
             },
             scrollToTop: () => {
                 document.documentElement.scrollTop = 0;
+            },
+            editableText: {
+                get: element => {
+                    return element.innerText
+                },
+                set: (element, value) => {
+                    element.innerText = value;
+                }
+            },
+            focusElement: element => {
+                element.focus();
+            },
+            addClassToElement: (selector, className) => {
+                let element = document.querySelector(selector);
+                if (element) {
+                    element.classList.add(className);
+                }
+            },
+            addPageScrollObserver: (elementSelector, anchorSelector, modificatorClass) => {
+                const anchor = document.querySelector(anchorSelector);
+                const element = document.querySelector(elementSelector);
+                const placeholder = document.querySelector(elementSelector + '_placeholder')
+
+                const observer = new IntersectionObserver(es => {
+                    es.forEach(e => {
+                        if (e.isIntersecting)
+                        {
+                            element.classList.remove(modificatorClass);
+                            placeholder.style.height = '0px';
+                        }
+                        else {
+                            element.classList.add(modificatorClass);
+                            placeholder.style.height = element.offsetHeight + 'px';
+                        }
+                    });
+                }, { threshold: 0 });
+
+                if (anchor && element && placeholder)
+                    observer.observe(anchor);
+            },
+            addCleanStyleActionToPasteListener: element => {
+                element.addEventListener("paste", function(e) {
+                    e.preventDefault();
+                    
+                    const text = e.clipboardData.getData("text/plain");
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+
+                    const textNode = document.createTextNode(text);
+                    range.insertNode(textNode);
+                    
+                    range.setStartAfter(textNode);
+                    range.setEndAfter(textNode);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                });
             }
         };
 

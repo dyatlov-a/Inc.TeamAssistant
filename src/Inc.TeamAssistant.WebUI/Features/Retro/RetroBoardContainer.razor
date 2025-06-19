@@ -1,0 +1,589 @@
+@page "/retro/{RoomId:guid}"
+@page "/ru/retro/{RoomId:guid}"
+@page "/en/retro/{RoomId:guid}"
+@page "/retro/{RoomId:guid}/{ItemId:guid}"
+@page "/ru/retro/{RoomId:guid}/{ItemId:guid}"
+@page "/en/retro/{RoomId:guid}/{ItemId:guid}"
+
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+@inject TenantStore TenantStore
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<RetroResources> Localizer
+@inject NavRouter NavRouter
+
+@layout EmptyLayout
+
+<MetaDataModule />
+
+<MainLayout>
+    <Body>
+    <AuthorizeView>
+        <Authorized>
+            <RetroBoard
+                RoomId="RoomId"
+                State="_state"
+                Columns="Columns"
+                CurrentUserId="context.User.ToPerson().Id"
+                Session="_activeSession"
+                FacilitatorId="_retroProperties.FacilitatorId"
+                Items="_items"
+                ActionItems="_actionItems"
+                Participants="Participants"
+                VotesTotal="_retroProperties.VoteCount"
+                TimerDuration="_retroProperties.TimerDuration"
+                RetroType="@_retroProperties.RetroType"
+                CurrentTimer="_currentTimer"
+                IsCreating="_isCreating"
+                Retry="@(() => Load(_state))"
+                LinkFactory="@(v => NavRouter.CreateRoute(v))"
+                ItemCreated="OnRetroItemCreated"
+                ItemChanged="OnRetroItemChanged"
+                ItemRemoved="OnRetroItemRemoved"
+                ItemMoved="OnItemMoved"
+                ItemMovedToSlot="OnItemMovedToSlot"
+                ActionItemCreated="OnActionItemCreated"
+                ActionItemChanged="OnActionItemChanged"
+                ActionItemRemoved="OnActionItemRemoved"
+                VoteChanged="OnVoteChanged"
+                RetroStarted="OnRetroStarted"
+                ToNextMoved="OnToNextMoved"
+                ToPreviousMoved="OnToPreviousMoved"
+                TimerChanged="OnTimerChanged"
+                Finished="OnFinished"
+                HandRaised="OnHandRaised"
+                FacilitatorGiven="FacilitatorGiven"
+                HandLowered="OnHandLowered"
+                RetroPropertiesOpened="OnRetroPropertiesOpened" />
+        </Authorized>
+    </AuthorizeView>
+    </Body>
+    <DialogSlot>
+        <InlineDialog
+            IsOpen="IsDisconnected"
+            Text="@Localizer["ConnectionLost"]"
+            ButtonText="@Localizer["Reconnect"]"
+            OnAction="Reconnect"/>
+    </DialogSlot>
+</MainLayout>
+<ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
+    <RetroPropertiesEditorContainer
+        RoomId="RoomId"
+        RetroProperties="_retroProperties"
+        RetroPropertiesChanged="OnRetroPropertiesChanged" />
+</ContentDialog>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    [Parameter]
+    public Guid? ItemId { get; set; }
+    
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    
+    private LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)>? _currentItem;
+    private RetroEventBuilder? _eventBuilder;
+    private IAsyncDisposable? _eventListener;
+    private RetroSessionDto? _activeSession;
+    private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
+    private TimeSpan? _currentTimer;
+    private bool _isCreating;
+    private ContentDialog? _retroPropertiesEditor;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<RetroColumnDto> _columns = new();
+    private LinkedList<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)> _orderedItems = new();
+    private readonly List<RetroItemViewModel> _items = new();
+    private Dictionary<long, ParticipantViewModel> _participants = new();
+    private readonly List<ActionItemViewModel> _actionItems = new();
+    
+    private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
+    private bool IsDiscussing => _activeSession?.State == RetroStages.Discussing;
+    private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .OrderBy(p => p.Person.DisplayName)
+        .ToArray();
+    private IReadOnlyCollection<RetroColumnDto> Columns => _columns
+        .Where(c => _currentItem is null || _currentItem.Value.Item.ColumnId == c.Id)
+        .ToArray();
+    
+    protected override async Task OnParametersSetAsync() => await Load(_state);
+    
+    private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
+    {
+        if (hardReset)
+            await TenantStore.Initialize(RoomId, state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetRetroState(RoomId),
+            nameof(RetroBoardContainer),
+            state);
+        var children = result.Items
+            .Where(i => i.ParentId.HasValue)
+            .ToLookup(i => i.ParentId!.Value);
+
+        _columns.Clear();
+        _columns.AddRange(result.Columns);
+        _activeSession = result.ActiveSession;
+        _retroProperties = result.RetroProperties;
+        _currentTimer = result.CurrentTimer;
+        _participants = result.Participants
+            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished, p.HandRaised))
+            .ToDictionary(p => p.Person.Id);
+        _orderedItems = new(result.Items
+            .Where(i => !i.ParentId.HasValue)
+            .OrderByDescending(i => i.Votes)
+            .ThenBy(i => i.ColumnId)
+            .ThenByDescending(i => i.Position)
+            .Select(i => (i, (IReadOnlyCollection<RetroItemDto>)children[i.Id].ToArray())));
+
+        if (IsDiscussing && _currentItem is null)
+            _currentItem = ItemId.HasValue ? _orderedItems.Find(i => i.Item.Id == ItemId.Value) : _orderedItems.First;
+        var items = _currentItem is not null
+            ? _currentItem.Value.Children.Append(_currentItem.Value.Item)
+            : result.Items;
+        
+        _items.Clear();
+        foreach (var item in items)
+            ApplyRetroItemChanged(item);
+
+        _actionItems.Clear();
+        foreach (var actionItem in result.ActionItems)
+            ApplyActionItemChanged(actionItem);
+        
+        if (hardReset)
+            await Connect();
+    }
+    
+    private async Task MoveItem(LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)> node)
+    {
+        var routeSegment = $"retro/{RoomId:N}/{node.Value.Item.Id:N}".ToLowerInvariant();
+        
+        _currentItem = node;
+        
+        _items.Clear();
+        foreach (var item in _currentItem.Value.Children.Append(_currentItem.Value.Item))
+            ApplyRetroItemChanged(item);
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+    }
+    
+    private async Task Connect()
+    {
+        var eventBuilder = ServiceProvider.GetService<RetroEventBuilder>();
+        
+        if (eventBuilder is not null && _eventBuilder is null)
+        {
+            _eventBuilder = await eventBuilder.Start(StateHasChanged, OnReconnect);
+            _eventListener = await StartListenEvents(eventBuilder);
+        }
+    }
+
+    private async Task Reconnect()
+    {
+        if (_eventBuilder is not null)
+            await _eventBuilder.Start(StateHasChanged, OnReconnect);
+    }
+
+    private async Task OnReconnect() => await Load(LoadingState.Wrap(_state, StateHasChanged));
+    
+    private async Task<IAsyncDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
+    {
+        return await eventBuilder.Build(
+            RoomId,
+            b => b.OnRetroItemChanged(async i =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyRetroItemChanged(i);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroItemRemoved(async i =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyRetroItemRemovedEvent(i);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnVotesChanged(async (p, v) =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyVotes(p, v);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroStateChanged(async (p, f, hr) =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyRetroState(p, f, hr);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnPersonsChanged(async p =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyParticipants(p);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroSessionChanged(async r =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    if (r.State == RetroStages.Finished)
+                        await NavRouter.MoveToRoute($"retro-assessment/{r.Id:N}");
+                    else
+                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                });
+            }),
+            b => b.OnItemMoved(async id =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    var item = _orderedItems.Find(i => i.Item.Id == id);
+                    if (item is not null)
+                        await MoveItem(item);
+
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnActionItemChanged(async a =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyActionItemChanged(a);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnActionItemRemoved(async a =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyActionItemRemovedEvent(a);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnTimerChanged(async t =>
+            {
+                await InvokeAsync(() =>
+                {
+                    _currentTimer = t;
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnRetroPropertiesChanged(async p =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    if (_retroProperties.TemplateId == p.TemplateId && _retroProperties.RetroType == p.RetroType)
+                    {
+                        _retroProperties = p;
+                        StateHasChanged();
+                    }
+                    else
+                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                });
+            })
+        );
+    }
+
+    private async Task OnRetroStarted()
+    {
+        await RequestProcessor.Process(
+            () => RetroService.StartRetro(new StartRetroCommand(RoomId)),
+            _state);
+
+        await Load(_state, hardReset: false);
+    }
+    
+    private async Task OnToNextMoved(Guid id)
+    {
+        if (IsDiscussing)
+        {
+            if (_currentItem?.Next is not null)
+            {
+                if (_eventBuilder is not null)
+                    await _eventBuilder.MoveItem(RoomId, _currentItem.Next.Value.Item.Id);
+                
+                await MoveItem(_currentItem.Next);
+            }
+            else if (_activeSession?.Id is not null)
+                await RequestProcessor.Process(
+                    () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
+                    _state);
+        }
+        else
+        {
+            await RequestProcessor.Process(
+                () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
+                _state);
+            
+            await Load(_state, hardReset: false);
+        }
+    }
+
+    private async Task OnToPreviousMoved()
+    {
+        if (_currentItem?.Previous is not null)
+        {
+            if (_eventBuilder is not null)
+                await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
+            
+            await MoveItem(_currentItem.Previous);
+        }
+    }
+
+    private async Task OnRetroItemCreated(Guid columnId)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        _isCreating = true;
+
+        try
+        {
+            await _eventBuilder.CreateRetroItem(new CreateRetroItemCommand(RoomId, columnId, Text: null));
+        }
+        finally
+        {
+            _isCreating = false;
+        }
+    }
+
+    private void OnActionItemCreated()
+    {
+        if (_currentItem is null)
+            return;
+        
+        _actionItems.Add(new ActionItemViewModel(
+            Guid.CreateVersion7(),
+            _currentItem.Value.Item.Id,
+            DateTimeOffset.UtcNow));
+    }
+
+    private async Task OnActionItemChanged(ActionItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.ChangeActionItem(item.ToCommand(RoomId, notify: true));
+    }
+
+    private async Task OnActionItemRemoved(ActionItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.RemoveActionItem(RoomId, item.Id);
+    }
+
+    private async Task OnRetroItemChanged(RetroItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.UpdateRetroItem(item.ToCommand());
+    }
+
+    private void ApplyRetroItemChanged(RetroItemDto changed)
+    {
+        var viewItem = _items.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewItem is null)
+            _items.Add(new RetroItemViewModel(changed.Id, changed.OwnerId).Apply(changed));
+        else
+            viewItem.Apply(changed);
+    }
+
+    private void ApplyActionItemChanged(ActionItemDto changed)
+    {
+        var viewActionItem = _actionItems.SingleOrDefault(i => i.Id == changed.Id);
+        if (viewActionItem is null)
+            _actionItems.Add(
+                new ActionItemViewModel(changed.Id, changed.RetroItemId, DateTimeOffset.UtcNow).Apply(changed));
+        else
+            viewActionItem.Apply(changed);
+    }
+
+    private void ApplyVotes(long personId, int votesCount)
+    {
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeTotalVotes(votesCount);
+    }
+    
+    private void ApplyRetroState(long personId, bool finished, bool handRaised)
+    {
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeFinished(finished).ChangeHandRaised(handRaised);
+    }
+    
+    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    {
+        foreach (var person in persons)
+            _participants.TryAdd(person.Id, new ParticipantViewModel(
+                person,
+                totalVotes: 0,
+                finished: false,
+                handRaised: false));
+    }
+    
+    private async Task OnRetroItemRemoved(RetroItemViewModel item)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        if (item.ParentId.HasValue)
+        {
+            var command = item.ToCommand() with
+            {
+                ParentId = null
+            };
+            
+            await _eventBuilder.UpdateRetroItem(command);
+        }
+        else
+            await _eventBuilder.RemoveRetroItem(item.Id);
+    }
+
+    private async Task OnItemMoved((RetroItemViewModel Parent, RetroItemViewModel Child) data)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var command = data.Child.ToCommand() with
+        {
+            ParentId = data.Parent.Id
+        };
+        
+        await _eventBuilder.UpdateRetroItem(command);
+    }
+
+    private async Task OnItemMovedToSlot((Guid ColumnId, RetroItemViewModel Item) data)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var itemWithMaxPosition = _items
+            .Where(i => i.ColumnId == data.ColumnId)
+            .MaxBy(i => i.Position);
+        var command = data.Item.ToCommand() with
+        {
+            ColumnId = data.ColumnId,
+            Position = (itemWithMaxPosition?.Position ?? 0) + 1
+        };
+
+        await _eventBuilder.UpdateRetroItem(command);
+    }
+
+    private async Task OnVoteChanged((Guid ItemId, int Votes) data)
+    {
+        if (_eventBuilder is null || _activeSession is null)
+            return;
+        
+        var votesByPerson = _items
+            .Where(i => i.Id != data.ItemId)
+            .Select(i => new PersonVoteByItemDto(i.Id, i.Votes))
+            .Append(new PersonVoteByItemDto(data.ItemId, data.Votes))
+            .Where(i => i.Vote > 0)
+            .ToArray();
+        _items
+            .Single(i => i.Id == data.ItemId)
+            .ChangeVotes(data.Votes);
+
+        await _eventBuilder.SetVotes(new SetVotesCommand(RoomId, _activeSession.Id, votesByPerson));
+    }
+
+    private async Task OnFinished()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var currentUser = authenticationState.User.ToPerson();
+
+        if (_participants.TryGetValue(currentUser.Id, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeFinished(!participant.Finished).ToCommand(RoomId));
+    }
+
+    private async Task OnHandRaised()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var authenticationState = await AuthenticationStateTask;
+        var currentUser = authenticationState.User.ToPerson();
+
+        if (_participants.TryGetValue(currentUser.Id, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(!participant.HandRaised).ToCommand(RoomId));
+    }
+
+    private async Task OnHandLowered(long personId)
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        if (_participants.TryGetValue(personId, out var participant))
+            await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(RoomId));
+    }
+
+    public async Task OnTimerChanged(TimeSpan? changed)
+    {
+        if (_eventBuilder is null)
+            return;
+
+        var timerChanged = new [] { _currentTimer, changed }.Count(t => t.HasValue) == 1;
+        if (timerChanged)
+            await _eventBuilder.ChangeTimer(new ChangeTimerCommand(RoomId, changed));
+        else
+            _currentTimer = changed;
+    }
+
+    public async Task FacilitatorGiven()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.GiveFacilitator(ChangeRetroPropertiesCommand.ChangeFacilitator(RoomId));
+    }
+
+    private void ApplyRetroItemRemovedEvent(Guid itemId)
+    {
+        var viewItem = _items.SingleOrDefault(i => i.Id == itemId);
+        if (viewItem is not null)
+            _items.Remove(viewItem);
+    }
+
+    private void ApplyActionItemRemovedEvent(Guid itemId)
+    {
+        var viewItem = _actionItems.SingleOrDefault(i => i.Id == itemId);
+        if (viewItem is not null)
+            _actionItems.Remove(viewItem);
+    }
+    
+    private void OnRetroPropertiesChanged() => _retroPropertiesEditor?.Close();
+    private void OnRetroPropertiesOpened() => _retroPropertiesEditor?.Open();
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+        {
+            await _eventListener.DisposeAsync();
+            _eventListener = null;
+        }
+        
+        if (_eventBuilder is not null)
+        {
+            await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
+    }
+}

@@ -1,30 +1,26 @@
 .navbar {
-    background: rgba(0, 0, 0, .3);
+    background-color: var(--bg-secondary-color);
     position: relative;
-    height: 70px;
     z-index: 999;
+    padding: 10px 0;
 }
 .navbar-container {
     display: flex;
-    align-items: center;
     padding: 0 20px;
 }
 .navbar__item {
     display: flex;
     align-items: center;
-    padding: 15px 10px;
-}
-.navbar__item_logo {
-    margin-bottom: -4px;
+    padding: 0 10px;
+    min-height: 50px;
 }
 .navbar__divider {
     flex-grow: 1;
 }
-.user-avatar {
-    width: 50px;
-    border-radius: 50%;
-    margin: -5px 10px -5px 0;
-    float: left;
+@media (max-width: 767.98px) {
+    .navbar__item_room {
+        display: none;
+    }
 }
 @media (max-width: 479.98px) {
     .navbar__item_avatar {

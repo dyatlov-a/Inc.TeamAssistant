@@ -1,5 +1,5 @@
 .footer {
-    background: rgba(0, 0, 0, .3);
+    background-color: var(--bg-secondary-color);
 }
 .footer__content {
     display: flex;

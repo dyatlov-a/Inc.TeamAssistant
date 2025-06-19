@@ -3,16 +3,21 @@
 <div class="panel">
     <div class="panel__header">
         <h2 class="panel__header-text">@Header</h2>
-        <div class="panel__actions">
-            @if (IsOpen)
+        @if (IsOpen)
+        {
+            if (HasActions && Actions is not null)
             {
-                @Actions
+                <div class="panel__actions">
+                    @Actions
+                </div>
             }
-            else
-            {
+        }
+        else
+        {
+            <div class="panel__actions">
                 <Button OnClick="Open">@Localizer["Open"]</Button>
-            }
-        </div>
+            </div>
+        }
     </div>
     @if (IsOpen)
     {
@@ -32,8 +37,8 @@
     /// <summary>
     /// Actions to be displayed in the header.
     /// </summary>
-    [Parameter, EditorRequired]
-    public RenderFragment Actions { get; set; } = default!;
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
     
     /// <summary>
     /// HTML content.
@@ -46,6 +51,12 @@
     /// </summary>
     [Parameter]
     public bool IsOpen { get; set; }
+
+    /// <summary>
+    /// Has actions in the header.
+    /// </summary>
+    [Parameter]
+    public bool HasActions { get; set; } = true;
     
     /// <summary>
     /// Opened event.
@@ -56,7 +67,7 @@
     private async Task Open()
     {
         IsOpen = true;
-        StateHasChanged();
+        
         await Opened.InvokeAsync();
     }
 }

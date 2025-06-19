@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives.Commands;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Notifications;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
@@ -35,10 +34,8 @@ internal sealed class AddCommentCommandHandler : IRequestHandler<AddCommentComma
         if (taskId.HasValue)
         {
             var task = await taskId.Value.Required(_repository.Find, token);
-            if (!task.HasRightsForComments(authorId))
-                throw new TeamAssistantUserException(Messages.Connector_HasNoRights);
-
-            if (task.CanMakeDecision())
+            
+            if (task.HasRightsForComments(authorId) && task.CanMakeDecision())
             {
                 await _repository.Upsert(task.AddComment(DateTimeOffset.UtcNow, command.Comment, authorId), token);
 

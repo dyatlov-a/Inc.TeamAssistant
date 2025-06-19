@@ -1,6 +1,6 @@
 @inherits InputBase<IEnumerable<Guid>>
 
-@inject DragAndDropService<Guid> DragAndDropService
+@inject DragAndDropService<FeatureDto> DragAndDropService
 @inject IStringLocalizer<ConstructorResources> Localizer
 @inject FeaturesFactory FeaturesFactory
 
@@ -16,7 +16,7 @@
             foreach (var feature in AvailableFeatures)
             {
                 <FeatureCard
-                    FeatureId="feature.Id"
+                    Feature="feature"
                     Icon="@FeatureType(feature.Name)"
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
@@ -42,7 +42,7 @@
             foreach (var feature in SelectedFeatures)
             {
                 <FeatureCard
-                    FeatureId="feature.Id"
+                    Feature="feature"
                     Icon="@FeatureType(feature.Name)"
                     Title="@FeaturesFactory.CreateName(feature.Name)"
                     Description="@FeaturesFactory.CreateDescription(feature.Name)">
@@ -102,7 +102,7 @@
         "CheckIn" => typeof(CheckInIcon),
         "RandomCoffee" => typeof(RandomCoffeeIcon),
         "Reviewer" => typeof(ReviewerIcon),
-        _ => typeof(UnknownIcon)
+        _ => typeof(CircleQuestionIcon)
     };
 
     private async Task ToggleFeature(Guid id)
@@ -117,10 +117,9 @@
     
     private async Task HandleDrop(IEnumerable<FeatureDto> features)
     {
-        var featureId = DragAndDropService.End();
-        
-        if (features.All(f => f.Id != featureId))
-            await ToggleFeature(featureId);
+        var feature = DragAndDropService.End();
+        if (feature is not null && features.All(f => f.Id != feature.Id))
+            await ToggleFeature(feature.Id);
         
         _availableFeaturesCssClass = string.Empty;
         _selectedFeaturesCssClass = string.Empty;
@@ -130,7 +129,7 @@
     {
         var cssClass = "input-features__items_can-drop";
 
-        if (AvailableFeatures.Any(f => f.Id == DragAndDropService.Current))
+        if (AvailableFeatures.Any(f => f.Id == DragAndDropService.Current?.Id))
             _selectedFeaturesCssClass = cssClass;
         else
             _availableFeaturesCssClass = cssClass;

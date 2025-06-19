@@ -1,0 +1,36 @@
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div
+    @attributes="DynamicAttributes.BuildOnDragOver(CanMove)"
+    @ondrop="OnDrop"
+    class="retro-grid__slot">
+    @Localizer["SlotDropText"]
+</div>
+
+@code {
+    /// <summary>
+    /// Slot column id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid ColumnId { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanMove { get; set; }
+    
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(Guid ColumnId, RetroItemViewModel Item)> ItemMoved { get; set; }
+    
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+        if (movedItem is not null)
+            await ItemMoved.InvokeAsync((ColumnId, movedItem));
+    }
+}

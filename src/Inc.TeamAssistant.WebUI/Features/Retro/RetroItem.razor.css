@@ -1,0 +1,18 @@
+.retro-item {
+    padding: .5rem;
+}
+.retro-item__actions, .retro-item__icons {
+    float: right;
+    padding-left: .3rem;
+}
+.retro-item__icons {
+    cursor: move;
+}
+.retro-item_freeze {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+}
+.retro-item_child {
+    border-top: 2px var(--block-secondary-color) dashed;
+}

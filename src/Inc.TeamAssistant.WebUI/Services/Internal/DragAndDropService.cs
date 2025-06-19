@@ -1,6 +1,7 @@
 namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
 internal sealed class DragAndDropService<T>
+    where T : class
 {
     public T? Current { get; private set; }
     
@@ -9,13 +10,14 @@ internal sealed class DragAndDropService<T>
         Current = current;
     }
 
-    public T End()
+    public T? End()
     {
         if (Current is null)
-            throw new InvalidOperationException("Drag and drop operation has not been started.");
+            return null;
         
         var current = Current;
-        Current = default;
+        
+        Current = null;
         
         return current; 
     }

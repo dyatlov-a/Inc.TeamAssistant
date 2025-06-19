@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inc.TeamAssistant.Primitives.DataAccess\Inc.TeamAssistant.Primitives.DataAccess.csproj" />
+      <ProjectReference Include="..\Inc.TeamAssistant.Tenants.Application\Inc.TeamAssistant.Tenants.Application.csproj" />
+    </ItemGroup>
+</Project>

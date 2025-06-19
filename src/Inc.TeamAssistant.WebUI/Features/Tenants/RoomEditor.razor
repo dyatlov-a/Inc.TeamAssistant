@@ -1,0 +1,60 @@
+@inject IStringLocalizer<TenantResources> Localizer
+
+<EditForm id="@AnalyticEvents.ManageRoom" EditContext="_editContext" OnSubmit="SubmitForm">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+    <Loading State="State" Retry="Retry">
+        <FormSection Title="@Localizer["RoomSectionTitle"]" HelpText="@Localizer["RoomSectionHelp"]">
+            <FormFieldSet
+                FieldId="room-name"
+                Label="@Localizer["RoomNameField"]">
+                <InputSingleLine FieldId="room-name" @bind-Value="FormModel.Name" />
+                <ValidationMessage For="@(() => FormModel.Name)"/>
+            </FormFieldSet>
+        </FormSection>
+    </Loading>
+    <div class="content__actions">
+        <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
+    </div>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RoomFormModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+    
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(FormModel);
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+
+        await OnValidSubmit.InvokeAsync();
+    }
+}

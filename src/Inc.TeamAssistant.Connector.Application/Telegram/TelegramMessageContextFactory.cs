@@ -176,7 +176,7 @@ internal sealed class TelegramMessageContextFactory
         ArgumentNullException.ThrowIfNull(user);
         
         if (!string.IsNullOrWhiteSpace(user.LanguageCode))
-            await _languageRepository.Upsert(botId, user.Id, user.LanguageCode, DateTimeOffset.UtcNow, token);
+            await _languageRepository.Upsert(botId, user.Id, new (user.LanguageCode), DateTimeOffset.UtcNow, token);
         
         var language = await _languageRepository.Get(botId, user.Id, token);
         return language;

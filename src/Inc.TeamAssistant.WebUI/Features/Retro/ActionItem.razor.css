@@ -1,0 +1,17 @@
+.action-item {
+    padding: .5rem;
+    background-color: var(--accent-color);
+}
+.action-item_done {
+    background-color: var(--message-valid-color);
+}
+.action-item__actions {
+    float: right;
+    padding-left: .3rem;
+}
+.action-item__data {
+    display: block;
+    text-align: right;
+    color: var(--block-secondary-color);
+    font-size: .8rem;
+}

@@ -19,7 +19,7 @@ public sealed class CompleteFormModel
     private readonly List<string> _supportedLanguages = new();
     public IReadOnlyCollection<string> SupportedLanguages => _supportedLanguages;
 
-    private Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<string, IReadOnlyCollection<SettingSection>> _availableProperties = new(StringComparer.InvariantCultureIgnoreCase);
     public IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> AvailableProperties => _availableProperties;
 
     public CompleteFormModel Apply(StagesState stagesState)

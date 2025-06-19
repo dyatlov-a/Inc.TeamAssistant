@@ -1,0 +1,37 @@
+@if (IsOpen)
+{
+    <div class="inline-dialog">
+        <div class="inline-dialog__content">
+            <p>@Text</p>
+        </div>
+        <div class="inline-dialog__actions">
+            <Button OnClick="OnAction">@ButtonText</Button>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Is the dialog open?
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsOpen { get; set; }
+    
+    /// <summary>
+    /// MessageId for localization.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+    
+    /// <summary>
+    /// Button MessageId for localization.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string ButtonText { get; set; } = default!;
+    
+    /// <summary>
+    /// Callback when the button is clicked.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnAction { get; set; }
+}

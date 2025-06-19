@@ -80,10 +80,10 @@
         AssessmentType.Individual => typeof(AssessmentIndividual),
         _ => typeof(AssessmentGroup)
     };
-    
-    private IReadOnlyDictionary<string, string> Breadcrumbs => new Dictionary<string, string>
-    {
-        [Localizer["AssessmentSession"]] = LinkFactory($"assessment-session/{TeamId:N}"),
-        [Date] = LinkFactory($"assessment-history/{TeamId:N}/{Date}")
-    };
+
+    private IReadOnlyCollection<BreadcrumbItem> Breadcrumbs =>
+    [
+        new(Localizer["AssessmentSession"], Selected: false, LinkFactory($"assessment-session/{TeamId:N}")),
+        new(Date, Selected: true, LinkFactory($"assessment-history/{TeamId:N}/{Date}"))
+    ];
 }

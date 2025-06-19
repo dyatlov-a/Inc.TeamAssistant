@@ -1,0 +1,16 @@
+<i data-hint="@Text" class="hint @CssClass" @onclick="Toggle">
+    <CircleQuestionIcon Size="20px" />
+</i>
+
+@code {
+    /// <summary>
+    /// Text for hint.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+
+    private bool _isOpen;
+    private string CssClass => _isOpen ? "hint_open" : string.Empty;
+    
+    private void Toggle() => _isOpen = !_isOpen;
+}

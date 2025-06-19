@@ -3,7 +3,7 @@
 @inject FeaturesFactory FeaturesFactory
 
 <ContentDialog Title="@Localizer["Settings"]" @ref="_contentDialog">
-    <div class="widget-settings @CssClass">
+    <div class="widget-settings">
         <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
             <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
             <Loading State="State" Retry="SubmitForm">
@@ -25,7 +25,6 @@
                                 draggable="true"
                                 ondragover="event.preventDefault();"
                                 @ondrop="() => HandleDrop(widgets, current)"
-                                @ondragenter="HandleDragEnter"
                                 @ondragstart="@(() => HandleDragStart(current))">
                                 <div class="widget-settings__drag">
                                     <DragVerticalIcon Size="30px" ComponentStyle="ComponentStyle.Secondary"/>
@@ -136,7 +135,6 @@
     public void Close() => _contentDialog?.Close();
 
     private ContentDialog? _contentDialog;
-    private bool _isDragStarting;
     private readonly DashboardSettingsFormModel _formModel = new();
     private FluentValidationValidator? _fluentValidationValidator;
     private EditContext? _editContext;
@@ -152,8 +150,6 @@
         [nameof(RandomCoffeeHistoryWidget)] = Localizer["RandomCoffeeHistoryWidgetTitle"],
         [nameof(MapWidget)] = Localizer["CheckInMapWidgetTitle"]
     };
-    
-    private string CssClass => _isDragStarting ? "widget-settings_on-drag" : "widget-settings_no-drag";
     
     protected override void OnParametersSet()
     {
@@ -176,14 +172,11 @@
     {
         var source = DragAndDropService.End();
         
-        Swap(items, source, target);
-        
-        _isDragStarting = false;
+        if (source is not null)
+            Swap(items, source, target);
     }
     
     private void HandleDragStart(DashboardSettingsItem source) => DragAndDropService.Start(source);
-    
-    private void HandleDragEnter() => _isDragStarting = true;
     
     private void Swap(DashboardSettingsItem[] items, DashboardSettingsItem first, DashboardSettingsItem second)
     {

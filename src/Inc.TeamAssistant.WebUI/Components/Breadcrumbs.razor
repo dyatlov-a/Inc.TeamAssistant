@@ -2,8 +2,11 @@
     @foreach(var item in Items)
     {
         <li class="breadcrumbs__item">
-            <RouterLink Href="@item.Value" ComponentStyle="ComponentStyle.Secondary">
-                @item.Key
+            <RouterLink
+                Href="@(item.Href ?? "#")"
+                ComponentStyle="ComponentStyle.Secondary"
+                Selected="@item.Selected">
+                @item.Text
             </RouterLink>
         </li>
     }
@@ -14,5 +17,5 @@
     /// Breadcrumb items.
     /// </summary>
     [Parameter, EditorRequired]
-    public IReadOnlyDictionary<string, string> Items { get; set; } = new Dictionary<string, string>();
+    public IReadOnlyCollection<BreadcrumbItem> Items { get; set; } = [];
 }

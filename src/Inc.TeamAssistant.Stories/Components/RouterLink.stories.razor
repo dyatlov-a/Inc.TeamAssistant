@@ -14,6 +14,14 @@
             <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
         </Template>
     </Story>
+    <Story Name="Selected" Layout="typeof(DarkLayout)">
+        <Arguments>
+            <Arg For="c => c.Selected" Value="true" />
+        </Arguments>
+        <Template>
+            <RouterLink Href="#" @attributes="context.Args">@_text</RouterLink>
+        </Template>
+    </Story>
 </Stories>
 
 @code {

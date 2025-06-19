@@ -1,0 +1,17 @@
+@attribute [Stories("Components/Dialogs/InlineDialog")]
+
+<Stories TComponent="InlineDialog">
+    <Story Name="Default">
+        <Template>
+            <InlineDialog
+                IsOpen="_isOpen"
+                Text="We use cookies to make your experience on our site as convenient as possible. By continuing to browse our site, you are agreeing to the use of these cookies"
+                ButtonText="Accept"
+                OnAction="@(() => _isOpen = false)" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private bool _isOpen = true;
+}

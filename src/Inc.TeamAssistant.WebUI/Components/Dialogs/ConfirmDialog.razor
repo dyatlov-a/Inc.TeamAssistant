@@ -1,0 +1,56 @@
+@inject IStringLocalizer<ComponentResources> Localizer
+
+@if (_isOpen)
+{
+    <div class="confirm-dialog-bg"></div>
+    <div class="confirm-dialog">
+        <div class="confirm-dialog__body">
+            <div class="confirm-dialog__content">
+                @if (string.IsNullOrWhiteSpace(_message))
+                {
+                    @ChildContent
+                }
+                else
+                {
+                    @_message
+                }
+            </div>
+            <div class="confirm-dialog__actions">
+                <Button OnClick="() => Close(true)">@Localizer["Yes"]</Button>
+                <Button OnClick="() => Close(false)" ComponentStyle="ComponentStyle.Secondary">@Localizer["No"]</Button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// HTML content
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? _message;
+    private bool _isOpen;
+    private TaskCompletionSource<bool>? _state;
+
+    public Task<bool> IsConfirmed(string? message = null)
+    {
+        _message = message;
+        _isOpen = true;
+        
+        StateHasChanged();
+
+        _state = new TaskCompletionSource<bool>();
+
+        return _state.Task;
+    }
+
+    private void Close(bool confirmed)
+    {
+        _isOpen = false;
+        _message = null;
+        
+        _state?.SetResult(confirmed);
+    }
+}

@@ -1,30 +1,28 @@
-<div class="dashboard__fluent-container">
-    @Settings
-    <div class="dashboard">
-        <div class="dashboard-toolbar">
-            <div class="dashboard-toolbar__content">
-                @Toolbar
+<DashboardGrid>
+    <Header>
+        @Settings
+    </Header>
+    <Toolbar>
+        @Toolbar
+    </Toolbar>
+    <Content>
+        <Loading State="State" Retry="Retry">
+            <div class="dashboard-widgets">
+                @if (BotId.HasValue)
+                {
+                    foreach (var widget in Widgets)
+                    {
+                        <DynamicComponent Type="widget" Parameters="WidgetParametersFactory(widget)"/>
+                    }
+                }
+                else
+                {
+                    <BotNotSelected/>
+                }
             </div>
-        </div>
-        <div class="dashboard-content">
-            <Loading State="State" Retry="Load">
-                <div class="dashboard-widgets">
-                    @if (BotId.HasValue)
-                    {
-                        foreach (var widget in Widgets)
-                        {
-                            <DynamicComponent Type="widget" Parameters="WidgetParametersFactory(widget)"/>
-                        }
-                    }
-                    else
-                    {
-                        <BotNotSelected/>
-                    }
-                </div>
-            </Loading>
-        </div>
-    </div>
-</div>
+        </Loading>
+    </Content>
+</DashboardGrid>
 
 @code {
     /// <summary>
@@ -32,12 +30,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid? BotId { get; set; }
-    
-    /// <summary>
-    /// TeamId.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Guid? TeamId { get; set; }
     
     /// <summary>
     /// Component state.
@@ -64,10 +56,10 @@
     public RenderFragment Toolbar { get; set; } = default!;
     
     /// <summary>
-    /// Action for load.
+    /// Action for retry.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Load { get; set; } = default!;
+    public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
     /// ParametersFactory for widget by type.

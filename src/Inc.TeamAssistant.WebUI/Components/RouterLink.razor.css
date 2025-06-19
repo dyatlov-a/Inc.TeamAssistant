@@ -1,4 +1,4 @@
-.link:hover {
+.link:hover, .link_selected {
     text-decoration: underline;
 }
 .link_primary {

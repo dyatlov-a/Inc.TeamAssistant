@@ -1,0 +1,18 @@
+@attribute [Stories("Components/Navigations")]
+
+<Stories TComponent="Navigations<int>">
+    <Story Name="Default">
+        <Template>
+            <Navigations Items="_navItems" @attributes="context.Args" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private readonly IReadOnlyCollection<NavigationItem<int>> _navItems = [
+        new (Text: "Stage 1", Value: 1, Selected: false, CanMove: true),
+        new (Text: "Stage 2", Value: 2, Selected: false, CanMove: false),
+        new (Text: "Stage 3", Value: 3, Selected: true, CanMove: false),
+        new (Text: "Stage 4", Value: 4, Selected: false, CanMove: false)
+    ];
+}

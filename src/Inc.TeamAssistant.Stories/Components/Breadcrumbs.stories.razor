@@ -3,15 +3,22 @@
 <Stories TComponent="Breadcrumbs" Layout="typeof(LightLayout)">
     <Story Name="Default">
         <Template>
-            <Breadcrumbs Items="_items" @attributes="context.Args" />
+            <Breadcrumbs Items="CreateItems()" @attributes="context.Args" />
+        </Template>
+    </Story>
+    <Story Name="Selected">
+        <Template>
+            <Breadcrumbs Items="CreateItems(selected: true)" @attributes="context.Args" />
         </Template>
     </Story>
 </Stories>
 
 @code {
-    private readonly IReadOnlyDictionary<string, string> _items = new Dictionary<string, string>
+    private IReadOnlyCollection<BreadcrumbItem> CreateItems(bool selected = false)
     {
-        ["AssessmentSession"] = string.Empty,
-        [DateTimeOffset.UtcNow.ToString("yyyy.MM.dd")] = string.Empty
-    };
+        return [
+            new("AssessmentSession", Selected: selected, Href: string.Empty),
+            new(DateTimeOffset.UtcNow.ToString("yyyy.MM.dd"), Selected: false, Href: string.Empty)
+        ];
+    }
 }

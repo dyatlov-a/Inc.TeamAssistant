@@ -1,0 +1,149 @@
+@inject DragAndDropService<RetroItemViewModel> DragAndDropService
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div
+    @ondrop="OnDrop"
+    @ondragstart="OnDragStart"
+    style="background-color: @BackgroundColor"
+    class="retro-item @CanViewCss @ChildCss"
+    @attributes="DynamicAttributes.BuildDraggable(CanMove)">
+    @if (CanMove)
+    {
+        <div class="retro-item__icons">
+            <DragVerticalIcon Size="30px" />
+        </div>
+    }
+    @if (CanRemove)
+    {
+        <div class="retro-item__actions">
+            <Button ButtonMode="ButtonMode.Small" OnClick="SendItemRemoved">
+                @if (Value.ParentId.HasValue)
+                {
+                    <PaperclipSlashIcon Size="20px"/>
+                }
+                else
+                {
+                    <TrashIcon Size="20px"/>
+                }
+            </Button>
+        </div>
+    }
+    <InputInlineEditor
+        Id="@Value.Id"
+        CanEdit="CanEdit"
+        DebounceDelay="DebounceDelay"
+        Value="@Value.Text"
+        ValueExpression="@(() => Value.Text)"
+        ValueChanged="@(v => OnValueChanged(v))" />
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+</div>
+<ConfirmDialog @ref="_confirmDialog">
+    @Localizer["ItemRemoveConfirm"]
+</ConfirmDialog>
+
+@code {
+    /// <summary>
+    /// Can view item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanView { get; set; }
+
+    /// <summary>
+    /// Can edit item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanEdit { get; set; }
+
+    /// <summary>
+    /// Can remove item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanRemove { get; set; }
+
+    /// <summary>
+    /// Can drag and drop item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanMove { get; set; }
+    
+    /// <summary>
+    /// Value of the item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RetroItemViewModel Value { get; set; } = default!;
+
+    /// <summary>
+    /// Background color.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string BackgroundColor { get; set; } = default!;
+
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; }
+
+    /// <summary>
+    /// Child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
+    /// Value changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
+
+    /// <summary>
+    /// Item moved callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<(RetroItemViewModel Parent, RetroItemViewModel Child)> ItemMoved { get; set; }
+    
+    private ConfirmDialog? _confirmDialog;
+
+    private string CanViewCss => CanView ? string.Empty : "retro-item_freeze";
+    private string ChildCss => Value.ParentId.HasValue ? "retro-item_child" : string.Empty;
+
+    private void OnDragStart() => DragAndDropService.Start(Value);
+
+    private async Task OnDrop()
+    {
+        var movedItem = DragAndDropService.End();
+        var isOtherItem = Value.Id != movedItem?.Id;
+        var hasParent = Value.ParentId.HasValue;
+
+        if (movedItem is not null && !hasParent && isOtherItem)
+            await ItemMoved.InvokeAsync(new(Value, movedItem));
+    }
+
+    private async Task OnValueChanged(string? value)
+    {
+        await ValueChanged.InvokeAsync(Value.ChangeText(value));
+    }
+
+    private async Task SendItemRemoved()
+    {
+        if (!CanRemove)
+            return;
+
+        var hasParent = Value.ParentId.HasValue;
+        var isEmpty = string.IsNullOrWhiteSpace(Value.Text);
+
+        if (hasParent || isEmpty)
+            await ItemRemoved.InvokeAsync(Value);
+        else if (_confirmDialog is not null && await _confirmDialog.IsConfirmed())
+            await ItemRemoved.InvokeAsync(Value);
+    }
+}

@@ -53,9 +53,9 @@ SET
 
 UPDATE review.task_for_reviews
 SET
-    state = 4,
+    state = 5,
     accept_date = now()
-WHERE state in (1, 2, 3);
+WHERE state in (1, 2, 3, 4);
 
 UPDATE review.draft_task_for_reviews
 SET chat_id = -1001685108427;

@@ -1,0 +1,28 @@
+.backlog__text {
+    font-size: 1.2rem;
+    line-height: 1.6rem;
+    margin-bottom: 1rem;
+}
+.backlog-grid__columns {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+}
+.backlog-grid__column {
+    width: calc(50% - .5rem);
+}
+.backlog-grid__column-items {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1rem;
+}
+@media (max-width: 767.98px) {
+    .backlog-grid__columns {
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+    .backlog-grid__column {
+        width: 100%;
+    }
+}

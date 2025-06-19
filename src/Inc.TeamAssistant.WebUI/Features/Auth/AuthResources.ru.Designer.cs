@@ -69,9 +69,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Auth {
             }
         }
         
-        internal static string LoginAsSuperuser {
+        internal static string LoginAsSystemUser {
             get {
-                return ResourceManager.GetString("LoginAsSuperuser", resourceCulture);
+                return ResourceManager.GetString("LoginAsSystemUser", resourceCulture);
             }
         }
     }

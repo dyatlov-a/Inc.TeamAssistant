@@ -24,7 +24,7 @@ public sealed class StagesState : IWithEmpty<StagesState>
     private readonly List<Guid> _featureIds = new();
     public IReadOnlyCollection<Guid> FeatureIds => _featureIds;
     
-    private Dictionary<string, string> _properties = new(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<string, string> _properties = new(StringComparer.InvariantCultureIgnoreCase);
     public IReadOnlyDictionary<string, string> Properties => _properties;
 
     private readonly List<FeatureDto> _availableFeatures = new();
@@ -38,15 +38,15 @@ public sealed class StagesState : IWithEmpty<StagesState>
         .ToArray();
 
     public static StagesState Empty { get; } = new(
-        null,
-        null,
-        string.Empty,
-        string.Empty,
-        Array.Empty<string>(),
-        Array.Empty<Guid>(),
-        new Dictionary<string, string>(),
-        Array.Empty<FeatureDto>(),
-        new Dictionary<string, IReadOnlyCollection<SettingSection>>());
+        id: null,
+        calendarId: null,
+        userName: string.Empty,
+        token: string.Empty,
+        supportedLanguages: [],
+        featureIds: [],
+        properties: new Dictionary<string, string>(),
+        availableFeatures: [],
+        availableProperties: new Dictionary<string, IReadOnlyCollection<SettingSection>>());
 
     public StagesState(
         Guid? id,
@@ -59,9 +59,9 @@ public sealed class StagesState : IWithEmpty<StagesState>
         IReadOnlyCollection<FeatureDto> availableFeatures,
         IReadOnlyDictionary<string, IReadOnlyCollection<SettingSection>> availableProperties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
         ArgumentNullException.ThrowIfNull(supportedLanguages);
         ArgumentNullException.ThrowIfNull(featureIds);
+        ArgumentNullException.ThrowIfNull(properties);
         ArgumentNullException.ThrowIfNull(availableFeatures);
         ArgumentNullException.ThrowIfNull(availableProperties);
         
@@ -123,7 +123,7 @@ public sealed class StagesState : IWithEmpty<StagesState>
             string.Empty,
             string.Empty,
             [LanguageSettings.DefaultLanguageId.Value],
-            Array.Empty<Guid>(),
+            [],
             new Dictionary<string, string>(),
             availableFeatures.Features,
             availableProperties.Properties);

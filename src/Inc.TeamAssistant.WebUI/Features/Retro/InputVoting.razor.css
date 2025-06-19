@@ -1,0 +1,18 @@
+.vote-items {
+    direction: rtl;
+    display: inline-block;
+}
+.vote {
+    width: 20px;
+    aspect-ratio: 1;
+    background-color: var(--block-secondary-color);
+    display: inline-block;
+    vertical-align: middle;
+    clip-path: polygon(50% 0, calc(50%*(1 + sin(.4turn))) calc(50%*(1 - cos(.4turn))), calc(50%*(1 - sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 + sin(.2turn))) calc(50%*(1 - cos(.2turn))), calc(50%*(1 - sin(.4turn))) calc(50%*(1 - cos(.4turn))));
+}
+.vote_active {
+    cursor: pointer;
+}
+.vote_selected, .vote_active:hover, .vote_active:hover ~ .vote_active {
+    background-color: var(--block-priority-color);
+}

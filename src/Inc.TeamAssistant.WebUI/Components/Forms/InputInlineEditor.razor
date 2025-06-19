@@ -1,0 +1,140 @@
+@inherits InputBase<string?>
+
+@inject IJSRuntime JsRuntime
+@inject IRenderContext RenderContext
+@inject ILogger<InputInlineEditor> Logger
+
+<div
+    id="@Id"
+    class="inline-editor__text @CssClass"
+    @oninput="OnInputChanged"
+    @onblur="OnBlur"
+    @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
+    @ref="_item">
+    @if (!RenderContext.IsBrowser || !CanEdit)
+    {
+        @HtmlValue
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Id of the item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Can edit item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanEdit { get; set; }
+    
+    /// <summary>
+    /// Debounce delay in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; }
+    
+    private string _value = string.Empty;
+    private ElementReference _item;
+    private Timer? _timer;
+
+    private MarkupString HtmlValue => (MarkupString)_value.Replace("\n", "<br/>");
+    
+    protected override void OnParametersSet()
+    {
+        _value = CurrentValue ?? string.Empty;
+
+        if (!CanEdit)
+            return;
+
+        if (RenderContext.IsBrowser && _timer is null)
+        {
+            _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
+            OnInputChanged();
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && RenderContext.IsBrowser && CanEdit)
+        {
+            if (string.IsNullOrWhiteSpace(_value))
+                await JsRuntime.Execute(JsFunctions.FocusElement(_item));
+            else
+                await JsRuntime.Execute(JsFunctions.SetTextValue(_item, _value));
+
+            await JsRuntime.Execute(JsFunctions.AddCleanStyleActionToPasteListener(_item));
+        }
+    }
+    
+    private async Task TrySendValueChanged()
+    {
+        try
+        {
+            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+
+            if (_value != value)
+            {
+                _value = value;
+                
+                await ValueChanged.InvokeAsync(_value);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error on timer tick for InlineEditor");
+        }
+    }
+    
+    private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
+    {
+        _timer?.Stop();
+        
+        InvokeAsync(TrySendValueChanged);
+    }
+    
+    private async Task OnBlur()
+    {
+        await TrySendValueChanged();
+        
+        _timer?.Stop();
+    }
+    
+    private void OnInputChanged()
+    {
+        _timer?.Stop();
+        _timer?.Start();
+    }
+    
+    private Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new Timer(interval);
+
+        timer.Elapsed += OnAfterInputChanged;
+        timer.AutoReset = false;
+
+        return timer;
+    }
+    
+    protected override bool TryParseValueFromString(
+        string? value,
+        out string result,
+        out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+    
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && _timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnAfterInputChanged;
+            _timer.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
+}

@@ -1,0 +1,41 @@
+<div class="@CssClass">
+    @Header
+    <div class="dashboard-grid">
+        <div class="dashboard-grid-toolbar">
+            <div class="dashboard-grid-toolbar__content">
+                @Toolbar
+            </div>
+        </div>
+        <div class="dashboard-grid-content">
+            @Content
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Toolbar block.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Toolbar { get; set; } = default!;
+    
+    /// <summary>
+    /// Content block.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Content { get; set; } = default!;
+    
+    /// <summary>
+    /// Header block.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Header { get; set; }
+    
+    /// <summary>
+    /// Has fixed width.
+    /// </summary>
+    [Parameter]
+    public bool HasFixedWidth { get; set; }
+    
+    private string CssClass => HasFixedWidth ? "dashboard-grid__container" : "dashboard-grid__fluent-container";
+}

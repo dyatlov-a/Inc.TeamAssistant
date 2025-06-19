@@ -1,6 +1,7 @@
 @implements IDisposable
 
 @inject NavRouter NavRouter
+@inject TenantStore TenantStore
 
 <AuthorizeView>
     <Authorized>
@@ -10,8 +11,10 @@
             MainUrl="@MainUrl"
             LoginUrl="@LoginUrl"
             LogoutUrl="@_logoutUrl"
-            Moved="p => MoveTo(p)"
-            CurrentPerson="context.User.ToPerson()" />
+            LanguageChanged="p => MoveTo(p)"
+            CurrentPerson="context.User.ToPerson()"
+            Rooms="TenantStore.Rooms"
+            MoveToLinkFactory="CreateMoveToLink" />
     </Authorized>
     <NotAuthorized>
         <MainNavbar
@@ -20,13 +23,14 @@
             LoginUrl="@LoginUrl"
             LogoutUrl="@_logoutUrl"
             MainUrl="@MainUrl"
-            Moved="p => MoveTo(p)" />
+            LanguageChanged="p => MoveTo(p)"
+            MoveToLinkFactory="CreateMoveToLink" />
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private IDisposable? _routerScope;
-    private IReadOnlyCollection<LinkModel> _languages = Array.Empty<LinkModel>();
+    private IReadOnlyCollection<LinkModel> _languages = [];
     private string _logoutUrl = string.Empty;
     
     private bool HasLogin => !NavRouter.CurrentUrl.Contains("/login");
@@ -43,6 +47,8 @@
             : $"accounts/logout?languageCode={languageId.Value}";
         
         SetLanguages();
+        
+        TenantStore.OnChange += StateHasChanged;
     }
     
     private void SetLanguages()
@@ -57,6 +63,13 @@
     }
 
     private Task MoveTo(string path) => NavRouter.MoveToRoute(path, RoutingType.Server);
+    
+    private string CreateMoveToLink(string routeSegment) => NavRouter.CreateRoute(routeSegment);
 
-    public void Dispose() => _routerScope?.Dispose();
+    public void Dispose()
+    {
+        _routerScope?.Dispose();
+        
+        TenantStore.OnChange -= StateHasChanged;
+    }
 }

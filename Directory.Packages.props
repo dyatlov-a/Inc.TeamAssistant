@@ -3,31 +3,31 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.4" PrivateAssets="all" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.5" PrivateAssets="all" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.5" />
     <PackageVersion Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1" />
     <PackageVersion Include="prometheus-net.DotNetRuntime" Version="4.4.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageVersion Include="Sentry.Serilog" Version="5.6.0" />
+    <PackageVersion Include="Sentry.Serilog" Version="5.7.0" />
     <PackageVersion Include="Npgsql" Version="9.0.3" />
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="MediatR" Version="12.5.0" />
-    <PackageVersion Include="FluentValidation" Version="11.11.0" />
-    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageVersion Include="FluentValidation" Version="12.0.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageVersion Include="Blazored.FluentValidation" Version="2.2.0" />
-    <PackageVersion Include="BlazingStory" Version="1.0.0-preview.47" />
+    <PackageVersion Include="BlazingStory" Version="1.0.0-preview.48" />
     <PackageVersion Include="Blazor-ApexCharts" Version="6.0.0" />
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
@@ -39,11 +39,17 @@
     <PackageVersion Include="FluentMigrator.Runner" Version="7.1.0" />
     <PackageVersion Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
     <PackageVersion Include="JunitXml.TestLogger" Version="6.1.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
   </ItemGroup>
 </Project>

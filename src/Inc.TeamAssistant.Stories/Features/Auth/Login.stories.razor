@@ -1,34 +1,54 @@
 @attribute [Stories("Features/Auth/Login")]
 
 <Stories TComponent="Login" Layout="typeof(StubLayout)">
+    <Story Name="WithMultipleSystemUsers">
+        <Template>
+            <Login
+                State="LoadingState.Done()"
+                AuthBotContext="_multipleBotContext"
+                Retry="() => Task.CompletedTask"
+                LoggedInAsSystemUser="@(_ => Task.CompletedTask)"
+                Lang="en" />
+        </Template>
+    </Story>
     <Story Name="Done">
         <Template>
             <Login
                 State="LoadingState.Done()"
-                BotUserName="string.Empty"
-                HasSuperUser="true"
+                AuthBotContext="_defaultBotContext"
                 Retry="() => Task.CompletedTask"
-                LoginAsSuperUser="() => Task.CompletedTask" />
+                LoggedInAsSystemUser="@(_ => Task.CompletedTask)"
+                Lang="en"/>
         </Template>
     </Story>
     <Story Name="Loading">
         <Template>
             <Login
                 State="LoadingState.Loading()"
-                BotUserName="string.Empty"
-                HasSuperUser="true"
+                AuthBotContext="_defaultBotContext"
                 Retry="() => Task.CompletedTask"
-                LoginAsSuperUser="() => Task.CompletedTask" />
+                LoggedInAsSystemUser="@(_ => Task.CompletedTask)"
+                Lang="en"/>
         </Template>
     </Story>
     <Story Name="Error">
         <Template>
             <Login
                 State="LoadingState.Error()"
-                BotUserName="string.Empty"
-                HasSuperUser="true"
+                AuthBotContext="_defaultBotContext"
                 Retry="() => Task.CompletedTask"
-                LoginAsSuperUser="() => Task.CompletedTask" />
+                LoggedInAsSystemUser="@(_ => Task.CompletedTask)"
+                Lang="en"/>
         </Template>
     </Story>
 </Stories>
+
+@code {
+    private readonly AuthBotContext _defaultBotContext = new(
+        "auth_bot",
+        [new Person(272062137, "Aleksandr", "adiatlov")]);
+    
+    private readonly AuthBotContext _multipleBotContext = new(
+        "auth_bot",
+        [new Person(272062137, "Aleksandr", "adiatlov"), new Person(6771789737, "Alex", Username: null)]);
+}

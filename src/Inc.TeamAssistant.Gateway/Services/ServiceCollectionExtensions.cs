@@ -1,10 +1,11 @@
-using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Services.Clients;
+using Inc.TeamAssistant.Gateway.Services.InMemory;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Languages;
+using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,17 +32,12 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton(authOptions)
             .AddSingleton(openGraphOptions)
-            .AddSingleton(new MessageProvider(webRootPath))
-            .AddSingleton<IMessageProvider>(sp => ActivatorUtilities.CreateInstance<MessageProviderCached>(
-                sp,
-                sp.GetRequiredService<MessageProvider>(),
-                cacheTimeout))
+            .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
             .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
             .AddScoped<IAppraiserService, AppraiserService>()
-            .AddScoped<IMessagesSender, MessagesSender>()
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
@@ -49,17 +45,26 @@ public static class ServiceCollectionExtensions
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddScoped<ICalendarService, CalendarService>()
+            .AddScoped<ITenantService, TenantService>()
+            .AddScoped<IRetroService, RetroService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
-            
             .AddSingleton<QuickResponseCodeGenerator>()
-            .AddSingleton<IQuickResponseCodeGenerator>(sp => ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
-                sp,
-                sp.GetRequiredService<QuickResponseCodeGenerator>(),
-                cacheTimeout))
+            .AddSingleton<IQuickResponseCodeGenerator>(sp =>
+                ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
+                    sp,
+                    sp.GetRequiredService<QuickResponseCodeGenerator>(),
+                    cacheTimeout))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
-            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>();
+            .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
+            .AddSingleton<IRetroPropertiesProvider, RetroPropertiesProviderAdapter>()
+            
+            .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
+            .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
+            .AddSingleton<ITimerService, TimerInMemoryService>()
+            .AddSingleton<IVoteStore, VoteInMemoryStore>()
+            .AddSingleton<IRetroStage, RetroStageInMemory>();
 
         return services;
 	}

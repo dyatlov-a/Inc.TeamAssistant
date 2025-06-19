@@ -1,0 +1,18 @@
+<span class="person-card">
+    <img src="@Person.AvatarUrl" alt="user avatar" class="user-avatar"/>
+    @Person.Name
+    <br/>
+    @if (string.IsNullOrWhiteSpace(Person.Username))
+    {
+        <br/>
+    }
+    @Person.Username
+</span>
+
+@code {
+    /// <summary>
+    /// Person object.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Person Person { get; set; } = default!;
+}

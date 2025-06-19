@@ -5,9 +5,18 @@
     
     <main class="main">
         @Body
+        
+        <div class="inline__dialogs_placeholder"></div>
+        <div class="inline__dialogs">
+            <AcceptCookieDialogContainer />
+            @DialogSlot
+        </div>
     </main>
     
     <MainFooter/>
 </div>
 
-<AcceptCookieDialogContainer />
+@code {
+    [Parameter]
+    public RenderFragment? DialogSlot { get; set; }
+}
