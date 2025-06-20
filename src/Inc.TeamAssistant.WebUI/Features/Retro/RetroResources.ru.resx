@@ -69,10 +69,10 @@
     <data name="Actions" xml:space="preserve">
         <value>Действия</value>
     </data>
-    <data name="ActionItemStageDone" xml:space="preserve">
+    <data name="ActionItemStageDoneTitle" xml:space="preserve">
         <value>Готово</value>
     </data>
-    <data name="ActionItemStageNew" xml:space="preserve">
+    <data name="ActionItemStageNewTitle" xml:space="preserve">
         <value>В работу</value>
     </data>
     <data name="TimerStart" xml:space="preserve">
@@ -203,5 +203,14 @@
     </data>
     <data name="Participants" xml:space="preserve">
         <value>Участники</value>
+    </data>
+    <data name="ActionsHint" xml:space="preserve">
+        <value>Запиши конкретный шаг с ответственным и сроком — не идея, а действие.</value>
+    </data>
+    <data name="ActionItemStageNewHint" xml:space="preserve">
+        <value>Действие по итогам ретро — что делать, кто отвечает и срок.</value>
+    </data>
+    <data name="ActionItemStageDoneHint" xml:space="preserve">
+        <value>Экшен-айтемы, которые закрыты.</value>
     </data>
 </root>

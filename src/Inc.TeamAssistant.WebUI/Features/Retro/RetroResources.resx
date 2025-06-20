@@ -69,10 +69,10 @@
     <data name="Actions" xml:space="preserve">
         <value>Actions</value>
     </data>
-    <data name="ActionItemStageNew" xml:space="preserve">
-        <value>TODO</value>
+    <data name="ActionItemStageNewTitle" xml:space="preserve">
+        <value>To-do</value>
     </data>
-    <data name="ActionItemStageDone" xml:space="preserve">
+    <data name="ActionItemStageDoneTitle" xml:space="preserve">
         <value>Done</value>
     </data>
     <data name="TimerStart" xml:space="preserve">
@@ -204,5 +204,14 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="Participants" xml:space="preserve">
         <value>Participants</value>
+    </data>
+    <data name="ActionsHint" xml:space="preserve">
+        <value>Write a specific action with an owner and a deadline — not an idea, but a step.</value>
+    </data>
+    <data name="ActionItemStageDoneHint" xml:space="preserve">
+        <value>Action items that are closed.</value>
+    </data>
+    <data name="ActionItemStageNewHint" xml:space="preserve">
+        <value>Action item from retro — clear, doable, with owner and deadline.</value>
     </data>
 </root>
