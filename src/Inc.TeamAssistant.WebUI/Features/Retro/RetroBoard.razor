@@ -59,7 +59,7 @@
                                 </Actions>
                                 <Content>
                                     <div class="retro-grid__column-items">
-                                        @if (CanMove)
+                                        @if (HasDropSlot)
                                         {
                                             <RetroSlot
                                                 ColumnId="column.Id"
@@ -377,6 +377,7 @@
     private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
     private bool CanMove => Session?.State == RetroStages.Grouping && IsFacilitator;
     private bool CanVote => Session?.State == RetroStages.Prioritizing;
+    private bool HasDropSlot => CanMove && Columns.Count > 1;
     private bool PrioritizingInProgress => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
     private bool IsDiscussing => Session?.State == RetroStages.Discussing;
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
