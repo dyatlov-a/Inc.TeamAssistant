@@ -1,4 +1,3 @@
-@inject IStringLocalizer<LayoutResources> Localizer
 @inject MainFooterLinksFactory MainFooterLinksFactory
 
 <div class="footer">
@@ -7,7 +6,7 @@
             @foreach (var group in MainFooterLinksFactory.Create())
             {
                 <div class="footer-group">
-                    <span class="footer-group__header">@Localizer[group.Key]</span>
+                    <span class="footer-group__header">@group.Key</span>
                     @foreach (var link in group.Value)
                     {
                         <RouterLink Href="@link.Url" Target="@(link.External ? RouterTarget.Blank : RouterTarget.Self)">

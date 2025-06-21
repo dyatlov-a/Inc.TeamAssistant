@@ -20,7 +20,7 @@ internal sealed class MainFooterLinksFactory
         return new Dictionary<string, IReadOnlyCollection<LinkModel>>
         {
             {
-                _localizer["GroupNavigation"],
+                $"{_localizer["GroupNavigation"]} {ApplicationContext.GetVersion()}",
                 [
                     new LinkModel(
                         _localizer["LinkMain"],
@@ -71,7 +71,7 @@ internal sealed class MainFooterLinksFactory
                 ]
             },
             {
-                $"{_localizer["GroupTools"]} {ApplicationContext.GetVersion()}",
+                _localizer["GroupTools"],
                 [
                     new LinkModel(
                         "Telegram.Bot",
