@@ -1,6 +1,7 @@
 @implements IDisposable
 
 @inject IStringLocalizer<RetroResources> Localizer
+@inject IServiceProvider ServiceProvider
 
 <div class="retro-state-panel">
     <a
@@ -98,6 +99,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsFacilitator { get; set; }
+    
+    /// <summary>
+    /// Has items flag.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasItems { get; set; }
     
     /// <summary>
     /// Current timer value.
@@ -224,7 +231,13 @@
     {
         if (Session is null)
         {
-            await StartRetro.InvokeAsync();
+            var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+            
+            if (HasItems)
+                await StartRetro.InvokeAsync();
+            else
+                notificationsService.Publish(Notification.Warning(Localizer["CanNotStartRetro"]));
+            
             return;
         }
             

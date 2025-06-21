@@ -4,6 +4,7 @@
     align-items: center;
     gap: .5rem;
     background-color: var(--accent-color);
+    min-height: 40px;
 }
 .retro__link {
     display: flex;

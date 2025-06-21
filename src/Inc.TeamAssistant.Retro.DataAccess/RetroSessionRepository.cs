@@ -16,7 +16,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
 
     public async Task<RetroSession?> Find(Guid id, CancellationToken token)
     {
-        var command = new CommandDefinition(
+        var getSessionsCommand = new CommandDefinition(
             """
             SELECT
                 rs.id AS id,
@@ -35,7 +35,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
 
         await using var connection = _connectionFactory.Create();
         
-        var retroSession = await connection.QuerySingleOrDefaultAsync<RetroSession>(command);
+        var retroSession = await connection.QuerySingleOrDefaultAsync<RetroSession>(getSessionsCommand);
         
         return retroSession;
     }
@@ -44,7 +44,18 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
     {
         ArgumentNullException.ThrowIfNull(retro);
         
-        var upsertRetroCommand = new CommandDefinition(
+        var removeEmptyItemsCommand = new CommandDefinition(
+            """
+            DELETE FROM retro.retro_items AS ri
+            WHERE ri.room_id = @room_id AND COALESCE(TRIM(ri.text), '') = '';
+            """,
+            new
+            {
+                room_id = retro.RoomId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        var upsertSessionCommand = new CommandDefinition(
             """
             INSERT INTO retro.retro_sessions (
                 id,
@@ -70,20 +81,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        var removeEmptyItemsCommand = new CommandDefinition(
-            """
-            DELETE FROM retro.retro_items AS ri
-            WHERE ri.room_id = @room_id AND COALESCE(trim(ri.text), '') = '';
-            """,
-            new
-            {
-                room_id = retro.RoomId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-        
-        var attachItemsCommand = new CommandDefinition(
+        var attachItemsToSessionCommand = new CommandDefinition(
             """
             UPDATE retro.retro_items AS ri
             SET 
@@ -102,9 +100,9 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
         
-        await connection.ExecuteAsync(upsertRetroCommand);
         await connection.ExecuteAsync(removeEmptyItemsCommand);
-        await connection.ExecuteAsync(attachItemsCommand);
+        await connection.ExecuteAsync(upsertSessionCommand);
+        await connection.ExecuteAsync(attachItemsToSessionCommand);
 
         await transaction.CommitAsync(token);
     }
@@ -114,16 +112,17 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         ArgumentNullException.ThrowIfNull(retro);
         ArgumentNullException.ThrowIfNull(voteTickets);
 
-        var itemId = new List<Guid>();
-        var votes = new List<int>();
+        var ticketsByItems = voteTickets.ToLookup(t => t.ItemId);
+        var itemId = new List<Guid>(ticketsByItems.Count);
+        var votes = new List<int>(ticketsByItems.Count);
         
-        foreach (var ticketsByItem in voteTickets.GroupBy(t => t.ItemId))
+        foreach (var ticketsByItem in ticketsByItems)
         {
             itemId.Add(ticketsByItem.Key);
             votes.Add(ticketsByItem.Sum(t => t.Vote));
         }
         
-        var commandSession = new CommandDefinition(
+        var updateSessionCommand = new CommandDefinition(
             """
             UPDATE retro.retro_sessions AS rs
             SET
@@ -137,8 +136,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
-        var commandItems = new CommandDefinition(
+        var updateItemsCommand = new CommandDefinition(
             """
             UPDATE retro.retro_items AS ri
             SET
@@ -158,10 +156,10 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         await connection.OpenAsync(token);
         await using var transaction = await connection.BeginTransactionAsync(token);
         
-        await connection.ExecuteAsync(commandSession);
+        await connection.ExecuteAsync(updateSessionCommand);
 
         if (itemId.Any())
-            await connection.ExecuteAsync(commandItems);
+            await connection.ExecuteAsync(updateItemsCommand);
         
         await transaction.CommitAsync(token);
     }

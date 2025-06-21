@@ -62,13 +62,13 @@
         </Authorized>
     </AuthorizeView>
     </Body>
-    <DialogSlot>
+    <InlineDialogSlot>
         <InlineDialog
             IsOpen="IsDisconnected"
             Text="@Localizer["ConnectionLost"]"
             ButtonText="@Localizer["Reconnect"]"
             OnAction="Reconnect"/>
-    </DialogSlot>
+    </InlineDialogSlot>
 </MainLayout>
 <ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
     <RetroPropertiesEditorContainer

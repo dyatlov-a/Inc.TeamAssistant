@@ -8,56 +8,37 @@
         <Loading State="State" Retry="Retry">
             <p class="backlog__text">@Localizer["BacklogText"]</p>
             <div class="backlog-grid__columns">
-                <div class="backlog-grid__column">
-                    <Panel
-                        Header="@GetStateTitle(_stageNew)"
-                        IsOpen="true"
-                        HasActions="false">
-                        <Content>
-                            <div class="backlog-grid__column-items">
-                                @foreach (var item in ActionItems
-                                              .Where(i => i.State == _stageNew)
-                                              .OrderByDescending(i => i.Created))
-                                {
-                                    <ActionItem
-                                        @key="item.Id"
-                                        CanEdit="CanEdit"
-                                        CanRemove="false"
-                                        CanMoveToState="CanEdit"
-                                        Value="item"
-                                        DebounceDelay="DebounceDelay"
-                                        ValueChanged="SendActionItemChanged"
-                                        ItemRemoved="@(_ => { })"/>
-                                }
-                            </div>
-                        </Content>
-                    </Panel>
-                </div>
-                <div class="backlog-grid__column">
-                    <Panel
-                        Header="@GetStateTitle(_stageDone)"
-                        IsOpen="true"
-                        HasActions="false">
-                        <Content>
-                            <div class="backlog-grid__column-items">
-                                @foreach (var item in ActionItems
-                                              .Where(i => i.State == _stageDone)
-                                              .OrderByDescending(i => i.Modified))
-                                {
-                                    <ActionItem
-                                        @key="item.Id"
-                                        CanEdit="false"
-                                        CanRemove="false"
-                                        CanMoveToState="false"
-                                        Value="item"
-                                        DebounceDelay="DebounceDelay"
-                                        ValueChanged="SendActionItemChanged"
-                                        ItemRemoved="@(_ => { })"/>
-                                }
-                            </div>
-                        </Content>
-                    </Panel>
-                </div>
+                @foreach (var stage in ActionItemStages.All)
+                {
+                    <div class="backlog-grid__column">
+                        <Panel
+                            Header="@GetTitle(stage)"
+                            IsOpen="true"
+                            HasActions="true">
+                            <Actions>
+                                <Hint Text="@GetHint(stage)"/>
+                            </Actions>
+                            <Content>
+                                <div class="backlog-grid__column-items">
+                                    @foreach (var item in ActionItems
+                                                  .Where(i => i.State == stage)
+                                                  .OrderByDescending(i => i.Modified ?? i.Created))
+                                    {
+                                        <ActionItem
+                                            @key="item.Id"
+                                            CanEdit="CanEdit(stage)"
+                                            CanRemove="false"
+                                            CanMoveToState="CanEdit(stage)"
+                                            Value="item"
+                                            DebounceDelay="DebounceDelay"
+                                            ValueChanged="SendActionItemChanged"
+                                            ItemRemoved="@(_ => { })"/>
+                                    }
+                                </div>
+                            </Content>
+                        </Panel>
+                    </div>
+                }
             </div>
         </Loading>
     </Content>
@@ -112,12 +93,10 @@
     [Parameter, EditorRequired]
     public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
 
-    private bool CanEdit => FacilitatorId == CurrentPersonId;
     private const int DebounceDelay = 500;
-    private readonly string _stageNew = ActionItemStages.New;
-    private readonly string _stageDone = ActionItemStages.Done;
-
-    private string GetStateTitle(string stage) => Localizer[$"ActionItemStage{stage}"];
     
+    private bool CanEdit(string stage) => stage == ActionItemStages.New && FacilitatorId == CurrentPersonId;
+    private string GetTitle(string stage) => Localizer[$"ActionItemStage{stage}Title"];
+    private string GetHint(string stage) => Localizer[$"ActionItemStage{stage}Hint"];
     private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);
 }
