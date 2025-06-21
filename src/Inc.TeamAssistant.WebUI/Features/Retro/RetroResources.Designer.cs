@@ -434,5 +434,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("ActionItemStageNewHint", resourceCulture);
             }
         }
+        
+        internal static string CanNotStartRetro {
+            get {
+                return ResourceManager.GetString("CanNotStartRetro", resourceCulture);
+            }
+        }
     }
 }

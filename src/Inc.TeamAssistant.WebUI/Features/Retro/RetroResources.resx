@@ -214,4 +214,7 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     <data name="ActionItemStageNewHint" xml:space="preserve">
         <value>Action item from retro — clear, doable, with owner and deadline.</value>
     </data>
+    <data name="CanNotStartRetro" xml:space="preserve">
+        <value>To start the retro, you need to register at least one card</value>
+    </data>
 </root>

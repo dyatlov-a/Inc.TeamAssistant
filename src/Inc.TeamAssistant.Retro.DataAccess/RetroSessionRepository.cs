@@ -47,7 +47,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
         var removeEmptyItemsCommand = new CommandDefinition(
             """
             DELETE FROM retro.retro_items AS ri
-            WHERE ri.room_id = @room_id AND COALESCE(REGEXP_REPLACE(ri.text, '\s+', '', 'g'), '') = '';
+            WHERE ri.room_id = @room_id AND COALESCE(TRIM(ri.text), '') = '';
             """,
             new
             {

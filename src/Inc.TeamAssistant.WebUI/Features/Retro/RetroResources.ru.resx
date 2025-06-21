@@ -213,4 +213,7 @@
     <data name="ActionItemStageDoneHint" xml:space="preserve">
         <value>Экшен-айтемы, которые закрыты.</value>
     </data>
+    <data name="CanNotStartRetro" xml:space="preserve">
+        <value>Для запуска ретро необходимо зарегистрировать хотя бы одну карточку</value>
+    </data>
 </root>
