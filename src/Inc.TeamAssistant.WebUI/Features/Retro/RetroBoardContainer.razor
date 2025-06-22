@@ -64,10 +64,11 @@
     </Body>
     <InlineDialogSlot>
         <InlineDialog
-            IsOpen="IsDisconnected"
-            Text="@Localizer["ConnectionLost"]"
+            IsOpen="@HubDisconnectedStates.All.Any(i => i == ConnectionState)"
+            Text="@Localizer[ConnectionStateAsKey]"
             ButtonText="@Localizer["Reconnect"]"
-            OnAction="Reconnect"/>
+            HasAction="ConnectionState == HubDisconnectedStates.Disconnected"
+            OnAction="Reconnect" />
     </InlineDialogSlot>
 </MainLayout>
 <ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
@@ -103,7 +104,10 @@
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private readonly List<ActionItemViewModel> _actionItems = new();
     
-    private bool IsDisconnected => _eventBuilder?.IsDisconnected ?? false;
+    private HubConnectionState? ConnectionState => _eventBuilder?.State;
+    private string ConnectionStateAsKey => ConnectionState == HubConnectionState.Disconnected
+        ? "ConnectionStateLost"
+        : "ConnectionStateConnecting";
     private bool IsDiscussing => _activeSession?.State == RetroStages.Discussing;
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
         .OrderBy(p => p.Person.DisplayName)
@@ -179,19 +183,34 @@
         
         if (eventBuilder is not null && _eventBuilder is null)
         {
-            _eventBuilder = await eventBuilder.Start(StateHasChanged, OnReconnect);
+            _eventBuilder = await eventBuilder.AddAccessors(StateHasChanged, OnReconnect).Start();
             _eventListener = await StartListenEvents(eventBuilder);
         }
     }
 
     private async Task Reconnect()
     {
-        if (_eventBuilder is not null)
-            await _eventBuilder.Start(StateHasChanged, OnReconnect);
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.Start();
+
+        await OnReconnect();
     }
 
-    private async Task OnReconnect() => await Load(LoadingState.Wrap(_state, StateHasChanged));
-    
+    private async Task OnReconnect()
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await Load(LoadingState.Wrap(_state, StateHasChanged));
+
+        if (_eventListener is not null)
+            await _eventListener.DisposeAsync();
+        
+        _eventListener = await StartListenEvents(_eventBuilder);
+    }
+
     private async Task<IAsyncDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
     {
         return await eventBuilder.Build(

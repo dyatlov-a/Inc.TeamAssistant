@@ -1,12 +1,23 @@
 @attribute [Stories("Components/Dialogs/InlineDialog")]
 
 <Stories TComponent="InlineDialog">
-    <Story Name="Default">
+    <Story Name="WithAction">
         <Template>
             <InlineDialog
                 IsOpen="_isOpen"
-                Text="We use cookies to make your experience on our site as convenient as possible. By continuing to browse our site, you are agreeing to the use of these cookies"
+                Text="@Text"
                 ButtonText="Accept"
+                HasAction="true"
+                OnAction="@(() => _isOpen = false)" />
+        </Template>
+    </Story>
+    <Story Name="WithoutAction">
+        <Template>
+            <InlineDialog
+                IsOpen="_isOpen"
+                Text="@Text"
+                ButtonText="Accept"
+                HasAction="false"
                 OnAction="@(() => _isOpen = false)" />
         </Template>
     </Story>
@@ -14,4 +25,5 @@
 
 @code {
     private bool _isOpen = true;
+    private const string Text = "We use cookies to make your experience on our site as convenient as possible. By continuing to browse our site, you are agreeing to the use of these cookies";
 }

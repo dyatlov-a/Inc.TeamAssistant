@@ -30,8 +30,8 @@
     <data name="PrioritizingText" xml:space="preserve">
         <value>We are now at the prioritization stage. Review the grouped cards and vote for the ones you believe are the most important to discuss. You can distribute your votes across different cards or assign multiple votes to a single one. This will help us focus on the most meaningful topics during the retrospective.</value>
     </data>
-    <data name="ConnectionLost" xml:space="preserve">
-        <value>Connection lost</value>
+    <data name="ConnectionStateConnecting" xml:space="preserve">
+        <value>Establishing connection to the server...</value>
     </data>
     <data name="Reconnect" xml:space="preserve">
         <value>Reconnect</value>
@@ -216,5 +216,8 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="CanNotStartRetro" xml:space="preserve">
         <value>To start the retro, you need to register at least one card</value>
+    </data>
+    <data name="ConnectionStateLost" xml:space="preserve">
+        <value>Connection lost.</value>
     </data>
 </root>

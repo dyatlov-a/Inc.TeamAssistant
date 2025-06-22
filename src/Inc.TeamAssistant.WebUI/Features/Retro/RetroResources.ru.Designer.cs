@@ -69,9 +69,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string ConnectionLost {
+        internal static string ConnectionStateConnecting {
             get {
-                return ResourceManager.GetString("ConnectionLost", resourceCulture);
+                return ResourceManager.GetString("ConnectionStateConnecting", resourceCulture);
             }
         }
         
@@ -438,6 +438,12 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string CanNotStartRetro {
             get {
                 return ResourceManager.GetString("CanNotStartRetro", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateLost {
+            get {
+                return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
             }
         }
     }
