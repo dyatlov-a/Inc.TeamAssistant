@@ -1,21 +1,18 @@
 @inject IStringLocalizer<RetroResources> Localizer
 @inject IJSRuntime JsRuntime
 @inject IRenderContext RenderContext
+@inject IServiceProvider ServiceProvider
 
 <DashboardGrid>
     <Toolbar>
         <div class="retro-toolbar__content">
             <RetroStatePanel
-                Session="Session"
-                PrioritizingInProgress="PrioritizingInProgress"
                 IsDiscussing="IsDiscussing"
                 IsFacilitator="IsFacilitator"
-                HasItems="Items.Any(i => !string.IsNullOrWhiteSpace(i.Text))"
                 TimerDuration="TimerDuration"
                 CurrentTimer="CurrentTimer"
-                StartRetro="RetroStarted"
-                MoveToNext="ToNextMoved"
-                MoveToPrevious="ToPreviousMoved"
+                MoveNext="OnMoveNext"
+                MovePrevious="ToPreviousMoved"
                 TimerChanged="TimerChanged"
                 Finished="Finished"
                 HandRaised="HandRaised"
@@ -32,7 +29,7 @@
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
-            <Navigations Items="NavItems" />
+            <Navigations Items="NavItems" MoveToNext="@((string _) => OnMoveNext())" />
             <p class="retro__text">@Localizer[RetroTextKey]</p>
             <div class="retro-grid">
                 <div class="retro-grid__columns">
@@ -157,6 +154,7 @@
         </Loading>
     </Content>
 </DashboardGrid>
+<ConfirmDialog @ref="_confirmDialog" />
 
 @code {
     /// <summary>
@@ -319,7 +317,7 @@
     /// To next moved callback.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<Guid> ToNextMoved { get; set; }
+    public EventCallback<Guid> OnNextMoved { get; set; }
     
     /// <summary>
     /// To previous moved callback.
@@ -363,13 +361,14 @@
     [Parameter, EditorRequired]
     public EventCallback RetroPropertiesOpened { get; set; }
 
+    private ConfirmDialog? _confirmDialog;
     private Guid StartColumn => Columns.First().Id;
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;
     private string RetroTextKey => $"{RetroState}Text";
     
-    private IReadOnlyCollection<NavigationItem<object?>> NavItems => RetroStages.Stages
-        .Select(s => new NavigationItem<object?>(Localizer[$"{s}Title"], Value: null, s == RetroState, CanMove: false))
+    private IReadOnlyCollection<NavigationItem<string>> NavItems => RetroStages.All
+        .Select(s => new NavigationItem<string>(Localizer[$"{s}Title"], Value: s, s == RetroState, CanMoveToNext(s)))
         .ToArray();
 
     private const int DebounceDelay = 500;
@@ -428,6 +427,38 @@
             : localizedDescription;
         
         return result;
+    }
+
+    private bool CanMoveToNext(string stage)
+    {
+        using var enumerator = RetroStages.All.GetEnumerator();
+        
+        while (enumerator.MoveNext())
+            if (enumerator.Current == RetroState && enumerator.MoveNext() && enumerator.Current == stage)
+                return true;
+
+        return false;
+    }
+    
+    private async Task OnMoveNext()
+    {
+        if (Session is null)
+        {
+            var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+            
+            if (Items.Any(i => !string.IsNullOrWhiteSpace(i.Text)))
+                await RetroStarted.InvokeAsync();
+            else
+                notificationsService.Publish(Notification.Warning(Localizer["CanNotStartRetro"]));
+            
+            return;
+        }
+            
+        if (PrioritizingInProgress && _confirmDialog is not null &&
+            !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
+            return;
+        
+        await OnNextMoved.InvokeAsync(Session.Id);
     }
 
     private async Task SendRetroItemCreated(Guid columnId) => await ItemCreated.InvokeAsync(columnId);

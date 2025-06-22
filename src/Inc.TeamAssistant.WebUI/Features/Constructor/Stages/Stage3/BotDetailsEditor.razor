@@ -73,7 +73,7 @@
     {
         FormModel.Apply(StagesState.SupportedLanguages);
         
-        if (_fluentValidationValidator is null || !await _fluentValidationValidator!.ValidateAsync())
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
         await OnValidSubmit.InvokeAsync();

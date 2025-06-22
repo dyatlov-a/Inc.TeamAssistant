@@ -1,7 +1,6 @@
 @implements IDisposable
 
 @inject IStringLocalizer<RetroResources> Localizer
-@inject IServiceProvider ServiceProvider
 
 <div class="retro-state-panel">
     <a
@@ -77,18 +76,6 @@
 
 @code {
     /// <summary>
-    /// Retro session.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public RetroSessionDto? Session { get; set; }
-    
-    /// <summary>
-    /// Prioritizing state.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool PrioritizingInProgress { get; set; }
-    
-    /// <summary>
     ///  Is discussing state.
     /// </summary>
     [Parameter, EditorRequired]
@@ -99,12 +86,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsFacilitator { get; set; }
-    
-    /// <summary>
-    /// Has items flag.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public bool HasItems { get; set; }
     
     /// <summary>
     /// Current timer value.
@@ -125,22 +106,16 @@
     public TimeSpan TimerRefreshInterval { get; set; } = TimeSpan.FromSeconds(1);
     
     /// <summary>
-    /// Start retro action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback StartRetro { get; set; }
-    
-    /// <summary>
     /// Move to next action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback<Guid> MoveToNext { get; set; }
+    public EventCallback MoveNext { get; set; }
     
     /// <summary>
     /// Move to previous action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback MoveToPrevious { get; set; }
+    public EventCallback MovePrevious { get; set; }
     
     /// <summary>
     /// Timer changed action.
@@ -226,27 +201,6 @@
         
         InvokeAsync(async () => await TimerChanged.InvokeAsync(_currentTimer));
     }
-
-    private async Task OnMoveNext()
-    {
-        if (Session is null)
-        {
-            var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-            
-            if (HasItems)
-                await StartRetro.InvokeAsync();
-            else
-                notificationsService.Publish(Notification.Warning(Localizer["CanNotStartRetro"]));
-            
-            return;
-        }
-            
-        if (PrioritizingInProgress && _confirmDialog is not null &&
-            !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
-            return;
-        
-        await MoveToNext.InvokeAsync(Session.Id);
-    }
     
     private async Task ToggleTimer()
     {
@@ -275,9 +229,10 @@
     }
 
     private async Task OnRetroPropertiesOpened() => await RetroPropertiesOpened.InvokeAsync();
-    private async Task OnMoveToPrevious() => await MoveToPrevious.InvokeAsync();
+    private async Task OnMoveToPrevious() => await MovePrevious.InvokeAsync();
     private async Task MoveToFinish() => await Finished.InvokeAsync();
     private async Task RaiseHand() => await HandRaised.InvokeAsync();
+    private async Task OnMoveNext() => await MoveNext.InvokeAsync();
 
     public void Dispose() => TryStopTimer();
 }
