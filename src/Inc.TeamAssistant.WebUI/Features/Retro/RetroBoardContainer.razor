@@ -441,6 +441,8 @@
         if (_eventBuilder is null)
             return;
 
+        ApplyRetroItemRemovedEvent(item.Id);
+        
         if (item.ParentId.HasValue)
         {
             var command = item.ToCommand() with
@@ -459,6 +461,8 @@
         if (_eventBuilder is null)
             return;
 
+        ApplyRetroItemRemovedEvent(data.Child.Id);
+        
         var command = data.Child.ToCommand() with
         {
             ParentId = data.Parent.Id
@@ -471,6 +475,8 @@
     {
         if (_eventBuilder is null)
             return;
+        
+        ApplyRetroItemRemovedEvent(data.Item.Id);
 
         var itemWithMaxPosition = _items
             .Where(i => i.ColumnId == data.ColumnId)
