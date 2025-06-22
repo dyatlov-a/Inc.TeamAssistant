@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Primitives;
 
 public record Person(long Id, string Name, string? Username)
 {
-    public static readonly Person Empty = new(0, string.Empty, null);
+    public static readonly Person Empty = new(Id: 0, Name: string.Empty, Username: null);
     
     public string DisplayName => Username?.Equals(Name, StringComparison.InvariantCultureIgnoreCase) == false
         ? $"{Name} ({Username})"

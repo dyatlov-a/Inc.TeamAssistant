@@ -14,17 +14,17 @@ namespace Inc.TeamAssistant.Connector.Application.Telegram;
 
 internal sealed class TelegramMessageContextFactory
 {
-    private readonly IPersonRepository _personRepository;
     private readonly IClientLanguageRepository _languageRepository;
+    private readonly IPersonAccessor _personAccessor;
     private readonly MessageParser _messageParser;
 
     public TelegramMessageContextFactory(
-        IPersonRepository personRepository,
         IClientLanguageRepository languageRepository,
+        IPersonAccessor personAccessor,
         MessageParser messageParser)
     {
-        _personRepository = personRepository ?? throw new ArgumentNullException(nameof(personRepository));
         _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
+        _personAccessor = personAccessor ?? throw new ArgumentNullException(nameof(personAccessor));
         _messageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
     }
     
@@ -155,7 +155,7 @@ internal sealed class TelegramMessageContextFactory
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(text);
 
-        var person = await EnsurePerson(user, token);
+        var person = await _personAccessor.Ensure(new Person(user.Id, user.FirstName, user.Username), token);
         var language = await EnsureLanguage(bot.Id, user, token);
         var teams = GetTeams(bot, person.Id, chatId);
             
@@ -180,16 +180,6 @@ internal sealed class TelegramMessageContextFactory
         
         var language = await _languageRepository.Get(botId, user.Id, token);
         return language;
-    }
-
-    private async Task<Person> EnsurePerson(User user, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(user);
-        
-        await _personRepository.Upsert(new Person(user.Id, user.FirstName, user.Username), token);
-        
-        var person = await _personRepository.Find(user.Id, token);
-        return person!;
     }
 
     private IReadOnlyList<TeamContext> GetTeams(Bot bot, long personId, long chatId)

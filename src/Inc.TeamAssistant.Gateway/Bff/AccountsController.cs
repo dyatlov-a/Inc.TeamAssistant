@@ -1,6 +1,5 @@
+using Inc.TeamAssistant.Gateway.Auth;
 using Inc.TeamAssistant.Gateway.Configs;
-using Inc.TeamAssistant.Gateway.Services.ServerCore;
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
 using Microsoft.AspNetCore.Authentication;
@@ -31,21 +30,28 @@ public sealed class AccountsController : ControllerBase
 
     [HttpGet("login-tg")]
     public async Task<IActionResult> Login(
-        [FromQuery(Name = "id")] long id,
-        [FromQuery(Name = "first_name")] string firstName,
-        [FromQuery(Name = "auth_date")] string authDate,
-        [FromQuery(Name = "hash")] string hash,
-        [FromQuery(Name = "last_name")] string? lastName,
-        [FromQuery(Name = "username")] string? username,
-        [FromQuery(Name = "photo_url")] string? photoUrl,
-        [FromQuery(Name = "return_url")] string? returnUrl)
+        [FromQuery(Name = TelegramAuthProperties.Profile.Id)] long id,
+        [FromQuery(Name = TelegramAuthProperties.Profile.FirstName)] string firstName,
+        [FromQuery(Name = TelegramAuthProperties.Profile.AuthDate)] string authDate,
+        [FromQuery(Name = TelegramAuthProperties.Profile.Hash)] string hash,
+        [FromQuery(Name = TelegramAuthProperties.Profile.LastName)] string? lastName,
+        [FromQuery(Name = TelegramAuthProperties.Profile.Username)] string? username,
+        [FromQuery(Name = TelegramAuthProperties.Profile.PhotoUrl)] string? photoUrl,
+        [FromQuery(Name = TelegramAuthProperties.ReturnUrl)] string? returnUrl)
     {
-        if (!await _telegramAuthService.CanLogin(id, firstName, lastName, username, photoUrl, authDate, hash))
-            return BadRequest();
-
-        var principal = new Person(id, firstName, username).ToClaimsPrincipal();
+        var person = await _telegramAuthService.CanLoginAs(
+            id,
+            firstName,
+            lastName,
+            username,
+            photoUrl,
+            authDate,
+            hash);
         
-        await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, principal);
+        if (person is null)
+            return BadRequest();
+        
+        await HttpContext.SignInAsync(ApplicationContext.AuthenticationScheme, person.ToClaimsPrincipal());
         
         return Redirect(DetectTargetUrl(returnUrl));
     }
@@ -78,8 +84,10 @@ public sealed class AccountsController : ControllerBase
 
     private string DetectTargetUrl(string? returnUrl)
     {
+        const string constructorPage = "/constructor";
+        
         if (string.IsNullOrWhiteSpace(returnUrl))
-            return "/constructor";
+            return constructorPage;
 
         var returnUri = new Uri(returnUrl);
         var returnUrlHost = returnUri.IsDefaultPort
@@ -88,6 +96,6 @@ public sealed class AccountsController : ControllerBase
 
         return string.IsNullOrWhiteSpace(returnUrlHost) || returnUrlHost == Request.Host.ToUriComponent()
             ? returnUrl
-            : "/constructor";
+            : constructorPage;
     }
 }
