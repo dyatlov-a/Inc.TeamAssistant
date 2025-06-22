@@ -118,7 +118,7 @@ builder.Services
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication()
 	.AddRandomCoffeeDataAccess()
-	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
+	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds, authOptions.BotId)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
 	.AddTenantsDataAccess(CachePolicies.CacheAbsoluteExpiration)

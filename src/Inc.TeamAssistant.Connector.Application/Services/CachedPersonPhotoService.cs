@@ -3,13 +3,13 @@ using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Inc.TeamAssistant.Connector.Application.Services;
 
-internal sealed class PersonPhotoServiceCache : IPersonPhotoService
+internal sealed class CachedPersonPhotoService : IPersonPhotoService
 {
     private readonly IPersonPhotoService _service;
     private readonly HybridCache _cache;
     private readonly int _cacheDurationInSeconds;
 
-    public PersonPhotoServiceCache(IPersonPhotoService service, HybridCache cache, int cacheDurationInSeconds)
+    public CachedPersonPhotoService(IPersonPhotoService service, HybridCache cache, int cacheDurationInSeconds)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -19,7 +19,7 @@ internal sealed class PersonPhotoServiceCache : IPersonPhotoService
     public async Task<byte[]> GetPersonPhoto(long personId, CancellationToken token)
     {
         return await _cache.GetOrCreateAsync(
-            $"{nameof(PersonPhotoServiceCache)}__{nameof(GetPersonPhoto)}__{personId}",
+            $"{nameof(CachedPersonPhotoService)}__{nameof(GetPersonPhoto)}__{personId}",
             personId,
             async (pId, t) => await _service.GetPersonPhoto(pId, t),
             CreateCacheOptions(),
