@@ -8,5 +8,5 @@ public static class RetroStages
     public const string Discussing = "Discussing";
     public const string Finished = "Finished";
 
-    public static readonly IReadOnlyCollection<string> Stages = [Collecting, Grouping, Prioritizing, Discussing];
+    public static readonly IReadOnlyCollection<string> All = [Collecting, Grouping, Prioritizing, Discussing];
 }

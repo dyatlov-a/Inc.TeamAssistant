@@ -9,7 +9,7 @@
         <div class="inline__dialogs_placeholder"></div>
         <div class="inline__dialogs">
             <AcceptCookieDialogContainer />
-            @DialogSlot
+            @InlineDialogSlot
         </div>
     </main>
     
@@ -18,5 +18,5 @@
 
 @code {
     [Parameter]
-    public RenderFragment? DialogSlot { get; set; }
+    public RenderFragment? InlineDialogSlot { get; set; }
 }

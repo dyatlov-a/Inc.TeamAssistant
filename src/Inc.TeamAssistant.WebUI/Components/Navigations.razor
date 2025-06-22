@@ -32,16 +32,19 @@
 
     private string CssClass(NavigationItem<TValue> value)
     {
+        var builder = new StringBuilder();
+        
         if (value.Selected)
-            return "nav-items__item_active";
-
+            builder.Append("nav-items__item_active ");
+        
         if (value.CanMove)
-            return "nav-items__item_can-move";
+            builder.Append("nav-items__item_can-move ");
 
         var valuePosition = _items.IndexOf(value);
-        return _items.Skip(valuePosition).Any(i => i.Selected)
-            ? "nav-items__item_previous"
-            : string.Empty;
+        if (_items.Skip(valuePosition).Any(i => i.Selected))
+            builder.Append("nav-items__item_previous ");
+
+        return builder.ToString();
     }
 
     private async Task MoveTo(NavigationItem<TValue> item)

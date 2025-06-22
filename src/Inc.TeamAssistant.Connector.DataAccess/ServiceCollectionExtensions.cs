@@ -12,25 +12,52 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         
         services
+            .AddPersonRepository(cacheTimeout)
+            .AddClientLanguageRepository(cacheTimeout)
+                
             .AddSingleton<IIntegrationsAccessor, IntegrationsAccessor>()
             .AddSingleton<ITeamAccessor, TeamAccessor>()
+            .AddSingleton<IPersonAccessor, PersonAccessor>()
             
             .AddSingleton<IBotReader, BotReader>()
             .AddSingleton<ITeamReader, TeamReader>()
             
             .AddSingleton<ITeamRepository, TeamRepository>()
-            .AddSingleton<IDashboardSettingsRepository, DashboardSettingsRepository>()
+            .AddSingleton<IDashboardSettingsRepository, DashboardSettingsRepository>();
+        
+        return services;
+    }
+
+    private static IServiceCollection AddPersonRepository(
+        this IServiceCollection services,
+        TimeSpan cacheTimeout)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
             .AddSingleton<PersonRepository>()
             .AddSingleton<IPersonRepository>(sp => ActivatorUtilities.CreateInstance<CachedPersonRepository>(
                 sp,
                 sp.GetRequiredService<PersonRepository>(),
-                cacheTimeout))
-            .AddSingleton<ClientLanguageRepository>()
-            .AddSingleton<IClientLanguageRepository>(sp => ActivatorUtilities.CreateInstance<CachedClientLanguageRepository>(
-                sp,
-                sp.GetRequiredService<ClientLanguageRepository>(),
                 cacheTimeout));
-        
+
+        return services;
+    }
+    
+    private static IServiceCollection AddClientLanguageRepository(
+        this IServiceCollection services,
+        TimeSpan cacheTimeout)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddSingleton<ClientLanguageRepository>()
+            .AddSingleton<IClientLanguageRepository>(sp =>
+                ActivatorUtilities.CreateInstance<CachedClientLanguageRepository>(
+                    sp,
+                    sp.GetRequiredService<ClientLanguageRepository>(),
+                    cacheTimeout));
+
         return services;
     }
 }

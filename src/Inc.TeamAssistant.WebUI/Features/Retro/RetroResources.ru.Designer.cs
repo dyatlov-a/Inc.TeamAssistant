@@ -69,9 +69,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string ConnectionLost {
+        internal static string ConnectionStateConnecting {
             get {
-                return ResourceManager.GetString("ConnectionLost", resourceCulture);
+                return ResourceManager.GetString("ConnectionStateConnecting", resourceCulture);
             }
         }
         
@@ -147,15 +147,15 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string ActionItemStageDone {
+        internal static string ActionItemStageDoneTitle {
             get {
-                return ResourceManager.GetString("ActionItemStageDone", resourceCulture);
+                return ResourceManager.GetString("ActionItemStageDoneTitle", resourceCulture);
             }
         }
         
-        internal static string ActionItemStageNew {
+        internal static string ActionItemStageNewTitle {
             get {
-                return ResourceManager.GetString("ActionItemStageNew", resourceCulture);
+                return ResourceManager.GetString("ActionItemStageNewTitle", resourceCulture);
             }
         }
         
@@ -414,6 +414,36 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string Participants {
             get {
                 return ResourceManager.GetString("Participants", resourceCulture);
+            }
+        }
+        
+        internal static string ActionsHint {
+            get {
+                return ResourceManager.GetString("ActionsHint", resourceCulture);
+            }
+        }
+        
+        internal static string ActionItemStageNewHint {
+            get {
+                return ResourceManager.GetString("ActionItemStageNewHint", resourceCulture);
+            }
+        }
+        
+        internal static string ActionItemStageDoneHint {
+            get {
+                return ResourceManager.GetString("ActionItemStageDoneHint", resourceCulture);
+            }
+        }
+        
+        internal static string CanNotStartRetro {
+            get {
+                return ResourceManager.GetString("CanNotStartRetro", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateLost {
+            get {
+                return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
             }
         }
     }

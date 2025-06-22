@@ -211,6 +211,6 @@
         if (!BotId.HasValue || _fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
             return;
 
-        await OnValidSubmit.InvokeAsync(_formModel.ToCommand(BotId!.Value));
+        await OnValidSubmit.InvokeAsync(_formModel.ToCommand(BotId.Value));
     }
 }

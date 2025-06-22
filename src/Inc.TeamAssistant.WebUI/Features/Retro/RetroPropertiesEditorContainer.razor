@@ -26,13 +26,22 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback RetroPropertiesChanged { get; set; }
-    
+
+    private Guid _roomId = Guid.Empty;
     private readonly RetroPropertiesFormModel _formModel = new();
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroTemplateDto> _templates = new();
     
-    protected override async Task OnParametersSetAsync() => await Load();
-    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_roomId != RoomId)
+        {
+            _roomId = RoomId;
+            
+            await Load();
+        }
+    }
+
     private async Task Load()
     {
         var result = await RequestProcessor.Process(
@@ -48,7 +57,7 @@
     private async Task Save()
     {
         await RequestProcessor.Process(
-            async () => await RetroService.ChangeRetroProperties(_formModel.ToCommand(RoomId)),
+            async () => await RetroService.ChangeRetroProperties(_formModel.ToCommand(_roomId)),
             _state);
 
         await RetroPropertiesChanged.InvokeAsync();

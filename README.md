@@ -99,11 +99,10 @@ The community looks forward to your contributions.
 - [X] Add second round for code review
 - [X] Add comments to code review
 - [X] Move to .NET9
-- [ ] Add dashboard for retro
+- [X] Add dashboard for retro
 - [ ] Add a feature for team health check
 - [ ] Add telegram messages to story book
 - [ ] Integrate with GitLab (code review)
-- [ ] Split the monolith into separate services
 
 ## Team members
 

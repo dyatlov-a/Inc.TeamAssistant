@@ -15,7 +15,8 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionEventPro
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri(HubDescriptors.AssessmentSessionHub.Endpoint))
-            .WithAutomaticReconnect()
+            .WithAutomaticReconnect(HubRetryPolicy.Default)
+            .ConfigureLogging(c => c.SetMinimumLevel(LogLevel.Error))
             .Build();
 	}
 

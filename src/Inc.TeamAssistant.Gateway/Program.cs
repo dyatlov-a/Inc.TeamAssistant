@@ -22,6 +22,7 @@ using Inc.TeamAssistant.Reviewer.Application;
 using Inc.TeamAssistant.Reviewer.DataAccess;
 using Prometheus;
 using Inc.TeamAssistant.Gateway.Apps;
+using Inc.TeamAssistant.Gateway.Auth;
 using Inc.TeamAssistant.Gateway.Configs;
 using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
@@ -107,7 +108,8 @@ builder.Services
 
 builder.Services
 	.AddHolidays(CachePolicies.CacheAbsoluteExpiration)
-	.AddServices(authOptions, openGraphOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
+	.AddServices(openGraphOptions, builder.Environment.WebRootPath, CachePolicies.CacheAbsoluteExpiration)
+	.AddAuthServices(authOptions)
 	.AddIsomorphicServices()
 	.AddAppraiserApplication(linksOptions.ConnectToDashboardLinkTemplate)
 	.AddAppraiserDataAccess()
@@ -118,7 +120,7 @@ builder.Services
 	.AddReviewerDataAccess()
 	.AddRandomCoffeeApplication()
 	.AddRandomCoffeeDataAccess()
-	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds)
+	.AddConnectorApplication(CachePolicies.UserAvatarCacheDurationInSeconds, authOptions.BotId)
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
 	.AddTenantsDataAccess(CachePolicies.CacheAbsoluteExpiration)

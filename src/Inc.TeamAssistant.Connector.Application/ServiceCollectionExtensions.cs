@@ -24,11 +24,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConnectorApplication(
         this IServiceCollection services,
-        int userAvatarCacheDurationInSeconds)
+        int userAvatarCacheDurationInSeconds,
+        Guid authBotId)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services
+            .AddPersonPhotoService(userAvatarCacheDurationInSeconds, authBotId)
             .AddSingleton<CommandFactory>()
             .AddSingleton<DialogCommandFactory>()
             .AddSingleton<TelegramMessageContextFactory>()
@@ -54,13 +56,6 @@ public static class ServiceCollectionExtensions
                     UpdateType.PollAnswer,
                     UpdateType.EditedMessage]
             })
-
-            .AddSingleton<TelegramPhotoService>()
-            .AddSingleton<IPersonPhotoService>(sp => ActivatorUtilities.CreateInstance<PersonPhotoServiceCache>(
-                sp,
-                sp.GetRequiredService<TelegramPhotoService>(),
-                userAvatarCacheDurationInSeconds))
-
             .AddTransient(typeof(IRequestPostProcessor<,>), typeof(CommandPostProcessor<,>))
 
             .AddSingleton<IChangeTeamPropertyCommandFactory, ChangeTeamPropertyCommandFactory>()
@@ -71,6 +66,23 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ICommandCreator, LeaveFromTeamCommandCreator>()
             .AddSingleton<ICommandCreator, RemoveTeamCommandCreator>();
         
+        return services;
+    }
+
+    private static IServiceCollection AddPersonPhotoService(
+        this IServiceCollection services,
+        int userAvatarCacheDurationInSeconds,
+        Guid authBotId)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddSingleton(sp => ActivatorUtilities.CreateInstance<TelegramPhotoService>(sp, authBotId))
+            .AddSingleton<IPersonPhotoService>(sp => ActivatorUtilities.CreateInstance<CachedPersonPhotoService>(
+                sp,
+                sp.GetRequiredService<TelegramPhotoService>(),
+                userAvatarCacheDurationInSeconds));
+
         return services;
     }
 }

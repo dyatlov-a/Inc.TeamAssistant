@@ -17,48 +17,37 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro;
 internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
-    private readonly ILogger<RetroEventBuilder> _logger;
     private Action? _rerender;
     private Func<Task>? _reload;
 
-    public RetroEventBuilder(NavigationManager navigationManager, ILogger<RetroEventBuilder> logger)
+    public RetroEventBuilder(NavigationManager navigationManager)
     {
         ArgumentNullException.ThrowIfNull(navigationManager);
-
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri(HubDescriptors.RetroHub.Endpoint))
-            .WithAutomaticReconnect()
+            .WithAutomaticReconnect(HubRetryPolicy.Default)
+            .ConfigureLogging(c => c.SetMinimumLevel(LogLevel.Error))
             .Build();
 
-        _hubConnection.Closed += Closed;
-        _hubConnection.Reconnected += Reconnected;
+        _hubConnection.Reconnecting += OnReconnecting;
+        _hubConnection.Closed += OnReconnecting;
+        _hubConnection.Reconnected += OnReconnected;
     }
-    
-    public bool IsDisconnected { get; private set; }
 
-    public async Task<RetroEventBuilder> Start(Action rerender, Func<Task> reload)
+    public HubConnectionState State => _hubConnection.State;
+
+    public RetroEventBuilder AddAccessors(Action rerender, Func<Task> reload)
     {
         _rerender = rerender ?? throw new ArgumentNullException(nameof(rerender));
         _reload = reload ?? throw new ArgumentNullException(nameof(reload));
-        
-        var hasDisconnect = IsDisconnected;
-        
-        try
-        {
-            await _hubConnection.StartAsync();
 
-            IsDisconnected = false;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while starting RetroEventBuilder");
-            
-            IsDisconnected = true;
-        }
+        return this;
+    }
 
-        if (hasDisconnect)
-            await _reload();
+    public async Task<RetroEventBuilder> Start()
+    {
+        await _hubConnection.StartAsync();
 
         return this;
     }
@@ -223,27 +212,24 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.RetroPropertiesChanged), changed);
     }
 
-    private Task Closed(Exception? ex)
+    private Task OnReconnecting(Exception? ex)
     {
-        IsDisconnected = true;
-
         _rerender?.Invoke();
         
         return Task.CompletedTask;
     }
     
-    private async Task Reconnected(string? connectionId)
+    private async Task OnReconnected(string? connectionId)
     {
-        IsDisconnected = false;
-
         if (_reload is not null)
             await _reload();
     }
 
     public async ValueTask DisposeAsync()
     {
-        _hubConnection.Closed -= Closed;
-        _hubConnection.Reconnected -= Reconnected;
+        _hubConnection.Reconnecting -= OnReconnecting;
+        _hubConnection.Closed -= OnReconnecting;
+        _hubConnection.Reconnected -= OnReconnected;
 
         if (_hubConnection.State == HubConnectionState.Connected)
             await _hubConnection.StopAsync();

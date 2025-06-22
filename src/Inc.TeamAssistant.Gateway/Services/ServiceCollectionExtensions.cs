@@ -16,25 +16,22 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServices(
         this IServiceCollection services,
-        AuthOptions authOptions,
         OpenGraphOptions openGraphOptions,
         string webRootPath,
         TimeSpan cacheTimeout)
 	{
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(authOptions);
         ArgumentNullException.ThrowIfNull(openGraphOptions);
         ArgumentException.ThrowIfNullOrWhiteSpace(webRootPath);
         
-        services
-            .TryAddScoped<IWebAssemblyHostEnvironment, ServerHostEnvironment>();
+        services.TryAddScoped<IWebAssemblyHostEnvironment, ServerHostEnvironment>();
 
         services
-            .AddSingleton(authOptions)
+            .AddQuickResponseCodeGenerator(cacheTimeout)
+                
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
             .AddSingleton<IRenderContext, ServerRenderContext>()
-            .AddScoped<TelegramAuthService>()
             .AddScoped<EstimatesService>()
             .AddScoped<IntegrationContextProvider>()
             .AddScoped<IAppraiserService, AppraiserService>()
@@ -49,12 +46,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRetroService, RetroService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
-            .AddSingleton<QuickResponseCodeGenerator>()
-            .AddSingleton<IQuickResponseCodeGenerator>(sp =>
-                ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
-                    sp,
-                    sp.GetRequiredService<QuickResponseCodeGenerator>(),
-                    cacheTimeout))
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
@@ -68,4 +59,21 @@ public static class ServiceCollectionExtensions
 
         return services;
 	}
+
+    private static IServiceCollection AddQuickResponseCodeGenerator(
+        this IServiceCollection services,
+        TimeSpan cacheTimeout)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddSingleton<QuickResponseCodeGenerator>()
+            .AddSingleton<IQuickResponseCodeGenerator>(sp =>
+                ActivatorUtilities.CreateInstance<QuickResponseCodeGeneratorCached>(
+                    sp,
+                    sp.GetRequiredService<QuickResponseCodeGenerator>(),
+                    cacheTimeout));
+        
+        return services;
+    }
 }

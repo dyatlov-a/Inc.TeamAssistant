@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Inc.TeamAssistant.Connector.Application.Contracts;
 using Inc.TeamAssistant.Primitives.Bots;
+using Inc.TeamAssistant.Primitives.Extensions;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -39,8 +40,8 @@ internal sealed class TelegramBotListeners : IBotListeners
         try
         {
             var listener = CancellationTokenSource.CreateLinkedTokenSource(token);
-            var bot = await _botReader.Find(botId, DateTimeOffset.UtcNow, listener.Token);
-            var client = new TelegramBotClient(bot!.Token);
+            var bot = await botId.Required((k, t) => _botReader.Find(k, DateTimeOffset.UtcNow, t), listener.Token);
+            var client = new TelegramBotClient(bot.Token);
             var handler = _updateHandlerFactory.Create(botId);
             
             client.StartReceiving(handler, _receiverOptions, cancellationToken: listener.Token);

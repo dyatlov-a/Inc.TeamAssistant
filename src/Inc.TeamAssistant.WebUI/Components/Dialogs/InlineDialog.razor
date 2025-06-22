@@ -4,9 +4,12 @@
         <div class="inline-dialog__content">
             <p>@Text</p>
         </div>
-        <div class="inline-dialog__actions">
-            <Button OnClick="OnAction">@ButtonText</Button>
-        </div>
+        @if (HasAction)
+        {
+            <div class="inline-dialog__actions">
+                <Button OnClick="OnAction">@ButtonText</Button>
+            </div>
+        }
     </div>
 }
 
@@ -16,6 +19,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsOpen { get; set; }
+    
+    /// <summary>
+    /// Has action button.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasAction { get; set; }
     
     /// <summary>
     /// MessageId for localization.

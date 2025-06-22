@@ -30,8 +30,8 @@
     <data name="PrioritizingText" xml:space="preserve">
         <value>We are now at the prioritization stage. Review the grouped cards and vote for the ones you believe are the most important to discuss. You can distribute your votes across different cards or assign multiple votes to a single one. This will help us focus on the most meaningful topics during the retrospective.</value>
     </data>
-    <data name="ConnectionLost" xml:space="preserve">
-        <value>Connection lost</value>
+    <data name="ConnectionStateConnecting" xml:space="preserve">
+        <value>Establishing connection to the server...</value>
     </data>
     <data name="Reconnect" xml:space="preserve">
         <value>Reconnect</value>
@@ -69,10 +69,10 @@
     <data name="Actions" xml:space="preserve">
         <value>Actions</value>
     </data>
-    <data name="ActionItemStageNew" xml:space="preserve">
-        <value>TODO</value>
+    <data name="ActionItemStageNewTitle" xml:space="preserve">
+        <value>To-do</value>
     </data>
-    <data name="ActionItemStageDone" xml:space="preserve">
+    <data name="ActionItemStageDoneTitle" xml:space="preserve">
         <value>Done</value>
     </data>
     <data name="TimerStart" xml:space="preserve">
@@ -204,5 +204,20 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="Participants" xml:space="preserve">
         <value>Participants</value>
+    </data>
+    <data name="ActionsHint" xml:space="preserve">
+        <value>Write a specific action with an owner and a deadline — not an idea, but a step.</value>
+    </data>
+    <data name="ActionItemStageDoneHint" xml:space="preserve">
+        <value>Action items that are closed.</value>
+    </data>
+    <data name="ActionItemStageNewHint" xml:space="preserve">
+        <value>Action item from retro — clear, doable, with owner and deadline.</value>
+    </data>
+    <data name="CanNotStartRetro" xml:space="preserve">
+        <value>To start the retro, you need to register at least one card</value>
+    </data>
+    <data name="ConnectionStateLost" xml:space="preserve">
+        <value>Connection lost.</value>
     </data>
 </root>
