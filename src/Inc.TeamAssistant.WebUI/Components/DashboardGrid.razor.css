@@ -12,7 +12,7 @@
 .dashboard-grid-content {
     flex-grow: 1;
 }
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
     .dashboard-grid {
         display: block;
     }
