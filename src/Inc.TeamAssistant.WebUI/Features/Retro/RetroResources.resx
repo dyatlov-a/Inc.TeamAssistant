@@ -184,13 +184,13 @@
         <value>Retro type</value>
     </data>
     <data name="RetroTypeHidden" xml:space="preserve">
-        <value>Hidden</value>
+        <value>The item text is hidden from participants</value>
     </data>
     <data name="RetroTypeClosed" xml:space="preserve">
-        <value>Closed</value>
+        <value>The presence of items is hidden from participants</value>
     </data>
     <data name="RetroTypeOpened" xml:space="preserve">
-        <value>Opened</value>
+        <value>The item text is visible to all participants</value>
     </data>
     <data name="BacklogText" xml:space="preserve">
         <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.
@@ -219,5 +219,17 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Connection lost.</value>
+    </data>
+    <data name="VoteByItemCountField" xml:space="preserve">
+        <value>Maximum number of votes per item</value>
+    </data>
+    <data name="VotePropertiesSectionTitle" xml:space="preserve">
+        <value>Vote properties</value>
+    </data>
+    <data name="VotePropertiesSectionHelp" xml:space="preserve">
+        <value>Please configure vote properties</value>
+    </data>
+    <data name="VotesCount" xml:space="preserve">
+        <value>Votes count:</value>
     </data>
 </root>

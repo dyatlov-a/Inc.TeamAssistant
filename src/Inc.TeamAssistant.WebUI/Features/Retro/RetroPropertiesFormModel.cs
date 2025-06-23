@@ -8,6 +8,7 @@ public sealed class RetroPropertiesFormModel
     public Guid TemplateId { get; private set; }
     public TimeSpan TimerDuration { get; private set; }
     public int VoteCount { get; private set; }
+    public int VoteByItemCount { get; private set; }
     public string RetroType { get; private set; } = default!;
     
     public RetroPropertiesFormModel ChangeTemplate(Guid value)
@@ -27,6 +28,16 @@ public sealed class RetroPropertiesFormModel
     public RetroPropertiesFormModel ChangeVoteCount(int value)
     {
         VoteCount = value;
+
+        if (VoteByItemCount > value)
+            ChangeVoteByItemCount(value);
+        
+        return this;
+    }
+    
+    public RetroPropertiesFormModel ChangeVoteByItemCount(int value)
+    {
+        VoteByItemCount = value;
         
         return this;
     }
@@ -43,9 +54,10 @@ public sealed class RetroPropertiesFormModel
         ArgumentNullException.ThrowIfNull(model);
         
         TemplateId = model.TemplateId;
+        RetroType = model.RetroType;
         TimerDuration = model.TimerDuration;
         VoteCount = model.VoteCount;
-        RetroType = model.RetroType;
+        VoteByItemCount = model.VoteByItemCount;
         
         return this;
     }
@@ -57,6 +69,7 @@ public sealed class RetroPropertiesFormModel
             TemplateId,
             TimerDuration,
             VoteCount,
+            VoteByItemCount,
             RetroType);
     }
 }

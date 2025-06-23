@@ -34,6 +34,7 @@ internal sealed class ChangeRetroPropertiesCommandHandler : IRequestHandler<Chan
             TemplateId = command.TemplateId,
             TimerDuration = command.TimerDuration,
             VoteCount = command.VoteCount,
+            VoteByItemCount = command.VoteByItemCount,
             RetroType = string.IsNullOrWhiteSpace(command.RetroType)
                 ? null
                 : Enum.Parse<RetroTypes>(command.RetroType, ignoreCase: true)

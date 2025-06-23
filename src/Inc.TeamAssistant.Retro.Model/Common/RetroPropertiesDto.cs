@@ -7,6 +7,7 @@ public sealed record RetroPropertiesDto(
     Guid TemplateId,
     TimeSpan TimerDuration,
     int VoteCount,
+    int VoteByItemCount,
     string RetroType)
     : IWithEmpty<RetroPropertiesDto>
 {
@@ -15,5 +16,6 @@ public sealed record RetroPropertiesDto(
         TemplateId: Guid.Empty,
         TimerDuration: TimeSpan.Zero,
         VoteCount: 0,
+        VoteByItemCount: 0,
         RetroType: string.Empty);
 }

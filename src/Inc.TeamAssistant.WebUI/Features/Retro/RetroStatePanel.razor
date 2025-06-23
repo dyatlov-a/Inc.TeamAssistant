@@ -82,6 +82,12 @@
     public bool IsDiscussing { get; set; }
     
     /// <summary>
+    /// Current user identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
     /// Is facilitator flag.
     /// </summary>
     [Parameter, EditorRequired]
@@ -127,13 +133,13 @@
     /// Finish action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback Finished { get; set; }
+    public EventCallback<long> Finished { get; set; }
     
     /// <summary>
     /// Hand raised action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback HandRaised { get; set; }
+    public EventCallback<long> HandRaised { get; set; }
     
     /// <summary>
     /// Facilitator given action.
@@ -229,10 +235,10 @@
     }
 
     private async Task OnRetroPropertiesOpened() => await RetroPropertiesOpened.InvokeAsync();
-    private async Task OnMoveToPrevious() => await MovePrevious.InvokeAsync();
-    private async Task MoveToFinish() => await Finished.InvokeAsync();
-    private async Task RaiseHand() => await HandRaised.InvokeAsync();
     private async Task OnMoveNext() => await MoveNext.InvokeAsync();
+    private async Task OnMoveToPrevious() => await MovePrevious.InvokeAsync();
+    private async Task MoveToFinish() => await Finished.InvokeAsync(CurrentUserId);
+    private async Task RaiseHand() => await HandRaised.InvokeAsync(CurrentUserId);
 
     public void Dispose() => TryStopTimer();
 }

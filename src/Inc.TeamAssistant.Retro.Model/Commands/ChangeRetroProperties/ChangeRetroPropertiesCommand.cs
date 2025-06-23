@@ -8,6 +8,7 @@ public sealed record ChangeRetroPropertiesCommand(
     Guid? TemplateId,
     TimeSpan? TimerDuration,
     int? VoteCount,
+    int? VoteByItemCount,
     string? RetroType)
     : IRequest
 {
@@ -19,6 +20,7 @@ public sealed record ChangeRetroPropertiesCommand(
             TemplateId: null,
             TimerDuration: null,
             VoteCount: null,
+            VoteByItemCount: null,
             RetroType: string.Empty);
     }
     
@@ -27,6 +29,7 @@ public sealed record ChangeRetroPropertiesCommand(
         Guid templateId,
         TimeSpan timerDuration,
         int voteCount,
+        int voteByItemCount,
         string retroType)
     {
         return new ChangeRetroPropertiesCommand(
@@ -35,6 +38,7 @@ public sealed record ChangeRetroPropertiesCommand(
             templateId,
             timerDuration,
             voteCount,
+            voteByItemCount,
             retroType);
     }
 }

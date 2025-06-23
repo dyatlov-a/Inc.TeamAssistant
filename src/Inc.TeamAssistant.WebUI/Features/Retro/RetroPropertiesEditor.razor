@@ -30,6 +30,22 @@
                     ValueChanged="@((string v) => FormModel.ChangeRetroType(v))" />
             </FormFieldSet>
             <FormFieldSet
+                FieldId="timer-duration"
+                Label="@Localizer["TimerDurationField"]">
+                <InputSelectList
+                    FieldId="timer-duration"
+                    Items="_timerDurations"
+                    TitleSelector="@(t => string.Format(Localizer["TimerDurationTemplate"], t))"
+                    ValueSelector="@(t => TimeSpan.FromMinutes(t))"
+                    Value="FormModel.TimerDuration"
+                    ValueExpression="@(() => FormModel.TimerDuration)"
+                    ValueChanged="@((TimeSpan v) => FormModel.ChangeTimerDuration(v))" />
+            </FormFieldSet>
+        </FormSection>
+        <FormSection
+            Title="@Localizer["VotePropertiesSectionTitle"]"
+            HelpText="@Localizer["VotePropertiesSectionHelp"]">
+            <FormFieldSet
                 FieldId="vote-count"
                 Label="@Localizer["VoteCountField"]">
                 <InputSelectList
@@ -42,16 +58,16 @@
                     ValueChanged="@((int v) => FormModel.ChangeVoteCount(v))" />
             </FormFieldSet>
             <FormFieldSet
-                FieldId="timer-duration"
-                Label="@Localizer["TimerDurationField"]">
+                FieldId="vote-by-item-count"
+                Label="@Localizer["VoteByItemCountField"]">
                 <InputSelectList
-                    FieldId="timer-duration"
-                    Items="_timerDurations"
-                    TitleSelector="@(t => string.Format(Localizer["TimerDurationTemplate"], t))"
-                    ValueSelector="@(t => TimeSpan.FromMinutes(t))"
-                    Value="FormModel.TimerDuration"
-                    ValueExpression="@(() => FormModel.TimerDuration)"
-                    ValueChanged="@((TimeSpan v) => FormModel.ChangeTimerDuration(v))" />
+                    FieldId="vote-by-item-count"
+                    Items="VotesByItem"
+                    TitleSelector="@(t => t.ToString())"
+                    ValueSelector="t => t"
+                    Value="FormModel.VoteByItemCount"
+                    ValueExpression="@(() => FormModel.VoteByItemCount)"
+                    ValueChanged="@((int v) => FormModel.ChangeVoteByItemCount(v))" />
             </FormFieldSet>
         </FormSection>
     </Loading>
@@ -91,8 +107,9 @@
     [Parameter, EditorRequired]
     public EventCallback OnValidSubmit { get; set; }
 
-    private readonly IReadOnlyCollection<int> _timerDurations = [5, 10, 15];
+    private readonly IReadOnlyCollection<int> _timerDurations = [1, 2, 3, 4, 5, 10, 15, 30];
     private readonly IReadOnlyCollection<int> _votes = Enumerable.Range(1, 10).ToArray();
+    private IReadOnlyCollection<int> VotesByItem => _votes.Where(v => v <= FormModel.VoteCount).ToArray();
     
     private EditContext? _editContext;
 

@@ -35,6 +35,7 @@
                 ActionItems="_actionItems"
                 Participants="Participants"
                 VotesTotal="_retroProperties.VoteCount"
+                VoteByItemCount="_retroProperties.VoteByItemCount"
                 TimerDuration="_retroProperties.TimerDuration"
                 RetroType="@_retroProperties.RetroType"
                 CurrentTimer="_currentTimer"
@@ -84,9 +85,6 @@
     
     [Parameter]
     public Guid? ItemId { get; set; }
-    
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
     
     private LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)>? _currentItem;
     private RetroEventBuilder? _eventBuilder;
@@ -527,27 +525,21 @@
         await _eventBuilder.SetVotes(new SetVotesCommand(RoomId, _activeSession.Id, votesByPerson));
     }
 
-    private async Task OnFinished()
+    private async Task OnFinished(long personId)
     {
         if (_eventBuilder is null)
             return;
 
-        var authenticationState = await AuthenticationStateTask;
-        var currentUser = authenticationState.User.ToPerson();
-
-        if (_participants.TryGetValue(currentUser.Id, out var participant))
+        if (_participants.TryGetValue(personId, out var participant))
             await _eventBuilder.SetRetroState(participant.ChangeFinished(!participant.Finished).ToCommand(RoomId));
     }
 
-    private async Task OnHandRaised()
+    private async Task OnHandRaised(long personId)
     {
         if (_eventBuilder is null)
             return;
 
-        var authenticationState = await AuthenticationStateTask;
-        var currentUser = authenticationState.User.ToPerson();
-
-        if (_participants.TryGetValue(currentUser.Id, out var participant))
+        if (_participants.TryGetValue(personId, out var participant))
             await _eventBuilder.SetRetroState(participant.ChangeHandRaised(!participant.HandRaised).ToCommand(RoomId));
     }
 

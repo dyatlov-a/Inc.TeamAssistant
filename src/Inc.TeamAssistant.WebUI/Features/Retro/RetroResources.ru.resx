@@ -169,19 +169,19 @@
         <value>Свойства ретро</value>
     </data>
     <data name="RetroPropertiesSectionHelp" xml:space="preserve">
-        <value>Пожалуйста, укажите свойства</value>
+        <value>Пожалуйста, укажите свойства для проведения ретро</value>
     </data>
     <data name="RetroTypeField" xml:space="preserve">
         <value>Способ проведения ретро</value>
     </data>
     <data name="RetroTypeClosed" xml:space="preserve">
-        <value>Скрыто наличие карточек</value>
+        <value>Наличие элементов не видно участникам</value>
     </data>
     <data name="RetroTypeHidden" xml:space="preserve">
-        <value>Текст карточек скрыт</value>
+        <value>Текст элементов не виден участникам</value>
     </data>
     <data name="RetroTypeOpened" xml:space="preserve">
-        <value>Все карточки открыты</value>
+        <value>Текст элементов виден всем участникам</value>
     </data>
     <data name="ColumnToDiscussDescription" xml:space="preserve">
         <value>Задачи, вопросы или темы, которые ещё не обсуждались. Ожидают рассмотрения на ближайшем собрании или в ходе диалога.</value>
@@ -218,5 +218,17 @@
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Соединение потеряно.</value>
+    </data>
+    <data name="VoteByItemCountField" xml:space="preserve">
+        <value>Максимальное количество голосов на элемент</value>
+    </data>
+    <data name="VotePropertiesSectionTitle" xml:space="preserve">
+        <value>Свойства голосования</value>
+    </data>
+    <data name="VotePropertiesSectionHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите свойства для проведения голосования</value>
+    </data>
+    <data name="VotesCount" xml:space="preserve">
+        <value>Кол-во голосов:</value>
     </data>
 </root>

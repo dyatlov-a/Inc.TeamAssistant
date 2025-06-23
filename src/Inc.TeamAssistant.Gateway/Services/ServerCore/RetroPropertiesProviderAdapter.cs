@@ -32,6 +32,8 @@ internal sealed class RetroPropertiesProviderAdapter : IRetroPropertiesProvider
             newProperties.TimerDuration = properties.TimerDuration.Value;
         if (properties.VoteCount.HasValue)
             newProperties.VoteCount = properties.VoteCount.Value;
+        if (properties.VoteByItemCount.HasValue)
+            newProperties.VoteByItemCount = properties.VoteByItemCount.Value;
         if (properties.RetroType.HasValue)
             newProperties.RetroType = properties.RetroType.Value;
 

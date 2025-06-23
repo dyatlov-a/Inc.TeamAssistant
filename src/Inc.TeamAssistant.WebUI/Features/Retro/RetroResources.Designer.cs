@@ -446,5 +446,29 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
             }
         }
+        
+        internal static string VoteByItemCountField {
+            get {
+                return ResourceManager.GetString("VoteByItemCountField", resourceCulture);
+            }
+        }
+        
+        internal static string VotePropertiesSectionTitle {
+            get {
+                return ResourceManager.GetString("VotePropertiesSectionTitle", resourceCulture);
+            }
+        }
+        
+        internal static string VotePropertiesSectionHelp {
+            get {
+                return ResourceManager.GetString("VotePropertiesSectionHelp", resourceCulture);
+            }
+        }
+        
+        internal static string VotesCount {
+            get {
+                return ResourceManager.GetString("VotesCount", resourceCulture);
+            }
+        }
     }
 }
