@@ -1,0 +1,32 @@
+@attribute [Stories("Components/Forms/InputVoting")]
+
+<Stories TComponent="InputVoting" Layout="typeof(DarkLayout)">
+    <Story Name="CanVote">
+        <Template>
+            <InputVoting
+                VotesTotal="5"
+                RemainingVotes="5"
+                CanVote="true"
+                Value="CanVoteValue"
+                ValueExpression="() => CanVoteValue"
+                ValueChanged="@((int v) => CanVoteValue = v)" />
+        </Template>
+    </Story>
+    <Story Name="CanNotVote">
+        <Template>
+            <InputVoting
+                VotesTotal="6"
+                RemainingVotes="6"
+                CanVote="false"
+                Value="CanNotVoteValue"
+                ValueExpression="() => CanNotVoteValue"
+                ValueChanged="@((int v) => CanNotVoteValue = v)" />
+        </Template>
+    </Story>
+</Stories>
+
+@code {
+    private int CanVoteValue { get; set; } = 2;
+    
+    private int CanNotVoteValue { get; set; } = 3;
+}
