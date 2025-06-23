@@ -14,7 +14,12 @@ internal sealed class ActionItemReader : IActionItemReader
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<ActionItem>> Read(Guid roomId, CancellationToken token)
+    public async Task<IReadOnlyCollection<ActionItem>> Read(
+        Guid roomId,
+        ActionItemState state,
+        Guid? lastItemId,
+        int pageSize,
+        CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -27,11 +32,16 @@ internal sealed class ActionItemReader : IActionItemReader
                 ai.modified as modified
             FROM retro.action_items AS ai
             JOIN retro.retro_items AS ri ON ai.retro_item_id = ri.id
-            WHERE ri.room_id = @room_id;
+            WHERE ri.room_id = @room_id AND ai.state = @state AND (@last_item_id IS NULL OR ai.id > @last_item_id)
+            ORDER BY COALESCE(ai.modified, ai.created) DESC
+            LIMIT @limit;
             """,
             new
             {
-                room_id = roomId
+                room_id = roomId,
+                state = (int)state,
+                last_item_id = lastItemId,
+                limit = pageSize
             },
             flags: CommandFlags.None,
             cancellationToken: token);

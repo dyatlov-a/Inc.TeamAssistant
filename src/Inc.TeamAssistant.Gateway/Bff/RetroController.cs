@@ -47,10 +47,10 @@ public sealed class RetroController : ControllerBase
         return Ok();
     }
     
-    [HttpGet("{roomId:Guid}/actions")]
-    public async Task<IActionResult> GetActionItems(Guid roomId, CancellationToken token)
+    [HttpGet("{roomId:Guid}/actions/{pageSize:int}")]
+    public async Task<IActionResult> GetActionItems(Guid roomId, int pageSize, CancellationToken token)
     {
-        return Ok(await _retroService.GetActionItems(roomId, token));
+        return Ok(await _retroService.GetActionItems(roomId, pageSize, token));
     }
     
     [HttpPut("actions")]

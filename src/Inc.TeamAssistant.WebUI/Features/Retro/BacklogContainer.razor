@@ -31,6 +31,7 @@
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<ActionItemViewModel> _actionItems = new();
+    private const int PageSize = 10;
     private long? _facilitatorId;
     
     protected override async Task OnParametersSetAsync() => await Load();
@@ -40,7 +41,7 @@
         await TenantStore.Initialize(RoomId, _state);
         
         var result = await RequestProcessor.Process(
-            async () => await RetroService.GetActionItems(RoomId),
+            async () => await RetroService.GetActionItems(RoomId, PageSize),
             nameof(BacklogContainer),
             _state);
 

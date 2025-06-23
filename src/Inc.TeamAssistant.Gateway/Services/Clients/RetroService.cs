@@ -40,9 +40,9 @@ internal sealed class RetroService : IRetroService
         await _mediator.Send(command, token);
     }
 
-    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
+    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, int pageSize, CancellationToken token)
     {
-        return await _mediator.Send(new GetActionItemsQuery(teamId), token);
+        return await _mediator.Send(new GetActionItemsQuery(teamId, pageSize), token);
     }
 
     public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)

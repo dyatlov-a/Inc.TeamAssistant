@@ -18,7 +18,7 @@ public interface IRetroService
     
     Task MoveToNextRetroState(MoveToNextRetroStateCommand command, CancellationToken token = default);
 
-    Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token = default);
+    Task<GetActionItemsResult> GetActionItems(Guid teamId, int pageSize, CancellationToken token = default);
     
     Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token = default);
     

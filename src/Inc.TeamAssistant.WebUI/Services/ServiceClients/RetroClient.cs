@@ -51,9 +51,11 @@ internal sealed class RetroClient : IRetroService
         await response.HandleValidation(token);
     }
 
-    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
+    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, int pageSize, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/{teamId:N}/actions", token);
+        var result = await _client.GetFromJsonAsync<GetActionItemsResult>(
+            $"retro/{teamId:N}/actions/{pageSize}",
+            token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
