@@ -470,5 +470,17 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("VotesCount", resourceCulture);
             }
         }
+        
+        internal static string ActionItemStagePinnedTitle {
+            get {
+                return ResourceManager.GetString("ActionItemStagePinnedTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ActionItemStagePinnedHint {
+            get {
+                return ResourceManager.GetString("ActionItemStagePinnedHint", resourceCulture);
+            }
+        }
     }
 }

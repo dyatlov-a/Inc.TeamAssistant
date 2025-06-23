@@ -1,8 +1,13 @@
 .action-item {
     padding: .5rem;
+}
+.action-item_new {
     background-color: var(--accent-color);
 }
 .action-item_done {
+    background-color: var(--block-primary-color);
+}
+.action-item_pinned {
     background-color: var(--message-valid-color);
 }
 .action-item__actions {

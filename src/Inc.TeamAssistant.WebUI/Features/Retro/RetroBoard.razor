@@ -79,8 +79,8 @@
                                             <div>
                                                 <RetroItem
                                                     @key="item.Id"
-                                                    CanView="@(CanView(item))"
-                                                    CanEdit="@(CanEdit(item))"
+                                                    CanView="CanView(item)"
+                                                    CanEdit="CanEdit(item)"
                                                     CanRemove="@(CanRemove(item) && !hasChildren)"
                                                     CanMove="CanMove"
                                                     BackgroundColor="@column.Color"
@@ -109,15 +109,15 @@
                                                 {
                                                     <RetroItem
                                                         @key="child.Id"
-                                                        CanView="@(CanView(child))"
+                                                        CanView="CanView(child)"
                                                         CanEdit="false"
-                                                        CanRemove="@(CanRemove(child))"
+                                                        CanRemove="CanRemove(child)"
                                                         CanMove="false"
                                                         BackgroundColor="@column.Color"
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="@(_ => { })"
                                                         Value="child"
-                                                        ValueChanged="_ => { }"/>
+                                                        ValueChanged="@(_ => { })"/>
                                                 }
                                             </div>
                                         }

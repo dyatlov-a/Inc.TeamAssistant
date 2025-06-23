@@ -231,4 +231,10 @@
     <data name="VotesCount" xml:space="preserve">
         <value>Кол-во голосов:</value>
     </data>
+    <data name="ActionItemStagePinnedTitle" xml:space="preserve">
+        <value>Командные соглашения</value>
+    </data>
+    <data name="ActionItemStagePinnedHint" xml:space="preserve">
+        <value>Здесь фиксируются общие договорённости команды: правила взаимодействия, форматы встреч, рабочие часы, нормы обратной связи и другие важные принципы.</value>
+    </data>
 </root>

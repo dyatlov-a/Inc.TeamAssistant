@@ -12,8 +12,11 @@
     @if (CanMoveToState)
     {
         <div class="action-item__actions">
-            <Button ButtonMode="ButtonMode.Small" OnClick="OnStateChanged">
+            <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToDone">
                 <CheckIcon Size="20px" />
+            </Button>
+            <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToPinned">
+                <PaperclipIcon Size="20px" />
             </Button>
         </div>
     }
@@ -77,7 +80,13 @@
     public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
 
     private DateTimeOffset Date => Value.Modified ?? Value.Created;
-    private string CssClass => Value.State == ActionItemStages.Done ? "action-item_done" : string.Empty;
+
+    private string CssClass => Value.State switch
+    {
+        ActionItemStages.New => "action-item_new",
+        ActionItemStages.Done => "action-item_done",
+        _ => "action-item_pinned"
+    };
     
     private ConfirmDialog? _confirmDialog;
     
@@ -102,5 +111,6 @@
             await ItemRemoved.InvokeAsync(Value);
     }
     
-    private async Task OnStateChanged() => await ValueChanged.InvokeAsync(Value.MoveToDone());
+    private async Task OnMoveToDone() => await ValueChanged.InvokeAsync(Value.MoveToDone());
+    private async Task OnMoveToPinned() => await ValueChanged.InvokeAsync(Value.MoveToPinned());
 }

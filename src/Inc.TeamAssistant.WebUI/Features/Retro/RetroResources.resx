@@ -232,4 +232,10 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     <data name="VotesCount" xml:space="preserve">
         <value>Votes count:</value>
     </data>
+    <data name="ActionItemStagePinnedTitle" xml:space="preserve">
+        <value>Team agreements</value>
+    </data>
+    <data name="ActionItemStagePinnedHint" xml:space="preserve">
+        <value>Here we capture the team’s shared agreements: interaction rules, meeting formats, working hours, feedback norms, and other important principles.</value>
+    </data>
 </root>
