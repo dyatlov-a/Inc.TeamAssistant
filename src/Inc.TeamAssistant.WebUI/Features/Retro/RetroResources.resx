@@ -238,4 +238,7 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     <data name="ActionItemStagePinnedHint" xml:space="preserve">
         <value>Here we capture the team’s shared agreements: interaction rules, meeting formats, working hours, feedback norms, and other important principles.</value>
     </data>
+    <data name="More" xml:space="preserve">
+        <value>More</value>
+    </data>
 </root>

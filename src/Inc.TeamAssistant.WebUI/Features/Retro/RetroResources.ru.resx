@@ -237,4 +237,7 @@
     <data name="ActionItemStagePinnedHint" xml:space="preserve">
         <value>Здесь фиксируются общие договорённости команды: правила взаимодействия, форматы встреч, рабочие часы, нормы обратной связи и другие важные принципы.</value>
     </data>
+    <data name="More" xml:space="preserve">
+        <value>Еще</value>
+    </data>
 </root>

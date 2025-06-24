@@ -9,5 +9,8 @@ internal sealed class GetActionItemsQueryValidator : AbstractValidator<GetAction
     {
         RuleFor(q => q.RoomId)
             .NotEmpty();
+
+        RuleFor(q => q.Limit)
+            .GreaterThan(0);
     }
 }

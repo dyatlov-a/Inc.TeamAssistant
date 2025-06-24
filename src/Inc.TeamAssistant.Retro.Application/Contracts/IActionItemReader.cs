@@ -7,7 +7,7 @@ public interface IActionItemReader
     Task<IReadOnlyCollection<ActionItem>> Read(
         Guid roomId,
         ActionItemState state,
-        Guid? lastItemId,
-        int pageSize,
+        int offset,
+        int limit,
         CancellationToken token);
 }

@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
+using Inc.TeamAssistant.Retro.Model.Queries.GetActionItemsHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroTemplates;
@@ -21,9 +22,9 @@ internal sealed class RetroService : IRetroService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token)
+    public async Task<GetRetroStateResult> GetRetroState(Guid roomId, CancellationToken token)
     {
-        return await _mediator.Send(new GetRetroStateQuery(teamId), token);
+        return await _mediator.Send(new GetRetroStateQuery(roomId), token);
     }
 
     public async Task StartRetro(StartRetroCommand command, CancellationToken token)
@@ -40,9 +41,21 @@ internal sealed class RetroService : IRetroService
         await _mediator.Send(command, token);
     }
 
-    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, int pageSize, CancellationToken token)
+    public async Task<GetActionItemsResult> GetActionItems(Guid roomId, int limit, CancellationToken token)
     {
-        return await _mediator.Send(new GetActionItemsQuery(teamId, pageSize), token);
+        return await _mediator.Send(new GetActionItemsQuery(roomId, limit), token);
+    }
+
+    public async Task<GetActionItemsHistoryResult> GetActionItemsHistory(
+        Guid roomId,
+        string state,
+        int offset,
+        int limit,
+        CancellationToken token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(state);
+        
+        return await _mediator.Send(new GetActionItemsHistoryQuery(roomId, state, offset, limit), token);
     }
 
     public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)

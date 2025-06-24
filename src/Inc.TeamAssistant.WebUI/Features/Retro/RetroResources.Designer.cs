@@ -482,5 +482,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("ActionItemStagePinnedHint", resourceCulture);
             }
         }
+        
+        internal static string More {
+            get {
+                return ResourceManager.GetString("More", resourceCulture);
+            }
+        }
     }
 }
