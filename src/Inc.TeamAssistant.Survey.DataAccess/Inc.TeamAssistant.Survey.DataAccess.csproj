@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Inc.TeamAssistant.Survey.Application\Inc.TeamAssistant.Survey.Application.csproj" />
+  </ItemGroup>
+</Project>
