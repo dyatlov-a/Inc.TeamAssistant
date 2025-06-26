@@ -302,7 +302,7 @@
             {
                 await InvokeAsync(async () =>
                 {
-                    if (_retroProperties.TemplateId == p.TemplateId && _retroProperties.RetroType == p.RetroType)
+                    if (_retroProperties.RetroTemplateId == p.RetroTemplateId && _retroProperties.RetroType == p.RetroType)
                     {
                         _retroProperties = p;
                         StateHasChanged();

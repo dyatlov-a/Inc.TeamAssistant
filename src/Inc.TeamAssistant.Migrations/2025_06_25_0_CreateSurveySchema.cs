@@ -41,10 +41,7 @@ public sealed class CreateSurveySchema : Migration
             .PrimaryKey("survey_templates__pk__id")
 
             .WithColumn("name")
-            .AsString(255).NotNullable()
-
-            .WithColumn("description")
-            .AsString(2000).NotNullable()
+            .AsString(50).NotNullable()
 
             .WithColumn("question_ids")
             .AsCustom("jsonb").NotNullable();
@@ -93,6 +90,15 @@ public sealed class CreateSurveySchema : Migration
             
             .WithColumn("answers")
             .AsCustom("jsonb").NotNullable();
+        
+        Execute.Sql(
+            """
+            INSERT INTO survey.templates (id, name, question_ids)
+            VALUES
+                ('6c9b2eef-b7ce-4e13-b866-1a0cd743c6b3', 'SurveyTemplateSpotifyHealthCheck', '[]'::JSONB),
+                ('24038309-ba36-4838-adf6-315dfa3cf94b', 'SurveyTemplateRemoteTeamHappiness', '[]'::JSONB);
+            """,
+            "Set default templates");
     }
 
     public override void Down()

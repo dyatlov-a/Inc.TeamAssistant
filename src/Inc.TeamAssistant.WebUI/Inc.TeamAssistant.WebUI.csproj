@@ -22,6 +22,7 @@
         <ProjectReference Include="..\Inc.TeamAssistant.Constructor.Model\Inc.TeamAssistant.Constructor.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.RandomCoffee.Model\Inc.TeamAssistant.RandomCoffee.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Retro.Model\Inc.TeamAssistant.Retro.Model.csproj" />
+        <ProjectReference Include="..\Inc.TeamAssistant.Survey.Model\Inc.TeamAssistant.Survey.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Tenants.Model\Inc.TeamAssistant.Tenants.Model.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Reviewer.Model\Inc.TeamAssistant.Reviewer.Model.csproj" />
     </ItemGroup>
@@ -129,6 +130,14 @@
         <EmbeddedResource Update="Features\Survey\SurveyResources.ru.resx">
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>SurveyResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\RoomProperties\RoomPropertiesResources.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>RoomPropertiesResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Features\RoomProperties\RoomPropertiesResources.ru.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>RoomPropertiesResources.ru.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
@@ -261,6 +270,16 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>SurveyResources.ru.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\RoomProperties\RoomPropertiesResources.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>RoomPropertiesResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Features\RoomProperties\RoomPropertiesResources.ru.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>RoomPropertiesResources.ru.resx</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>

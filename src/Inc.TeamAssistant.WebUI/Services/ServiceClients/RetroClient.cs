@@ -115,9 +115,7 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetRetroTemplatesResult> GetRetroTemplates(CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroTemplatesResult>(
-            $"retro/templates",
-            token);
+        var result = await _client.GetFromJsonAsync<GetRetroTemplatesResult>("retro/templates", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");

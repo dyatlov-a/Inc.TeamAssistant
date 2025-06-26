@@ -44,5 +44,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 resourceCulture = value;
             }
         }
+        
+        internal static string WaitStartHealthCheck {
+            get {
+                return ResourceManager.GetString("WaitStartHealthCheck", resourceCulture);
+            }
+        }
     }
 }

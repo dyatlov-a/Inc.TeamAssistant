@@ -1,9 +1,11 @@
 @inject IRetroService RetroService
+@inject ISurveyService SurveyService
 @inject RequestProcessor RequestProcessor
 
 <RetroPropertiesEditor
     FormModel="_formModel"
-    Templates="_templates"
+    RetroTemplates="_retroTemplates"
+    SurveyTemplates="_surveyTemplates"
     State="_state"
     Retry="Load"
     OnValidSubmit="Save" />
@@ -30,7 +32,8 @@
     private Guid _roomId = Guid.Empty;
     private readonly RetroPropertiesFormModel _formModel = new();
     private readonly LoadingState _state = LoadingState.Done();
-    private readonly List<RetroTemplateDto> _templates = new();
+    private readonly List<RetroTemplateDto> _retroTemplates = new();
+    private readonly List<SurveyTemplateDto> _surveyTemplates = new();
     
     protected override async Task OnParametersSetAsync()
     {
@@ -45,13 +48,23 @@
     private async Task Load()
     {
         var result = await RequestProcessor.Process(
-            async () => await RetroService.GetRetroTemplates(),
+            async () =>
+            {
+                var retroResult = await RetroService.GetRetroTemplates();
+                var surveyResult = await SurveyService.GetSurveyTemplates();
+
+                return new RetroPropertiesViewModel(retroResult.Templates, surveyResult.Templates);
+            },
             nameof(RetroPropertiesEditorContainer),
             _state);
             
         _formModel.Apply(RetroProperties);
-        _templates.Clear();
-        _templates.AddRange(result.Templates);
+        
+        _retroTemplates.Clear();
+        _retroTemplates.AddRange(result.RetroTemplates);
+        
+        _surveyTemplates.Clear();
+        _surveyTemplates.AddRange(result.SurveyTemplates);
     }
 
     private async Task Save()

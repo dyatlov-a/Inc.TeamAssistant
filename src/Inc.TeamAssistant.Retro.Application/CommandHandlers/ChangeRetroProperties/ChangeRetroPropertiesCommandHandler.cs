@@ -31,7 +31,8 @@ internal sealed class ChangeRetroPropertiesCommandHandler : IRequestHandler<Chan
         var retroProperties = new RetroProperties
         {
             FacilitatorId = command.IsFacilitator == true ? currentPerson.Id : null,
-            TemplateId = command.TemplateId,
+            RetroTemplateId = command.RetroTemplateId,
+            SurveyTemplateId = command.SurveyTemplateId,
             TimerDuration = command.TimerDuration,
             VoteCount = command.VoteCount,
             VoteByItemCount = command.VoteByItemCount,

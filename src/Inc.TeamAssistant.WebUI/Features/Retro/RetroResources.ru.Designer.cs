@@ -231,12 +231,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string TemplateStartStopContinue {
-            get {
-                return ResourceManager.GetString("TemplateStartStopContinue", resourceCulture);
-            }
-        }
-        
         internal static string ColumnStartTitle {
             get {
                 return ResourceManager.GetString("ColumnStartTitle", resourceCulture);
@@ -264,12 +258,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string ColumnContinueDescription {
             get {
                 return ResourceManager.GetString("ColumnContinueDescription", resourceCulture);
-            }
-        }
-        
-        internal static string TemplateToDiscussDiscussingDiscussed {
-            get {
-                return ResourceManager.GetString("TemplateToDiscussDiscussingDiscussed", resourceCulture);
             }
         }
         
@@ -309,72 +297,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string Save {
-            get {
-                return ResourceManager.GetString("Save", resourceCulture);
-            }
-        }
-        
-        internal static string VoteCountField {
-            get {
-                return ResourceManager.GetString("VoteCountField", resourceCulture);
-            }
-        }
-        
-        internal static string TimerDurationTemplate {
-            get {
-                return ResourceManager.GetString("TimerDurationTemplate", resourceCulture);
-            }
-        }
-        
-        internal static string TimerDurationField {
-            get {
-                return ResourceManager.GetString("TimerDurationField", resourceCulture);
-            }
-        }
-        
-        internal static string RetroTemplateField {
-            get {
-                return ResourceManager.GetString("RetroTemplateField", resourceCulture);
-            }
-        }
-        
-        internal static string RetroPropertiesSectionTitle {
-            get {
-                return ResourceManager.GetString("RetroPropertiesSectionTitle", resourceCulture);
-            }
-        }
-        
-        internal static string RetroPropertiesSectionHelp {
-            get {
-                return ResourceManager.GetString("RetroPropertiesSectionHelp", resourceCulture);
-            }
-        }
-        
-        internal static string RetroTypeField {
-            get {
-                return ResourceManager.GetString("RetroTypeField", resourceCulture);
-            }
-        }
-        
-        internal static string RetroTypeClosed {
-            get {
-                return ResourceManager.GetString("RetroTypeClosed", resourceCulture);
-            }
-        }
-        
-        internal static string RetroTypeHidden {
-            get {
-                return ResourceManager.GetString("RetroTypeHidden", resourceCulture);
-            }
-        }
-        
-        internal static string RetroTypeOpened {
-            get {
-                return ResourceManager.GetString("RetroTypeOpened", resourceCulture);
-            }
-        }
-        
         internal static string ColumnToDiscussDescription {
             get {
                 return ResourceManager.GetString("ColumnToDiscussDescription", resourceCulture);
@@ -396,18 +318,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string BacklogText {
             get {
                 return ResourceManager.GetString("BacklogText", resourceCulture);
-            }
-        }
-        
-        internal static string RetroBoard {
-            get {
-                return ResourceManager.GetString("RetroBoard", resourceCulture);
-            }
-        }
-        
-        internal static string RetroBacklog {
-            get {
-                return ResourceManager.GetString("RetroBacklog", resourceCulture);
             }
         }
         
@@ -444,24 +354,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string ConnectionStateLost {
             get {
                 return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
-            }
-        }
-        
-        internal static string VoteByItemCountField {
-            get {
-                return ResourceManager.GetString("VoteByItemCountField", resourceCulture);
-            }
-        }
-        
-        internal static string VotePropertiesSectionTitle {
-            get {
-                return ResourceManager.GetString("VotePropertiesSectionTitle", resourceCulture);
-            }
-        }
-        
-        internal static string VotePropertiesSectionHelp {
-            get {
-                return ResourceManager.GetString("VotePropertiesSectionHelp", resourceCulture);
             }
         }
         

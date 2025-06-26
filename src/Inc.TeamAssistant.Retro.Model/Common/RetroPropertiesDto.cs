@@ -4,7 +4,8 @@ namespace Inc.TeamAssistant.Retro.Model.Common;
 
 public sealed record RetroPropertiesDto(
     long? FacilitatorId,
-    Guid TemplateId,
+    Guid RetroTemplateId,
+    Guid SurveyTemplateId,
     TimeSpan TimerDuration,
     int VoteCount,
     int VoteByItemCount,
@@ -13,7 +14,8 @@ public sealed record RetroPropertiesDto(
 {
     public static RetroPropertiesDto Empty { get; } = new(
         FacilitatorId: null,
-        TemplateId: Guid.Empty,
+        RetroTemplateId: Guid.Empty,
+        SurveyTemplateId: Guid.Empty,
         TimerDuration: TimeSpan.Zero,
         VoteCount: 0,
         VoteByItemCount: 0,

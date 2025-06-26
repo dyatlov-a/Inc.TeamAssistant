@@ -1,7 +1,10 @@
-@inject IStringLocalizer<RetroResources> Localizer
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
 
 <nav aria-label="Retro navigation">
     <ul class="retro-navbar">
+        <li>
+            <a href="@LinkFactory($"survey/{RoomId:N}")" class="retro-navbar__item">@Localizer["TeamHealthCheck"]</a>
+        </li>
         <li>
             <a href="@LinkFactory($"retro/{RoomId:N}")" class="retro-navbar__item">@Localizer["RetroBoard"]</a>
         </li>

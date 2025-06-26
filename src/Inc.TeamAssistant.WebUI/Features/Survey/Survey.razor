@@ -1,5 +1,24 @@
-<h3>Survey</h3>
+@inject IStringLocalizer<SurveyResources> Localizer
+
+<DashboardGrid>
+    <Toolbar>
+        <RoomNavbar RoomId="RoomId" LinkFactory="LinkFactory"/>
+    </Toolbar>
+    <Content>
+        @Localizer["WaitStartHealthCheck"]
+    </Content>
+</DashboardGrid>
 
 @code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
     
+    /// <summary>
+    /// Link factory.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<string, string> LinkFactory { get; set; } = default!;
 }

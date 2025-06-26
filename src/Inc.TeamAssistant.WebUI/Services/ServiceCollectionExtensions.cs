@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarClient>()
             .AddScoped<ITenantService, TenantClient>()
             .AddScoped<IRetroService, RetroClient>()
+            .AddScoped<ISurveyService, SurveyClient>()
             .AddScoped<IIntegrationService, IntegrationClient>()
             .AddScoped(sp => ActivatorUtilities.CreateInstance<AppLocalStorage>(sp, appVersion))
             .AddSingleton<IRenderContext, ClientRenderContext>()

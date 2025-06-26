@@ -1,4 +1,4 @@
-@inject IStringLocalizer<RetroResources> Localizer
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
 
 <EditForm id="@AnalyticEvents.ChangeRetroProperties" EditContext="_editContext" OnSubmit="SubmitForm">
     <Loading State="State" Retry="Retry">
@@ -6,16 +6,16 @@
             Title="@Localizer["RetroPropertiesSectionTitle"]"
             HelpText="@Localizer["RetroPropertiesSectionHelp"]">
             <FormFieldSet
-                FieldId="template-id"
+                FieldId="retro-template-id"
                 Label="@Localizer["RetroTemplateField"]">
                 <InputSelectList
-                    FieldId="template-id"
-                    Items="Templates"
+                    FieldId="retro-template-id"
+                    Items="RetroTemplates"
                     TitleSelector="@(t => Localizer[t.Name])"
                     ValueSelector="t => t.Id"
-                    Value="FormModel.TemplateId"
-                    ValueExpression="@(() => FormModel.TemplateId)"
-                    ValueChanged="@((Guid v) => FormModel.ChangeTemplate(v))"/>
+                    Value="FormModel.RetroTemplateId"
+                    ValueExpression="@(() => FormModel.RetroTemplateId)"
+                    ValueChanged="@((Guid v) => FormModel.ChangeRetroTemplate(v))"/>
             </FormFieldSet>
             <FormFieldSet
                 FieldId="retro-type"
@@ -70,6 +70,22 @@
                     ValueChanged="@((int v) => FormModel.ChangeVoteByItemCount(v))" />
             </FormFieldSet>
         </FormSection>
+        <FormSection
+            Title="@Localizer["SurveyPropertiesSectionTitle"]"
+            HelpText="@Localizer["SurveyPropertiesSectionHelp"]">
+            <FormFieldSet
+                FieldId="retro-template-id"
+                Label="@Localizer["SurveyTemplateField"]">
+                <InputSelectList
+                    FieldId="retro-template-id"
+                    Items="SurveyTemplates"
+                    TitleSelector="@(t => Localizer[t.Name])"
+                    ValueSelector="t => t.Id"
+                    Value="FormModel.SurveyTemplateId"
+                    ValueExpression="@(() => FormModel.SurveyTemplateId)"
+                    ValueChanged="@((Guid v) => FormModel.ChangeSurveyTemplate(v))"/>
+            </FormFieldSet>
+        </FormSection>
     </Loading>
     <div class="content__actions">
         <Button ButtonType="ButtonType.Submit">@Localizer["Save"]</Button>
@@ -84,10 +100,16 @@
     public RetroPropertiesFormModel FormModel { get; set; } = default!;
     
     /// <summary>
-    /// Templates.
+    /// Retro templates.
     /// </summary>
     [Parameter, EditorRequired]
-    public IReadOnlyCollection<RetroTemplateDto> Templates { get; set; } = default!;
+    public IReadOnlyCollection<RetroTemplateDto> RetroTemplates { get; set; } = default!;
+    
+    /// <summary>
+    /// Survey templates.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<SurveyTemplateDto> SurveyTemplates { get; set; } = default!;
     
     /// <summary>
     /// Component state.

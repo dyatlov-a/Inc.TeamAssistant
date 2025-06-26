@@ -5,7 +5,8 @@ namespace Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 public sealed record ChangeRetroPropertiesCommand(
     Guid RoomId,
     bool? IsFacilitator,
-    Guid? TemplateId,
+    Guid? RetroTemplateId,
+    Guid? SurveyTemplateId,
     TimeSpan? TimerDuration,
     int? VoteCount,
     int? VoteByItemCount,
@@ -17,7 +18,8 @@ public sealed record ChangeRetroPropertiesCommand(
         return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
-            TemplateId: null,
+            RetroTemplateId: null,
+            SurveyTemplateId: null,
             TimerDuration: null,
             VoteCount: null,
             VoteByItemCount: null,
@@ -26,7 +28,8 @@ public sealed record ChangeRetroPropertiesCommand(
     
     public static ChangeRetroPropertiesCommand ChangeProperties(
         Guid roomId,
-        Guid templateId,
+        Guid retroTemplateId,
+        Guid surveyTemplateId,
         TimeSpan timerDuration,
         int voteCount,
         int voteByItemCount,
@@ -35,7 +38,8 @@ public sealed record ChangeRetroPropertiesCommand(
         return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
-            templateId,
+            retroTemplateId,
+            surveyTemplateId,
             timerDuration,
             voteCount,
             voteByItemCount,

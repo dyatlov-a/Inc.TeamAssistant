@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICalendarService, CalendarService>()
             .AddScoped<ITenantService, TenantService>()
             .AddScoped<IRetroService, RetroService>()
+            .AddScoped<ISurveyService, SurveyService>()
             .AddScoped<IIntegrationService, IntegrationService>()
             .AddSingleton(sp => ActivatorUtilities.CreateInstance<OpenGraphService>(sp, webRootPath))
 

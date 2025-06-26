@@ -8,4 +8,21 @@ public sealed class SurveyByRooms
     public DateTimeOffset Created { get; private set; }
     public SurveyState State { get; private set; }
     public IReadOnlyCollection<Guid> QuestionIds { get; private set; } = default!;
+
+    private SurveyByRooms()
+    {
+    }
+
+    public SurveyByRooms(Guid id, Guid roomId, DateTimeOffset created, SurveyTemplate template)
+        : this()
+    {
+        ArgumentNullException.ThrowIfNull(template);
+        
+        Id = id;
+        TemplateId = template.Id;
+        RoomId = roomId;
+        Created = created;
+        State = SurveyState.InProgress;
+        QuestionIds = template.QuestionIds;
+    }
 }

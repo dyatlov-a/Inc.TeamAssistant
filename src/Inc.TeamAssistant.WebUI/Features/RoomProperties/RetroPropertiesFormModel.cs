@@ -1,19 +1,27 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Common;
 
-namespace Inc.TeamAssistant.WebUI.Features.Retro;
+namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
 public sealed class RetroPropertiesFormModel
 {
-    public Guid TemplateId { get; private set; }
+    public Guid RetroTemplateId { get; private set; }
+    public Guid SurveyTemplateId { get; private set; }
     public TimeSpan TimerDuration { get; private set; }
     public int VoteCount { get; private set; }
     public int VoteByItemCount { get; private set; }
     public string RetroType { get; private set; } = default!;
     
-    public RetroPropertiesFormModel ChangeTemplate(Guid value)
+    public RetroPropertiesFormModel ChangeRetroTemplate(Guid value)
     {
-        TemplateId = value;
+        RetroTemplateId = value;
+        
+        return this;
+    }
+    
+    public RetroPropertiesFormModel ChangeSurveyTemplate(Guid value)
+    {
+        SurveyTemplateId = value;
         
         return this;
     }
@@ -53,7 +61,8 @@ public sealed class RetroPropertiesFormModel
     {
         ArgumentNullException.ThrowIfNull(model);
         
-        TemplateId = model.TemplateId;
+        RetroTemplateId = model.RetroTemplateId;
+        SurveyTemplateId = model.SurveyTemplateId;
         RetroType = model.RetroType;
         TimerDuration = model.TimerDuration;
         VoteCount = model.VoteCount;
@@ -66,7 +75,8 @@ public sealed class RetroPropertiesFormModel
     {
         return ChangeRetroPropertiesCommand.ChangeProperties(
             roomId,
-            TemplateId,
+            RetroTemplateId,
+            SurveyTemplateId,
             TimerDuration,
             VoteCount,
             VoteByItemCount,

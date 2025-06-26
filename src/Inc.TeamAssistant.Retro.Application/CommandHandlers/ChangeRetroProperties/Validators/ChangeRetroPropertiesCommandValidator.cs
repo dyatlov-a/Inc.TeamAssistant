@@ -10,9 +10,9 @@ internal sealed class ChangeRetroPropertiesCommandValidator : AbstractValidator<
         RuleFor(c => c.RoomId)
             .NotEmpty();
 
-        RuleFor(c => c.TemplateId)
+        RuleFor(c => c.RetroTemplateId)
             .NotEmpty()
-            .When(c => c.TemplateId.HasValue);
+            .When(c => c.RetroTemplateId.HasValue);
         
         RuleFor(c => c.TimerDuration)
             .NotEmpty()
