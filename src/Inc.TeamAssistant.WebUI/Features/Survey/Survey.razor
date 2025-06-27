@@ -2,7 +2,7 @@
 
 <DashboardGrid>
     <Toolbar>
-        <RoomNavbar RoomId="RoomId" LinkFactory="LinkFactory"/>
+        <RoomNavbarContainer RoomId="RoomId" />
     </Toolbar>
     <Content>
         @Localizer["WaitStartHealthCheck"]
@@ -15,10 +15,4 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
-    
-    /// <summary>
-    /// Link factory.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string, string> LinkFactory { get; set; } = default!;
 }

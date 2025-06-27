@@ -15,22 +15,22 @@ internal sealed class MainFooterLinksFactory
         _navRouter = navRouter ?? throw new ArgumentNullException(nameof(navRouter));
     }
 
-    public IReadOnlyDictionary<string, IReadOnlyCollection<LinkModel>> Create()
+    public IReadOnlyDictionary<string, IReadOnlyCollection<MainLinkViewModel>> Create()
     {
-        return new Dictionary<string, IReadOnlyCollection<LinkModel>>
+        return new Dictionary<string, IReadOnlyCollection<MainLinkViewModel>>
         {
             {
                 $"{_localizer["GroupNavigation"]} {ApplicationContext.GetVersion()}",
                 [
-                    new LinkModel(
+                    new MainLinkViewModel(
                         _localizer["LinkMain"],
                         _navRouter.CreateRoute(null),
                         External: false),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         _localizer["LinkConstructor"],
                         _navRouter.CreateRoute("constructor"),
                         External: false),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         _localizer["LinkDashboard"],
                         _navRouter.CreateRoute("dashboard"),
                         External: false)
@@ -39,15 +39,15 @@ internal sealed class MainFooterLinksFactory
             {
                 _localizer["GroupTech"],
                 [
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "DotNet",
                         "https://dotnet.microsoft.com/",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "Blazor",
                         "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "Nuke",
                         "https://nuke.build/",
                         External: true)
@@ -56,15 +56,15 @@ internal sealed class MainFooterLinksFactory
             {
                 _localizer["GroupStorage"],
                 [
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "Postgres",
                         "https://www.postgresql.org/",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "Npgsql",
                         "https://www.npgsql.org/",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "FluentMigrator",
                         "https://fluentmigrator.github.io/",
                         External: true)
@@ -73,15 +73,15 @@ internal sealed class MainFooterLinksFactory
             {
                 _localizer["GroupTools"],
                 [
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "Telegram.Bot",
                         "https://github.com/TelegramBots/Telegram.Bot",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "FluentValidator",
                         "https://docs.fluentvalidation.net/",
                         External: true),
-                    new LinkModel(
+                    new MainLinkViewModel(
                         "GitHub",
                         "https://github.com/dyatlov-a/Inc.TeamAssistant",
                         External: true)

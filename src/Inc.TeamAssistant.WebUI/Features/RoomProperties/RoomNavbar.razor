@@ -2,28 +2,23 @@
 
 <nav aria-label="Retro navigation">
     <ul class="retro-navbar">
-        <li>
-            <a href="@LinkFactory($"survey/{RoomId:N}")" class="retro-navbar__item">@Localizer["TeamHealthCheck"]</a>
-        </li>
-        <li>
-            <a href="@LinkFactory($"retro/{RoomId:N}")" class="retro-navbar__item">@Localizer["RetroBoard"]</a>
-        </li>
-        <li>
-            <a href="@LinkFactory($"backlog/{RoomId:N}")" class="retro-navbar__item">@Localizer["RetroBacklog"]</a>
-        </li>
+        @foreach (var link in Links)
+        {
+            <li>
+                <a href="@link.Url" class="retro-navbar__item @CssClass(link)">@Localizer[link.TitleKey]</a>
+            </li>
+        }
     </ul>
 </nav>
 
 @code {
     /// <summary>
-    /// Room identifier.
+    /// Link items.
     /// </summary>
     [Parameter, EditorRequired]
-    public Guid RoomId { get; set; }
-    
-    /// <summary>
-    /// Link factory.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string, string> LinkFactory { get; set; } = default!;
+    public IReadOnlyCollection<RoomNavbarLinkViewModel> Links { get; set; } = default!;
+
+    private string CssClass(RoomNavbarLinkViewModel link) => link.Selected
+        ? "retro-navbar__ite_selected"
+        : string.Empty;
 }

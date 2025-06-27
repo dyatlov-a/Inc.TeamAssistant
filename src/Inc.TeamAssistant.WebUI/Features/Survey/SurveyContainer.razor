@@ -1,9 +1,7 @@
 @page "/survey/{RoomId:guid}"
 @page "/ru/survey/{RoomId:guid}"
 
-@inject NavRouter NavRouter
-
-<Survey RoomId="RoomId" LinkFactory="@(v => NavRouter.CreateRoute(v))" />
+<Survey RoomId="RoomId" />
 
 @code {
     [Parameter, EditorRequired]

@@ -41,7 +41,6 @@
                 CurrentTimer="_currentTimer"
                 IsCreating="_isCreating"
                 Retry="@(() => Load(_state))"
-                LinkFactory="@(v => NavRouter.CreateRoute(v))"
                 ItemCreated="OnRetroItemCreated"
                 ItemChanged="OnRetroItemChanged"
                 ItemRemoved="OnRetroItemRemoved"

@@ -7,7 +7,6 @@
 @inject TenantStore TenantStore
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
-@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -22,7 +21,6 @@
             CurrentPersonId="context.User.ToPerson().Id"
             FacilitatorId="_facilitatorId"
             Retry="Load"
-            LinkFactory="@(v => NavRouter.CreateRoute(v))"
             ActionItemChanged="OnActionItemChanged"
             LoadHistory="OnLoadHistory" />
     </Authorized>

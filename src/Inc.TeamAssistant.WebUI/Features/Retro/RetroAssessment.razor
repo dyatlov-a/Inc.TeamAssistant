@@ -4,7 +4,7 @@
     <Toolbar>
         @if (RoomId.HasValue)
         {
-            <RoomNavbar RoomId="RoomId.Value" LinkFactory="LinkFactory"/>
+            <RoomNavbarContainer RoomId="RoomId.Value" />
         }
     </Toolbar>
     <Content>
@@ -60,12 +60,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int VotesCount { get; set; }
-    
-    /// <summary>
-    /// Link factory.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string, string> LinkFactory { get; set; } = default!;
     
     /// <summary>
     /// Value changed callback.

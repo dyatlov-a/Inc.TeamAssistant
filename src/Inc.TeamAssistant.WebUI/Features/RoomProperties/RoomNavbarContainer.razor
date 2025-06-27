@@ -1,0 +1,29 @@
+@implements IDisposable
+
+@inject NavRouter NavRouter
+
+<RoomNavbar Links="Links" />
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+
+    private IDisposable? _routerScope;
+    
+    protected override void OnInitialized()
+    {
+        _routerScope = NavRouter.OnRouteChanged(StateHasChanged);
+    }
+
+    private IReadOnlyCollection<RoomNavbarLinkViewModel> Links =>
+    [
+        new("TeamHealthCheck", NavRouter.CreateRoute($"survey/{RoomId}"), NavRouter.CurrentUrl.Contains("/survey")),
+        new("RetroBoard", NavRouter.CreateRoute($"retro/{RoomId}"), NavRouter.CurrentUrl.Contains("/retro")),
+        new("RetroBacklog", NavRouter.CreateRoute($"backlog/{RoomId}"), NavRouter.CurrentUrl.Contains("/backlog"))
+    ];
+    
+    public void Dispose() => _routerScope?.Dispose();
+}
