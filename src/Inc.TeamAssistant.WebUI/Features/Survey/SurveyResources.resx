@@ -21,4 +21,81 @@
     <data name="WaitStartHealthCheck" xml:space="preserve">
         <value>Please wait for the moderator to start the team health check.</value>
     </data>
+    <data name="DeliveringValueTitle" xml:space="preserve">
+        <value>Delivering value</value>
+    </data>
+    <data name="DeliveringValueText" xml:space="preserve">
+        <value>Good: We deliver great stuff! We're proud of it and our stakeholders are really happy.
+Bad: We deliver total crap. We are ashamed of that. Our stakeholders hate us for that.</value>
+    </data>
+    <data name="EasyToReleaseTitle" xml:space="preserve">
+        <value>Easy to release</value>
+    </data>
+    <data name="EasyToReleaseText" xml:space="preserve">
+        <value>Good: Releasing is simple, safe, painless and mostly automated.
+Bad: Releasing is risky, painful, lots of manual work and takes forever.</value>
+    </data>
+    <data name="FunTitle" xml:space="preserve">
+        <value>Fun</value>
+    </data>
+    <data name="FunText" xml:space="preserve">
+        <value>Good: We love going to work and we have a lot of fun together.
+Bad: The work is boring.</value>
+    </data>
+    <data name="HealthOfCodebaseTitle" xml:space="preserve">
+        <value>Health of codebase</value>
+    </data>
+    <data name="HealthOfCodebaseText" xml:space="preserve">
+        <value>Good: We're proud of the quality of our code! It is clean, easy to read and has great test coverage.
+Bad: Our code is a pile of dung and technical debt is raging out of control.</value>
+    </data>
+    <data name="LearningTitle" xml:space="preserve">
+        <value>Learning</value>
+    </data>
+    <data name="LearningText" xml:space="preserve">
+        <value>Good: We are constantly learning new things.
+Bad: We never have time to learn anything.</value>
+    </data>
+    <data name="MissionTitle" xml:space="preserve">
+        <value>Mission</value>
+    </data>
+    <data name="MissionText" xml:space="preserve">
+        <value>Good: We know exactly why we are here and we’re really excited about it!
+Bad: We have no idea why we are here, there's no high lever picture or focus. Our so called mission is completely unclear and uninspiring.</value>
+    </data>
+    <data name="PlayerOrPawnTitle" xml:space="preserve">
+        <value>Player or pawn</value>
+    </data>
+    <data name="PlayerOrPawnText" xml:space="preserve">
+        <value>Good: We are in control of our own destiny! We decide what to build and how to build it.
+Bad: We are just pawns in a game of chess with no influence over what we build or how we build it.</value>
+    </data>
+    <data name="SpeedTitle" xml:space="preserve">
+        <value>Speed</value>
+    </data>
+    <data name="SpeedText" xml:space="preserve">
+        <value>Good: We get stuff done really quickly! No waiting and no delays.
+Bad: We never seem to get anything done. We keep getting stuck or interrupted. Stories keep getting stuck on dependencies.</value>
+    </data>
+    <data name="SuitableProcessesTitle" xml:space="preserve">
+        <value>Suitable processes</value>
+    </data>
+    <data name="SuitableProcessesText" xml:space="preserve">
+        <value>Good: Our way of working fits us perfectly.
+Bad: Our way of working sucks!</value>
+    </data>
+    <data name="SupportTitle" xml:space="preserve">
+        <value>Support</value>
+    </data>
+    <data name="SupportText" xml:space="preserve">
+        <value>Good: We always get great support and help when we ask for it!
+Bad: We keep getting stuck because we can't get the support and help that we ask for.</value>
+    </data>
+    <data name="TeamworkTitle" xml:space="preserve">
+        <value>Teamwork</value>
+    </data>
+    <data name="TeamworkText" xml:space="preserve">
+        <value>Good: We are a great team that works great together.
+Bad: We are a bunch of individuals who neither know nor care what the others on the team are doing.</value>
+    </data>
 </root>

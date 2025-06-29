@@ -50,5 +50,137 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("WaitStartHealthCheck", resourceCulture);
             }
         }
+        
+        internal static string DeliveringValueTitle {
+            get {
+                return ResourceManager.GetString("DeliveringValueTitle", resourceCulture);
+            }
+        }
+        
+        internal static string DeliveringValueText {
+            get {
+                return ResourceManager.GetString("DeliveringValueText", resourceCulture);
+            }
+        }
+        
+        internal static string EasyToReleaseTitle {
+            get {
+                return ResourceManager.GetString("EasyToReleaseTitle", resourceCulture);
+            }
+        }
+        
+        internal static string EasyToReleaseText {
+            get {
+                return ResourceManager.GetString("EasyToReleaseText", resourceCulture);
+            }
+        }
+        
+        internal static string FunTitle {
+            get {
+                return ResourceManager.GetString("FunTitle", resourceCulture);
+            }
+        }
+        
+        internal static string FunText {
+            get {
+                return ResourceManager.GetString("FunText", resourceCulture);
+            }
+        }
+        
+        internal static string HealthOfCodebaseTitle {
+            get {
+                return ResourceManager.GetString("HealthOfCodebaseTitle", resourceCulture);
+            }
+        }
+        
+        internal static string HealthOfCodebaseText {
+            get {
+                return ResourceManager.GetString("HealthOfCodebaseText", resourceCulture);
+            }
+        }
+        
+        internal static string LearningTitle {
+            get {
+                return ResourceManager.GetString("LearningTitle", resourceCulture);
+            }
+        }
+        
+        internal static string LearningText {
+            get {
+                return ResourceManager.GetString("LearningText", resourceCulture);
+            }
+        }
+        
+        internal static string MissionTitle {
+            get {
+                return ResourceManager.GetString("MissionTitle", resourceCulture);
+            }
+        }
+        
+        internal static string MissionText {
+            get {
+                return ResourceManager.GetString("MissionText", resourceCulture);
+            }
+        }
+        
+        internal static string PlayerOrPawnTitle {
+            get {
+                return ResourceManager.GetString("PlayerOrPawnTitle", resourceCulture);
+            }
+        }
+        
+        internal static string PlayerOrPawnText {
+            get {
+                return ResourceManager.GetString("PlayerOrPawnText", resourceCulture);
+            }
+        }
+        
+        internal static string SpeedTitle {
+            get {
+                return ResourceManager.GetString("SpeedTitle", resourceCulture);
+            }
+        }
+        
+        internal static string SpeedText {
+            get {
+                return ResourceManager.GetString("SpeedText", resourceCulture);
+            }
+        }
+        
+        internal static string SuitableProcessesTitle {
+            get {
+                return ResourceManager.GetString("SuitableProcessesTitle", resourceCulture);
+            }
+        }
+        
+        internal static string SuitableProcessesText {
+            get {
+                return ResourceManager.GetString("SuitableProcessesText", resourceCulture);
+            }
+        }
+        
+        internal static string SupportTitle {
+            get {
+                return ResourceManager.GetString("SupportTitle", resourceCulture);
+            }
+        }
+        
+        internal static string SupportText {
+            get {
+                return ResourceManager.GetString("SupportText", resourceCulture);
+            }
+        }
+        
+        internal static string TeamworkTitle {
+            get {
+                return ResourceManager.GetString("TeamworkTitle", resourceCulture);
+            }
+        }
+        
+        internal static string TeamworkText {
+            get {
+                return ResourceManager.GetString("TeamworkText", resourceCulture);
+            }
+        }
     }
 }
