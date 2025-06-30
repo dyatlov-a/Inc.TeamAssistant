@@ -1,6 +1,6 @@
 namespace Inc.TeamAssistant.Survey.Domain;
 
-public sealed class Survey
+public sealed class SurveyEntry
 {
     public Guid Id { get; private set; }
     public Guid TemplateId { get; private set; }
@@ -9,11 +9,11 @@ public sealed class Survey
     public SurveyState State { get; private set; }
     public IReadOnlyCollection<Guid> QuestionIds { get; private set; } = default!;
 
-    private Survey()
+    private SurveyEntry()
     {
     }
 
-    public Survey(Guid id, Guid roomId, DateTimeOffset created, SurveyTemplate template)
+    public SurveyEntry(Guid id, Guid roomId, DateTimeOffset created, SurveyTemplate template)
         : this()
     {
         ArgumentNullException.ThrowIfNull(template);
@@ -23,6 +23,6 @@ public sealed class Survey
         RoomId = roomId;
         Created = created;
         State = SurveyState.InProgress;
-        QuestionIds = template.QuestionIds;
+        QuestionIds = template.QuestionIds.ToArray();
     }
 }

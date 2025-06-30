@@ -10,7 +10,9 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ISurveyReader, SurveyReader>();
+            .AddSingleton<ISurveyReader, SurveyReader>()
+            
+            .AddSingleton<ISurveyRepository, SurveyRepository>();
         
         return services;
     }

@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,5 +21,15 @@ public sealed class SurveyController : ControllerBase
     public async Task<IActionResult> GetTemplates(CancellationToken token)
     {
         return Ok(await _surveyService.GetSurveyTemplates(token));
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> StartSurvey([FromBody]StartSurveyCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _surveyService.StartSurvey(command);
+        
+        return Ok();
     }
 }

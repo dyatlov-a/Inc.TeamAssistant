@@ -33,4 +33,40 @@ internal sealed class SurveyReader : ISurveyReader
         
         return templates.ToArray();
     }
+
+    public async Task<SurveyEntry?> Find(
+        Guid roomId,
+        IReadOnlyCollection<SurveyState> states,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(states);
+
+        var targetStates = states.Select(s => (int)s).ToArray();
+        
+        var command = new CommandDefinition(
+            """
+            SELECT
+                s.id AS id,
+                s.template_id AS templateid,
+                s.room_id AS roomid,
+                s.created AS created,
+                s.state AS state,
+                s.question_ids AS questionids
+            FROM survey.surveys AS s
+            WHERE s.room_id = @room_id AND s.state = ANY(@target_states);
+            """,
+            new
+            {
+                room_id = roomId,
+                target_states = targetStates
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveyEntry = await connection.QuerySingleOrDefaultAsync<SurveyEntry>(command);
+        
+        return surveyEntry;
+    }
 }

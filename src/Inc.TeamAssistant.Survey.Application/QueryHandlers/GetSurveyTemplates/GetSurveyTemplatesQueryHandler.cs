@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
 using MediatR;
 
-namespace Inc.TeamAssistant.Survey.Application.Queries.GetSurveyTemplates;
+namespace Inc.TeamAssistant.Survey.Application.QueryHandlers.GetSurveyTemplates;
 
 internal sealed class GetSurveyTemplatesQueryHandler
     : IRequestHandler<GetSurveyTemplatesQuery, GetSurveyTemplatesResult>

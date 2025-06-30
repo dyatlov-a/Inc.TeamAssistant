@@ -24,30 +24,30 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
         RuleFor(x => x.RoomId)
             .NotEmpty()
             .MustAsync(HasFacilitationRights)
-            .WithMessage(c => $"You do not have facilitation rights for team {c.RoomId}.")
+            .WithMessage(c => $"You do not have facilitation rights for room {c.RoomId}.")
             .MustAsync(NotHaveActiveSession)
-            .WithMessage(c => $"There is already an active retro session for this team {c.RoomId}.")
+            .WithMessage(c => $"There is already an active retro session for this room {c.RoomId}.")
             .MustAsync(HasItems)
-            .WithMessage(c => $"There are no items to create a retro from team {c.RoomId}.");
+            .WithMessage(c => $"There are no items to create a retro from room {c.RoomId}.");
     }
 
-    private async Task<bool> NotHaveActiveSession(Guid teamId, CancellationToken token)
+    private async Task<bool> NotHaveActiveSession(Guid roomId, CancellationToken token)
     {
-        var retroSession = await _reader.FindSession(teamId, RetroSessionStateRules.Active, token);
+        var retroSession = await _reader.FindSession(roomId, RetroSessionStateRules.Active, token);
         
         return retroSession is null;
     }
     
-    private async Task<bool> HasItems(Guid teamId, CancellationToken token)
+    private async Task<bool> HasItems(Guid roomId, CancellationToken token)
     {
-        var items = await _reader.ReadRetroItems(teamId, states: [], token);
+        var items = await _reader.ReadRetroItems(roomId, states: [], token);
         
         return items.Any(i => !string.IsNullOrWhiteSpace(i.Text));
     }
     
-    private async Task<bool> HasFacilitationRights(Guid teamId, CancellationToken token)
+    private async Task<bool> HasFacilitationRights(Guid roomId, CancellationToken token)
     {
-        var properties = await _propertiesProvider.Get(teamId, token);
+        var properties = await _propertiesProvider.Get(roomId, token);
         var currentPerson = _personResolver.GetCurrentPerson();
 
         return properties.FacilitatorId == currentPerson.Id;

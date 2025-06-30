@@ -93,6 +93,14 @@ public sealed class CreateSurveySchema : Migration
         
         Execute.Sql(
             """
+            CREATE UNIQUE INDEX surveys__uidx__room_id__active
+            ON survey.surveys (room_id)
+            WHERE state != 2;
+            """,
+            "Create unique index on surveys for active survey");
+        
+        Execute.Sql(
+            """
             INSERT INTO survey.templates (id, name, question_ids)
             VALUES
                 ('6c9b2eef-b7ce-4e13-b866-1a0cd743c6b3', 'SurveyTemplateSpotifyHealthCheck', '["a72fffac-fc78-4d31-b870-682207b065b4", "7655a7a6-377a-4c48-8def-ab9a0694c708", "a1183b99-b102-477d-93ba-7ef99121670b", "10eeb23b-669b-414a-8db1-1efdd8df4e19", "e9417f25-1e31-45ce-a2d6-a62eacc971fd", "e0087ef7-276d-4a44-b69c-f9b820ae008c", "f1c21e84-ff4b-46f9-9d26-2305acbde82a", "8dfcc815-0ae0-46d7-a20e-d9ded64e4b1b", "2472847c-21f3-4565-853f-caa406d89a25", "01182478-ad44-4e27-90d1-3ffa604766c0", "f9ded0f4-4379-4993-a08b-527930100ef6"]'::JSONB),

@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -16,5 +17,12 @@ internal sealed class SurveyService : ISurveyService
     public async Task<GetSurveyTemplatesResult> GetSurveyTemplates(CancellationToken token)
     {
         return await _mediator.Send(new GetSurveyTemplatesQuery(), token);
+    }
+
+    public async Task StartSurvey(StartSurveyCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _mediator.Send(command, token);
     }
 }
