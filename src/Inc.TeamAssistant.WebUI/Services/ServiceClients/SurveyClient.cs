@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetPersonSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
@@ -42,6 +43,15 @@ internal sealed class SurveyClient : ISurveyService
         ArgumentNullException.ThrowIfNull(command);
         
         var response = await _client.PostAsJsonAsync("survey", command, token);
+        
+        await response.HandleValidation(token);
+    }
+
+    public async Task Finish(FinishSurveyCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        var response = await _client.PutAsJsonAsync("survey", command, token);
         
         await response.HandleValidation(token);
     }

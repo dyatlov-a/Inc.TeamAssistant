@@ -20,6 +20,8 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        // TODO: Check rights
+        
         var templates = await _reader.GetTemplates(token);
         var template = templates.Single(t => t.Id == command.TemplateId);
         var survey = new SurveyEntry(Guid.CreateVersion7(), command.RoomId, DateTimeOffset.UtcNow, template);

@@ -25,4 +25,11 @@ public sealed class SurveyEntry
         State = SurveyState.InProgress;
         QuestionIds = template.QuestionIds.ToArray();
     }
+
+    public SurveyEntry MoveToFinish()
+    {
+        State = SurveyState.Completed;
+        
+        return this;
+    }
 }

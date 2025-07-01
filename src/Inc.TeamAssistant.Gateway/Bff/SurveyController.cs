@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,16 @@ public sealed class SurveyController : ControllerBase
         ArgumentNullException.ThrowIfNull(command);
 
         await _surveyService.Start(command);
+        
+        return Ok();
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> FinishSurvey([FromBody]FinishSurveyCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _surveyService.Finish(command);
         
         return Ok();
     }

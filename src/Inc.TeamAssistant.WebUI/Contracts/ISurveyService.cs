@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetPersonSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
@@ -11,4 +12,6 @@ public interface ISurveyService
     Task<GetPersonSurveyResult> GetPersonSurveys(Guid surveyId, CancellationToken token = default);
 
     Task Start(StartSurveyCommand command, CancellationToken token = default);
+
+    Task Finish(FinishSurveyCommand command, CancellationToken token = default);
 }
