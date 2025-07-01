@@ -20,7 +20,13 @@ public sealed class SurveyController : ControllerBase
     [HttpGet("templates")]
     public async Task<IActionResult> GetTemplates(CancellationToken token)
     {
-        return Ok(await _surveyService.GetSurveyTemplates(token));
+        return Ok(await _surveyService.GetTemplates(token));
+    }
+    
+    [HttpGet("{surveyId:guid}/persons")]
+    public async Task<IActionResult> GetPersonSurveys(Guid surveyId, CancellationToken token)
+    {
+        return Ok(await _surveyService.GetPersonSurveys(surveyId, token));
     }
     
     [HttpPost]
@@ -28,7 +34,7 @@ public sealed class SurveyController : ControllerBase
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _surveyService.StartSurvey(command);
+        await _surveyService.Start(command);
         
         return Ok();
     }

@@ -16,14 +16,24 @@ public sealed class SurveyAnswer
         Guid id,
         Guid surveyId,
         DateTimeOffset created,
-        long ownerId,
-        IReadOnlyCollection<Answer> answers)
+        long ownerId)
         : this()
     {
         Id = id;
         SurveyId = surveyId;
         Created = created;
         OwnerId = ownerId;
-        Answers = answers ?? throw new ArgumentNullException(nameof(answers));
+    }
+
+    public SurveyAnswer SetAnswer(Answer answer)
+    {
+        ArgumentNullException.ThrowIfNull(answer);
+
+        Answers = Answers
+            .Where(a => a.QuestionId != answer.QuestionId)
+            .Append(answer)
+            .ToArray();
+        
+        return this;
     }
 }

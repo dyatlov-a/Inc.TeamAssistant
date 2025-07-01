@@ -13,7 +13,34 @@ internal sealed class SurveyReader : ISurveyReader
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<IReadOnlyCollection<Question>> ReadQuestions(
+        IReadOnlyCollection<Guid> questionIds,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                q.id AS id,
+                q.title AS title,
+                q.text AS text
+            FROM survey.questions AS q
+            WHERE q.id = ANY(@question_ids);
+            """,
+            new
+            {
+                question_ids = questionIds.ToArray() 
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var questions = await connection.QueryAsync<Question>(command);
+        
+        return questions.ToArray();
+    }
+
     public async Task<IReadOnlyCollection<SurveyTemplate>> GetTemplates(CancellationToken token)
     {
         var command = new CommandDefinition(

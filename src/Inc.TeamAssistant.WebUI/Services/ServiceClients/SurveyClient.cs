@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
+using Inc.TeamAssistant.Survey.Model.Queries.GetPersonSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -16,7 +17,7 @@ internal sealed class SurveyClient : ISurveyService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
     
-    public async Task<GetSurveyTemplatesResult> GetSurveyTemplates(CancellationToken token)
+    public async Task<GetSurveyTemplatesResult> GetTemplates(CancellationToken token)
     {
         var result = await _client.GetFromJsonAsync<GetSurveyTemplatesResult>("survey/templates", token);
 
@@ -26,7 +27,17 @@ internal sealed class SurveyClient : ISurveyService
         return result;
     }
 
-    public async Task StartSurvey(StartSurveyCommand command, CancellationToken token)
+    public async Task<GetPersonSurveyResult> GetPersonSurveys(Guid surveyId, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetPersonSurveyResult>($"survey/{surveyId:N}/persons", token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
+    }
+
+    public async Task Start(StartSurveyCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         

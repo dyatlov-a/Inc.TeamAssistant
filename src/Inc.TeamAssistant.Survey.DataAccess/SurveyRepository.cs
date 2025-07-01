@@ -14,7 +14,35 @@ internal sealed class SurveyRepository : ISurveyRepository
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<SurveyEntry?> Find(Guid surveyId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                s.id AS id,
+                s.template_id AS templateid,
+                s.room_id AS roomid,
+                s.created AS created,
+                s.state AS state,
+                s.question_ids AS questionids
+            FROM survey.surveys AS s
+            WHERE s.id = @survey_id;
+            """,
+            new
+            {
+                survey_id = surveyId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveyEntry = await connection.QuerySingleOrDefaultAsync<SurveyEntry>(command);
+        
+        return surveyEntry;
+    }
+
     public async Task Upsert(SurveyEntry survey, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(survey);
@@ -39,6 +67,37 @@ internal sealed class SurveyRepository : ISurveyRepository
                 created = survey.Created,
                 state = (int)survey.State,
                 question_ids = questionIds
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+        
+        await using var connection = _connectionFactory.Create();
+        
+        await connection.ExecuteAsync(command);
+    }
+
+    public async Task Upsert(SurveyAnswer surveyAnswer, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(surveyAnswer);
+
+        var answers = JsonSerializer.Serialize(surveyAnswer.Answers);
+        var command = new CommandDefinition(
+            """
+            INSERT INTO survey.survey_answers (id, survey_id, created, owner_id, answers)
+            VALUES (@id, @survey_id, @created, @owner_id, @answers::JSONB)
+            ON CONFLICT (id) DO UPDATE SET
+                survey_id = EXCLUDED.survey_id,
+                created = EXCLUDED.created,
+                owner_id = EXCLUDED.owner_id,
+                answers = EXCLUDED.answers;
+            """,
+            new
+            {
+                id = surveyAnswer.Id,
+                survey_id = surveyAnswer.SurveyId,
+                created = surveyAnswer.Created,
+                owner_id = surveyAnswer.OwnerId,
+                answers = answers
             },
             flags: CommandFlags.None,
             cancellationToken: token);

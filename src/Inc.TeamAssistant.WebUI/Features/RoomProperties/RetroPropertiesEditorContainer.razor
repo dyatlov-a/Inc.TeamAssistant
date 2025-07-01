@@ -51,7 +51,7 @@
             async () =>
             {
                 var retroResult = await RetroService.GetRetroTemplates();
-                var surveyResult = await SurveyService.GetSurveyTemplates();
+                var surveyResult = await SurveyService.GetTemplates();
 
                 return new RetroPropertiesViewModel(retroResult.Templates, surveyResult.Templates);
             },
