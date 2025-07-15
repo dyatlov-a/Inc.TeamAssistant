@@ -26,12 +26,16 @@ internal sealed class RetroPropertiesProviderAdapter : IRetroPropertiesProvider
 
         if (properties.FacilitatorId.HasValue)
             newProperties.FacilitatorId = properties.FacilitatorId.Value;
-        if (properties.TemplateId.HasValue)
-            newProperties.TemplateId = properties.TemplateId.Value;
+        if (properties.RetroTemplateId.HasValue)
+            newProperties.RetroTemplateId = properties.RetroTemplateId.Value;
+        if (properties.SurveyTemplateId.HasValue)
+            newProperties.SurveyTemplateId = properties.SurveyTemplateId.Value;
         if (properties.TimerDuration.HasValue)
             newProperties.TimerDuration = properties.TimerDuration.Value;
         if (properties.VoteCount.HasValue)
             newProperties.VoteCount = properties.VoteCount.Value;
+        if (properties.VoteByItemCount.HasValue)
+            newProperties.VoteByItemCount = properties.VoteByItemCount.Value;
         if (properties.RetroType.HasValue)
             newProperties.RetroType = properties.RetroType.Value;
 

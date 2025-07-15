@@ -11,6 +11,10 @@
 .backlog-grid__column {
     width: calc(50% - .5rem);
 }
+.backlog-grid__column-more {
+    display: flex;
+    flex-direction: column;
+}
 .backlog-grid__column-items {
     display: flex;
     flex-wrap: wrap;

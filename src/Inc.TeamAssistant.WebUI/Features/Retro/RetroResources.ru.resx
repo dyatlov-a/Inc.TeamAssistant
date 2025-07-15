@@ -111,9 +111,6 @@
     <data name="AssessmentSuccess" xml:space="preserve">
         <value>Спасибо, что поделились своим мнением</value>
     </data>
-    <data name="TemplateStartStopContinue" xml:space="preserve">
-        <value>Начать, прекратить, продолжать</value>
-    </data>
     <data name="ColumnStartTitle" xml:space="preserve">
         <value>Начать</value>
     </data>
@@ -128,9 +125,6 @@
     </data>
     <data name="ColumnContinueDescription" xml:space="preserve">
         <value>Добавьте заметки о вещах, которые хорошо сработали в предыдущей итерации и должны остаться в рабочем процессе.</value>
-    </data>
-    <data name="TemplateToDiscussDiscussingDiscussed" xml:space="preserve">
-        <value>Обсудить, обсуждение, обсудили</value>
     </data>
     <data name="ColumnToDiscussTitle" xml:space="preserve">
         <value>Обсудить</value>
@@ -150,39 +144,6 @@
     <data name="RetroProperties" xml:space="preserve">
         <value>Настройки ретро</value>
     </data>
-    <data name="Save" xml:space="preserve">
-        <value>Сохранить</value>
-    </data>
-    <data name="VoteCountField" xml:space="preserve">
-        <value>Кол-во голосов</value>
-    </data>
-    <data name="TimerDurationTemplate" xml:space="preserve">
-        <value>{0} минут</value>
-    </data>
-    <data name="TimerDurationField" xml:space="preserve">
-        <value>Продолжительность таймера</value>
-    </data>
-    <data name="RetroTemplateField" xml:space="preserve">
-        <value>Шаблон ретро</value>
-    </data>
-    <data name="RetroPropertiesSectionTitle" xml:space="preserve">
-        <value>Свойства ретро</value>
-    </data>
-    <data name="RetroPropertiesSectionHelp" xml:space="preserve">
-        <value>Пожалуйста, укажите свойства</value>
-    </data>
-    <data name="RetroTypeField" xml:space="preserve">
-        <value>Способ проведения ретро</value>
-    </data>
-    <data name="RetroTypeClosed" xml:space="preserve">
-        <value>Скрыто наличие карточек</value>
-    </data>
-    <data name="RetroTypeHidden" xml:space="preserve">
-        <value>Текст карточек скрыт</value>
-    </data>
-    <data name="RetroTypeOpened" xml:space="preserve">
-        <value>Все карточки открыты</value>
-    </data>
     <data name="ColumnToDiscussDescription" xml:space="preserve">
         <value>Задачи, вопросы или темы, которые ещё не обсуждались. Ожидают рассмотрения на ближайшем собрании или в ходе диалога.</value>
     </data>
@@ -194,12 +155,6 @@
     </data>
     <data name="BacklogText" xml:space="preserve">
         <value>Здесь собраны пункты, которые поднимались на прошлых ретроспективах, но пока не были реализованы. Это может быть хорошая возможность вернуться к идеям, которые всё ещё актуальны, и довести их до результата. Просмотрите список, выберите то, что по-прежнему важно, и добавьте в план работы.</value>
-    </data>
-    <data name="RetroBoard" xml:space="preserve">
-        <value>Доска для ретро</value>
-    </data>
-    <data name="RetroBacklog" xml:space="preserve">
-        <value>Список задач с ретро</value>
     </data>
     <data name="Participants" xml:space="preserve">
         <value>Участники</value>
@@ -218,5 +173,17 @@
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Соединение потеряно.</value>
+    </data>
+    <data name="VotesCount" xml:space="preserve">
+        <value>Кол-во голосов:</value>
+    </data>
+    <data name="ActionItemStagePinnedTitle" xml:space="preserve">
+        <value>Командные соглашения</value>
+    </data>
+    <data name="ActionItemStagePinnedHint" xml:space="preserve">
+        <value>Здесь фиксируются общие договорённости команды: правила взаимодействия, форматы встреч, рабочие часы, нормы обратной связи и другие важные принципы.</value>
+    </data>
+    <data name="More" xml:space="preserve">
+        <value>Еще</value>
     </data>
 </root>

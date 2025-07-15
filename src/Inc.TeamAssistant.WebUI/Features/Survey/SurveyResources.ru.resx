@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="WaitStartHealthCheck" xml:space="preserve">
+        <value>Пожалуйста, дождитесь запуска оценки здоровья модератором.</value>
+    </data>
+    <data name="DeliveringValueTitle" xml:space="preserve">
+        <value>Создание ценности</value>
+    </data>
+    <data name="DeliveringValueText" xml:space="preserve">
+        <value>Хорошо: Мы создаем отличные вещи! Мы гордимся результатами, и наши стейкхолдеры действительно довольны.
+Плохо: Мы создаем полный бред. Мы стыдимся этого. Наши стейкхолдеры ненавидят нас за это.</value>
+    </data>
+    <data name="EasyToReleaseTitle" xml:space="preserve">
+        <value>Простота релиза</value>
+    </data>
+    <data name="EasyToReleaseText" xml:space="preserve">
+        <value>Хорошо: Релиз происходит легко, безопасно, безболезненно и в основном автоматизировано.
+Плохо: Релиз рискованный, вызывает боль, требует много ручной работы и занимает вечность.</value>
+    </data>
+    <data name="FunTitle" xml:space="preserve">
+        <value>Удовольствие</value>
+    </data>
+    <data name="FunText" xml:space="preserve">
+        <value>Хорошо: Нам нравится ходить на работу, и мы много веселимся вместе.
+Плохо: Работа скучная.</value>
+    </data>
+    <data name="HealthOfCodebaseTitle" xml:space="preserve">
+        <value>Состояние кодовой базы</value>
+    </data>
+    <data name="HealthOfCodebaseText" xml:space="preserve">
+        <value>Хорошо: Мы гордимся качеством нашего кода! Он чистый, легко читаемый и имеет отличное покрытие тестами.
+Плохо: Наш код - это груда негатива, и технический долг выходит из-под контроля.</value>
+    </data>
+    <data name="LearningTitle" xml:space="preserve">
+        <value>Обучение</value>
+    </data>
+    <data name="LearningText" xml:space="preserve">
+        <value>Хорошо: Мы постоянно учимся новому.
+Плохо: У нас никогда нет времени учиться чему-либо.</value>
+    </data>
+    <data name="MissionTitle" xml:space="preserve">
+        <value>Миссия</value>
+    </data>
+    <data name="MissionText" xml:space="preserve">
+        <value>Хорошо: Мы точно знаем, для чего мы здесь, и мы действительно в этом заинтересованы!
+Плохо: Мы не имеем представления о том, для чего мы здесь, нет общего понимания или фокуса. Наша так называемая миссия полностью неясна и неинтересна.</value>
+    </data>
+    <data name="PlayerOrPawnTitle" xml:space="preserve">
+        <value>Игрок или пешка</value>
+    </data>
+    <data name="PlayerOrPawnText" xml:space="preserve">
+        <value>Хорошо: Мы контролируем свою судьбу! Мы сами решаем, что и как строить.
+Плохо: Мы всего лишь пешки в шахматной игре, у нас нет влияния на то, что мы создаем и как мы это делаем.</value>
+    </data>
+    <data name="SpeedTitle" xml:space="preserve">
+        <value>Скорость</value>
+    </data>
+    <data name="SpeedText" xml:space="preserve">
+        <value>Хорошо: Мы выполняем работу очень быстро! Нет ожидания и задержек.
+Плохо: Похоже, мы ничего не делаем. Мы постоянно застреваем или прерываемся. Задачи застревают из-за зависимостей.</value>
+    </data>
+    <data name="SuitableProcessesTitle" xml:space="preserve">
+        <value>Состояние процессов</value>
+    </data>
+    <data name="SuitableProcessesText" xml:space="preserve">
+        <value>Хорошо: Наш способ работы идеально подходит нам.
+Плохо: Наш способ работы ужасен!</value>
+    </data>
+    <data name="SupportTitle" xml:space="preserve">
+        <value>Поддержка</value>
+    </data>
+    <data name="SupportText" xml:space="preserve">
+        <value>Хорошо: Мы всегда получаем отличную поддержку и помощь, когда просим об этом!
+Плохо: Мы застреваем, потому что не можем получить поддержку и помощь, которую просим.</value>
+    </data>
+    <data name="TeamworkTitle" xml:space="preserve">
+        <value>Командная работа</value>
+    </data>
+    <data name="TeamworkText" xml:space="preserve">
+        <value>Хорошо: Мы отличная команда, которая прекрасно работает вместе.
+Плохо: Мы группа отдельных лиц, которым нет дела до того, что делают остальные в команде.</value>
+    </data>
+</root>

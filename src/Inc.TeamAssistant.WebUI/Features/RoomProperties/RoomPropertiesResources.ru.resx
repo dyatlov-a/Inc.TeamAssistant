@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RetroPropertiesSectionHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите свойства для проведения ретро</value>
+    </data>
+    <data name="RetroPropertiesSectionTitle" xml:space="preserve">
+        <value>Свойства ретро</value>
+    </data>
+    <data name="RetroTemplateField" xml:space="preserve">
+        <value>Шаблон ретро</value>
+    </data>
+    <data name="RetroTypeField" xml:space="preserve">
+        <value>Способ проведения ретро</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Сохранить</value>
+    </data>
+    <data name="TimerDurationField" xml:space="preserve">
+        <value>Продолжительность таймера</value>
+    </data>
+    <data name="TimerDurationTemplate" xml:space="preserve">
+        <value>{0} минут</value>
+    </data>
+    <data name="VoteByItemCountField" xml:space="preserve">
+        <value>Максимальное количество голосов на элемент</value>
+    </data>
+    <data name="VoteCountField" xml:space="preserve">
+        <value>Кол-во голосов</value>
+    </data>
+    <data name="VotePropertiesSectionHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите свойства для проведения голосования</value>
+    </data>
+    <data name="VotePropertiesSectionTitle" xml:space="preserve">
+        <value>Свойства голосования</value>
+    </data>
+    <data name="RetroTypeClosed" xml:space="preserve">
+        <value>Наличие элементов не видно участникам</value>
+    </data>
+    <data name="RetroTypeHidden" xml:space="preserve">
+        <value>Текст элементов не виден участникам</value>
+    </data>
+    <data name="RetroTypeOpened" xml:space="preserve">
+        <value>Текст элементов виден всем участникам</value>
+    </data>
+    <data name="SurveyPropertiesSectionTitle" xml:space="preserve">
+        <value>Свойства опроса</value>
+    </data>
+    <data name="SurveyPropertiesSectionHelp" xml:space="preserve">
+        <value>Пожалуйста, укажите свойства для проведения опроса</value>
+    </data>
+    <data name="SurveyTemplateField" xml:space="preserve">
+        <value>Шаблон опроса</value>
+    </data>
+    <data name="TemplateStartStopContinue" xml:space="preserve">
+        <value>Начать, прекратить, продолжать</value>
+    </data>
+    <data name="TemplateToDiscussDiscussingDiscussed" xml:space="preserve">
+        <value>Обсудить, обсуждение, обсудили</value>
+    </data>
+    <data name="SurveyTemplateRemoteTeamHappiness" xml:space="preserve">
+        <value>Оценка счастья команды на удаленке</value>
+    </data>
+    <data name="SurveyTemplateSpotifyHealthCheck" xml:space="preserve">
+        <value>Проверка здоровья Spotify</value>
+    </data>
+    <data name="TeamHealthCheck" xml:space="preserve">
+        <value>Проверка здоровья</value>
+    </data>
+    <data name="RetroBoard" xml:space="preserve">
+        <value>Доска для ретро</value>
+    </data>
+    <data name="RetroBacklog" xml:space="preserve">
+        <value>Список задач с ретро</value>
+    </data>
+</root>

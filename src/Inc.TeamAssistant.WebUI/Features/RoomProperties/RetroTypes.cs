@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.WebUI.Features.Retro;
+namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
 public static class RetroTypes
 {

@@ -36,6 +36,8 @@ using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Survey.Application.Contracts;
+using Inc.TeamAssistant.Survey.DataAccess;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Inc.TeamAssistant.Tenants.DataAccess;
 using Inc.TeamAssistant.WebUI;
@@ -67,6 +69,7 @@ builder.Services
 	.AddValidatorsFromAssemblyContaining<IBotRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<ITenantRepository>(defaultLifetime, includeInternalTypes: true)
 	.AddValidatorsFromAssemblyContaining<IRetroItemRepository>(defaultLifetime, includeInternalTypes: true)
+	.AddValidatorsFromAssemblyContaining<ISurveyReader>(defaultLifetime, includeInternalTypes: true)
 	.AddMediatR(c =>
 	{
 		c.Lifetime = defaultLifetime;
@@ -78,6 +81,7 @@ builder.Services
 		c.RegisterServicesFromAssemblyContaining<IBotRepository>();
 		c.RegisterServicesFromAssemblyContaining<ITenantRepository>();
 		c.RegisterServicesFromAssemblyContaining<IRetroItemRepository>();
+		c.RegisterServicesFromAssemblyContaining<ISurveyReader>();
 	})
 	.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>))
 	.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>)));
@@ -104,6 +108,8 @@ builder.Services
 	.AddJsonType<IReadOnlyDictionary<DateOnly, HolidayType>>()
 	.AddJsonType<IReadOnlyCollection<ContextScope>>()
 	.AddJsonType<IReadOnlyCollection<DashboardWidget>>()
+	
+	.AddJsonType<IReadOnlyCollection<Guid>>()
 	.Build();
 
 builder.Services
@@ -124,7 +130,8 @@ builder.Services
 	.AddConnectorDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddConstructorDataAccess()
 	.AddTenantsDataAccess(CachePolicies.CacheAbsoluteExpiration)
-	.AddRetroDataAccess();
+	.AddRetroDataAccess()
+	.AddSurveyDataAccess();
 
 builder.Services
 	.AddAuthentication(ApplicationContext.AuthenticationScheme)

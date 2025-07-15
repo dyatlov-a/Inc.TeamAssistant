@@ -7,7 +7,6 @@
 @inject TenantStore TenantStore
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
-@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -15,13 +14,15 @@
     <Authorized>
         <Backlog
             RoomId="RoomId"
+            PageSize="PageSize"
             State="_state"
+            Loaders="_loaders"
             ActionItems="_actionItems"
             CurrentPersonId="context.User.ToPerson().Id"
             FacilitatorId="_facilitatorId"
             Retry="Load"
-            LinkFactory="@(v => NavRouter.CreateRoute(v))"
-            ActionItemChanged="OnActionItemChanged" />
+            ActionItemChanged="OnActionItemChanged"
+            LoadHistory="OnLoadHistory" />
     </Authorized>
 </AuthorizeView>
 
@@ -31,7 +32,9 @@
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<ActionItemViewModel> _actionItems = new();
+    private const int PageSize = 10;
     private long? _facilitatorId;
+    private readonly Dictionary<string, LoadingState> _loaders = new(StringComparer.InvariantCultureIgnoreCase);
     
     protected override async Task OnParametersSetAsync() => await Load();
     
@@ -40,7 +43,7 @@
         await TenantStore.Initialize(RoomId, _state);
         
         var result = await RequestProcessor.Process(
-            async () => await RetroService.GetActionItems(RoomId),
+            async () => await RetroService.GetActionItems(RoomId, PageSize),
             nameof(BacklogContainer),
             _state);
 
@@ -49,6 +52,10 @@
         _actionItems.Clear();
         foreach (var actionItem in result.Items)
             ApplyActionItemChanged(actionItem);
+
+        foreach (var stage in ActionItemStages.All)
+            if (_actionItems.Count(i => stage.Equals(i.State, StringComparison.InvariantCultureIgnoreCase)) == PageSize)
+                _loaders.Add(stage, LoadingState.Done());
     }
     
     private void ApplyActionItemChanged(ActionItemDto changed)
@@ -66,5 +73,23 @@
             async () => await RetroService.ChangeActionItem(item.ToCommand(RoomId)),
             _state,
             showLoading: false);
+    }
+
+    private async Task OnLoadHistory(string stage)
+    {
+        if (_loaders.TryGetValue(stage, out var loader))
+        {
+            var offset = _actionItems.Count(i => stage.Equals(i.State, StringComparison.InvariantCultureIgnoreCase));
+            var result = await RequestProcessor.Process(
+                async () => await RetroService.GetActionItemsHistory(RoomId, stage, offset, PageSize),
+                loader);
+
+            if (result.Items.Any())
+                foreach (var item in result.Items)
+                    ApplyActionItemChanged(item);
+            
+            if (result.Items.Count < PageSize)
+                _loaders.Remove(stage);
+        }
     }
 }

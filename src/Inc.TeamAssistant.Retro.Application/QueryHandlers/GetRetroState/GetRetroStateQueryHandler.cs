@@ -54,7 +54,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var properties = await _propertiesProvider.Get(query.RoomId, token);
         var retroType = properties.RequiredRetroType();
         var retroProperties = RetroPropertiesConverter.ConvertTo(properties);
-        var columns = await _retroTemplateReader.GetColumns(retroProperties.TemplateId, token);
+        var columns = await _retroTemplateReader.GetColumns(retroProperties.RetroTemplateId, token);
 
         var votes = session is not null
             ? _voteStore.Get(session.Id)

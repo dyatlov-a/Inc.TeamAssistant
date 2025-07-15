@@ -6,6 +6,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
+using Inc.TeamAssistant.Retro.Model.Queries.GetActionItemsHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroTemplates;
@@ -23,9 +24,9 @@ internal sealed class RetroClient : IRetroService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<GetRetroStateResult> GetRetroState(Guid teamId, CancellationToken token)
+    public async Task<GetRetroStateResult> GetRetroState(Guid roomId, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{teamId:N}/state", token);
+        var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{roomId:N}/state", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
@@ -51,9 +52,30 @@ internal sealed class RetroClient : IRetroService
         await response.HandleValidation(token);
     }
 
-    public async Task<GetActionItemsResult> GetActionItems(Guid teamId, CancellationToken token)
+    public async Task<GetActionItemsResult> GetActionItems(Guid roomId, int limit, CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetActionItemsResult>($"retro/{teamId:N}/actions", token);
+        var result = await _client.GetFromJsonAsync<GetActionItemsResult>(
+            $"retro/{roomId:N}/actions/{limit}",
+            token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
+    }
+
+    public async Task<GetActionItemsHistoryResult> GetActionItemsHistory(
+        Guid roomId,
+        string state,
+        int offset,
+        int limit,
+        CancellationToken token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(state);
+        
+        var result = await _client.GetFromJsonAsync<GetActionItemsHistoryResult>(
+            $"retro/{roomId:N}/actions/{limit}/history/{state}/{offset}",
+            token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");
@@ -93,9 +115,7 @@ internal sealed class RetroClient : IRetroService
 
     public async Task<GetRetroTemplatesResult> GetRetroTemplates(CancellationToken token)
     {
-        var result = await _client.GetFromJsonAsync<GetRetroTemplatesResult>(
-            $"retro/templates",
-            token);
+        var result = await _client.GetFromJsonAsync<GetRetroTemplatesResult>("retro/templates", token);
 
         if (result is null)
             throw new TeamAssistantException("Parse response with error.");

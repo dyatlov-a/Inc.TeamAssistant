@@ -30,7 +30,7 @@
 
 @code {
     private IDisposable? _routerScope;
-    private IReadOnlyCollection<LinkModel> _languages = [];
+    private IReadOnlyCollection<MainLinkViewModel> _languages = [];
     private string _logoutUrl = string.Empty;
     
     private bool HasLogin => !NavRouter.CurrentUrl.Contains("/login");
@@ -56,7 +56,7 @@
         var routeWithoutLanguage = NavRouter.GetRouteSegment();
 
         _languages = LanguageSettings.LanguageIds
-            .Select(l => new LinkModel(l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
+            .Select(l => new MainLinkViewModel(l.Value, $"/{l.Value}/{routeWithoutLanguage}"))
             .ToArray();
         
         StateHasChanged();

@@ -111,9 +111,6 @@
     <data name="AssessmentSuccess" xml:space="preserve">
         <value>Thank you for sharing your opinion</value>
     </data>
-    <data name="TemplateStartStopContinue" xml:space="preserve">
-        <value>Start, stop, continue</value>
-    </data>
     <data name="ColumnStartTitle" xml:space="preserve">
         <value>Start</value>
     </data>
@@ -131,9 +128,6 @@
     </data>
     <data name="ColumnContinueDescription" xml:space="preserve">
         <value>Add notes about things that worked well in the previous iteration and should stay in the workflow.</value>
-    </data>
-    <data name="TemplateToDiscussDiscussingDiscussed" xml:space="preserve">
-        <value>To discuss, discussing, discussed</value>
     </data>
     <data name="ColumnToDiscussTitle" xml:space="preserve">
         <value>To Discuss</value>
@@ -159,48 +153,9 @@
     <data name="RetroProperties" xml:space="preserve">
         <value>Retro properties</value>
     </data>
-    <data name="Save" xml:space="preserve">
-        <value>Save</value>
-    </data>
-    <data name="VoteCountField" xml:space="preserve">
-        <value>Vote count</value>
-    </data>
-    <data name="TimerDurationTemplate" xml:space="preserve">
-        <value>{0} minutes</value>
-    </data>
-    <data name="TimerDurationField" xml:space="preserve">
-        <value>Timer duration</value>
-    </data>
-    <data name="RetroTemplateField" xml:space="preserve">
-        <value>Retro template</value>
-    </data>
-    <data name="RetroPropertiesSectionTitle" xml:space="preserve">
-        <value>Retro properties</value>
-    </data>
-    <data name="RetroPropertiesSectionHelp" xml:space="preserve">
-        <value>Please configure retro properties</value>
-    </data>
-    <data name="RetroTypeField" xml:space="preserve">
-        <value>Retro type</value>
-    </data>
-    <data name="RetroTypeHidden" xml:space="preserve">
-        <value>Hidden</value>
-    </data>
-    <data name="RetroTypeClosed" xml:space="preserve">
-        <value>Closed</value>
-    </data>
-    <data name="RetroTypeOpened" xml:space="preserve">
-        <value>Opened</value>
-    </data>
     <data name="BacklogText" xml:space="preserve">
         <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.
 Review the list, pick what still matters, and add it to the work plan.</value>
-    </data>
-    <data name="RetroBoard" xml:space="preserve">
-        <value>Retro board</value>
-    </data>
-    <data name="RetroBacklog" xml:space="preserve">
-        <value>Retro backlog</value>
     </data>
     <data name="Participants" xml:space="preserve">
         <value>Participants</value>
@@ -219,5 +174,17 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Connection lost.</value>
+    </data>
+    <data name="VotesCount" xml:space="preserve">
+        <value>Votes count:</value>
+    </data>
+    <data name="ActionItemStagePinnedTitle" xml:space="preserve">
+        <value>Team agreements</value>
+    </data>
+    <data name="ActionItemStagePinnedHint" xml:space="preserve">
+        <value>Here we capture the team’s shared agreements: interaction rules, meeting formats, working hours, feedback norms, and other important principles.</value>
+    </data>
+    <data name="More" xml:space="preserve">
+        <value>More</value>
     </data>
 </root>

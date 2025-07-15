@@ -1,0 +1,9 @@
+@page "/survey/{RoomId:guid}"
+@page "/ru/survey/{RoomId:guid}"
+
+<Survey RoomId="RoomId" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+}

@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using MediatR;
 
@@ -19,12 +20,17 @@ internal sealed class GetActionItemsQueryHandler : IRequestHandler<GetActionItem
     public async Task<GetActionItemsResult> Handle(GetActionItemsQuery query, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(query);
-        
-        var items = await _reader.Read(query.RoomId, token);
-        var actionItems = items
+
+        var firstPage = 0;
+        var properties = await _provider.Get(query.RoomId, token);
+        var newItems = await _reader.Read(query.RoomId, ActionItemState.New, firstPage, limit: int.MaxValue, token);
+        var doneItems = await _reader.Read(query.RoomId, ActionItemState.Done, firstPage, query.Limit, token);
+        var pinnedItems = await _reader.Read(query.RoomId, ActionItemState.Pinned, firstPage, query.Limit, token);
+        var actionItems = newItems
+            .Union(doneItems)
+            .Union(pinnedItems)
             .Select(ActionItemConverter.ConvertTo)
             .ToArray();
-        var properties = await _provider.Get(query.RoomId, token);
         
         return new GetActionItemsResult(properties.FacilitatorId, actionItems);
     }

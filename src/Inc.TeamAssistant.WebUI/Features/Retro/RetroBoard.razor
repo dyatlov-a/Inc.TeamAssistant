@@ -8,6 +8,7 @@
         <div class="retro-toolbar__content">
             <RetroStatePanel
                 IsDiscussing="IsDiscussing"
+                CurrentUserId="CurrentUserId"
                 IsFacilitator="IsFacilitator"
                 TimerDuration="TimerDuration"
                 CurrentTimer="CurrentTimer"
@@ -18,7 +19,7 @@
                 HandRaised="HandRaised"
                 FacilitatorGiven="FacilitatorGiven"
                 RetroPropertiesOpened="RetroPropertiesOpened" />
-            <RetroNavbar RoomId="RoomId" LinkFactory="LinkFactory" />
+            <RoomNavbarContainer RoomId="RoomId" />
             <RetroParticipants
                 CanVote="CanVote"
                 VotesTotal="VotesTotal"
@@ -78,8 +79,8 @@
                                             <div>
                                                 <RetroItem
                                                     @key="item.Id"
-                                                    CanView="@(CanView(item))"
-                                                    CanEdit="@(CanEdit(item))"
+                                                    CanView="CanView(item)"
+                                                    CanEdit="CanEdit(item)"
                                                     CanRemove="@(CanRemove(item) && !hasChildren)"
                                                     CanMove="CanMove"
                                                     BackgroundColor="@column.Color"
@@ -88,15 +89,19 @@
                                                     ItemMoved="ItemMoved"
                                                     Value="item"
                                                     ValueChanged="SendItemChanged">
-                                                    @if (CanVote || IsDiscussing)
+                                                    @if (CanVote)
                                                     {
                                                         <InputVoting
-                                                            VotesTotal="@(IsDiscussing ? item.Votes : VotesTotal)"
+                                                            VotesTotal="VoteByItemCount"
                                                             RemainingVotes="RemainingVotes"
                                                             CanVote="CanVote"
                                                             Value="item.Votes"
                                                             ValueExpression="@(() => item.Votes)"
                                                             ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
+                                                    }
+                                                    @if (IsDiscussing)
+                                                    {
+                                                        <VotesDisplay Value="item.Votes" />
                                                     }
                                                 </RetroItem>
 
@@ -104,15 +109,15 @@
                                                 {
                                                     <RetroItem
                                                         @key="child.Id"
-                                                        CanView="@(CanView(child))"
+                                                        CanView="CanView(child)"
                                                         CanEdit="false"
-                                                        CanRemove="@(CanRemove(child))"
+                                                        CanRemove="CanRemove(child)"
                                                         CanMove="false"
                                                         BackgroundColor="@column.Color"
                                                         ItemRemoved="ItemRemoved"
                                                         ItemMoved="@(_ => { })"
                                                         Value="child"
-                                                        ValueChanged="_ => { }"/>
+                                                        ValueChanged="@(_ => { })"/>
                                                 }
                                             </div>
                                         }
@@ -218,6 +223,12 @@
     public int VotesTotal { get; set; }
     
     /// <summary>
+    /// Vote by item count.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int VoteByItemCount { get; set; }
+    
+    /// <summary>
     /// Timer duration.
     /// </summary>
     [Parameter, EditorRequired]
@@ -246,12 +257,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
-    
-    /// <summary>
-    /// Link factory.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string, string> LinkFactory { get; set; } = default!;
 
     /// <summary>
     /// Create retro item callback.
@@ -335,13 +340,13 @@
     /// Finished action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback Finished { get; set; }
+    public EventCallback<long> Finished { get; set; }
     
     /// <summary>
     /// Hand raised action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback HandRaised { get; set; }
+    public EventCallback<long> HandRaised { get; set; }
     
     /// <summary>
     /// Facilitator given action.
@@ -378,7 +383,6 @@
     private bool CanMove => Session?.State == RetroStages.Grouping && IsFacilitator;
     private bool CanVote => Session?.State == RetroStages.Prioritizing;
     private bool HasDropSlot => CanMove && Columns.Count > 1;
-    private bool PrioritizingInProgress => CanVote && Participants.Any(p => p.TotalVotes < VotesTotal);
     private bool IsDiscussing => Session?.State == RetroStages.Discussing;
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
 
@@ -454,7 +458,7 @@
             return;
         }
             
-        if (PrioritizingInProgress && _confirmDialog is not null &&
+        if (CanVote && Participants.Any(p => p.TotalVotes < VotesTotal) && _confirmDialog is not null &&
             !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
             return;
         

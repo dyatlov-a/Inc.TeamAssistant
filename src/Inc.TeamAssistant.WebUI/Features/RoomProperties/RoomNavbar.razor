@@ -1,0 +1,24 @@
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
+
+<nav aria-label="Retro navigation">
+    <ul class="retro-navbar">
+        @foreach (var link in Links)
+        {
+            <li>
+                <a href="@link.Url" class="retro-navbar__item @CssClass(link)">@Localizer[link.TitleKey]</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+@code {
+    /// <summary>
+    /// Link items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<RoomNavbarLinkViewModel> Links { get; set; } = default!;
+
+    private string CssClass(RoomNavbarLinkViewModel link) => link.Selected
+        ? "retro-navbar__ite_selected"
+        : string.Empty;
+}

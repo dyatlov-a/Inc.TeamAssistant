@@ -6,7 +6,6 @@
 @inject RequestProcessor RequestProcessor
 @inject IStringLocalizer<RetroResources> Localizer
 @inject INotificationsService NotificationsService
-@inject NavRouter NavRouter
 
 @attribute [Authorize]
 
@@ -18,7 +17,6 @@
     Retry="Load"
     Value="_value"
     VotesCount="VotesCount"
-    LinkFactory="@(v => NavRouter.CreateRoute(v))"
     ValueChanged="OnValueChanged" />
 
 @code {

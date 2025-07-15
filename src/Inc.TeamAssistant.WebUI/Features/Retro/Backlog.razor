@@ -1,8 +1,8 @@
 @inject IStringLocalizer<RetroResources> Localizer
 
-<DashboardGrid HasFixedWidth="true">
+<DashboardGrid>
     <Toolbar>
-        <RetroNavbar RoomId="RoomId" LinkFactory="LinkFactory" />
+        <RoomNavbarContainer RoomId="RoomId" />
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
@@ -34,6 +34,18 @@
                                             ValueChanged="SendActionItemChanged"
                                             ItemRemoved="@(_ => { })"/>
                                     }
+                                    @if (stage != ActionItemStages.New && Loaders.TryGetValue(stage, out var loader))
+                                    {
+                                        var load = () => SendLoadHistory(stage);
+                                            
+                                        <Loading State="loader" Retry="load">
+                                            <div class="backlog-grid__column-more">
+                                                <Button ButtonMode="ButtonMode.Small" OnClick="load">
+                                                    @Localizer["More"]
+                                                </Button>
+                                            </div>
+                                        </Loading>
+                                    }
                                 </div>
                             </Content>
                         </Panel>
@@ -52,10 +64,22 @@
     public Guid RoomId { get; set; }
     
     /// <summary>
+    /// Page size for the backlog.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int PageSize { get; set; }
+    
+    /// <summary>
     /// Component state.
     /// </summary>
     [Parameter, EditorRequired]
     public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Loaders for different action item stages.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyDictionary<string, LoadingState> Loaders { get; set; } = default!;
     
     /// <summary>
     /// Action items for the backlog.
@@ -82,16 +106,16 @@
     public Func<Task> Retry { get; set; } = default!;
     
     /// <summary>
-    /// Link factory.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public Func<string, string> LinkFactory { get; set; } = default!;
-    
-    /// <summary>
     /// Action item changed callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
+    
+    /// <summary>
+    /// Load action items history callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<string> LoadHistory { get; set; }
 
     private const int DebounceDelay = 500;
     
@@ -99,4 +123,5 @@
     private string GetTitle(string stage) => Localizer[$"ActionItemStage{stage}Title"];
     private string GetHint(string stage) => Localizer[$"ActionItemStage{stage}Hint"];
     private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);
+    private async Task SendLoadHistory(string stage) => await LoadHistory.InvokeAsync(stage);
 }

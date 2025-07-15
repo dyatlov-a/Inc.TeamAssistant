@@ -5,9 +5,11 @@ namespace Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 public sealed record ChangeRetroPropertiesCommand(
     Guid RoomId,
     bool? IsFacilitator,
-    Guid? TemplateId,
+    Guid? RetroTemplateId,
+    Guid? SurveyTemplateId,
     TimeSpan? TimerDuration,
     int? VoteCount,
+    int? VoteByItemCount,
     string? RetroType)
     : IRequest
 {
@@ -16,25 +18,31 @@ public sealed record ChangeRetroPropertiesCommand(
         return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
-            TemplateId: null,
+            RetroTemplateId: null,
+            SurveyTemplateId: null,
             TimerDuration: null,
             VoteCount: null,
+            VoteByItemCount: null,
             RetroType: string.Empty);
     }
     
     public static ChangeRetroPropertiesCommand ChangeProperties(
         Guid roomId,
-        Guid templateId,
+        Guid retroTemplateId,
+        Guid surveyTemplateId,
         TimeSpan timerDuration,
         int voteCount,
+        int voteByItemCount,
         string retroType)
     {
         return new ChangeRetroPropertiesCommand(
             roomId,
             IsFacilitator: true,
-            templateId,
+            retroTemplateId,
+            surveyTemplateId,
             timerDuration,
             voteCount,
+            voteByItemCount,
             retroType);
     }
 }

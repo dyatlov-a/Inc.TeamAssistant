@@ -49,8 +49,8 @@
         ImageName: "user_avatar",
         Username: "adiatlov");
     
-    private readonly IReadOnlyCollection<LinkModel> _languages = LanguageSettings.LanguageIds
-        .Select(l => new LinkModel(l.Value, $"/{l.Value}"))
+    private readonly IReadOnlyCollection<MainLinkViewModel> _languages = LanguageSettings.LanguageIds
+        .Select(l => new MainLinkViewModel(l.Value, $"/{l.Value}"))
         .ToArray();
 
     private readonly IReadOnlyCollection<RoomDto> _teams = [

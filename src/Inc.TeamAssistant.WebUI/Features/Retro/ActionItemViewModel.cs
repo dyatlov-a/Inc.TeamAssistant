@@ -37,6 +37,14 @@ public sealed class ActionItemViewModel
         
         return this;
     }
+    
+    public ActionItemViewModel MoveToPinned()
+    {
+        State = ActionItemStages.Pinned;
+        Modified = DateTimeOffset.UtcNow;
+        
+        return this;
+    }
 
     public ActionItemViewModel Apply(ActionItemDto item)
     {
