@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
+using Inc.TeamAssistant.Tenants.Model.Commands.SetPersonRoomState;
 
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
@@ -41,8 +41,8 @@ public sealed class ParticipantViewModel
         return this;
     }
 
-    public SetRetroStateCommand ToCommand(Guid roomId)
+    public SetPersonRoomStateCommand ToCommand(Guid roomId)
     {
-        return new SetRetroStateCommand(roomId, Person.Id, Finished, HandRaised);
+        return new SetPersonRoomStateCommand(roomId, Person.Id, Finished, HandRaised);
     }
 }

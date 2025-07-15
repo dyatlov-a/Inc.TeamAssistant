@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Inc.TeamAssistant.Gateway.Bff;
 
 [ApiController]
-[Route("tenants/teams")]
+[Route("tenants/rooms")]
 [Authorize]
 public sealed class TenantsController : ControllerBase
 {
@@ -18,20 +18,26 @@ public sealed class TenantsController : ControllerBase
         _tenantService = tenantService ?? throw new ArgumentNullException(nameof(tenantService));
     }
     
-    [HttpGet("{teamId:Guid}")]
-    public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken token)
+    [HttpGet("{roomId:Guid}/properties")]
+    public async Task<IActionResult> GetRoomProperties(Guid roomId, CancellationToken token)
     {
-        return Ok(await _tenantService.GetRoom(teamId, token));
+        return Ok(await _tenantService.GetRoomProperties(roomId, token));
     }
     
-    [HttpGet("available/{teamId:Guid?}")]
-    public async Task<IActionResult> GetTeams(Guid? teamId, CancellationToken token)
+    [HttpGet("{roomId:Guid}")]
+    public async Task<IActionResult> GetTeam(Guid roomId, CancellationToken token)
     {
-        return Ok(await _tenantService.GetAvailableRooms(teamId, token));
+        return Ok(await _tenantService.GetRoom(roomId, token));
+    }
+    
+    [HttpGet("{roomId:Guid?}/available")]
+    public async Task<IActionResult> GetTeams(Guid? roomId, CancellationToken token)
+    {
+        return Ok(await _tenantService.GetAvailableRooms(roomId, token));
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTeam([FromBody]CreateRoomCommand command)
+    public async Task<IActionResult> Create([FromBody]CreateRoomCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -39,7 +45,7 @@ public sealed class TenantsController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateTeam([FromBody]UpdateRoomCommand command)
+    public async Task<IActionResult> Update([FromBody]UpdateRoomCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -48,10 +54,10 @@ public sealed class TenantsController : ControllerBase
         return Ok();
     }
     
-    [HttpDelete("{teamId:Guid}")]
-    public async Task<IActionResult> RemoveTeam(Guid teamId)
+    [HttpDelete("{roomId:Guid}")]
+    public async Task<IActionResult> Remove(Guid roomId)
     {
-        await _tenantService.RemoveRoom(teamId, CancellationToken.None);
+        await _tenantService.RemoveRoom(roomId, CancellationToken.None);
         
         return Ok();
     }

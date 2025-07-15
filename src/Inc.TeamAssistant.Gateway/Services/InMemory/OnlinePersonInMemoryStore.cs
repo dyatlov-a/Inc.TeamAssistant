@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Tenants.Application.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 

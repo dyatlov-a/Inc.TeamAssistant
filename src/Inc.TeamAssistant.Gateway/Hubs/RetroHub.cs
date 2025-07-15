@@ -1,15 +1,15 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
-using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
-using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
-using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeTimer;
+using Inc.TeamAssistant.Tenants.Model.Commands.JoinToRoom;
+using Inc.TeamAssistant.Tenants.Model.Commands.LeaveFromRoom;
+using Inc.TeamAssistant.Tenants.Model.Commands.LeaveFromRooms;
+using Inc.TeamAssistant.Tenants.Model.Commands.SetPersonRoomState;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -33,7 +33,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString("N"));
 
-        await _mediator.Send(new JoinToRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
+        await _mediator.Send(new JoinToRoomCommand(Context.ConnectionId, roomId), CancellationToken.None);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
@@ -41,7 +41,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));
         
-        await _mediator.Send(new LeaveFromRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
+        await _mediator.Send(new LeaveFromRoomCommand(Context.ConnectionId, roomId), CancellationToken.None);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -73,7 +73,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.SetRetroStateMethod)]
-    public async Task SetRetroState(SetRetroStateCommand command)
+    public async Task SetRetroState(SetPersonRoomStateCommand command)
     {
         await _mediator.Send(command, CancellationToken.None);
     }
@@ -107,7 +107,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.GiveFacilitatorMethod)]
-    public async Task GiveFacilitator(ChangeRetroPropertiesCommand command)
+    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -116,7 +116,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var result = await _mediator.Send(new LeaveFromAllCommand(Context.ConnectionId), CancellationToken.None);
+        var result = await _mediator.Send(new LeaveFromRoomsCommand(Context.ConnectionId), CancellationToken.None);
 
         foreach (var roomId in result.RoomIds)
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));

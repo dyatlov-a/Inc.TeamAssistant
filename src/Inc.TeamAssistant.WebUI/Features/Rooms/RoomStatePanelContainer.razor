@@ -1,0 +1,103 @@
+@implements IDisposable
+
+@inject RoomStore RoomStore
+@inject IStringLocalizer<Retro.RetroResources> Localizer
+
+<RoomStatePanel
+    State="_state"
+    Retry="Load"
+    CanMovePrevious="CanMovePrevious"
+    CurrentUserId="CurrentUserId"
+    IsFacilitator="RoomStore.RoomProperties.IsFacilitator"
+    TimerDuration="RoomStore.RoomProperties.Properties.TimerDuration"
+    CurrentTimer="RoomStore.RoomProperties.CurrentTimer"
+    MoveNext="MoveNext"
+    MovePrevious="MovePrevious"
+    TimerChanged="TimerChanged"
+    Finished="Finished"
+    HandRaised="HandRaised"
+    FacilitatorGiven="FacilitatorGiven"
+    RetroPropertiesOpened="OnRetroPropertiesOpened" />
+<ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
+    <RetroPropertiesEditorContainer
+        RoomId="RoomId"
+        RoomProperties="RoomStore.RoomProperties.Properties"
+        RetroPropertiesChanged="OnRetroPropertiesChanged" />
+</ContentDialog>
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Current user identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveNext { get; set; }
+    
+    /// <summary>
+    /// Can move to previous.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanMovePrevious { get; set; }
+    
+    /// <summary>
+    /// Move to previous action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MovePrevious { get; set; }
+    
+    /// <summary>
+    /// Timer changed action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<TimeSpan?> TimerChanged { get; set; }
+    
+    /// <summary>
+    /// Finish action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<long> Finished { get; set; }
+    
+    /// <summary>
+    /// Hand raised action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<long> HandRaised { get; set; }
+    
+    /// <summary>
+    /// Facilitator given action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback FacilitatorGiven { get; set; }
+    
+    private readonly LoadingState _state = LoadingState.Done();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+        
+        RoomStore.OnChange += StateHasChanged;
+    }
+
+    private async Task Load() => await RoomStore.Initialize(RoomId, _state);
+
+    private ContentDialog? _retroPropertiesEditor;
+    
+    private void OnRetroPropertiesOpened() => _retroPropertiesEditor?.Open();
+    private void OnRetroPropertiesChanged() => _retroPropertiesEditor?.Close();
+    
+    public void Dispose()
+    {
+        RoomStore.OnChange -= StateHasChanged;
+    }
+}

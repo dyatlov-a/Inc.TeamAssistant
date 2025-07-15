@@ -3,165 +3,148 @@
 @inject IRenderContext RenderContext
 @inject IServiceProvider ServiceProvider
 
-<DashboardGrid>
-    <Toolbar>
-        <div class="retro-toolbar__content">
-            <RetroStatePanel
-                IsDiscussing="IsDiscussing"
-                CurrentUserId="CurrentUserId"
-                IsFacilitator="IsFacilitator"
-                TimerDuration="TimerDuration"
-                CurrentTimer="CurrentTimer"
-                MoveNext="OnMoveNext"
-                MovePrevious="ToPreviousMoved"
-                TimerChanged="TimerChanged"
-                Finished="Finished"
-                HandRaised="HandRaised"
-                FacilitatorGiven="FacilitatorGiven"
-                RetroPropertiesOpened="RetroPropertiesOpened" />
-            <RoomNavbarContainer RoomId="RoomId" />
-            <RetroParticipants
-                CanVote="CanVote"
-                VotesTotal="VotesTotal"
-                Participants="Participants"
-                IsFacilitator="IsFacilitator"
-                HandLowered="HandLowered" />
-        </div>
-    </Toolbar>
-    <Content>
-        <Loading State="State" Retry="Retry">
-            <Navigations Items="NavItems" MoveToNext="@((string _) => OnMoveNext())" />
-            <p class="retro__text">@Localizer[RetroTextKey]</p>
-            <div class="retro-grid">
-                <div class="retro-grid__columns">
-                    @foreach (var column in Columns.OrderBy(c => c.Position))
-                    {
-                        var description = GetColumnDescription(column);
-                        var hasDescription = !string.IsNullOrWhiteSpace(description);
+<Loading State="State" Retry="Retry">
+    <Navigations Items="NavItems" MoveToNext="@((string _) => OnMoveNext())" />
+    <p class="retro__text">@Localizer[RetroTextKey]</p>
+    <div class="retro-grid">
+        <div class="retro-grid__columns">
+            @foreach (var column in Columns.OrderBy(c => c.Position))
+            {
+                var description = GetColumnDescription(column);
+                var hasDescription = !string.IsNullOrWhiteSpace(description);
                             
-                        <div class="retro-grid__column">
-                            <Panel
-                                Header="@Localizer[column.Name]"
-                                IsOpen="true"
-                                HasActions="@(CanCreateRetroItem || hasDescription)">
-                                <Actions>
-                                    @if (CanCreateRetroItem)
-                                    {
-                                        <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
-                                            @Localizer["Add"]
-                                        </Button>
-                                    }
-                                    @if (hasDescription)
-                                    {    
-                                        <Hint Text="@description" />
-                                    }
-                                </Actions>
-                                <Content>
-                                    <div class="retro-grid__column-items">
-                                        @if (HasDropSlot)
-                                        {
-                                            <RetroSlot
-                                                ColumnId="column.Id"
-                                                CanMove="CanMove"
-                                                ItemMoved="ItemMovedToSlot"/>
-                                        }
-                                        @foreach (var item in Items
-                                                      .Where(i => i.ColumnId == column.Id || (Columns.All(c => c.Id != i.ColumnId) && column.Id == StartColumn))
-                                                      .Where(i => !i.ParentId.HasValue)
-                                                      .OrderByDescending(c => c.Position))
-                                        {
-                                            var children = Items
-                                                .Where(i => i.ParentId == item.Id)
-                                                .OrderByDescending(c => c.Position)
-                                                .ToArray();
-                                            var hasChildren = children.Any();
+                <div class="retro-grid__column">
+                    <Panel
+                        Header="@Localizer[column.Name]"
+                        IsOpen="true"
+                        HasActions="@(CanCreateRetroItem || hasDescription)">
+                        <Actions>
+                            @if (CanCreateRetroItem)
+                            {
+                                <Button IsDisabled="IsCreating" OnClick="() => SendRetroItemCreated(column.Id)">
+                                    @Localizer["Add"]
+                                </Button>
+                            }
+                            @if (hasDescription)
+                            {    
+                                <Hint Text="@description" />
+                            }
+                        </Actions>
+                        <Content>
+                            <div class="retro-grid__column-items">
+                                @if (HasDropSlot)
+                                {
+                                    <RetroSlot
+                                        ColumnId="column.Id"
+                                        CanMove="CanMove"
+                                        ItemMoved="ItemMovedToSlot"/>
+                                }
+                                @foreach (var item in Items
+                                              .Where(i => i.ColumnId == column.Id || (Columns.All(c => c.Id != i.ColumnId) && column.Id == StartColumn))
+                                              .Where(i => !i.ParentId.HasValue)
+                                              .OrderByDescending(c => c.Position))
+                                {
+                                    var children = Items
+                                        .Where(i => i.ParentId == item.Id)
+                                        .OrderByDescending(c => c.Position)
+                                        .ToArray();
+                                    var hasChildren = children.Any();
 
-                                            <div>
-                                                <RetroItem
-                                                    @key="item.Id"
-                                                    CanView="CanView(item)"
-                                                    CanEdit="CanEdit(item)"
-                                                    CanRemove="@(CanRemove(item) && !hasChildren)"
-                                                    CanMove="CanMove"
-                                                    BackgroundColor="@column.Color"
-                                                    DebounceDelay="DebounceDelay"
-                                                    ItemRemoved="ItemRemoved"
-                                                    ItemMoved="ItemMoved"
-                                                    Value="item"
-                                                    ValueChanged="SendItemChanged">
-                                                    @if (CanVote)
-                                                    {
-                                                        <InputVoting
-                                                            VotesTotal="VoteByItemCount"
-                                                            RemainingVotes="RemainingVotes"
-                                                            CanVote="CanVote"
-                                                            Value="item.Votes"
-                                                            ValueExpression="@(() => item.Votes)"
-                                                            ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
-                                                    }
-                                                    @if (IsDiscussing)
-                                                    {
-                                                        <VotesDisplay Value="item.Votes" />
-                                                    }
-                                                </RetroItem>
+                                    <div>
+                                        <RetroItem
+                                            @key="item.Id"
+                                            CanView="CanView(item)"
+                                            CanEdit="CanEdit(item)"
+                                            CanRemove="@(CanRemove(item) && !hasChildren)"
+                                            CanMove="CanMove"
+                                            BackgroundColor="@column.Color"
+                                            DebounceDelay="DebounceDelay"
+                                            ItemRemoved="ItemRemoved"
+                                            ItemMoved="ItemMoved"
+                                            Value="item"
+                                            ValueChanged="SendItemChanged">
+                                            @if (CanVote)
+                                            {
+                                                <InputVoting
+                                                    VotesTotal="RoomProperties.VoteByItemCount"
+                                                    RemainingVotes="RemainingVotes"
+                                                    CanVote="CanVote"
+                                                    Value="item.Votes"
+                                                    ValueExpression="@(() => item.Votes)"
+                                                    ValueChanged="@((int v) => SendVotesChanged(item.Id, v))"/>
+                                            }
+                                            @if (IsDiscussing)
+                                            {
+                                                <VotesDisplay Value="item.Votes" />
+                                            }
+                                        </RetroItem>
 
-                                                @foreach (var child in children)
-                                                {
-                                                    <RetroItem
-                                                        @key="child.Id"
-                                                        CanView="CanView(child)"
-                                                        CanEdit="false"
-                                                        CanRemove="CanRemove(child)"
-                                                        CanMove="false"
-                                                        BackgroundColor="@column.Color"
-                                                        ItemRemoved="ItemRemoved"
-                                                        ItemMoved="@(_ => { })"
-                                                        Value="child"
-                                                        ValueChanged="@(_ => { })"/>
-                                                }
-                                            </div>
+                                        @foreach (var child in children)
+                                        {
+                                            <RetroItem
+                                                @key="child.Id"
+                                                CanView="CanView(child)"
+                                                CanEdit="false"
+                                                CanRemove="CanRemove(child)"
+                                                CanMove="false"
+                                                BackgroundColor="@column.Color"
+                                                ItemRemoved="ItemRemoved"
+                                                ItemMoved="@(_ => { })"
+                                                Value="child"
+                                                ValueChanged="@(_ => { })"/>
                                         }
                                     </div>
-                                </Content>
-                            </Panel>
-                        </div>
-                    }
-                    @if (IsDiscussing)
-                    {
-                        <div class="retro-grid__column">
-                            <Panel Header="@Localizer["Actions"]" IsOpen="true" HasActions="CanCreateActionItem">
-                                <Actions>
-                                    <Button OnClick="SendActionItemCreated">
-                                        @Localizer["Add"]
-                                    </Button>
-                                    <Hint Text="@Localizer["ActionsHint"]" />
-                                </Actions>
-                                <Content>
-                                    <div class="retro-grid__column-items">
-                                        @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
-                                        {
-                                            <ActionItem
-                                                CanEdit="IsFacilitator"
-                                                CanRemove="IsFacilitator"
-                                                CanMoveToState="false"
-                                                Value="actionItem"
-                                                DebounceDelay="DebounceDelay"
-                                                ValueChanged="SendActionItemChanged"
-                                                ItemRemoved="SendActionItemRemoved" />
-                                        }
-                                    </div>
-                                </Content>
-                            </Panel>
-                        </div>
-                    }
+                                }
+                            </div>
+                        </Content>
+                    </Panel>
                 </div>
-            </div>
-        </Loading>
-    </Content>
-</DashboardGrid>
-<ConfirmDialog @ref="_confirmDialog" />
+            }
+            @if (IsDiscussing)
+            {
+                <div class="retro-grid__column">
+                    <Panel Header="@Localizer["Actions"]" IsOpen="true" HasActions="CanCreateActionItem">
+                        <Actions>
+                            <Button OnClick="SendActionItemCreated">
+                                @Localizer["Add"]
+                            </Button>
+                            <Hint Text="@Localizer["ActionsHint"]" />
+                        </Actions>
+                        <Content>
+                            <div class="retro-grid__column-items">
+                                @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
+                                {
+                                    <ActionItem
+                                        CanEdit="IsFacilitator"
+                                        CanRemove="IsFacilitator"
+                                        CanMoveToState="false"
+                                        Value="actionItem"
+                                        DebounceDelay="DebounceDelay"
+                                        ValueChanged="SendActionItemChanged"
+                                        ItemRemoved="SendActionItemRemoved" />
+                                }
+                            </div>
+                        </Content>
+                    </Panel>
+                </div>
+            }
+        </div>
+    </div>
+</Loading>
 
 @code {
+    /// <summary>
+    /// Retro properties.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RoomPropertiesDto RoomProperties { get; set; } = default!;
+    
+    /// <summary>
+    /// Is retro discussing.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsDiscussing { get; set; }
+    
     /// <summary>
     /// Room identifier.
     /// </summary>
@@ -191,12 +174,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public RetroSessionDto? Session { get; set; }
-    
-    /// <summary>
-    /// Moderator id.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public long? FacilitatorId { get; set; }
 
     /// <summary>
     /// Retro items.
@@ -209,48 +186,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
-
-    /// <summary>
-    /// Retro session participants.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
-
-    /// <summary>
-    /// Votes total.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public int VotesTotal { get; set; }
-    
-    /// <summary>
-    /// Vote by item count.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public int VoteByItemCount { get; set; }
-    
-    /// <summary>
-    /// Timer duration.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public TimeSpan TimerDuration { get; set; }
-    
-    /// <summary>
-    /// Retro type.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string RetroType { get; set; } = default!;
     
     /// <summary>
     /// Is creating retro item.
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsCreating { get; set; }
-    
-    /// <summary>
-    /// Current timer value.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public TimeSpan? CurrentTimer { get; set; }
 
     /// <summary>
     /// Action for retry.
@@ -330,43 +271,6 @@
     [Parameter, EditorRequired]
     public EventCallback ToPreviousMoved { get; set; }
     
-    /// <summary>
-    /// Timer changed action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<TimeSpan?> TimerChanged { get; set; }
-    
-    /// <summary>
-    /// Finished action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<long> Finished { get; set; }
-    
-    /// <summary>
-    /// Hand raised action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<long> HandRaised { get; set; }
-    
-    /// <summary>
-    /// Facilitator given action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback FacilitatorGiven { get; set; }
-    
-    /// <summary>
-    /// Hand raised event callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<long> HandLowered { get; set; }
-    
-    /// <summary>
-    /// Retro properties opened action.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback RetroPropertiesOpened { get; set; }
-
-    private ConfirmDialog? _confirmDialog;
     private Guid StartColumn => Columns.First().Id;
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;
@@ -377,14 +281,13 @@
         .ToArray();
 
     private const int DebounceDelay = 500;
-    private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
+    private int RemainingVotes => RoomProperties.VoteCount - Items.Sum(i => i.Votes);
     private bool CanCreateRetroItem => Session is null;
     private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
     private bool CanMove => Session?.State == RetroStages.Grouping && IsFacilitator;
     private bool CanVote => Session?.State == RetroStages.Prioritizing;
     private bool HasDropSlot => CanMove && Columns.Count > 1;
-    private bool IsDiscussing => Session?.State == RetroStages.Discussing;
-    private bool IsFacilitator => CurrentUserId == FacilitatorId;
+    private bool IsFacilitator => CurrentUserId == RoomProperties.FacilitatorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -398,7 +301,7 @@
 
     private bool CanView(RetroItemViewModel item)
     {
-        var canAsUser = Session is not null || RetroType == RetroTypes.Opened;
+        var canAsUser = Session is not null || RoomProperties.RetroType == RetroTypes.Opened;
         var canAsOwner = item.HasOwnerRights(CurrentUserId);
 
         return canAsUser || canAsOwner;
@@ -457,10 +360,6 @@
             
             return;
         }
-            
-        if (CanVote && Participants.Any(p => p.TotalVotes < VotesTotal) && _confirmDialog is not null &&
-            !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
-            return;
         
         await OnNextMoved.InvokeAsync(Session.Id);
     }

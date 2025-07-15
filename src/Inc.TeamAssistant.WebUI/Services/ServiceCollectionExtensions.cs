@@ -71,6 +71,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<NavRouter>()
             .AddScoped(typeof(DragAndDropService<>))
             .AddScoped<TenantStore>()
+            .AddScoped<RoomStore>()
             
             .AddScoped<IValidator<CheckBotFormModel>, CheckBotFormModelValidator>()
             .AddScoped<IValidator<SelectFeaturesFormModel>, SelectFeaturesFormValidator>()

@@ -12,18 +12,15 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
     private readonly IRetroSessionRepository _repository;
     private readonly IRetroEventSender _eventSender;
     private readonly IVoteStore _voteStore;
-    private readonly IRetroStage _retroStage;
 
     public MoveToNextRetroStateCommandHandler(
         IRetroSessionRepository repository,
         IRetroEventSender eventSender,
-        IVoteStore voteStore,
-        IRetroStage retroStage)
+        IVoteStore voteStore)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
-        _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
     }
 
     public async Task Handle(MoveToNextRetroStateCommand command, CancellationToken token)
@@ -41,7 +38,6 @@ internal sealed class MoveToNextRetroStateCommandHandler : IRequestHandler<MoveT
         await _repository.Update(retroSession, votes, token);
 
         _voteStore.Clear(retroSession.Id);
-        _retroStage.Clear(retroSession.RoomId);
         
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
     }

@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Tenants.Application.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 

@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Features.Rooms;
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
@@ -9,12 +10,12 @@ namespace Inc.TeamAssistant.Retro.Application.QueryHandlers.GetActionItems;
 internal sealed class GetActionItemsQueryHandler : IRequestHandler<GetActionItemsQuery, GetActionItemsResult>
 {
     private readonly IActionItemReader _reader;
-    private readonly IRetroPropertiesProvider _provider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
 
-    public GetActionItemsQueryHandler(IActionItemReader reader, IRetroPropertiesProvider provider)
+    public GetActionItemsQueryHandler(IActionItemReader reader, IRoomPropertiesProvider propertiesProvider)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
 
     public async Task<GetActionItemsResult> Handle(GetActionItemsQuery query, CancellationToken token)
@@ -22,7 +23,7 @@ internal sealed class GetActionItemsQueryHandler : IRequestHandler<GetActionItem
         ArgumentNullException.ThrowIfNull(query);
 
         var firstPage = 0;
-        var properties = await _provider.Get(query.RoomId, token);
+        var properties = await _propertiesProvider.Get(query.RoomId, token);
         var newItems = await _reader.Read(query.RoomId, ActionItemState.New, firstPage, limit: int.MaxValue, token);
         var doneItems = await _reader.Read(query.RoomId, ActionItemState.Done, firstPage, query.Limit, token);
         var pinnedItems = await _reader.Read(query.RoomId, ActionItemState.Pinned, firstPage, query.Limit, token);

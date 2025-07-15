@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
 
@@ -25,5 +26,5 @@ public interface IRetroHubClient
     
     Task TimerChanged(TimeSpan? duration);
     
-    Task RetroPropertiesChanged(RetroPropertiesDto properties);
+    Task RetroPropertiesChanged(RoomPropertiesDto properties);
 }

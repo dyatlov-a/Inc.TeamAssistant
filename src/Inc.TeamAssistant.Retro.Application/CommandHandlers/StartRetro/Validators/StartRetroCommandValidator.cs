@@ -1,5 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Rooms;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
@@ -9,12 +10,12 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.StartRetro.Validat
 internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroCommand>
 {
     private readonly IRetroReader _reader;
-    private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
     public StartRetroCommandValidator(
         IRetroReader reader,
-        IRetroPropertiesProvider propertiesProvider,
+        IRoomPropertiesProvider propertiesProvider,
         IPersonResolver personResolver)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));

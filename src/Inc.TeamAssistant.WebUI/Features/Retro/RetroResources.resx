@@ -36,9 +36,6 @@
     <data name="Reconnect" xml:space="preserve">
         <value>Reconnect</value>
     </data>
-    <data name="ConfirmMoveToDiscussing" xml:space="preserve">
-        <value>Early voting closure. Proceed to discussion?</value>
-    </data>
     <data name="DiscussingText" xml:space="preserve">
         <value>At this stage, team members sequentially discuss the cards that were created and supported during voting. The goal is to gain a deeper understanding of each card, identify issues, share perspectives, and suggest solutions.</value>
     </data>

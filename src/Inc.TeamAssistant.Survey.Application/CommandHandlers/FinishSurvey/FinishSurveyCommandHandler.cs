@@ -17,8 +17,6 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
     public async Task Handle(FinishSurveyCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        // TODO: Check rights
         
         var survey = await command.SurveyId.Required(_repository.Find, token);
 

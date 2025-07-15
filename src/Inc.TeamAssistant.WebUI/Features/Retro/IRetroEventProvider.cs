@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
 
@@ -25,5 +26,5 @@ public interface IRetroEventProvider
     
     IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed);
     
-    IDisposable OnRetroPropertiesChanged(Func<RetroPropertiesDto, Task> changed);
+    IDisposable OnRetroPropertiesChanged(Func<RoomPropertiesDto, Task> changed);
 }

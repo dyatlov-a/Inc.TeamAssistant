@@ -19,8 +19,6 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
     public async Task Handle(StartSurveyCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        // TODO: Check rights
         
         var templates = await _reader.GetTemplates(token);
         var template = templates.Single(t => t.Id == command.TemplateId);

@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.Rooms;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
+using Inc.TeamAssistant.Tenants.Domain;
 
 namespace Inc.TeamAssistant.Tenants.DataAccess;
 
@@ -14,8 +16,7 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<T> Get<T>(Guid roomId, CancellationToken token)
-        where T : class, new()
+    public async Task<RoomProperties> Get(Guid roomId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -33,15 +34,12 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
         
         var data = await connection.QuerySingleOrDefaultAsync<string>(command);
 
-        var properties = !string.IsNullOrWhiteSpace(data)
-            ? JsonSerializer.Deserialize<T>(data)
-            : null;
+        var properties = JsonSerializer.Deserialize<RoomProperties>(data!)!;
 
-        return properties ?? new T();
+        return properties;
     }
 
-    public async Task Set<T>(Guid roomId, T properties, CancellationToken token)
-        where T : class, new()
+    public async Task Set(Guid roomId, RoomProperties properties, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(properties);
         

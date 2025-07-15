@@ -1,8 +1,8 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -91,7 +91,7 @@ public sealed class RetroController : ControllerBase
     }
 
     [HttpPut("properties")]
-    public async Task<IActionResult> ChangeRetroProperties([FromBody]ChangeRetroPropertiesCommand command)
+    public async Task<IActionResult> ChangeRetroProperties([FromBody]ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
