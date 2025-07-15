@@ -42,7 +42,7 @@ Collect a random coffee meetings 💬.
 
 ## How to use
 
-Use my backend [constructor](https://teamassist.bot/constructor) for adding your bot
+Use my backend [constructor](https://easyteam.space/constructor) for adding your bot
 In the constructor, you can create a bot, add commands, and set up the bot's behavior.
 
 1. Login with your telegram account
@@ -85,10 +85,10 @@ The community looks forward to your contributions.
 
 - [X] Create a bot for estimate tasks in SP
 - [X] Create a bot to notify about code review
-- [X] Create a bot to show teammates on the world [map](https://teamassist.bot/en/map/00e24fa287f14e25889995b27eea319f)
+- [X] Create a bot to show teammates on the world [map](https://easyteam.space/en/map/00e24fa287f14e25889995b27eea319f)
 - [X] Add a feature to estimate tasks in t-shirts
 - [X] Create a bot to help with organizing random coffee
-- [X] Create a page to request a [demo](https://teamassist.bot/)
+- [X] Create a page to request a [demo](https://easyteam.space/)
 - [X] Update blazor app
 - [X] Add a constructor for the Telegram bot
 - [X] Add dashboard for the team (review stats, estimate stats...)
