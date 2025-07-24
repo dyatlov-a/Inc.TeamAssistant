@@ -57,14 +57,8 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Drag here to change the type</value>
     </data>
-    <data name="NextHint" xml:space="preserve">
-        <value>Next</value>
-    </data>
     <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Are you sure you want to delete the card?</value>
-    </data>
-    <data name="PreviousHint" xml:space="preserve">
-        <value>Previous</value>
     </data>
     <data name="Actions" xml:space="preserve">
         <value>Actions</value>
@@ -75,26 +69,8 @@
     <data name="ActionItemStageDoneTitle" xml:space="preserve">
         <value>Done</value>
     </data>
-    <data name="TimerStart" xml:space="preserve">
-        <value>Start</value>
-    </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Stop</value>
-    </data>
-    <data name="TimerStartHint" xml:space="preserve">
-        <value>Start timer</value>
-    </data>
-    <data name="FinishHint" xml:space="preserve">
-        <value>I am finished</value>
-    </data>
-    <data name="ConfirmGiveFacilitator" xml:space="preserve">
-        <value>Are you sure you want to become a facilitator?</value>
-    </data>
-    <data name="GiveFacilitatorHint" xml:space="preserve">
-        <value>Request permission to facilitate</value>
-    </data>
-    <data name="RaiseHandHint" xml:space="preserve">
-        <value>Raise hand</value>
     </data>
     <data name="LowerHandHint" xml:space="preserve">
         <value>Lower hand</value>
@@ -146,9 +122,6 @@
     </data>
     <data name="ColumnDiscussedDescription" xml:space="preserve">
         <value>Topics that have already been reviewed. Decisions have been made, and no further discussion is needed.</value>
-    </data>
-    <data name="RetroPropertiesHint" xml:space="preserve">
-        <value>Change retro properties</value>
     </data>
     <data name="RetroProperties" xml:space="preserve">
         <value>Retro properties</value>

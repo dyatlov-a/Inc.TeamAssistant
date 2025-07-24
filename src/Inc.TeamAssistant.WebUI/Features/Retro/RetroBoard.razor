@@ -6,8 +6,8 @@
 <DashboardGrid>
     <Toolbar>
         <div class="retro-toolbar__content">
-            <RetroStatePanel
-                IsDiscussing="IsDiscussing"
+            <RoomStatePanel
+                HasPrevious="IsDiscussing"
                 CurrentUserId="CurrentUserId"
                 IsFacilitator="IsFacilitator"
                 TimerDuration="TimerDuration"
@@ -18,7 +18,7 @@
                 Finished="Finished"
                 HandRaised="HandRaised"
                 FacilitatorGiven="FacilitatorGiven"
-                RetroPropertiesOpened="RetroPropertiesOpened" />
+                RoomPropertiesOpened="RetroPropertiesOpened" />
             <RoomNavbarContainer RoomId="RoomId" />
             <RetroParticipants
                 CanVote="CanVote"

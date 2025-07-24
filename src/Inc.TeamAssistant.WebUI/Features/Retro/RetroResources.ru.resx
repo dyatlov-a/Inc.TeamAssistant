@@ -57,14 +57,8 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Перетащите сюда, чтобы изменить тип</value>
     </data>
-    <data name="NextHint" xml:space="preserve">
-        <value>Далее</value>
-    </data>
     <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Вы действительно желаете удалить карточку?</value>
-    </data>
-    <data name="PreviousHint" xml:space="preserve">
-        <value>Назад</value>
     </data>
     <data name="Actions" xml:space="preserve">
         <value>Действия</value>
@@ -75,26 +69,8 @@
     <data name="ActionItemStageNewTitle" xml:space="preserve">
         <value>В работу</value>
     </data>
-    <data name="TimerStart" xml:space="preserve">
-        <value>Старт</value>
-    </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Остановить</value>
-    </data>
-    <data name="TimerStartHint" xml:space="preserve">
-        <value>Запустить таймер</value>
-    </data>
-    <data name="FinishHint" xml:space="preserve">
-        <value>Я завершил</value>
-    </data>
-    <data name="GiveFacilitatorHint" xml:space="preserve">
-        <value>Запросить права для фасилитации</value>
-    </data>
-    <data name="ConfirmGiveFacilitator" xml:space="preserve">
-        <value>Вы уверены, что хотите стать фасилитатором?</value>
-    </data>
-    <data name="RaiseHandHint" xml:space="preserve">
-        <value>Поднять руку</value>
     </data>
     <data name="LowerHandHint" xml:space="preserve">
         <value>Опустить руку</value>
@@ -137,9 +113,6 @@
     </data>
     <data name="ColumnContinueTitle" xml:space="preserve">
         <value>Продолжать</value>
-    </data>
-    <data name="RetroPropertiesHint" xml:space="preserve">
-        <value>Изменить настройик ретро</value>
     </data>
     <data name="RetroProperties" xml:space="preserve">
         <value>Настройки ретро</value>

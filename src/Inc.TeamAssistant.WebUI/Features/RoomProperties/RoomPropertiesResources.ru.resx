@@ -90,4 +90,31 @@
     <data name="RetroBacklog" xml:space="preserve">
         <value>Список задач с ретро</value>
     </data>
+    <data name="FinishHint" xml:space="preserve">
+        <value>Я завершил</value>
+    </data>
+    <data name="RaiseHandHint" xml:space="preserve">
+        <value>Поднять руку</value>
+    </data>
+    <data name="TimerStartHint" xml:space="preserve">
+        <value>Запустить таймер</value>
+    </data>
+    <data name="RoomPropertiesHint" xml:space="preserve">
+        <value>Изменить настройки комнаты</value>
+    </data>
+    <data name="PreviousHint" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="NextHint" xml:space="preserve">
+        <value>Далее</value>
+    </data>
+    <data name="GiveFacilitatorHint" xml:space="preserve">
+        <value>Запросить права для фасилитации</value>
+    </data>
+    <data name="TimerStart" xml:space="preserve">
+        <value>Старт</value>
+    </data>
+    <data name="ConfirmGiveFacilitator" xml:space="preserve">
+        <value>Вы уверены, что хотите стать фасилитатором?</value>
+    </data>
 </root>

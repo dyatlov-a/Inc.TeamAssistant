@@ -1,6 +1,6 @@
 @implements IDisposable
 
-@inject IStringLocalizer<RetroResources> Localizer
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
 
 <div class="retro-state-panel">
     <a
@@ -30,14 +30,14 @@
             <ClockCheckIcon Size="@IconSize" /> @TimerValue
         </a>
         <a
-            title="@Localizer["RetroPropertiesHint"]"
+            title="@Localizer["RoomPropertiesHint"]"
             href="#"
             class="retro__link retro__link_active retro__link_right"
-            @onclick="OnRetroPropertiesOpened"
+            @onclick="OnRoomPropertiesOpened"
             @onclick:preventDefault="true">
             <SettingsIcon Size="@IconSize" />
         </a>
-        if (IsDiscussing)
+        if (HasPrevious)
         {
             <a
                 title="@Localizer["PreviousHint"]"
@@ -76,10 +76,10 @@
 
 @code {
     /// <summary>
-    ///  Is discussing state.
+    /// Has previous state.
     /// </summary>
     [Parameter, EditorRequired]
-    public bool IsDiscussing { get; set; }
+    public bool HasPrevious { get; set; }
     
     /// <summary>
     /// Current user identifier.
@@ -148,10 +148,10 @@
     public EventCallback FacilitatorGiven { get; set; }
     
     /// <summary>
-    /// Retro properties opened action.
+    /// Room properties opened action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback RetroPropertiesOpened { get; set; }
+    public EventCallback RoomPropertiesOpened { get; set; }
 
     private const string IconSize = "26px";
     private TimeSpan? _currentTimer;
@@ -159,7 +159,7 @@
     private ConfirmDialog? _confirmDialog;
 
     private string TimerValue => _currentTimer.HasValue
-        ? _currentTimer.Value.ToString(@"mm\:ss")
+        ? _currentTimer.Value.ToShortTime()
         : IsFacilitator
             ? Localizer["TimerStart"]
             : string.Empty;
@@ -234,7 +234,7 @@
         }
     }
 
-    private async Task OnRetroPropertiesOpened() => await RetroPropertiesOpened.InvokeAsync();
+    private async Task OnRoomPropertiesOpened() => await RoomPropertiesOpened.InvokeAsync();
     private async Task OnMoveNext() => await MoveNext.InvokeAsync();
     private async Task OnMoveToPrevious() => await MovePrevious.InvokeAsync();
     private async Task MoveToFinish() => await Finished.InvokeAsync(CurrentUserId);

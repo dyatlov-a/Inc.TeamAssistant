@@ -90,4 +90,31 @@
     <data name="RetroBacklog" xml:space="preserve">
         <value>Retro backlog</value>
     </data>
+    <data name="FinishHint" xml:space="preserve">
+        <value>I am finished</value>
+    </data>
+    <data name="RaiseHandHint" xml:space="preserve">
+        <value>Raise hand</value>
+    </data>
+    <data name="TimerStartHint" xml:space="preserve">
+        <value>Start timer</value>
+    </data>
+    <data name="RoomPropertiesHint" xml:space="preserve">
+        <value>Change room properties</value>
+    </data>
+    <data name="PreviousHint" xml:space="preserve">
+        <value>Previous</value>
+    </data>
+    <data name="NextHint" xml:space="preserve">
+        <value>Next</value>
+    </data>
+    <data name="GiveFacilitatorHint" xml:space="preserve">
+        <value>Request permission to facilitate</value>
+    </data>
+    <data name="TimerStart" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="ConfirmGiveFacilitator" xml:space="preserve">
+        <value>Are you sure you want to become a facilitator?</value>
+    </data>
 </root>

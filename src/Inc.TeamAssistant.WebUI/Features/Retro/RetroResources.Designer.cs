@@ -123,21 +123,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string NextHint {
-            get {
-                return ResourceManager.GetString("NextHint", resourceCulture);
-            }
-        }
-        
         internal static string ItemRemoveConfirm {
             get {
                 return ResourceManager.GetString("ItemRemoveConfirm", resourceCulture);
-            }
-        }
-        
-        internal static string PreviousHint {
-            get {
-                return ResourceManager.GetString("PreviousHint", resourceCulture);
             }
         }
         
@@ -159,45 +147,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string TimerStart {
-            get {
-                return ResourceManager.GetString("TimerStart", resourceCulture);
-            }
-        }
-        
         internal static string TimerStop {
             get {
                 return ResourceManager.GetString("TimerStop", resourceCulture);
-            }
-        }
-        
-        internal static string TimerStartHint {
-            get {
-                return ResourceManager.GetString("TimerStartHint", resourceCulture);
-            }
-        }
-        
-        internal static string FinishHint {
-            get {
-                return ResourceManager.GetString("FinishHint", resourceCulture);
-            }
-        }
-        
-        internal static string ConfirmGiveFacilitator {
-            get {
-                return ResourceManager.GetString("ConfirmGiveFacilitator", resourceCulture);
-            }
-        }
-        
-        internal static string GiveFacilitatorHint {
-            get {
-                return ResourceManager.GetString("GiveFacilitatorHint", resourceCulture);
-            }
-        }
-        
-        internal static string RaiseHandHint {
-            get {
-                return ResourceManager.GetString("RaiseHandHint", resourceCulture);
             }
         }
         
@@ -300,12 +252,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string ColumnDiscussedDescription {
             get {
                 return ResourceManager.GetString("ColumnDiscussedDescription", resourceCulture);
-            }
-        }
-        
-        internal static string RetroPropertiesHint {
-            get {
-                return ResourceManager.GetString("RetroPropertiesHint", resourceCulture);
             }
         }
         
