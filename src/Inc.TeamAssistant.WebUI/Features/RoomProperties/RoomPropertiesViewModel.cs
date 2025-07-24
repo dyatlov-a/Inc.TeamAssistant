@@ -4,10 +4,10 @@ using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyTemplates;
 
 namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
-public sealed record RetroPropertiesViewModel(
+public sealed record RoomPropertiesViewModel(
     IReadOnlyCollection<RetroTemplateDto> RetroTemplates,
     IReadOnlyCollection<SurveyTemplateDto> SurveyTemplates)
-    : IWithEmpty<RetroPropertiesViewModel>
+    : IWithEmpty<RoomPropertiesViewModel>
 {
-    public static RetroPropertiesViewModel Empty { get; } = new(RetroTemplates: [], SurveyTemplates: []);
+    public static RoomPropertiesViewModel Empty { get; } = new(RetroTemplates: [], SurveyTemplates: []);
 }

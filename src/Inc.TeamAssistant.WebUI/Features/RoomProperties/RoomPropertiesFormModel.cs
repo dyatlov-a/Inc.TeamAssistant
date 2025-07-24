@@ -3,7 +3,7 @@ using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
-public sealed class RetroPropertiesFormModel
+public sealed class RoomPropertiesFormModel
 {
     public Guid RetroTemplateId { get; private set; }
     public Guid SurveyTemplateId { get; private set; }
@@ -12,28 +12,28 @@ public sealed class RetroPropertiesFormModel
     public int VoteByItemCount { get; private set; }
     public string RetroType { get; private set; } = default!;
     
-    public RetroPropertiesFormModel ChangeRetroTemplate(Guid value)
+    public RoomPropertiesFormModel ChangeRetroTemplate(Guid value)
     {
         RetroTemplateId = value;
         
         return this;
     }
     
-    public RetroPropertiesFormModel ChangeSurveyTemplate(Guid value)
+    public RoomPropertiesFormModel ChangeSurveyTemplate(Guid value)
     {
         SurveyTemplateId = value;
         
         return this;
     }
     
-    public RetroPropertiesFormModel ChangeTimerDuration(TimeSpan value)
+    public RoomPropertiesFormModel ChangeTimerDuration(TimeSpan value)
     {
         TimerDuration = value;
         
         return this;
     }
     
-    public RetroPropertiesFormModel ChangeVoteCount(int value)
+    public RoomPropertiesFormModel ChangeVoteCount(int value)
     {
         VoteCount = value;
 
@@ -43,21 +43,21 @@ public sealed class RetroPropertiesFormModel
         return this;
     }
     
-    public RetroPropertiesFormModel ChangeVoteByItemCount(int value)
+    public RoomPropertiesFormModel ChangeVoteByItemCount(int value)
     {
         VoteByItemCount = value;
         
         return this;
     }
     
-    public RetroPropertiesFormModel ChangeRetroType(string value)
+    public RoomPropertiesFormModel ChangeRetroType(string value)
     {
         RetroType = value;
         
         return this;
     }
     
-    public RetroPropertiesFormModel Apply(RetroPropertiesDto model)
+    public RoomPropertiesFormModel Apply(RetroPropertiesDto model)
     {
         ArgumentNullException.ThrowIfNull(model);
         

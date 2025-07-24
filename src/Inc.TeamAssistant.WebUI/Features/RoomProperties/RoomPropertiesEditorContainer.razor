@@ -2,7 +2,7 @@
 @inject ISurveyService SurveyService
 @inject RequestProcessor RequestProcessor
 
-<RetroPropertiesEditor
+<RoomPropertiesEditor
     FormModel="_formModel"
     RetroTemplates="_retroTemplates"
     SurveyTemplates="_surveyTemplates"
@@ -30,7 +30,7 @@
     public EventCallback RetroPropertiesChanged { get; set; }
 
     private Guid _roomId = Guid.Empty;
-    private readonly RetroPropertiesFormModel _formModel = new();
+    private readonly RoomPropertiesFormModel _formModel = new();
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroTemplateDto> _retroTemplates = new();
     private readonly List<SurveyTemplateDto> _surveyTemplates = new();
@@ -53,9 +53,9 @@
                 var retroResult = await RetroService.GetRetroTemplates();
                 var surveyResult = await SurveyService.GetTemplates();
 
-                return new RetroPropertiesViewModel(retroResult.Templates, surveyResult.Templates);
+                return new RoomPropertiesViewModel(retroResult.Templates, surveyResult.Templates);
             },
-            nameof(RetroPropertiesEditorContainer),
+            nameof(RoomPropertiesEditorContainer),
             _state);
             
         _formModel.Apply(RetroProperties);
