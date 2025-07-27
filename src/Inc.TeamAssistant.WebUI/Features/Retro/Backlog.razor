@@ -2,7 +2,16 @@
 
 <DashboardGrid>
     <Toolbar>
-        <RoomNavbarContainer RoomId="RoomId" />
+        <RoomStatePanel
+            HasPrevious="false"
+            HasNext="false"
+            HasFinish="false"
+            HasRaiseHand="false"
+            CanChangeProperties="IsFacilitator"
+            CurrentUserId="CurrentUserId"
+            FacilitatorGiven="FacilitatorGiven"
+            RoomPropertiesOpened="RoomPropertiesOpened" />
+        <RoomNavbarContainer RoomId="RoomId"/>
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
@@ -88,10 +97,10 @@
     public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
     
     /// <summary>
-    /// Current person id.
+    /// Current user id.
     /// </summary>
     [Parameter, EditorRequired]
-    public long CurrentPersonId { get; set; }
+    public long CurrentUserId { get; set; }
     
     /// <summary>
     /// Facilitator id.
@@ -112,6 +121,18 @@
     public EventCallback<ActionItemViewModel> ActionItemChanged { get; set; }
     
     /// <summary>
+    /// Facilitator given action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback FacilitatorGiven { get; set; }
+    
+    /// <summary>
+    /// Retro properties opened action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RoomPropertiesOpened { get; set; }
+    
+    /// <summary>
     /// Load action items history callback.
     /// </summary>
     [Parameter, EditorRequired]
@@ -119,7 +140,9 @@
 
     private const int DebounceDelay = 500;
     
-    private bool CanEdit(string stage) => stage == ActionItemStages.New && FacilitatorId == CurrentPersonId;
+    private bool IsFacilitator => CurrentUserId == FacilitatorId;
+    
+    private bool CanEdit(string stage) => stage == ActionItemStages.New && FacilitatorId == CurrentUserId;
     private string GetTitle(string stage) => Localizer[$"ActionItemStage{stage}Title"];
     private string GetHint(string stage) => Localizer[$"ActionItemStage{stage}Hint"];
     private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);

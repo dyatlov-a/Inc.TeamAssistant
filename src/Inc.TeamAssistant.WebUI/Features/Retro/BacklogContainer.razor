@@ -5,8 +5,10 @@
 @attribute [Authorize]
 
 @inject TenantStore TenantStore
+@inject ITenantService TenantService
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<RetroResources> Localizer
 
 <MetaDataModule />
 
@@ -18,13 +20,18 @@
             State="_state"
             Loaders="_loaders"
             ActionItems="_actionItems"
-            CurrentPersonId="context.User.ToPerson().Id"
+            CurrentUserId="context.User.ToPerson().Id"
             FacilitatorId="_facilitatorId"
-            Retry="Load"
+            Retry="@(() => Load())"
             ActionItemChanged="OnActionItemChanged"
+            FacilitatorGiven="FacilitatorGiven"
+            RoomPropertiesOpened="OnRoomPropertiesOpened"
             LoadHistory="OnLoadHistory" />
     </Authorized>
 </AuthorizeView>
+<ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
+    <RoomPropertiesEditorContainer RoomId="RoomId" RoomPropertiesChanged="OnRoomPropertiesChanged" />
+</ContentDialog>
 
 @code {
     [Parameter, EditorRequired]
@@ -34,13 +41,15 @@
     private readonly List<ActionItemViewModel> _actionItems = new();
     private const int PageSize = 10;
     private long? _facilitatorId;
+    private ContentDialog? _roomPropertiesEditor;
     private readonly Dictionary<string, LoadingState> _loaders = new(StringComparer.InvariantCultureIgnoreCase);
     
     protected override async Task OnParametersSetAsync() => await Load();
     
-    private async Task Load()
+    private async Task Load(bool hardReset = true)
     {
-        await TenantStore.Initialize(RoomId, _state);
+        if (hardReset)
+            await TenantStore.Initialize(RoomId, _state);
         
         var result = await RequestProcessor.Process(
             async () => await RetroService.GetActionItems(RoomId, PageSize),
@@ -53,6 +62,7 @@
         foreach (var actionItem in result.Items)
             ApplyActionItemChanged(actionItem);
 
+        _loaders.Clear();
         foreach (var stage in ActionItemStages.All)
             if (_actionItems.Count(i => stage.Equals(i.State, StringComparison.InvariantCultureIgnoreCase)) == PageSize)
                 _loaders.Add(stage, LoadingState.Done());
@@ -92,4 +102,16 @@
                 _loaders.Remove(stage);
         }
     }
+    
+    private async Task FacilitatorGiven()
+    {
+        await RequestProcessor.Process(
+            async () => await TenantService.ChangeRoomProperties(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId)),
+            _state);
+
+        await Load(hardReset: false);
+    }
+
+    private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();
+    private void OnRoomPropertiesChanged() => _roomPropertiesEditor?.Close();
 }

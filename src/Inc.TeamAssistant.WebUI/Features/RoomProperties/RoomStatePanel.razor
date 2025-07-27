@@ -25,22 +25,25 @@
             <UserQuestionIcon Size="@IconSize"/>
         </a>
     }
-    @if (CanStartTimer)
+    @if (CanStartTimer.HasValue)
     {
-        <a
-            title="@Localizer["TimerStartHint"]"
-            href="#"
-            class="retro__link retro__link_active"
-            @onclick="ToggleTimer"
-            @onclick:preventDefault="true">
-            <ClockCheckIcon Size="@IconSize"/> @TimerValue
-        </a>
-    }
-    else
-    {
-        <i class="retro__link">
-            <ClockCheckIcon Size="@IconSize"/> @TimerValue
-        </i>
+        if (CanStartTimer.Value)
+        {
+            <a
+                title="@Localizer["TimerStartHint"]"
+                href="#"
+                class="retro__link retro__link_active"
+                @onclick="ToggleTimer"
+                @onclick:preventDefault="true">
+                <ClockCheckIcon Size="@IconSize"/> @TimerValue
+            </a>
+        }
+        else
+        {
+            <i class="retro__link">
+                <ClockCheckIcon Size="@IconSize"/> @TimerValue
+            </i>
+        }
     }
     @if (CanChangeProperties)
     {
@@ -117,8 +120,8 @@
     /// <summary>
     /// Can start timer.
     /// </summary>
-    [Parameter, EditorRequired]
-    public bool CanStartTimer { get; set; }
+    [Parameter]
+    public bool? CanStartTimer { get; set; }
     
     /// <summary>
     /// Can change properties.
@@ -199,7 +202,7 @@
 
     private string TimerValue => _currentTimer.HasValue
         ? _currentTimer.Value.ToShortTime()
-        : CanStartTimer
+        : CanStartTimer == true
             ? Localizer["TimerStart"]
             : string.Empty;
 

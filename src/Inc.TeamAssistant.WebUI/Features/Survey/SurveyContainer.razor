@@ -4,6 +4,7 @@
 @attribute [Authorize]
 
 @inject TenantStore TenantStore
+@inject ITenantService TenantService
 @inject ISurveyService SurveyService
 @inject RequestProcessor RequestProcessor
 @inject IStringLocalizer<SurveyResources> Localizer
@@ -20,7 +21,7 @@
             FacilitatorGiven="FacilitatorGiven"
             RoomPropertiesOpened="OnRoomPropertiesOpened"
             State="_state"
-            Retry="Load" />
+            Retry="@(() => Load())" />
     </Authorized>
 </AuthorizeView>
 <ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
@@ -38,9 +39,10 @@
     
     protected override async Task OnParametersSetAsync() => await Load();
 
-    private async Task Load()
+    private async Task Load(bool hardReset = true)
     {
-        await TenantStore.Initialize(RoomId, _state);
+        if (hardReset)
+            await TenantStore.Initialize(RoomId, _state);
         
         var result = await RequestProcessor.Process(
             async () => await SurveyService.GetSurveyState(RoomId),
@@ -57,11 +59,14 @@
         return Task.CompletedTask;
     }
 
-    private Task FacilitatorGiven()
+    private async Task FacilitatorGiven()
     {
         // TODO: send event to hub
-        
-        return Task.CompletedTask;
+        await RequestProcessor.Process(
+            async () => await TenantService.ChangeRoomProperties(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId)),
+            _state);
+
+        await Load(hardReset: false);
     }
 
     private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();

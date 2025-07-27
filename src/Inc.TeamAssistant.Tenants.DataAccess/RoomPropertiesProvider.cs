@@ -30,11 +30,8 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
-        
-        var data = await connection.QuerySingleOrDefaultAsync<string>(command);
-        var properties = JsonSerializer.Deserialize<RoomProperties>(data!);
 
-        return properties!;
+        return await connection.QuerySingleAsync<RoomProperties>(command);
     }
 
     public async Task Set(Guid roomId, RoomProperties properties, CancellationToken token)
