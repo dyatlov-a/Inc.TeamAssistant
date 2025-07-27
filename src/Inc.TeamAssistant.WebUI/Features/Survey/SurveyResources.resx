@@ -98,4 +98,7 @@ Bad: We keep getting stuck because we can't get the support and help that we ask
         <value>Good: We are a great team that works great together.
 Bad: We are a bunch of individuals who neither know nor care what the others on the team are doing.</value>
     </data>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Room properties</value>
+    </data>
 </root>

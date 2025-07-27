@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Domain;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
@@ -19,12 +20,13 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
     public async Task Handle(StartSurveyCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        // TODO: Check rights
         
-        var templates = await _reader.GetTemplates(token);
-        var template = templates.Single(t => t.Id == command.TemplateId);
-        var survey = new SurveyEntry(Guid.CreateVersion7(), command.RoomId, DateTimeOffset.UtcNow, template);
+        var template = await command.TemplateId.Required(_reader.FindTemplate, token);
+        var survey = new SurveyEntry(
+            Guid.CreateVersion7(),
+            command.RoomId,
+            DateTimeOffset.UtcNow,
+            template);
 
         await _repository.Upsert(survey, token);
     }

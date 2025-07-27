@@ -1,6 +1,6 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 
@@ -8,12 +8,12 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.ChangeActionItem.V
 
 internal sealed class ChangeActionItemCommandValidator : AbstractValidator<ChangeActionItemCommand>
 {
-    private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
-    public ChangeActionItemCommandValidator(IRetroPropertiesProvider provider, IPersonResolver personResolver)
+    public ChangeActionItemCommandValidator(IRoomPropertiesProvider propertiesProvider, IPersonResolver personResolver)
     {
-        _propertiesProvider = provider ?? throw new ArgumentNullException(nameof(provider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         
         RuleFor(e => e.Id)

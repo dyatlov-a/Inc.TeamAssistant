@@ -1,5 +1,4 @@
-@inject IRetroService RetroService
-@inject ISurveyService SurveyService
+@inject ITenantService TenantService
 @inject RequestProcessor RequestProcessor
 
 <RoomPropertiesEditor
@@ -16,24 +15,18 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
-
-    /// <summary>
-    /// Retro properties.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public RetroPropertiesDto RetroProperties { get; set; } = default!;
     
     /// <summary>
-    /// Retro properties changed event.
+    /// Room properties changed event.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback RetroPropertiesChanged { get; set; }
+    public EventCallback RoomPropertiesChanged { get; set; }
 
     private Guid _roomId = Guid.Empty;
     private readonly RoomPropertiesFormModel _formModel = new();
     private readonly LoadingState _state = LoadingState.Done();
-    private readonly List<RetroTemplateDto> _retroTemplates = new();
-    private readonly List<SurveyTemplateDto> _surveyTemplates = new();
+    private readonly List<TemplateDto> _retroTemplates = new();
+    private readonly List<TemplateDto> _surveyTemplates = new();
     
     protected override async Task OnParametersSetAsync()
     {
@@ -48,17 +41,11 @@
     private async Task Load()
     {
         var result = await RequestProcessor.Process(
-            async () =>
-            {
-                var retroResult = await RetroService.GetRetroTemplates();
-                var surveyResult = await SurveyService.GetTemplates();
-
-                return new RoomPropertiesViewModel(retroResult.Templates, surveyResult.Templates);
-            },
+            async () => await TenantService.GetRoomProperties(_roomId),
             nameof(RoomPropertiesEditorContainer),
             _state);
             
-        _formModel.Apply(RetroProperties);
+        _formModel.Apply(result);
         
         _retroTemplates.Clear();
         _retroTemplates.AddRange(result.RetroTemplates);
@@ -70,9 +57,9 @@
     private async Task Save()
     {
         await RequestProcessor.Process(
-            async () => await RetroService.ChangeRetroProperties(_formModel.ToCommand(_roomId)),
+            async () => await TenantService.ChangeRoomProperties(_formModel.ToCommand(_roomId)),
             _state);
 
-        await RetroPropertiesChanged.InvokeAsync();
+        await RoomPropertiesChanged.InvokeAsync();
     }
 }

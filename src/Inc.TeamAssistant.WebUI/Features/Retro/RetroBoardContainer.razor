@@ -58,7 +58,7 @@
                 HandRaised="OnHandRaised"
                 FacilitatorGiven="FacilitatorGiven"
                 HandLowered="OnHandLowered"
-                RetroPropertiesOpened="OnRetroPropertiesOpened" />
+                RoomPropertiesOpened="OnRoomPropertiesOpened" />
         </Authorized>
     </AuthorizeView>
     </Body>
@@ -71,11 +71,8 @@
             OnAction="Reconnect" />
     </InlineDialogSlot>
 </MainLayout>
-<ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
-    <RoomPropertiesEditorContainer
-        RoomId="RoomId"
-        RetroProperties="_retroProperties"
-        RetroPropertiesChanged="OnRetroPropertiesChanged" />
+<ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
+    <RoomPropertiesEditorContainer RoomId="RoomId" RoomPropertiesChanged="OnRoomPropertiesChanged" />
 </ContentDialog>
 
 @code {
@@ -92,7 +89,7 @@
     private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
     private TimeSpan? _currentTimer;
     private bool _isCreating;
-    private ContentDialog? _retroPropertiesEditor;
+    private ContentDialog? _roomPropertiesEditor;
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroColumnDto> _columns = new();
@@ -297,17 +294,11 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroPropertiesChanged(async p =>
+            b => b.OnRetroPropertiesChanged(async () =>
             {
                 await InvokeAsync(async () =>
                 {
-                    if (_retroProperties.RetroTemplateId == p.RetroTemplateId && _retroProperties.RetroType == p.RetroType)
-                    {
-                        _retroProperties = p;
-                        StateHasChanged();
-                    }
-                    else
-                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                    await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
                 });
             })
         );
@@ -568,7 +559,7 @@
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.GiveFacilitator(ChangeRetroPropertiesCommand.ChangeFacilitator(RoomId));
+        await _eventBuilder.GiveFacilitator(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)
@@ -585,8 +576,17 @@
             _actionItems.Remove(viewItem);
     }
     
-    private void OnRetroPropertiesChanged() => _retroPropertiesEditor?.Close();
-    private void OnRetroPropertiesOpened() => _retroPropertiesEditor?.Open();
+    private async Task OnRoomPropertiesChanged()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.NotifyRetroPropertiesChanged(RoomId);
+        
+        _roomPropertiesEditor?.Close();
+    }
+
+    private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();
     
     public async ValueTask DisposeAsync()
     {

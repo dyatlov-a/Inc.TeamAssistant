@@ -1,9 +1,69 @@
 @page "/survey/{RoomId:guid}"
 @page "/ru/survey/{RoomId:guid}"
 
-<Survey RoomId="RoomId" />
+@attribute [Authorize]
+
+@inject TenantStore TenantStore
+@inject ISurveyService SurveyService
+@inject RequestProcessor RequestProcessor
+@inject IStringLocalizer<SurveyResources> Localizer
+
+<MetaDataModule />
+
+<AuthorizeView>
+    <Authorized>
+        <Survey
+            RoomId="RoomId"
+            CurrentUserId="context.User.ToPerson().Id"
+            FacilitatorId="_facilitatorId"
+            MoveNext="MoveNext"
+            FacilitatorGiven="FacilitatorGiven"
+            RoomPropertiesOpened="OnRoomPropertiesOpened"
+            State="_state"
+            Retry="Load" />
+    </Authorized>
+</AuthorizeView>
+<ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
+    <RoomPropertiesEditorContainer RoomId="RoomId" RoomPropertiesChanged="OnRoomPropertiesChanged" />
+</ContentDialog>
 
 @code {
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
+
+    private long? _facilitatorId;
+    private ContentDialog? _roomPropertiesEditor;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(RoomId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await SurveyService.GetSurveyState(RoomId),
+            nameof(SurveyContainer),
+            _state);
+
+        _facilitatorId = result.FacilitatorId;
+    }
+    
+    private Task MoveNext()
+    {
+        // TODO: send event to hub
+        
+        return Task.CompletedTask;
+    }
+
+    private Task FacilitatorGiven()
+    {
+        // TODO: send event to hub
+        
+        return Task.CompletedTask;
+    }
+
+    private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();
+    private void OnRoomPropertiesChanged() => _roomPropertiesEditor?.Close();
 }

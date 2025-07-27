@@ -1,7 +1,10 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.Application.Extensions;
 using Inc.TeamAssistant.Retro.Domain;
+using Inc.TeamAssistant.Retro.Model.Common;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using MediatR;
 
@@ -15,7 +18,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
     private readonly IRetroStage _retroStage;
-    private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IRetroTemplateReader _retroTemplateReader;
 
     public GetRetroStateQueryHandler(
@@ -25,7 +28,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IVoteStore voteStore,
         ITimerService timerService,
         IRetroStage retroStage,
-        IRetroPropertiesProvider propertiesProvider,
+        IRoomPropertiesProvider propertiesProvider,
         IRetroTemplateReader retroTemplateReader)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
@@ -52,10 +55,15 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
             ? await _reader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
+        var columns = await _retroTemplateReader.GetColumns(properties.RetroTemplateId, token);
+        
         var retroType = properties.RequiredRetroType();
-        var retroProperties = RetroPropertiesConverter.ConvertTo(properties);
-        var columns = await _retroTemplateReader.GetColumns(retroProperties.RetroTemplateId, token);
-
+        var retroProperties = new RetroPropertiesDto(
+            properties.FacilitatorId,
+            properties.TimerDuration,
+            properties.VoteCount,
+            properties.VoteByItemCount,
+            retroType.ToString());
         var votes = session is not null
             ? _voteStore.Get(session.Id)
             : [];

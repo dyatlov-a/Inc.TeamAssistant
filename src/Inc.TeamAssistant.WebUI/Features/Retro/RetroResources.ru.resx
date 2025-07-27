@@ -114,8 +114,8 @@
     <data name="ColumnContinueTitle" xml:space="preserve">
         <value>Продолжать</value>
     </data>
-    <data name="RetroProperties" xml:space="preserve">
-        <value>Настройки ретро</value>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Настройки комнаты</value>
     </data>
     <data name="ColumnToDiscussDescription" xml:space="preserve">
         <value>Задачи, вопросы или темы, которые ещё не обсуждались. Ожидают рассмотрения на ближайшем собрании или в ходе диалога.</value>

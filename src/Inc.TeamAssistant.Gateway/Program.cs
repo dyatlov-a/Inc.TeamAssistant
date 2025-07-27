@@ -28,6 +28,7 @@ using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
@@ -92,6 +93,8 @@ builder.Services
 	.AddLanguageIdType()
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
+	
+	.AddJsonType<RoomProperties>()
 	
 	.AddJsonType<IReadOnlyCollection<long>>()
 	.AddJsonType<IReadOnlyCollection<string>>()

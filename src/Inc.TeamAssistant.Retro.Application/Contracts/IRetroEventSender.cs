@@ -20,8 +20,6 @@ public interface IRetroEventSender
     Task ActionItemChanged(Guid roomId, ActionItemDto item);
     
     Task ActionItemRemoved(Guid roomId, Guid itemId);
-    
-    Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties);
 
     Task TimerChanged(Guid roomId, TimeSpan? duration);
 }

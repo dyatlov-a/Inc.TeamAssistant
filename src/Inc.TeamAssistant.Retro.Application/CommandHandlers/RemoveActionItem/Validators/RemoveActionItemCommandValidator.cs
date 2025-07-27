@@ -1,16 +1,16 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 
 namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.RemoveActionItem.Validators;
 
 internal sealed class RemoveActionItemCommandValidator : AbstractValidator<RemoveActionItemCommand>
 {
-    private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
-    public RemoveActionItemCommandValidator(IRetroPropertiesProvider propertiesProvider, IPersonResolver personResolver)
+    public RemoveActionItemCommandValidator(IRoomPropertiesProvider propertiesProvider, IPersonResolver personResolver)
     {
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));

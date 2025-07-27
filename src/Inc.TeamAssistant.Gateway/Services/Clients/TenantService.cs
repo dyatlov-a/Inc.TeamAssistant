@@ -1,8 +1,10 @@
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.Tenants.Model.Commands.CreateRoom;
 using Inc.TeamAssistant.Tenants.Model.Commands.RemoveRoom;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateRoom;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetAvailableRooms;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoom;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 
@@ -17,14 +19,26 @@ internal sealed class TenantService : ITenantService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    public async Task<GetAvailableRoomsResult> GetAvailableRooms(Guid? id, CancellationToken token)
+    public async Task<GetAvailableRoomsResult> GetAvailableRooms(Guid? roomId, CancellationToken token)
     {
-        return await _mediator.Send(new GetAvailableRoomsQuery(id), token);
+        return await _mediator.Send(new GetAvailableRoomsQuery(roomId), token);
     }
 
-    public async Task<GetRoomResult> GetRoom(Guid id, CancellationToken token)
+    public async Task<GetRoomResult> GetRoom(Guid roomId, CancellationToken token)
     {
-        return await _mediator.Send(new GetRoomQuery(id), token);
+        return await _mediator.Send(new GetRoomQuery(roomId), token);
+    }
+
+    public async Task<GetRoomPropertiesResult> GetRoomProperties(Guid roomId, CancellationToken token)
+    {
+        return await _mediator.Send(new GetRoomPropertiesQuery(roomId), token);
+    }
+
+    public async Task ChangeRoomProperties(ChangeRoomPropertiesCommand command, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+
+        await _mediator.Send(command, token);
     }
 
     public async Task<CreateRoomResult> CreateRoom(CreateRoomCommand command, CancellationToken token)
@@ -41,8 +55,8 @@ internal sealed class TenantService : ITenantService
         await _mediator.Send(command, token);
     }
 
-    public async Task RemoveRoom(Guid teamId, CancellationToken token)
+    public async Task RemoveRoom(Guid roomId, CancellationToken token)
     {
-        await _mediator.Send(new RemoveRoomCommand(teamId), token);
+        await _mediator.Send(new RemoveRoomCommand(roomId), token);
     }
 }

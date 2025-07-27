@@ -1,5 +1,5 @@
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
-using Inc.TeamAssistant.Retro.Model.Common;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomProperties;
 
 namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
@@ -57,7 +57,7 @@ public sealed class RoomPropertiesFormModel
         return this;
     }
     
-    public RoomPropertiesFormModel Apply(RetroPropertiesDto model)
+    public RoomPropertiesFormModel Apply(GetRoomPropertiesResult model)
     {
         ArgumentNullException.ThrowIfNull(model);
         
@@ -71,9 +71,9 @@ public sealed class RoomPropertiesFormModel
         return this;
     }
     
-    public ChangeRetroPropertiesCommand ToCommand(Guid roomId)
+    public ChangeRoomPropertiesCommand ToCommand(Guid roomId)
     {
-        return ChangeRetroPropertiesCommand.ChangeProperties(
+        return ChangeRoomPropertiesCommand.ChangeProperties(
             roomId,
             RetroTemplateId,
             SurveyTemplateId,

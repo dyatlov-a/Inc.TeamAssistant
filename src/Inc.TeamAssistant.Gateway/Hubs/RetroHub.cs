@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
 using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
@@ -10,6 +9,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -107,11 +107,17 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     }
     
     [HubMethodName(HubDescriptors.RetroHub.GiveFacilitatorMethod)]
-    public async Task GiveFacilitator(ChangeRetroPropertiesCommand command)
+    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         await _mediator.Send(command, CancellationToken.None);
+    }
+
+    [HubMethodName(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged)]
+    public async Task NotifyRetroPropertiesChanged(Guid roomId)
+    {
+        await Clients.Group(roomId.ToString("N")).RetroPropertiesChanged();
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)

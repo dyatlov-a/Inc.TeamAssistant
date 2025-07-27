@@ -51,7 +51,6 @@ public static class ServiceCollectionExtensions
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
-            .AddSingleton<IRetroPropertiesProvider, RetroPropertiesProviderAdapter>()
             
             .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
             .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()

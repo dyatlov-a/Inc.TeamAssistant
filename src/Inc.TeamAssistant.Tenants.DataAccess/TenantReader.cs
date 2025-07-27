@@ -2,6 +2,7 @@ using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Inc.TeamAssistant.Tenants.Domain;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomProperties;
 
 namespace Inc.TeamAssistant.Tenants.DataAccess;
 
@@ -46,5 +47,43 @@ internal sealed class TenantReader : ITenantReader
         var rooms = await connection.QueryAsync<Room, Tenant, Room>(command, (tt, t) => tt.MapTenant(t));
 
         return rooms.ToArray();
+    }
+
+    public async Task<IReadOnlyCollection<TemplateDto>> GetRetroTemplates(CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.name AS name
+            FROM retro.templates AS t;
+            """,
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var templates = await connection.QueryAsync<TemplateDto>(command);
+        
+        return templates.ToArray();
+    }
+
+    public async Task<IReadOnlyCollection<TemplateDto>> GetSurveyTemplates(CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                t.id AS id,
+                t.name AS name
+            FROM survey.templates AS t;
+            """,
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var templates = await connection.QueryAsync<TemplateDto>(command);
+        
+        return templates.ToArray();
     }
 }

@@ -25,5 +25,5 @@ public interface IRetroEventProvider
     
     IDisposable OnTimerChanged(Func<TimeSpan?, Task> changed);
     
-    IDisposable OnRetroPropertiesChanged(Func<RetroPropertiesDto, Task> changed);
+    IDisposable OnRetroPropertiesChanged(Func<Task> changed);
 }

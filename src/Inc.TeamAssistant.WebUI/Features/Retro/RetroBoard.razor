@@ -5,28 +5,30 @@
 
 <DashboardGrid>
     <Toolbar>
-        <div class="retro-toolbar__content">
-            <RoomStatePanel
-                HasPrevious="IsDiscussing"
-                CurrentUserId="CurrentUserId"
-                IsFacilitator="IsFacilitator"
-                TimerDuration="TimerDuration"
-                CurrentTimer="CurrentTimer"
-                MoveNext="OnMoveNext"
-                MovePrevious="ToPreviousMoved"
-                TimerChanged="TimerChanged"
-                Finished="Finished"
-                HandRaised="HandRaised"
-                FacilitatorGiven="FacilitatorGiven"
-                RoomPropertiesOpened="RetroPropertiesOpened" />
-            <RoomNavbarContainer RoomId="RoomId" />
-            <RetroParticipants
-                CanVote="CanVote"
-                VotesTotal="VotesTotal"
-                Participants="Participants"
-                IsFacilitator="IsFacilitator"
-                HandLowered="HandLowered" />
-        </div>
+        <RoomStatePanel
+            HasPrevious="@(IsFacilitator && IsDiscussing)"
+            HasNext="IsFacilitator"
+            HasFinish="true"
+            HasRaiseHand="true"
+            CanStartTimer="IsFacilitator"
+            CanChangeProperties="IsFacilitator"
+            CurrentUserId="CurrentUserId"
+            TimerDuration="TimerDuration"
+            CurrentTimer="CurrentTimer"
+            MoveNext="OnMoveNext"
+            MovePrevious="ToPreviousMoved"
+            TimerChanged="TimerChanged"
+            Finished="Finished"
+            HandRaised="HandRaised"
+            FacilitatorGiven="FacilitatorGiven"
+            RoomPropertiesOpened="RoomPropertiesOpened" />
+        <RoomNavbarContainer RoomId="RoomId" />
+        <RetroParticipants
+            CanVote="CanVote"
+            VotesTotal="VotesTotal"
+            Participants="Participants"
+            IsFacilitator="IsFacilitator"
+            HandLowered="HandLowered" />
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
@@ -193,7 +195,7 @@
     public RetroSessionDto? Session { get; set; }
     
     /// <summary>
-    /// Moderator id.
+    /// Facilitator id.
     /// </summary>
     [Parameter, EditorRequired]
     public long? FacilitatorId { get; set; }
@@ -364,7 +366,7 @@
     /// Retro properties opened action.
     /// </summary>
     [Parameter, EditorRequired]
-    public EventCallback RetroPropertiesOpened { get; set; }
+    public EventCallback RoomPropertiesOpened { get; set; }
 
     private ConfirmDialog? _confirmDialog;
     private Guid StartColumn => Columns.First().Id;

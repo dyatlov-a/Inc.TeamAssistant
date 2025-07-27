@@ -123,8 +123,8 @@
     <data name="ColumnDiscussedDescription" xml:space="preserve">
         <value>Topics that have already been reviewed. Decisions have been made, and no further discussion is needed.</value>
     </data>
-    <data name="RetroProperties" xml:space="preserve">
-        <value>Retro properties</value>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Room properties</value>
     </data>
     <data name="BacklogText" xml:space="preserve">
         <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.

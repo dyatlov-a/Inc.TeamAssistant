@@ -237,9 +237,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string RetroProperties {
+        internal static string RoomProperties {
             get {
-                return ResourceManager.GetString("RetroProperties", resourceCulture);
+                return ResourceManager.GetString("RoomProperties", resourceCulture);
             }
         }
         

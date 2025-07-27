@@ -41,7 +41,7 @@ internal sealed class SurveyReader : ISurveyReader
         return questions.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<SurveyTemplate>> GetTemplates(CancellationToken token)
+    public async Task<SurveyTemplate?> FindTemplate(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -49,16 +49,19 @@ internal sealed class SurveyReader : ISurveyReader
                 t.id AS id,
                 t.name AS name,
                 t.question_ids AS questionids
-            FROM survey.templates AS t;
+            FROM survey.templates AS t
+            WHERE t.id = @id;
             """,
+            new
+            {
+                id = id
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
         
-        var templates = await connection.QueryAsync<SurveyTemplate>(command);
-        
-        return templates.ToArray();
+        return await connection.QuerySingleOrDefaultAsync(command);
     }
 
     public async Task<SurveyEntry?> Find(

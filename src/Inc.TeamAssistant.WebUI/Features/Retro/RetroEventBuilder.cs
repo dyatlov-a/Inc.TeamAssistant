@@ -2,11 +2,11 @@ using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Microsoft.AspNetCore.Components;
@@ -109,11 +109,16 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, command);
     }
     
-    public async Task GiveFacilitator(ChangeRetroPropertiesCommand command)
+    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.GiveFacilitatorMethod, command);
+    }
+    
+    public async Task NotifyRetroPropertiesChanged(Guid roomId)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged, roomId);
     }
 
     public async Task<IAsyncDisposable> Build(
@@ -207,7 +212,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
     }
 
-    public IDisposable OnRetroPropertiesChanged(Func<RetroPropertiesDto, Task> changed)
+    public IDisposable OnRetroPropertiesChanged(Func<Task> changed)
     {
         return _hubConnection.On(nameof(IRetroHubClient.RetroPropertiesChanged), changed);
     }

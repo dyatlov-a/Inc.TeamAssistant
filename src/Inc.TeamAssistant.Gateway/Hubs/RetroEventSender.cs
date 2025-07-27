@@ -73,13 +73,6 @@ internal sealed class RetroEventSender : IRetroEventSender
         await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemRemoved(itemId);
     }
 
-    public async Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties)
-    {
-        ArgumentNullException.ThrowIfNull(properties);
-        
-        await _hubContext.Clients.Group(roomId.ToString("N")).RetroPropertiesChanged(properties);
-    }
-
     public async Task TimerChanged(Guid roomId, TimeSpan? duration)
     {
         await _hubContext.Clients.Group(roomId.ToString("N")).TimerChanged(duration);

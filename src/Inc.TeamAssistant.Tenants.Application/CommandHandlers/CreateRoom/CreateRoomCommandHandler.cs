@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Inc.TeamAssistant.Tenants.Domain;
 using Inc.TeamAssistant.Tenants.Model.Commands.CreateRoom;
@@ -28,6 +29,7 @@ internal sealed class CreateRoomCommandHandler
             Guid.CreateVersion7(),
             command.Name,
             person.Id,
+            RoomProperties.Default,
             tenant ?? new Tenant(Guid.CreateVersion7(), command.Name, person.Id));
 
         await _repository.Upsert(room, token);

@@ -182,5 +182,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("TeamworkText", resourceCulture);
             }
         }
+        
+        internal static string RoomProperties {
+            get {
+                return ResourceManager.GetString("RoomProperties", resourceCulture);
+            }
+        }
     }
 }

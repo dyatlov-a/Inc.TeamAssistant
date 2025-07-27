@@ -25,5 +25,5 @@ public interface IRetroHubClient
     
     Task TimerChanged(TimeSpan? duration);
     
-    Task RetroPropertiesChanged(RetroPropertiesDto properties);
+    Task RetroPropertiesChanged();
 }

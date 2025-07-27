@@ -6,7 +6,7 @@ public interface ISurveyReader
 {
     Task<IReadOnlyCollection<Question>> ReadQuestions(IReadOnlyCollection<Guid> questionIds, CancellationToken token);
     
-    Task<IReadOnlyCollection<SurveyTemplate>> GetTemplates(CancellationToken token);
+    Task<SurveyTemplate?> FindTemplate(Guid id, CancellationToken token);
     
     Task<SurveyEntry?> Find(Guid roomId, IReadOnlyCollection<SurveyState> states, CancellationToken token);
 }
