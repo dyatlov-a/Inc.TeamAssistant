@@ -47,7 +47,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         
         var states = RetroSessionStateRules.Active;
         var currentPerson = _personResolver.GetCurrentPerson();
-        var onlinePersons = _onlinePersonStore.GetPersons(query.RoomId);
+        var onlinePersons = _onlinePersonStore.GetPersons(RoomId.CreateForRetro(query.RoomId));
         
         var session = await _reader.FindSession(query.RoomId, states, token);
         var items = await _reader.ReadRetroItems(query.RoomId, states, token);

@@ -4,7 +4,7 @@
     <Toolbar>
         <RoomStatePanel
             HasPrevious="false"
-            HasNext="IsFacilitator"
+            HasNext="@(HasNext && IsFacilitator)"
             HasFinish="false"
             HasRaiseHand="false"
             CanChangeProperties="IsFacilitator"
@@ -39,6 +39,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public long? FacilitatorId { get; set; }
+    
+    /// <summary>
+    /// Has next action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasNext { get; set; }
     
     /// <summary>
     /// Move to next action.

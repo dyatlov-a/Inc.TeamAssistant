@@ -17,6 +17,7 @@
             RoomId="RoomId"
             CurrentUserId="context.User.ToPerson().Id"
             FacilitatorId="_facilitatorId"
+            HasNext="@(_inProgress is not null)"
             MoveNext="MoveNext"
             FacilitatorGiven="FacilitatorGiven"
             RoomPropertiesOpened="OnRoomPropertiesOpened"
@@ -32,6 +33,7 @@
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
 
+    private bool? _inProgress;
     private long? _facilitatorId;
     private ContentDialog? _roomPropertiesEditor;
     
@@ -49,14 +51,23 @@
             nameof(SurveyContainer),
             _state);
 
+        _inProgress = result.InProgress;
         _facilitatorId = result.FacilitatorId;
     }
     
-    private Task MoveNext()
+    private async Task MoveNext()
     {
-        // TODO: send event to hub
-        
-        return Task.CompletedTask;
+        if (!_inProgress.HasValue)
+            return;
+
+        if (_inProgress.Value)
+            await RequestProcessor.Process(
+                () => SurveyService.Finish(new FinishSurveyCommand(RoomId)),
+                _state);
+        else
+            await RequestProcessor.Process(
+                () => SurveyService.Start(new StartSurveyCommand(RoomId)),
+                _state);
     }
 
     private async Task FacilitatorGiven()

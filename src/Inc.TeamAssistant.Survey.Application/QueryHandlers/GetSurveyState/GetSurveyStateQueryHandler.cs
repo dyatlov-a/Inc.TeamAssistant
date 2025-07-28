@@ -33,12 +33,13 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         var currentPerson = _personResolver.GetCurrentPerson();
         var roomProperties = await _propertiesProvider.Get(query.RoomId, token);
         var survey = await _reader.Find(query.RoomId, SurveyStateRules.Active, token);
+        var inProgress = survey is not null;
         
-        var items = survey is not null
-            ? await GetQuestions(survey.Id, currentPerson.Id, survey.QuestionIds, token)
+        var items = inProgress
+            ? await GetQuestions(survey!.Id, currentPerson.Id, survey.QuestionIds, token)
             : [];
 
-        return new(roomProperties.FacilitatorId, items);
+        return new(inProgress, roomProperties.FacilitatorId, items);
     }
 
     private async Task<IReadOnlyCollection<SurveyQuestionDto>> GetQuestions(

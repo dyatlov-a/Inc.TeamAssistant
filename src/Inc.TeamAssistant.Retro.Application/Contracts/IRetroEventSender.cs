@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.Retro.Application.Contracts;
@@ -14,8 +13,6 @@ public interface IRetroEventSender
     Task VotesChanged(Guid roomId, long personId, int votesCount);
     
     Task RetroStateChanged(Guid roomId, long personId, bool finished, bool handRaised);
-
-    Task PersonsChanged(Guid roomId, IReadOnlyCollection<Person> persons);
 
     Task ActionItemChanged(Guid roomId, ActionItemDto item);
     

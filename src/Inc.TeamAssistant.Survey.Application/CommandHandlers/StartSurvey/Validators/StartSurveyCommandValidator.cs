@@ -28,9 +28,6 @@ internal sealed class StartSurveyCommandValidator : AbstractValidator<StartSurve
             .WithMessage(c => $"You do not have facilitation rights for room {c.RoomId}.")
             .MustAsync(NotHaveActiveSurvey)
             .WithMessage(c => $"There is already an active survey for this room {c.RoomId}.");
-        
-        RuleFor(c => c.TemplateId)
-            .NotEmpty();
     }
 
     private async Task<bool> NotHaveActiveSurvey(Guid roomId, CancellationToken token)

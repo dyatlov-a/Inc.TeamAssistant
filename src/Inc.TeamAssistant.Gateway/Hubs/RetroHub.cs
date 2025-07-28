@@ -1,9 +1,7 @@
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.JoinToRetro;
-using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromAll;
-using Inc.TeamAssistant.Retro.Model.Commands.LeaveFromRetro;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.RemoveRetroItem;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
@@ -12,6 +10,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
+using Inc.TeamAssistant.WebUI.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -22,26 +21,36 @@ namespace Inc.TeamAssistant.Gateway.Hubs;
 internal sealed class RetroHub : Hub<IRetroHubClient>
 {
     private readonly IMediator _mediator;
+    private readonly IOnlinePersonStore _store;
 
-    public RetroHub(IMediator mediator)
+    public RetroHub(IMediator mediator, IOnlinePersonStore store)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _store = store ?? throw new ArgumentNullException(nameof(store));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
     public async Task JoinRetro(Guid roomId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString("N"));
-
-        await _mediator.Send(new JoinToRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await Groups.AddToGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
+        
+        var persons = _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
+        
+        await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
     public async Task LeaveRetro(Guid roomId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));
+        var retroRoomId = RoomId.CreateForRetro(roomId);
         
-        await _mediator.Send(new LeaveFromRetroCommand(Context.ConnectionId, roomId), CancellationToken.None);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
+        
+        var persons = _store.LeaveFromRoom(retroRoomId, Context.ConnectionId);
+        
+        await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -81,7 +90,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     [HubMethodName(HubDescriptors.RetroHub.MoveItemMethod)]
     public async Task MoveItem(Guid roomId, Guid itemId)
     {
-        await Clients.GroupExcept(roomId.ToString("N"), Context.ConnectionId).ItemMoved(itemId);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await Clients.GroupExcept(retroRoomId.GroupName, Context.ConnectionId).ItemMoved(itemId);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.ChangeActionItemMethod)]
@@ -117,15 +128,23 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     [HubMethodName(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged)]
     public async Task NotifyRetroPropertiesChanged(Guid roomId)
     {
-        await Clients.Group(roomId.ToString("N")).RetroPropertiesChanged();
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await Clients.Group(retroRoomId.GroupName).RetroPropertiesChanged();
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var result = await _mediator.Send(new LeaveFromAllCommand(Context.ConnectionId), CancellationToken.None);
+        var roomIds = _store.LeaveFromRooms(Context.ConnectionId);
 
-        foreach (var roomId in result.RoomIds)
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString("N"));
+        foreach (var roomId in roomIds)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.GroupName);
+            
+            var persons = _store.GetPersons(roomId);
+        
+            await Clients.Group(roomId.GroupName).PersonsChanged(persons);
+        }
 
         await base.OnDisconnectedAsync(exception);
     }

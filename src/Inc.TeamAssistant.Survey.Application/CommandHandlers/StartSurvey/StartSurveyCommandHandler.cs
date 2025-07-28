@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Extensions;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Domain;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
@@ -10,18 +11,24 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
 {
     private readonly ISurveyReader _reader;
     private readonly ISurveyRepository _repository;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
 
-    public StartSurveyCommandHandler(ISurveyReader reader, ISurveyRepository repository)
+    public StartSurveyCommandHandler(
+        ISurveyReader reader,
+        ISurveyRepository repository,
+        IRoomPropertiesProvider propertiesProvider)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
 
     public async Task Handle(StartSurveyCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
-        
-        var template = await command.TemplateId.Required(_reader.FindTemplate, token);
+
+        var properties = await _propertiesProvider.Get(command.RoomId, token);
+        var template = await properties.SurveyTemplateId.Required(_reader.FindTemplate, token);
         var survey = new SurveyEntry(
             Guid.CreateVersion7(),
             command.RoomId,

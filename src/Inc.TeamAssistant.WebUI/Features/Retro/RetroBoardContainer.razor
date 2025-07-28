@@ -309,8 +309,6 @@
         await RequestProcessor.Process(
             () => RetroService.StartRetro(new StartRetroCommand(RoomId)),
             _state);
-
-        await Load(_state, hardReset: false);
     }
     
     private async Task OnToNextMoved(Guid id)
@@ -435,6 +433,8 @@
     
     private void ApplyParticipants(IReadOnlyCollection<Person> persons)
     {
+        _participants.Clear();
+        
         foreach (var person in persons)
             _participants.TryAdd(person.Id, new ParticipantViewModel(
                 person,

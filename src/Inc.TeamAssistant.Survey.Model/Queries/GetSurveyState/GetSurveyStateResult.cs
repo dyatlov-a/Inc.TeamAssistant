@@ -3,9 +3,10 @@ using Inc.TeamAssistant.Primitives;
 namespace Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
 
 public sealed record GetSurveyStateResult(
+    bool? InProgress,
     long? FacilitatorId,
     IReadOnlyCollection<SurveyQuestionDto> Questions)
     : IWithEmpty<GetSurveyStateResult>
 {
-    public static GetSurveyStateResult Empty { get; } = new(FacilitatorId: null, Questions: []);
+    public static GetSurveyStateResult Empty { get; } = new(InProgress: null, FacilitatorId: null, Questions: []);
 }

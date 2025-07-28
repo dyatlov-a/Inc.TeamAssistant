@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Model.Common;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -20,15 +20,16 @@ internal sealed class RetroEventSender : IRetroEventSender
     public async Task RetroItemChanged(RetroItemDto item, EventTarget eventTarget)
     {
         ArgumentNullException.ThrowIfNull(item);
-        
-        var ownerConnectionId = _onlinePersonStore.FindConnectionId(item.RoomId, item.OwnerId);
+
+        var retroRoomId = RoomId.CreateForRetro(item.RoomId);
+        var ownerConnectionId = _onlinePersonStore.FindConnectionId(retroRoomId, item.OwnerId);
         var client = eventTarget switch
         {
             EventTarget.Owner when !string.IsNullOrWhiteSpace(ownerConnectionId)
                 => _hubContext.Clients.Client(ownerConnectionId),
             EventTarget.Participants when !string.IsNullOrWhiteSpace(ownerConnectionId)
-                => _hubContext.Clients.GroupExcept(item.RoomId.ToString("N"), ownerConnectionId),
-            _ => _hubContext.Clients.Group(item.RoomId.ToString("N"))
+                => _hubContext.Clients.GroupExcept(retroRoomId.GroupName, ownerConnectionId),
+            _ => _hubContext.Clients.Group(retroRoomId.GroupName)
         };
 
         await client.RetroItemChanged(item);
@@ -36,45 +37,52 @@ internal sealed class RetroEventSender : IRetroEventSender
 
     public async Task RetroItemRemoved(Guid roomId, Guid itemId)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).RetroItemRemoved(itemId);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).RetroItemRemoved(itemId);
     }
 
     public async Task RetroSessionChanged(RetroSessionDto session)
     {
-        await _hubContext.Clients.Group(session.RoomId.ToString("N")).RetroSessionChanged(session);
+        var retroRoomId = RoomId.CreateForRetro(session.RoomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).RetroSessionChanged(session);
     }
 
     public async Task VotesChanged(Guid roomId, long personId, int votesCount)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).VotesChanged(personId, votesCount);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).VotesChanged(personId, votesCount);
     }
 
     public async Task RetroStateChanged(Guid roomId, long personId, bool finished, bool handRaised)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).RetroStateChanged(personId, finished, handRaised);
-    }
-
-    public async Task PersonsChanged(Guid roomId, IReadOnlyCollection<Person> persons)
-    {
-        ArgumentNullException.ThrowIfNull(persons);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
         
-        await _hubContext.Clients.Group(roomId.ToString("N")).PersonsChanged(persons);
+        await _hubContext.Clients.Group(retroRoomId.GroupName).RetroStateChanged(personId, finished, handRaised);
     }
 
     public async Task ActionItemChanged(Guid roomId, ActionItemDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemChanged(item);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).ActionItemChanged(item);
     }
 
     public async Task ActionItemRemoved(Guid roomId, Guid itemId)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).ActionItemRemoved(itemId);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).ActionItemRemoved(itemId);
     }
 
     public async Task TimerChanged(Guid roomId, TimeSpan? duration)
     {
-        await _hubContext.Clients.Group(roomId.ToString("N")).TimerChanged(duration);
+        var retroRoomId = RoomId.CreateForRetro(roomId);
+        
+        await _hubContext.Clients.Group(retroRoomId.GroupName).TimerChanged(duration);
     }
 }

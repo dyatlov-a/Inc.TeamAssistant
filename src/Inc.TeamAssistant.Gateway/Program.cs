@@ -199,5 +199,6 @@ app
 
 app.MapHub<AssessmentSessionHub>(HubDescriptors.AssessmentSessionHub.Endpoint);
 app.MapHub<RetroHub>(HubDescriptors.RetroHub.Endpoint);
+app.MapHub<SurveyHub>(HubDescriptors.SurveyHub.Endpoint);
 
 app.Run();

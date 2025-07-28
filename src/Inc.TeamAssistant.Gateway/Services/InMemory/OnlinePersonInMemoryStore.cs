@@ -1,16 +1,17 @@
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 
 namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
 internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 {
-    private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, Person>> _state = new();
+    private readonly ConcurrentDictionary<RoomId, ConcurrentDictionary<string, Person>> _state = new();
 
-    public string? FindConnectionId(Guid roomId, long personId)
+    public string? FindConnectionId(RoomId roomId, long personId)
     {
+        ArgumentNullException.ThrowIfNull(roomId);
+        
         if (_state.TryGetValue(roomId, out var persons))
             foreach (var person in persons)
                 if (person.Value.Id == personId)
@@ -19,8 +20,10 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         return null;
     }
 
-    public IReadOnlyCollection<Person> GetPersons(Guid roomId)
+    public IReadOnlyCollection<Person> GetPersons(RoomId roomId)
     {
+        ArgumentNullException.ThrowIfNull(roomId);
+        
         var result = _state.TryGetValue(roomId, out var persons)
             ? persons.Values.ToArray()
             : [];
@@ -28,8 +31,9 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         return result;
     }
     
-    public IReadOnlyCollection<Person> JoinToTeam(Guid roomId, string connectionId, Person person)
+    public IReadOnlyCollection<Person> JoinToRoom(RoomId roomId, string connectionId, Person person)
     {
+        ArgumentNullException.ThrowIfNull(roomId);
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         ArgumentNullException.ThrowIfNull(person);
         
@@ -37,33 +41,33 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         
         persons.TryAdd(connectionId, person);
 
-        return GetPersons(roomId);
+        var newPersons = GetPersons(roomId);
+        return newPersons;
     }
 
-    public IReadOnlyCollection<Person> LeaveFromTeam(Guid roomId, string connectionId)
+    public IReadOnlyCollection<Person> LeaveFromRoom(RoomId roomId, string connectionId)
     {
+        ArgumentNullException.ThrowIfNull(roomId);
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         
         if (_state.TryGetValue(roomId, out var persons))
             persons.TryRemove(connectionId, out _);
         
-        return GetPersons(roomId);
+        var newPersons = GetPersons(roomId);
+        return newPersons;
     }
 
-    public async IAsyncEnumerable<Guid> LeaveFromTeams(
-        string connectionId,
-        Func<Guid, IReadOnlyCollection<Person>, CancellationToken, Task> notify,
-        [EnumeratorCancellation] CancellationToken token)
+    public IEnumerable<RoomId> LeaveFromRooms(string connectionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
-        ArgumentNullException.ThrowIfNull(notify);
-        
-        foreach (var (teamId, persons) in _state)
-            if (persons.TryRemove(connectionId, out _))
-            {
-                await notify(teamId, GetPersons(teamId), token);
 
-                yield return teamId;
-            }
+        return Leave();
+
+        IEnumerable<RoomId> Leave()
+        {
+            foreach (var (roomId, personsLookup) in _state)
+                if (personsLookup.TryRemove(connectionId, out _))
+                    yield return roomId;
+        }
     }
 }
