@@ -121,7 +121,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged, roomId);
     }
 
-    public async Task<IAsyncDisposable> Build(
+    public async Task<IDisposable> Build(
         Guid roomId,
         params IReadOnlyCollection<Func<IRetroEventProvider, IDisposable>> eventHandlers)
     {
@@ -133,10 +133,8 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 
         await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinRetroMethod, roomId);
 
-        return new PostActionScope(async () =>
+        return new PostActionScope(() =>
         {
-            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.LeaveRetroMethod, roomId);
-			
             foreach (var handler in handlers)
                 handler.Dispose();
         });

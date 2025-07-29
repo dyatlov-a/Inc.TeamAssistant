@@ -8,7 +8,5 @@ public interface IOnlinePersonStore
     
     IReadOnlyCollection<Person> JoinToRoom(RoomId roomId, string connectionId, Person person);
 
-    IReadOnlyCollection<Person> LeaveFromRoom(RoomId roomId, string connectionId);
-
     IEnumerable<RoomId> LeaveFromRooms(string connectionId);
 }

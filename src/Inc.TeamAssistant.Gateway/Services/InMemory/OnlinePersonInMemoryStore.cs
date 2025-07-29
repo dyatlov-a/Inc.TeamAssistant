@@ -45,18 +45,6 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         return newPersons;
     }
 
-    public IReadOnlyCollection<Person> LeaveFromRoom(RoomId roomId, string connectionId)
-    {
-        ArgumentNullException.ThrowIfNull(roomId);
-        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
-        
-        if (_state.TryGetValue(roomId, out var persons))
-            persons.TryRemove(connectionId, out _);
-        
-        var newPersons = GetPersons(roomId);
-        return newPersons;
-    }
-
     public IEnumerable<RoomId> LeaveFromRooms(string connectionId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);

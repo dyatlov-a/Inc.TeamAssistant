@@ -30,16 +30,6 @@ internal sealed class SurveyHub : Hub<ISurveyHubClient>
         _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
     }
     
-    [HubMethodName(HubDescriptors.SurveyHub.LeaveSurveyMethod)]
-    public async Task LeaveSurvey(Guid roomId)
-    {
-        var retroRoomId = RoomId.CreateForSurvey(roomId);
-        
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
-        
-        _store.LeaveFromRoom(retroRoomId, Context.ConnectionId);
-    }
-    
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var roomIds = _store.LeaveFromRooms(Context.ConnectionId);

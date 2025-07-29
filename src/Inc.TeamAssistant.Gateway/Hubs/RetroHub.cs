@@ -40,18 +40,6 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         
         await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
     }
-    
-    [HubMethodName(HubDescriptors.RetroHub.LeaveRetroMethod)]
-    public async Task LeaveRetro(Guid roomId)
-    {
-        var retroRoomId = RoomId.CreateForRetro(roomId);
-        
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
-        
-        var persons = _store.LeaveFromRoom(retroRoomId, Context.ConnectionId);
-        
-        await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
-    }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
     public async Task CreateRetroItem(CreateRetroItemCommand command)

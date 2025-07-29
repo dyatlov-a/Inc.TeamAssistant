@@ -84,7 +84,7 @@
     
     private LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)>? _currentItem;
     private RetroEventBuilder? _eventBuilder;
-    private IAsyncDisposable? _eventListener;
+    private IDisposable? _eventListener;
     private RetroSessionDto? _activeSession;
     private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
     private TimeSpan? _currentTimer;
@@ -199,13 +199,12 @@
         
         await Load(LoadingState.Wrap(_state, StateHasChanged));
 
-        if (_eventListener is not null)
-            await _eventListener.DisposeAsync();
-        
+        _eventListener?.Dispose();
+
         _eventListener = await StartListenEvents(_eventBuilder);
     }
 
-    private async Task<IAsyncDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
+    private async Task<IDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
     {
         return await eventBuilder.Build(
             RoomId,
@@ -592,7 +591,7 @@
     {
         if (_eventListener is not null)
         {
-            await _eventListener.DisposeAsync();
+            _eventListener.Dispose();
             _eventListener = null;
         }
         

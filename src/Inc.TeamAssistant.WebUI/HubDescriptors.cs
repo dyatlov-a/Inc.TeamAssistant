@@ -13,7 +13,6 @@ public static class HubDescriptors
     {
         public const string Endpoint = "/retro-events";
         public const string JoinRetroMethod = "JoinRetro";
-        public const string LeaveRetroMethod = "LeaveRetro";
         public const string CreateRetroItemMethod = "CreateRetroItem";
         public const string UpdateRetroItemMethod = "UpdateRetroItem";
         public const string RemoveRetroItemMethod = "RemoveRetroItem";
@@ -31,6 +30,5 @@ public static class HubDescriptors
     {
         public const string Endpoint = "/survey-events";
         public const string JoinSurveyMethod = "JoinSurvey";
-        public const string LeaveSurveyMethod = "LeaveSurvey";
     }
 }
