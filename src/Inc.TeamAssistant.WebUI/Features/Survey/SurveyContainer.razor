@@ -1,5 +1,9 @@
 @page "/survey/{RoomId:guid}"
 @page "/ru/survey/{RoomId:guid}"
+@page "/en/survey/{RoomId:guid}"
+@page "/survey/{RoomId:guid}/{QuestionId:guid}"
+@page "/ru/survey/{RoomId:guid}/{QuestionId:guid}"
+@page "/en/survey/{RoomId:guid}/{QuestionId:guid}"
 
 @attribute [Authorize]
 
@@ -17,7 +21,7 @@
             RoomId="RoomId"
             CurrentUserId="context.User.ToPerson().Id"
             FacilitatorId="_facilitatorId"
-            HasNext="@(_inProgress is not null)"
+            Question="Question"
             MoveNext="MoveNext"
             FacilitatorGiven="FacilitatorGiven"
             RoomPropertiesOpened="OnRoomPropertiesOpened"
@@ -32,10 +36,15 @@
 @code {
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
+    
+    [Parameter]
+    public Guid? QuestionId { get; set; }
 
-    private bool? _inProgress;
+    private Guid? _surveyId;
     private long? _facilitatorId;
+    private readonly List<SurveyQuestionViewModel> _questions = new();
     private ContentDialog? _roomPropertiesEditor;
+    private SurveyQuestionViewModel? Question => _questions.SingleOrDefault(i => i.Id == QuestionId);
     
     private readonly LoadingState _state = LoadingState.Done();
     
@@ -51,22 +60,22 @@
             nameof(SurveyContainer),
             _state);
 
-        _inProgress = result.InProgress;
+        _surveyId = result.SurveyId;
         _facilitatorId = result.FacilitatorId;
+        
+        _questions.Clear();
+        _questions.AddRange(result.Questions.Select(i => new SurveyQuestionViewModel(i)));
     }
     
     private async Task MoveNext()
     {
-        if (!_inProgress.HasValue)
-            return;
-
-        if (_inProgress.Value)
+        if (_surveyId.HasValue)
             await RequestProcessor.Process(
-                () => SurveyService.Finish(new FinishSurveyCommand(RoomId)),
+                () => SurveyService.Start(new StartSurveyCommand(RoomId)),
                 _state);
         else
             await RequestProcessor.Process(
-                () => SurveyService.Start(new StartSurveyCommand(RoomId)),
+                () => SurveyService.Finish(new FinishSurveyCommand(RoomId)),
                 _state);
     }
 

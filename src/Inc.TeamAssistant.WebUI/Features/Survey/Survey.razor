@@ -4,7 +4,7 @@
     <Toolbar>
         <RoomStatePanel
             HasPrevious="false"
-            HasNext="@(HasNext && IsFacilitator)"
+            HasNext="IsFacilitator"
             HasFinish="false"
             HasRaiseHand="false"
             CanChangeProperties="IsFacilitator"
@@ -16,7 +16,22 @@
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
-            @Localizer["WaitStartHealthCheck"]
+            @if (Question is null)
+            {
+                @Localizer["WaitStartHealthCheck"]
+            }
+            else
+            {
+                <h2>@Question.Title</h2>
+                <p>@Question.Text</p>
+                <div>
+                    <Button OnClick="() => OnAnswerSelected(null)">Пропустить</Button>
+                    @foreach (var value in Enumerable.Range(1, 5))
+                    {
+                        <Button OnClick="() => OnAnswerSelected(value)">@value</Button>
+                    }
+                </div>
+            }
         </Loading>
     </Content>
 </DashboardGrid>
@@ -41,10 +56,10 @@
     public long? FacilitatorId { get; set; }
     
     /// <summary>
-    /// Has next action.
+    /// Current question
     /// </summary>
     [Parameter, EditorRequired]
-    public bool HasNext { get; set; }
+    public SurveyQuestionViewModel? Question { get; set; }
     
     /// <summary>
     /// Move to next action.
@@ -77,4 +92,6 @@
     public Func<Task> Retry { get; set; } = default!;
     
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
+
+    private void OnAnswerSelected(int? value) => Question?.ChangeValue(value);
 }

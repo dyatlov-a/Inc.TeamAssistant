@@ -33,13 +33,12 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         var currentPerson = _personResolver.GetCurrentPerson();
         var roomProperties = await _propertiesProvider.Get(query.RoomId, token);
         var survey = await _reader.Find(query.RoomId, SurveyStateRules.Active, token);
-        var inProgress = survey is not null;
         
-        var items = inProgress
+        var items = survey is not null
             ? await GetQuestions(survey!.Id, currentPerson.Id, survey.QuestionIds, token)
             : [];
 
-        return new(inProgress, roomProperties.FacilitatorId, items);
+        return new(survey?.Id, roomProperties.FacilitatorId, items);
     }
 
     private async Task<IReadOnlyCollection<SurveyQuestionDto>> GetQuestions(
@@ -50,16 +49,13 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     {
         ArgumentNullException.ThrowIfNull(questionIds);
         
-        var answers = _surveyState.GetAll(surveyId);
+        var answers = _surveyState.Get(surveyId, ownerId);
         var questions = await _reader.ReadQuestions(questionIds, token);
 
         return questions
             .Select(q =>
             {
-                var answer = answers
-                    .Where(a => a.OwnerId == ownerId)
-                    .SelectMany(a => a.Answers)
-                    .SingleOrDefault(a => a.QuestionId == q.Id);
+                var answer = answers?.Answers.SingleOrDefault(a => a.QuestionId == q.Id);
 
                 return new SurveyQuestionDto(q.Id, q.Title, q.Text, answer?.Value, answer?.Comment);
             })

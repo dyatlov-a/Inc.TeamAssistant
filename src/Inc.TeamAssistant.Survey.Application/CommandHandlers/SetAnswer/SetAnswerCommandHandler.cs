@@ -29,23 +29,19 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
         ArgumentNullException.ThrowIfNull(command);
 
         var currentPerson = _personResolver.GetCurrentPerson();
-        var ownerId = currentPerson.Id;
-        var answers = _surveyState.GetAll(command.SurveyId);
+        var existAnswer = _surveyState.Get(command.SurveyId, currentPerson.Id);
         var survey = await command.SurveyId.Required(_repository.Find, token);
 
         if (!survey.QuestionIds.Contains(command.QuestionId))
             throw new TeamAssistantException($"Survey {command.SurveyId} not contains question {command.QuestionId}.");
         
-        var answer = answers.SingleOrDefault(a => a.OwnerId == ownerId) ?? new SurveyAnswer(
+        var answer = existAnswer ?? new SurveyAnswer(
             Guid.NewGuid(),
             command.SurveyId,
             DateTimeOffset.UtcNow,
-            ownerId);
+            currentPerson.Id);
         answer.SetAnswer(new Answer(command.QuestionId, command.Value, command.Comment));
 
         _surveyState.Set(answer);
-        
-        if (survey.QuestionIds.Count == answer.Answers.Count)
-            await _repository.Upsert(answer, token);
     }
 }

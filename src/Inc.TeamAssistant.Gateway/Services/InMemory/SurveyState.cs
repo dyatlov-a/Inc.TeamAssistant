@@ -8,13 +8,11 @@ internal sealed class SurveyState : ISurveyState
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<long, SurveyAnswer>> _state = new();
     
-    public IReadOnlyCollection<SurveyAnswer> GetAll(Guid surveyId)
+    public SurveyAnswer? Get(Guid surveyId, long ownerId)
     {
-        var result = _state.TryGetValue(surveyId, out var answers)
-            ? answers.Select(t => t.Value).ToArray()
-            : [];
-
-        return result;
+        return _state.TryGetValue(surveyId, out var answers) && answers.TryGetValue(ownerId, out var answer)
+            ? answer
+            : null;
     }
 
     public void Set(SurveyAnswer surveyAnswer)

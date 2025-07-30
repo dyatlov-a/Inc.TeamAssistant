@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.Survey.Application.Contracts;
 
 public interface ISurveyState
 {
-    IReadOnlyCollection<SurveyAnswer> GetAll(Guid surveyId);
+    SurveyAnswer? Get(Guid surveyId, long ownerId);
 
     void Set(SurveyAnswer surveyAnswer);
 
