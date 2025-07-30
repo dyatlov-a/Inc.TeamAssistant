@@ -14,14 +14,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IReviewMetricsProvider _metricsProvider;
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly IReviewTeamMetricsFactory _metricsFactory;
     private readonly DraftTaskForReviewService _draftService;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
         IReviewMetricsProvider metricsProvider,
-        ReviewTeamMetricsFactory metricsFactory,
+        IReviewTeamMetricsFactory metricsFactory,
         DraftTaskForReviewService draftService)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));

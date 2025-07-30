@@ -4,7 +4,7 @@ using Inc.TeamAssistant.Survey.Domain;
 
 namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
-internal sealed class SurveyState : ISurveyState
+internal sealed class SurveyInMemoryState : ISurveyState
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<long, SurveyAnswer>> _state = new();
     

@@ -1,4 +1,5 @@
 using AutoFixture;
+using Inc.TeamAssistant.Gateway.Services.InMemory;
 using Inc.TeamAssistant.Holidays;
 using Inc.TeamAssistant.Holidays.Internal;
 using Inc.TeamAssistant.Holidays.Model;
@@ -10,19 +11,19 @@ using Xunit;
 
 namespace Inc.TeamAssistant.Reviewer.ApplicationTests.Services;
 
-public sealed class ReviewMetricsProviderTests
+public sealed class ReviewInMemoryMetricsProviderTests
 {
     private readonly Fixture _fixture = new();
     private readonly IReviewMetricsProvider _target;
 
-    public ReviewMetricsProviderTests()
+    public ReviewInMemoryMetricsProviderTests()
     {
         var calendar = Calendar.Create(_fixture.Create<Guid>(), _fixture.Create<long>());
         
         var holidayReader = Substitute.For<IHolidayReader>();
         holidayReader.Find(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(calendar);
         var holidayService = new HolidayService(holidayReader);
-        _target = new ReviewMetricsProvider(new ReviewTeamMetricsFactory(holidayService));
+        _target = new ReviewInMemoryMetricsProvider(new ReviewTeamMetricsFactory(holidayService));
     }
 
     [Theory]

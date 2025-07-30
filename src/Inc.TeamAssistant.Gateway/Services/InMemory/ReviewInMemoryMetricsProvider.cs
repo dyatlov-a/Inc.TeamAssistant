@@ -2,15 +2,15 @@ using System.Collections.Concurrent;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 
-namespace Inc.TeamAssistant.Reviewer.Application.Services;
+namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
-internal sealed class ReviewMetricsProvider : IReviewMetricsProvider, IReviewMetricsLoader
+internal sealed class ReviewInMemoryMetricsProvider : IReviewMetricsProvider, IReviewMetricsLoader
 {
     private readonly ConcurrentDictionary<Guid, ReviewTeamMetrics> _statsByTeams = new();
 
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly IReviewTeamMetricsFactory _metricsFactory;
 
-    public ReviewMetricsProvider(ReviewTeamMetricsFactory metricsFactory)
+    public ReviewInMemoryMetricsProvider(IReviewTeamMetricsFactory metricsFactory)
     {
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));
     }
