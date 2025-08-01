@@ -46,6 +46,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Serilog;
@@ -152,7 +153,12 @@ builder.Services
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
-	.AddMvc(o => o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false);
+	.AddControllers(o =>
+	{
+		o.Filters.Add<CurrentPersonFilter>();
+		o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false;
+	})
+	.AddControllersAsServices();
 
 builder.Services
 	.AddHybridCache();
@@ -162,7 +168,7 @@ builder.Services
 
 builder.Services
 	.AddEventSenders()
-	.AddSignalR();
+	.AddSignalR(o => o.AddFilter<CurrentPersonFilter>());
 
 builder.Services
 	.AddRazorComponents()
