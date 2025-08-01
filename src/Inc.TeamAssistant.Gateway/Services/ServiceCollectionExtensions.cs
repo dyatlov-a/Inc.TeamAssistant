@@ -31,6 +31,9 @@ public static class ServiceCollectionExtensions
 
         services
             .AddQuickResponseCodeGenerator(cacheTimeout)
+            
+            .AddScoped<PersonResolver>()
+            .AddScoped<IPersonResolver>(sp => sp.GetRequiredService<PersonResolver>())
                 
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
@@ -41,7 +44,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
-            .AddScoped<IPersonResolver, PersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddScoped<ICalendarService, CalendarService>()

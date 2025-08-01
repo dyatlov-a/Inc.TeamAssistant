@@ -1,15 +1,14 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.WebUI.Extensions;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Inc.TeamAssistant.Gateway.Auth;
 
-internal sealed class CurrentPersonFilter : IHubFilter, IActionFilter
+internal sealed class CurrentPersonHubFilter : IHubFilter
 {
-    private readonly IPersonResolver _personResolver;
+    private readonly PersonResolver _personResolver;
 
-    public CurrentPersonFilter(IPersonResolver personResolver)
+    public CurrentPersonHubFilter(PersonResolver personResolver)
     {
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
@@ -40,22 +39,5 @@ internal sealed class CurrentPersonFilter : IHubFilter, IActionFilter
         _personResolver.Reset();
         
         return next(context, exception);
-    }
-
-    public void OnActionExecuting(ActionExecutingContext context)
-    {
-        ArgumentNullException.ThrowIfNull(context);
-        
-        var user = context.HttpContext.User;
-        
-        if (user.Identity?.IsAuthenticated == true)
-            _personResolver.TrySet(user.ToPerson());
-        else
-            _personResolver.Reset();
-    }
-
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-        _personResolver.Reset();
     }
 }

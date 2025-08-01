@@ -155,7 +155,7 @@ builder.Services
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
 	.AddControllers(o =>
 	{
-		o.Filters.Add<CurrentPersonFilter>();
+		o.Filters.Add<CurrentPersonActionFilter>();
 		o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false;
 	})
 	.AddControllersAsServices();
@@ -168,7 +168,7 @@ builder.Services
 
 builder.Services
 	.AddEventSenders()
-	.AddSignalR(o => o.AddFilter<CurrentPersonFilter>());
+	.AddSignalR(o => o.AddFilter<CurrentPersonHubFilter>());
 
 builder.Services
 	.AddRazorComponents()
