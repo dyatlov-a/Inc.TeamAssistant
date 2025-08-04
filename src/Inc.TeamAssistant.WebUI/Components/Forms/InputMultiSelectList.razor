@@ -42,6 +42,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Func<TItem, TValue> ValueSelector { get; set; } = default!;
+
+    /// <summary>
+    /// Disable multi select logic
+    /// </summary>
+    [Parameter]
+    public bool HasMulti { get; set; } = true;
     
     /// <summary>
     /// Is disabled state of the input.
@@ -69,11 +75,22 @@
     {
         if (IsDisabled)
             return;
+
+        var hasValue = _values.Contains(value);
         
-        if (_values.Contains(value))
-            _values.Remove(value);
+        if (HasMulti)
+        {
+            if (hasValue)
+                _values.Remove(value);
+            else
+                _values.Add(value);
+        }
         else
-            _values.Add(value);
+        {
+            _values.Clear();
+            if (!hasValue)
+                _values.Add(value);
+        }
 
         CurrentValue = _values;
     }
