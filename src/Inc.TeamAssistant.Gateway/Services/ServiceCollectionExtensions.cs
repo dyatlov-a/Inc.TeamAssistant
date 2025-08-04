@@ -8,7 +8,6 @@ using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
-using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -61,7 +60,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>()
             .AddSingleton<IRetroStage, RetroStageInMemory>()
-            .AddSingleton<ISurveyState, SurveyInMemoryState>()
             
             .AddSingleton<ReviewInMemoryMetricsProvider>()
             .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewInMemoryMetricsProvider>())

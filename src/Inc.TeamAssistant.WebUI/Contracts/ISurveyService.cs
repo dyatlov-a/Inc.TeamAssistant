@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Survey.Model.Commands.FinishAnswer;
 using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
@@ -10,8 +9,6 @@ public interface ISurveyService
     Task<GetSurveyStateResult> GetSurveyState(Guid roomId, CancellationToken token = default);
 
     Task Start(StartSurveyCommand command, CancellationToken token = default);
-
-    Task Finish(FinishAnswerCommand command, CancellationToken token = default);
     
     Task Finish(FinishSurveyCommand command, CancellationToken token = default);
 }

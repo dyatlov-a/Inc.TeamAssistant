@@ -9,13 +9,11 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
 {
     private readonly ISurveyRepository _repository;
     private readonly ISurveyReader _reader;
-    private readonly ISurveyState _surveyState;
 
-    public FinishSurveyCommandHandler(ISurveyRepository repository, ISurveyReader reader, ISurveyState surveyState)
+    public FinishSurveyCommandHandler(ISurveyRepository repository, ISurveyReader reader)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _surveyState = surveyState ?? throw new ArgumentNullException(nameof(surveyState));
     }
 
     public async Task Handle(FinishSurveyCommand command, CancellationToken token)
@@ -25,10 +23,6 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
         var survey = await _reader.Find(command.RoomId, SurveyStateRules.Active, token);
 
         if (survey is not null)
-        {
             await _repository.Upsert(survey.MoveToFinish(), token);
-            
-            _surveyState.Clear(survey.Id);
-        }
     }
 }

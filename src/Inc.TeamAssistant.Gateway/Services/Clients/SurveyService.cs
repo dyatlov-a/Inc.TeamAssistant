@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Survey.Model.Commands.FinishAnswer;
 using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
@@ -25,13 +24,6 @@ internal sealed class SurveyService : ISurveyService
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        await _mediator.Send(command, token);
-    }
-
-    public async Task Finish(FinishAnswerCommand command, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-        
         await _mediator.Send(command, token);
     }
 

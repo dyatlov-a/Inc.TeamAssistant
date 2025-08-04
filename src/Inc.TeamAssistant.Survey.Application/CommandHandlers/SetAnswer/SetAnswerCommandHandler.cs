@@ -10,16 +10,11 @@ namespace Inc.TeamAssistant.Survey.Application.CommandHandlers.SetAnswer;
 
 internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand>
 {
-    private readonly ISurveyState _surveyState;
     private readonly ISurveyRepository _repository;
     private readonly IPersonResolver _personResolver;
 
-    public SetAnswerCommandHandler(
-        ISurveyState surveyState,
-        ISurveyRepository repository,
-        IPersonResolver personResolver)
+    public SetAnswerCommandHandler(ISurveyRepository repository, IPersonResolver personResolver)
     {
-        _surveyState = surveyState ?? throw new ArgumentNullException(nameof(surveyState));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
@@ -29,7 +24,7 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
         ArgumentNullException.ThrowIfNull(command);
 
         var currentPerson = _personResolver.GetCurrentPerson();
-        var existAnswer = _surveyState.Get(command.SurveyId, currentPerson.Id);
+        var existAnswer = await _repository.Find(command.SurveyId, currentPerson.Id, token);
         var survey = await command.SurveyId.Required(_repository.Find, token);
 
         if (!survey.QuestionIds.Contains(command.QuestionId))
@@ -42,6 +37,6 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
             currentPerson.Id);
         answer.SetAnswer(new Answer(command.QuestionId, command.Value, command.Comment));
 
-        _surveyState.Set(answer);
+        await _repository.Upsert(answer, token);
     }
 }
