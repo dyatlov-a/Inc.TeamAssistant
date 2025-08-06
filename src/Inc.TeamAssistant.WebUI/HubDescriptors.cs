@@ -30,5 +30,7 @@ public static class HubDescriptors
     {
         public const string Endpoint = "/survey-events";
         public const string JoinSurveyMethod = "JoinSurvey";
+        public const string GiveFacilitatorMethod = "GiveFacilitator";
+        public const string SetAnswerMethod = "SetAnswer";
     }
 }

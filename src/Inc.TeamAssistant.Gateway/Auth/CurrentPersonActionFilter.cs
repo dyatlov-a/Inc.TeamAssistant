@@ -21,12 +21,9 @@ internal sealed class CurrentPersonActionFilter : IActionFilter
         
         if (user.Identity?.IsAuthenticated == true)
             _personResolver.TrySet(user.ToPerson());
-        else
-            _personResolver.Reset();
     }
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        _personResolver.Reset();
     }
 }

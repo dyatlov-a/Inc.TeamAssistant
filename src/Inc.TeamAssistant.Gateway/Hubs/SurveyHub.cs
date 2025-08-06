@@ -1,4 +1,6 @@
 using Inc.TeamAssistant.Primitives.Features.Tenants;
+using Inc.TeamAssistant.Survey.Model.Commands.SetAnswer;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -23,11 +25,30 @@ internal sealed class SurveyHub : Hub<ISurveyHubClient>
     [HubMethodName(HubDescriptors.SurveyHub.JoinSurveyMethod)]
     public async Task JoinSurvey(Guid roomId)
     {
-        var retroRoomId = RoomId.CreateForSurvey(roomId);
+        var surveyRoomId = RoomId.CreateForSurvey(roomId);
         
-        await Groups.AddToGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
+        await Groups.AddToGroupAsync(Context.ConnectionId, surveyRoomId.GroupName);
         
-        _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
+        _store.JoinToRoom(surveyRoomId, Context.ConnectionId, Context.User!.ToPerson());
+    }
+    
+    [HubMethodName(HubDescriptors.SurveyHub.GiveFacilitatorMethod)]
+    public async Task GiveFacilitator(Guid roomId)
+    {
+        var surveyRoomId = RoomId.CreateForSurvey(roomId);
+        var person = Context.User!.ToPerson();
+        
+        await _mediator.Send(ChangeRoomPropertiesCommand.ChangeFacilitator(roomId), CancellationToken.None);
+
+        await Clients.Group(surveyRoomId.GroupName).FacilitatorChanged(person.Id);
+    }
+    
+    [HubMethodName(HubDescriptors.SurveyHub.SetAnswerMethod)]
+    public async Task SetAnswer(SetAnswerCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        
+        await _mediator.Send(command, CancellationToken.None);
     }
     
     public override async Task OnDisconnectedAsync(Exception? exception)

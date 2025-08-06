@@ -12,32 +12,16 @@ internal sealed class CurrentPersonHubFilter : IHubFilter
     {
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
     }
-
-    public Task OnConnectedAsync(HubLifetimeContext context, Func<HubLifetimeContext, Task> next)
+    
+    public ValueTask<object?> InvokeMethodAsync(
+        HubInvocationContext invocationContext,
+        Func<HubInvocationContext, ValueTask<object?>> next)
     {
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(next);
-        
-        var user = context.Context.User;
+        var user = invocationContext.Context.User;
         
         if (user is not null)
             _personResolver.TrySet(user.ToPerson());
-        else
-            _personResolver.Reset();
         
-        return next(context);
-    }
-    
-    public Task OnDisconnectedAsync(
-        HubLifetimeContext context,
-        Exception? exception,
-        Func<HubLifetimeContext, Exception?, Task> next)
-    {
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(next);
-        
-        _personResolver.Reset();
-        
-        return next(context, exception);
+        return next(invocationContext);
     }
 }

@@ -7,8 +7,6 @@
 @{
     if (HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true)
         PersonResolver.TrySet(HttpContextAccessor.HttpContext.User.ToPerson());
-    else
-        PersonResolver.Reset();
 }
 
 <!DOCTYPE html>

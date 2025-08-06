@@ -13,8 +13,6 @@ internal sealed class PersonResolver : IPersonResolver
         _currentPerson ??= person;
     }
 
-    public void Reset() => _currentPerson = null;
-
     public Person GetCurrentPerson()
     {
         if (_currentPerson is null)

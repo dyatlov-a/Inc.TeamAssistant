@@ -39,6 +39,7 @@ using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.DataAccess;
+using Inc.TeamAssistant.Survey.Domain;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Inc.TeamAssistant.Tenants.DataAccess;
 using Inc.TeamAssistant.WebUI;
@@ -114,6 +115,7 @@ builder.Services
 	.AddJsonType<IReadOnlyCollection<DashboardWidget>>()
 	
 	.AddJsonType<IReadOnlyCollection<Guid>>()
+	.AddJsonType<IReadOnlyCollection<Answer>>()
 	.Build();
 
 builder.Services

@@ -61,7 +61,7 @@ internal sealed class SurveyReader : ISurveyReader
 
         await using var connection = _connectionFactory.Create();
         
-        return await connection.QuerySingleOrDefaultAsync(command);
+        return await connection.QuerySingleOrDefaultAsync<SurveyTemplate>(command);
     }
 
     public async Task<SurveyEntry?> Find(

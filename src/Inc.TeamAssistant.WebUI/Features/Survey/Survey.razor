@@ -22,15 +22,12 @@
             }
             else
             {
-                <h2>@Question.Title</h2>
-                <p>@Question.Text</p>
-                <div>
-                    <Button OnClick="() => OnAnswerSelected(null)">Пропустить</Button>
-                    @foreach (var value in Enumerable.Range(1, 5))
-                    {
-                        <Button OnClick="() => OnAnswerSelected(value)">@value</Button>
-                    }
-                </div>
+                <AnswerFrom
+                    Title="@Question.Title"
+                    Text="@Question.Text"
+                    FormModel="@(new AnswerFromModel(Question))"
+                    OnNextQuestion="OnNextQuestion"
+                    OnValidSubmit="AnswerSelected" />
             }
         </Loading>
     </Content>
@@ -59,7 +56,7 @@
     /// Current question
     /// </summary>
     [Parameter, EditorRequired]
-    public SurveyQuestionViewModel? Question { get; set; }
+    public SurveyQuestionDto? Question { get; set; }
     
     /// <summary>
     /// Move to next action.
@@ -91,7 +88,17 @@
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
     
+    /// <summary>
+    /// Move to question event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnNextQuestion { get; set; }
+    
+    /// <summary>
+    /// Answer selected event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<AnswerFromModel> AnswerSelected { get; set; }
+    
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
-
-    private void OnAnswerSelected(int? value) => Question?.ChangeValue(value);
 }

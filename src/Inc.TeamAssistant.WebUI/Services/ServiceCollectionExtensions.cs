@@ -12,6 +12,7 @@ using Inc.TeamAssistant.WebUI.Features.Dashboard.Appraiser;
 using Inc.TeamAssistant.WebUI.Features.Dashboard.Settings;
 using Inc.TeamAssistant.WebUI.Features.Layouts;
 using Inc.TeamAssistant.WebUI.Features.Retro;
+using Inc.TeamAssistant.WebUI.Features.Survey;
 using Inc.TeamAssistant.WebUI.Features.Tenants;
 using Inc.TeamAssistant.WebUI.Routing;
 using Inc.TeamAssistant.WebUI.Services.Internal;
@@ -49,6 +50,7 @@ public static class ServiceCollectionExtensions
             
             .AddTransient<AssessmentSessionEventBuilder>()
             .AddTransient<RetroEventBuilder>()
+            .AddTransient<SurveyEventBuilder>()
 
             .AddAuthorizationCore()
             .AddCascadingAuthenticationState()
@@ -81,7 +83,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IValidator<CompleteFormModel>, CompleteFormModelValidator>()
             .AddScoped<IValidator<AppraiserIntegrationFromModel>, AppraiserIntegrationFromModelValidator>()
             .AddScoped<IValidator<DashboardSettingsFormModel>, DashboardSettingsFormModelValidator>()
-            .AddScoped<IValidator<RoomFormModel>, RoomFormModelValidator>();
+            .AddScoped<IValidator<RoomFormModel>, RoomFormModelValidator>()
+            .AddScoped<IValidator<AnswerFromModel>, AnswerFromModelValidator>();
 
         return services;
     }

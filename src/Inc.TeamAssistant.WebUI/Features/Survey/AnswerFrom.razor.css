@@ -1,0 +1,10 @@
+.survey-answer {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.survey-answer__controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 40px;
+    flex-direction: row-reverse;
+}
