@@ -242,5 +242,23 @@ namespace Inc.TeamAssistant.WebUI.Features.RoomProperties {
                 return ResourceManager.GetString("ConfirmGiveFacilitator", resourceCulture);
             }
         }
+        
+        internal static string VotesCount {
+            get {
+                return ResourceManager.GetString("VotesCount", resourceCulture);
+            }
+        }
+        
+        internal static string Participants {
+            get {
+                return ResourceManager.GetString("Participants", resourceCulture);
+            }
+        }
+        
+        internal static string LowerHandHint {
+            get {
+                return ResourceManager.GetString("LowerHandHint", resourceCulture);
+            }
+        }
     }
 }

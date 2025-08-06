@@ -29,6 +29,7 @@
                 CurrentUserId="context.User.ToPerson().Id"
                 FacilitatorId="_facilitatorId"
                 Question="_currentQuestion?.Value"
+                Participants="_participants"
                 MoveNext="MoveNext"
                 FacilitatorGiven="FacilitatorGiven"
                 RoomPropertiesOpened="OnRoomPropertiesOpened"
@@ -72,6 +73,8 @@
     private LinkedList<SurveyQuestionDto> _orderedQuestions = new();
     private LinkedListNode<SurveyQuestionDto>? _currentQuestion;
     
+    private readonly List<ParticipantViewModel> _participants = new();
+    
     private readonly LoadingState _state = LoadingState.Done();
     
     protected override async Task OnParametersSetAsync() => await Load(_state);
@@ -88,6 +91,8 @@
 
         _surveyId = result.SurveyId;
         _facilitatorId = result.FacilitatorId;
+        _participants.Clear();
+        _participants.AddRange(result.Participants.Select(p => new ParticipantViewModel(p.Person, p.Finished)));
 
         _orderedQuestions = new(result.Questions);
         _currentQuestion = QuestionId.HasValue 
@@ -143,7 +148,23 @@
                     
                     StateHasChanged();
                 });
+            }),
+            b => b.OnPersonsChanged(async p =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyParticipants(p);
+                    StateHasChanged();
+                });
             }));
+    }
+    
+    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    {
+        _participants.Clear();
+        
+        foreach (var person in persons)
+            _participants.Add(new ParticipantViewModel(person, finished: false));
     }
 
     private async Task MoveNext()

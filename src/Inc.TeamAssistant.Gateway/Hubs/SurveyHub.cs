@@ -29,7 +29,9 @@ internal sealed class SurveyHub : Hub<ISurveyHubClient>
         
         await Groups.AddToGroupAsync(Context.ConnectionId, surveyRoomId.GroupName);
         
-        _store.JoinToRoom(surveyRoomId, Context.ConnectionId, Context.User!.ToPerson());
+        var persons = _store.JoinToRoom(surveyRoomId, Context.ConnectionId, Context.User!.ToPerson());
+        
+        await Clients.Group(surveyRoomId.GroupName).PersonsChanged(persons);
     }
     
     [HubMethodName(HubDescriptors.SurveyHub.GiveFacilitatorMethod)]
@@ -56,7 +58,13 @@ internal sealed class SurveyHub : Hub<ISurveyHubClient>
         var roomIds = _store.LeaveFromRooms(Context.ConnectionId);
 
         foreach (var roomId in roomIds)
+        {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.GroupName);
+            
+            var persons = _store.GetPersons(roomId);
+            
+            await Clients.Group(roomId.GroupName).PersonsChanged(persons);
+        }
 
         await base.OnDisconnectedAsync(exception);
     }

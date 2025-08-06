@@ -13,17 +13,20 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     private readonly IPersonResolver _personResolver;
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly ISurveyRepository _surveyRepository;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
     public GetSurveyStateQueryHandler(
         ISurveyReader reader,
         IPersonResolver personResolver,
         IRoomPropertiesProvider propertiesProvider,
-        ISurveyRepository surveyRepository)
+        ISurveyRepository surveyRepository,
+        IOnlinePersonStore onlinePersonStore)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _surveyRepository = surveyRepository ?? throw new ArgumentNullException(nameof(surveyRepository));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
     
     public async Task<GetSurveyStateResult> Handle(GetSurveyStateQuery query, CancellationToken token)
@@ -31,14 +34,18 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         ArgumentNullException.ThrowIfNull(query);
 
         var currentPerson = _personResolver.GetCurrentPerson();
+        var onlinePersons = _onlinePersonStore.GetPersons(RoomId.CreateForSurvey(query.RoomId));
         var roomProperties = await _propertiesProvider.Get(query.RoomId, token);
         var survey = await _reader.Find(query.RoomId, SurveyStateRules.Active, token);
         
         var items = survey is not null
             ? await GetQuestions(survey.Id, currentPerson.Id, survey.QuestionIds, token)
             : [];
+        var participants = onlinePersons
+            .Select(op => new SurveyParticipantDto(op, Finished: false))
+            .ToArray();
 
-        return new(survey?.Id, roomProperties.FacilitatorId, items);
+        return new(survey?.Id, roomProperties.FacilitatorId, items, participants);
     }
 
     private async Task<IReadOnlyCollection<SurveyQuestionDto>> GetQuestions(

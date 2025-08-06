@@ -1,7 +1,7 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 
-namespace Inc.TeamAssistant.WebUI.Features.Retro;
+namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 
 public sealed class ParticipantViewModel
 {
@@ -9,6 +9,11 @@ public sealed class ParticipantViewModel
     public int TotalVotes { get; private set; }
     public bool Finished { get; private set; }
     public bool HandRaised { get; private set; }
+    
+    public ParticipantViewModel(Person person, bool finished)
+        : this(person, totalVotes: 0, finished, handRaised: false)
+    {
+    }
 
     public ParticipantViewModel(Person person, int totalVotes, bool finished, bool handRaised)
     {

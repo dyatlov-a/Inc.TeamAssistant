@@ -12,7 +12,11 @@
             FacilitatorGiven="FacilitatorGiven"
             RoomPropertiesOpened="RoomPropertiesOpened"
             MoveNext="MoveNext" />
-        <RoomNavbarContainer RoomId="RoomId"/>
+        <RoomNavbarContainer RoomId="RoomId" />
+        <ParticipantsPanel
+            CanVote="false"
+            IsFacilitator="IsFacilitator"
+            Participants="Participants" />
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
@@ -53,6 +57,18 @@
     public long? FacilitatorId { get; set; }
     
     /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Retro session participants.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
+    
+    /// <summary>
     /// Current question
     /// </summary>
     [Parameter, EditorRequired]
@@ -75,12 +91,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback RoomPropertiesOpened { get; set; }
-    
-    /// <summary>
-    /// Component state.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public LoadingState State { get; set; } = default!;
     
     /// <summary>
     /// Action for retry.

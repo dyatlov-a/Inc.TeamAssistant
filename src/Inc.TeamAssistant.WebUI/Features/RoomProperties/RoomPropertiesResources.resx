@@ -117,4 +117,13 @@
     <data name="ConfirmGiveFacilitator" xml:space="preserve">
         <value>Are you sure you want to become a facilitator?</value>
     </data>
+    <data name="VotesCount" xml:space="preserve">
+        <value>Votes count:</value>
+    </data>
+    <data name="Participants" xml:space="preserve">
+        <value>Participants</value>
+    </data>
+    <data name="LowerHandHint" xml:space="preserve">
+        <value>Lower hand</value>
+    </data>
 </root>

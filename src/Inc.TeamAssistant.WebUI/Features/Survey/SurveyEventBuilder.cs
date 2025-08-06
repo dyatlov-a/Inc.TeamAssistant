@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Survey.Model.Commands.SetAnswer;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
@@ -80,6 +81,13 @@ internal sealed class SurveyEventBuilder : ISurveyEventProvider, IAsyncDisposabl
         ArgumentNullException.ThrowIfNull(changed);
 		
         return _hubConnection.On(nameof(ISurveyHubClient.FacilitatorChanged), changed);
+    }
+    
+    IDisposable ISurveyEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(ISurveyHubClient.PersonsChanged), changed);
     }
     
     private Task OnReconnecting(Exception? ex)

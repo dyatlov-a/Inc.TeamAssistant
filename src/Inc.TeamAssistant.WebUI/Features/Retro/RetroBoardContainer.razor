@@ -435,7 +435,7 @@
         _participants.Clear();
         
         foreach (var person in persons)
-            _participants.TryAdd(person.Id, new ParticipantViewModel(
+            _participants.Add(person.Id, new ParticipantViewModel(
                 person,
                 totalVotes: 0,
                 finished: false,

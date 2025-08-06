@@ -72,9 +72,6 @@
     <data name="TimerStop" xml:space="preserve">
         <value>Остановить</value>
     </data>
-    <data name="LowerHandHint" xml:space="preserve">
-        <value>Опустить руку</value>
-    </data>
     <data name="RetroAssessmentQuestion" xml:space="preserve">
         <value>Стоило ли это ретро нашего времени?</value>
     </data>
@@ -129,9 +126,6 @@
     <data name="BacklogText" xml:space="preserve">
         <value>Здесь собраны пункты, которые поднимались на прошлых ретроспективах, но пока не были реализованы. Это может быть хорошая возможность вернуться к идеям, которые всё ещё актуальны, и довести их до результата. Просмотрите список, выберите то, что по-прежнему важно, и добавьте в план работы.</value>
     </data>
-    <data name="Participants" xml:space="preserve">
-        <value>Участники</value>
-    </data>
     <data name="ActionsHint" xml:space="preserve">
         <value>Запиши конкретный шаг с ответственным и сроком — не идея, а действие.</value>
     </data>
@@ -146,9 +140,6 @@
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Соединение потеряно.</value>
-    </data>
-    <data name="VotesCount" xml:space="preserve">
-        <value>Кол-во голосов:</value>
     </data>
     <data name="ActionItemStagePinnedTitle" xml:space="preserve">
         <value>Командные соглашения</value>

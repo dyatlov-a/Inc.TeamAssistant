@@ -72,9 +72,6 @@
     <data name="TimerStop" xml:space="preserve">
         <value>Stop</value>
     </data>
-    <data name="LowerHandHint" xml:space="preserve">
-        <value>Lower hand</value>
-    </data>
     <data name="RetroAssessmentTitle" xml:space="preserve">
         <value>Rate the time invested!</value>
     </data>
@@ -130,9 +127,6 @@
         <value>This section contains items that were brought up in previous retrospectives but haven’t been implemented yet. It’s a good opportunity to revisit ideas that are still relevant and follow through on them.
 Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
-    <data name="Participants" xml:space="preserve">
-        <value>Participants</value>
-    </data>
     <data name="ActionsHint" xml:space="preserve">
         <value>Write a specific action with an owner and a deadline — not an idea, but a step.</value>
     </data>
@@ -147,9 +141,6 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Connection lost.</value>
-    </data>
-    <data name="VotesCount" xml:space="preserve">
-        <value>Votes count:</value>
     </data>
     <data name="ActionItemStagePinnedTitle" xml:space="preserve">
         <value>Team agreements</value>

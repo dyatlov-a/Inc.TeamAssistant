@@ -1,12 +1,10 @@
-@inject IStringLocalizer<RetroResources> Localizer
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
 
 <div class="participants">
     <h2 class="participants__header">@Localizer["Participants"]</h2>
     
     @foreach (var participant in Participants)
     {
-        var votesTotal = VotesTotal - participant.TotalVotes;
-
         <div @key="participant.Person.Id" class="participant">
             <div class="participant__state">
                 @if (participant.Finished)
@@ -39,7 +37,7 @@
             <PersonCard Person="participant.Person"/>
             @if (CanVote)
             {
-                <VotesDisplay Value="votesTotal" />
+                <VotesDisplay Value="@(VotesTotal - participant.TotalVotes)" />
             }
         </div>
     }
@@ -53,10 +51,10 @@
     public bool CanVote { get; set; }
     
     /// <summary>
-    /// Votes total for the retro session.
+    /// Is facilitator of the retro session.
     /// </summary>
     [Parameter, EditorRequired]
-    public int VotesTotal { get; set; }
+    public bool IsFacilitator { get; set; }
 
     /// <summary>
     /// Retro session participants.
@@ -65,15 +63,15 @@
     public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
     
     /// <summary>
-    /// Is facilitator of the retro session.
+    /// Votes total for the retro session.
     /// </summary>
-    [Parameter, EditorRequired]
-    public bool IsFacilitator { get; set; }
+    [Parameter]
+    public int VotesTotal { get; set; }
     
     /// <summary>
     /// Hand raised event callback.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter]
     public EventCallback<long> HandLowered { get; set; }
 
     private async Task SendHandLowered(long personId)

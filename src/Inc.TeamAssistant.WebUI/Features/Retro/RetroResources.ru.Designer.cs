@@ -153,12 +153,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string LowerHandHint {
-            get {
-                return ResourceManager.GetString("LowerHandHint", resourceCulture);
-            }
-        }
-        
         internal static string RetroAssessmentQuestion {
             get {
                 return ResourceManager.GetString("RetroAssessmentQuestion", resourceCulture);
@@ -267,12 +261,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string Participants {
-            get {
-                return ResourceManager.GetString("Participants", resourceCulture);
-            }
-        }
-        
         internal static string ActionsHint {
             get {
                 return ResourceManager.GetString("ActionsHint", resourceCulture);
@@ -300,12 +288,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string ConnectionStateLost {
             get {
                 return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
-            }
-        }
-        
-        internal static string VotesCount {
-            get {
-                return ResourceManager.GetString("VotesCount", resourceCulture);
             }
         }
         
