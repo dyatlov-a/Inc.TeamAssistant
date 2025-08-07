@@ -17,7 +17,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IOnlinePersonStore _onlinePersonStore;
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
-    private readonly IRetroStage _retroStage;
+    private readonly IPersonState _personState;
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IRetroTemplateReader _retroTemplateReader;
 
@@ -27,7 +27,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IOnlinePersonStore onlinePersonStore,
         IVoteStore voteStore,
         ITimerService timerService,
-        IRetroStage retroStage,
+        IPersonState personState,
         IRoomPropertiesProvider propertiesProvider,
         IRetroTemplateReader retroTemplateReader)
     {
@@ -36,7 +36,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
-        _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
+        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _retroTemplateReader = retroTemplateReader ?? throw new ArgumentNullException(nameof(retroTemplateReader));
     }
@@ -73,9 +73,9 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
             .ToDictionary(v => v.Key, v => v.Sum(i => i));
-        var retroStage = _retroStage.Get(query.RoomId);
-        var finishedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.Finished);
-        var handRaisedLookup = retroStage.ToDictionary(s => s.PersonId, s => s.HandRaised);
+        var retroStage = _personState.Get(RoomId.CreateForRetro(query.RoomId));
+        var finishedLookup = retroStage.ToDictionary(s => s.Person.Id, s => s.Finished);
+        var handRaisedLookup = retroStage.ToDictionary(s => s.Person.Id, s => s.HandRaised);
         
         var activeSession = session is not null
             ? RetroSessionConverter.ConvertTo(session)

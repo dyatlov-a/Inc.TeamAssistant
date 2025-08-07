@@ -20,9 +20,13 @@
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
-            @if (Question is null)
+            @if (Finished)
             {
-                @Localizer["WaitStartHealthCheck"]
+                @Localizer["TeamHealthCheckFinished"]
+            }
+            else if (Question is null)
+            {
+                @Localizer["TeamHealthCheckWaiting"]
             }
             else
             {
@@ -31,7 +35,7 @@
                     Text="@Question.Text"
                     FormModel="@(new AnswerFromModel(Question))"
                     OnNextQuestion="OnNextQuestion"
-                    OnValidSubmit="AnswerSelected" />
+                    OnValidSubmit="AnswerSelected"/>
             }
         </Loading>
     </Content>
@@ -49,6 +53,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public long CurrentUserId { get; set; }
+    
+    /// <summary>
+    /// Current person finished.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool Finished { get; set; }
     
     /// <summary>
     /// Facilitator id.

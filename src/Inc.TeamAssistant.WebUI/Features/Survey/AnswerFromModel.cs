@@ -35,9 +35,10 @@ public sealed class AnswerFromModel
         return this;
     }
 
-    public SetAnswerCommand ToCommand(Guid surveyId) => new(
+    public SetAnswerCommand ToCommand(Guid surveyId, bool isEnd) => new(
         surveyId,
         _questionId,
         Values.Count == 1 ? Values.Single() : null,
-        string.IsNullOrWhiteSpace(Comment) ? null : Comment);
+        string.IsNullOrWhiteSpace(Comment) ? null : Comment,
+        isEnd);
 }

@@ -45,9 +45,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
             }
         }
         
-        internal static string WaitStartHealthCheck {
+        internal static string TeamHealthCheckWaiting {
             get {
-                return ResourceManager.GetString("WaitStartHealthCheck", resourceCulture);
+                return ResourceManager.GetString("TeamHealthCheckWaiting", resourceCulture);
             }
         }
         
@@ -240,6 +240,12 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
         internal static string TeamHealthCheckHelp {
             get {
                 return ResourceManager.GetString("TeamHealthCheckHelp", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheckFinished {
+            get {
+                return ResourceManager.GetString("TeamHealthCheckFinished", resourceCulture);
             }
         }
     }

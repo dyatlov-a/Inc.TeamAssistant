@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Survey.Model.Commands.SetAnswer;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
@@ -75,7 +75,14 @@ internal sealed class SurveyEventBuilder : ISurveyEventProvider, IAsyncDisposabl
                 handler.Dispose();
         });
     }
-    
+
+    public IDisposable OnSurveyStarted(Func<Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(ISurveyHubClient.SurveyStarted), changed);
+    }
+
     IDisposable ISurveyEventProvider.OnFacilitatorChanged(Func<long, Task> changed)
     {
         ArgumentNullException.ThrowIfNull(changed);
@@ -83,13 +90,27 @@ internal sealed class SurveyEventBuilder : ISurveyEventProvider, IAsyncDisposabl
         return _hubConnection.On(nameof(ISurveyHubClient.FacilitatorChanged), changed);
     }
     
-    IDisposable ISurveyEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed)
+    IDisposable ISurveyEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<PersonStateTicket>, Task> changed)
     {
         ArgumentNullException.ThrowIfNull(changed);
         
         return _hubConnection.On(nameof(ISurveyHubClient.PersonsChanged), changed);
     }
-    
+
+    public IDisposable OnSurveyStateChanged(Func<long, bool, Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(ISurveyHubClient.SurveyStateChanged), changed);
+    }
+
+    public IDisposable OnSurveyFinished(Func<Task> changed)
+    {
+        ArgumentNullException.ThrowIfNull(changed);
+        
+        return _hubConnection.On(nameof(ISurveyHubClient.SurveyFinished), changed);
+    }
+
     private Task OnReconnecting(Exception? ex)
     {
         _rerender?.Invoke();

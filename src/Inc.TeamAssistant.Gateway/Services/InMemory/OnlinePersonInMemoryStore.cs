@@ -31,7 +31,7 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         return result;
     }
     
-    public IReadOnlyCollection<Person> JoinToRoom(RoomId roomId, string connectionId, Person person)
+    public void JoinToRoom(RoomId roomId, string connectionId, Person person)
     {
         ArgumentNullException.ThrowIfNull(roomId);
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
@@ -40,9 +40,6 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         var persons = _state.GetOrAdd(roomId, _ => new ConcurrentDictionary<string, Person>());
         
         persons.TryAdd(connectionId, person);
-
-        var newPersons = GetPersons(roomId);
-        return newPersons;
     }
 
     public IEnumerable<RoomId> LeaveFromRooms(string connectionId)

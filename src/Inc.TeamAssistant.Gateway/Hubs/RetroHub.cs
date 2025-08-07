@@ -36,7 +36,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         
         await Groups.AddToGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
         
-        var persons = _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
+        _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
+
+        var persons = _store.GetPersons(retroRoomId);
         
         await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
     }

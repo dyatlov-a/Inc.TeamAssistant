@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
@@ -10,16 +11,16 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
 {
     private readonly IRetroSessionRepository _repository;
     private readonly IRetroEventSender _eventSender;
-    private readonly IRetroStage _retroStage;
+    private readonly IPersonState _personState;
 
     public StartRetroCommandHandler(
         IRetroSessionRepository repository,
         IRetroEventSender eventSender,
-        IRetroStage retroStage)
+        IPersonState personState)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
+        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
     }
 
     public async Task Handle(StartRetroCommand command, CancellationToken token)
@@ -30,7 +31,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
 
         await _repository.Create(retroSession, token);
         
-        _retroStage.Clear(retroSession.RoomId);
+        _personState.Clear(RoomId.CreateForRetro(retroSession.RoomId));
 
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
     }

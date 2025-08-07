@@ -14,19 +14,22 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly ISurveyRepository _surveyRepository;
     private readonly IOnlinePersonStore _onlinePersonStore;
+    private readonly IPersonState _personState;
 
     public GetSurveyStateQueryHandler(
         ISurveyReader reader,
         IPersonResolver personResolver,
         IRoomPropertiesProvider propertiesProvider,
         ISurveyRepository surveyRepository,
-        IOnlinePersonStore onlinePersonStore)
+        IOnlinePersonStore onlinePersonStore,
+        IPersonState personState)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _surveyRepository = surveyRepository ?? throw new ArgumentNullException(nameof(surveyRepository));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
+        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
     }
     
     public async Task<GetSurveyStateResult> Handle(GetSurveyStateQuery query, CancellationToken token)
@@ -41,11 +44,19 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         var items = survey is not null
             ? await GetQuestions(survey.Id, currentPerson.Id, survey.QuestionIds, token)
             : [];
+        var personState = _personState.Get(RoomId.CreateForSurvey(query.RoomId));
+        var finishedLookup = personState.ToDictionary(s => s.Person.Id, s => s.Finished);
         var participants = onlinePersons
-            .Select(op => new SurveyParticipantDto(op, Finished: false))
+            .Select(op => new SurveyParticipantDto(op, finishedLookup.GetValueOrDefault(op.Id, false)))
             .ToArray();
+        var finished = finishedLookup.TryGetValue(currentPerson.Id, out var value) && value;
 
-        return new(survey?.Id, roomProperties.FacilitatorId, items, participants);
+        return new(
+            survey?.Id,
+            finished,
+            roomProperties.FacilitatorId,
+            items,
+            participants);
     }
 
     private async Task<IReadOnlyCollection<SurveyQuestionDto>> GetQuestions(

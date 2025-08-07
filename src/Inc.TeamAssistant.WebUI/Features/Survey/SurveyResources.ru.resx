@@ -18,7 +18,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="WaitStartHealthCheck" xml:space="preserve">
+    <data name="TeamHealthCheckWaiting" xml:space="preserve">
         <value>Пожалуйста, дождитесь запуска оценки здоровья модератором.</value>
     </data>
     <data name="DeliveringValueTitle" xml:space="preserve">
@@ -127,5 +127,8 @@
     </data>
     <data name="TeamHealthCheckHelp" xml:space="preserve">
         <value>Пожалуйста, оцените текущее состояние ответив на вопросы</value>
+    </data>
+    <data name="TeamHealthCheckFinished" xml:space="preserve">
+        <value>Вы ответили на все вопросы, дождитесь остальных участников.</value>
     </data>
 </root>

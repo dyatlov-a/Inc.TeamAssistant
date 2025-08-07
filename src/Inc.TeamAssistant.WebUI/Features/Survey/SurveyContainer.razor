@@ -27,9 +27,10 @@
             <Survey
                 RoomId="RoomId"
                 CurrentUserId="context.User.ToPerson().Id"
+                Finished="_finished"
                 FacilitatorId="_facilitatorId"
                 Question="_currentQuestion?.Value"
-                Participants="_participants"
+                Participants="Participants"
                 MoveNext="MoveNext"
                 FacilitatorGiven="FacilitatorGiven"
                 RoomPropertiesOpened="OnRoomPropertiesOpened"
@@ -69,11 +70,15 @@
     
     private Guid? _surveyId;
     private long? _facilitatorId;
+    private bool _finished;
     private ContentDialog? _roomPropertiesEditor;
     private LinkedList<SurveyQuestionDto> _orderedQuestions = new();
     private LinkedListNode<SurveyQuestionDto>? _currentQuestion;
     
-    private readonly List<ParticipantViewModel> _participants = new();
+    private Dictionary<long, ParticipantViewModel> _participants = new();
+    private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .OrderBy(p => p.Person.DisplayName)
+        .ToArray();
     
     private readonly LoadingState _state = LoadingState.Done();
     
@@ -91,8 +96,10 @@
 
         _surveyId = result.SurveyId;
         _facilitatorId = result.FacilitatorId;
-        _participants.Clear();
-        _participants.AddRange(result.Participants.Select(p => new ParticipantViewModel(p.Person, p.Finished)));
+        _finished = result.Finished;
+        _participants = result.Participants
+            .Select(p => new ParticipantViewModel(p.Person, p.Finished))
+            .ToDictionary(p => p.Person.Id);
 
         _orderedQuestions = new(result.Questions);
         _currentQuestion = QuestionId.HasValue 
@@ -140,6 +147,10 @@
     {
         return await eventBuilder.Build(
             RoomId,
+            b => b.OnSurveyStarted(async () =>
+            {
+                await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+            }),
             b => b.OnFacilitatorChanged(async fId =>
             {
                 await InvokeAsync(() =>
@@ -156,15 +167,49 @@
                     ApplyParticipants(p);
                     StateHasChanged();
                 });
+            }),
+            b => b.OnSurveyStateChanged(async (p, f) =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplySurveyState(p, f);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnSurveyFinished(async () =>
+            {
+                if (_surveyId.HasValue)
+                    await NavRouter.MoveToRoute($"survey-summary/{_surveyId.Value:N}");
             }));
     }
     
-    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    private void ApplySurveyState(long personId, bool finished)
     {
-        _participants.Clear();
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeFinished(finished);
+    }
+    
+    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> persons)
+    {
+        var newParticipants = persons.ToDictionary(p => p.Person.Id);
+        var allPersonIds = _participants.Keys.Union(newParticipants.Keys).ToArray();
         
-        foreach (var person in persons)
-            _participants.Add(new ParticipantViewModel(person, finished: false));
+        foreach (var personId in allPersonIds)
+        {
+            var oldParticipant = _participants.ContainsKey(personId);
+            var newParticipant = newParticipants.ContainsKey(personId);
+
+            switch ((oldParticipant, newParticipant))
+            {
+                case (true, false):
+                    _participants.Remove(personId);
+                    break;
+                case (false, true):
+                    var participant = newParticipants[personId];
+                    _participants.Add(personId, new ParticipantViewModel(participant.Person, participant.Finished));
+                    break;
+            }
+        }
     }
 
     private async Task MoveNext()
@@ -207,14 +252,14 @@
         if (_eventBuilder is null || !_surveyId.HasValue)
             return;
 
-        await _eventBuilder.SetAnswer(answer.ToCommand(_surveyId.Value));
+        var next = _currentQuestion?.Next;
+        
+        await _eventBuilder.SetAnswer(answer.ToCommand(_surveyId.Value, isEnd: next is null));
 
-        if (_currentQuestion?.Next is not null)
-            await MoveTo(_currentQuestion.Next);
+        if (next is not null)
+            await MoveTo(next);
         else
-        {
-            // TODO: Set answer finish
-        }
+            _finished = true;
     }
 
     private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();

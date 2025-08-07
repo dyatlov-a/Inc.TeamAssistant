@@ -12,15 +12,18 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
     private readonly ISurveyReader _reader;
     private readonly ISurveyRepository _repository;
     private readonly IRoomPropertiesProvider _propertiesProvider;
+    private readonly ISurveyEventSender _surveyEventSender;
 
     public StartSurveyCommandHandler(
         ISurveyReader reader,
         ISurveyRepository repository,
-        IRoomPropertiesProvider propertiesProvider)
+        IRoomPropertiesProvider propertiesProvider,
+        ISurveyEventSender surveyEventSender)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
+        _surveyEventSender = surveyEventSender ?? throw new ArgumentNullException(nameof(surveyEventSender));
     }
 
     public async Task Handle(StartSurveyCommand command, CancellationToken token)
@@ -36,5 +39,7 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
             template);
 
         await _repository.Upsert(survey, token);
+
+        await _surveyEventSender.SurveyStarted(command.RoomId);
     }
 }
