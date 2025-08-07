@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Retro;
@@ -15,7 +15,7 @@ public interface IRetroEventProvider
     
     IDisposable OnRetroStateChanged(Func<long, bool, bool, Task> changed);
     
-    IDisposable OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed);
+    IDisposable OnPersonsChanged(Func<IReadOnlyCollection<PersonStateTicket>, Task> changed);
     
     IDisposable OnItemMoved(Func<Guid, Task> moved);
     

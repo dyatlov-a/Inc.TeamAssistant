@@ -430,16 +430,16 @@
             participant.ChangeFinished(finished).ChangeHandRaised(handRaised);
     }
     
-    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> tickets)
     {
         _participants.Clear();
         
-        foreach (var person in persons)
-            _participants.Add(person.Id, new ParticipantViewModel(
-                person,
+        foreach (var ticket in tickets)
+            _participants.Add(ticket.Person.Id, new ParticipantViewModel(
+                ticket.Person,
                 totalVotes: 0,
-                finished: false,
-                handRaised: false));
+                finished: ticket.Finished,
+                handRaised: ticket.HandRaised));
     }
     
     private async Task OnRetroItemRemoved(RetroItemViewModel item)

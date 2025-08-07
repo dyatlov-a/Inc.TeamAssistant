@@ -189,27 +189,14 @@
             participant.ChangeFinished(finished);
     }
     
-    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> persons)
+    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> tickets)
     {
-        var newParticipants = persons.ToDictionary(p => p.Person.Id);
-        var allPersonIds = _participants.Keys.Union(newParticipants.Keys).ToArray();
+        _participants.Clear();
         
-        foreach (var personId in allPersonIds)
-        {
-            var oldParticipant = _participants.ContainsKey(personId);
-            var newParticipant = newParticipants.ContainsKey(personId);
-
-            switch ((oldParticipant, newParticipant))
-            {
-                case (true, false):
-                    _participants.Remove(personId);
-                    break;
-                case (false, true):
-                    var participant = newParticipants[personId];
-                    _participants.Add(personId, new ParticipantViewModel(participant.Person, participant.Finished));
-                    break;
-            }
-        }
+        foreach (var ticket in tickets)
+            _participants.Add(ticket.Person.Id, new ParticipantViewModel(
+                ticket.Person,
+                ticket.Finished));
     }
 
     private async Task MoveNext()

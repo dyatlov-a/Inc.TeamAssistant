@@ -22,11 +22,13 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
 {
     private readonly IMediator _mediator;
     private readonly IOnlinePersonStore _store;
+    private readonly IPersonState _personState;
 
-    public RetroHub(IMediator mediator, IOnlinePersonStore store)
+    public RetroHub(IMediator mediator, IOnlinePersonStore store, IPersonState personState)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _store = store ?? throw new ArgumentNullException(nameof(store));
+        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
@@ -37,10 +39,8 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         await Groups.AddToGroupAsync(Context.ConnectionId, retroRoomId.GroupName);
         
         _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
-
-        var persons = _store.GetPersons(retroRoomId);
         
-        await Clients.Group(retroRoomId.GroupName).PersonsChanged(persons);
+        await Clients.Group(retroRoomId.GroupName).PersonsChanged(GetTickets(retroRoomId));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -113,6 +113,8 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         ArgumentNullException.ThrowIfNull(command);
         
         await _mediator.Send(command, CancellationToken.None);
+        
+        await NotifyRetroPropertiesChanged(command.RoomId);
     }
 
     [HubMethodName(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged)]
@@ -130,12 +132,26 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         foreach (var roomId in roomIds)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.GroupName);
-            
-            var persons = _store.GetPersons(roomId);
         
-            await Clients.Group(roomId.GroupName).PersonsChanged(persons);
+            await Clients.Group(roomId.GroupName).PersonsChanged(GetTickets(roomId));
         }
 
         await base.OnDisconnectedAsync(exception);
+    }
+    
+    private IReadOnlyCollection<PersonStateTicket> GetTickets(RoomId roomId)
+    {
+        ArgumentNullException.ThrowIfNull(roomId);
+        
+        var onlinePersons = _store.GetPersons(roomId);
+        var personState = _personState.Get(roomId).ToDictionary(p => p.Person.Id);
+        
+        var persons = onlinePersons
+            .Select(op => personState.TryGetValue(op.Id, out var state)
+                ? state
+                : new PersonStateTicket(op, Finished: false, HandRaised: false))
+            .ToArray();
+
+        return persons;
     }
 }
