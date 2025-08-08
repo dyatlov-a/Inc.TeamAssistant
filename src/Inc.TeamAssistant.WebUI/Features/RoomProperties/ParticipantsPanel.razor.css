@@ -6,7 +6,7 @@
     margin: 1rem .5rem .5rem 0;
 }
 .participant {
-    padding: .5rem;
+    padding: .2rem;
     background-color: var(--block-primary-color);
 }
 .participant:nth-child(2n - 1){
@@ -15,9 +15,7 @@
 .participant__state {
     float: right;
     display: flex;
-    align-items: center;
-    gap: .5rem;
-    margin: 0 0 .3rem .3rem;
+    margin: 0 0 .2rem .2rem;
 }
 .participant__state-item {
     display: flex;

@@ -11,16 +11,16 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
 {
     private readonly IRetroSessionRepository _repository;
     private readonly IRetroEventSender _eventSender;
-    private readonly IPersonState _personState;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
     public StartRetroCommandHandler(
         IRetroSessionRepository repository,
         IRetroEventSender eventSender,
-        IPersonState personState)
+        IOnlinePersonStore onlinePersonStore)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
 
     public async Task Handle(StartRetroCommand command, CancellationToken token)
@@ -31,7 +31,7 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
 
         await _repository.Create(retroSession, token);
         
-        _personState.Clear(RoomId.CreateForRetro(retroSession.RoomId));
+        _onlinePersonStore.ClearTickets(RoomId.CreateForRetro(retroSession.RoomId));
 
         await _eventSender.RetroSessionChanged(RetroSessionConverter.ConvertTo(retroSession));
     }

@@ -55,11 +55,13 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
             
-            .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
             .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>()
-            .AddSingleton<IPersonState, PersonStateInMemory>()
+            
+            .AddSingleton<OnlinePersonInMemoryStore>()
+            .AddSingleton<IOnlinePersonStore>(sp => sp.GetRequiredService<OnlinePersonInMemoryStore>())
+            .AddHostedService<OnlinePersonClearBackgroundService>()
             
             .AddSingleton<ReviewInMemoryMetricsProvider>()
             .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewInMemoryMetricsProvider>())

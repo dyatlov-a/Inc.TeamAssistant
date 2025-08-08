@@ -6,26 +6,23 @@ namespace Inc.TeamAssistant.Gateway.Services.InMemory;
 
 internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 {
-    private readonly ConcurrentDictionary<RoomId, ConcurrentDictionary<string, Person>> _state = new();
+    private readonly ConcurrentDictionary<RoomId, ConcurrentDictionary<long, PersonStateTicketWrapper>> _state = new();
 
-    public string? FindConnectionId(RoomId roomId, long personId)
+    public IReadOnlyCollection<string> GetConnections(RoomId roomId, long personId)
     {
         ArgumentNullException.ThrowIfNull(roomId);
         
-        if (_state.TryGetValue(roomId, out var persons))
-            foreach (var person in persons)
-                if (person.Value.Id == personId)
-                    return person.Key;
-        
-        return null;
+        return _state.TryGetValue(roomId, out var persons) && persons.TryGetValue(personId, out var ticket)
+            ? ticket.ConnectionIds
+            : [];
     }
 
-    public IReadOnlyCollection<Person> GetPersons(RoomId roomId)
+    public IReadOnlyCollection<PersonStateTicket> GetTickets(RoomId roomId)
     {
         ArgumentNullException.ThrowIfNull(roomId);
         
         var result = _state.TryGetValue(roomId, out var persons)
-            ? persons.Values.ToArray()
+            ? persons.Values.Select(v => v.ToPersonStateTicket()).ToArray()
             : [];
         
         return result;
@@ -37,9 +34,13 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
         ArgumentNullException.ThrowIfNull(person);
         
-        var persons = _state.GetOrAdd(roomId, _ => new ConcurrentDictionary<string, Person>());
+        var persons = _state.GetOrAdd(roomId, _ => new ConcurrentDictionary<long, PersonStateTicketWrapper>());
+        var now = DateTimeOffset.UtcNow;
         
-        persons.TryAdd(connectionId, person);
+        persons.AddOrUpdate(
+            person.Id,
+            pId => new PersonStateTicketWrapper(person).Connected(connectionId, now),
+            (pId, p) => p.Connected(connectionId, now));
     }
 
     public IEnumerable<RoomId> LeaveFromRooms(string connectionId)
@@ -50,9 +51,73 @@ internal sealed class OnlinePersonInMemoryStore : IOnlinePersonStore
 
         IEnumerable<RoomId> Leave()
         {
-            foreach (var (roomId, personsLookup) in _state)
-                if (personsLookup.TryRemove(connectionId, out _))
-                    yield return roomId;
+            foreach (var tickets in _state.ToArray())
+            foreach (var ticket in tickets.Value.ToArray())
+                if (ticket.Value.Disconnected(connectionId))
+                    yield return tickets.Key;
         }
+    }
+
+    public void SetTicket(RoomId roomId, Person person, int totalVote, bool finished, bool handRaised)
+    {
+        ArgumentNullException.ThrowIfNull(roomId);
+
+        if (_state.TryGetValue(roomId, out var persons))
+            persons.AddOrUpdate(
+                person.Id,
+                pId => new PersonStateTicketWrapper(person)
+                    .ChangeTotalVote(totalVote)
+                    .ChangeFinished(finished)
+                    .ChangeHandRaised(handRaised),
+                (pId, p) => p
+                    .ChangeTotalVote(totalVote)
+                    .ChangeFinished(finished)
+                    .ChangeHandRaised(handRaised));
+    }
+
+    public void SetTicket(RoomId roomId, Person person, bool finished)
+    {
+        ArgumentNullException.ThrowIfNull(roomId);
+
+        if (_state.TryGetValue(roomId, out var persons))
+            persons.AddOrUpdate(
+                person.Id,
+                pId => new PersonStateTicketWrapper(person).ChangeFinished(finished),
+                (pId, p) => p.ChangeFinished(finished));
+    }
+
+    public void ClearTickets(RoomId roomId)
+    {
+        ArgumentNullException.ThrowIfNull(roomId);
+        
+        if (_state.TryGetValue(roomId, out var persons))
+            foreach (var person in persons.ToArray())
+                person.Value.Clear();
+    }
+
+    public void Clear(DateTimeOffset now, TimeSpan idleConnectionLifetime)
+    {
+        var canDisconnect = now.Subtract(idleConnectionLifetime);
+        var canDisconnectLookup = new Dictionary<RoomId, List<long>>();
+        
+        foreach (var tickets in _state.ToArray())
+        foreach (var ticket in tickets.Value.ToArray())
+            if (ticket.Value.LastConnection < canDisconnect && !ticket.Value.ConnectionIds.Any())
+            {
+                var roomId = tickets.Key;
+                
+                if (!canDisconnectLookup.ContainsKey(roomId))
+                    canDisconnectLookup.Add(roomId, new List<long>());
+                
+                canDisconnectLookup[roomId].Add(ticket.Key);
+            }
+
+        foreach (var disconnect in canDisconnectLookup)
+        foreach (var item in disconnect.Value)
+            _state[disconnect.Key].Remove(item, out _);
+
+        foreach (var item in _state.ToArray())
+            if (!item.Value.Any())
+                _state.Remove(item.Key, out _);
     }
 }

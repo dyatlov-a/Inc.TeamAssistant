@@ -13,19 +13,19 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
 {
     private readonly ISurveyRepository _repository;
     private readonly IPersonResolver _personResolver;
-    private readonly IPersonState _personState;
     private readonly ISurveyEventSender _surveyEventSender;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
     public SetAnswerCommandHandler(
         ISurveyRepository repository,
         IPersonResolver personResolver,
-        IPersonState personState,
-        ISurveyEventSender surveyEventSender)
+        ISurveyEventSender surveyEventSender,
+        IOnlinePersonStore onlinePersonStore)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
-        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
         _surveyEventSender = surveyEventSender ?? throw new ArgumentNullException(nameof(surveyEventSender));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
 
     public async Task Handle(SetAnswerCommand command, CancellationToken token)
@@ -50,11 +50,11 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
 
         if (command.IsEnd)
         {
-            var ticket = new PersonStateTicket(currentPerson, Finished: true, HandRaised: false);
+            var finished = true;
             
-            _personState.Set(RoomId.CreateForSurvey(survey.RoomId), ticket);
+            _onlinePersonStore.SetTicket(RoomId.CreateForSurvey(survey.RoomId), currentPerson, finished);
 
-            await _surveyEventSender.SurveyStateChanged(survey.RoomId, ticket.Person.Id, ticket.Finished);
+            await _surveyEventSender.SurveyStateChanged(survey.RoomId, currentPerson.Id, finished);
         }
     }
 }

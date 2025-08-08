@@ -7,10 +7,16 @@
     {
         <div @key="participant.Person.Id" class="participant">
             <div class="participant__state">
+                @if (!participant.IsOnline)
+                {
+                    <i class="participant__state-item">
+                        <SignalSlashIcon Size="@IconSize" />
+                    </i>
+                }
                 @if (participant.Finished)
                 {
                     <i class="participant__state-item">
-                        <CheckIcon Size="30px"/>
+                        <CheckIcon Size="@IconSize"/>
                     </i>
                 }
                 @if (participant.HandRaised)
@@ -23,13 +29,13 @@
                             class="participant__state-item participant__state-item_active"
                             @onclick="() => SendHandLowered(participant.Person.Id)"
                             @onclick:preventDefault="true">
-                            <UserQuestionIcon Size="30px"/>
+                            <UserQuestionIcon Size="@IconSize"/>
                         </a>
                     }
                     else
                     {
                         <i class="participant__state-item">
-                            <UserQuestionIcon Size="30px"/>
+                            <UserQuestionIcon Size="@IconSize"/>
                         </i>
                     }
                 }
@@ -73,6 +79,8 @@
     /// </summary>
     [Parameter]
     public EventCallback<long> HandLowered { get; set; }
+    
+    private const string IconSize = "20px";
 
     private async Task SendHandLowered(long personId)
     {

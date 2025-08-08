@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 
 namespace Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
 
@@ -7,7 +8,7 @@ public sealed record GetSurveyStateResult(
     bool Finished,
     long? FacilitatorId,
     IReadOnlyCollection<SurveyQuestionDto> Questions,
-    IReadOnlyCollection<SurveyParticipantDto> Participants)
+    IReadOnlyCollection<PersonStateTicket> Participants)
     : IWithEmpty<GetSurveyStateResult>
 {
     public static GetSurveyStateResult Empty { get; } = new(

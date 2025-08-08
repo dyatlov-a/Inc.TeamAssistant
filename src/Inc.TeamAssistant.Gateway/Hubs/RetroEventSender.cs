@@ -22,13 +22,15 @@ internal sealed class RetroEventSender : IRetroEventSender
         ArgumentNullException.ThrowIfNull(item);
 
         var retroRoomId = RoomId.CreateForRetro(item.RoomId);
-        var ownerConnectionId = _onlinePersonStore.FindConnectionId(retroRoomId, item.OwnerId);
+        var ownerConnectionIds = _onlinePersonStore.GetConnections(retroRoomId, item.OwnerId);
+        
+        // TODO: refactoring default logic
         var client = eventTarget switch
         {
-            EventTarget.Owner when !string.IsNullOrWhiteSpace(ownerConnectionId)
-                => _hubContext.Clients.Client(ownerConnectionId),
-            EventTarget.Participants when !string.IsNullOrWhiteSpace(ownerConnectionId)
-                => _hubContext.Clients.GroupExcept(retroRoomId.GroupName, ownerConnectionId),
+            EventTarget.Owner when ownerConnectionIds.Any()
+                => _hubContext.Clients.Clients(ownerConnectionIds),
+            EventTarget.Participants when ownerConnectionIds.Any()
+                => _hubContext.Clients.GroupExcept(retroRoomId.GroupName, ownerConnectionIds),
             _ => _hubContext.Clients.Group(retroRoomId.GroupName)
         };
 

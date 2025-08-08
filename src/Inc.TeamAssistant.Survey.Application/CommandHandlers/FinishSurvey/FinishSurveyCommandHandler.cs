@@ -10,19 +10,19 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
 {
     private readonly ISurveyRepository _repository;
     private readonly ISurveyReader _reader;
-    private readonly IPersonState _personState;
     private readonly ISurveyEventSender _surveyEventSender;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
     public FinishSurveyCommandHandler(
         ISurveyRepository repository,
         ISurveyReader reader,
-        IPersonState personState,
-        ISurveyEventSender surveyEventSender)
+        ISurveyEventSender surveyEventSender,
+        IOnlinePersonStore onlinePersonStore)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
         _surveyEventSender = surveyEventSender ?? throw new ArgumentNullException(nameof(surveyEventSender));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
 
     public async Task Handle(FinishSurveyCommand command, CancellationToken token)
@@ -35,7 +35,7 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
         {
             await _repository.Upsert(survey.MoveToFinish(), token);
             
-            _personState.Clear(RoomId.CreateForSurvey(command.RoomId));
+            _onlinePersonStore.ClearTickets(RoomId.CreateForSurvey(command.RoomId));
 
             await _surveyEventSender.SurveyFinished(survey.RoomId);
         }

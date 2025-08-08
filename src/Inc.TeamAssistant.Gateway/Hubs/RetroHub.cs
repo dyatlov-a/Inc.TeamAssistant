@@ -22,13 +22,11 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
 {
     private readonly IMediator _mediator;
     private readonly IOnlinePersonStore _store;
-    private readonly IPersonState _personState;
 
-    public RetroHub(IMediator mediator, IOnlinePersonStore store, IPersonState personState)
+    public RetroHub(IMediator mediator, IOnlinePersonStore store)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _store = store ?? throw new ArgumentNullException(nameof(store));
-        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.JoinRetroMethod)]
@@ -40,7 +38,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         
         _store.JoinToRoom(retroRoomId, Context.ConnectionId, Context.User!.ToPerson());
         
-        await Clients.Group(retroRoomId.GroupName).PersonsChanged(GetTickets(retroRoomId));
+        await Clients.Group(retroRoomId.GroupName).PersonsChanged(_store.GetTickets(retroRoomId));
     }
 
     [HubMethodName(HubDescriptors.RetroHub.CreateRetroItemMethod)]
@@ -133,25 +131,9 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.GroupName);
         
-            await Clients.Group(roomId.GroupName).PersonsChanged(GetTickets(roomId));
+            await Clients.Group(roomId.GroupName).PersonsChanged(_store.GetTickets(roomId));
         }
 
         await base.OnDisconnectedAsync(exception);
-    }
-    
-    private IReadOnlyCollection<PersonStateTicket> GetTickets(RoomId roomId)
-    {
-        ArgumentNullException.ThrowIfNull(roomId);
-        
-        var onlinePersons = _store.GetPersons(roomId);
-        var personState = _personState.Get(roomId).ToDictionary(p => p.Person.Id);
-        
-        var persons = onlinePersons
-            .Select(op => personState.TryGetValue(op.Id, out var state)
-                ? state
-                : new PersonStateTicket(op, Finished: false, HandRaised: false))
-            .ToArray();
-
-        return persons;
     }
 }

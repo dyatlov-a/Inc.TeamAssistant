@@ -131,7 +131,7 @@
         _retroProperties = result.RetroProperties;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
-            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished, p.HandRaised))
+            .Select(p => new ParticipantViewModel(p.Person, p.IsOnline, p.TotalVote, p.Finished, p.HandRaised))
             .ToDictionary(p => p.Person.Id);
         _orderedItems = new(result.Items
             .Where(i => !i.ParentId.HasValue)
@@ -437,9 +437,10 @@
         foreach (var ticket in tickets)
             _participants.Add(ticket.Person.Id, new ParticipantViewModel(
                 ticket.Person,
-                totalVotes: 0,
-                finished: ticket.Finished,
-                handRaised: ticket.HandRaised));
+                ticket.IsOnline,
+                ticket.TotalVote,
+                ticket.Finished,
+                ticket.HandRaised));
     }
     
     private async Task OnRetroItemRemoved(RetroItemViewModel item)
@@ -536,7 +537,7 @@
     {
         if (_eventBuilder is null)
             return;
-        
+
         if (_participants.TryGetValue(personId, out var participant))
             await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(RoomId));
     }

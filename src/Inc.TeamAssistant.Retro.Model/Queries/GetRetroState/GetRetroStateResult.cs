@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
@@ -6,7 +7,7 @@ namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 public sealed record GetRetroStateResult(
     RetroSessionDto? ActiveSession,
     IReadOnlyCollection<RetroItemDto> Items,
-    IReadOnlyCollection<RetroParticipantDto> Participants,
+    IReadOnlyCollection<PersonStateTicket> Participants,
     IReadOnlyCollection<ActionItemDto> ActionItems,
     IReadOnlyCollection<RetroColumnDto> Columns,
     RetroPropertiesDto RetroProperties,

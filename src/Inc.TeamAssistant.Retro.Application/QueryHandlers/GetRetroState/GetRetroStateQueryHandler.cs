@@ -17,7 +17,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IOnlinePersonStore _onlinePersonStore;
     private readonly IVoteStore _voteStore;
     private readonly ITimerService _timerService;
-    private readonly IPersonState _personState;
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IRetroTemplateReader _retroTemplateReader;
 
@@ -27,7 +26,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IOnlinePersonStore onlinePersonStore,
         IVoteStore voteStore,
         ITimerService timerService,
-        IPersonState personState,
         IRoomPropertiesProvider propertiesProvider,
         IRetroTemplateReader retroTemplateReader)
     {
@@ -36,7 +34,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
-        _personState = personState ?? throw new ArgumentNullException(nameof(personState));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _retroTemplateReader = retroTemplateReader ?? throw new ArgumentNullException(nameof(retroTemplateReader));
     }
@@ -47,7 +44,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         
         var states = RetroSessionStateRules.Active;
         var currentPerson = _personResolver.GetCurrentPerson();
-        var onlinePersons = _onlinePersonStore.GetPersons(RoomId.CreateForRetro(query.RoomId));
+        var onlinePersons = _onlinePersonStore.GetTickets(RoomId.CreateForRetro(query.RoomId));
         
         var session = await _reader.FindSession(query.RoomId, states, token);
         var items = await _reader.ReadRetroItems(query.RoomId, states, token);
@@ -73,9 +70,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var totalVotes = votes
             .GroupBy(v => v.PersonId, v => v.Vote)
             .ToDictionary(v => v.Key, v => v.Sum(i => i));
-        var retroStage = _personState.Get(RoomId.CreateForRetro(query.RoomId));
-        var finishedLookup = retroStage.ToDictionary(s => s.Person.Id, s => s.Finished);
-        var handRaisedLookup = retroStage.ToDictionary(s => s.Person.Id, s => s.HandRaised);
         
         var activeSession = session is not null
             ? RetroSessionConverter.ConvertTo(session)
@@ -88,13 +82,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 session?.State,
                 votesByPerson,
                 retroType))
-            .ToArray();
-        var participants = onlinePersons
-            .Select(op => new RetroParticipantDto(
-                op,
-                totalVotes.GetValueOrDefault(op.Id, 0),
-                finishedLookup.GetValueOrDefault(op.Id, false),
-                handRaisedLookup.GetValueOrDefault(op.Id, false)))
             .ToArray();
         var actionItems = actions.Select(ActionItemConverter.ConvertTo).ToArray();
         var retroColumns = columns
@@ -110,7 +97,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         return new GetRetroStateResult(
             activeSession,
             retroItems,
-            participants,
+            onlinePersons,
             actionItems,
             retroColumns,
             retroProperties,

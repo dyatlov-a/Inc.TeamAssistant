@@ -6,20 +6,22 @@ namespace Inc.TeamAssistant.WebUI.Features.RoomProperties;
 public sealed class ParticipantViewModel
 {
     public Person Person { get; private set; }
+    public bool IsOnline { get; private set; }
     public int TotalVotes { get; private set; }
     public bool Finished { get; private set; }
     public bool HandRaised { get; private set; }
-    
-    public ParticipantViewModel(Person person, bool finished)
-        : this(person, totalVotes: 0, finished, handRaised: false)
-    {
-    }
 
-    public ParticipantViewModel(Person person, int totalVotes, bool finished, bool handRaised)
+    public ParticipantViewModel(
+        Person person,
+        bool isOnline,
+        int totalVotes,
+        bool finished,
+        bool handRaised)
     {
         ArgumentNullException.ThrowIfNull(person);
 
         Person = person;
+        IsOnline = isOnline;
         TotalVotes = totalVotes;
         Finished = finished;
         HandRaised = handRaised;

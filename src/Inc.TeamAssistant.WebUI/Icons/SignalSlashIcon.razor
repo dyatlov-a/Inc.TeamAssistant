@@ -1,0 +1,23 @@
+<svg class="icon @CssClass" width="@Size" height="@Size" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 4V14.3945M16 16V20M16 8V10.399M12 12V20M8 16V20M4 19V20M3 3L21 21" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
+@code {
+    /// <summary>
+    /// Size of the icon.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Size { get; set; } = default!;
+    
+    /// <summary>
+    /// Style for component.
+    /// </summary>
+    [Parameter]
+    public ComponentStyle ComponentStyle { get; set; } = ComponentStyle.Primary;
+    
+    private string CssClass  => ComponentStyle switch
+    {
+        ComponentStyle.Primary => "icon_primary",
+        _ => "icon_secondary"
+    };
+}

@@ -98,7 +98,7 @@
         _facilitatorId = result.FacilitatorId;
         _finished = result.Finished;
         _participants = result.Participants
-            .Select(p => new ParticipantViewModel(p.Person, p.Finished))
+            .Select(p => new ParticipantViewModel(p.Person, p.IsOnline, p.TotalVote, p.Finished, p.HandRaised))
             .ToDictionary(p => p.Person.Id);
 
         _orderedQuestions = new(result.Questions);
@@ -196,7 +196,10 @@
         foreach (var ticket in tickets)
             _participants.Add(ticket.Person.Id, new ParticipantViewModel(
                 ticket.Person,
-                ticket.Finished));
+                ticket.IsOnline,
+                ticket.TotalVote,
+                ticket.Finished,
+                ticket.HandRaised));
     }
 
     private async Task MoveNext()

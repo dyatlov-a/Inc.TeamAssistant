@@ -13,17 +13,20 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
     private readonly ISurveyRepository _repository;
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly ISurveyEventSender _surveyEventSender;
+    private readonly IOnlinePersonStore _onlinePersonStore;
 
     public StartSurveyCommandHandler(
         ISurveyReader reader,
         ISurveyRepository repository,
         IRoomPropertiesProvider propertiesProvider,
-        ISurveyEventSender surveyEventSender)
+        ISurveyEventSender surveyEventSender,
+        IOnlinePersonStore onlinePersonStore)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _surveyEventSender = surveyEventSender ?? throw new ArgumentNullException(nameof(surveyEventSender));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
 
     public async Task Handle(StartSurveyCommand command, CancellationToken token)
@@ -39,6 +42,8 @@ internal sealed class StartSurveyCommandHandler : IRequestHandler<StartSurveyCom
             template);
 
         await _repository.Upsert(survey, token);
+        
+        _onlinePersonStore.ClearTickets(RoomId.CreateForSurvey(command.RoomId));
 
         await _surveyEventSender.SurveyStarted(command.RoomId);
     }

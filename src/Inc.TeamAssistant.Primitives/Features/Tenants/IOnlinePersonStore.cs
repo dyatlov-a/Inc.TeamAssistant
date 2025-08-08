@@ -2,11 +2,17 @@ namespace Inc.TeamAssistant.Primitives.Features.Tenants;
 
 public interface IOnlinePersonStore
 {
-    string? FindConnectionId(RoomId roomId, long personId);
+    IReadOnlyCollection<string> GetConnections(RoomId roomId, long personId);
     
-    IReadOnlyCollection<Person> GetPersons(RoomId roomId);
+    IReadOnlyCollection<PersonStateTicket> GetTickets(RoomId roomId);
     
     void JoinToRoom(RoomId roomId, string connectionId, Person person);
 
     IEnumerable<RoomId> LeaveFromRooms(string connectionId);
+    
+    void SetTicket(RoomId roomId, Person person, int totalVote, bool finished, bool handRaised);
+    
+    void SetTicket(RoomId roomId, Person person, bool finished);
+    
+    void ClearTickets(RoomId roomId);
 }
