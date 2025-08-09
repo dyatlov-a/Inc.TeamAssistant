@@ -1,13 +1,12 @@
 using ApexCharts;
 
-namespace Inc.TeamAssistant.WebUI.Components;
+namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
-public static class ApexChartOptionsBuilder
+internal static class ApexChartBaseOptionsBuilder
 {
-    public static ApexChartOptions<T> Build<T>(Action<ApexChartOptions<T>>? configure = null)
-        where T : class
+    public static ApexChartBaseOptions Build()
     {
-        var options = new ApexChartOptions<T>
+        return new ApexChartBaseOptions
         {
             Legend = new Legend
             {
@@ -42,35 +41,22 @@ public static class ApexChartOptionsBuilder
                 Animations = new Animations
                 {
                     Enabled = false
+                },
+                Toolbar = new Toolbar
+                {
+                    Show = false,
+                    Tools = new Tools
+                    {
+                        Download = false,
+                        Selection = false,
+                        Zoom = false,
+                        Zoomin = false,
+                        Zoomout = false,
+                        Pan = false,
+                        Reset = false
+                    }
                 }
             }
         };
-        
-        configure?.Invoke(options);
-
-        return options;
-    }
-
-    public static ApexChartOptions<T> DisableToolbar<T>(this ApexChartOptions<T> options)
-        where T : class
-    {
-        ArgumentNullException.ThrowIfNull(options);
-        
-        options.Chart.Toolbar = new Toolbar
-        {
-            Show = false,
-            Tools = new Tools
-            {
-                Download = false,
-                Selection = false,
-                Zoom = false,
-                Zoomin = false,
-                Zoomout = false,
-                Pan = false,
-                Reset = false
-            }
-        };
-
-        return options;
     }
 }

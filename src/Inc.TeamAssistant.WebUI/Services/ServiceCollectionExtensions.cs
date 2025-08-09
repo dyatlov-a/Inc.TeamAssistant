@@ -1,3 +1,4 @@
+using ApexCharts;
 using Blazored.LocalStorage;
 using FluentValidation;
 using Inc.TeamAssistant.WebUI.Components;
@@ -33,6 +34,8 @@ public static class ServiceCollectionExtensions
         services
             .AddBlazoredLocalStorage()
 
+            .AddApexCharts(e => e.GlobalOptions = ApexChartBaseOptionsBuilder.Build())
+            
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<ICheckInService, CheckInClient>()
             .AddScoped<IUserService, UserClient>()
