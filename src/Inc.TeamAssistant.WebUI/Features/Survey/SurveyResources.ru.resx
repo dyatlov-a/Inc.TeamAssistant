@@ -131,4 +131,7 @@
     <data name="TeamHealthCheckFinished" xml:space="preserve">
         <value>Вы ответили на все вопросы, дождитесь остальных участников.</value>
     </data>
+    <data name="ConfirmMoveToFinish" xml:space="preserve">
+        <value>Не все участники предоставили ответы. Хотите завершить опрос?</value>
+    </data>
 </root>

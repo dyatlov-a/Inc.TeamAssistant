@@ -248,5 +248,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("TeamHealthCheckFinished", resourceCulture);
             }
         }
+        
+        internal static string ConfirmMoveToFinish {
+            get {
+                return ResourceManager.GetString("ConfirmMoveToFinish", resourceCulture);
+            }
+        }
     }
 }

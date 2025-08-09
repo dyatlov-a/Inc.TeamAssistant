@@ -131,4 +131,7 @@
     <data name="TeamHealthCheckFinished" xml:space="preserve">
         <value>You have answered all the questions. Please wait for the other participants.</value>
     </data>
+    <data name="ConfirmMoveToFinish" xml:space="preserve">
+        <value>Not all participants have submitted their responses. Do you want to end the survey?</value>
+    </data>
 </root>

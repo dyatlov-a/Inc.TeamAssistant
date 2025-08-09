@@ -40,6 +40,7 @@
                 AnswerSelected="SetAnswer" />
         </Authorized>
     </AuthorizeView>
+    <ConfirmDialog @ref="_confirmDialog" />
     </Body>
     <InlineDialogSlot>
         <InlineDialog
@@ -68,6 +69,7 @@
         ? "ConnectionStateLost"
         : "ConnectionStateConnecting";
     
+    private ConfirmDialog? _confirmDialog;
     private Guid? _surveyId;
     private long? _facilitatorId;
     private bool _finished;
@@ -205,9 +207,15 @@
     private async Task MoveNext()
     {
         if (_surveyId.HasValue)
+        {
+            if (_participants.Values.Any(v => !v.Finished) && _confirmDialog is not null &&
+                !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToFinish"]))
+                return;
+            
             await RequestProcessor.Process(
                 () => SurveyService.Finish(new FinishSurveyCommand(RoomId)),
                 _state);
+        }
         else
             await RequestProcessor.Process(
                 () => SurveyService.Start(new StartSurveyCommand(RoomId)),

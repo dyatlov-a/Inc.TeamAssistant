@@ -19,7 +19,7 @@
     position: absolute;
     top: 70px;
     left: 50%;
-    background-color: var(--block-primary-color);
+    background-color: var(--bg-primary-color);
 }
 .content-dialog__content_grand {
     width: 1530px;
