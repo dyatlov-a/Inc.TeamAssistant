@@ -33,10 +33,7 @@ public static class ServiceCollectionExtensions
             .AddHostedService<PushBackgroundService>()
             
             .AddSingleton<ISettingSectionProvider, ReviewerSettingSectionProvider>()
-            .AddSingleton<ReviewMetricsProvider>()
-            .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
-            .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewMetricsProvider>())
-            .AddSingleton<ReviewTeamMetricsFactory>()
+            .AddSingleton<IReviewTeamMetricsFactory, ReviewTeamMetricsFactory>()
             .AddSingleton<ReviewCommentsProvider>()
             .AddHostedService<CacheWarmUpHostedService>()
             

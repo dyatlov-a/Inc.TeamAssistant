@@ -1,7 +1,6 @@
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks.Converters;
-using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetLastTasks;
 using MediatR;
 
@@ -10,9 +9,9 @@ namespace Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetLastTasks;
 internal sealed class GetLastTasksQueryHandler : IRequestHandler<GetLastTasksQuery, GetLastTasksResult>
 {
     private readonly ITaskForReviewReader _reader;
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly IReviewTeamMetricsFactory _metricsFactory;
 
-    public GetLastTasksQueryHandler(ITaskForReviewReader reader, ReviewTeamMetricsFactory metricsFactory)
+    public GetLastTasksQueryHandler(ITaskForReviewReader reader, IReviewTeamMetricsFactory metricsFactory)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));

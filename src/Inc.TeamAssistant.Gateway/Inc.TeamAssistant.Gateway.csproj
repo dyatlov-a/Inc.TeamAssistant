@@ -5,6 +5,9 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+        <InternalsVisibleTo Include="Inc.TeamAssistant.Reviewer.ApplicationTests" />
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.DataAccess\Inc.TeamAssistant.CheckIn.DataAccess.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.CheckIn.Geo\Inc.TeamAssistant.CheckIn.Geo.csproj" />
         <ProjectReference Include="..\Inc.TeamAssistant.Connector.DataAccess\Inc.TeamAssistant.Connector.DataAccess.csproj" />

@@ -1,0 +1,12 @@
+@page "/survey-summary/{SurveyId:guid}"
+@page "/ru/survey-summary/{SurveyId:guid}"
+@page "/en/survey-summary/{SurveyId:guid}"
+
+<h2>Need impl team health check summary</h2>
+
+<p>@SurveyId</p>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid SurveyId { get; set; }
+}

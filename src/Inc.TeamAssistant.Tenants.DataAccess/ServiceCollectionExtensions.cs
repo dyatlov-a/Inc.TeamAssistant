@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 

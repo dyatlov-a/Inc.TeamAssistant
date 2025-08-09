@@ -14,14 +14,14 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
     private readonly IMessageBuilder _messageBuilder;
     private readonly ITeamAccessor _teamAccessor;
     private readonly IReviewMetricsProvider _metricsProvider;
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly IReviewTeamMetricsFactory _metricsFactory;
     private readonly DraftTaskForReviewService _draftService;
 
     public ReviewMessageBuilder(
         IMessageBuilder messageBuilder,
         ITeamAccessor teamAccessor,
         IReviewMetricsProvider metricsProvider,
-        ReviewTeamMetricsFactory metricsFactory,
+        IReviewTeamMetricsFactory metricsFactory,
         DraftTaskForReviewService draftService)
     {
         _messageBuilder = messageBuilder ?? throw new ArgumentNullException(nameof(messageBuilder));
@@ -140,7 +140,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
 
             var languageId = await _teamAccessor.GetClientLanguage(task.BotId, personId, token);
             var message = _messageBuilder.Build(messageTextId, languageId);
-            var totalTimeMessage = _messageBuilder.Build(Messages.Reviewer_TotalTime, languageId, totalTime.ToTime());
+            var totalTimeMessage = _messageBuilder.Build(Messages.Reviewer_TotalTime, languageId, totalTime.ToLongTime());
             var notification = NotificationBuilder.Create()
                 .Add(sb => sb.AppendLine(message).AppendLine().AppendLine(totalTimeMessage))
                 .Build(m => NotificationMessage.Create(personId, m).ReplyTo(messageId));
@@ -445,7 +445,7 @@ internal sealed class ReviewMessageBuilder : IReviewMessageBuilder
         var stateMessage = task.State == TaskForReviewState.AcceptWithComments
             ? Messages.Reviewer_AcceptedWithComments
             : Messages.Reviewer_Accepted;
-        var totalTimeMessage = _messageBuilder.Build(Messages.Reviewer_TotalTime, ownerLanguageId, totalTime.ToTime());
+        var totalTimeMessage = _messageBuilder.Build(Messages.Reviewer_TotalTime, ownerLanguageId, totalTime.ToLongTime());
         var notification = NotificationBuilder.Create()
             .Add(sb => sb
                 .AppendLine(_messageBuilder.Build(stateMessage, ownerLanguageId))

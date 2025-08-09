@@ -57,14 +57,8 @@
     <data name="SlotDropText" xml:space="preserve">
         <value>Перетащите сюда, чтобы изменить тип</value>
     </data>
-    <data name="NextHint" xml:space="preserve">
-        <value>Далее</value>
-    </data>
     <data name="ItemRemoveConfirm" xml:space="preserve">
         <value>Вы действительно желаете удалить карточку?</value>
-    </data>
-    <data name="PreviousHint" xml:space="preserve">
-        <value>Назад</value>
     </data>
     <data name="Actions" xml:space="preserve">
         <value>Действия</value>
@@ -75,29 +69,8 @@
     <data name="ActionItemStageNewTitle" xml:space="preserve">
         <value>В работу</value>
     </data>
-    <data name="TimerStart" xml:space="preserve">
-        <value>Старт</value>
-    </data>
     <data name="TimerStop" xml:space="preserve">
         <value>Остановить</value>
-    </data>
-    <data name="TimerStartHint" xml:space="preserve">
-        <value>Запустить таймер</value>
-    </data>
-    <data name="FinishHint" xml:space="preserve">
-        <value>Я завершил</value>
-    </data>
-    <data name="GiveFacilitatorHint" xml:space="preserve">
-        <value>Запросить права для фасилитации</value>
-    </data>
-    <data name="ConfirmGiveFacilitator" xml:space="preserve">
-        <value>Вы уверены, что хотите стать фасилитатором?</value>
-    </data>
-    <data name="RaiseHandHint" xml:space="preserve">
-        <value>Поднять руку</value>
-    </data>
-    <data name="LowerHandHint" xml:space="preserve">
-        <value>Опустить руку</value>
     </data>
     <data name="RetroAssessmentQuestion" xml:space="preserve">
         <value>Стоило ли это ретро нашего времени?</value>
@@ -138,11 +111,8 @@
     <data name="ColumnContinueTitle" xml:space="preserve">
         <value>Продолжать</value>
     </data>
-    <data name="RetroPropertiesHint" xml:space="preserve">
-        <value>Изменить настройик ретро</value>
-    </data>
-    <data name="RetroProperties" xml:space="preserve">
-        <value>Настройки ретро</value>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Настройки комнаты</value>
     </data>
     <data name="ColumnToDiscussDescription" xml:space="preserve">
         <value>Задачи, вопросы или темы, которые ещё не обсуждались. Ожидают рассмотрения на ближайшем собрании или в ходе диалога.</value>
@@ -155,9 +125,6 @@
     </data>
     <data name="BacklogText" xml:space="preserve">
         <value>Здесь собраны пункты, которые поднимались на прошлых ретроспективах, но пока не были реализованы. Это может быть хорошая возможность вернуться к идеям, которые всё ещё актуальны, и довести их до результата. Просмотрите список, выберите то, что по-прежнему важно, и добавьте в план работы.</value>
-    </data>
-    <data name="Participants" xml:space="preserve">
-        <value>Участники</value>
     </data>
     <data name="ActionsHint" xml:space="preserve">
         <value>Запиши конкретный шаг с ответственным и сроком — не идея, а действие.</value>
@@ -173,9 +140,6 @@
     </data>
     <data name="ConnectionStateLost" xml:space="preserve">
         <value>Соединение потеряно.</value>
-    </data>
-    <data name="VotesCount" xml:space="preserve">
-        <value>Кол-во голосов:</value>
     </data>
     <data name="ActionItemStagePinnedTitle" xml:space="preserve">
         <value>Командные соглашения</value>

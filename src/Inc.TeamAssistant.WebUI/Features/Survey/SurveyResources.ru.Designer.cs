@@ -45,9 +45,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
             }
         }
         
-        internal static string WaitStartHealthCheck {
+        internal static string TeamHealthCheckWaiting {
             get {
-                return ResourceManager.GetString("WaitStartHealthCheck", resourceCulture);
+                return ResourceManager.GetString("TeamHealthCheckWaiting", resourceCulture);
             }
         }
         
@@ -180,6 +180,78 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
         internal static string TeamworkText {
             get {
                 return ResourceManager.GetString("TeamworkText", resourceCulture);
+            }
+        }
+        
+        internal static string RoomProperties {
+            get {
+                return ResourceManager.GetString("RoomProperties", resourceCulture);
+            }
+        }
+        
+        internal static string Reconnect {
+            get {
+                return ResourceManager.GetString("Reconnect", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateConnecting {
+            get {
+                return ResourceManager.GetString("ConnectionStateConnecting", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateLost {
+            get {
+                return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
+            }
+        }
+        
+        internal static string RequiredValues {
+            get {
+                return ResourceManager.GetString("RequiredValues", resourceCulture);
+            }
+        }
+        
+        internal static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+        
+        internal static string GiveRating {
+            get {
+                return ResourceManager.GetString("GiveRating", resourceCulture);
+            }
+        }
+        
+        internal static string Comment {
+            get {
+                return ResourceManager.GetString("Comment", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheck {
+            get {
+                return ResourceManager.GetString("TeamHealthCheck", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheckHelp {
+            get {
+                return ResourceManager.GetString("TeamHealthCheckHelp", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheckFinished {
+            get {
+                return ResourceManager.GetString("TeamHealthCheckFinished", resourceCulture);
+            }
+        }
+        
+        internal static string ConfirmMoveToFinish {
+            get {
+                return ResourceManager.GetString("ConfirmMoveToFinish", resourceCulture);
             }
         }
     }

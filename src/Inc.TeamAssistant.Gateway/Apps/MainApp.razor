@@ -1,6 +1,13 @@
 @inject AnalyticsOptions AnalyticsOptions
 @inject IRenderContext RenderContext
 @inject IHostEnvironment HostEnvironment
+@inject IHttpContextAccessor HttpContextAccessor
+@inject PersonResolver PersonResolver
+
+@{
+    if (HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true)
+        PersonResolver.TrySet(HttpContextAccessor.HttpContext.User.ToPerson());
+}
 
 <!DOCTYPE html>
 <html lang="@_lang">

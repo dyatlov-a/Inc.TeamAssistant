@@ -39,7 +39,7 @@ internal sealed class AssessmentSessionEventBuilder : IAssessmentSessionEventPro
 
 		await _hubConnection.InvokeAsync(HubDescriptors.AssessmentSessionHub.JoinToAssessmentSessionMethod, teamId);
 
-		return new PostActionScope(async () =>
+		return new PostActionScopeAsync(async () =>
 		{
 			await _hubConnection.InvokeAsync(HubDescriptors.AssessmentSessionHub.RemoveFromAssessmentSessionMethod, teamId);
 			

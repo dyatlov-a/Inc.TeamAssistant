@@ -1,12 +1,12 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeTimer;
 using Inc.TeamAssistant.Retro.Model.Commands.CreateRetroItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetVotes;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using Inc.TeamAssistant.Retro.Model.Common;
+using Inc.TeamAssistant.Tenants.Model.Commands.ChangeRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;
 using Microsoft.AspNetCore.Components;
@@ -109,14 +109,19 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.ChangeTimerMethod, command);
     }
     
-    public async Task GiveFacilitator(ChangeRetroPropertiesCommand command)
+    public async Task GiveFacilitator(ChangeRoomPropertiesCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         
         await _hubConnection.SendAsync(HubDescriptors.RetroHub.GiveFacilitatorMethod, command);
     }
+    
+    public async Task NotifyRetroPropertiesChanged(Guid roomId)
+    {
+        await _hubConnection.SendAsync(HubDescriptors.RetroHub.NotifyRetroPropertiesChanged, roomId);
+    }
 
-    public async Task<IAsyncDisposable> Build(
+    public async Task<IDisposable> Build(
         Guid roomId,
         params IReadOnlyCollection<Func<IRetroEventProvider, IDisposable>> eventHandlers)
     {
@@ -128,10 +133,8 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
 
         await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.JoinRetroMethod, roomId);
 
-        return new PostActionScope(async () =>
+        return new PostActionScope(() =>
         {
-            await _hubConnection.InvokeAsync(HubDescriptors.RetroHub.LeaveRetroMethod, roomId);
-			
             foreach (var handler in handlers)
                 handler.Dispose();
         });
@@ -172,7 +175,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.RetroStateChanged), changed);
     }
 
-    IDisposable IRetroEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<Person>, Task> changed)
+    IDisposable IRetroEventProvider.OnPersonsChanged(Func<IReadOnlyCollection<PersonStateTicket>, Task> changed)
     {
         ArgumentNullException.ThrowIfNull(changed);
         
@@ -207,7 +210,7 @@ internal sealed class RetroEventBuilder : IRetroEventProvider, IAsyncDisposable
         return _hubConnection.On(nameof(IRetroHubClient.TimerChanged), changed);
     }
 
-    public IDisposable OnRetroPropertiesChanged(Func<RetroPropertiesDto, Task> changed)
+    public IDisposable OnRetroPropertiesChanged(Func<Task> changed)
     {
         return _hubConnection.On(nameof(IRetroHubClient.RetroPropertiesChanged), changed);
     }

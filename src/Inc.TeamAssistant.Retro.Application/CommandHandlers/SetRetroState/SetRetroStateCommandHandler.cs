@@ -1,3 +1,5 @@
+using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroState;
@@ -7,22 +9,42 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.SetRetroState;
 
 internal sealed class SetRetroStateCommandHandler : IRequestHandler<SetRetroStateCommand>
 {
-    private readonly IRetroStage _retroStage;
     private readonly IRetroEventSender _eventSender;
+    private readonly ITeamAccessor _teamAccessor;
+    private readonly IVoteStore _voteStore;
+    private readonly IOnlinePersonStore _onlinePersonStore;
+    private readonly IRetroReader _reader;
 
-    public SetRetroStateCommandHandler(IRetroStage retroStage, IRetroEventSender eventSender)
+    public SetRetroStateCommandHandler(
+        IRetroEventSender eventSender,
+        ITeamAccessor teamAccessor,
+        IVoteStore voteStore,
+        IOnlinePersonStore onlinePersonStore,
+        IRetroReader reader)
     {
-        _retroStage = retroStage ?? throw new ArgumentNullException(nameof(retroStage));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
+        _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
+        _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
+        _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
     public async Task Handle(SetRetroStateCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var ticket = new RetroStageTicket(command.PersonId, command.Finished, command.HandRaised);
+        var person = await _teamAccessor.EnsurePerson(command.PersonId, token);
+        var retroSession = await _reader.FindSession(command.RoomId, RetroSessionStateRules.Active, token);
+        var totalVote = retroSession is not null
+            ? _voteStore.Get(retroSession.Id).Where(v => v.PersonId == person.Id).Sum(v => v.Vote)
+            : 0;
         
-        _retroStage.Set(command.RoomId, ticket);
+        _onlinePersonStore.SetTicket(
+            RoomId.CreateForRetro(command.RoomId),
+            person,
+            totalVote,
+            command.Finished,
+            command.HandRaised);
 
         await _eventSender.RetroStateChanged(
             command.RoomId,

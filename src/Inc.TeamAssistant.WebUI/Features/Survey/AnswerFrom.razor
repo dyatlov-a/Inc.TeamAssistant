@@ -1,0 +1,88 @@
+@inject IStringLocalizer<SurveyResources> Localizer
+
+<div class="survey-answer">
+    <h2 class="main-content__header">@Localizer[Title]</h2>
+    <p class="main-content__text">@(new MarkupString(Localizer[Text]))</p>
+    <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
+        <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
+        <FormSection Title="@Localizer["TeamHealthCheck"]" HelpText="@Localizer["TeamHealthCheckHelp"]">
+            <ChildContent>
+                <FormFieldSet FieldId="answer-values" Label="@Localizer["GiveRating"]">
+                    <InputMultiSelectList
+                        HasMulti="false"
+                        FieldId="answer-values"
+                        Value="FormModel.Values"
+                        ValueExpression="() => FormModel.Values"
+                        ValueChanged="(IEnumerable<int> v) => FormModel.ChangeValues(v)"
+                        Items="_items"
+                        TitleSelector="i => i.ToString()"
+                        ValueSelector="i => i"/>
+                    <ValidationMessage For="@(() => FormModel.Values)"/>
+                </FormFieldSet>
+                <FormFieldSet FieldId="answer-comment" Label="@Localizer["Comment"]">
+                    <InputMultiLines
+                        FieldId="answer-comment"
+                        Value="@FormModel.Comment"
+                        ValueExpression="() => FormModel.Comment"
+                        ValueChanged="v => FormModel.ChangeComment(v)" />
+                    <ValidationMessage For="@(() => FormModel.Comment)"/>
+                </FormFieldSet>
+            </ChildContent>
+        </FormSection>
+        <div class="survey-answer__controls">
+            <Button ButtonType="ButtonType.Submit">@Localizer["Next"]</Button>
+            <Button ComponentStyle="ComponentStyle.Secondary" OnClick="NextQuestion">@Localizer["Skip"]</Button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    /// <summary>
+    /// Title
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = default!;
+    
+    /// <summary>
+    /// Text
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = default!;
+    
+    /// <summary>
+    /// Form model.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AnswerFromModel FormModel { get; set; } = default!;
+    
+    /// <summary>
+    /// Move to question event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnNextQuestion { get; set; }
+    
+    /// <summary>
+    /// OnValidSubmit event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<AnswerFromModel> OnValidSubmit { get; set; }
+    
+    private FluentValidationValidator? _fluentValidationValidator;
+    private EditContext? _editContext;
+    private readonly IEnumerable<int> _items = Enumerable.Range(1, 5);
+
+    protected override void OnParametersSet()
+    {
+        _editContext = EditContextFactory.Create(FormModel);
+    }
+    
+    private async Task SubmitForm()
+    {
+        if (_fluentValidationValidator is null || !await _fluentValidationValidator.ValidateAsync())
+            return;
+        
+        await OnValidSubmit.InvokeAsync(FormModel);
+    }
+
+    private void NextQuestion() => OnNextQuestion.InvokeAsync();
+}

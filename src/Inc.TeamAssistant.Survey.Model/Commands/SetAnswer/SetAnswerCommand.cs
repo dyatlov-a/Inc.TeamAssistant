@@ -6,5 +6,6 @@ public sealed record SetAnswerCommand(
     Guid SurveyId,
     Guid QuestionId,
     int? Value,
-    string? Comment)
+    string? Comment,
+    bool IsEnd)
     : IRequest;

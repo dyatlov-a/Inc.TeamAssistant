@@ -1,0 +1,286 @@
+@implements IDisposable
+
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
+
+<div class="retro-state-panel">
+    @if (HasFinish)
+    {
+        <a
+            title="@Localizer["FinishHint"]"
+            href="#"
+            class="retro__link retro__link_active"
+            @onclick="MoveToFinish"
+            @onclick:preventDefault="true">
+            <CheckIcon Size="@IconSize"/>
+        </a>
+    }
+    @if (HasRaiseHand)
+    {
+        <a
+            title="@Localizer["RaiseHandHint"]"
+            href="#"
+            class="retro__link retro__link_active"
+            @onclick="RaiseHand"
+            @onclick:preventDefault="true">
+            <UserQuestionIcon Size="@IconSize"/>
+        </a>
+    }
+    @if (CanStartTimer.HasValue)
+    {
+        if (CanStartTimer.Value)
+        {
+            <a
+                title="@Localizer["TimerStartHint"]"
+                href="#"
+                class="retro__link retro__link_active"
+                @onclick="ToggleTimer"
+                @onclick:preventDefault="true">
+                <ClockCheckIcon Size="@IconSize"/> @TimerValue
+            </a>
+        }
+        else
+        {
+            <i class="retro__link">
+                <ClockCheckIcon Size="@IconSize"/> @TimerValue
+            </i>
+        }
+    }
+    @if (CanChangeProperties)
+    {
+        <a
+            title="@Localizer["RoomPropertiesHint"]"
+            href="#"
+            class="retro__link retro__link_active retro__link_right"
+            @onclick="OnRoomPropertiesOpened"
+            @onclick:preventDefault="true">
+            <SettingsIcon Size="@IconSize"/>
+        </a>
+    }
+    else
+    {
+        <a
+            title="@Localizer["GiveFacilitatorHint"]"
+            href="#"
+            class="retro__link retro__link_active retro__link_right"
+            @onclick="GiveFacilitator"
+            @onclick:preventDefault="true">
+            <UsersIcon Size="@IconSize"/>
+        </a>
+    }
+    @if (HasPrevious)
+    {
+        <a
+            title="@Localizer["PreviousHint"]"
+            href="#"
+            class="retro__link retro__link_active"
+            @onclick="OnMoveToPrevious"
+            @onclick:preventDefault="true">
+            <CaretLeftIcon Size="@IconSize"/>
+        </a>
+    }
+    @if (HasNext)
+    {
+        <a
+            title="@Localizer["NextHint"]"
+            href="#"
+            class="retro__link retro__link_active"
+            @onclick="OnMoveNext"
+            @onclick:preventDefault="true">
+            <CaretRightIcon Size="@IconSize"/>
+        </a>
+    }
+</div>
+<ConfirmDialog @ref="_confirmDialog" />
+
+@code {
+    /// <summary>
+    /// Has previous state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasPrevious { get; set; }
+    
+    /// <summary>
+    /// Has next state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasNext { get; set; }
+    
+    /// <summary>
+    /// Has finish.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasFinish { get; set; }
+    
+    /// <summary>
+    /// Has raise hand.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool HasRaiseHand { get; set; }
+    
+    /// <summary>
+    /// Can start timer.
+    /// </summary>
+    [Parameter]
+    public bool? CanStartTimer { get; set; }
+    
+    /// <summary>
+    /// Can change properties.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanChangeProperties { get; set; }
+    
+    /// <summary>
+    /// Current user identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
+    /// Facilitator given action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback FacilitatorGiven { get; set; }
+    
+    /// <summary>
+    /// Room properties opened action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RoomPropertiesOpened { get; set; }
+    
+    /// <summary>
+    /// Current timer value.
+    /// </summary>
+    [Parameter]
+    public TimeSpan? CurrentTimer { get; set; }
+
+    /// <summary>
+    /// Timer duration.
+    /// </summary>
+    [Parameter]
+    public TimeSpan? TimerDuration { get; set; }
+    
+    /// <summary>
+    /// Timer refresh interval.
+    /// </summary>
+    [Parameter]
+    public TimeSpan TimerRefreshInterval { get; set; } = TimeSpan.FromSeconds(1);
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter]
+    public EventCallback MoveNext { get; set; }
+    
+    /// <summary>
+    /// Move to previous action.
+    /// </summary>
+    [Parameter]
+    public EventCallback MovePrevious { get; set; }
+    
+    /// <summary>
+    /// Timer changed action.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TimeSpan?> TimerChanged { get; set; }
+    
+    /// <summary>
+    /// Finish action.
+    /// </summary>
+    [Parameter]
+    public EventCallback<long> Finished { get; set; }
+    
+    /// <summary>
+    /// Hand raised action.
+    /// </summary>
+    [Parameter]
+    public EventCallback<long> HandRaised { get; set; }
+
+    private const string IconSize = "26px";
+    private TimeSpan? _currentTimer;
+    private Timer? _timer;
+    private ConfirmDialog? _confirmDialog;
+
+    private string TimerValue => _currentTimer.HasValue
+        ? _currentTimer.Value.ToShortTime()
+        : CanStartTimer == true
+            ? Localizer["TimerStart"]
+            : string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (!_currentTimer.HasValue && CurrentTimer.HasValue)
+        {
+            _currentTimer = CurrentTimer;
+            
+            _timer = CreateTimer(TimerRefreshInterval);
+            _timer.Start();
+        }
+        else if (!CurrentTimer.HasValue)
+        {
+            _currentTimer = null;
+            TryStopTimer();
+        }
+    }
+    
+    private Timer CreateTimer(TimeSpan interval)
+    {
+        var timer = new Timer(interval);
+
+        timer.Elapsed += OnTimerTick;
+        timer.AutoReset = true;
+
+        return timer;
+    }
+
+    private void OnTimerTick(object? sender, ElapsedEventArgs e)
+    {
+        if (_currentTimer.HasValue)
+        {
+            var changed = _currentTimer.Value.Subtract(TimerRefreshInterval);
+
+            if (changed > TimeSpan.Zero)
+                _currentTimer = changed;
+            else
+            {
+                _currentTimer = null;
+                TryStopTimer();
+            }
+        }
+        
+        InvokeAsync(async () => await TimerChanged.InvokeAsync(_currentTimer));
+    }
+    
+    private async Task ToggleTimer()
+    {
+        var changedValue = _currentTimer.HasValue
+            ? (TimeSpan?)null
+            : TimerDuration;
+
+        await TimerChanged.InvokeAsync(changedValue);
+    }
+    
+    private async Task GiveFacilitator()
+    {
+        if (_confirmDialog is not null && await _confirmDialog.IsConfirmed(Localizer["ConfirmGiveFacilitator"]))
+            await FacilitatorGiven.InvokeAsync();
+    }
+    
+    private void TryStopTimer()
+    {
+        if (_timer is not null)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnTimerTick;
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
+
+    private async Task OnRoomPropertiesOpened() => await RoomPropertiesOpened.InvokeAsync();
+    private async Task OnMoveNext() => await MoveNext.InvokeAsync();
+    private async Task OnMoveToPrevious() => await MovePrevious.InvokeAsync();
+    private async Task MoveToFinish() => await Finished.InvokeAsync(CurrentUserId);
+    private async Task RaiseHand() => await HandRaised.InvokeAsync(CurrentUserId);
+
+    public void Dispose() => TryStopTimer();
+}
