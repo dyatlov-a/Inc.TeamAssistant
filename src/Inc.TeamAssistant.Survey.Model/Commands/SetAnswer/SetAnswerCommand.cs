@@ -7,5 +7,5 @@ public sealed record SetAnswerCommand(
     Guid QuestionId,
     int? Value,
     string? Comment,
-    bool IsEnd)
+    bool IsFinal)
     : IRequest;

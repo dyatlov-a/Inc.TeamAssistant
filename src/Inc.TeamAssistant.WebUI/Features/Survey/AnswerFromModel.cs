@@ -10,7 +10,7 @@ public sealed class AnswerFromModel
     public IReadOnlyCollection<int> Values { get; private set; }
     public string Comment { get; private set; }
 
-    public AnswerFromModel(SurveyQuestionDto item)
+    public AnswerFromModel(AnswerOnSurveyDto item)
     {
         ArgumentNullException.ThrowIfNull(item);
 

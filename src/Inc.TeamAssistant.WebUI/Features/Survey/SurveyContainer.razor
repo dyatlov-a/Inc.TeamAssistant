@@ -74,8 +74,8 @@
     private long? _facilitatorId;
     private bool _finished;
     private ContentDialog? _roomPropertiesEditor;
-    private LinkedList<SurveyQuestionDto> _orderedQuestions = new();
-    private LinkedListNode<SurveyQuestionDto>? _currentQuestion;
+    private LinkedList<AnswerOnSurveyDto> _orderedQuestions = new();
+    private LinkedListNode<AnswerOnSurveyDto>? _currentQuestion;
     
     private Dictionary<long, ParticipantViewModel> _participants = new();
     private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
@@ -228,7 +228,7 @@
             await MoveTo(_currentQuestion.Next);
     }
     
-    private async Task MoveTo(LinkedListNode<SurveyQuestionDto> node)
+    private async Task MoveTo(LinkedListNode<AnswerOnSurveyDto> node)
     {
         var routeSegment = $"survey/{RoomId:N}/{node.Value.Id:N}".ToLowerInvariant();
         

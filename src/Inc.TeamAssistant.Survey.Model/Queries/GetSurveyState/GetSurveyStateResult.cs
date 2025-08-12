@@ -7,7 +7,7 @@ public sealed record GetSurveyStateResult(
     Guid? SurveyId,
     bool Finished,
     long? FacilitatorId,
-    IReadOnlyCollection<SurveyQuestionDto> Questions,
+    IReadOnlyCollection<AnswerOnSurveyDto> Questions,
     IReadOnlyCollection<PersonStateTicket> Participants)
     : IWithEmpty<GetSurveyStateResult>
 {

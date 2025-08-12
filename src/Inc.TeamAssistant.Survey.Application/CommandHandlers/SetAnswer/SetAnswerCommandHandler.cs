@@ -48,7 +48,7 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
 
         await _repository.Upsert(answer, token);
 
-        if (command.IsEnd)
+        if (command.IsFinal)
         {
             var finished = true;
             

@@ -51,7 +51,7 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
             onlinePersons);
     }
 
-    private async Task<IReadOnlyCollection<SurveyQuestionDto>> GetQuestions(
+    private async Task<IReadOnlyCollection<AnswerOnSurveyDto>> GetQuestions(
         Guid surveyId,
         long ownerId,
         IReadOnlyCollection<Guid> questionIds,
@@ -59,15 +59,15 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     {
         ArgumentNullException.ThrowIfNull(questionIds);
         
-        var answers = await _surveyRepository.Find(surveyId, ownerId, token);
+        var surveyAnswer = await _surveyRepository.Find(surveyId, ownerId, token);
         var questions = await _reader.ReadQuestions(questionIds, token);
 
         return questions
             .Select(q =>
             {
-                var answer = answers?.Answers.SingleOrDefault(a => a.QuestionId == q.Id);
+                var answer = surveyAnswer?.Answers.SingleOrDefault(a => a.QuestionId == q.Id);
 
-                return new SurveyQuestionDto(q.Id, q.Title, q.Text, answer?.Value, answer?.Comment);
+                return new AnswerOnSurveyDto(q.Id, q.Title, q.Text, answer?.Value, answer?.Comment);
             })
             .ToArray();
     }

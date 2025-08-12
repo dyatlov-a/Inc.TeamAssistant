@@ -41,6 +41,38 @@ internal sealed class SurveyReader : ISurveyReader
         return questions.ToArray();
     }
 
+    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(Guid roomId, int limit, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                sa.id AS id,
+                sa.survey_id AS surveyid,
+                sa.created AS created,
+                sa.owner_id AS ownerid,
+                sa.answers AS answers
+            FROM survey.survey_answers AS sa
+            JOIN survey.surveys AS s ON sa.survey_id = s.id
+            WHERE s.room_id = @room_id
+            ORDER BY sa.created DESC
+            OFFSET 0
+            LIMIT @limit
+            """,
+            new
+            {
+                room_id = roomId,
+                limit = limit
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveyAnswers = await connection.QueryAsync<SurveyAnswer>(command);
+        
+        return surveyAnswers.ToArray();
+    }
+
     public async Task<SurveyTemplate?> FindTemplate(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
