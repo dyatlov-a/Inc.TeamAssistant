@@ -21,9 +21,9 @@ internal sealed class SurveyService : ISurveyService
         return await _mediator.Send(new GetSurveyStateQuery(roomId), token);
     }
 
-    public async Task<GetSurveySummaryResult> GetSurveySummary(Guid surveyId, int limit, CancellationToken token)
+    public async Task<GetSurveySummaryResult> GetSurveySummary(Guid roomId, int limit, CancellationToken token)
     {
-        return await _mediator.Send(new GetSurveySummaryQuery(surveyId, limit), token);
+        return await _mediator.Send(new GetSurveySummaryQuery(roomId, limit), token);
     }
 
     public async Task Start(StartSurveyCommand command, CancellationToken token)

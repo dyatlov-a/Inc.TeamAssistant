@@ -7,7 +7,7 @@ internal sealed class GetSurveySummaryQueryValidator : AbstractValidator<GetSurv
 {
     public GetSurveySummaryQueryValidator()
     {
-        RuleFor(q => q.SurveyId)
+        RuleFor(q => q.RoomId)
             .NotEmpty();
 
         RuleFor(q => q.Limit)

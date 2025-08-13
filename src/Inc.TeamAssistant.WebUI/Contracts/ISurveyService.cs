@@ -9,7 +9,7 @@ public interface ISurveyService
 {
     Task<GetSurveyStateResult> GetSurveyState(Guid roomId, CancellationToken token = default);
 
-    Task<GetSurveySummaryResult> GetSurveySummary(Guid surveyId, int limit, CancellationToken token = default);
+    Task<GetSurveySummaryResult> GetSurveySummary(Guid roomId, int limit, CancellationToken token = default);
 
     Task Start(StartSurveyCommand command, CancellationToken token = default);
     

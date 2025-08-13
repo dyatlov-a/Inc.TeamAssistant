@@ -28,10 +28,10 @@ internal sealed class SurveyClient : ISurveyService
         return result;
     }
 
-    public async Task<GetSurveySummaryResult> GetSurveySummary(Guid surveyId, int limit, CancellationToken token)
+    public async Task<GetSurveySummaryResult> GetSurveySummary(Guid roomId, int limit, CancellationToken token)
     {
         var result = await _client.GetFromJsonAsync<GetSurveySummaryResult>(
-            $"survey/{surveyId:N}/summary/{limit}",
+            $"survey/{roomId:N}/summary/{limit}",
             token);
 
         if (result is null)

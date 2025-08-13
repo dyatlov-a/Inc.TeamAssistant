@@ -1,12 +1,41 @@
-@page "/survey-summary/{SurveyId:guid}"
-@page "/ru/survey-summary/{SurveyId:guid}"
-@page "/en/survey-summary/{SurveyId:guid}"
+@page "/survey-summary/{RoomId:guid}"
+@page "/ru/survey-summary/{RoomId:guid}"
+@page "/en/survey-summary/{RoomId:guid}"
 
-<h2>Need impl team health check summary</h2>
+@attribute [Authorize]
 
-<p>@SurveyId</p>
+@inject ISurveyService SurveyService
+@inject TenantStore TenantStore
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule />
+
+<SurveySummary
+    RoomId="RoomId"
+    Answers="_answers"
+    State="_state"
+    Retry="Load" />
 
 @code {
     [Parameter, EditorRequired]
-    public Guid SurveyId { get; set; }
+    public Guid RoomId { get; set; }
+
+    private const int SurveyTotal = 5;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private IReadOnlyCollection<PersonAnswerDto> _answers = [];
+
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(RoomId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await SurveyService.GetSurveySummary(RoomId, SurveyTotal),
+            nameof(SurveySummaryContainer),
+            _state);
+
+        _answers = result.Answers;
+    }
 }

@@ -149,10 +149,7 @@
     {
         return await eventBuilder.Build(
             RoomId,
-            b => b.OnSurveyStarted(async () =>
-            {
-                await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
-            }),
+            b => b.OnSurveyStarted(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false)),
             b => b.OnFacilitatorChanged(async fId =>
             {
                 await InvokeAsync(() =>
@@ -178,11 +175,7 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnSurveyFinished(async () =>
-            {
-                if (_surveyId.HasValue)
-                    await NavRouter.MoveToRoute($"survey-summary/{_surveyId.Value:N}");
-            }));
+            b => b.OnSurveyFinished(async () => await NavRouter.MoveToRoute($"survey-summary/{RoomId:N}")));
     }
     
     private void ApplySurveyState(long personId, bool finished)

@@ -1,0 +1,77 @@
+@inject IStringLocalizer<SurveyResources> Localizer
+
+<DashboardGrid>
+    <Toolbar>
+        <RoomNavbarContainer RoomId="RoomId" />
+    </Toolbar>
+    <Content>
+        <Loading Retry="Retry" State="State">
+            <ApexChart TItem="PersonAnswerDto" Options="_options">
+                @foreach (var item in TotalSummary)
+                {
+                    <ApexPointSeries TItem="PersonAnswerDto"
+                                     Items="item"
+                                     Name="@item.Key"
+                                     SeriesType="SeriesType.Radar"
+                                     XValue="@(e => Localizer[e.QuestionKey].ToString())"
+                                     YValue="@(e => e.Value)"
+                                     OrderByDescending="e => e.Y" />
+                }
+            </ApexChart>
+        </Loading>
+    </Content>
+</DashboardGrid>
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Last answers
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<PersonAnswerDto> Answers { get; set; } = default!;
+    
+    private ILookup<string, PersonAnswerDto> TotalSummary => Answers.ToLookup(k => k.PersonId.ToString());
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+
+    private readonly ApexChartOptions<PersonAnswerDto> _options = new()
+    {
+        Yaxis =
+        [
+            new YAxis
+            {
+                Min = 0,
+                Max = 5,
+                TickAmount = 5
+            }
+        ],
+        Theme = new Theme
+        {
+            Mode = Mode.Dark,
+            Palette = PaletteType.Palette1,
+            Monochrome = new ThemeMonochrome
+            {
+                Enabled = false
+            }
+        },
+        Legend = new Legend
+        {
+            Show = false
+        }
+    };
+}

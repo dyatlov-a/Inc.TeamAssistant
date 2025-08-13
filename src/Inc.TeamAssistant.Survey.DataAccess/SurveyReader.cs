@@ -41,7 +41,43 @@ internal sealed class SurveyReader : ISurveyReader
         return questions.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(Guid roomId, int limit, CancellationToken token)
+    public async Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
+        Guid roomId,
+        SurveyState state,
+        int limit,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                s.id AS id,
+                s.template_id AS templateid,
+                s.room_id AS roomid,
+                s.created AS created,
+                s.state AS state,
+                s.question_ids AS questionids
+            FROM survey.surveys AS s
+            WHERE s.room_id = @room_id AND s.state = @state
+            ORDER BY created DESC
+            LIMIT @limit;
+            """,
+            new
+            {
+                room_id = roomId,
+                state = state,
+                limit = limit
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveys = await connection.QueryAsync<SurveyEntry>(command);
+        
+        return surveys.ToArray();
+    }
+
+    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(IReadOnlyCollection<Guid> surveyIds, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -52,16 +88,11 @@ internal sealed class SurveyReader : ISurveyReader
                 sa.owner_id AS ownerid,
                 sa.answers AS answers
             FROM survey.survey_answers AS sa
-            JOIN survey.surveys AS s ON sa.survey_id = s.id
-            WHERE s.room_id = @room_id
-            ORDER BY sa.created DESC
-            OFFSET 0
-            LIMIT @limit
+            WHERE sa.survey_id = ANY(@survey_ids);
             """,
             new
             {
-                room_id = roomId,
-                limit = limit
+                survey_ids = surveyIds.ToArray()
             },
             flags: CommandFlags.None,
             cancellationToken: token);

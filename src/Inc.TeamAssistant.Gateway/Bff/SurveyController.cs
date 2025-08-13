@@ -24,10 +24,10 @@ public sealed class SurveyController : ControllerBase
         return Ok(await _surveyService.GetSurveyState(roomId, token));
     }
     
-    [HttpGet("{surveyId:guid}/summary/{limit:int}")]
-    public async Task<IActionResult> GetPersonSurveys(Guid surveyId, int limit, CancellationToken token)
+    [HttpGet("{roomId:guid}/summary/{limit:int}")]
+    public async Task<IActionResult> GetPersonSurveys(Guid roomId, int limit, CancellationToken token)
     {
-        return Ok(await _surveyService.GetSurveySummary(surveyId, limit, token));
+        return Ok(await _surveyService.GetSurveySummary(roomId, limit, token));
     }
     
     [HttpPost]
