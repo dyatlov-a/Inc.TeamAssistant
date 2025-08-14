@@ -134,4 +134,16 @@
     <data name="ConfirmMoveToFinish" xml:space="preserve">
         <value>Not all participants have submitted their responses. Do you want to end the survey?</value>
     </data>
+    <data name="HasParticipants" xml:space="preserve">
+        <value>Answers by members</value>
+    </data>
+    <data name="HasMean" xml:space="preserve">
+        <value>Average answers</value>
+    </data>
+    <data name="TotalSummaryControls" xml:space="preserve">
+        <value>Answers</value>
+    </data>
+    <data name="TotalSummaryControlsHelp" xml:space="preserve">
+        <value>Analyze the deviations of individual participants' answers from the average answers.</value>
+    </data>
 </root>

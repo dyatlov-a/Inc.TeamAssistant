@@ -4,7 +4,7 @@ namespace Inc.TeamAssistant.WebUI.Services.Internal;
 
 internal static class ApexChartBaseOptionsBuilder
 {
-    public static ApexChartBaseOptions Build()
+    public static ApexChartBaseOptions BuildDefault()
     {
         return new ApexChartBaseOptions
         {
@@ -55,6 +55,62 @@ internal static class ApexChartBaseOptionsBuilder
                         Pan = false,
                         Reset = false
                     }
+                }
+            }
+        };
+    }
+
+    public static ApexChartOptions<T> BuildRadar<T>(int maxValue = 5)
+        where T : class
+    {
+        return new()
+        {
+            PlotOptions = new PlotOptions
+            {
+                Radar = new PlotOptionsRadar
+                {
+                    Polygons = new RadarPolygons
+                    {
+                        StrokeColors = new List<string> { "#CCCCCC" },
+                        ConnectorColors = "#CCCCCC",
+                        Fill = new RadarPolygonsFill
+                        {
+                            Colors = ["transparent"]
+                        }
+                    }
+                }
+            },
+            Tooltip = new Tooltip
+            {
+                Enabled = false
+            },
+            Yaxis =
+            [
+                new YAxis
+                {
+                    Min = 0,
+                    Max = maxValue,
+                    TickAmount = maxValue
+                }
+            ],
+            Theme = new Theme
+            {
+                Mode = Mode.Dark,
+                Palette = PaletteType.Palette1,
+                Monochrome = new ThemeMonochrome
+                {
+                    Enabled = false
+                }
+            },
+            Legend = new Legend
+            {
+                Show = false
+            },
+            Grid = new Grid
+            {
+                Padding = new Padding
+                {
+                    Top = -50
                 }
             }
         };

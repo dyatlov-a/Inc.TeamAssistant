@@ -6,18 +6,52 @@
     </Toolbar>
     <Content>
         <Loading Retry="Retry" State="State">
-            <ApexChart TItem="PersonAnswerDto" Options="_options">
-                @foreach (var item in TotalSummary)
-                {
-                    <ApexPointSeries TItem="PersonAnswerDto"
-                                     Items="item"
-                                     Name="@item.Key"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(e => Localizer[e.QuestionKey].ToString())"
-                                     YValue="@(e => e.Value)"
-                                     OrderByDescending="e => e.Y" />
-                }
-            </ApexChart>
+            <div class="survey-total-summary">
+                <div class="survey-total-summary__content">
+                    <div class="survey-total-summary__chart">
+                        <ApexChart
+                            TItem="PersonAnswerDto"
+                            Options="ApexChartBaseOptionsBuilder.BuildRadar<PersonAnswerDto>()"
+                            @ref="_totalSummaryChart">
+                            @foreach (var item in TotalSummary)
+                            {
+                                <ApexPointSeries TItem="PersonAnswerDto"
+                                                 Items="item.Value"
+                                                 Name="@item.Key"
+                                                 SeriesType="SeriesType.Radar"
+
+                                                 XValue="@(e => Localizer[e.QuestionKey].ToString())"
+                                                 YValue="@(e => e.Value)"/>
+                            }
+                        </ApexChart>
+                    </div>
+                </div>
+                <div class="survey-total-summary__panel">
+                    <FormSection
+                        Title="@Localizer["TotalSummaryControls"]"
+                        HelpText="@Localizer["TotalSummaryControlsHelp"]"
+                        AsRows="true">
+                        <FormFieldSet
+                            FieldId="hasParticipants"
+                            Label="@Localizer["HasParticipants"]">
+                            <InputCheckbox
+                                id="hasParticipants"
+                                Value="_hasParticipants"
+                                ValueExpression="@(() => _hasParticipants)"
+                                ValueChanged="@(v => ChangeTotalSummaryView(v, null))" />
+                        </FormFieldSet>
+                        <FormFieldSet
+                            FieldId="hasMean"
+                            Label="@Localizer["HasMean"]">
+                            <InputCheckbox
+                                id="hasMean"
+                                Value="_hasMean"
+                                ValueExpression="@(() => _hasMean)"
+                                ValueChanged="@(v => ChangeTotalSummaryView(null, v))" />
+                        </FormFieldSet>
+                    </FormSection>
+                </div>
+            </div>
         </Loading>
     </Content>
 </DashboardGrid>
@@ -34,9 +68,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<PersonAnswerDto> Answers { get; set; } = default!;
-    
-    private ILookup<string, PersonAnswerDto> TotalSummary => Answers.ToLookup(k => k.PersonId.ToString());
-    
+
     /// <summary>
     /// Component state.
     /// </summary>
@@ -49,29 +81,51 @@
     [Parameter, EditorRequired]
     public Func<Task> Retry { get; set; } = default!;
 
-    private readonly ApexChartOptions<PersonAnswerDto> _options = new()
+    private ApexChart<PersonAnswerDto>? _totalSummaryChart;
+    private bool _hasParticipants = true;
+    private bool _hasMean = true;
+    
+    private Dictionary<string, IReadOnlyCollection<PersonAnswerDto>> TotalSummary
     {
-        Yaxis =
-        [
-            new YAxis
-            {
-                Min = 0,
-                Max = 5,
-                TickAmount = 5
-            }
-        ],
-        Theme = new Theme
+        get
         {
-            Mode = Mode.Dark,
-            Palette = PaletteType.Palette1,
-            Monochrome = new ThemeMonochrome
-            {
-                Enabled = false
-            }
-        },
-        Legend = new Legend
-        {
-            Show = false
+            var items = new Dictionary<string, IReadOnlyCollection<PersonAnswerDto>>();
+
+            if (_hasParticipants)
+                foreach (var answer in Answers.GroupBy(k => k.PersonId.ToString()))
+                    items.Add(answer.Key, answer.OrderBy(a => a.QuestionKey).ToArray());
+            
+            if (_hasMean)
+                items.Add(nameof(_hasMean), Answers
+                    .GroupBy(k => new {k.QuestionId, k.QuestionKey})
+                    .Select(a => new PersonAnswerDto(
+                        a.Key.QuestionId,
+                        a.Key.QuestionKey,
+                        long.MaxValue,
+                        a.Sum(v => v.Value) / a.Count(),
+                        null))
+                    .OrderBy(a => a.QuestionKey)
+                    .ToArray());
+            
+            return items;
         }
-    };
+    }
+
+    private async Task ChangeTotalSummaryView(bool? hasParticipants, bool? hasMean)
+    {
+        if (hasParticipants.HasValue)
+            _hasParticipants = hasParticipants.Value;
+        
+        if (hasMean.HasValue)
+            _hasMean = hasMean.Value;
+
+        if (!_hasParticipants && !_hasMean)
+        {
+            _hasParticipants = true;
+            _hasMean = true;
+        }
+
+        if (_totalSummaryChart is not null)
+            await _totalSummaryChart.RenderAsync();
+    }
 }

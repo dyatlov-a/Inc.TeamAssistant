@@ -1,0 +1,24 @@
+.survey-total-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.survey-total-summary__content {
+    flex: 1;
+}
+.survey-total-summary__panel {
+    width: 260px;
+}
+.survey-total-summary__chart {
+    max-width: 960px;
+    margin: 0 auto;
+}
+@media (max-width: 991.98px) {
+    .survey-total-summary {
+        flex-direction: column;
+    }
+    .survey-total-summary__panel {
+        order: -1;
+        width: 100%;
+    }
+}

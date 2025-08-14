@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         services
             .AddBlazoredLocalStorage()
 
-            .AddApexCharts(e => e.GlobalOptions = ApexChartBaseOptionsBuilder.Build())
+            .AddApexCharts(e => e.GlobalOptions = ApexChartBaseOptionsBuilder.BuildDefault())
             
             .AddScoped<IAppraiserService, AppraiserClient>()
             .AddScoped<ICheckInService, CheckInClient>()

@@ -134,4 +134,16 @@
     <data name="ConfirmMoveToFinish" xml:space="preserve">
         <value>Не все участники предоставили ответы. Хотите завершить опрос?</value>
     </data>
+    <data name="HasParticipants" xml:space="preserve">
+        <value>Оценки по участникам</value>
+    </data>
+    <data name="HasMean" xml:space="preserve">
+        <value>Средняя оценка</value>
+    </data>
+    <data name="TotalSummaryControls" xml:space="preserve">
+        <value>Оценки</value>
+    </data>
+    <data name="TotalSummaryControlsHelp" xml:space="preserve">
+        <value>Проанализируйте отклонения оценок отдельных участников от средних оценок</value>
+    </data>
 </root>
