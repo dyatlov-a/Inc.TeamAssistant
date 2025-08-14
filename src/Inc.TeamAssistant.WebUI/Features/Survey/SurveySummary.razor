@@ -8,7 +8,7 @@
         <Loading Retry="Retry" State="State">
             <div class="survey-total-summary">
                 <div class="survey-total-summary__content">
-                    <div class="survey-total-summary__chart">
+                    <div class="survey-total-summary__main">
                         <ApexChart
                             TItem="PersonAnswerDto"
                             Options="ApexChartBaseOptionsBuilder.BuildRadar<PersonAnswerDto>()"
@@ -17,13 +17,77 @@
                             {
                                 <ApexPointSeries TItem="PersonAnswerDto"
                                                  Items="item.Value"
-                                                 Name="@item.Key"
                                                  SeriesType="SeriesType.Radar"
-
                                                  XValue="@(e => Localizer[e.QuestionKey].ToString())"
-                                                 YValue="@(e => e.Value)"/>
+                                                 YValue="@(e => e.Value)" />
                             }
                         </ApexChart>
+                        @foreach (var answerByQuestion in AnswerByQuestions)
+                        {
+                            var answerLookup = answerByQuestion.Answers
+                                .GroupBy(a => a.Created, a => a.Value)
+                                .ToDictionary(a => a.Key, a => a.ToArray());
+                            var meanLookup = answerByQuestion.Answers
+                                .GroupBy(a => a.Created)
+                                .Select(g => new Tuple<DateTimeOffset, int>(g.Key, g.Sum(i => i.Value) / g.Count()))
+                                .ToArray();
+                            var lastAnswerDate = answerLookup.Keys.Max();
+                            var lastMean = meanLookup.Single(m => m.Item1 == lastAnswerDate);
+                            var lastAnswers = answerLookup[lastAnswerDate]
+                                .GroupBy(a => a)
+                                .Select(a => new Tuple<int, int>(a.Key, a.Count()))
+                                .ToArray();
+                            var answerComments = Answers
+                                .Where(a => a.QuestionId == answerByQuestion.Id && !string.IsNullOrWhiteSpace(a.Comment))
+                                .Select(a => a.Comment).ToArray();
+                                           
+                            <FormSection Title="@Localizer[answerByQuestion.Title]">
+                                <HelpContent>
+                                    @(new MarkupString(Localizer[answerByQuestion.Text]))
+                                </HelpContent>
+                                <ChildContent>
+                                    <div class="survey-question">
+                                        <div class="survey-question__stats">
+                                            <div title="@Localizer["MeanAnswerHint"]" class="survey-question__mean">
+                                                <span class="survey-question__answer @CssClass(lastMean.Item2)">
+                                                    @lastMean.Item2
+                                                </span>
+                                            </div>
+                                            <div title="@Localizer["AnswersTrendHint"]">
+                                                <ApexChart
+                                                    @key="answerByQuestion.Id"
+                                                    TItem="Tuple<DateTimeOffset, int>"
+                                                    Title="@Localizer["Trend"]"
+                                                    Options="ApexChartBaseOptionsBuilder.CreateLineOptions<Tuple<DateTimeOffset, int>>()">
+                                                    <ApexPointSeries TItem="Tuple<DateTimeOffset, int>"
+                                                                     Items="meanLookup"
+                                                                     SeriesType="SeriesType.Line"
+                                                                     XValue="@(e => e.Item1)"
+                                                                     YValue="@(e => e.Item2)"
+                                                                     OrderBy="e => e.X"/>
+                                                </ApexChart>
+                                            </div>
+                                            <div title="@Localizer["AnswersHint"]" class="survey-question__answers">
+                                                @foreach (var answer in lastAnswers.OrderBy(a => a.Item1))
+                                                {
+                                                    <span
+                                                        class="survey-question__answer @CssClass(answer.Item1)"
+                                                        data-count="@answer.Item2">
+                                                        @answer.Item1
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="survey-question__comments">
+                                            @foreach (var answerComment in answerComments)
+                                            {
+                                                <p class="survey-question__comment">@answerComment</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </ChildContent>
+                            </FormSection>
+                        }
                     </div>
                 </div>
                 <div class="survey-total-summary__panel">
@@ -68,6 +132,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<PersonAnswerDto> Answers { get; set; } = default!;
+    
+    /// <summary>
+    /// Answer by questions
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<SurveyQuestionDto> AnswerByQuestions { get; set; } = default!;
 
     /// <summary>
     /// Component state.
@@ -127,5 +197,10 @@
 
         if (_totalSummaryChart is not null)
             await _totalSummaryChart.RenderAsync();
+    }
+
+    private string CssClass(int value)
+    {
+        return value > 3 ? "survey-question__answer_positive" : "survey-question__answer_negative";
     }
 }

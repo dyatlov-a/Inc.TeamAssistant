@@ -278,5 +278,29 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("TotalSummaryControlsHelp", resourceCulture);
             }
         }
+        
+        internal static string Trend {
+            get {
+                return ResourceManager.GetString("Trend", resourceCulture);
+            }
+        }
+        
+        internal static string MeanAnswerHint {
+            get {
+                return ResourceManager.GetString("MeanAnswerHint", resourceCulture);
+            }
+        }
+        
+        internal static string AnswersTrendHint {
+            get {
+                return ResourceManager.GetString("AnswersTrendHint", resourceCulture);
+            }
+        }
+        
+        internal static string AnswersHint {
+            get {
+                return ResourceManager.GetString("AnswersHint", resourceCulture);
+            }
+        }
     }
 }

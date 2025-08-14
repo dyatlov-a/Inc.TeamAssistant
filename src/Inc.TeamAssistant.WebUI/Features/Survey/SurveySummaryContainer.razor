@@ -13,6 +13,7 @@
 <SurveySummary
     RoomId="RoomId"
     Answers="_answers"
+    AnswerByQuestions="_answerByQuestions"
     State="_state"
     Retry="Load" />
 
@@ -24,6 +25,7 @@
     
     private readonly LoadingState _state = LoadingState.Done();
     private IReadOnlyCollection<PersonAnswerDto> _answers = [];
+    private IReadOnlyCollection<SurveyQuestionDto> _answerByQuestions = [];
 
     protected override async Task OnParametersSetAsync() => await Load();
 
@@ -37,5 +39,6 @@
             _state);
 
         _answers = result.Answers;
+        _answerByQuestions = result.AnswerByQuestions;
     }
 }

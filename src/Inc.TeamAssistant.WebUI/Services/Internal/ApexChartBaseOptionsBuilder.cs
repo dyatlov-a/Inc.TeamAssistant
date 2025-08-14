@@ -110,8 +110,46 @@ internal static class ApexChartBaseOptionsBuilder
             {
                 Padding = new Padding
                 {
-                    Top = -50
+                    Top = -50,
+                    Bottom = -50
                 }
+            }
+        };
+    }
+
+    public static ApexChartOptions<T> CreateLineOptions<T>()
+        where T : class
+    {
+        return new()
+        {
+            Stroke = new Stroke
+            {
+                Width = new List<double> { 4 }
+            },
+            Markers = new Markers
+            {
+                Size = 4,
+                StrokeWidth = 0,
+                FillOpacity = 1
+            },
+            Grid = new Grid
+            {
+                Show = false
+            },
+            Xaxis = new XAxis
+            {
+                Labels = new XAxisLabels { Show = false },
+                AxisTicks = new AxisTicks { Show = false },
+                AxisBorder = new AxisBorder { Show = false }
+            },
+            Yaxis = [new YAxis { Show = false }],
+            Legend = new Legend
+            {
+                Show = false
+            },
+            Tooltip = new Tooltip
+            {
+                Enabled = false
             }
         };
     }

@@ -32,7 +32,7 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
         var answers = new List<PersonAnswerDto>();
         var surveyQuestions = new Dictionary<Guid, List<QuestionAnswerDto>>();
 
-        // TODO: change answer doamin model
+        // TODO: change answer domain model
         foreach (var surveyAnswer in surveyAnswers.Where(sa => sa.SurveyId == lastSurvey.Id))
         foreach (var answer in surveyAnswer.Answers)
         {
@@ -48,7 +48,7 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
                 answer.Comment));
         }
 
-        // TODO: change answer doamin model
+        // TODO: change answer domain model
         foreach (var surveyAnswer in surveyAnswers)
         {
             var date = surveysLookup[surveyAnswer.SurveyId];

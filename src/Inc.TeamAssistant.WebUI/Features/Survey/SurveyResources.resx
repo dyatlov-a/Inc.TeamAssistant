@@ -146,4 +146,16 @@
     <data name="TotalSummaryControlsHelp" xml:space="preserve">
         <value>Analyze the deviations of individual participants' answers from the average answers.</value>
     </data>
+    <data name="Trend" xml:space="preserve">
+        <value>Trend</value>
+    </data>
+    <data name="MeanAnswerHint" xml:space="preserve">
+        <value>Mean answer within the current health check</value>
+    </data>
+    <data name="AnswersTrendHint" xml:space="preserve">
+        <value>Answers trend between health checks</value>
+    </data>
+    <data name="AnswersHint" xml:space="preserve">
+        <value>Participant answers</value>
+    </data>
 </root>

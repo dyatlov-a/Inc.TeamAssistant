@@ -146,4 +146,16 @@
     <data name="TotalSummaryControlsHelp" xml:space="preserve">
         <value>Проанализируйте отклонения оценок отдельных участников от средних оценок</value>
     </data>
+    <data name="Trend" xml:space="preserve">
+        <value>Тренд</value>
+    </data>
+    <data name="MeanAnswerHint" xml:space="preserve">
+        <value>Средний ответ в рамках текущего опроса</value>
+    </data>
+    <data name="AnswersTrendHint" xml:space="preserve">
+        <value>Тенденция ответов между опросами</value>
+    </data>
+    <data name="AnswersHint" xml:space="preserve">
+        <value>Ответы участников</value>
+    </data>
 </root>
