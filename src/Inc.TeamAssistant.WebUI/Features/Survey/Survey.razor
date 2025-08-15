@@ -20,13 +20,12 @@
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
-            @if (Finished)
+            @if (Finished || Question is null)
             {
-                @Localizer["TeamHealthCheckFinished"]
-            }
-            else if (Question is null)
-            {
-                @Localizer["TeamHealthCheckWaiting"]
+                <div class="survey-content">
+                    <h2 class="main-content__header">@Localizer["TeamHealthCheck"]</h2>
+                    <p class="main-content__text">@Localizer[ContentTextKey]</p>
+                </div>
             }
             else
             {
@@ -121,4 +120,6 @@
     public EventCallback<AnswerFromModel> AnswerSelected { get; set; }
     
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
+
+    private string ContentTextKey => Finished ? "TeamHealthCheckFinished" : "TeamHealthCheckWaiting";
 }
