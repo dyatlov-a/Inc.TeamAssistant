@@ -1,9 +1,273 @@
 @page "/survey/{RoomId:guid}"
 @page "/ru/survey/{RoomId:guid}"
+@page "/en/survey/{RoomId:guid}"
+@page "/survey/{RoomId:guid}/{QuestionId:guid}"
+@page "/ru/survey/{RoomId:guid}/{QuestionId:guid}"
+@page "/en/survey/{RoomId:guid}/{QuestionId:guid}"
 
-<Survey RoomId="RoomId" />
+@attribute [Authorize]
+
+@implements IAsyncDisposable
+
+@inject TenantStore TenantStore
+@inject ISurveyService SurveyService
+@inject RequestProcessor RequestProcessor
+@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<SurveyResources> Localizer
+@inject NavRouter NavRouter
+
+@layout EmptyLayout
+
+<MetaDataModule />
+
+<MainLayout>
+    <Body>
+    <AuthorizeView>
+        <Authorized>
+            <Survey
+                RoomId="RoomId"
+                CurrentUserId="context.User.ToPerson().Id"
+                Finished="_finished"
+                FacilitatorId="_facilitatorId"
+                Question="_currentQuestion?.Value"
+                Participants="Participants"
+                MoveNext="MoveNext"
+                FacilitatorGiven="FacilitatorGiven"
+                RoomPropertiesOpened="OnRoomPropertiesOpened"
+                State="_state"
+                Retry="@(() => Load(_state))"
+                OnNextQuestion="MoveNextQuestion"
+                AnswerSelected="SetAnswer" />
+        </Authorized>
+    </AuthorizeView>
+    <ConfirmDialog @ref="_confirmDialog" />
+    </Body>
+    <InlineDialogSlot>
+        <InlineDialog
+            IsOpen="@HubDisconnectedStates.All.Any(i => i == ConnectionState)"
+            Text="@Localizer[ConnectionStateAsKey]"
+            ButtonText="@Localizer["Reconnect"]"
+            HasAction="ConnectionState == HubDisconnectedStates.Disconnected"
+            OnAction="Reconnect" />
+    </InlineDialogSlot>
+</MainLayout>
+<ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
+    <RoomPropertiesEditorContainer RoomId="RoomId" RoomPropertiesChanged="OnRoomPropertiesChanged" />
+</ContentDialog>
 
 @code {
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
+    
+    [Parameter]
+    public Guid? QuestionId { get; set; }
+
+    private SurveyEventBuilder? _eventBuilder;
+    private IDisposable? _eventListener;
+    private HubConnectionState? ConnectionState => _eventBuilder?.State;
+    private string ConnectionStateAsKey => ConnectionState == HubConnectionState.Disconnected
+        ? "ConnectionStateLost"
+        : "ConnectionStateConnecting";
+    
+    private ConfirmDialog? _confirmDialog;
+    private Guid? _surveyId;
+    private long? _facilitatorId;
+    private bool _finished;
+    private ContentDialog? _roomPropertiesEditor;
+    private LinkedList<AnswerOnSurveyDto> _orderedQuestions = new();
+    private LinkedListNode<AnswerOnSurveyDto>? _currentQuestion;
+    
+    private Dictionary<long, ParticipantViewModel> _participants = new();
+    private IReadOnlyCollection<ParticipantViewModel> Participants => _participants.Values
+        .OrderBy(p => p.Person.DisplayName)
+        .ToArray();
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    
+    protected override async Task OnParametersSetAsync() => await Load(_state);
+
+    private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
+    {
+        if (hardReset)
+            await TenantStore.Initialize(RoomId, state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await SurveyService.GetSurveyState(RoomId),
+            nameof(SurveyContainer),
+            state);
+
+        _surveyId = result.SurveyId;
+        _facilitatorId = result.FacilitatorId;
+        _finished = result.Finished;
+        _participants = result.Participants
+            .Select(p => new ParticipantViewModel(p.Person, p.IsOnline, p.TotalVote, p.Finished, p.HandRaised))
+            .ToDictionary(p => p.Person.Id);
+
+        _orderedQuestions = new(result.Questions);
+        _currentQuestion = QuestionId.HasValue 
+            ? _orderedQuestions.Find(i => i.Id == QuestionId.Value)
+            : _orderedQuestions.First;
+        
+        if (hardReset)
+            await Connect();
+    }
+    
+    private async Task Connect()
+    {
+        var eventBuilder = ServiceProvider.GetService<SurveyEventBuilder>();
+        
+        if (eventBuilder is not null && _eventBuilder is null)
+        {
+            _eventBuilder = await eventBuilder.AddAccessors(StateHasChanged, OnReconnect).Start();
+            _eventListener = await StartListenEvents(eventBuilder);
+        }
+    }
+
+    private async Task Reconnect()
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await _eventBuilder.Start();
+
+        await OnReconnect();
+    }
+
+    private async Task OnReconnect()
+    {
+        if (_eventBuilder is null)
+            return;
+        
+        await Load(LoadingState.Wrap(_state, StateHasChanged));
+
+        _eventListener?.Dispose();
+
+        _eventListener = await StartListenEvents(_eventBuilder);
+    }
+
+    private async Task<IDisposable?> StartListenEvents(SurveyEventBuilder eventBuilder)
+    {
+        return await eventBuilder.Build(
+            RoomId,
+            b => b.OnSurveyStarted(async () => await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false)),
+            b => b.OnFacilitatorChanged(async fId =>
+            {
+                await InvokeAsync(() =>
+                {
+                    _facilitatorId = fId;
+                    
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnPersonsChanged(async p =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplyParticipants(p);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnSurveyStateChanged(async (p, f) =>
+            {
+                await InvokeAsync(() =>
+                {
+                    ApplySurveyState(p, f);
+                    StateHasChanged();
+                });
+            }),
+            b => b.OnSurveyFinished(async () => await NavRouter.MoveToRoute($"survey-summary/{RoomId:N}")));
+    }
+    
+    private void ApplySurveyState(long personId, bool finished)
+    {
+        if (_participants.TryGetValue(personId, out var participant))
+            participant.ChangeFinished(finished);
+    }
+    
+    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> tickets)
+    {
+        _participants.Clear();
+        
+        foreach (var ticket in tickets)
+            _participants.Add(ticket.Person.Id, new ParticipantViewModel(
+                ticket.Person,
+                ticket.IsOnline,
+                ticket.TotalVote,
+                ticket.Finished,
+                ticket.HandRaised));
+    }
+
+    private async Task MoveNext()
+    {
+        if (_surveyId.HasValue)
+        {
+            if (_participants.Values.Any(v => !v.Finished) && _confirmDialog is not null &&
+                !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToFinish"]))
+                return;
+            
+            await RequestProcessor.Process(
+                () => SurveyService.Finish(new FinishSurveyCommand(RoomId)),
+                _state);
+        }
+        else
+            await RequestProcessor.Process(
+                () => SurveyService.Start(new StartSurveyCommand(RoomId)),
+                _state);
+    }
+    
+    private async Task MoveNextQuestion()
+    {
+        if (_currentQuestion?.Next is not null)
+            await MoveTo(_currentQuestion.Next);
+    }
+    
+    private async Task MoveTo(LinkedListNode<AnswerOnSurveyDto> node)
+    {
+        var routeSegment = $"survey/{RoomId:N}/{node.Value.Id:N}".ToLowerInvariant();
+        
+        _currentQuestion = node;
+
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+    }
+
+    private async Task FacilitatorGiven()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.GiveFacilitator(RoomId);
+    }
+
+    private async Task SetAnswer(AnswerFromModel answer)
+    {
+        if (_eventBuilder is null || !_surveyId.HasValue)
+            return;
+
+        var next = _currentQuestion?.Next;
+        
+        await _eventBuilder.SetAnswer(answer.ToCommand(_surveyId.Value, isEnd: next is null));
+
+        if (next is not null)
+            await MoveTo(next);
+        else
+            _finished = true;
+    }
+
+    private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();
+    private void OnRoomPropertiesChanged() => _roomPropertiesEditor?.Close();
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_eventListener is not null)
+        {
+            _eventListener.Dispose();
+            _eventListener = null;
+        }
+        
+        if (_eventBuilder is not null)
+        {
+            await _eventBuilder.DisposeAsync();
+            _eventBuilder = null;
+        }
+    }
 }

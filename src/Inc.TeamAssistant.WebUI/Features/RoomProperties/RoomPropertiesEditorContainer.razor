@@ -1,0 +1,65 @@
+@inject ITenantService TenantService
+@inject RequestProcessor RequestProcessor
+
+<RoomPropertiesEditor
+    FormModel="_formModel"
+    RetroTemplates="_retroTemplates"
+    SurveyTemplates="_surveyTemplates"
+    State="_state"
+    Retry="Load"
+    OnValidSubmit="Save" />
+
+@code {
+    /// <summary>
+    /// RoomId for edit.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Room properties changed event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RoomPropertiesChanged { get; set; }
+
+    private Guid _roomId = Guid.Empty;
+    private readonly RoomPropertiesFormModel _formModel = new();
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<TemplateDto> _retroTemplates = new();
+    private readonly List<TemplateDto> _surveyTemplates = new();
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_roomId != RoomId)
+        {
+            _roomId = RoomId;
+            
+            await Load();
+        }
+    }
+
+    private async Task Load()
+    {
+        var result = await RequestProcessor.Process(
+            async () => await TenantService.GetRoomProperties(_roomId),
+            nameof(RoomPropertiesEditorContainer),
+            _state);
+            
+        _formModel.Apply(result);
+        
+        _retroTemplates.Clear();
+        _retroTemplates.AddRange(result.RetroTemplates);
+        
+        _surveyTemplates.Clear();
+        _surveyTemplates.AddRange(result.SurveyTemplates);
+    }
+
+    private async Task Save()
+    {
+        await RequestProcessor.Process(
+            async () => await TenantService.ChangeRoomProperties(_formModel.ToCommand(_roomId)),
+            _state);
+
+        await RoomPropertiesChanged.InvokeAsync();
+    }
+}

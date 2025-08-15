@@ -15,10 +15,7 @@
                         <div class="review-total-stats__item">
                             <ApexChart
                                 TItem="HistoryByTeamItemDto"
-                                Title="@string.Format(
-                                           Localizer["ReviewByReviewerTemplate"],
-                                           FormModel.IntervalInDays)"
-                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                Title="@string.Format(Localizer["ReviewByReviewerTemplate"], FormModel.IntervalInDays)">
                                 <ApexPointSeries TItem="HistoryByTeamItemDto"
                                                  Items="FormModel.Review"
                                                  SeriesType="SeriesType.Donut"
@@ -30,10 +27,7 @@
                         <div class="review-total-stats__item">
                             <ApexChart
                                 TItem="HistoryByTeamItemDto"
-                                Title="@string.Format(
-                                           Localizer["ReviewByOwnerTemplate"],
-                                           FormModel.IntervalInDays)"
-                                Options="ApexChartOptionsBuilder.Build<HistoryByTeamItemDto>()">
+                                Title="@string.Format(Localizer["ReviewByOwnerTemplate"], FormModel.IntervalInDays)">
                                 <ApexPointSeries TItem="HistoryByTeamItemDto"
                                                  Items="FormModel.Requests"
                                                  SeriesType="SeriesType.Donut"

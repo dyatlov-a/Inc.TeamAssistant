@@ -12,6 +12,20 @@
                 @attributes="context.Args" />
         </Template>
     </Story>
+    <Story Name="Without multiselect">
+        <Arguments>
+            <Arg For="c => c.HasMulti" Value="false" />
+        </Arguments>
+        <Template>
+            <InputMultiSelectList
+                FieldId="@_fieldId"
+                @bind-Value="_weekends"
+                Items="Enum.GetValues<DayOfWeek>()"
+                TitleSelector="i => GetTitle(i)"
+                ValueSelector="i => i"
+                @attributes="context.Args"/>
+        </Template>
+    </Story>
     <Story Name="Disabled">
         <Arguments>
             <Arg For="c => c.IsDisabled" Value="true" />

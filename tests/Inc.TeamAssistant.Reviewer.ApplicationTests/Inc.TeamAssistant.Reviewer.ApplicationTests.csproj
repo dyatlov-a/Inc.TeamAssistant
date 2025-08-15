@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Inc.TeamAssistant.Reviewer.Application\Inc.TeamAssistant.Reviewer.Application.csproj" />
+        <ProjectReference Include="..\..\src\Inc.TeamAssistant.Gateway\Inc.TeamAssistant.Gateway.csproj" />
     </ItemGroup>
 </Project>

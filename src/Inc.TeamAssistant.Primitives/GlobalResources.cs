@@ -12,6 +12,12 @@ public static class GlobalResources
         public static readonly string OptionParameterName = "&option=";
     }
     
+    public static class PersonStore
+    {
+        public static readonly TimeSpan ClearDelay = TimeSpan.FromMinutes(30);
+        public static readonly TimeSpan IdleConnectionLifetime = TimeSpan.FromHours(8);
+    }
+    
     public static class Icons
     {
         public static readonly string TrendUp = "👍";

@@ -4,8 +4,9 @@ using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
-internal sealed class ReviewTeamMetricsFactory
+internal sealed class ReviewTeamMetricsFactory : IReviewTeamMetricsFactory
 {
+    // TODO: check correction logic
     private static readonly TimeSpan Correction = TimeSpan.Parse("0.00:00:00.0000001");
     
     private readonly IHolidayService _holidayService;

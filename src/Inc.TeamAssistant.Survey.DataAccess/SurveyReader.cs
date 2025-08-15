@@ -41,7 +41,75 @@ internal sealed class SurveyReader : ISurveyReader
         return questions.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<SurveyTemplate>> GetTemplates(CancellationToken token)
+    public async Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
+        Guid roomId,
+        Guid templateId,
+        SurveyState state,
+        int offset,
+        int limit,
+        CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                s.id AS id,
+                s.template_id AS templateid,
+                s.room_id AS roomid,
+                s.created AS created,
+                s.state AS state,
+                s.question_ids AS questionids
+            FROM survey.surveys AS s
+            WHERE s.room_id = @room_id AND s.template_id = @template_id AND s.state = @state
+            ORDER BY created DESC
+            OFFSET @offset
+            LIMIT @limit;
+            """,
+            new
+            {
+                room_id = roomId,
+                template_id = templateId,
+                state = state,
+                offset = offset,
+                limit = limit
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveys = await connection.QueryAsync<SurveyEntry>(command);
+        
+        return surveys.ToArray();
+    }
+
+    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(IReadOnlyCollection<Guid> surveyIds, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                sa.id AS id,
+                sa.survey_id AS surveyid,
+                sa.created AS created,
+                sa.owner_id AS ownerid,
+                sa.answers AS answers
+            FROM survey.survey_answers AS sa
+            WHERE sa.survey_id = ANY(@survey_ids);
+            """,
+            new
+            {
+                survey_ids = surveyIds.ToArray()
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveyAnswers = await connection.QueryAsync<SurveyAnswer>(command);
+        
+        return surveyAnswers.ToArray();
+    }
+
+    public async Task<SurveyTemplate?> FindTemplate(Guid id, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
@@ -49,16 +117,19 @@ internal sealed class SurveyReader : ISurveyReader
                 t.id AS id,
                 t.name AS name,
                 t.question_ids AS questionids
-            FROM survey.templates AS t;
+            FROM survey.templates AS t
+            WHERE t.id = @id;
             """,
+            new
+            {
+                id = id
+            },
             flags: CommandFlags.None,
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
         
-        var templates = await connection.QueryAsync<SurveyTemplate>(command);
-        
-        return templates.ToArray();
+        return await connection.QuerySingleOrDefaultAsync<SurveyTemplate>(command);
     }
 
     public async Task<SurveyEntry?> Find(
@@ -80,12 +151,17 @@ internal sealed class SurveyReader : ISurveyReader
                 s.state AS state,
                 s.question_ids AS questionids
             FROM survey.surveys AS s
-            WHERE s.room_id = @room_id AND s.state = ANY(@target_states);
+            WHERE s.room_id = @room_id AND s.state = ANY(@target_states)
+            ORDER BY created DESC
+            OFFSET @offset
+            LIMIT @limit;
             """,
             new
             {
                 room_id = roomId,
-                target_states = targetStates
+                target_states = targetStates,
+                offset = 0,
+                limit = 1
             },
             flags: CommandFlags.None,
             cancellationToken: token);

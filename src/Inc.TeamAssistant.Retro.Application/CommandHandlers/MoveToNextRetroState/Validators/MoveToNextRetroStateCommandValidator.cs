@@ -1,17 +1,17 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 
 namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.MoveToNextRetroState.Validators;
 
 internal sealed class MoveToNextRetroStateCommandValidator : AbstractValidator<MoveToNextRetroStateCommand>
 {
-    private readonly IRetroPropertiesProvider _propertiesProvider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
     
     public MoveToNextRetroStateCommandValidator(
-        IRetroPropertiesProvider propertiesProvider,
+        IRoomPropertiesProvider propertiesProvider,
         IPersonResolver personResolver)
     {
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));

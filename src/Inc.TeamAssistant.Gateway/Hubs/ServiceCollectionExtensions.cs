@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Appraiser.Application.Contracts;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Survey.Application.Contracts;
 
 namespace Inc.TeamAssistant.Gateway.Hubs;
 
@@ -11,7 +12,8 @@ public static class ServiceCollectionExtensions
 
         services
             .AddScoped<IAssessmentSessionEventSender, AssessmentSessionEventSender>()
-            .AddScoped<IRetroEventSender, RetroEventSender>();
+            .AddScoped<IRetroEventSender, RetroEventSender>()
+            .AddScoped<ISurveyEventSender, SurveyEventSender>();
         
         return services;
     }

@@ -43,6 +43,34 @@ internal sealed class SurveyRepository : ISurveyRepository
         return surveyEntry;
     }
 
+    public async Task<SurveyAnswer?> Find(Guid surveyId, long ownerId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                s.id AS id,
+                s.survey_id AS surveyid,
+                s.created AS created,
+                s.owner_id AS ownerid,
+                s.answers AS answers
+            FROM survey.survey_answers AS s
+            WHERE s.survey_id = @survey_id AND s.owner_id = @owner_id;
+            """,
+            new
+            {
+                survey_id = surveyId,
+                owner_id = ownerId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+        
+        var surveyEntry = await connection.QuerySingleOrDefaultAsync<SurveyAnswer>(command);
+        
+        return surveyEntry;
+    }
+
     public async Task Upsert(SurveyEntry survey, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(survey);

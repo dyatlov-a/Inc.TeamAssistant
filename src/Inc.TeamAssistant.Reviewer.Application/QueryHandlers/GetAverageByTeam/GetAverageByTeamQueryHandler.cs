@@ -1,6 +1,5 @@
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
-using Inc.TeamAssistant.Reviewer.Application.Services;
 using Inc.TeamAssistant.Reviewer.Model.Queries.GetAverageByTeam;
 using MediatR;
 
@@ -9,9 +8,9 @@ namespace Inc.TeamAssistant.Reviewer.Application.QueryHandlers.GetAverageByTeam;
 internal sealed class GetAverageByTeamQueryHandler : IRequestHandler<GetAverageByTeamQuery, GetAverageByTeamResult>
 {
     private readonly ITaskForReviewReader _reader;
-    private readonly ReviewTeamMetricsFactory _metricsFactory;
+    private readonly IReviewTeamMetricsFactory _metricsFactory;
 
-    public GetAverageByTeamQueryHandler(ITaskForReviewReader reader, ReviewTeamMetricsFactory metricsFactory)
+    public GetAverageByTeamQueryHandler(ITaskForReviewReader reader, IReviewTeamMetricsFactory metricsFactory)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _metricsFactory = metricsFactory ?? throw new ArgumentNullException(nameof(metricsFactory));

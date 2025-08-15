@@ -123,21 +123,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string NextHint {
-            get {
-                return ResourceManager.GetString("NextHint", resourceCulture);
-            }
-        }
-        
         internal static string ItemRemoveConfirm {
             get {
                 return ResourceManager.GetString("ItemRemoveConfirm", resourceCulture);
-            }
-        }
-        
-        internal static string PreviousHint {
-            get {
-                return ResourceManager.GetString("PreviousHint", resourceCulture);
             }
         }
         
@@ -159,51 +147,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string TimerStart {
-            get {
-                return ResourceManager.GetString("TimerStart", resourceCulture);
-            }
-        }
-        
         internal static string TimerStop {
             get {
                 return ResourceManager.GetString("TimerStop", resourceCulture);
-            }
-        }
-        
-        internal static string TimerStartHint {
-            get {
-                return ResourceManager.GetString("TimerStartHint", resourceCulture);
-            }
-        }
-        
-        internal static string FinishHint {
-            get {
-                return ResourceManager.GetString("FinishHint", resourceCulture);
-            }
-        }
-        
-        internal static string GiveFacilitatorHint {
-            get {
-                return ResourceManager.GetString("GiveFacilitatorHint", resourceCulture);
-            }
-        }
-        
-        internal static string ConfirmGiveFacilitator {
-            get {
-                return ResourceManager.GetString("ConfirmGiveFacilitator", resourceCulture);
-            }
-        }
-        
-        internal static string RaiseHandHint {
-            get {
-                return ResourceManager.GetString("RaiseHandHint", resourceCulture);
-            }
-        }
-        
-        internal static string LowerHandHint {
-            get {
-                return ResourceManager.GetString("LowerHandHint", resourceCulture);
             }
         }
         
@@ -285,15 +231,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
             }
         }
         
-        internal static string RetroPropertiesHint {
+        internal static string RoomProperties {
             get {
-                return ResourceManager.GetString("RetroPropertiesHint", resourceCulture);
-            }
-        }
-        
-        internal static string RetroProperties {
-            get {
-                return ResourceManager.GetString("RetroProperties", resourceCulture);
+                return ResourceManager.GetString("RoomProperties", resourceCulture);
             }
         }
         
@@ -318,12 +258,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string BacklogText {
             get {
                 return ResourceManager.GetString("BacklogText", resourceCulture);
-            }
-        }
-        
-        internal static string Participants {
-            get {
-                return ResourceManager.GetString("Participants", resourceCulture);
             }
         }
         
@@ -354,12 +288,6 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
         internal static string ConnectionStateLost {
             get {
                 return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
-            }
-        }
-        
-        internal static string VotesCount {
-            get {
-                return ResourceManager.GetString("VotesCount", resourceCulture);
             }
         }
         

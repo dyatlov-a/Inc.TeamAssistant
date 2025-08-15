@@ -188,5 +188,77 @@ namespace Inc.TeamAssistant.WebUI.Features.RoomProperties {
                 return ResourceManager.GetString("RetroBacklog", resourceCulture);
             }
         }
+        
+        internal static string FinishHint {
+            get {
+                return ResourceManager.GetString("FinishHint", resourceCulture);
+            }
+        }
+        
+        internal static string RaiseHandHint {
+            get {
+                return ResourceManager.GetString("RaiseHandHint", resourceCulture);
+            }
+        }
+        
+        internal static string TimerStartHint {
+            get {
+                return ResourceManager.GetString("TimerStartHint", resourceCulture);
+            }
+        }
+        
+        internal static string RoomPropertiesHint {
+            get {
+                return ResourceManager.GetString("RoomPropertiesHint", resourceCulture);
+            }
+        }
+        
+        internal static string PreviousHint {
+            get {
+                return ResourceManager.GetString("PreviousHint", resourceCulture);
+            }
+        }
+        
+        internal static string NextHint {
+            get {
+                return ResourceManager.GetString("NextHint", resourceCulture);
+            }
+        }
+        
+        internal static string GiveFacilitatorHint {
+            get {
+                return ResourceManager.GetString("GiveFacilitatorHint", resourceCulture);
+            }
+        }
+        
+        internal static string TimerStart {
+            get {
+                return ResourceManager.GetString("TimerStart", resourceCulture);
+            }
+        }
+        
+        internal static string ConfirmGiveFacilitator {
+            get {
+                return ResourceManager.GetString("ConfirmGiveFacilitator", resourceCulture);
+            }
+        }
+        
+        internal static string VotesCount {
+            get {
+                return ResourceManager.GetString("VotesCount", resourceCulture);
+            }
+        }
+        
+        internal static string Participants {
+            get {
+                return ResourceManager.GetString("Participants", resourceCulture);
+            }
+        }
+        
+        internal static string LowerHandHint {
+            get {
+                return ResourceManager.GetString("LowerHandHint", resourceCulture);
+            }
+        }
     }
 }
