@@ -43,7 +43,9 @@ internal sealed class SurveyReader : ISurveyReader
 
     public async Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
         Guid roomId,
+        Guid templateId,
         SurveyState state,
+        int offset,
         int limit,
         CancellationToken token)
     {
@@ -57,14 +59,17 @@ internal sealed class SurveyReader : ISurveyReader
                 s.state AS state,
                 s.question_ids AS questionids
             FROM survey.surveys AS s
-            WHERE s.room_id = @room_id AND s.state = @state
+            WHERE s.room_id = @room_id AND s.template_id = @template_id AND s.state = @state
             ORDER BY created DESC
+            OFFSET @offset
             LIMIT @limit;
             """,
             new
             {
                 room_id = roomId,
+                template_id = templateId,
                 state = state,
+                offset = offset,
                 limit = limit
             },
             flags: CommandFlags.None,
@@ -146,12 +151,17 @@ internal sealed class SurveyReader : ISurveyReader
                 s.state AS state,
                 s.question_ids AS questionids
             FROM survey.surveys AS s
-            WHERE s.room_id = @room_id AND s.state = ANY(@target_states);
+            WHERE s.room_id = @room_id AND s.state = ANY(@target_states)
+            ORDER BY created DESC
+            OFFSET @offset
+            LIMIT @limit;
             """,
             new
             {
                 room_id = roomId,
-                target_states = targetStates
+                target_states = targetStates,
+                offset = 0,
+                limit = 1
             },
             flags: CommandFlags.None,
             cancellationToken: token);

@@ -5,10 +5,12 @@ namespace Inc.TeamAssistant.Survey.Application.Contracts;
 public interface ISurveyReader
 {
     Task<IReadOnlyCollection<Question>> ReadQuestions(IReadOnlyCollection<Guid> questionIds, CancellationToken token);
-
+    
     Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
         Guid roomId,
+        Guid templateId,
         SurveyState state,
+        int offset,
         int limit,
         CancellationToken token);
     

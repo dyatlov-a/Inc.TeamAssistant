@@ -18,12 +18,19 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var surveys = await _reader.ReadSurveys(query.RoomId, SurveyState.Completed, query.Limit, token);
-        if (!surveys.Any())
+        var lastSurvey = await _reader.Find(query.RoomId, [SurveyState.Completed], token);
+        if (lastSurvey is null)
             return GetSurveySummaryResult.Empty;
 
+        var history = await _reader.ReadSurveys(
+            lastSurvey.RoomId,
+            lastSurvey.TemplateId,
+            SurveyState.Completed,
+            offset: 1,
+            query.Limit,
+            token);
+        var surveys = history.Append(lastSurvey).ToArray();
         var surveyIds = surveys.Select(s => s.Id).ToArray();
-        var lastSurvey = surveys.OrderByDescending(s => s.Created).First();
         var surveysLookup = surveys.ToDictionary(s => s.Id, s => s.Created);
         var questions = await _reader.ReadQuestions(lastSurvey.QuestionIds, token);
         var questionLookup = questions.ToDictionary(q => q.Id);

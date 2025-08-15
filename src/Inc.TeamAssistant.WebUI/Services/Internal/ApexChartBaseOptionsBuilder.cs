@@ -55,6 +55,10 @@ internal static class ApexChartBaseOptionsBuilder
                         Pan = false,
                         Reset = false
                     }
+                },
+                Zoom = new Zoom
+                {
+                    Enabled = false
                 }
             }
         };
@@ -138,11 +142,26 @@ internal static class ApexChartBaseOptionsBuilder
             },
             Xaxis = new XAxis
             {
-                Labels = new XAxisLabels { Show = false },
-                AxisTicks = new AxisTicks { Show = false },
-                AxisBorder = new AxisBorder { Show = false }
+                Labels = new XAxisLabels
+                {
+                    Show = false
+                },
+                AxisTicks = new AxisTicks
+                {
+                    Show = false
+                },
+                AxisBorder = new AxisBorder
+                {
+                    Show = false
+                }
             },
-            Yaxis = [new YAxis { Show = false }],
+            Yaxis =
+            [
+                new YAxis
+                {
+                    Show = false
+                }
+            ],
             Legend = new Legend
             {
                 Show = false
