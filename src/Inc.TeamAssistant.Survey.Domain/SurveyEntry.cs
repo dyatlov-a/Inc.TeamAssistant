@@ -7,23 +7,19 @@ public sealed class SurveyEntry
     public Guid RoomId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public SurveyState State { get; private set; }
-    public IReadOnlyCollection<Guid> QuestionIds { get; private set; } = default!;
 
     private SurveyEntry()
     {
     }
 
-    public SurveyEntry(Guid id, Guid roomId, DateTimeOffset created, SurveyTemplate template)
+    public SurveyEntry(Guid id, Guid roomId, Guid templateId, DateTimeOffset created)
         : this()
     {
-        ArgumentNullException.ThrowIfNull(template);
-        
         Id = id;
-        TemplateId = template.Id;
         RoomId = roomId;
+        TemplateId = templateId;
         Created = created;
         State = SurveyState.InProgress;
-        QuestionIds = template.QuestionIds.ToArray();
     }
 
     public SurveyEntry MoveToFinish()

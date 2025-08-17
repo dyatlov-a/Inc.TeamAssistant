@@ -404,5 +404,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("Skip", resourceCulture);
             }
         }
+        
+        internal static string Comments {
+            get {
+                return ResourceManager.GetString("Comments", resourceCulture);
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Survey.Application.Contracts;
@@ -34,9 +33,6 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
 
         var currentPerson = _personResolver.GetCurrentPerson();
         var survey = await command.SurveyId.Required(_repository.Find, token);
-
-        if (!survey.QuestionIds.Contains(command.QuestionId))
-            throw new TeamAssistantException($"Survey {command.SurveyId} not contains question {command.QuestionId}.");
         
         var answer = new SurveyAnswer(
             command.SurveyId,

@@ -209,4 +209,7 @@
     <data name="Skip" xml:space="preserve">
         <value>Skip</value>
     </data>
+    <data name="Comments" xml:space="preserve">
+        <value>Comments:</value>
+    </data>
 </root>

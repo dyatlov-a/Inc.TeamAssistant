@@ -10,8 +10,8 @@
     flex-wrap: wrap;
     gap: 1rem;
 }
-.survey-question__stats {
-    width: 260px;
+.survey-question__trend {
+    width: 200px;
 }
 .survey-question__comments {
     flex: 1;

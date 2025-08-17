@@ -34,10 +34,10 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         var onlinePersons = _onlinePersonStore.GetTickets(RoomId.CreateForSurvey(query.RoomId));
         var onlinePerson = onlinePersons.SingleOrDefault(p => p.Person.Id == currentPerson.Id);
         var roomProperties = await _propertiesProvider.Get(query.RoomId, token);
-        var survey = await _reader.Find(query.RoomId, SurveyStateRules.Active, token);
+        var survey = await _reader.ReadSurvey(query.RoomId, SurveyStateRules.Active, token);
         
         var items = survey is not null
-            ? await GetQuestions(survey.Id, currentPerson.Id, survey.QuestionIds, token)
+            ? await GetQuestions(survey.Id, currentPerson.Id, survey.TemplateId, token)
             : [];
         
         return new(
@@ -51,13 +51,11 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     private async Task<IReadOnlyCollection<AnswerOnSurveyDto>> GetQuestions(
         Guid surveyId,
         long responderId,
-        IReadOnlyCollection<Guid> questionIds,
+        Guid templateId,
         CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(questionIds);
-        
         var surveyAnswer = await _reader.ReadAnswers([surveyId], token);
-        var questions = await _reader.ReadQuestions(questionIds, token);
+        var questions = await _reader.ReadQuestions(templateId, token);
 
         return questions
             .Select(q =>

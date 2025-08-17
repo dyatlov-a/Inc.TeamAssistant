@@ -59,10 +59,23 @@ public sealed class ChangeSurvey : Migration
             
             .WithColumn("comment")
             .AsString(250).Nullable();
+        
+        Delete
+            .Column("question_ids")
+            .FromTable("surveys")
+            .InSchema("survey");
     }
 
     public override void Down()
     {
+        Create
+            .Column("question_ids")
+            .OnTable("surveys")
+            .InSchema("survey")
+            .AsCustom("jsonb")
+            .NotNullable()
+            .SetExistingRowsTo("[]");
+        
         Delete
             .Table("survey_answers")
             .InSchema("survey");

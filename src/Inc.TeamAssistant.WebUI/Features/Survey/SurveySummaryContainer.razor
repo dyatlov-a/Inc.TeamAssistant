@@ -12,9 +12,8 @@
 
 <SurveySummary
     RoomId="RoomId"
+    LastSurveyDate="_lastSurveyDate"
     Answers="_answers"
-    AnswerByQuestions="_answerByQuestions"
-    TotalAnswers="_totalAnswers"
     State="_state"
     Retry="Load" />
 
@@ -25,9 +24,8 @@
     private const int SurveyTotal = 5;
     
     private readonly LoadingState _state = LoadingState.Done();
-    private IReadOnlyCollection<PersonAnswerDto> _answers = [];
-    private IReadOnlyCollection<SurveyQuestionDto> _answerByQuestions = [];
-    private int _totalAnswers;
+    private DateTimeOffset _lastSurveyDate;
+    private IReadOnlyCollection<SurveyQuestionDto> _answers = [];
 
     protected override async Task OnParametersSetAsync() => await Load();
 
@@ -40,8 +38,9 @@
             nameof(SurveySummaryContainer),
             _state);
 
+        _lastSurveyDate = result.Answers.Any()
+            ? result.Answers.Max(a => a.SurveyDate)
+            : DateTimeOffset.UtcNow;
         _answers = result.Answers;
-        _answerByQuestions = result.AnswerByQuestions;
-        _totalAnswers = result.TotalAnswers;
     }
 }

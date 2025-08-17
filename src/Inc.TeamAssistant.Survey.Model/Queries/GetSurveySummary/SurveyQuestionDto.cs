@@ -1,7 +1,10 @@
 namespace Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
 
 public sealed record SurveyQuestionDto(
-    Guid Id,
-    string Title,
-    string Text,
-    IReadOnlyCollection<QuestionAnswerDto> Answers);
+    Guid QuestionId,
+    string QuestionTitle,
+    string QuestionText,
+    DateTimeOffset SurveyDate,
+    long ResponderId,
+    int Value,
+    string? Comment);

@@ -31,7 +31,9 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
 
         await using var connection = _connectionFactory.Create();
 
-        return await connection.QuerySingleAsync<RoomProperties>(command);
+        var roomProperties = await connection.QuerySingleOrDefaultAsync<RoomProperties>(command);
+        
+        return roomProperties ?? RoomProperties.Default;
     }
 
     public async Task Set(Guid roomId, RoomProperties properties, CancellationToken token)
