@@ -48,13 +48,11 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
 
         await _repository.Upsert(answer, token);
 
-        if (command.IsFinal)
+        if (command.IsFinished)
         {
-            var finished = true;
-            
-            _onlinePersonStore.SetTicket(RoomId.CreateForSurvey(survey.RoomId), currentPerson, finished);
+            _onlinePersonStore.SetTicket(RoomId.CreateForSurvey(survey.RoomId), currentPerson, command.IsFinished);
 
-            await _surveyEventSender.SurveyStateChanged(survey.RoomId, currentPerson.Id, finished);
+            await _surveyEventSender.SurveyStateChanged(survey.RoomId, currentPerson.Id, command.IsFinished);
         }
     }
 }

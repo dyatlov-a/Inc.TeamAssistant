@@ -1,3 +1,4 @@
+using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Domain;
@@ -29,15 +30,12 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var survey = await _reader.Find(command.RoomId, SurveyStateRules.Active, token);
+        var survey = await command.RoomId.Required((rId, t) => _reader.Find(rId, SurveyStateRules.Active, t), token);
 
-        if (survey is not null)
-        {
-            await _repository.Upsert(survey.MoveToFinish(), token);
+        await _repository.Upsert(survey.MoveToFinish(), token);
             
-            _onlinePersonStore.ClearTickets(RoomId.CreateForSurvey(command.RoomId));
+        _onlinePersonStore.ClearTickets(RoomId.CreateForSurvey(command.RoomId));
 
-            await _surveyEventSender.SurveyFinished(survey.RoomId);
-        }
+        await _surveyEventSender.SurveyFinished(survey.RoomId);
     }
 }

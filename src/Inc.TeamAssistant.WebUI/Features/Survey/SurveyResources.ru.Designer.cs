@@ -302,5 +302,101 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("AnswersHint", resourceCulture);
             }
         }
+        
+        internal static string TeamEngagementTitle {
+            get {
+                return ResourceManager.GetString("TeamEngagementTitle", resourceCulture);
+            }
+        }
+        
+        internal static string TeamEngagementText {
+            get {
+                return ResourceManager.GetString("TeamEngagementText", resourceCulture);
+            }
+        }
+        
+        internal static string RoleClarityTitle {
+            get {
+                return ResourceManager.GetString("RoleClarityTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RoleClarityText {
+            get {
+                return ResourceManager.GetString("RoleClarityText", resourceCulture);
+            }
+        }
+        
+        internal static string AutonomyTitle {
+            get {
+                return ResourceManager.GetString("AutonomyTitle", resourceCulture);
+            }
+        }
+        
+        internal static string AutonomyText {
+            get {
+                return ResourceManager.GetString("AutonomyText", resourceCulture);
+            }
+        }
+        
+        internal static string RemoteSupportTitle {
+            get {
+                return ResourceManager.GetString("RemoteSupportTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RemoteSupportText {
+            get {
+                return ResourceManager.GetString("RemoteSupportText", resourceCulture);
+            }
+        }
+        
+        internal static string IsolationTitle {
+            get {
+                return ResourceManager.GetString("IsolationTitle", resourceCulture);
+            }
+        }
+        
+        internal static string IsolationText {
+            get {
+                return ResourceManager.GetString("IsolationText", resourceCulture);
+            }
+        }
+        
+        internal static string WellBeingTitle {
+            get {
+                return ResourceManager.GetString("WellBeingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string WellBeingText {
+            get {
+                return ResourceManager.GetString("WellBeingText", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectednessTitle {
+            get {
+                return ResourceManager.GetString("ConnectednessTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectednessText {
+            get {
+                return ResourceManager.GetString("ConnectednessText", resourceCulture);
+            }
+        }
+        
+        internal static string DistractionsTitle {
+            get {
+                return ResourceManager.GetString("DistractionsTitle", resourceCulture);
+            }
+        }
+        
+        internal static string DistractionsText {
+            get {
+                return ResourceManager.GetString("DistractionsText", resourceCulture);
+            }
+        }
     }
 }

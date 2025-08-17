@@ -51,7 +51,7 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
                 answer.QuestionId,
                 questionTitleKey,
                 surveyAnswer.OwnerId,
-                answer.Value ?? 0,
+                answer.Value,
                 answer.Comment));
         }
 
@@ -67,7 +67,7 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
                 surveyQuestions[answer.QuestionId].Add(new QuestionAnswerDto(
                     date,
                     surveyAnswer.OwnerId,
-                    answer.Value ?? 0));
+                    answer.Value));
             }
         }
         

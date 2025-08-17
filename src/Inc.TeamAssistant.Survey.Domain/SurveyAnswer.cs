@@ -6,10 +6,11 @@ public sealed class SurveyAnswer
     public Guid SurveyId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public long OwnerId { get; private set; }
-    public IReadOnlyCollection<Answer> Answers { get; private set; } = [];
+    public IReadOnlyCollection<Answer> Answers { get; private set; }
 
     private SurveyAnswer()
     {
+        Answers = [];
     }
 
     public SurveyAnswer(

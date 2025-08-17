@@ -158,4 +158,52 @@
     <data name="AnswersHint" xml:space="preserve">
         <value>Ответы участников</value>
     </data>
+    <data name="TeamEngagementTitle" xml:space="preserve">
+        <value>Взаимодействие с командой</value>
+    </data>
+    <data name="TeamEngagementText" xml:space="preserve">
+        <value>Несмотря на то, что мы работаем удаленно, мы можем взаимодействовать и общаться друг с другом в хорошем смысле.</value>
+    </data>
+    <data name="RoleClarityTitle" xml:space="preserve">
+        <value>Ролевая ясность</value>
+    </data>
+    <data name="RoleClarityText" xml:space="preserve">
+        <value>Моя роль очень ясна, я понимаю, что мне нужно делать.</value>
+    </data>
+    <data name="AutonomyTitle" xml:space="preserve">
+        <value>Автономия</value>
+    </data>
+    <data name="AutonomyText" xml:space="preserve">
+        <value>У меня есть свобода и гибкость, чтобы выполнять свою повседневную работу.</value>
+    </data>
+    <data name="RemoteSupportTitle" xml:space="preserve">
+        <value>Поддержка</value>
+    </data>
+    <data name="RemoteSupportText" xml:space="preserve">
+        <value>Мы поддерживаем друг друга как единая команда, и у нас есть все инструменты и ресурсы, необходимые для выполнения нашей работы.</value>
+    </data>
+    <data name="IsolationTitle" xml:space="preserve">
+        <value>Изоляция</value>
+    </data>
+    <data name="IsolationText" xml:space="preserve">
+        <value>Я часто чувствую себя изолированным, работая удаленно.</value>
+    </data>
+    <data name="WellBeingTitle" xml:space="preserve">
+        <value>Хорошее самочувствие</value>
+    </data>
+    <data name="WellBeingText" xml:space="preserve">
+        <value>У меня есть привычка заботиться о себе умственно и физически, и мы регулярно обсуждаем это на наших встречах.</value>
+    </data>
+    <data name="ConnectednessTitle" xml:space="preserve">
+        <value>Связность</value>
+    </data>
+    <data name="ConnectednessText" xml:space="preserve">
+        <value>Я чувствую связь со своей командой, отделом и организацией в целом.</value>
+    </data>
+    <data name="DistractionsTitle" xml:space="preserve">
+        <value>Отвлечения</value>
+    </data>
+    <data name="DistractionsText" xml:space="preserve">
+        <value>Дома мало отвлекающих факторов, всегда есть возможность сосредоточиться на рабочих процессах.</value>
+    </data>
 </root>

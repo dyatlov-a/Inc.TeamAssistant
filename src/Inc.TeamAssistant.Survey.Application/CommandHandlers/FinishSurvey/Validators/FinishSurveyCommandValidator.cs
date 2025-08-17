@@ -1,6 +1,8 @@
 using FluentValidation;
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Features.Tenants;
+using Inc.TeamAssistant.Survey.Application.Contracts;
+using Inc.TeamAssistant.Survey.Domain;
 using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 
 namespace Inc.TeamAssistant.Survey.Application.CommandHandlers.FinishSurvey.Validators;
@@ -9,16 +11,23 @@ internal sealed class FinishSurveyCommandValidator : AbstractValidator<FinishSur
 {
     private readonly IRoomPropertiesProvider _propertiesProvider;
     private readonly IPersonResolver _personResolver;
+    private readonly ISurveyReader _reader;
     
-    public FinishSurveyCommandValidator(IRoomPropertiesProvider propertiesProvider, IPersonResolver personResolver)
+    public FinishSurveyCommandValidator(
+        IRoomPropertiesProvider propertiesProvider,
+        IPersonResolver personResolver,
+        ISurveyReader reader)
     {
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         
         RuleFor(c => c.RoomId)
             .NotEmpty()
             .MustAsync(HasFacilitationRights)
-            .WithMessage(c => $"You do not have facilitation rights for room {c.RoomId}.");
+            .WithMessage(c => $"You do not have facilitation rights for room {c.RoomId}.")
+            .MustAsync(HaveActiveSurvey)
+            .WithMessage(c => $"This room {c.RoomId} don't have active survey.");
     }
     
     private async Task<bool> HasFacilitationRights(Guid roomId, CancellationToken token)
@@ -27,5 +36,12 @@ internal sealed class FinishSurveyCommandValidator : AbstractValidator<FinishSur
         var currentPerson = _personResolver.GetCurrentPerson();
 
         return properties.FacilitatorId == currentPerson.Id;
+    }
+    
+    private async Task<bool> HaveActiveSurvey(Guid roomId, CancellationToken token)
+    {
+        var survey = await _reader.Find(roomId, SurveyStateRules.Active, token);
+        
+        return survey is not null;
     }
 }

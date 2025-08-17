@@ -38,7 +38,7 @@ public sealed class AnswerFromModel
     public SetAnswerCommand ToCommand(Guid surveyId, bool isEnd) => new(
         surveyId,
         _questionId,
-        Values.Count == 1 ? Values.Single() : null,
+        Values.Single(),
         string.IsNullOrWhiteSpace(Comment) ? null : Comment,
         isEnd);
 }
