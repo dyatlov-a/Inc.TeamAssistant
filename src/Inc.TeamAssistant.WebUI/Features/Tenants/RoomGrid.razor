@@ -18,10 +18,19 @@
                             @context.Name
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
-                            <RouterLink Href="@MoveToBacklogFactory(context.Id)">@Localizer["MoveToBacklog"]</RouterLink>
+                            <RouterLink Href="@MoveToTeamHealthCheckFactory(context.Id)">
+                                @Localizer["MoveToTeamHealthCheck"]
+                            </RouterLink>
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
-                            <RouterLink Href="@MoveToRetroFactory(context.Id)">@Localizer["MoveToRetro"]</RouterLink>
+                            <RouterLink Href="@MoveToRetroFactory(context.Id)">
+                                @Localizer["MoveToRetro"]
+                            </RouterLink>
+                        </TemplateColumn>
+                        <TemplateColumn Sortable="false">
+                            <RouterLink Href="@MoveToBacklogFactory(context.Id)">
+                                @Localizer["MoveToBacklog"]
+                            </RouterLink>
                         </TemplateColumn>
                         <TemplateColumn Sortable="false">
                             <RouterLink OnClick="() => EditEmit(context.Id)">@Localizer["Edit"]</RouterLink>
@@ -72,6 +81,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RoomDto> RemoveEmitted { get; set; }
+    
+    /// <summary>
+    /// Factory for create link to team health check.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Guid, string> MoveToTeamHealthCheckFactory { get; set; } = default!;
 
     /// <summary>
     /// Factory for create link to retro.

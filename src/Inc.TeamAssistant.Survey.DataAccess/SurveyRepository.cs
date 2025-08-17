@@ -43,34 +43,6 @@ internal sealed class SurveyRepository : ISurveyRepository
         return surveyEntry;
     }
 
-    public async Task<SurveyAnswer?> Find(Guid surveyId, long ownerId, CancellationToken token)
-    {
-        var command = new CommandDefinition(
-            """
-            SELECT
-                s.id AS id,
-                s.survey_id AS surveyid,
-                s.created AS created,
-                s.owner_id AS ownerid,
-                s.answers AS answers
-            FROM survey.survey_answers AS s
-            WHERE s.survey_id = @survey_id AND s.owner_id = @owner_id;
-            """,
-            new
-            {
-                survey_id = surveyId,
-                owner_id = ownerId
-            },
-            flags: CommandFlags.None,
-            cancellationToken: token);
-
-        await using var connection = _connectionFactory.Create();
-        
-        var surveyEntry = await connection.QuerySingleOrDefaultAsync<SurveyAnswer>(command);
-        
-        return surveyEntry;
-    }
-
     public async Task Upsert(SurveyEntry survey, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(survey);
@@ -107,25 +79,24 @@ internal sealed class SurveyRepository : ISurveyRepository
     public async Task Upsert(SurveyAnswer surveyAnswer, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(surveyAnswer);
-
-        var answers = JsonSerializer.Serialize(surveyAnswer.Answers);
+        
         var command = new CommandDefinition(
             """
-            INSERT INTO survey.survey_answers (id, survey_id, created, owner_id, answers)
-            VALUES (@id, @survey_id, @created, @owner_id, @answers::JSONB)
-            ON CONFLICT (id) DO UPDATE SET
-                survey_id = EXCLUDED.survey_id,
-                created = EXCLUDED.created,
-                owner_id = EXCLUDED.owner_id,
-                answers = EXCLUDED.answers;
+            INSERT INTO survey.survey_answers (survey_id, question_id, responder_id, responded, value, comment)
+            VALUES (@survey_id, @question_id, @responder_id, @responded, @value, @comment)
+            ON CONFLICT (survey_id, question_id, responder_id) DO UPDATE SET
+                responded = EXCLUDED.responded,
+                value = EXCLUDED.value,
+                comment = EXCLUDED.comment;
             """,
             new
             {
-                id = surveyAnswer.Id,
                 survey_id = surveyAnswer.SurveyId,
-                created = surveyAnswer.Created,
-                owner_id = surveyAnswer.OwnerId,
-                answers = answers
+                question_id = surveyAnswer.QuestionId,
+                responder_id = surveyAnswer.ResponderId,
+                responded = surveyAnswer.Responded,
+                value = surveyAnswer.Value,
+                comment = surveyAnswer.Comment
             },
             flags: CommandFlags.None,
             cancellationToken: token);

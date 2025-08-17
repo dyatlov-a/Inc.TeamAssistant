@@ -117,7 +117,7 @@
         <value>Далее</value>
     </data>
     <data name="GiveRating" xml:space="preserve">
-        <value>Пропустить</value>
+        <value>Ответ</value>
     </data>
     <data name="Comment" xml:space="preserve">
         <value>Добавить комментарий (опционально)</value>
@@ -205,5 +205,8 @@
     </data>
     <data name="DistractionsText" xml:space="preserve">
         <value>Дома мало отвлекающих факторов, всегда есть возможность сосредоточиться на рабочих процессах.</value>
+    </data>
+    <data name="Skip" xml:space="preserve">
+        <value>Пропустить</value>
     </data>
 </root>

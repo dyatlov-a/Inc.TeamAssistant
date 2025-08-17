@@ -35,54 +35,40 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
         var questions = await _reader.ReadQuestions(lastSurvey.QuestionIds, token);
         var questionLookup = questions.ToDictionary(q => q.Id);
         var surveyAnswers = await _reader.ReadAnswers(surveyIds, token);
+        var answersLookup = surveyAnswers
+            .Where(sa => sa.SurveyId == lastSurvey.Id)
+            .ToDictionary(sa => (sa.QuestionId, sa.ResponderId));
+        var responders = answersLookup.Keys.Select(a => a.ResponderId).Distinct().ToArray();
 
-        var answers = new List<PersonAnswerDto>();
-        var surveyQuestions = new Dictionary<Guid, List<QuestionAnswerDto>>();
-
-        // TODO: change answer domain model
-        foreach (var surveyAnswer in surveyAnswers.Where(sa => sa.SurveyId == lastSurvey.Id))
-        foreach (var answer in surveyAnswer.Answers)
-        {
-            var questionTitleKey = questionLookup.TryGetValue(answer.QuestionId, out var question)
-                ? question.Title
-                : answer.QuestionId.ToString();
-
-            answers.Add(new PersonAnswerDto(
-                answer.QuestionId,
-                questionTitleKey,
-                surveyAnswer.OwnerId,
-                answer.Value,
-                answer.Comment));
-        }
-
-        // TODO: change answer domain model
-        foreach (var surveyAnswer in surveyAnswers)
-        {
-            var date = surveysLookup[surveyAnswer.SurveyId];
-
-            foreach (var answer in surveyAnswer.Answers)
+        var answers = lastSurvey.QuestionIds
+            .SelectMany(q => responders.Select(r =>
             {
-                surveyQuestions.TryAdd(answer.QuestionId, new List<QuestionAnswerDto>());
+                var questionTitleKey = questionLookup.TryGetValue(q, out var question) ? question.Title : q.ToString();
 
-                surveyQuestions[answer.QuestionId].Add(new QuestionAnswerDto(
-                    date,
-                    surveyAnswer.OwnerId,
-                    answer.Value));
-            }
-        }
-        
-        var result = new GetSurveySummaryResult(answers, surveyQuestions.Select(sq =>
-        {
-            var questionTitleKey = questionLookup.TryGetValue(sq.Key, out var question)
-                ? question.Title
-                : sq.Key.ToString();
-            var questionTextKey = questionLookup.TryGetValue(sq.Key, out var text)
-                ? text.Text
-                : sq.Key.ToString();
+                return answersLookup.TryGetValue((q, r), out var value)
+                    ? new PersonAnswerDto(
+                        value.QuestionId,
+                        questionTitleKey,
+                        value.ResponderId,
+                        value.Value,
+                        value.Comment)
+                    : new PersonAnswerDto(q, questionTitleKey, r, Value: 0, Comment: null);
+            }))
+            .ToArray();
+        var surveyQuestions = surveyAnswers
+            .GroupBy(sa => sa.QuestionId)
+            .Select(sa =>
+            {
+                var question = questionLookup.GetValueOrDefault(sa.Key);
 
-            return new SurveyQuestionDto(sq.Key, questionTitleKey, questionTextKey, sq.Value);
-        }).ToArray());
+                return new SurveyQuestionDto(
+                    sa.Key,
+                    question?.Title ?? sa.Key.ToString(),
+                    question?.Text ?? sa.Key.ToString(),
+                    sa.Select(i => new QuestionAnswerDto(surveysLookup[i.SurveyId], i.ResponderId, i.Value)).ToArray());
+            })
+            .ToArray();
 
-        return result;
+        return new GetSurveySummaryResult(answers, surveyQuestions, responders.Length);
     }
 }

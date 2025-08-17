@@ -398,5 +398,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
                 return ResourceManager.GetString("RemoteSupportText", resourceCulture);
             }
         }
+        
+        internal static string Skip {
+            get {
+                return ResourceManager.GetString("Skip", resourceCulture);
+            }
+        }
     }
 }

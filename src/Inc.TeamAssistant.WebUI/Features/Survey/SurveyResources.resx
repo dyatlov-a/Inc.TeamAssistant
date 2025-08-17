@@ -117,7 +117,7 @@
         <value>Next</value>
     </data>
     <data name="GiveRating" xml:space="preserve">
-        <value>Skip</value>
+        <value>Answer</value>
     </data>
     <data name="Comment" xml:space="preserve">
         <value>Add a comment (optional)</value>
@@ -205,5 +205,8 @@
     </data>
     <data name="RemoteSupportText" xml:space="preserve">
         <value>We support each other as a team and we have all the tools and resources we need to perform our job.</value>
+    </data>
+    <data name="Skip" xml:space="preserve">
+        <value>Skip</value>
     </data>
 </root>

@@ -12,20 +12,17 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
     private readonly ISurveyReader _reader;
     private readonly IPersonResolver _personResolver;
     private readonly IRoomPropertiesProvider _propertiesProvider;
-    private readonly ISurveyRepository _surveyRepository;
     private readonly IOnlinePersonStore _onlinePersonStore;
 
     public GetSurveyStateQueryHandler(
         ISurveyReader reader,
         IPersonResolver personResolver,
         IRoomPropertiesProvider propertiesProvider,
-        ISurveyRepository surveyRepository,
         IOnlinePersonStore onlinePersonStore)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
-        _surveyRepository = surveyRepository ?? throw new ArgumentNullException(nameof(surveyRepository));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
     }
     
@@ -53,19 +50,19 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
 
     private async Task<IReadOnlyCollection<AnswerOnSurveyDto>> GetQuestions(
         Guid surveyId,
-        long ownerId,
+        long responderId,
         IReadOnlyCollection<Guid> questionIds,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(questionIds);
         
-        var surveyAnswer = await _surveyRepository.Find(surveyId, ownerId, token);
+        var surveyAnswer = await _reader.ReadAnswers([surveyId], token);
         var questions = await _reader.ReadQuestions(questionIds, token);
 
         return questions
             .Select(q =>
             {
-                var answer = surveyAnswer?.Answers.SingleOrDefault(a => a.QuestionId == q.Id);
+                var answer = surveyAnswer.SingleOrDefault(a => a.QuestionId == q.Id && a.ResponderId == responderId);
 
                 return new AnswerOnSurveyDto(q.Id, q.Title, q.Text, answer?.Value, answer?.Comment);
             })

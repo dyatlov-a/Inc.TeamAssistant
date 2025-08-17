@@ -56,6 +56,7 @@
                         .ToArray();
                     var lastAnswerDate = answerLookup.Keys.Max();
                     var lastMean = meanLookup.Single(m => m.Item1 == lastAnswerDate);
+                    var hasNotAnswerCount = TotalAnswers - answerLookup[lastAnswerDate].Length;
                     var lastAnswers = answerLookup[lastAnswerDate]
                         .GroupBy(a => a)
                         .Select(a => new Tuple<int, int>(a.Key, a.Count()))
@@ -92,6 +93,14 @@
                                         </ApexChart>
                                     </div>
                                     <div title="@Localizer["AnswersHint"]" class="survey-question__answers">
+                                        @if (hasNotAnswerCount > 0)
+                                        {
+                                            <span
+                                                class="survey-question__answer @CssClass(0)"
+                                                data-count="@hasNotAnswerCount">
+                                                -
+                                            </span>
+                                        }
                                         @foreach (var answer in lastAnswers.OrderBy(a => a.Item1))
                                         {
                                             <span
@@ -135,6 +144,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<SurveyQuestionDto> AnswerByQuestions { get; set; } = default!;
+    
+    /// <summary>
+    /// Total answers count.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int TotalAnswers { get; set; }   
 
     /// <summary>
     /// Component state.

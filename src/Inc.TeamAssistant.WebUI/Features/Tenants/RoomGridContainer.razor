@@ -19,6 +19,7 @@
     EditEmitted="tId => StartEdit(tId)"
     CreateEmitted="() => StartEdit(roomId: null)"
     RemoveEmitted="RemoveRoom"
+    MoveToTeamHealthCheckFactory="MoveToTeamHealthCheckLink"
     MoveToRetroFactory="CreateMoveToRetroLink"
     MoveToBacklogFactory="CreateMoveToBacklogLink" />
 
@@ -75,6 +76,7 @@
         _selectedRoomName = null;
     }
     
+    private string MoveToTeamHealthCheckLink(Guid roomId) => NavRouter.CreateRoute($"survey/{roomId:N}");
     private string CreateMoveToRetroLink(Guid roomId) => NavRouter.CreateRoute($"retro/{roomId:N}");
     private string CreateMoveToBacklogLink(Guid roomId) => NavRouter.CreateRoute($"backlog/{roomId:N}");
 }

@@ -2,39 +2,31 @@ namespace Inc.TeamAssistant.Survey.Domain;
 
 public sealed class SurveyAnswer
 {
-    public Guid Id { get; private set; }
     public Guid SurveyId { get; private set; }
-    public DateTimeOffset Created { get; private set; }
-    public long OwnerId { get; private set; }
-    public IReadOnlyCollection<Answer> Answers { get; private set; }
+    public Guid QuestionId { get; private set; }
+    public long ResponderId { get; private set; }
+    public DateTimeOffset Responded { get; private set; }
+    public int Value { get; private set; }
+    public string? Comment { get; private set; }
 
     private SurveyAnswer()
     {
-        Answers = [];
     }
 
     public SurveyAnswer(
-        Guid id,
         Guid surveyId,
-        DateTimeOffset created,
-        long ownerId)
+        Guid questionId,
+        long responderId,
+        DateTimeOffset responded,
+        int value,
+        string? comment)
         : this()
     {
-        Id = id;
         SurveyId = surveyId;
-        Created = created;
-        OwnerId = ownerId;
-    }
-
-    public SurveyAnswer SetAnswer(Answer answer)
-    {
-        ArgumentNullException.ThrowIfNull(answer);
-
-        Answers = Answers
-            .Where(a => a.QuestionId != answer.QuestionId)
-            .Append(answer)
-            .ToArray();
-        
-        return this;
+        QuestionId = questionId;
+        ResponderId = responderId;
+        Responded = responded;
+        Value = value;
+        Comment = comment;
     }
 }

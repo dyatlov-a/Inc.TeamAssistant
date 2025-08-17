@@ -33,18 +33,18 @@ internal sealed class SetAnswerCommandHandler : IRequestHandler<SetAnswerCommand
         ArgumentNullException.ThrowIfNull(command);
 
         var currentPerson = _personResolver.GetCurrentPerson();
-        var existAnswer = await _repository.Find(command.SurveyId, currentPerson.Id, token);
         var survey = await command.SurveyId.Required(_repository.Find, token);
 
         if (!survey.QuestionIds.Contains(command.QuestionId))
             throw new TeamAssistantException($"Survey {command.SurveyId} not contains question {command.QuestionId}.");
         
-        var answer = existAnswer ?? new SurveyAnswer(
-            Guid.NewGuid(),
+        var answer = new SurveyAnswer(
             command.SurveyId,
+            command.QuestionId,
+            currentPerson.Id,
             DateTimeOffset.UtcNow,
-            currentPerson.Id);
-        answer.SetAnswer(new Answer(command.QuestionId, command.Value, command.Comment));
+            command.Value,
+            command.Comment);
 
         await _repository.Upsert(answer, token);
 

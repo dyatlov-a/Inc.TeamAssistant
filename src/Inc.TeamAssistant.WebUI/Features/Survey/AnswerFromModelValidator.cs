@@ -14,6 +14,6 @@ internal sealed class AnswerFromModelValidator : AbstractValidator<AnswerFromMod
             .WithMessage(localizer["RequiredValues"]);
 
         RuleFor(f => f.Comment)
-            .MaximumLength(2_000);
+            .MaximumLength(250);
     }
 }

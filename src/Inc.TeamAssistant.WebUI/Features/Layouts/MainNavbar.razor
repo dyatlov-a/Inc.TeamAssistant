@@ -15,7 +15,7 @@
         @foreach(var room in Rooms)
         {
             <div class="navbar__item navbar__item_room">
-                <RouterLink Href="@MoveToLinkFactory($"retro/{room.Id:N}")">@room.Name</RouterLink>
+                <RouterLink Href="@MoveToLinkFactory($"survey/{room.Id:N}")">@room.Name</RouterLink>
             </div>
         }
         @if (HasRoomManager)

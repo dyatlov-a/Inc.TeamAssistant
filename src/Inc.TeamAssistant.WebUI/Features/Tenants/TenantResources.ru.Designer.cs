@@ -122,5 +122,11 @@ namespace Inc.TeamAssistant.WebUI.Features.Tenants {
                 return ResourceManager.GetString("Rooms", resourceCulture);
             }
         }
+        
+        internal static string MoveToTeamHealthCheck {
+            get {
+                return ResourceManager.GetString("MoveToTeamHealthCheck", resourceCulture);
+            }
+        }
     }
 }

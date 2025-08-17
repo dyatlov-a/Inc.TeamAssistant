@@ -18,6 +18,8 @@ internal sealed class SurveyReader : ISurveyReader
         IReadOnlyCollection<Guid> questionIds,
         CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(questionIds);
+        
         var command = new CommandDefinition(
             """
             SELECT
@@ -82,16 +84,21 @@ internal sealed class SurveyReader : ISurveyReader
         return surveys.ToArray();
     }
 
-    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(IReadOnlyCollection<Guid> surveyIds, CancellationToken token)
+    public async Task<IReadOnlyCollection<SurveyAnswer>> ReadAnswers(
+        IReadOnlyCollection<Guid> surveyIds,
+        CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(surveyIds);
+        
         var command = new CommandDefinition(
             """
             SELECT
-                sa.id AS id,
                 sa.survey_id AS surveyid,
-                sa.created AS created,
-                sa.owner_id AS ownerid,
-                sa.answers AS answers
+                sa.question_id AS questionid,
+                sa.responder_id AS responderid,
+                sa.responded AS responded,
+                sa.value AS value,
+                sa.comment AS comment
             FROM survey.survey_answers AS sa
             WHERE sa.survey_id = ANY(@survey_ids);
             """,
