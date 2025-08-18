@@ -3,19 +3,14 @@
 <div class="navbar">
     <div class="navbar-container">
         <div class="navbar__item">
-            <RouterLink Href="@MainUrl"><HomeIcon Size="40px"/></RouterLink>
+            <RouterLink Href="@MainUrl"><HomeIcon Size="40px" /></RouterLink>
         </div>
         @foreach (var language in Languages)
         {
             <div class="navbar__item">
-                <RouterLink OnClick="() => LanguageChanged.InvokeAsync(language.Url)">@language.Title</RouterLink>
-            </div>
-        }
-        <div class="navbar__divider"></div>
-        @foreach(var room in Rooms)
-        {
-            <div class="navbar__item navbar__item_room">
-                <RouterLink Href="@MoveToLinkFactory($"survey/{room.Id:N}")">@room.Name</RouterLink>
+                <RouterLink OnClick="() => LanguageChanged.InvokeAsync(language.Url)">
+                    @language.Title.ToUpperInvariant()
+                </RouterLink>
             </div>
         }
         @if (HasRoomManager)
@@ -24,6 +19,13 @@
                 <RouterLink Href="@MoveToLinkFactory("/rooms")">@Localizer["Rooms"]</RouterLink>
             </div>
         }
+        @foreach(var room in Rooms)
+        {
+            <div class="navbar__item navbar__item_room">
+                <RouterLink Href="@MoveToLinkFactory($"survey/{room.Id:N}")">@room.Name</RouterLink>
+            </div>
+        }
+        <div class="navbar__divider"></div>
         @if (CurrentPerson is not null)
         {
             <div class="navbar__item navbar__item_avatar">
