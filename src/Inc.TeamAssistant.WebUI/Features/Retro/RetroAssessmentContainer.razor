@@ -5,7 +5,7 @@
 @inject IRetroService RetroService
 @inject RequestProcessor RequestProcessor
 @inject IStringLocalizer<RetroResources> Localizer
-@inject INotificationsService NotificationsService
+@inject IServiceProvider ServiceProvider
 
 @attribute [Authorize]
 
@@ -43,6 +43,8 @@
     
     private async Task OnValueChanged(int value)
     {
+        var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
+        
         _value = value;
         
         await RequestProcessor.Process(
@@ -50,6 +52,6 @@
             _state,
             showLoading: false);
 
-        NotificationsService.Publish(Notification.Info(Localizer["AssessmentSuccess"]));
+        notificationsService.Publish(Notification.Info(Localizer["AssessmentSuccess"]));
     }
 }

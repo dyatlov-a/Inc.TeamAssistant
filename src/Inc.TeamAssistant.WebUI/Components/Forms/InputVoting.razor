@@ -3,7 +3,7 @@
 <div class="vote-items @CssClass">
     @foreach (var i in Enumerable.Range(1, VotesTotal).Reverse())
     {
-        <i class="vote @SelectedCssClass(i) @ActiveCssClass(i)" @onclick="@(() => OnVoteClick(i))"></i>
+        <i class="vote @SelectedCssClass(i) @ActiveCssClass(i)" style="width: @Size" @onclick="@(() => OnVoteClick(i))"></i>
     }
 </div>
 
@@ -21,10 +21,16 @@
     public int RemainingVotes { get; set; }
     
     /// <summary>
-    /// Can the user vote
+    /// Can the user vote.
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanVote { get; set; }
+
+    /// <summary>
+    /// Icon size.
+    /// </summary>
+    [Parameter]
+    public string Size { get; set; } = "20px";
     
     private int AvailableVotes => RemainingVotes + _value;
     
