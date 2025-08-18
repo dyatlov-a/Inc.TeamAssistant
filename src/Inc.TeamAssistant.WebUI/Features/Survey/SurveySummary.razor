@@ -209,6 +209,8 @@
     {
         var values = items.Where(i => i.Value > 0).ToArray();
 
-        return values.Any() ? values.Sum(i => i.Value) / values.Length : 0;
+        return values.Any()
+            ? (int)Math.Round(values.Sum(i => i.Value) / (decimal)values.Length)
+            : 0;
     }
 }
