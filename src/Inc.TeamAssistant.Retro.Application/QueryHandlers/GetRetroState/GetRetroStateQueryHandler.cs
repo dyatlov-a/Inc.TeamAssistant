@@ -67,9 +67,6 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var votesByPerson = votes
             .Where(v => v.PersonId == currentPerson.Id)
             .ToDictionary(v => v.ItemId, v => v.Vote);
-        var totalVotes = votes
-            .GroupBy(v => v.PersonId, v => v.Vote)
-            .ToDictionary(v => v.Key, v => v.Sum(i => i));
         
         var activeSession = session is not null
             ? RetroSessionConverter.ConvertTo(session)

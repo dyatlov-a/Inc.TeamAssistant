@@ -20,9 +20,9 @@
 
     private IReadOnlyCollection<RoomNavbarLinkViewModel> Links =>
     [
-        new("TeamHealthCheck", NavRouter.CreateRoute($"survey/{RoomId}"), NavRouter.CurrentUrl.Contains("/survey")),
-        new("RetroBoard", NavRouter.CreateRoute($"retro/{RoomId}"), NavRouter.CurrentUrl.Contains("/retro")),
-        new("RetroBacklog", NavRouter.CreateRoute($"backlog/{RoomId}"), NavRouter.CurrentUrl.Contains("/backlog"))
+        new("TeamHealthCheck", NavRouter.CreateRoute($"survey/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/survey")),
+        new("RetroBoard", NavRouter.CreateRoute($"retro/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/retro")),
+        new("RetroBacklog", NavRouter.CreateRoute($"backlog/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/backlog"))
     ];
     
     public void Dispose() => _routerScope?.Dispose();
