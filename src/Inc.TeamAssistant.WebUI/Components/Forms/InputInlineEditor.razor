@@ -73,11 +73,12 @@
     {
         try
         {
-            var value = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+            var newValue = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
 
-            if (_value != value)
+            // TODO: fix clear state
+            if (_value != newValue && !string.IsNullOrWhiteSpace(newValue))
             {
-                _value = value;
+                _value = newValue;
                 
                 await ValueChanged.InvokeAsync(_value);
             }
