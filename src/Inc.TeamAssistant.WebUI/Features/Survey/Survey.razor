@@ -20,7 +20,7 @@
     </Toolbar>
     <Content>
         <Loading State="State" Retry="Retry">
-            @if (Finished || Question is null)
+            @if (Finished || _fromModel is null)
             {
                 <div class="survey-content">
                     <h2 class="main-content__header">@Localizer["TeamHealthCheck"]</h2>
@@ -30,9 +30,7 @@
             else
             {
                 <AnswerFrom
-                    Title="@Question.Title"
-                    Text="@Question.Text"
-                    FormModel="@(new AnswerFromModel(Question))"
+                    FormModel="_fromModel"
                     OnNextQuestion="OnNextQuestion"
                     OnValidSubmit="AnswerSelected"/>
             }
@@ -118,8 +116,22 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<AnswerFromModel> AnswerSelected { get; set; }
+
+    private Guid? _questionId;
+    private AnswerFromModel? _fromModel;
     
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
 
     private string ContentTextKey => Finished ? "TeamHealthCheckFinished" : "TeamHealthCheckWaiting";
+
+    protected override void OnParametersSet()
+    {
+        if (_questionId == Question?.Id)
+            return;
+        
+        _questionId = Question?.Id;
+        _fromModel = Question is not null
+            ? new AnswerFromModel(Question)
+            : null;
+    }
 }

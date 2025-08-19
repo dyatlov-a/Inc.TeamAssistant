@@ -79,10 +79,14 @@ internal static class ApexChartBaseOptionsBuilder
                         ConnectorColors = "#CCCCCC",
                         Fill = new RadarPolygonsFill
                         {
-                            Colors = ["transparent"]
+                            Colors = []
                         }
                     }
                 }
+            },
+            Fill = new Fill
+            {
+                Opacity = 0
             },
             Tooltip = new Tooltip
             {
