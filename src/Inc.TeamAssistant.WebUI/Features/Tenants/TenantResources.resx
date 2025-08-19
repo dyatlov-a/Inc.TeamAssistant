@@ -43,7 +43,7 @@
         <value>Edit</value>
     </data>
     <data name="MoveToRetro" xml:space="preserve">
-        <value>Move to retro</value>
+        <value>Retro</value>
     </data>
     <data name="Remove" xml:space="preserve">
         <value>Remove</value>
@@ -52,9 +52,12 @@
         <value>Confirming the deletion of the {0}?</value>
     </data>
     <data name="MoveToBacklog" xml:space="preserve">
-        <value>Move to backlog</value>
+        <value>Backlog</value>
     </data>
     <data name="Rooms" xml:space="preserve">
         <value>Rooms</value>
+    </data>
+    <data name="MoveToTeamHealthCheck" xml:space="preserve">
+        <value>Team health check</value>
     </data>
 </root>

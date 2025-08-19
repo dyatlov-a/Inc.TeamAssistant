@@ -23,6 +23,18 @@
                 ValueChanged="@((int v) => CanNotVoteValue = v)" />
         </Template>
     </Story>
+    <Story Name="Big">
+        <Template>
+            <InputVoting
+                VotesTotal="6"
+                RemainingVotes="6"
+                CanVote="false"
+                Size="40px"
+                Value="CanNotVoteValue"
+                ValueExpression="() => CanNotVoteValue"
+                ValueChanged="@((int v) => CanNotVoteValue = v)" />
+        </Template>
+    </Story>
 </Stories>
 
 @code {

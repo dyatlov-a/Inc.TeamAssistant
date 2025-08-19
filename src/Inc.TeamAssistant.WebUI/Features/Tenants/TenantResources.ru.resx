@@ -43,7 +43,7 @@
         <value>Изменить</value>
     </data>
     <data name="MoveToRetro" xml:space="preserve">
-        <value>Перейти к ретро</value>
+        <value>Ретро</value>
     </data>
     <data name="Remove" xml:space="preserve">
         <value>Удалить</value>
@@ -52,9 +52,12 @@
         <value>Подтверждаете удаление команды {0}?</value>
     </data>
     <data name="MoveToBacklog" xml:space="preserve">
-        <value>Перейти к списку задач</value>
+        <value>Список задач</value>
     </data>
     <data name="Rooms" xml:space="preserve">
         <value>Комнаты</value>
+    </data>
+    <data name="MoveToTeamHealthCheck" xml:space="preserve">
+        <value>Проверка здоровья команды</value>
     </data>
 </root>

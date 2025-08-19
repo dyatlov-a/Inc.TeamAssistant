@@ -96,7 +96,6 @@ internal sealed class TenantRepository : ITenantRepository
             },
             flags: CommandFlags.None,
             cancellationToken: token);
-        
         var teamCommand = new CommandDefinition(
             """
             INSERT INTO tenants.rooms (
@@ -123,7 +122,7 @@ internal sealed class TenantRepository : ITenantRepository
                 name = room.Name,
                 owner_id = room.OwnerId,
                 tenant_id = room.Tenant.Id,
-                properties = room.Properties
+                properties = JsonSerializer.Serialize(room.Properties)
             },
             flags: CommandFlags.None,
             cancellationToken: token);

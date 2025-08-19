@@ -4,9 +4,10 @@ using Inc.TeamAssistant.Gateway.Services.InMemory;
 using Inc.TeamAssistant.Gateway.Services.Integrations;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Primitives.Languages;
 using Inc.TeamAssistant.Retro.Application.Contracts;
-using Inc.TeamAssistant.Survey.Application.Contracts;
+using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -29,6 +30,9 @@ public static class ServiceCollectionExtensions
 
         services
             .AddQuickResponseCodeGenerator(cacheTimeout)
+            
+            .AddScoped<PersonResolver>()
+            .AddScoped<IPersonResolver>(sp => sp.GetRequiredService<PersonResolver>())
                 
             .AddSingleton(openGraphOptions)
             .AddSingleton(MessageDataBuilder.Build(webRootPath))
@@ -39,7 +43,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICheckInService, CheckInService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IBotService, BotService>()
-            .AddScoped<IPersonResolver, PersonResolver>()
             .AddScoped<IReviewService, ReviewService>()
             .AddScoped<IRandomCoffeeService, RandomCoffeeService>()
             .AddScoped<ICalendarService, CalendarService>()
@@ -51,14 +54,18 @@ public static class ServiceCollectionExtensions
 
             .AddSingleton<IMessageBuilder, MessageBuilder>()
             .AddSingleton<ITeamLinkBuilder, TeamLinkBuilder>()
-            .AddSingleton<IRetroPropertiesProvider, RetroPropertiesProviderAdapter>()
             
-            .AddSingleton<IOnlinePersonStore, OnlinePersonInMemoryStore>()
             .AddSingleton<IPositionGenerator, PositionInMemoryGenerator>()
             .AddSingleton<ITimerService, TimerInMemoryService>()
             .AddSingleton<IVoteStore, VoteInMemoryStore>()
-            .AddSingleton<IRetroStage, RetroStageInMemory>()
-            .AddSingleton<ISurveyState, SurveyState>();
+            
+            .AddSingleton<OnlinePersonInMemoryStore>()
+            .AddSingleton<IOnlinePersonStore>(sp => sp.GetRequiredService<OnlinePersonInMemoryStore>())
+            .AddHostedService<OnlinePersonClearBackgroundService>()
+            
+            .AddSingleton<ReviewInMemoryMetricsProvider>()
+            .AddSingleton<IReviewMetricsProvider>(sp => sp.GetRequiredService<ReviewInMemoryMetricsProvider>())
+            .AddSingleton<IReviewMetricsLoader>(sp => sp.GetRequiredService<ReviewInMemoryMetricsProvider>());
 
         return services;
 	}

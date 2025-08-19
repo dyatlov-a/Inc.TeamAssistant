@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
@@ -15,7 +15,7 @@ public interface IRetroHubClient
     
     Task RetroStateChanged(long personId, bool finished, bool handRaised);
     
-    Task PersonsChanged(IReadOnlyCollection<Person> persons);
+    Task PersonsChanged(IReadOnlyCollection<PersonStateTicket> persons);
 
     Task ItemMoved(Guid itemId);
     
@@ -25,5 +25,5 @@ public interface IRetroHubClient
     
     Task TimerChanged(TimeSpan? duration);
     
-    Task RetroPropertiesChanged(RetroPropertiesDto properties);
+    Task RetroPropertiesChanged();
 }

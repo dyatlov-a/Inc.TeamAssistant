@@ -1,0 +1,10 @@
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
+
+<span class="votes-count">
+    @Localizer["VotesCount"] @Value
+</span>
+
+@code {
+    [Parameter, EditorRequired]
+    public int Value { get; set; }
+}

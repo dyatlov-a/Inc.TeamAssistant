@@ -18,84 +18,198 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="WaitStartHealthCheck" xml:space="preserve">
+    <data name="TeamHealthCheckWaiting" xml:space="preserve">
         <value>Please wait for the moderator to start the team health check.</value>
     </data>
     <data name="DeliveringValueTitle" xml:space="preserve">
         <value>Delivering value</value>
     </data>
     <data name="DeliveringValueText" xml:space="preserve">
-        <value>Good: We deliver great stuff! We're proud of it and our stakeholders are really happy.
-Bad: We deliver total crap. We are ashamed of that. Our stakeholders hate us for that.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We deliver great stuff! We're proud of it and our stakeholders are really happy.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We deliver total crap. We are ashamed of that. Our stakeholders hate us for that.</value>
     </data>
     <data name="EasyToReleaseTitle" xml:space="preserve">
         <value>Easy to release</value>
     </data>
     <data name="EasyToReleaseText" xml:space="preserve">
-        <value>Good: Releasing is simple, safe, painless and mostly automated.
-Bad: Releasing is risky, painful, lots of manual work and takes forever.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; Releasing is simple, safe, painless and mostly automated.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; Releasing is risky, painful, lots of manual work and takes forever.</value>
     </data>
     <data name="FunTitle" xml:space="preserve">
         <value>Fun</value>
     </data>
     <data name="FunText" xml:space="preserve">
-        <value>Good: We love going to work and we have a lot of fun together.
-Bad: The work is boring.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We love going to work and we have a lot of fun together.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; The work is boring.</value>
     </data>
     <data name="HealthOfCodebaseTitle" xml:space="preserve">
         <value>Health of codebase</value>
     </data>
     <data name="HealthOfCodebaseText" xml:space="preserve">
-        <value>Good: We're proud of the quality of our code! It is clean, easy to read and has great test coverage.
-Bad: Our code is a pile of dung and technical debt is raging out of control.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We're proud of the quality of our code! It is clean, easy to read and has great test coverage.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; Our code is a pile of dung and technical debt is raging out of control.</value>
     </data>
     <data name="LearningTitle" xml:space="preserve">
         <value>Learning</value>
     </data>
     <data name="LearningText" xml:space="preserve">
-        <value>Good: We are constantly learning new things.
-Bad: We never have time to learn anything.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We are constantly learning new things.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We never have time to learn anything.</value>
     </data>
     <data name="MissionTitle" xml:space="preserve">
         <value>Mission</value>
     </data>
     <data name="MissionText" xml:space="preserve">
-        <value>Good: We know exactly why we are here and we’re really excited about it!
-Bad: We have no idea why we are here, there's no high lever picture or focus. Our so called mission is completely unclear and uninspiring.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We know exactly why we are here and we’re really excited about it!&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We have no idea why we are here, there's no high lever picture or focus. Our so called mission is completely unclear and uninspiring.</value>
     </data>
     <data name="PlayerOrPawnTitle" xml:space="preserve">
         <value>Player or pawn</value>
     </data>
     <data name="PlayerOrPawnText" xml:space="preserve">
-        <value>Good: We are in control of our own destiny! We decide what to build and how to build it.
-Bad: We are just pawns in a game of chess with no influence over what we build or how we build it.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We are in control of our own destiny! We decide what to build and how to build it.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We are just pawns in a game of chess with no influence over what we build or how we build it.</value>
     </data>
     <data name="SpeedTitle" xml:space="preserve">
         <value>Speed</value>
     </data>
     <data name="SpeedText" xml:space="preserve">
-        <value>Good: We get stuff done really quickly! No waiting and no delays.
-Bad: We never seem to get anything done. We keep getting stuck or interrupted. Stories keep getting stuck on dependencies.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We get stuff done really quickly! No waiting and no delays.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We never seem to get anything done. We keep getting stuck or interrupted. Stories keep getting stuck on dependencies.</value>
     </data>
     <data name="SuitableProcessesTitle" xml:space="preserve">
         <value>Suitable processes</value>
     </data>
     <data name="SuitableProcessesText" xml:space="preserve">
-        <value>Good: Our way of working fits us perfectly.
-Bad: Our way of working sucks!</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; Our way of working fits us perfectly.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; Our way of working sucks!</value>
     </data>
     <data name="SupportTitle" xml:space="preserve">
         <value>Support</value>
     </data>
     <data name="SupportText" xml:space="preserve">
-        <value>Good: We always get great support and help when we ask for it!
-Bad: We keep getting stuck because we can't get the support and help that we ask for.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We always get great support and help when we ask for it!&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We keep getting stuck because we can't get the support and help that we ask for.</value>
     </data>
     <data name="TeamworkTitle" xml:space="preserve">
         <value>Teamwork</value>
     </data>
     <data name="TeamworkText" xml:space="preserve">
-        <value>Good: We are a great team that works great together.
-Bad: We are a bunch of individuals who neither know nor care what the others on the team are doing.</value>
+        <value>&lt;b&gt;Good:&lt;/b&gt; We are a great team that works great together.&lt;br /&gt;
+&lt;b&gt;Bad:&lt;/b&gt; We are a bunch of individuals who neither know nor care what the others on the team are doing.</value>
+    </data>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Room properties</value>
+    </data>
+    <data name="ConnectionStateLost" xml:space="preserve">
+        <value>Connection lost.</value>
+    </data>
+    <data name="ConnectionStateConnecting" xml:space="preserve">
+        <value>Establishing connection to the server...</value>
+    </data>
+    <data name="Reconnect" xml:space="preserve">
+        <value>Reconnect</value>
+    </data>
+    <data name="RequiredValues" xml:space="preserve">
+        <value>Please select a value</value>
+    </data>
+    <data name="Next" xml:space="preserve">
+        <value>Next</value>
+    </data>
+    <data name="GiveRating" xml:space="preserve">
+        <value>Answer</value>
+    </data>
+    <data name="Comment" xml:space="preserve">
+        <value>Add a comment (optional)</value>
+    </data>
+    <data name="TeamHealthCheck" xml:space="preserve">
+        <value>Team health check</value>
+    </data>
+    <data name="TeamHealthCheckHelp" xml:space="preserve">
+        <value>Please answer the following questions to assess the current state</value>
+    </data>
+    <data name="TeamHealthCheckFinished" xml:space="preserve">
+        <value>You have answered all the questions. Please wait for the other participants.</value>
+    </data>
+    <data name="ConfirmMoveToFinish" xml:space="preserve">
+        <value>Not all participants have submitted their responses. Do you want to end the survey?</value>
+    </data>
+    <data name="HasParticipants" xml:space="preserve">
+        <value>Answers by members</value>
+    </data>
+    <data name="HasMean" xml:space="preserve">
+        <value>Average answers</value>
+    </data>
+    <data name="TotalSummaryControls" xml:space="preserve">
+        <value>Answers</value>
+    </data>
+    <data name="TotalSummaryControlsHelp" xml:space="preserve">
+        <value>Analyze the deviations of individual participants' answers from the average answers.</value>
+    </data>
+    <data name="Trend" xml:space="preserve">
+        <value>Trend</value>
+    </data>
+    <data name="MeanAnswerHint" xml:space="preserve">
+        <value>Mean answer within the current health check</value>
+    </data>
+    <data name="AnswersTrendHint" xml:space="preserve">
+        <value>Answers trend between health checks</value>
+    </data>
+    <data name="AnswersHint" xml:space="preserve">
+        <value>Participant answers</value>
+    </data>
+    <data name="TeamEngagementTitle" xml:space="preserve">
+        <value>Team Engagement</value>
+    </data>
+    <data name="TeamEngagementText" xml:space="preserve">
+        <value>Although we are working remotely, we are able to engage and communicate with each other in a good way.</value>
+    </data>
+    <data name="RoleClarityTitle" xml:space="preserve">
+        <value>Role Clarity</value>
+    </data>
+    <data name="RoleClarityText" xml:space="preserve">
+        <value>My role is very clear, I understand what I need to do and deliver.</value>
+    </data>
+    <data name="AutonomyTitle" xml:space="preserve">
+        <value>Autonomy</value>
+    </data>
+    <data name="AutonomyText" xml:space="preserve">
+        <value>I have the freedom and flexibility to perform my day to day work.</value>
+    </data>
+    <data name="IsolationTitle" xml:space="preserve">
+        <value>Isolation</value>
+    </data>
+    <data name="IsolationText" xml:space="preserve">
+        <value>I often feel isolated while working remotely.</value>
+    </data>
+    <data name="WellBeingTitle" xml:space="preserve">
+        <value>Well Being</value>
+    </data>
+    <data name="WellBeingText" xml:space="preserve">
+        <value>I have routines to take care of myself mentally and physically and we regularly discuss about this in our meetings.</value>
+    </data>
+    <data name="ConnectednessTitle" xml:space="preserve">
+        <value>Connectedness</value>
+    </data>
+    <data name="ConnectednessText" xml:space="preserve">
+        <value>I feel connected to my team, department and organization at large.</value>
+    </data>
+    <data name="DistractionsTitle" xml:space="preserve">
+        <value>Distractions</value>
+    </data>
+    <data name="DistractionsText" xml:space="preserve">
+        <value>There are low distractions at home, there is always an opportunity to focus on work processes.</value>
+    </data>
+    <data name="RemoteSupportTitle" xml:space="preserve">
+        <value>Support</value>
+    </data>
+    <data name="RemoteSupportText" xml:space="preserve">
+        <value>We support each other as a team and we have all the tools and resources we need to perform our job.</value>
+    </data>
+    <data name="Skip" xml:space="preserve">
+        <value>Skip</value>
+    </data>
+    <data name="Comments" xml:space="preserve">
+        <value>Comments:</value>
     </data>
 </root>

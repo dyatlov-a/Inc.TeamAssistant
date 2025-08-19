@@ -1,0 +1,46 @@
+@page "/survey-summary/{RoomId:guid}"
+@page "/ru/survey-summary/{RoomId:guid}"
+@page "/en/survey-summary/{RoomId:guid}"
+
+@attribute [Authorize]
+
+@inject ISurveyService SurveyService
+@inject TenantStore TenantStore
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule />
+
+<SurveySummary
+    RoomId="RoomId"
+    LastSurveyDate="_lastSurveyDate"
+    Answers="_answers"
+    State="_state"
+    Retry="Load" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+
+    private const int SurveyTotal = 5;
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private DateTimeOffset _lastSurveyDate;
+    private IReadOnlyCollection<SurveyQuestionDto> _answers = [];
+
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(RoomId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await SurveyService.GetSurveySummary(RoomId, SurveyTotal),
+            nameof(SurveySummaryContainer),
+            _state);
+
+        _lastSurveyDate = result.Answers.Any()
+            ? result.Answers.Max(a => a.SurveyDate)
+            : DateTimeOffset.UtcNow;
+        _answers = result.Answers;
+    }
+}

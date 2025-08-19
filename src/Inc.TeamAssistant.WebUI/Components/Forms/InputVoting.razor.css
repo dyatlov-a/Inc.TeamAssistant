@@ -3,7 +3,6 @@
     display: inline-block;
 }
 .vote {
-    width: 20px;
     aspect-ratio: 1;
     background-color: var(--block-secondary-color);
     display: inline-block;

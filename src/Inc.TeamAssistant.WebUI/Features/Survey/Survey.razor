@@ -2,10 +2,41 @@
 
 <DashboardGrid>
     <Toolbar>
+        <RoomStatePanel
+            HasPrevious="false"
+            HasNext="IsFacilitator"
+            HasFinish="false"
+            HasRaiseHand="false"
+            CanChangeProperties="IsFacilitator"
+            CurrentUserId="CurrentUserId"
+            FacilitatorGiven="FacilitatorGiven"
+            RoomPropertiesOpened="RoomPropertiesOpened"
+            MoveNext="MoveNext" />
         <RoomNavbarContainer RoomId="RoomId" />
+        <ParticipantsPanel
+            CanVote="false"
+            IsFacilitator="IsFacilitator"
+            Participants="Participants" />
     </Toolbar>
     <Content>
-        @Localizer["WaitStartHealthCheck"]
+        <Loading State="State" Retry="Retry">
+            @if (Finished || Question is null)
+            {
+                <div class="survey-content">
+                    <h2 class="main-content__header">@Localizer["TeamHealthCheck"]</h2>
+                    <p class="main-content__text">@Localizer[ContentTextKey]</p>
+                </div>
+            }
+            else
+            {
+                <AnswerFrom
+                    Title="@Question.Title"
+                    Text="@Question.Text"
+                    FormModel="@(new AnswerFromModel(Question))"
+                    OnNextQuestion="OnNextQuestion"
+                    OnValidSubmit="AnswerSelected"/>
+            }
+        </Loading>
     </Content>
 </DashboardGrid>
 
@@ -15,4 +46,80 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Current user id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long CurrentUserId { get; set; }
+    
+    /// <summary>
+    /// Current person finished.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool Finished { get; set; }
+    
+    /// <summary>
+    /// Facilitator id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public long? FacilitatorId { get; set; }
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Retro session participants.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
+    
+    /// <summary>
+    /// Current question
+    /// </summary>
+    [Parameter, EditorRequired]
+    public AnswerOnSurveyDto? Question { get; set; }
+    
+    /// <summary>
+    /// Move to next action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback MoveNext { get; set; }
+    
+    /// <summary>
+    /// Facilitator given action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback FacilitatorGiven { get; set; }
+    
+    /// <summary>
+    /// Retro properties opened action.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback RoomPropertiesOpened { get; set; }
+    
+    /// <summary>
+    /// Action for retry.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<Task> Retry { get; set; } = default!;
+    
+    /// <summary>
+    /// Move to question event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback OnNextQuestion { get; set; }
+    
+    /// <summary>
+    /// Answer selected event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<AnswerFromModel> AnswerSelected { get; set; }
+    
+    private bool IsFacilitator => CurrentUserId == FacilitatorId;
+
+    private string ContentTextKey => Finished ? "TeamHealthCheckFinished" : "TeamHealthCheckWaiting";
 }

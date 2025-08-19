@@ -58,7 +58,7 @@
                 HandRaised="OnHandRaised"
                 FacilitatorGiven="FacilitatorGiven"
                 HandLowered="OnHandLowered"
-                RetroPropertiesOpened="OnRetroPropertiesOpened" />
+                RoomPropertiesOpened="OnRoomPropertiesOpened" />
         </Authorized>
     </AuthorizeView>
     </Body>
@@ -71,11 +71,8 @@
             OnAction="Reconnect" />
     </InlineDialogSlot>
 </MainLayout>
-<ContentDialog Title="@Localizer["RetroProperties"]" @ref="_retroPropertiesEditor">
-    <RetroPropertiesEditorContainer
-        RoomId="RoomId"
-        RetroProperties="_retroProperties"
-        RetroPropertiesChanged="OnRetroPropertiesChanged" />
+<ContentDialog Title="@Localizer["RoomProperties"]" @ref="_roomPropertiesEditor">
+    <RoomPropertiesEditorContainer RoomId="RoomId" RoomPropertiesChanged="OnRoomPropertiesChanged" />
 </ContentDialog>
 
 @code {
@@ -87,12 +84,12 @@
     
     private LinkedListNode<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)>? _currentItem;
     private RetroEventBuilder? _eventBuilder;
-    private IAsyncDisposable? _eventListener;
+    private IDisposable? _eventListener;
     private RetroSessionDto? _activeSession;
     private RetroPropertiesDto _retroProperties = RetroPropertiesDto.Empty;
     private TimeSpan? _currentTimer;
     private bool _isCreating;
-    private ContentDialog? _retroPropertiesEditor;
+    private ContentDialog? _roomPropertiesEditor;
     
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroColumnDto> _columns = new();
@@ -134,7 +131,7 @@
         _retroProperties = result.RetroProperties;
         _currentTimer = result.CurrentTimer;
         _participants = result.Participants
-            .Select(p => new ParticipantViewModel(p.Person, p.TotalVote, p.Finished, p.HandRaised))
+            .Select(p => new ParticipantViewModel(p.Person, p.IsOnline, p.TotalVote, p.Finished, p.HandRaised))
             .ToDictionary(p => p.Person.Id);
         _orderedItems = new(result.Items
             .Where(i => !i.ParentId.HasValue)
@@ -202,13 +199,12 @@
         
         await Load(LoadingState.Wrap(_state, StateHasChanged));
 
-        if (_eventListener is not null)
-            await _eventListener.DisposeAsync();
-        
+        _eventListener?.Dispose();
+
         _eventListener = await StartListenEvents(_eventBuilder);
     }
 
-    private async Task<IAsyncDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
+    private async Task<IDisposable?> StartListenEvents(RetroEventBuilder eventBuilder)
     {
         return await eventBuilder.Build(
             RoomId,
@@ -297,17 +293,11 @@
                     StateHasChanged();
                 });
             }),
-            b => b.OnRetroPropertiesChanged(async p =>
+            b => b.OnRetroPropertiesChanged(async () =>
             {
                 await InvokeAsync(async () =>
                 {
-                    if (_retroProperties.RetroTemplateId == p.RetroTemplateId && _retroProperties.RetroType == p.RetroType)
-                    {
-                        _retroProperties = p;
-                        StateHasChanged();
-                    }
-                    else
-                        await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                    await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
                 });
             })
         );
@@ -318,8 +308,6 @@
         await RequestProcessor.Process(
             () => RetroService.StartRetro(new StartRetroCommand(RoomId)),
             _state);
-
-        await Load(_state, hardReset: false);
     }
     
     private async Task OnToNextMoved(Guid id)
@@ -442,14 +430,17 @@
             participant.ChangeFinished(finished).ChangeHandRaised(handRaised);
     }
     
-    private void ApplyParticipants(IReadOnlyCollection<Person> persons)
+    private void ApplyParticipants(IReadOnlyCollection<PersonStateTicket> tickets)
     {
-        foreach (var person in persons)
-            _participants.TryAdd(person.Id, new ParticipantViewModel(
-                person,
-                totalVotes: 0,
-                finished: false,
-                handRaised: false));
+        _participants.Clear();
+        
+        foreach (var ticket in tickets)
+            _participants.Add(ticket.Person.Id, new ParticipantViewModel(
+                ticket.Person,
+                ticket.IsOnline,
+                ticket.TotalVote,
+                ticket.Finished,
+                ticket.HandRaised));
     }
     
     private async Task OnRetroItemRemoved(RetroItemViewModel item)
@@ -546,7 +537,7 @@
     {
         if (_eventBuilder is null)
             return;
-        
+
         if (_participants.TryGetValue(personId, out var participant))
             await _eventBuilder.SetRetroState(participant.ChangeHandRaised(false).ToCommand(RoomId));
     }
@@ -568,7 +559,7 @@
         if (_eventBuilder is null)
             return;
 
-        await _eventBuilder.GiveFacilitator(ChangeRetroPropertiesCommand.ChangeFacilitator(RoomId));
+        await _eventBuilder.GiveFacilitator(ChangeRoomPropertiesCommand.ChangeFacilitator(RoomId));
     }
 
     private void ApplyRetroItemRemovedEvent(Guid itemId)
@@ -585,14 +576,23 @@
             _actionItems.Remove(viewItem);
     }
     
-    private void OnRetroPropertiesChanged() => _retroPropertiesEditor?.Close();
-    private void OnRetroPropertiesOpened() => _retroPropertiesEditor?.Open();
+    private async Task OnRoomPropertiesChanged()
+    {
+        if (_eventBuilder is null)
+            return;
+
+        await _eventBuilder.NotifyRetroPropertiesChanged(RoomId);
+        
+        _roomPropertiesEditor?.Close();
+    }
+
+    private void OnRoomPropertiesOpened() => _roomPropertiesEditor?.Open();
     
     public async ValueTask DisposeAsync()
     {
         if (_eventListener is not null)
         {
-            await _eventListener.DisposeAsync();
+            _eventListener.Dispose();
             _eventListener = null;
         }
         

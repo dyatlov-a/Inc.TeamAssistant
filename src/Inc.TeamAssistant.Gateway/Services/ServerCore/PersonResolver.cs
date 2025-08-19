@@ -1,24 +1,23 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.WebUI.Extensions;
 
 namespace Inc.TeamAssistant.Gateway.Services.ServerCore;
 
 internal sealed class PersonResolver : IPersonResolver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private Person? _currentPerson;
 
-    public PersonResolver(IHttpContextAccessor httpContextAccessor)
+    public void TrySet(Person person)
     {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        ArgumentNullException.ThrowIfNull(person);
+        
+        _currentPerson ??= person;
     }
 
     public Person GetCurrentPerson()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext is null)
-            throw new ApplicationException("Process has no access to the HTTP context");
+        if (_currentPerson is null)
+            throw new InvalidOperationException("Current person is not set. Use TrySetCurrentPerson method to set it.");
         
-        var person = httpContext.User.ToPerson();
-        return person;
+        return _currentPerson;
     }
 }

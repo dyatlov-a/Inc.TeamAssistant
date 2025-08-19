@@ -14,10 +14,9 @@ internal sealed class SetAnswerCommandValidator : AbstractValidator<SetAnswerCom
             .NotEmpty();
         
         RuleFor(c => c.Value)
-            .GreaterThan(0)
-            .When(c => c.Value.HasValue);
+            .GreaterThan(0);
         
         RuleFor(c => c.Comment)
-            .MaximumLength(2000);
+            .MaximumLength(250);
     }
 }

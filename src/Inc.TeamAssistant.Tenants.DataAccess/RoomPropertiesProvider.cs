@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
-using Inc.TeamAssistant.Tenants.Application.Contracts;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 
 namespace Inc.TeamAssistant.Tenants.DataAccess;
 
@@ -14,15 +14,15 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<T> Get<T>(Guid roomId, CancellationToken token)
-        where T : class, new()
+    public async Task<RoomProperties> Get(Guid roomId, CancellationToken token)
     {
         var command = new CommandDefinition(
             """
             SELECT r.properties
             FROM tenants.rooms AS r
             WHERE r.id = @room_id;
-            """, new
+            """,
+            new
             {
                 room_id = roomId
             },
@@ -30,18 +30,13 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
             cancellationToken: token);
 
         await using var connection = _connectionFactory.Create();
+
+        var roomProperties = await connection.QuerySingleOrDefaultAsync<RoomProperties>(command);
         
-        var data = await connection.QuerySingleOrDefaultAsync<string>(command);
-
-        var properties = !string.IsNullOrWhiteSpace(data)
-            ? JsonSerializer.Deserialize<T>(data)
-            : null;
-
-        return properties ?? new T();
+        return roomProperties ?? RoomProperties.Default;
     }
 
-    public async Task Set<T>(Guid roomId, T properties, CancellationToken token)
-        where T : class, new()
+    public async Task Set(Guid roomId, RoomProperties properties, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(properties);
         
@@ -50,7 +45,8 @@ internal sealed class RoomPropertiesProvider : IRoomPropertiesProvider
             UPDATE tenants.rooms AS r
             SET properties = @properties::JSONB
             WHERE r.id = @room_id;
-            """, new
+            """,
+            new
             {
                 room_id = roomId,
                 properties = JsonSerializer.Serialize(properties)

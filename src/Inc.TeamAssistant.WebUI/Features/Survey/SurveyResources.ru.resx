@@ -18,84 +18,198 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="WaitStartHealthCheck" xml:space="preserve">
+    <data name="TeamHealthCheckWaiting" xml:space="preserve">
         <value>Пожалуйста, дождитесь запуска оценки здоровья модератором.</value>
     </data>
     <data name="DeliveringValueTitle" xml:space="preserve">
         <value>Создание ценности</value>
     </data>
     <data name="DeliveringValueText" xml:space="preserve">
-        <value>Хорошо: Мы создаем отличные вещи! Мы гордимся результатами, и наши стейкхолдеры действительно довольны.
-Плохо: Мы создаем полный бред. Мы стыдимся этого. Наши стейкхолдеры ненавидят нас за это.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы создаем отличные вещи! Мы гордимся результатами, и наши стейкхолдеры действительно довольны.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Мы создаем полный бред. Мы стыдимся этого. Наши стейкхолдеры ненавидят нас за это.</value>
     </data>
     <data name="EasyToReleaseTitle" xml:space="preserve">
         <value>Простота релиза</value>
     </data>
     <data name="EasyToReleaseText" xml:space="preserve">
-        <value>Хорошо: Релиз происходит легко, безопасно, безболезненно и в основном автоматизировано.
-Плохо: Релиз рискованный, вызывает боль, требует много ручной работы и занимает вечность.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Релиз происходит легко, безопасно, безболезненно и в основном автоматизировано.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Релиз рискованный, вызывает боль, требует много ручной работы и занимает вечность.</value>
     </data>
     <data name="FunTitle" xml:space="preserve">
         <value>Удовольствие</value>
     </data>
     <data name="FunText" xml:space="preserve">
-        <value>Хорошо: Нам нравится ходить на работу, и мы много веселимся вместе.
-Плохо: Работа скучная.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Нам нравится ходить на работу, и мы много веселимся вместе.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Работа скучная.</value>
     </data>
     <data name="HealthOfCodebaseTitle" xml:space="preserve">
         <value>Состояние кодовой базы</value>
     </data>
     <data name="HealthOfCodebaseText" xml:space="preserve">
-        <value>Хорошо: Мы гордимся качеством нашего кода! Он чистый, легко читаемый и имеет отличное покрытие тестами.
-Плохо: Наш код - это груда негатива, и технический долг выходит из-под контроля.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы гордимся качеством нашего кода! Он чистый, легко читаемый и имеет отличное покрытие тестами.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Наш код - это груда негатива, и технический долг выходит из-под контроля.</value>
     </data>
     <data name="LearningTitle" xml:space="preserve">
         <value>Обучение</value>
     </data>
     <data name="LearningText" xml:space="preserve">
-        <value>Хорошо: Мы постоянно учимся новому.
-Плохо: У нас никогда нет времени учиться чему-либо.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы постоянно учимся новому.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; У нас никогда нет времени учиться чему-либо.</value>
     </data>
     <data name="MissionTitle" xml:space="preserve">
         <value>Миссия</value>
     </data>
     <data name="MissionText" xml:space="preserve">
-        <value>Хорошо: Мы точно знаем, для чего мы здесь, и мы действительно в этом заинтересованы!
-Плохо: Мы не имеем представления о том, для чего мы здесь, нет общего понимания или фокуса. Наша так называемая миссия полностью неясна и неинтересна.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы точно знаем, для чего мы здесь, и мы действительно в этом заинтересованы!&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Мы не имеем представления о том, для чего мы здесь, нет общего понимания или фокуса. Наша так называемая миссия полностью неясна и неинтересна.</value>
     </data>
     <data name="PlayerOrPawnTitle" xml:space="preserve">
         <value>Игрок или пешка</value>
     </data>
     <data name="PlayerOrPawnText" xml:space="preserve">
-        <value>Хорошо: Мы контролируем свою судьбу! Мы сами решаем, что и как строить.
-Плохо: Мы всего лишь пешки в шахматной игре, у нас нет влияния на то, что мы создаем и как мы это делаем.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы контролируем свою судьбу! Мы сами решаем, что и как строить.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Мы всего лишь пешки в шахматной игре, у нас нет влияния на то, что мы создаем и как мы это делаем.</value>
     </data>
     <data name="SpeedTitle" xml:space="preserve">
         <value>Скорость</value>
     </data>
     <data name="SpeedText" xml:space="preserve">
-        <value>Хорошо: Мы выполняем работу очень быстро! Нет ожидания и задержек.
-Плохо: Похоже, мы ничего не делаем. Мы постоянно застреваем или прерываемся. Задачи застревают из-за зависимостей.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы выполняем работу очень быстро! Нет ожидания и задержек.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Похоже, мы ничего не делаем. Мы постоянно застреваем или прерываемся. Задачи застревают из-за зависимостей.</value>
     </data>
     <data name="SuitableProcessesTitle" xml:space="preserve">
         <value>Состояние процессов</value>
     </data>
     <data name="SuitableProcessesText" xml:space="preserve">
-        <value>Хорошо: Наш способ работы идеально подходит нам.
-Плохо: Наш способ работы ужасен!</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Наш способ работы идеально подходит нам.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Наш способ работы ужасен!</value>
     </data>
     <data name="SupportTitle" xml:space="preserve">
         <value>Поддержка</value>
     </data>
     <data name="SupportText" xml:space="preserve">
-        <value>Хорошо: Мы всегда получаем отличную поддержку и помощь, когда просим об этом!
-Плохо: Мы застреваем, потому что не можем получить поддержку и помощь, которую просим.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы всегда получаем отличную поддержку и помощь, когда просим об этом!&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Мы застреваем, потому что не можем получить поддержку и помощь, которую просим.</value>
     </data>
     <data name="TeamworkTitle" xml:space="preserve">
         <value>Командная работа</value>
     </data>
     <data name="TeamworkText" xml:space="preserve">
-        <value>Хорошо: Мы отличная команда, которая прекрасно работает вместе.
-Плохо: Мы группа отдельных лиц, которым нет дела до того, что делают остальные в команде.</value>
+        <value>&lt;b&gt;Хорошо:&lt;/b&gt; Мы отличная команда, которая прекрасно работает вместе.&lt;br /&gt;
+&lt;b&gt;Плохо:&lt;/b&gt; Мы группа отдельных лиц, которым нет дела до того, что делают остальные в команде.</value>
+    </data>
+    <data name="RoomProperties" xml:space="preserve">
+        <value>Настройки комнаты</value>
+    </data>
+    <data name="Reconnect" xml:space="preserve">
+        <value>Повторить подключение</value>
+    </data>
+    <data name="ConnectionStateConnecting" xml:space="preserve">
+        <value>Устанавливается соединение с сервером...</value>
+    </data>
+    <data name="ConnectionStateLost" xml:space="preserve">
+        <value>Соединение потеряно.</value>
+    </data>
+    <data name="RequiredValues" xml:space="preserve">
+        <value>Пожалуйста, выберите значение</value>
+    </data>
+    <data name="Next" xml:space="preserve">
+        <value>Далее</value>
+    </data>
+    <data name="GiveRating" xml:space="preserve">
+        <value>Ответ</value>
+    </data>
+    <data name="Comment" xml:space="preserve">
+        <value>Добавить комментарий (опционально)</value>
+    </data>
+    <data name="TeamHealthCheck" xml:space="preserve">
+        <value>Проверка здоровья команды</value>
+    </data>
+    <data name="TeamHealthCheckHelp" xml:space="preserve">
+        <value>Пожалуйста, оцените текущее состояние ответив на вопросы</value>
+    </data>
+    <data name="TeamHealthCheckFinished" xml:space="preserve">
+        <value>Вы ответили на все вопросы, дождитесь остальных участников.</value>
+    </data>
+    <data name="ConfirmMoveToFinish" xml:space="preserve">
+        <value>Не все участники предоставили ответы. Хотите завершить опрос?</value>
+    </data>
+    <data name="HasParticipants" xml:space="preserve">
+        <value>Оценки по участникам</value>
+    </data>
+    <data name="HasMean" xml:space="preserve">
+        <value>Средняя оценка</value>
+    </data>
+    <data name="TotalSummaryControls" xml:space="preserve">
+        <value>Оценки</value>
+    </data>
+    <data name="TotalSummaryControlsHelp" xml:space="preserve">
+        <value>Проанализируйте отклонения оценок отдельных участников от средних оценок</value>
+    </data>
+    <data name="Trend" xml:space="preserve">
+        <value>Тренд</value>
+    </data>
+    <data name="MeanAnswerHint" xml:space="preserve">
+        <value>Средний ответ в рамках текущего опроса</value>
+    </data>
+    <data name="AnswersTrendHint" xml:space="preserve">
+        <value>Тенденция ответов между опросами</value>
+    </data>
+    <data name="AnswersHint" xml:space="preserve">
+        <value>Ответы участников</value>
+    </data>
+    <data name="TeamEngagementTitle" xml:space="preserve">
+        <value>Взаимодействие с командой</value>
+    </data>
+    <data name="TeamEngagementText" xml:space="preserve">
+        <value>Несмотря на то, что мы работаем удаленно, мы можем взаимодействовать и общаться друг с другом в хорошем смысле.</value>
+    </data>
+    <data name="RoleClarityTitle" xml:space="preserve">
+        <value>Ролевая ясность</value>
+    </data>
+    <data name="RoleClarityText" xml:space="preserve">
+        <value>Моя роль очень ясна, я понимаю, что мне нужно делать.</value>
+    </data>
+    <data name="AutonomyTitle" xml:space="preserve">
+        <value>Автономия</value>
+    </data>
+    <data name="AutonomyText" xml:space="preserve">
+        <value>У меня есть свобода и гибкость, чтобы выполнять свою повседневную работу.</value>
+    </data>
+    <data name="RemoteSupportTitle" xml:space="preserve">
+        <value>Поддержка</value>
+    </data>
+    <data name="RemoteSupportText" xml:space="preserve">
+        <value>Мы поддерживаем друг друга как единая команда, и у нас есть все инструменты и ресурсы, необходимые для выполнения нашей работы.</value>
+    </data>
+    <data name="IsolationTitle" xml:space="preserve">
+        <value>Изоляция</value>
+    </data>
+    <data name="IsolationText" xml:space="preserve">
+        <value>Я часто чувствую себя изолированным, работая удаленно.</value>
+    </data>
+    <data name="WellBeingTitle" xml:space="preserve">
+        <value>Хорошее самочувствие</value>
+    </data>
+    <data name="WellBeingText" xml:space="preserve">
+        <value>У меня есть привычка заботиться о себе умственно и физически, и мы регулярно обсуждаем это на наших встречах.</value>
+    </data>
+    <data name="ConnectednessTitle" xml:space="preserve">
+        <value>Связность</value>
+    </data>
+    <data name="ConnectednessText" xml:space="preserve">
+        <value>Я чувствую связь со своей командой, отделом и организацией в целом.</value>
+    </data>
+    <data name="DistractionsTitle" xml:space="preserve">
+        <value>Отвлечения</value>
+    </data>
+    <data name="DistractionsText" xml:space="preserve">
+        <value>Дома мало отвлекающих факторов, всегда есть возможность сосредоточиться на рабочих процессах.</value>
+    </data>
+    <data name="Skip" xml:space="preserve">
+        <value>Пропустить</value>
+    </data>
+    <data name="Comments" xml:space="preserve">
+        <value>Комментарии:</value>
     </data>
 </root>

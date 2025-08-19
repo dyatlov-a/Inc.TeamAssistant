@@ -1,0 +1,92 @@
+@inject IStringLocalizer<RoomPropertiesResources> Localizer
+
+<div class="participants">
+    <h2 class="participants__header">@Localizer["Participants"]</h2>
+    
+    @foreach (var participant in Participants)
+    {
+        <div @key="participant.Person.Id" class="participant">
+            <div class="participant__state">
+                @if (!participant.IsOnline)
+                {
+                    <i class="participant__state-item">
+                        <SignalSlashIcon Size="@IconSize" />
+                    </i>
+                }
+                @if (participant.Finished)
+                {
+                    <i class="participant__state-item">
+                        <CheckIcon Size="@IconSize"/>
+                    </i>
+                }
+                @if (participant.HandRaised)
+                {
+                    if (IsFacilitator)
+                    {
+                        <a
+                            title="@Localizer["LowerHandHint"]"
+                            href="#"
+                            class="participant__state-item participant__state-item_active"
+                            @onclick="() => SendHandLowered(participant.Person.Id)"
+                            @onclick:preventDefault="true">
+                            <UserQuestionIcon Size="@IconSize"/>
+                        </a>
+                    }
+                    else
+                    {
+                        <i class="participant__state-item">
+                            <UserQuestionIcon Size="@IconSize"/>
+                        </i>
+                    }
+                }
+            </div>
+            <PersonCard Person="participant.Person"/>
+            @if (CanVote)
+            {
+                <VotesDisplay Value="@(VotesTotal - participant.TotalVotes)" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Can the user vote in the retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool CanVote { get; set; }
+    
+    /// <summary>
+    /// Is facilitator of the retro session.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public bool IsFacilitator { get; set; }
+
+    /// <summary>
+    /// Retro session participants.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ParticipantViewModel> Participants { get; set; } = default!;
+    
+    /// <summary>
+    /// Votes total for the retro session.
+    /// </summary>
+    [Parameter]
+    public int VotesTotal { get; set; }
+    
+    /// <summary>
+    /// Hand raised event callback.
+    /// </summary>
+    [Parameter]
+    public EventCallback<long> HandLowered { get; set; }
+    
+    private const string IconSize = "20px";
+
+    private async Task SendHandLowered(long personId)
+    {
+        if (!IsFacilitator)
+            return;
+        
+        await HandLowered.InvokeAsync(personId);
+    }
+}

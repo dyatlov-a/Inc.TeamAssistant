@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives.Exceptions;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 
 namespace Inc.TeamAssistant.Tenants.Domain;
 
@@ -7,15 +8,14 @@ public sealed class Room
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
     public long OwnerId { get; private set; }
-    public string Properties { get; private set; }
+    public RoomProperties Properties { get; private set; } = default!;
     public Tenant Tenant { get; private set; } = default!;
 
     private Room()
     {
-        Properties = "{}";
     }
 
-    public Room(Guid id, string name, long ownerId, Tenant tenant)
+    public Room(Guid id, string name, long ownerId, RoomProperties properties, Tenant tenant)
         : this()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -23,6 +23,7 @@ public sealed class Room
         Id = id;
         Name = name;
         OwnerId = ownerId;
+        Properties = properties ?? throw new ArgumentNullException(nameof(properties));
         Tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
     }
     

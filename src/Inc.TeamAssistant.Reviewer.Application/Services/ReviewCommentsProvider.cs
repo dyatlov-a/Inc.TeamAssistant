@@ -2,6 +2,7 @@ using Inc.TeamAssistant.Reviewer.Domain;
 
 namespace Inc.TeamAssistant.Reviewer.Application.Services;
 
+// TODO: Remove review comments logic
 public sealed class ReviewCommentsProvider
 {
     private readonly Dictionary<(long ChatId, int MessageId), Guid> _data = new();

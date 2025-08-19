@@ -17,17 +17,17 @@ public sealed class SurveyController : ControllerBase
     {
         _surveyService = surveyService ?? throw new ArgumentNullException(nameof(surveyService));
     }
-
-    [HttpGet("templates")]
-    public async Task<IActionResult> GetTemplates(CancellationToken token)
+    
+    [HttpGet("{roomId:guid}/state")]
+    public async Task<IActionResult> GetPersonSurveys(Guid roomId, CancellationToken token)
     {
-        return Ok(await _surveyService.GetTemplates(token));
+        return Ok(await _surveyService.GetSurveyState(roomId, token));
     }
     
-    [HttpGet("{surveyId:guid}/persons")]
-    public async Task<IActionResult> GetPersonSurveys(Guid surveyId, CancellationToken token)
+    [HttpGet("{roomId:guid}/summary/{limit:int}")]
+    public async Task<IActionResult> GetPersonSurveys(Guid roomId, int limit, CancellationToken token)
     {
-        return Ok(await _surveyService.GetPersonSurveys(surveyId, token));
+        return Ok(await _surveyService.GetSurveySummary(roomId, limit, token));
     }
     
     [HttpPost]

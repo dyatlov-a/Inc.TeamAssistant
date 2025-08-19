@@ -1,7 +1,9 @@
 using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Primitives.Extensions;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.Retro.Application.Common.Converters;
 using Inc.TeamAssistant.Retro.Application.Contracts;
+using Inc.TeamAssistant.Retro.Application.Extensions;
 using Inc.TeamAssistant.Retro.Domain;
 using Inc.TeamAssistant.Retro.Model.Commands.UpdateRetroItem;
 using MediatR;
@@ -13,18 +15,18 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
     private readonly IRetroItemRepository _repository;
     private readonly IPersonResolver _personResolver;
     private readonly IRetroEventSender _eventSender;
-    private readonly IRetroPropertiesProvider _provider;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
 
     public UpdateRetroItemCommandHandler(
         IRetroItemRepository repository,
         IPersonResolver personResolver,
         IRetroEventSender eventSender,
-        IRetroPropertiesProvider provider)
+        IRoomPropertiesProvider propertiesProvider)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
-        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
 
     public async Task Handle(UpdateRetroItemCommand command, CancellationToken token)
@@ -33,7 +35,7 @@ internal sealed class UpdateRetroItemCommandHandler : IRequestHandler<UpdateRetr
 
         var person = _personResolver.GetCurrentPerson();
         var item = await command.Id.Required(_repository.Find, token);
-        var properties = await _provider.Get(item.RoomId, token);
+        var properties = await _propertiesProvider.Get(item.RoomId, token);
         var retroType = properties.RequiredRetroType();
 
         item

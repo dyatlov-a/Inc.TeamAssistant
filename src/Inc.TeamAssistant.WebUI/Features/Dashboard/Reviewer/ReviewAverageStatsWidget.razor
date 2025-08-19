@@ -14,7 +14,6 @@
                     <ApexChart
                         TItem="ReviewAverageStatsDto"
                         Title="@Localizer["ReviewAverageStatsTitle"]"
-                        Options="ApexChartOptionsBuilder.Build<ReviewAverageStatsDto>(c => c.DisableToolbar())"
                         FormatYAxisLabel="@(y => y.ToString("N1"))">
                         <ApexPointSeries
                             TItem="ReviewAverageStatsDto"

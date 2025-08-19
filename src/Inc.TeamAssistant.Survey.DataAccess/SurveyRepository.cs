@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Dapper;
 using Inc.TeamAssistant.Primitives.DataAccess;
 using Inc.TeamAssistant.Survey.Application.Contracts;
@@ -24,8 +23,7 @@ internal sealed class SurveyRepository : ISurveyRepository
                 s.template_id AS templateid,
                 s.room_id AS roomid,
                 s.created AS created,
-                s.state AS state,
-                s.question_ids AS questionids
+                s.state AS state
             FROM survey.surveys AS s
             WHERE s.id = @survey_id;
             """,
@@ -46,18 +44,16 @@ internal sealed class SurveyRepository : ISurveyRepository
     public async Task Upsert(SurveyEntry survey, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(survey);
-
-        var questionIds = JsonSerializer.Serialize(survey.QuestionIds);
+        
         var command = new CommandDefinition(
             """
-            INSERT INTO survey.surveys (id, template_id, room_id, created, state, question_ids)
-            VALUES (@id, @template_id, @room_id, @created, @state, @question_ids::JSONB)
+            INSERT INTO survey.surveys (id, template_id, room_id, created, state)
+            VALUES (@id, @template_id, @room_id, @created, @state)
             ON CONFLICT (id) DO UPDATE SET
                 template_id = EXCLUDED.template_id,
                 room_id = EXCLUDED.room_id,
                 created = EXCLUDED.created,
-                state = EXCLUDED.state,
-                question_ids = EXCLUDED.question_ids;
+                state = EXCLUDED.state;
             """,
             new
             {
@@ -65,8 +61,7 @@ internal sealed class SurveyRepository : ISurveyRepository
                 template_id = survey.TemplateId,
                 room_id = survey.RoomId,
                 created = survey.Created,
-                state = (int)survey.State,
-                question_ids = questionIds
+                state = (int)survey.State
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -79,25 +74,24 @@ internal sealed class SurveyRepository : ISurveyRepository
     public async Task Upsert(SurveyAnswer surveyAnswer, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(surveyAnswer);
-
-        var answers = JsonSerializer.Serialize(surveyAnswer.Answers);
+        
         var command = new CommandDefinition(
             """
-            INSERT INTO survey.survey_answers (id, survey_id, created, owner_id, answers)
-            VALUES (@id, @survey_id, @created, @owner_id, @answers::JSONB)
-            ON CONFLICT (id) DO UPDATE SET
-                survey_id = EXCLUDED.survey_id,
-                created = EXCLUDED.created,
-                owner_id = EXCLUDED.owner_id,
-                answers = EXCLUDED.answers;
+            INSERT INTO survey.survey_answers (survey_id, question_id, responder_id, responded, value, comment)
+            VALUES (@survey_id, @question_id, @responder_id, @responded, @value, @comment)
+            ON CONFLICT (survey_id, question_id, responder_id) DO UPDATE SET
+                responded = EXCLUDED.responded,
+                value = EXCLUDED.value,
+                comment = EXCLUDED.comment;
             """,
             new
             {
-                id = surveyAnswer.Id,
                 survey_id = surveyAnswer.SurveyId,
-                created = surveyAnswer.Created,
-                owner_id = surveyAnswer.OwnerId,
-                answers = answers
+                question_id = surveyAnswer.QuestionId,
+                responder_id = surveyAnswer.ResponderId,
+                responded = surveyAnswer.Responded,
+                value = surveyAnswer.Value,
+                comment = surveyAnswer.Comment
             },
             flags: CommandFlags.None,
             cancellationToken: token);

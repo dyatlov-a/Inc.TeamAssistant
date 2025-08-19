@@ -28,6 +28,7 @@ using Inc.TeamAssistant.Gateway.Middlewares;
 using Inc.TeamAssistant.Gateway.Services.ServerCore;
 using Inc.TeamAssistant.Holidays.Model;
 using Inc.TeamAssistant.Primitives.DataAccess;
+using Inc.TeamAssistant.Primitives.Features.Tenants;
 using Inc.TeamAssistant.RandomCoffee.Application;
 using Inc.TeamAssistant.RandomCoffee.Application.Contracts;
 using Inc.TeamAssistant.RandomCoffee.DataAccess;
@@ -45,6 +46,7 @@ using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.WebEncoders;
 using Serilog;
@@ -92,6 +94,8 @@ builder.Services
 	.AddLanguageIdType()
 	.AddDateOnlyType()
 	.AddDateTimeOffsetType()
+	
+	.AddJsonType<RoomProperties>()
 	
 	.AddJsonType<IReadOnlyCollection<long>>()
 	.AddJsonType<IReadOnlyCollection<string>>()
@@ -149,7 +153,12 @@ builder.Services
 		CachePolicies.OpenGraphCachePolicyName,
 		b => b.Expire(TimeSpan.FromSeconds(CachePolicies.OpenGraphCacheDurationInSeconds))))
 	.Configure<WebEncoderOptions>(c => c.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All))
-	.AddMvc(o => o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false);
+	.AddControllers(o =>
+	{
+		o.Filters.Add<CurrentPersonActionFilter>();
+		o.OutputFormatters.OfType<HttpNoContentOutputFormatter>().Single().TreatNullValueAsNoContent = false;
+	})
+	.AddControllersAsServices();
 
 builder.Services
 	.AddHybridCache();
@@ -159,7 +168,7 @@ builder.Services
 
 builder.Services
 	.AddEventSenders()
-	.AddSignalR();
+	.AddSignalR(o => o.AddFilter<CurrentPersonHubFilter>());
 
 builder.Services
 	.AddRazorComponents()
@@ -196,5 +205,6 @@ app
 
 app.MapHub<AssessmentSessionHub>(HubDescriptors.AssessmentSessionHub.Endpoint);
 app.MapHub<RetroHub>(HubDescriptors.RetroHub.Endpoint);
+app.MapHub<SurveyHub>(HubDescriptors.SurveyHub.Endpoint);
 
 app.Run();

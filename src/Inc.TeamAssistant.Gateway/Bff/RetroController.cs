@@ -1,5 +1,4 @@
 using Inc.TeamAssistant.Retro.Model.Commands.ChangeActionItem;
-using Inc.TeamAssistant.Retro.Model.Commands.ChangeRetroProperties;
 using Inc.TeamAssistant.Retro.Model.Commands.MoveToNextRetroState;
 using Inc.TeamAssistant.Retro.Model.Commands.SetRetroAssessment;
 using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
@@ -88,21 +87,5 @@ public sealed class RetroController : ControllerBase
         await _retroService.SetRetroAssessment(command, CancellationToken.None);
         
         return Ok();
-    }
-
-    [HttpPut("properties")]
-    public async Task<IActionResult> ChangeRetroProperties([FromBody]ChangeRetroPropertiesCommand command)
-    {
-        ArgumentNullException.ThrowIfNull(command);
-
-        await _retroService.ChangeRetroProperties(command, CancellationToken.None);
-        
-        return Ok();
-    }
-
-    [HttpGet("templates")]
-    public async Task<IActionResult> GetTemplates(CancellationToken token)
-    {
-        return Ok(await _retroService.GetRetroTemplates(token));
     }
 }

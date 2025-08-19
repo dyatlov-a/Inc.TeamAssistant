@@ -45,9 +45,9 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
             }
         }
         
-        internal static string WaitStartHealthCheck {
+        internal static string TeamHealthCheckWaiting {
             get {
-                return ResourceManager.GetString("WaitStartHealthCheck", resourceCulture);
+                return ResourceManager.GetString("TeamHealthCheckWaiting", resourceCulture);
             }
         }
         
@@ -180,6 +180,234 @@ namespace Inc.TeamAssistant.WebUI.Features.Survey {
         internal static string TeamworkText {
             get {
                 return ResourceManager.GetString("TeamworkText", resourceCulture);
+            }
+        }
+        
+        internal static string RoomProperties {
+            get {
+                return ResourceManager.GetString("RoomProperties", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateLost {
+            get {
+                return ResourceManager.GetString("ConnectionStateLost", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectionStateConnecting {
+            get {
+                return ResourceManager.GetString("ConnectionStateConnecting", resourceCulture);
+            }
+        }
+        
+        internal static string Reconnect {
+            get {
+                return ResourceManager.GetString("Reconnect", resourceCulture);
+            }
+        }
+        
+        internal static string RequiredValues {
+            get {
+                return ResourceManager.GetString("RequiredValues", resourceCulture);
+            }
+        }
+        
+        internal static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+        
+        internal static string GiveRating {
+            get {
+                return ResourceManager.GetString("GiveRating", resourceCulture);
+            }
+        }
+        
+        internal static string Comment {
+            get {
+                return ResourceManager.GetString("Comment", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheck {
+            get {
+                return ResourceManager.GetString("TeamHealthCheck", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheckHelp {
+            get {
+                return ResourceManager.GetString("TeamHealthCheckHelp", resourceCulture);
+            }
+        }
+        
+        internal static string TeamHealthCheckFinished {
+            get {
+                return ResourceManager.GetString("TeamHealthCheckFinished", resourceCulture);
+            }
+        }
+        
+        internal static string ConfirmMoveToFinish {
+            get {
+                return ResourceManager.GetString("ConfirmMoveToFinish", resourceCulture);
+            }
+        }
+        
+        internal static string HasParticipants {
+            get {
+                return ResourceManager.GetString("HasParticipants", resourceCulture);
+            }
+        }
+        
+        internal static string HasMean {
+            get {
+                return ResourceManager.GetString("HasMean", resourceCulture);
+            }
+        }
+        
+        internal static string TotalSummaryControls {
+            get {
+                return ResourceManager.GetString("TotalSummaryControls", resourceCulture);
+            }
+        }
+        
+        internal static string TotalSummaryControlsHelp {
+            get {
+                return ResourceManager.GetString("TotalSummaryControlsHelp", resourceCulture);
+            }
+        }
+        
+        internal static string Trend {
+            get {
+                return ResourceManager.GetString("Trend", resourceCulture);
+            }
+        }
+        
+        internal static string MeanAnswerHint {
+            get {
+                return ResourceManager.GetString("MeanAnswerHint", resourceCulture);
+            }
+        }
+        
+        internal static string AnswersTrendHint {
+            get {
+                return ResourceManager.GetString("AnswersTrendHint", resourceCulture);
+            }
+        }
+        
+        internal static string AnswersHint {
+            get {
+                return ResourceManager.GetString("AnswersHint", resourceCulture);
+            }
+        }
+        
+        internal static string TeamEngagementTitle {
+            get {
+                return ResourceManager.GetString("TeamEngagementTitle", resourceCulture);
+            }
+        }
+        
+        internal static string TeamEngagementText {
+            get {
+                return ResourceManager.GetString("TeamEngagementText", resourceCulture);
+            }
+        }
+        
+        internal static string RoleClarityTitle {
+            get {
+                return ResourceManager.GetString("RoleClarityTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RoleClarityText {
+            get {
+                return ResourceManager.GetString("RoleClarityText", resourceCulture);
+            }
+        }
+        
+        internal static string AutonomyTitle {
+            get {
+                return ResourceManager.GetString("AutonomyTitle", resourceCulture);
+            }
+        }
+        
+        internal static string AutonomyText {
+            get {
+                return ResourceManager.GetString("AutonomyText", resourceCulture);
+            }
+        }
+        
+        internal static string IsolationTitle {
+            get {
+                return ResourceManager.GetString("IsolationTitle", resourceCulture);
+            }
+        }
+        
+        internal static string IsolationText {
+            get {
+                return ResourceManager.GetString("IsolationText", resourceCulture);
+            }
+        }
+        
+        internal static string WellBeingTitle {
+            get {
+                return ResourceManager.GetString("WellBeingTitle", resourceCulture);
+            }
+        }
+        
+        internal static string WellBeingText {
+            get {
+                return ResourceManager.GetString("WellBeingText", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectednessTitle {
+            get {
+                return ResourceManager.GetString("ConnectednessTitle", resourceCulture);
+            }
+        }
+        
+        internal static string ConnectednessText {
+            get {
+                return ResourceManager.GetString("ConnectednessText", resourceCulture);
+            }
+        }
+        
+        internal static string DistractionsTitle {
+            get {
+                return ResourceManager.GetString("DistractionsTitle", resourceCulture);
+            }
+        }
+        
+        internal static string DistractionsText {
+            get {
+                return ResourceManager.GetString("DistractionsText", resourceCulture);
+            }
+        }
+        
+        internal static string RemoteSupportTitle {
+            get {
+                return ResourceManager.GetString("RemoteSupportTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RemoteSupportText {
+            get {
+                return ResourceManager.GetString("RemoteSupportText", resourceCulture);
+            }
+        }
+        
+        internal static string Skip {
+            get {
+                return ResourceManager.GetString("Skip", resourceCulture);
+            }
+        }
+        
+        internal static string Comments {
+            get {
+                return ResourceManager.GetString("Comments", resourceCulture);
             }
         }
     }

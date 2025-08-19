@@ -1,4 +1,3 @@
-using Inc.TeamAssistant.Primitives;
 using Inc.TeamAssistant.Retro.Model.Common;
 
 namespace Inc.TeamAssistant.Retro.Application.Contracts;
@@ -15,13 +14,9 @@ public interface IRetroEventSender
     
     Task RetroStateChanged(Guid roomId, long personId, bool finished, bool handRaised);
 
-    Task PersonsChanged(Guid roomId, IReadOnlyCollection<Person> persons);
-
     Task ActionItemChanged(Guid roomId, ActionItemDto item);
     
     Task ActionItemRemoved(Guid roomId, Guid itemId);
-    
-    Task RetroPropertiesChanged(Guid roomId, RetroPropertiesDto properties);
 
     Task TimerChanged(Guid roomId, TimeSpan? duration);
 }
