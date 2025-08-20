@@ -11,7 +11,7 @@
     @onblur="OnBlur"
     @attributes="DynamicAttributes.BuildContenteditable(CanEdit)"
     @ref="_item">
-    @if (!RenderContext.IsBrowser || !CanEdit)
+    @if (!RenderContext.IsClientSide || !CanEdit)
     {
         @HtmlValue
     }
@@ -49,7 +49,7 @@
         if (!CanEdit)
             return;
 
-        if (RenderContext.IsBrowser && _timer is null)
+        if (RenderContext.IsClientSide && _timer is null)
         {
             _timer = CreateTimer(TimeSpan.FromMilliseconds(DebounceDelay));
             OnInputChanged();
@@ -58,7 +58,7 @@
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && RenderContext.IsBrowser && CanEdit)
+        if (firstRender && RenderContext.IsClientSide && CanEdit)
         {
             if (string.IsNullOrWhiteSpace(_value))
                 await JsRuntime.Execute(JsFunctions.FocusElement(_item));

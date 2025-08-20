@@ -102,7 +102,7 @@
         <value>Настройки комнаты</value>
     </data>
     <data name="Reconnect" xml:space="preserve">
-        <value>Повторить подключение</value>
+        <value>Переподключение</value>
     </data>
     <data name="ConnectionStateConnecting" xml:space="preserve">
         <value>Устанавливается соединение с сервером...</value>

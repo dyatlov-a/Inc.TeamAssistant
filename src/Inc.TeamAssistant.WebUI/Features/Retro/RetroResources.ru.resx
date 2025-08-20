@@ -34,7 +34,7 @@
         <value>Устанавливается соединение с сервером...</value>
     </data>
     <data name="Reconnect" xml:space="preserve">
-        <value>Повторить подключение</value>
+        <value>Переподключение</value>
     </data>
     <data name="ConfirmMoveToDiscussing" xml:space="preserve">
         <value>Досрочное завершение голосования. Перейти к обсуждению?</value>

@@ -39,7 +39,7 @@ internal sealed class RequestProcessor : IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(progress);
         
-        if (_renderContext.IsBrowser)
+        if (_renderContext.IsClientSide)
         {
             if (_applicationState.TryTakeFromJson<TResponse>(key, out var restored) && restored is not null)
             {

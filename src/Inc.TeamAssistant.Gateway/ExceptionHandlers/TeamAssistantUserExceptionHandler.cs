@@ -27,10 +27,9 @@ internal sealed class TeamAssistantUserExceptionHandler : IExceptionHandler
             return false;
 
         var statusCode = (int)HttpStatusCode.BadRequest;
-        var languageContext = _renderContext.GetLanguageContext();
         var errorMessage = _messageBuilder.Build(
             userException.MessageId,
-            languageContext.CurrentLanguage,
+            _renderContext.CurrentLanguage,
             userException.Values);
         var errorDetails = new ErrorDetails(
             "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",

@@ -4,7 +4,7 @@
 <MainVideo FileName="source-tree-02" />
 
 <section id="about-bots" class="about-bots">
-    <div class="about-bots__container @(RenderContext.IsBrowser ? "animation__slide-left" : "hidden")">
+    <div class="about-bots__container @(RenderContext.IsClientSide ? "animation__slide-left" : "hidden")">
         <h1 class="about-bots__header">
             <span>@Localizer["MainHeader"]</span>
             <br/>

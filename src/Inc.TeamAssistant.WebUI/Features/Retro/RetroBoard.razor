@@ -387,7 +387,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (RenderContext.IsBrowser && IsFacilitator && RetroState == RetroStages.Grouping && !_isGrouping)
+        if (RenderContext.IsClientSide && IsFacilitator && RetroState == RetroStages.Grouping && !_isGrouping)
         {
             await JsRuntime.Execute(JsFunctions.AddClassToElement(".retro-item", "animation__draggable-hint"));
 

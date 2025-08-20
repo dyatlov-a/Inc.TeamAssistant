@@ -2,6 +2,7 @@
 
 @inject NavRouter NavRouter
 @inject TenantStore TenantStore
+@inject IRenderContext RenderContext
 
 <AuthorizeView>
     <Authorized>
@@ -10,7 +11,7 @@
             Languages="_languages"
             MainUrl="@MainUrl"
             LoginUrl="@LoginUrl"
-            LogoutUrl="@_logoutUrl"
+            LogoutUrl="@LogoutUrl"
             LanguageChanged="p => MoveTo(p)"
             CurrentPerson="context.User.ToPerson()"
             Rooms="TenantStore.Rooms"
@@ -21,7 +22,7 @@
             HasPath="HasPath"
             Languages="_languages"
             LoginUrl="@LoginUrl"
-            LogoutUrl="@_logoutUrl"
+            LogoutUrl="@LogoutUrl"
             MainUrl="@MainUrl"
             LanguageChanged="p => MoveTo(p)"
             MoveToLinkFactory="CreateMoveToLink" />
@@ -31,7 +32,9 @@
 @code {
     private IDisposable? _routerScope;
     private IReadOnlyCollection<MainLinkViewModel> _languages = [];
-    private string _logoutUrl = string.Empty;
+    private string LogoutUrl => RenderContext.SelectedLanguage is null
+        ? "accounts/logout"
+        : $"accounts/logout?languageCode={RenderContext.SelectedLanguage.Value}";
     
     private bool HasPath(string value) => NavRouter.CurrentUrl.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     private string MainUrl => NavRouter.CreateRoute(null);
@@ -39,12 +42,7 @@
 
     protected override void OnInitialized()
     {
-        var languageId = NavRouter.GetCurrentLanguage();
-        
         _routerScope = NavRouter.OnRouteChanged(SetLanguages);
-        _logoutUrl = languageId is null
-            ? "accounts/logout"
-            : $"accounts/logout?languageCode={languageId.Value}";
         
         SetLanguages();
         

@@ -4,13 +4,8 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject PersonResolver PersonResolver
 
-@{
-    if (HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true)
-        PersonResolver.TrySet(HttpContextAccessor.HttpContext.User.ToPerson());
-}
-
 <!DOCTYPE html>
-<html lang="@_lang">
+<html lang="@RenderContext.CurrentLanguage.Value">
 <head>
     @if (!string.IsNullOrWhiteSpace(AnalyticsOptions.GoogleVerificationValue))
     {
@@ -146,12 +141,10 @@
 
 @code {
     private readonly InteractiveWebAssemblyRenderMode _renderMode = new(prerender: true);
-    private string _lang = LanguageSettings.DefaultLanguageId.Value;
 
     protected override void OnInitialized()
     {
-        var languageContext = RenderContext.GetLanguageContext();
-        
-        _lang = languageContext.CurrentLanguage.Value;
+        if (HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true)
+            PersonResolver.TrySet(HttpContextAccessor.HttpContext.User.ToPerson());
     }
 }

@@ -4,7 +4,7 @@
 <div class="constructor__container">
     <Navigations Items="NavItems" MoveToNext="@((Stage i) => OnMoveToNext(i))" />
     <h1 class="constructor__title">@Localizer["Title"] @BotName</h1>
-    @if (RenderContext.IsBrowser)
+    @if (RenderContext.IsClientSide)
     {
         <Loading State="State" Retry="Retry">
             @foreach (var widget in StageWidgets)

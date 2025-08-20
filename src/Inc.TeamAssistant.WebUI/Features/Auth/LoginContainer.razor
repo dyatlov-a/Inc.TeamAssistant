@@ -15,7 +15,7 @@
         AuthBotContext="_authBotContext"
         Retry="Load"
         LoggedInAsSystemUser="LoginAsSystemUser"
-        Lang="@_lang"
+        Lang="@RenderContext.CurrentLanguage.Value"
         ReturnUrl="@ReturnUrl" />
 </div>
 
@@ -24,15 +24,9 @@
     public string? ReturnUrl { get; set; }
     
     private readonly LoadingState _state = LoadingState.Done();
-    private string _lang = LanguageSettings.DefaultLanguageId.Value;
     private AuthBotContext _authBotContext = AuthBotContext.Empty;
 
-    protected override async Task OnParametersSetAsync()
-    {
-        _lang = RenderContext.GetLanguageContext().CurrentLanguage.Value;
-        
-        await Load();
-    }
+    protected override async Task OnParametersSetAsync() => await Load();
 
     private async Task Load()
     {
