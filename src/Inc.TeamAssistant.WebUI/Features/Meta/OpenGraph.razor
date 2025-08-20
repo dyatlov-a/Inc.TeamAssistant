@@ -1,9 +1,9 @@
 @inject IRenderContext RenderContext
 @inject IStringLocalizer<MetaResources> Localizer
 
-<meta property="og:locale" content="@_languageId">
-<meta property="og:title" content="@Localizer[_data.Title]">
-<meta property="og:description" content="@Localizer[_data.Description]">
+<meta property="og:locale" content="@LanguageId">
+<meta property="og:title" content="@Localizer[Data.Title]">
+<meta property="og:description" content="@Localizer[Data.Description]">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://@(GlobalResources.Settings.CanonicalName)">
 <meta property="og:site_name" content="@GlobalResources.Settings.CanonicalName">
@@ -13,8 +13,8 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@(GlobalResources.Settings.CanonicalName)">
-<meta name="twitter:title" content="@Localizer[_data.Title]">
-<meta name="twitter:description" content="@Localizer[_data.Description]">
+<meta name="twitter:title" content="@Localizer[Data.Title]">
+<meta name="twitter:description" content="@Localizer[Data.Description]">
 <meta name="twitter:image" content="@ImageUrl">
 
 <meta property="vk:image" content="@ImageUrl">
@@ -23,23 +23,14 @@
     [Parameter, EditorRequired]
     public WebsiteSection WebsiteSection { get; set; }
 
-    private string _languageId = string.Empty;
-    private (string Title, string Description, string Image, string ImageText) _data = default;
-
-    protected override void OnParametersSet() => Load();
-
-    private void Load()
+    private string LanguageId => $"{RenderContext.CurrentLanguage.Value.ToLowerInvariant()}_{RenderContext.CurrentLanguage.Value.ToUpperInvariant()}";
+    
+    private string ImageUrl => $"https://{GlobalResources.Settings.CanonicalName}/open-graph/create-card/{Data.Image}?text={Localizer[Data.ImageText]}";
+    
+    private (string Title, string Description, string Image, string ImageText) Data => WebsiteSection switch
     {
-        var languageContext = RenderContext.GetLanguageContext();
-        
-        _languageId = $"{languageContext.CurrentLanguage.Value.ToLowerInvariant()}_{languageContext.CurrentLanguage.Value.ToUpperInvariant()}";
-        _data = WebsiteSection switch
-        {
-            WebsiteSection.Assessment => ("OgAppraiserTitle", "OgAppraiserDescription", "main.jpg", "OgAppraiserImageText"),
-            WebsiteSection.Map => ("OgCheckInTitle", "OgCheckInDescription", "map.jpg", "OgCheckInImageText"),
-            _ => ("OgMainTitle", "OgMainDescription", "main.jpg", "OgMainImageText")
-        };
-    }
-
-    private string ImageUrl => $"https://{GlobalResources.Settings.CanonicalName}/open-graph/create-card/{_data.Image}?text={Localizer[_data.ImageText]}";
+        WebsiteSection.Assessment => ("OgAppraiserTitle", "OgAppraiserDescription", "main.jpg", "OgAppraiserImageText"),
+        WebsiteSection.Map => ("OgCheckInTitle", "OgCheckInDescription", "map.jpg", "OgCheckInImageText"),
+        _ => ("OgMainTitle", "OgMainDescription", "main.jpg", "OgMainImageText")
+    };
 }

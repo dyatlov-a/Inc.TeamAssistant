@@ -1,8 +1,8 @@
 @inject IStringLocalizer<SurveyResources> Localizer
 
 <div class="survey-answer">
-    <h2 class="main-content__header">@Localizer[Title]</h2>
-    <p class="main-content__text">@(new MarkupString(Localizer[Text]))</p>
+    <h2 class="main-content__header">@Localizer[FormModel.Title]</h2>
+    <p class="main-content__text">@(new MarkupString(Localizer[FormModel.Text]))</p>
     <EditForm EditContext="_editContext" OnSubmit="SubmitForm">
         <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="true" />
         <FormSection Title="@Localizer["TeamHealthCheck"]" HelpText="@Localizer["TeamHealthCheckHelp"]">
@@ -37,18 +37,6 @@
 </div>
 
 @code {
-    /// <summary>
-    /// Title
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string Title { get; set; } = default!;
-    
-    /// <summary>
-    /// Text
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string Text { get; set; } = default!;
-    
     /// <summary>
     /// Form model.
     /// </summary>

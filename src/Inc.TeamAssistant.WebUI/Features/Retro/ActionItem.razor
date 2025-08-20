@@ -12,24 +12,35 @@
     @if (CanMoveToState)
     {
         <div class="action-item__actions">
-            <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToDone">
-                <CheckIcon Size="20px" />
-            </Button>
-            <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToPinned">
-                <PaperclipIcon Size="20px" />
-            </Button>
+            @if (Value.State == ActionItemStages.New)
+            {
+                <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToDone">
+                    <CheckIcon Size="20px"/>
+                </Button>
+            }
+            @if (Value.State is ActionItemStages.New or ActionItemStages.Done)
+            {
+                <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToPinned">
+                    <PaperclipIcon Size="20px"/>
+                </Button>
+            }
+            @if (Value.State == ActionItemStages.Pinned)
+            {
+                <Button ButtonMode="ButtonMode.Small" OnClick="OnMoveToDone">
+                    <PaperclipSlashIcon Size="20px"/>
+                </Button>
+            }
         </div>
     }
     <InputInlineEditor
         Id="@Value.Id"
         CanEdit="CanEdit"
-        DebounceDelay="DebounceDelay"
         Value="@Value.Text"
         ValueExpression="@(() => Value.Text)"
         ValueChanged="@((string? v) => OnValueChanged(v))" />
     @if (!CanRemove)
     {
-        <span class="action-item__data">@Date.ToString("dd.MM.yyyy")</span>
+        <span class="action-item__data">@Value.Modified.ToString("dd.MM.yyyy")</span>
     }
 </div>
 <ConfirmDialog @ref="_confirmDialog">
@@ -37,6 +48,24 @@
 </ConfirmDialog>
 
 @code {
+    /// <summary>
+    /// Value of the item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public ActionItemViewModel Value { get; set; } = default!;
+    
+    /// <summary>
+    /// Value changed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ValueChanged { get; set; }
+    
+    /// <summary>
+    /// Item removed callback.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
+    
     /// <summary>
     /// Can edit item.
     /// </summary>
@@ -52,34 +81,8 @@
     /// <summary>
     /// Can move to state.
     /// </summary>
-    [Parameter, EditorRequired]
-    public bool CanMoveToState { get; set; }
-    
-    /// <summary>
-    /// Value of the item.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public ActionItemViewModel Value { get; set; } = default!;
-    
-    /// <summary>
-    /// Debounce delay in milliseconds.
-    /// </summary>
     [Parameter]
-    public int DebounceDelay { get; set; }
-    
-    /// <summary>
-    /// Value changed callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<ActionItemViewModel> ValueChanged { get; set; }
-    
-    /// <summary>
-    /// Item removed callback.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public EventCallback<ActionItemViewModel> ItemRemoved { get; set; }
-
-    private DateTimeOffset Date => Value.Modified ?? Value.Created;
+    public bool CanMoveToState { get; set; }
 
     private string CssClass => Value.State switch
     {

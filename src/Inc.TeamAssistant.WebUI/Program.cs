@@ -12,8 +12,7 @@ builder.Services
 
 var host = builder.Build();
 var renderContext = host.Services.GetRequiredService<IRenderContext>();
-var languageContext = renderContext.GetLanguageContext();
 
-ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
+ValidatorOptions.Global.Configure(renderContext.CurrentLanguage);
        
 await host.RunAsync();

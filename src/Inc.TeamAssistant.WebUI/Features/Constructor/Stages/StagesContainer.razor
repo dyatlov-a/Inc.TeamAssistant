@@ -76,7 +76,7 @@
         if (Enum.TryParse<Stage>(SelectedStage, ignoreCase: true, out var value))
             _currentStage = value;
         
-        if (RenderContext.IsBrowser)
+        if (RenderContext.IsClientSide)
             await Load();
     }
     

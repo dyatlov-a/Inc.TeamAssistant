@@ -4,9 +4,9 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 
 public interface IRenderContext
 {
-    (LanguageId CurrentLanguage, bool Selected) GetLanguageContext();
+    bool IsClientSide { get; }
     
-    bool IsBrowser { get; }
-
-    bool IsDevelopment();
+    LanguageId? SelectedLanguage { get; }
+    
+    LanguageId CurrentLanguage => SelectedLanguage ?? LanguageSettings.DefaultLanguageId;
 }

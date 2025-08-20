@@ -26,7 +26,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && RenderContext.IsBrowser)
+        if (firstRender && RenderContext.IsClientSide)
         {
             _mapModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",

@@ -4,7 +4,7 @@
 @inject IRenderContext RenderContext
 @inject IJSRuntime JsRuntime
 
-@if (RenderContext.IsBrowser)
+@if (RenderContext.IsClientSide)
 {
     <video autoplay muted playsinline loop poster="@(FileName).jpg" @ref="_video" class="video-main">
         <source src="@(FileName).mp4" type="video/mp4">
@@ -25,7 +25,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && RenderContext.IsBrowser)
+        if (firstRender && RenderContext.IsClientSide)
         {
             _videoModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import",

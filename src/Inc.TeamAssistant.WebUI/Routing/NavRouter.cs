@@ -38,20 +38,11 @@ public sealed class NavRouter : IDisposable
         return routeWithoutLanguage;
     }
 
-    public LanguageId? GetCurrentLanguage()
-    {
-        var languageContext = _renderContext.GetLanguageContext();
-        
-        return languageContext.Selected
-            ? languageContext.CurrentLanguage
-            : null;
-    }
-
     public NavRoute CreateRoute(string? routeSegment)
     {
         var link = string.IsNullOrWhiteSpace(routeSegment) ? "/" : routeSegment;
 
-        return new NavRoute(GetCurrentLanguage(), link);
+        return new NavRoute(_renderContext.SelectedLanguage, link);
     }
     
     public IDisposable OnRouteChanged(Action onRouteChanged)

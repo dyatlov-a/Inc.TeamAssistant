@@ -94,9 +94,9 @@
     private readonly LoadingState _state = LoadingState.Done();
     private readonly List<RetroColumnDto> _columns = new();
     private LinkedList<(RetroItemDto Item, IReadOnlyCollection<RetroItemDto> Children)> _orderedItems = new();
-    private List<RetroItemViewModel> _items = new();
+    private readonly List<RetroItemViewModel> _items = new();
     private Dictionary<long, ParticipantViewModel> _participants = new();
-    private List<ActionItemViewModel> _actionItems = new();
+    private readonly List<ActionItemViewModel> _actionItems = new();
     
     private HubConnectionState? ConnectionState => _eventBuilder?.State;
     private string ConnectionStateAsKey => ConnectionState == HubConnectionState.Disconnected
@@ -114,6 +114,9 @@
     
     private async Task Load(IProgress<LoadingState.State> state, bool hardReset = true)
     {
+        _items.Clear();
+        _actionItems.Clear();
+        
         if (hardReset)
             await TenantStore.Initialize(RoomId, state);
         
@@ -146,11 +149,9 @@
             ? _currentItem.Value.Children.Append(_currentItem.Value.Item)
             : result.Items;
         
-        _items.Clear();
         foreach (var item in items)
             ApplyRetroItemChanged(item);
-
-        _actionItems.Clear();
+        
         foreach (var actionItem in result.ActionItems)
             ApplyActionItemChanged(actionItem);
         
@@ -255,7 +256,10 @@
                     if (r.State == RetroStages.Finished)
                         await NavRouter.MoveToRoute($"retro-assessment/{r.Id:N}");
                     else
+                    {
                         await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                        StateHasChanged();
+                    }
                 });
             }),
             b => b.OnItemMoved(async id =>
@@ -298,6 +302,7 @@
                 await InvokeAsync(async () =>
                 {
                     await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                    StateHasChanged();
                 });
             })
         );
@@ -318,33 +323,22 @@
             {
                 if (_eventBuilder is not null)
                     await _eventBuilder.MoveItem(RoomId, _currentItem.Next.Value.Item.Id);
-                
-                await MoveItem(_currentItem.Next);
             }
             else if (_activeSession?.Id is not null)
                 await RequestProcessor.Process(
-                    () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
+                    async () => await RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
                     _state);
         }
         else
-        {
             await RequestProcessor.Process(
-                () => RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
+                async () => await RetroService.MoveToNextRetroState(new MoveToNextRetroStateCommand(id, RoomId)),
                 _state);
-            
-            await Load(_state, hardReset: false);
-        }
     }
 
     private async Task OnToPreviousMoved()
     {
-        if (_currentItem?.Previous is not null)
-        {
-            if (_eventBuilder is not null)
-                await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
-            
-            await MoveItem(_currentItem.Previous);
-        }
+        if (_currentItem?.Previous is not null && _eventBuilder is not null)
+            await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
     }
 
     private async Task OnRetroItemCreated(Guid columnId)

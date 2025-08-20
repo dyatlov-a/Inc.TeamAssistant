@@ -7,6 +7,8 @@ public sealed class AnswerFromModel
 {
     private readonly Guid _questionId;
     
+    public string Title { get; private set; }
+    public string Text { get; private set; }
     public IReadOnlyCollection<int> Values { get; private set; }
     public string Comment { get; private set; }
 
@@ -15,6 +17,8 @@ public sealed class AnswerFromModel
         ArgumentNullException.ThrowIfNull(item);
 
         _questionId = item.Id;
+        Title = item.Title;
+        Text = item.Text;
         Values = item.Value.HasValue ? new[] { item.Value.Value } : [];
         Comment = item.Comment ?? string.Empty;
     }

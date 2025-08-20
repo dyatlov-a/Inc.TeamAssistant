@@ -17,9 +17,7 @@ internal sealed class RequestCultureMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var languageContext = _renderContext.GetLanguageContext();
-		
-        ValidatorOptions.Global.Configure(languageContext.CurrentLanguage);
+        ValidatorOptions.Global.Configure(_renderContext.CurrentLanguage);
         
         await _next(context);
     }
