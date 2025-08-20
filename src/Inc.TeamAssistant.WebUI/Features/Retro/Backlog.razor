@@ -39,7 +39,6 @@
                                             CanRemove="false"
                                             CanMoveToState="CanEdit(stage)"
                                             Value="item"
-                                            DebounceDelay="DebounceDelay"
                                             ValueChanged="SendActionItemChanged"
                                             ItemRemoved="@(_ => { })"/>
                                     }
@@ -137,8 +136,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<string> LoadHistory { get; set; }
-
-    private const int DebounceDelay = 500;
     
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
     

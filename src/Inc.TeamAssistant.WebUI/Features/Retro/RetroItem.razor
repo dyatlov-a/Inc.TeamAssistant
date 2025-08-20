@@ -31,7 +31,6 @@
     <InputInlineEditor
         Id="@Value.Id"
         CanEdit="CanEdit"
-        DebounceDelay="DebounceDelay"
         Value="@Value.Text"
         ValueExpression="@(() => Value.Text)"
         ValueChanged="@(v => OnValueChanged(v))" />
@@ -80,12 +79,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public string BackgroundColor { get; set; } = default!;
-
-    /// <summary>
-    /// Debounce delay in milliseconds.
-    /// </summary>
-    [Parameter]
-    public int DebounceDelay { get; set; }
 
     /// <summary>
     /// Child content.

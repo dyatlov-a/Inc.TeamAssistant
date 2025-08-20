@@ -29,12 +29,12 @@
     /// </summary>
     [Parameter, EditorRequired]
     public bool CanEdit { get; set; }
-    
+
     /// <summary>
     /// Debounce delay in milliseconds.
     /// </summary>
     [Parameter]
-    public int DebounceDelay { get; set; }
+    public int DebounceDelay { get; set; } = 500;
     
     private string _value = string.Empty;
     private ElementReference _item;
@@ -68,37 +68,36 @@
             await JsRuntime.Execute(JsFunctions.AddCleanStyleActionToPasteListener(_item));
         }
     }
-    
-    private async Task TrySendValueChanged()
+
+    private async Task SendValueChanged()
+    {
+        var newValue = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+
+        if (_value != newValue)
+        {
+            _value = newValue;
+
+            await ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    private async void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
     {
         try
         {
-            var newValue = await JsRuntime.Execute(JsFunctions.GetTextValue(_item));
+            _timer?.Stop();
 
-            // TODO: fix clear state
-            if (_value != newValue && !string.IsNullOrWhiteSpace(newValue))
-            {
-                _value = newValue;
-                
-                await ValueChanged.InvokeAsync(_value);
-            }
+            await InvokeAsync(async () => await SendValueChanged());
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error on timer tick for InlineEditor");
         }
     }
-    
-    private void OnAfterInputChanged(object? sender, ElapsedEventArgs e)
-    {
-        _timer?.Stop();
-        
-        InvokeAsync(TrySendValueChanged);
-    }
-    
+
     private async Task OnBlur()
     {
-        await TrySendValueChanged();
+        await SendValueChanged();
         
         _timer?.Stop();
     }

@@ -86,7 +86,6 @@
                                                     CanRemove="@(CanRemove(item) && !hasChildren)"
                                                     CanMove="CanMove"
                                                     BackgroundColor="@column.Color"
-                                                    DebounceDelay="DebounceDelay"
                                                     ItemRemoved="ItemRemoved"
                                                     ItemMoved="ItemMoved"
                                                     Value="item"
@@ -147,7 +146,6 @@
                                                 CanRemove="IsFacilitator"
                                                 CanMoveToState="false"
                                                 Value="actionItem"
-                                                DebounceDelay="DebounceDelay"
                                                 ValueChanged="SendActionItemChanged"
                                                 ItemRemoved="SendActionItemRemoved" />
                                         }
@@ -377,8 +375,7 @@
     private IReadOnlyCollection<NavigationItem<string>> NavItems => RetroStages.All
         .Select(s => new NavigationItem<string>(Localizer[$"{s}Title"], Value: s, s == RetroState, CanMoveToNext(s)))
         .ToArray();
-
-    private const int DebounceDelay = 500;
+    
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool CanCreateRetroItem => Session is null;
     private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
