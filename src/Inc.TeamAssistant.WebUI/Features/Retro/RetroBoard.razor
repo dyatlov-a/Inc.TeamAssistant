@@ -142,9 +142,9 @@
                                         @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
                                         {
                                             <ActionItem
+                                                @key="actionItem.Id"
                                                 CanEdit="IsFacilitator"
                                                 CanRemove="IsFacilitator"
-                                                CanMoveToState="false"
                                                 Value="actionItem"
                                                 ValueChanged="SendActionItemChanged"
                                                 ItemRemoved="SendActionItemRemoved" />
@@ -167,7 +167,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
-    
+
     /// <summary>
     /// Component state.
     /// </summary>
@@ -191,7 +191,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public RetroSessionDto? Session { get; set; }
-    
+
     /// <summary>
     /// Facilitator id.
     /// </summary>
@@ -203,7 +203,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public IReadOnlyCollection<RetroItemViewModel> Items { get; set; } = default!;
-    
+
     /// <summary>
     /// Action items.
     /// </summary>
@@ -221,31 +221,31 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int VotesTotal { get; set; }
-    
+
     /// <summary>
     /// Vote by item count.
     /// </summary>
     [Parameter, EditorRequired]
     public int VoteByItemCount { get; set; }
-    
+
     /// <summary>
     /// Timer duration.
     /// </summary>
     [Parameter, EditorRequired]
     public TimeSpan TimerDuration { get; set; }
-    
+
     /// <summary>
     /// Retro type.
     /// </summary>
     [Parameter, EditorRequired]
     public string RetroType { get; set; } = default!;
-    
+
     /// <summary>
     /// Is creating retro item.
     /// </summary>
     [Parameter, EditorRequired]
     public bool IsCreating { get; set; }
-    
+
     /// <summary>
     /// Current timer value.
     /// </summary>
@@ -263,7 +263,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> ItemCreated { get; set; }
-    
+
     /// <summary>
     /// Action item created callback.
     /// </summary>
@@ -275,7 +275,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemChanged { get; set; }
-    
+
     /// <summary>
     /// Action item changed callback.
     /// </summary>
@@ -287,7 +287,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<RetroItemViewModel> ItemRemoved { get; set; }
-    
+
     /// <summary>
     /// Action item removed callback.
     /// </summary>
@@ -311,55 +311,55 @@
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<(Guid ItemId, int Vote)> VoteChanged { get; set; }
-    
+
     /// <summary>
     /// Retro started callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback RetroStarted { get; set; }
-    
+
     /// <summary>
     /// To next moved callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<Guid> OnNextMoved { get; set; }
-    
+
     /// <summary>
     /// To previous moved callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback ToPreviousMoved { get; set; }
-    
+
     /// <summary>
     /// Timer changed action.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<TimeSpan?> TimerChanged { get; set; }
-    
+
     /// <summary>
     /// Finished action.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<long> Finished { get; set; }
-    
+
     /// <summary>
     /// Hand raised action.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<long> HandRaised { get; set; }
-    
+
     /// <summary>
     /// Facilitator given action.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback FacilitatorGiven { get; set; }
-    
+
     /// <summary>
     /// Hand raised event callback.
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<long> HandLowered { get; set; }
-    
+
     /// <summary>
     /// Retro properties opened action.
     /// </summary>
@@ -371,11 +371,11 @@
     private bool _isGrouping;
     private string RetroState => Session?.State ?? RetroStages.Collecting;
     private string RetroTextKey => $"{RetroState}Text";
-    
+
     private IReadOnlyCollection<NavigationItem<string>> NavItems => RetroStages.All
         .Select(s => new NavigationItem<string>(Localizer[$"{s}Title"], Value: s, s == RetroState, CanMoveToNext(s)))
         .ToArray();
-    
+
     private int RemainingVotes => VotesTotal - Items.Sum(i => i.Votes);
     private bool CanCreateRetroItem => Session is null;
     private bool CanCreateActionItem => Session?.State == RetroStages.Discussing && IsFacilitator;
@@ -418,49 +418,49 @@
 
         return canAsOwner || canAsFacilitator;
     }
-    
+
     private string? GetColumnDescription(RetroColumnDto column)
     {
         if (string.IsNullOrWhiteSpace(column.Description))
             return null;
-        
+
         var localizedDescription = Localizer[column.Description];
         var result = string.IsNullOrWhiteSpace(localizedDescription)
             ? column.Description
             : localizedDescription;
-        
+
         return result;
     }
 
     private bool CanMoveToNext(string stage)
     {
         using var enumerator = RetroStages.All.GetEnumerator();
-        
+
         while (enumerator.MoveNext())
             if (enumerator.Current == RetroState && enumerator.MoveNext() && enumerator.Current == stage)
                 return true;
 
         return false;
     }
-    
+
     private async Task OnMoveNext()
     {
         if (Session is null)
         {
             var notificationsService = ServiceProvider.GetRequiredService<INotificationsService>();
-            
+
             if (Items.Any(i => !string.IsNullOrWhiteSpace(i.Text)))
                 await RetroStarted.InvokeAsync();
             else
                 notificationsService.Publish(Notification.Warning(Localizer["CanNotStartRetro"]));
-            
+
             return;
         }
-            
+
         if (CanVote && Participants.Any(p => p.TotalVotes < VotesTotal) && _confirmDialog is not null &&
             !await _confirmDialog.IsConfirmed(Localizer["ConfirmMoveToDiscussing"]))
             return;
-        
+
         await OnNextMoved.InvokeAsync(Session.Id);
     }
 

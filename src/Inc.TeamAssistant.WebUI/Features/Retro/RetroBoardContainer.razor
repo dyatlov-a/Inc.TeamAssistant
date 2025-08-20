@@ -256,7 +256,10 @@
                     if (r.State == RetroStages.Finished)
                         await NavRouter.MoveToRoute($"retro-assessment/{r.Id:N}");
                     else
+                    {
                         await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                        StateHasChanged();
+                    }
                 });
             }),
             b => b.OnItemMoved(async id =>
@@ -299,6 +302,7 @@
                 await InvokeAsync(async () =>
                 {
                     await Load(LoadingState.Wrap(_state, StateHasChanged), hardReset: false);
+                    StateHasChanged();
                 });
             })
         );
@@ -319,8 +323,6 @@
             {
                 if (_eventBuilder is not null)
                     await _eventBuilder.MoveItem(RoomId, _currentItem.Next.Value.Item.Id);
-
-                await MoveItem(_currentItem.Next);
             }
             else if (_activeSession?.Id is not null)
                 await RequestProcessor.Process(
@@ -335,13 +337,8 @@
 
     private async Task OnToPreviousMoved()
     {
-        if (_currentItem?.Previous is not null)
-        {
-            if (_eventBuilder is not null)
-                await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
-            
-            await MoveItem(_currentItem.Previous);
-        }
+        if (_currentItem?.Previous is not null && _eventBuilder is not null)
+            await _eventBuilder.MoveItem(RoomId, _currentItem.Previous.Value.Item.Id);
     }
 
     private async Task OnRetroItemCreated(Guid columnId)

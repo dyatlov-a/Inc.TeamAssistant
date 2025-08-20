@@ -100,7 +100,7 @@ The community looks forward to your contributions.
 - [X] Add comments to code review
 - [X] Move to .NET9
 - [X] Add dashboard for retro
-- [ ] Add a feature for team health check
+- [X] Add a feature for team health check
 - [ ] Add telegram messages to story book
 - [ ] Integrate with GitLab (code review)
 

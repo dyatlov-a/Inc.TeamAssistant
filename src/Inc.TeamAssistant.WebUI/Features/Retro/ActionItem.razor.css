@@ -13,6 +13,8 @@
 .action-item__actions {
     float: right;
     padding-left: .3rem;
+    display: flex;
+    gap: .3rem;
 }
 .action-item__data {
     display: block;

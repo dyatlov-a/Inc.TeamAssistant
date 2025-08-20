@@ -32,10 +32,10 @@ else
     public RenderFragment ChildContent { get; set; } = default!;
     
     /// <summary>
-    /// Action for retry.
+    /// Retry event.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = default!;
+    public EventCallback Retry { get; set; }
     
     /// <summary>
     /// Style for component.

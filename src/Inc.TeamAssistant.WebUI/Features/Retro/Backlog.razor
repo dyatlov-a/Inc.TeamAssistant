@@ -31,24 +31,22 @@
                                 <div class="backlog-grid__column-items">
                                     @foreach (var item in ActionItems
                                                   .Where(i => i.State == stage)
-                                                  .OrderByDescending(i => i.Modified ?? i.Created))
+                                                  .OrderByDescending(i => i.Modified))
                                     {
                                         <ActionItem
                                             @key="item.Id"
-                                            CanEdit="CanEdit(stage)"
+                                            CanEdit="IsFacilitator"
                                             CanRemove="false"
-                                            CanMoveToState="CanEdit(stage)"
+                                            CanMoveToState="IsFacilitator"
                                             Value="item"
                                             ValueChanged="SendActionItemChanged"
                                             ItemRemoved="@(_ => { })"/>
                                     }
                                     @if (stage != ActionItemStages.New && Loaders.TryGetValue(stage, out var loader))
                                     {
-                                        var load = () => SendLoadHistory(stage);
-                                            
-                                        <Loading State="loader" Retry="load">
+                                        <Loading State="loader" Retry="@(() => SendLoadHistory(stage))">
                                             <div class="backlog-grid__column-more">
-                                                <Button ButtonMode="ButtonMode.Small" OnClick="load">
+                                                <Button ButtonMode="ButtonMode.Small" OnClick="@(() => SendLoadHistory(stage))">
                                                     @Localizer["More"]
                                                 </Button>
                                             </div>
@@ -139,7 +137,6 @@
     
     private bool IsFacilitator => CurrentUserId == FacilitatorId;
     
-    private bool CanEdit(string stage) => stage == ActionItemStages.New && FacilitatorId == CurrentUserId;
     private string GetTitle(string stage) => Localizer[$"ActionItemStage{stage}Title"];
     private string GetHint(string stage) => Localizer[$"ActionItemStage{stage}Hint"];
     private async Task SendActionItemChanged(ActionItemViewModel item) => await ActionItemChanged.InvokeAsync(item);

@@ -7,18 +7,17 @@ public sealed class ActionItemViewModel
 {
     public Guid Id { get; private set; }
     public Guid RetroItemId { get; private set; }
-    public DateTimeOffset Created { get; private set; }
     public string Text { get; private set; }
     public string State { get; private set; }
-    public DateTimeOffset? Modified { get; private set; }
+    public DateTimeOffset Modified { get; private set; }
 
     public ActionItemViewModel(Guid id, Guid retroItemId, DateTimeOffset created)
     {
         Id = id;
         RetroItemId = retroItemId;
-        Created = created;
         Text = string.Empty;
         State = ActionItemStages.New;
+        Modified = created;
     }
     
     public ActionItemViewModel ChangeText(string text)
@@ -52,7 +51,7 @@ public sealed class ActionItemViewModel
 
         Text = item.Text;
         State = item.State;
-        Modified = item.Modified;
+        Modified = item.Modified ?? item.Created;
         
         return this;
     }

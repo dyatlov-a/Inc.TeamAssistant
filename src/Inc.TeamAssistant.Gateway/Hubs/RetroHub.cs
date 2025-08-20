@@ -80,7 +80,7 @@ internal sealed class RetroHub : Hub<IRetroHubClient>
     {
         var retroRoomId = RoomId.CreateForRetro(roomId);
         
-        await Clients.GroupExcept(retroRoomId.GroupName, Context.ConnectionId).ItemMoved(itemId);
+        await Clients.Group(retroRoomId.GroupName).ItemMoved(itemId);
     }
     
     [HubMethodName(HubDescriptors.RetroHub.ChangeActionItemMethod)]
