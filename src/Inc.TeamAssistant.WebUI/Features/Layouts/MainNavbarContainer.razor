@@ -6,7 +6,7 @@
 <AuthorizeView>
     <Authorized>
         <MainNavbar
-            HasLogin="HasLogin"
+            HasPath="HasPath"
             Languages="_languages"
             MainUrl="@MainUrl"
             LoginUrl="@LoginUrl"
@@ -18,7 +18,7 @@
     </Authorized>
     <NotAuthorized>
         <MainNavbar
-            HasLogin="HasLogin"
+            HasPath="HasPath"
             Languages="_languages"
             LoginUrl="@LoginUrl"
             LogoutUrl="@_logoutUrl"
@@ -33,7 +33,7 @@
     private IReadOnlyCollection<MainLinkViewModel> _languages = [];
     private string _logoutUrl = string.Empty;
     
-    private bool HasLogin => !NavRouter.CurrentUrl.Contains("/login");
+    private bool HasPath(string value) => NavRouter.CurrentUrl.Contains(value, StringComparison.InvariantCultureIgnoreCase);
     private string MainUrl => NavRouter.CreateRoute(null);
     private string LoginUrl => NavRouter.CreateRoute($"login?returnUrl={NavRouter.CurrentUrl}");
 
@@ -68,8 +68,8 @@
 
     public void Dispose()
     {
-        _routerScope?.Dispose();
-        
         TenantStore.OnChange -= StateHasChanged;
+        
+        _routerScope?.Dispose();
     }
 }

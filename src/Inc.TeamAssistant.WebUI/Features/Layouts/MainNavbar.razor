@@ -16,13 +16,17 @@
         @if (HasRoomManager)
         {
             <div class="navbar__item navbar__item_room">
-                <RouterLink Href="@MoveToLinkFactory("/rooms")">@Localizer["Rooms"]</RouterLink>
+                <RouterLink Selected="@HasPath("/rooms")" Href="@MoveToLinkFactory("rooms")">
+                    @Localizer["Rooms"]
+                </RouterLink>
             </div>
         }
         @foreach(var room in Rooms)
         {
             <div class="navbar__item navbar__item_room">
-                <RouterLink Href="@MoveToLinkFactory($"survey/{room.Id:N}")">@room.Name</RouterLink>
+                <RouterLink Selected="@HasPath($"/{room.Id:N}")" Href="@MoveToLinkFactory($"survey/{room.Id:N}")">
+                    @room.Name
+                </RouterLink>
             </div>
         }
         <div class="navbar__divider"></div>
@@ -35,7 +39,7 @@
                 <RouterLink Href="@LogoutUrl">@Localizer["Logout"]</RouterLink>
             </div>
         }
-        else if (HasLogin)
+        else if (!HasPath("/login"))
         {
             <div class="navbar__item">
                 <RouterLink Href="@LoginUrl">
@@ -51,7 +55,7 @@
     /// Has login.
     /// </summary>
     [Parameter, EditorRequired]
-    public bool HasLogin { get; set; }
+    public Func<string, bool> HasPath { get; set; } = default!;
     
     /// <summary>
     /// Supported languages.
