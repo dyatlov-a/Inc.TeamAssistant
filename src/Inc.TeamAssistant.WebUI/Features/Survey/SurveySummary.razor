@@ -36,13 +36,25 @@
                     TItem="SurveyQuestionDto"
                     Options="ApexChartBaseOptionsBuilder.BuildRadar<SurveyQuestionDto>()"
                     @ref="_totalSummaryChart">
-                    @foreach (var item in TotalSummary)
+                    @if (_hasParticipants)
+                    {
+                        foreach (var participantAnswers in _lastParticipantAnswers)
+                        {
+                            <ApexPointSeries TItem="SurveyQuestionDto"
+                                             Items="participantAnswers"
+                                             SeriesType="SeriesType.Radar"
+                                             XValue="@(e => Localizer[e.QuestionTitle].ToString())"
+                                             YValue="@(e => e.Value)"/>
+                        }
+                    }
+                    @if (_hasMean)
                     {
                         <ApexPointSeries TItem="SurveyQuestionDto"
-                                         Items="item.Value"
+                                         Items="_lastMeanAnswers"
+                                         Name="survey-summary__mean"
                                          SeriesType="SeriesType.Radar"
                                          XValue="@(e => Localizer[e.QuestionTitle].ToString())"
-                                         YValue="@(e => e.Value)" />
+                                         YValue="@(e => e.Value)"/>
                     }
                 </ApexChart>
                 @foreach (var answerByQuestion in Answers.ToLookup(a => new { a.QuestionId, a.QuestionTitle, a.QuestionText }))
@@ -71,13 +83,13 @@
                         </HelpContent>
                         <ChildContent>
                             <div class="survey-question">
-                                <div class="survey-question__trend">
+                                <div class="survey-question__summary">
                                     <div title="@Localizer["MeanAnswerHint"]" class="survey-question__mean">
                                         <span class="survey-question__answer @ValueToCssClass(lastMean.Item2)">
                                             @ValueToDisplay(lastMean.Item2)
                                         </span>
                                     </div>
-                                    <div title="@Localizer["AnswersTrendHint"]">
+                                    <div class="survey-question__trend" title="@Localizer["AnswersTrendHint"]">
                                         <ApexChart
                                             @key="answerByQuestion.Key.QuestionId"
                                             TItem="Tuple<DateTimeOffset, int>"
@@ -151,34 +163,34 @@
     private ApexChart<SurveyQuestionDto>? _totalSummaryChart;
     private bool _hasParticipants = true;
     private bool _hasMean = true;
-    
-    private Dictionary<string, IReadOnlyCollection<SurveyQuestionDto>> TotalSummary
-    {
-        get
-        {
-            var lastAnswers = Answers.Where(a => a.SurveyDate == LastSurveyDate).ToArray();
-            var items = new Dictionary<string, IReadOnlyCollection<SurveyQuestionDto>>();
+    private readonly List<IReadOnlyCollection<SurveyQuestionDto>> _lastParticipantAnswers = new();
+    private readonly List<SurveyQuestionDto> _lastMeanAnswers = new();
 
-            if (_hasParticipants)
-                foreach (var answer in lastAnswers.GroupBy(k => k.ResponderId.ToString()))
-                    items.Add(answer.Key, answer.OrderBy(a => a.QuestionTitle).ToArray());
-            
-            if (_hasMean)
-                items.Add(nameof(_hasMean), lastAnswers
-                    .GroupBy(k => new { k.QuestionId, k.QuestionTitle, k.QuestionText })
-                    .Select(a => new SurveyQuestionDto(
-                        a.Key.QuestionId,
-                        a.Key.QuestionTitle,
-                        a.Key.QuestionText,
-                        LastSurveyDate,
-                        ResponderId: 0,
-                        Value: CalculateMean(a),
-                        Comment:null))
-                    .OrderBy(a => a.QuestionTitle)
-                    .ToArray());
-            
-            return items;
-        }
+    protected override void OnParametersSet()
+    {
+        var lastAnswers = Answers
+            .Where(a => a.SurveyDate == LastSurveyDate)
+            .ToArray();
+        var lastParticipantAnswers = lastAnswers
+            .GroupBy(k => k.ResponderId.ToString())
+            .Select(v => v.OrderBy(a => a.QuestionTitle).ToArray());
+        var lastMeanAnswers = lastAnswers
+            .GroupBy(k => new { k.QuestionId, k.QuestionTitle, k.QuestionText })
+            .Select(a => new SurveyQuestionDto(
+                a.Key.QuestionId,
+                a.Key.QuestionTitle,
+                a.Key.QuestionText,
+                LastSurveyDate,
+                ResponderId: 0,
+                Value: CalculateMean(a),
+                Comment: null))
+            .OrderBy(a => a.QuestionTitle);
+
+        _lastParticipantAnswers.Clear();
+        _lastParticipantAnswers.AddRange(lastParticipantAnswers);
+        
+        _lastMeanAnswers.Clear();
+        _lastMeanAnswers.AddRange(lastMeanAnswers);
     }
 
     private async Task ChangeTotalSummaryView(bool? hasParticipants, bool? hasMean)

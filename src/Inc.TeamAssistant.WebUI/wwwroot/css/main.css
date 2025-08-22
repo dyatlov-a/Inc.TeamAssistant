@@ -269,3 +269,7 @@ html {
     float: left;
     margin: 0 10px 10px 0;
 }
+/* CHART */
+.apexcharts-series[seriesName="survey-summary__mean"] path {
+    stroke-width: 4px;
+}

@@ -84,6 +84,11 @@ internal static class ApexChartBaseOptionsBuilder
                     }
                 }
             },
+            Stroke = new Stroke
+            {
+                Width = new List<double> { 2 },
+                Curve = Curve.Straight
+            },
             Fill = new Fill
             {
                 Opacity = 0
