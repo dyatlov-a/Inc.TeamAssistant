@@ -126,6 +126,12 @@ internal static class ApexChartBaseOptionsBuilder
                     Top = -50,
                     Bottom = -50
                 }
+            },
+            Markers = new Markers
+            {
+                Size = 5,
+                StrokeWidth = 0,
+                FillOpacity = 1
             }
         };
     }

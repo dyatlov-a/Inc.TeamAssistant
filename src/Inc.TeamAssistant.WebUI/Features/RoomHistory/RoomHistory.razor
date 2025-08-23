@@ -1,0 +1,77 @@
+@inject IStringLocalizer<RoomHistoryResources> Localizer
+
+<DashboardGrid>
+    <Toolbar>
+        <RoomNavbarContainer RoomId="RoomId" />
+        <Loading State="State" Retry="Retry">
+            <div class="room-history">
+                <h2 class="room-history__header">@Localizer["RoomHistory"]</h2>
+                <nav aria-label="Room history navigation">
+                    <ul class="room-history-navbar">
+                        @foreach (var item in Items)
+                        {
+                            <li @key="item.Id" class="room-history-navbar__item" @onclick="@(() => EmitItemChanged(item))">
+                                <span class="room-history-navbar__title">@Localizer[item.Date.DayOfWeek.ToString()]</span>
+                                @item.Date.ToString("dd.MM.yyyy") @Localizer[item.Type]
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </Loading>
+    </Toolbar>
+    <Content>
+        @if (Item is not null)
+        {
+            switch (Item.Type)
+            {
+                case "Survey":
+                    <SurveyLoader SurveyId="Item.Id" />
+                    break;
+                case "Retro":
+                    <RetroLoader RetroId="Item.Id" />
+                    break;
+            }
+        }
+    </Content>
+</DashboardGrid>
+
+@code {
+    /// <summary>
+    /// Room identifier.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+    
+    /// <summary>
+    /// Selected item.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public RoomEntryDto? Item { get; set; }
+    
+    /// <summary>
+    /// Room history items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<RoomEntryDto> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// Component state.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public LoadingState State { get; set; } = default!;
+    
+    /// <summary>
+    /// Retry event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback Retry { get; set; }
+    
+    /// <summary>
+    /// Item changed event.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<RoomEntryDto> ItemChanged { get; set; }
+
+    private async Task EmitItemChanged(RoomEntryDto item) => await ItemChanged.InvokeAsync(item);
+}

@@ -33,7 +33,7 @@ public sealed class SurveyController : ControllerBase
     [HttpGet("{surveyId:guid}/history/{limit:int}")]
     public async Task<IActionResult> GetSurveyHistory(Guid surveyId, int limit, CancellationToken token)
     {
-        return Ok(await _surveyService.GetSurveySummary(surveyId, limit, token));
+        return Ok(await _surveyService.GetSurveyHistory(surveyId, limit, token));
     }
     
     [HttpPost]

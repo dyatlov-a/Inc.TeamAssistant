@@ -270,6 +270,6 @@ html {
     margin: 0 10px 10px 0;
 }
 /* CHART */
-.apexcharts-series[seriesName="survey-summary__mean"] path {
+.apexcharts-series[seriesName="survey-summary__mean"] .apexcharts-radar {
     stroke-width: 4px;
 }

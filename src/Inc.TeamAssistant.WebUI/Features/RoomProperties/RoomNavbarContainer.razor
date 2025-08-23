@@ -22,7 +22,8 @@
     [
         new("TeamHealthCheck", NavRouter.CreateRoute($"survey/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/survey")),
         new("RetroBoard", NavRouter.CreateRoute($"retro/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/retro")),
-        new("RetroBacklog", NavRouter.CreateRoute($"backlog/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/backlog"))
+        new("RetroBacklog", NavRouter.CreateRoute($"backlog/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/backlog")),
+        new("RoomHistory", NavRouter.CreateRoute($"room-history/{RoomId:N}"), NavRouter.CurrentUrl.Contains("/room-history"))
     ];
     
     public void Dispose() => _routerScope?.Dispose();

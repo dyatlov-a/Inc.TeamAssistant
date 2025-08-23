@@ -99,14 +99,14 @@ internal sealed class TenantReader : ITenantReader
             """
             SELECT
                 s.id AS id,
-                'survey' AS type,
+                'Survey' AS type,
                 s.created AS date
             FROM survey.surveys AS s
             WHERE s.room_id = @room_id AND s.state = @survey_completed AND s.created > @from
             UNION
             SELECT
                 r.id AS id,
-                'retro' AS type,
+                'Retro' AS type,
                 r.created AS date
             FROM retro.retro_sessions AS r
             WHERE r.room_id = @room_id AND r.state = @retro_completed AND r.created > @from

@@ -1,0 +1,45 @@
+@page "/room-history/{RoomId:guid}"
+@page "/ru/room-history/{RoomId:guid}"
+@page "/en/room-history/{RoomId:guid}"
+
+@inject TenantStore TenantStore
+@inject ITenantService TenantService
+@inject RequestProcessor RequestProcessor
+
+<MetaDataModule />
+
+<RoomHistory
+    RoomId="RoomId"
+    Item="_item"
+    Items="_items"
+    State="_state"
+    Retry="Load"
+    ItemChanged="OnItemChanged" />
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid RoomId { get; set; }
+
+    private RoomEntryDto? _item;
+
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<RoomEntryDto> _items = new();
+
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        await TenantStore.Initialize(RoomId, _state);
+        
+        var result = await RequestProcessor.Process(
+            async () => await TenantService.GetRoomHistory(RoomId),
+            nameof(RoomHistoryContainer),
+            _state);
+        
+        _items.Clear();
+        _items.AddRange(result.Items.OrderByDescending(i => i.Date));
+        _item = _items.FirstOrDefault();
+    }
+
+    private void OnItemChanged(RoomEntryDto item) => _item = item;
+}

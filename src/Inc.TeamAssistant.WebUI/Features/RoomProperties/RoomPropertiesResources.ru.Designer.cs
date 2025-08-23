@@ -260,5 +260,11 @@ namespace Inc.TeamAssistant.WebUI.Features.RoomProperties {
                 return ResourceManager.GetString("LowerHandHint", resourceCulture);
             }
         }
+        
+        internal static string RoomHistory {
+            get {
+                return ResourceManager.GetString("RoomHistory", resourceCulture);
+            }
+        }
     }
 }
