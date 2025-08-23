@@ -34,7 +34,7 @@ internal sealed class GetSurveyStateQueryHandler : IRequestHandler<GetSurveyStat
         var onlinePersons = _onlinePersonStore.GetTickets(RoomId.CreateForSurvey(query.RoomId));
         var onlinePerson = onlinePersons.SingleOrDefault(p => p.Person.Id == currentPerson.Id);
         var roomProperties = await _propertiesProvider.Get(query.RoomId, token);
-        var survey = await _reader.ReadSurvey(query.RoomId, SurveyStateRules.Active, token);
+        var survey = await _reader.ReadLastSurvey(query.RoomId, SurveyStateRules.Active, token);
         
         var items = survey is not null
             ? await GetQuestions(survey.Id, currentPerson.Id, survey.TemplateId, token)

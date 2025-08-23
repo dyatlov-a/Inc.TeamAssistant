@@ -6,10 +6,10 @@ public interface ISurveyReader
 {
     Task<IReadOnlyCollection<Question>> ReadQuestions(Guid templateId, CancellationToken token);
     
-    Task<SurveyEntry?> ReadSurvey(Guid roomId, IReadOnlyCollection<SurveyState> states, CancellationToken token);
+    Task<SurveyEntry?> ReadLastSurvey(Guid roomId, IReadOnlyCollection<SurveyState> states, CancellationToken token);
     
     Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
-        Guid roomId,
+        DateTimeOffset from,
         Guid templateId,
         SurveyState state,
         int offset,

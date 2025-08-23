@@ -31,7 +31,7 @@ internal sealed class FinishSurveyCommandHandler : IRequestHandler<FinishSurveyC
         ArgumentNullException.ThrowIfNull(command);
 
         var survey = await command.RoomId.Required(
-            (rId, t) => _reader.ReadSurvey(rId, SurveyStateRules.Active, t),
+            (rId, t) => _reader.ReadLastSurvey(rId, SurveyStateRules.Active, t),
             token);
 
         await _repository.Upsert(survey.MoveToFinish(), token);
