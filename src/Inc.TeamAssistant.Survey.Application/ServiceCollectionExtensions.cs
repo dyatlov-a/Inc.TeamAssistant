@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Survey.Application.QueryHandlers.Services;
+using Inc.TeamAssistant.Survey.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inc.TeamAssistant.Survey.Application;

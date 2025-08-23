@@ -1,5 +1,6 @@
 using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
+using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyHistory;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -24,6 +25,11 @@ internal sealed class SurveyService : ISurveyService
     public async Task<GetSurveySummaryResult> GetSurveySummary(Guid roomId, int limit, CancellationToken token)
     {
         return await _mediator.Send(new GetSurveySummaryQuery(roomId, limit), token);
+    }
+
+    public async Task<GetSurveyHistoryResult> GetSurveyHistory(Guid surveyId, int limit, CancellationToken token)
+    {
+        return await _mediator.Send(new GetSurveyHistoryQuery(surveyId, limit), token);
     }
 
     public async Task Start(StartSurveyCommand command, CancellationToken token)

@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Survey.Application.Contracts;
-using Inc.TeamAssistant.Survey.Application.QueryHandlers.Services;
+using Inc.TeamAssistant.Survey.Application.Services;
 using Inc.TeamAssistant.Survey.Domain;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
 using MediatR;
@@ -22,10 +22,11 @@ internal sealed class GetSurveySummaryQueryHandler : IRequestHandler<GetSurveySu
         ArgumentNullException.ThrowIfNull(query);
 
         var survey = await _reader.ReadLastSurvey(query.RoomId, [SurveyState.Completed], token);
+        
         if (survey is null)
             return GetSurveySummaryResult.Empty;
         
-        var surveySummary = await _service.GetSurveySummary(survey, top: query.Limit, token);
+        var surveySummary = await _service.GetSurveySummary(survey, query.Limit, token);
 
         return new GetSurveySummaryResult(surveySummary);
     }

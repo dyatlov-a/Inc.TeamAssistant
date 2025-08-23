@@ -1,8 +1,8 @@
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Domain;
-using Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
+using Inc.TeamAssistant.Survey.Model.Queries.Common;
 
-namespace Inc.TeamAssistant.Survey.Application.QueryHandlers.Services;
+namespace Inc.TeamAssistant.Survey.Application.Services;
 
 internal sealed class SurveySummaryService
 {
@@ -15,19 +15,20 @@ internal sealed class SurveySummaryService
 
     public async Task<IReadOnlyCollection<SurveyQuestionDto>> GetSurveySummary(
         SurveyEntry surveyEntry,
-        int top,
+        int limit,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(surveyEntry);
 
         var templateId = surveyEntry.TemplateId;
+        var offset = 0;
         
         var surveys = await _reader.ReadSurveys(
             surveyEntry.Created,
             templateId,
             SurveyState.Completed,
-            offset: 0,
-            limit: top,
+            offset,
+            limit,
             token);
         var questions = await _reader.ReadQuestions(templateId, token);
         var surveyAnswers = await _reader.ReadAnswers(surveys.Select(s => s.Id).ToArray(), token);
