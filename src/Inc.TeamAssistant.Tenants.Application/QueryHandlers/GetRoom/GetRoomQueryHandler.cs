@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Primitives.Extensions;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
-using Inc.TeamAssistant.Tenants.Model.Queries.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoom;
 using MediatR;
 

@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.Domain;
-using Inc.TeamAssistant.Survey.Model.Queries.Common;
+using Inc.TeamAssistant.Survey.Model.Common;
 
 namespace Inc.TeamAssistant.Survey.Application.Services;
 
