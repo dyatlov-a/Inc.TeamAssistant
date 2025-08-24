@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItemsHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -23,6 +24,11 @@ internal sealed class RetroService : IRetroService
     public async Task<GetRetroStateResult> GetRetroState(Guid roomId, CancellationToken token)
     {
         return await _mediator.Send(new GetRetroStateQuery(roomId), token);
+    }
+
+    public async Task<GetRetroHistoryResult> GetRetroHistory(Guid sessionId, CancellationToken token)
+    {
+        return await _mediator.Send(new GetRetroHistoryQuery(sessionId), token);
     }
 
     public async Task StartRetro(StartRetroCommand command, CancellationToken token)

@@ -42,7 +42,7 @@ internal sealed class SurveyReader : ISurveyReader
         return questions.ToArray();
     }
     
-    public async Task<SurveyEntry?> ReadSurvey(
+    public async Task<SurveyEntry?> ReadLastSurvey(
         Guid roomId,
         IReadOnlyCollection<SurveyState> states,
         CancellationToken token)
@@ -83,7 +83,7 @@ internal sealed class SurveyReader : ISurveyReader
     }
 
     public async Task<IReadOnlyCollection<SurveyEntry>> ReadSurveys(
-        Guid roomId,
+        DateTimeOffset from,
         Guid templateId,
         SurveyState state,
         int offset,
@@ -99,14 +99,14 @@ internal sealed class SurveyReader : ISurveyReader
                 s.created AS created,
                 s.state AS state
             FROM survey.surveys AS s
-            WHERE s.room_id = @room_id AND s.template_id = @template_id AND s.state = @state
+            WHERE s.created <= @from AND s.template_id = @template_id AND s.state = @state
             ORDER BY created DESC
             OFFSET @offset
             LIMIT @limit;
             """,
             new
             {
-                room_id = roomId,
+                from = from.UtcDateTime,
                 template_id = templateId,
                 state = state,
                 offset = offset,

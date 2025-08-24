@@ -40,7 +40,7 @@ internal sealed class FinishSurveyCommandValidator : AbstractValidator<FinishSur
     
     private async Task<bool> HaveActiveSurvey(Guid roomId, CancellationToken token)
     {
-        var survey = await _reader.ReadSurvey(roomId, SurveyStateRules.Active, token);
+        var survey = await _reader.ReadLastSurvey(roomId, SurveyStateRules.Active, token);
         
         return survey is not null;
     }

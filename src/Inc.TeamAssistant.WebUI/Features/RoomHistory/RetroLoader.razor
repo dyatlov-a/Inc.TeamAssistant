@@ -1,0 +1,46 @@
+@inject IRetroService RetroService
+@inject RequestProcessor RequestProcessor
+
+<Loading State="_state" Retry="Load">
+    <RetroSummaryContent
+        Items="_items"
+        ActionItems="_actionItems"
+        Columns="_columns"
+        Assessments="_assessments" />
+</Loading>
+
+@code {
+    /// <summary>
+    /// Retro id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid RetroId { get; set; }
+    
+    private readonly LoadingState _state = LoadingState.Done();
+    private readonly List<RetroItemViewModel> _items = new();
+    private readonly List<ActionItemViewModel> _actionItems = new();
+    private readonly List<RetroColumnDto> _columns = new();
+    private readonly List<int> _assessments = new();
+    
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        var result = await RequestProcessor.Process(
+            async () => await RetroService.GetRetroHistory(RetroId),
+            nameof(RetroLoader),
+            _state);
+
+        _items.Clear();
+        _items.AddRange(result.Items.Select(i => new RetroItemViewModel(i.Id, i.OwnerId).Apply(i)));
+
+        _actionItems.Clear();
+        _actionItems.AddRange(result.ActionItems.Select(ai => new ActionItemViewModel(ai.Id, ai.RetroItemId, ai.Created).Apply(ai)));
+
+        _columns.Clear();
+        _columns.AddRange(result.Columns);
+
+        _assessments.Clear();
+        _assessments.AddRange(result.Assessments);
+    }
+}

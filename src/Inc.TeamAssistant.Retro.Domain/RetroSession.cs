@@ -4,6 +4,7 @@ public sealed class RetroSession
 {
     public Guid Id { get; private set; }
     public Guid RoomId { get; private set; }
+    public Guid TemplateId { get; private set; }
     public DateTimeOffset Created { get; private set; }
     public RetroSessionState State { get; private set; }
 
@@ -11,11 +12,12 @@ public sealed class RetroSession
     {
     }
 
-    public RetroSession(Guid id, Guid roomId, DateTimeOffset created)
+    public RetroSession(Guid id, Guid roomId, Guid templateId, DateTimeOffset created)
         : this()
     {
         Id = id;
         RoomId = roomId;
+        TemplateId = templateId;
         Created = created;
         State = RetroSessionState.Grouping;
     }

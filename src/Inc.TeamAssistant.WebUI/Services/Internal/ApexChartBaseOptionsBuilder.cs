@@ -84,6 +84,11 @@ internal static class ApexChartBaseOptionsBuilder
                     }
                 }
             },
+            Stroke = new Stroke
+            {
+                Width = new List<double> { 2 },
+                Curve = Curve.Straight
+            },
             Fill = new Fill
             {
                 Opacity = 0
@@ -121,7 +126,55 @@ internal static class ApexChartBaseOptionsBuilder
                     Top = -50,
                     Bottom = -50
                 }
+            },
+            Markers = new Markers
+            {
+                Size = 5,
+                StrokeWidth = 0,
+                FillOpacity = 1
             }
+        };
+    }
+    
+    public static ApexChartOptions<T> BuildBar<T>(int xMaxValue, string xTitle, int yMaxValue, string yTitle)
+        where T : class
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(xTitle);
+        ArgumentException.ThrowIfNullOrWhiteSpace(yTitle);
+        
+        return new()
+        {
+            Tooltip = new Tooltip
+            {
+                Enabled = false
+            },
+            Legend = new Legend
+            {
+                Show = false
+            },
+            Xaxis = new XAxis
+            {
+                Min = 0,
+                Max = xMaxValue,
+                TickAmount = xMaxValue,
+                Title = new AxisTitle
+                {
+                    Text = xTitle
+                }
+            },
+            Yaxis =
+            [
+                new YAxis
+                {
+                    Min = 0,
+                    Max = yMaxValue,
+                    TickAmount = yMaxValue,
+                    Title = new AxisTitle
+                    {
+                        Text = yTitle
+                    }
+                }
+            ]
         };
     }
 

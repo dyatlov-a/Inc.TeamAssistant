@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
+namespace Inc.TeamAssistant.Retro.Model.Common;
 
 public sealed record RetroColumnDto(
     Guid Id,

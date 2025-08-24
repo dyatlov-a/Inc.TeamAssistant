@@ -7,6 +7,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItemsHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -26,10 +27,14 @@ internal sealed class RetroClient : IRetroService
     {
         var result = await _client.GetFromJsonAsync<GetRetroStateResult>($"retro/{roomId:N}/state", token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
+        return result ?? throw new TeamAssistantException("Parse response with error.");
+    }
 
-        return result;
+    public async Task<GetRetroHistoryResult> GetRetroHistory(Guid sessionId, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetRetroHistoryResult>($"retro/{sessionId:N}/history", token);
+
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task StartRetro(StartRetroCommand command, CancellationToken token)
@@ -56,10 +61,7 @@ internal sealed class RetroClient : IRetroService
             $"retro/{roomId:N}/actions/{limit}",
             token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task<GetActionItemsHistoryResult> GetActionItemsHistory(
@@ -75,10 +77,7 @@ internal sealed class RetroClient : IRetroService
             $"retro/{roomId:N}/actions/{limit}/history/{state}/{offset}",
             token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task ChangeActionItem(ChangeActionItemCommand command, CancellationToken token)
@@ -96,10 +95,7 @@ internal sealed class RetroClient : IRetroService
             $"retro/{sessionId:N}/assessments",
             token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task SetRetroAssessment(SetRetroAssessmentCommand command, CancellationToken token)

@@ -12,7 +12,29 @@ internal sealed class RetroAssessmentReader : IRetroAssessmentReader
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-    
+
+    public async Task<IReadOnlyCollection<int>> Read(Guid retroSessionId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT ra.value AS value
+            FROM retro.retro_assessments AS ra
+            WHERE ra.retro_session_id = @retro_session_id;
+            """,
+            new
+            {
+                retro_session_id = retroSessionId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var retroAssessments = await connection.QueryAsync<int>(command);
+        
+        return retroAssessments.ToArray();
+    }
+
     public async Task<(Guid RoomId, int? Value)> Read(Guid retroSessionId, long personId, CancellationToken token)
     {
         var command = new CommandDefinition(

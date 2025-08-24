@@ -31,88 +31,11 @@
     </Toolbar>
     <Content>
         <Loading Retry="Retry" State="State">
-            <div class="survey-summary__content">
-                <ApexChart
-                    TItem="SurveyQuestionDto"
-                    Options="ApexChartBaseOptionsBuilder.BuildRadar<SurveyQuestionDto>()"
-                    @ref="_totalSummaryChart">
-                    @foreach (var item in TotalSummary)
-                    {
-                        <ApexPointSeries TItem="SurveyQuestionDto"
-                                         Items="item.Value"
-                                         SeriesType="SeriesType.Radar"
-                                         XValue="@(e => Localizer[e.QuestionTitle].ToString())"
-                                         YValue="@(e => e.Value)" />
-                    }
-                </ApexChart>
-                @foreach (var answerByQuestion in Answers.ToLookup(a => new { a.QuestionId, a.QuestionTitle, a.QuestionText }))
-                {
-                    var answerLookup = answerByQuestion
-                        .GroupBy(a => a.SurveyDate, a => a.Value)
-                        .ToDictionary(a => a.Key, a => a.ToArray());
-                    var meanLookup = answerByQuestion
-                        .GroupBy(a => a.SurveyDate)
-                        .Select(g => new Tuple<DateTimeOffset, int>(g.Key, CalculateMean(g)))
-                        .ToArray();
-                    var lastAnswerDate = answerLookup.Keys.Max();
-                    var lastMean = meanLookup.Single(m => m.Item1 == lastAnswerDate);
-                    var lastAnswers = answerLookup[lastAnswerDate]
-                        .GroupBy(a => a)
-                        .Select(a => new Tuple<int, int>(a.Key, a.Count()))
-                        .ToArray();
-                    var answerComments = Answers
-                        .Where(a => a.SurveyDate == LastSurveyDate && a.QuestionId == answerByQuestion.Key.QuestionId && !string.IsNullOrWhiteSpace(a.Comment))
-                        .Select(a => a.Comment)
-                        .ToArray();
-                                           
-                    <FormSection Title="@Localizer[answerByQuestion.Key.QuestionTitle]">
-                        <HelpContent>
-                            @(new MarkupString(Localizer[answerByQuestion.Key.QuestionText]))
-                        </HelpContent>
-                        <ChildContent>
-                            <div class="survey-question">
-                                <div class="survey-question__trend">
-                                    <div title="@Localizer["MeanAnswerHint"]" class="survey-question__mean">
-                                        <span class="survey-question__answer @ValueToCssClass(lastMean.Item2)">
-                                            @ValueToDisplay(lastMean.Item2)
-                                        </span>
-                                    </div>
-                                    <div title="@Localizer["AnswersTrendHint"]">
-                                        <ApexChart
-                                            @key="answerByQuestion.Key.QuestionId"
-                                            TItem="Tuple<DateTimeOffset, int>"
-                                            Title="@Localizer["Trend"]"
-                                            Options="ApexChartBaseOptionsBuilder.CreateLineOptions<Tuple<DateTimeOffset, int>>()">
-                                            <ApexPointSeries TItem="Tuple<DateTimeOffset, int>"
-                                                             Items="meanLookup"
-                                                             SeriesType="SeriesType.Line"
-                                                             XValue="@(e => e.Item1)"
-                                                             YValue="@(e => e.Item2)"
-                                                             OrderBy="e => e.X"/>
-                                        </ApexChart>
-                                    </div>
-                                    <div title="@Localizer["AnswersHint"]" class="survey-question__answers">
-                                        @foreach (var answer in lastAnswers.OrderBy(a => a.Item1))
-                                        {
-                                            <span
-                                                class="survey-question__answer @ValueToCssClass(answer.Item1)"
-                                                data-count="@answer.Item2">
-                                                @ValueToDisplay(answer.Item1)
-                                            </span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="survey-question__comments">
-                                    @foreach (var answerComment in answerComments)
-                                    {
-                                        <p class="survey-question__comment">@answerComment</p>
-                                    }
-                                </div>
-                            </div>
-                        </ChildContent>
-                    </FormSection>
-                }
-            </div>
+            <SurveySummaryContent
+                HasParticipants="_hasParticipants"
+                HasMean="_hasMean"
+                Answers="Answers"
+                @ref="_content" />
         </Loading>
     </Content>
 </DashboardGrid>
@@ -123,12 +46,6 @@
     /// </summary>
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
-    
-    /// <summary>
-    /// Last survey date.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public DateTimeOffset LastSurveyDate { get; set; }
     
     /// <summary>
     /// Last answers.
@@ -143,43 +60,14 @@
     public LoadingState State { get; set; } = default!;
     
     /// <summary>
-    /// Action for retry.
+    /// Retry event.
     /// </summary>
     [Parameter, EditorRequired]
-    public Func<Task> Retry { get; set; } = default!;
+    public EventCallback Retry { get; set; }
 
-    private ApexChart<SurveyQuestionDto>? _totalSummaryChart;
+    private SurveySummaryContent? _content;
     private bool _hasParticipants = true;
     private bool _hasMean = true;
-    
-    private Dictionary<string, IReadOnlyCollection<SurveyQuestionDto>> TotalSummary
-    {
-        get
-        {
-            var lastAnswers = Answers.Where(a => a.SurveyDate == LastSurveyDate).ToArray();
-            var items = new Dictionary<string, IReadOnlyCollection<SurveyQuestionDto>>();
-
-            if (_hasParticipants)
-                foreach (var answer in lastAnswers.GroupBy(k => k.ResponderId.ToString()))
-                    items.Add(answer.Key, answer.OrderBy(a => a.QuestionTitle).ToArray());
-            
-            if (_hasMean)
-                items.Add(nameof(_hasMean), lastAnswers
-                    .GroupBy(k => new { k.QuestionId, k.QuestionTitle, k.QuestionText })
-                    .Select(a => new SurveyQuestionDto(
-                        a.Key.QuestionId,
-                        a.Key.QuestionTitle,
-                        a.Key.QuestionText,
-                        LastSurveyDate,
-                        ResponderId: 0,
-                        Value: CalculateMean(a),
-                        Comment:null))
-                    .OrderBy(a => a.QuestionTitle)
-                    .ToArray());
-            
-            return items;
-        }
-    }
 
     private async Task ChangeTotalSummaryView(bool? hasParticipants, bool? hasMean)
     {
@@ -195,22 +83,7 @@
             _hasMean = true;
         }
 
-        if (_totalSummaryChart is not null)
-            await _totalSummaryChart.RenderAsync();
-    }
-
-    private string ValueToCssClass(int value) => value > 3
-        ? "survey-question__answer_positive"
-        : "survey-question__answer_negative";
-
-    private string ValueToDisplay(int value) => value == 0 ? "-" : value.ToString();
-    
-    private int CalculateMean(IEnumerable<SurveyQuestionDto> items)
-    {
-        var values = items.Where(i => i.Value > 0).ToArray();
-
-        return values.Any()
-            ? (int)Math.Round(values.Sum(i => i.Value) / (decimal)values.Length)
-            : 0;
+        if (_content is not null)
+            await _content.Update();
     }
 }

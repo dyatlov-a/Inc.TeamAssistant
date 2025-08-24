@@ -5,23 +5,17 @@ using Inc.TeamAssistant.Retro.Domain;
 
 namespace Inc.TeamAssistant.Retro.DataAccess;
 
-internal sealed class RetroReader : IRetroReader
+internal sealed class RetroSessionReader : IRetroSessionReader
 {
     private readonly IConnectionFactory _connectionFactory;
 
-    public RetroReader(IConnectionFactory connectionFactory)
+    public RetroSessionReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
     
-    public async Task<IReadOnlyCollection<RetroItem>> ReadRetroItems(
-        Guid roomId,
-        IReadOnlyCollection<RetroSessionState> states,
-        CancellationToken token)
+    public async Task<IReadOnlyCollection<RetroItem>> ReadAvailableItems(Guid roomId, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(states);
-        
-        var targetStates = states.Select(s => (int)s).ToArray();
         var command = new CommandDefinition(
             """
             SELECT
@@ -36,13 +30,43 @@ internal sealed class RetroReader : IRetroReader
                 ri.parent_id AS parentid,
                 ri.votes AS votes
             FROM retro.retro_items AS ri
-            LEFT JOIN retro.retro_sessions AS rs ON ri.retro_session_id = rs.id
-            WHERE ri.room_id = @room_id AND (rs.id IS NULL OR rs.state = ANY(@states));
+            WHERE ri.room_id = @room_id AND ri.retro_session_id IS NULL;
             """,
             new
             {
-                room_id = roomId,
-                states = targetStates
+                room_id = roomId
+            },
+            flags: CommandFlags.None,
+            cancellationToken: token);
+
+        await using var connection = _connectionFactory.Create();
+
+        var items = await connection.QueryAsync<RetroItem>(command);
+        
+        return items.ToArray();
+    }
+
+    public async Task<IReadOnlyCollection<RetroItem>> ReadItems(Guid retroSessionId, CancellationToken token)
+    {
+        var command = new CommandDefinition(
+            """
+            SELECT
+                ri.id AS id,
+                ri.room_id AS roomid,
+                ri.created AS created,
+                ri.column_id AS columnid,
+                ri.position AS position,
+                ri.text AS text,
+                ri.owner_id AS ownerid,
+                ri.retro_session_id AS retrosessionid,
+                ri.parent_id AS parentid,
+                ri.votes AS votes
+            FROM retro.retro_items AS ri
+            WHERE ri.retro_session_id = @retro_session_id;
+            """,
+            new
+            {
+                retro_session_id = retroSessionId
             },
             flags: CommandFlags.None,
             cancellationToken: token);
@@ -67,6 +91,7 @@ internal sealed class RetroReader : IRetroReader
             SELECT
                 rs.id AS id,
                 rs.room_id AS roomid,
+                rs.template_id AS templateid,
                 rs.created AS created,
                 rs.state AS state
             FROM retro.retro_sessions AS rs

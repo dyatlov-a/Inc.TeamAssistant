@@ -1,5 +1,5 @@
 using Inc.TeamAssistant.Primitives;
-using Inc.TeamAssistant.Tenants.Model.Queries.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 
 namespace Inc.TeamAssistant.Tenants.Model.Queries.GetRoom;
 

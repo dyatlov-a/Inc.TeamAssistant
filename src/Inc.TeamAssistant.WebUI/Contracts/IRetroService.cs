@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Retro.Model.Commands.StartRetro;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItems;
 using Inc.TeamAssistant.Retro.Model.Queries.GetActionItemsHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroAssessment;
+using Inc.TeamAssistant.Retro.Model.Queries.GetRetroHistory;
 using Inc.TeamAssistant.Retro.Model.Queries.GetRetroState;
 
 namespace Inc.TeamAssistant.WebUI.Contracts;
@@ -12,6 +13,8 @@ namespace Inc.TeamAssistant.WebUI.Contracts;
 public interface IRetroService
 {
     Task<GetRetroStateResult> GetRetroState(Guid roomId, CancellationToken token = default);
+    
+    Task<GetRetroHistoryResult> GetRetroHistory(Guid sessionId, CancellationToken token = default);
     
     Task StartRetro(StartRetroCommand command, CancellationToken token = default);
     

@@ -13,20 +13,20 @@ internal sealed class SetRetroStateCommandHandler : IRequestHandler<SetRetroStat
     private readonly ITeamAccessor _teamAccessor;
     private readonly IVoteStore _voteStore;
     private readonly IOnlinePersonStore _onlinePersonStore;
-    private readonly IRetroReader _reader;
+    private readonly IRetroSessionReader _retroSessionReader;
 
     public SetRetroStateCommandHandler(
         IRetroEventSender eventSender,
         ITeamAccessor teamAccessor,
         IVoteStore voteStore,
         IOnlinePersonStore onlinePersonStore,
-        IRetroReader reader)
+        IRetroSessionReader retroSessionReader)
     {
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
         _teamAccessor = teamAccessor ?? throw new ArgumentNullException(nameof(teamAccessor));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _retroSessionReader = retroSessionReader ?? throw new ArgumentNullException(nameof(retroSessionReader));
     }
 
     public async Task Handle(SetRetroStateCommand command, CancellationToken token)
@@ -34,7 +34,7 @@ internal sealed class SetRetroStateCommandHandler : IRequestHandler<SetRetroStat
         ArgumentNullException.ThrowIfNull(command);
         
         var person = await _teamAccessor.EnsurePerson(command.PersonId, token);
-        var retroSession = await _reader.FindSession(command.RoomId, RetroSessionStateRules.Active, token);
+        var retroSession = await _retroSessionReader.FindSession(command.RoomId, RetroSessionStateRules.Active, token);
         var totalVote = retroSession is not null
             ? _voteStore.Get(retroSession.Id).Where(v => v.PersonId == person.Id).Sum(v => v.Vote)
             : 0;

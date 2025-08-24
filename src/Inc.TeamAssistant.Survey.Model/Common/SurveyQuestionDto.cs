@@ -1,4 +1,4 @@
-namespace Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
+namespace Inc.TeamAssistant.Survey.Model.Common;
 
 public sealed record SurveyQuestionDto(
     Guid QuestionId,

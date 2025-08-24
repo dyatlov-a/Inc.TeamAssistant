@@ -1,6 +1,6 @@
 using Inc.TeamAssistant.Tenants.Model.Commands.CreateRoom;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateRoom;
-using Inc.TeamAssistant.Tenants.Model.Queries.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 
 namespace Inc.TeamAssistant.WebUI.Features.Tenants;
 

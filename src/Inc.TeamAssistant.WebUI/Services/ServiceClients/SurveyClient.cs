@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Inc.TeamAssistant.Primitives.Exceptions;
 using Inc.TeamAssistant.Survey.Model.Commands.FinishSurvey;
 using Inc.TeamAssistant.Survey.Model.Commands.StartSurvey;
+using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyHistory;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveyState;
 using Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
 using Inc.TeamAssistant.WebUI.Contracts;
@@ -32,6 +33,18 @@ internal sealed class SurveyClient : ISurveyService
     {
         var result = await _client.GetFromJsonAsync<GetSurveySummaryResult>(
             $"survey/{roomId:N}/summary/{limit}",
+            token);
+
+        if (result is null)
+            throw new TeamAssistantException("Parse response with error.");
+
+        return result;
+    }
+
+    public async Task<GetSurveyHistoryResult> GetSurveyHistory(Guid surveyId, int limit, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetSurveyHistoryResult>(
+            $"survey/{surveyId:N}/history/{limit}",
             token);
 
         if (result is null)

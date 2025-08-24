@@ -1,0 +1,35 @@
+@inject ISurveyService SurveyService
+@inject RequestProcessor RequestProcessor
+
+<Loading State="_state" Retry="Load">
+    <SurveySummaryContent
+        HasParticipants="true"
+        HasMean="true"
+        Answers="_answers" />
+</Loading>
+
+@code {
+    /// <summary>
+    /// Survey id.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Guid SurveyId { get; set; }
+    
+    private const int SurveyTotal = 5;
+
+    private readonly List<SurveyQuestionDto> _answers = new();
+    private readonly LoadingState _state = LoadingState.Done();
+
+    protected override async Task OnParametersSetAsync() => await Load();
+
+    private async Task Load()
+    {
+        var result = await RequestProcessor.Process(
+            async () => await SurveyService.GetSurveyHistory(SurveyId, SurveyTotal),
+            nameof(SurveyLoader),
+            _state);
+        
+        _answers.Clear();
+        _answers.AddRange(result.Answers);
+    }
+}

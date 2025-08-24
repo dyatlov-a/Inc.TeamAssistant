@@ -7,11 +7,11 @@ namespace Inc.TeamAssistant.Retro.Application.CommandHandlers.CreateRetroItem.Va
 
 internal sealed class CreateRetroItemCommandValidator : AbstractValidator<CreateRetroItemCommand>
 {
-    private readonly IRetroReader _reader;
+    private readonly IRetroSessionReader _retroSessionReader;
     
-    public CreateRetroItemCommandValidator(IRetroReader reader)
+    public CreateRetroItemCommandValidator(IRetroSessionReader retroSessionReader)
     {
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _retroSessionReader = retroSessionReader ?? throw new ArgumentNullException(nameof(retroSessionReader));
 
         RuleFor(c => c.RoomId)
             .NotEmpty()
@@ -24,7 +24,7 @@ internal sealed class CreateRetroItemCommandValidator : AbstractValidator<Create
 
     private async Task<bool> HasNotActiveSession(Guid teamId, CancellationToken token)
     {
-        var activeSession = await _reader.FindSession(teamId, RetroSessionStateRules.Active, token);
+        var activeSession = await _retroSessionReader.FindSession(teamId, RetroSessionStateRules.Active, token);
         
         return activeSession is null;
     }

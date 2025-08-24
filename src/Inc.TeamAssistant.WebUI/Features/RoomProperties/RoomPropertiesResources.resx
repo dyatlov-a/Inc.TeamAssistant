@@ -126,4 +126,7 @@
     <data name="LowerHandHint" xml:space="preserve">
         <value>Lower hand</value>
     </data>
+    <data name="RoomHistory" xml:space="preserve">
+        <value>History</value>
+    </data>
 </root>

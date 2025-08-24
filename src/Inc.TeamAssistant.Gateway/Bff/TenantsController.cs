@@ -37,6 +37,12 @@ public sealed class TenantsController : ControllerBase
         return Ok(await _tenantService.GetRoomProperties(roomId, token));
     }
     
+    [HttpGet("{roomId:Guid}/history")]
+    public async Task<IActionResult> GetRoomHistory(Guid roomId, CancellationToken token)
+    {
+        return Ok(await _tenantService.GetRoomHistory(roomId, token));
+    }
+    
     [HttpPut("properties")]
     public async Task<IActionResult> ChangeRoomProperties([FromBody]ChangeRoomPropertiesCommand command)
     {

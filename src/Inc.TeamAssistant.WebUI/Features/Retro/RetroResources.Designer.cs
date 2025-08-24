@@ -308,5 +308,23 @@ namespace Inc.TeamAssistant.WebUI.Features.Retro {
                 return ResourceManager.GetString("More", resourceCulture);
             }
         }
+        
+        internal static string RetroSummaryTitle {
+            get {
+                return ResourceManager.GetString("RetroSummaryTitle", resourceCulture);
+            }
+        }
+        
+        internal static string RetroSummaryPeopleCount {
+            get {
+                return ResourceManager.GetString("RetroSummaryPeopleCount", resourceCulture);
+            }
+        }
+        
+        internal static string RetroSummaryRating {
+            get {
+                return ResourceManager.GetString("RetroSummaryRating", resourceCulture);
+            }
+        }
     }
 }

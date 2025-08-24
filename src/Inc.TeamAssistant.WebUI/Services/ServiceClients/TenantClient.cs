@@ -5,6 +5,7 @@ using Inc.TeamAssistant.Tenants.Model.Commands.CreateRoom;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateRoom;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetAvailableRooms;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoom;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomHistory;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Extensions;
@@ -24,20 +25,14 @@ internal sealed class TenantClient : ITenantService
     {
         var result = await _client.GetFromJsonAsync<GetAvailableRoomsResult>($"tenants/rooms/available/{roomId:N}", token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task<GetRoomResult> GetRoom(Guid roomId, CancellationToken token)
     {
         var result = await _client.GetFromJsonAsync<GetRoomResult>($"tenants/rooms/{roomId:N}", token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task<GetRoomPropertiesResult> GetRoomProperties(Guid roomId, CancellationToken token)
@@ -46,13 +41,19 @@ internal sealed class TenantClient : ITenantService
             $"tenants/rooms/{roomId:N}/properties",
             token);
 
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
-    public async Task ChangeRoomProperties(ChangeRoomPropertiesCommand command, CancellationToken token = default)
+    public async Task<GetRoomHistoryResult> GetRoomHistory(Guid roomId, CancellationToken token)
+    {
+        var result = await _client.GetFromJsonAsync<GetRoomHistoryResult>(
+            $"tenants/rooms/{roomId:N}/history",
+            token);
+
+        return result ?? throw new TeamAssistantException("Parse response with error.");
+    }
+
+    public async Task ChangeRoomProperties(ChangeRoomPropertiesCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
         
@@ -68,10 +69,8 @@ internal sealed class TenantClient : ITenantService
         var response = await _client.PostAsJsonAsync("tenants/rooms", command, token);
         
         var result = await response.Content.ReadFromJsonAsync<CreateRoomResult>(token);
-        if (result is null)
-            throw new TeamAssistantException("Parse response with error.");
-
-        return result;
+        
+        return result ?? throw new TeamAssistantException("Parse response with error.");
     }
 
     public async Task UpdateRoom(UpdateRoomCommand command, CancellationToken token)

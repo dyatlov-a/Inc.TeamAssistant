@@ -150,4 +150,13 @@
     <data name="More" xml:space="preserve">
         <value>Еще</value>
     </data>
+    <data name="RetroSummaryTitle" xml:space="preserve">
+        <value>Было ли это ретро полезным для нас?</value>
+    </data>
+    <data name="RetroSummaryPeopleCount" xml:space="preserve">
+        <value>Количество человек</value>
+    </data>
+    <data name="RetroSummaryRating" xml:space="preserve">
+        <value>Рейтинг</value>
+    </data>
 </root>

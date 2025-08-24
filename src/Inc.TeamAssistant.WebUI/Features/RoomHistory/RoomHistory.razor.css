@@ -1,0 +1,26 @@
+.room-history {
+    display: flex;
+    flex-direction: column;
+}
+.room-history__header {
+    margin: 1rem .5rem .5rem 0;
+}
+.room-history-navbar {
+    background-color: var(--block-primary-color);
+    display: flex;
+    flex-direction: column;
+}
+.room-history-navbar__item {
+    display: flex;
+    padding: .5rem;
+    flex-direction: column;
+    cursor: pointer;
+    color: var(--accent-text-color);
+}
+.room-history-navbar__title {
+    font-weight: bold;
+    font-size: .7rem;
+}
+.room-history-navbar__item:hover, .room-history-navbar__item_selected {
+    background-color: var(--bg-secondary-color);
+}

@@ -1,4 +1,4 @@
-using Inc.TeamAssistant.Tenants.Model.Queries.Common;
+using Inc.TeamAssistant.Tenants.Model.Common;
 using Inc.TeamAssistant.WebUI.Components;
 using Inc.TeamAssistant.WebUI.Contracts;
 using Inc.TeamAssistant.WebUI.Services.Internal;

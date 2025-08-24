@@ -4,6 +4,7 @@ using Inc.TeamAssistant.Tenants.Model.Commands.RemoveRoom;
 using Inc.TeamAssistant.Tenants.Model.Commands.UpdateRoom;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetAvailableRooms;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoom;
+using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomHistory;
 using Inc.TeamAssistant.Tenants.Model.Queries.GetRoomProperties;
 using Inc.TeamAssistant.WebUI.Contracts;
 using MediatR;
@@ -32,6 +33,11 @@ internal sealed class TenantService : ITenantService
     public async Task<GetRoomPropertiesResult> GetRoomProperties(Guid roomId, CancellationToken token)
     {
         return await _mediator.Send(new GetRoomPropertiesQuery(roomId), token);
+    }
+
+    public async Task<GetRoomHistoryResult> GetRoomHistory(Guid roomId, CancellationToken token = default)
+    {
+        return await _mediator.Send(new GetRoomHistoryQuery(roomId), token);
     }
 
     public async Task ChangeRoomProperties(ChangeRoomPropertiesCommand command, CancellationToken token)

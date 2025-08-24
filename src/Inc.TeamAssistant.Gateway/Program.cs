@@ -37,6 +37,7 @@ using Inc.TeamAssistant.Retro.Application.Contracts;
 using Inc.TeamAssistant.Retro.DataAccess;
 using Inc.TeamAssistant.Reviewer.Application.Contracts;
 using Inc.TeamAssistant.Reviewer.Domain;
+using Inc.TeamAssistant.Survey.Application;
 using Inc.TeamAssistant.Survey.Application.Contracts;
 using Inc.TeamAssistant.Survey.DataAccess;
 using Inc.TeamAssistant.Tenants.Application.Contracts;
@@ -135,6 +136,7 @@ builder.Services
 	.AddConstructorDataAccess()
 	.AddTenantsDataAccess(CachePolicies.CacheAbsoluteExpiration)
 	.AddRetroDataAccess()
+	.AddSurveyApplication()
 	.AddSurveyDataAccess();
 
 builder.Services

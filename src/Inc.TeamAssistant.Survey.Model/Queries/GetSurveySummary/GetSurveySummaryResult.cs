@@ -1,4 +1,5 @@
 using Inc.TeamAssistant.Primitives;
+using Inc.TeamAssistant.Survey.Model.Common;
 
 namespace Inc.TeamAssistant.Survey.Model.Queries.GetSurveySummary;
 

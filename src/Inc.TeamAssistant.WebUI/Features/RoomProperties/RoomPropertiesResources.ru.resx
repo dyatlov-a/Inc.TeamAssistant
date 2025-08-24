@@ -126,4 +126,7 @@
     <data name="LowerHandHint" xml:space="preserve">
         <value>Опустить руку</value>
     </data>
+    <data name="RoomHistory" xml:space="preserve">
+        <value>История</value>
+    </data>
 </root>

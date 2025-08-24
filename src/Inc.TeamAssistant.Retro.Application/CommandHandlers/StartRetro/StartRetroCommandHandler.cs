@@ -12,22 +12,31 @@ internal sealed class StartRetroCommandHandler : IRequestHandler<StartRetroComma
     private readonly IRetroSessionRepository _repository;
     private readonly IRetroEventSender _eventSender;
     private readonly IOnlinePersonStore _onlinePersonStore;
+    private readonly IRoomPropertiesProvider _propertiesProvider;
 
     public StartRetroCommandHandler(
         IRetroSessionRepository repository,
         IRetroEventSender eventSender,
-        IOnlinePersonStore onlinePersonStore)
+        IOnlinePersonStore onlinePersonStore,
+        IRoomPropertiesProvider propertiesProvider)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _eventSender = eventSender ?? throw new ArgumentNullException(nameof(eventSender));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
+        _propertiesProvider = propertiesProvider ?? throw new ArgumentNullException(nameof(propertiesProvider));
     }
 
     public async Task Handle(StartRetroCommand command, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        var properties = await _propertiesProvider.Get(command.RoomId, token);
         
-        var retroSession = new RetroSession(Guid.CreateVersion7(), command.RoomId, DateTimeOffset.UtcNow);
+        var retroSession = new RetroSession(
+            Guid.CreateVersion7(),
+            command.RoomId,
+            properties.RetroTemplateId,
+            DateTimeOffset.UtcNow);
 
         await _repository.Create(retroSession, token);
         
