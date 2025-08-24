@@ -1,0 +1,138 @@
+@inject IStringLocalizer<RetroResources> Localizer
+
+<div class="retro-grid">
+    <div class="retro-grid__columns">
+        @foreach (var column in Columns.OrderBy(c => c.Position))
+        {
+            <div class="retro-grid__column">
+                <Panel
+                    Header="@Localizer[column.Name]"
+                    IsOpen="true"
+                    HasActions="false">
+                    <Content>
+                        <div class="retro-grid__column-items">
+                            @foreach (var item in Items
+                                          .Where(i => i.ColumnId == column.Id || (Columns.All(c => c.Id != i.ColumnId) && column.Id == StartColumn))
+                                          .Where(i => !i.ParentId.HasValue)
+                                          .OrderByDescending(c => c.Position))
+                            {
+                                var children = Items
+                                    .Where(i => i.ParentId == item.Id)
+                                    .OrderByDescending(c => c.Position)
+                                    .ToArray();
+
+                                <div>
+                                    <RetroItem
+                                        @key="item.Id"
+                                        CanView="true"
+                                        CanEdit="false"
+                                        CanRemove="false"
+                                        CanMove="false"
+                                        BackgroundColor="@column.Color"
+                                        ItemRemoved="@(_ => { })"
+                                        ItemMoved="@(_ => { })"
+                                        Value="item"
+                                        ValueChanged="@(_ => { })">
+                                        <VotesDisplay Value="item.Votes" />
+                                    </RetroItem>
+
+                                    @foreach (var child in children)
+                                    {
+                                        <RetroItem
+                                            @key="child.Id"
+                                            CanView="true"
+                                            CanEdit="false"
+                                            CanRemove="false"
+                                            CanMove="false"
+                                            BackgroundColor="@column.Color"
+                                            ItemRemoved="@(_ => { })"
+                                            ItemMoved="@(_ => { })"
+                                            Value="child"
+                                            ValueChanged="@(_ => { })"/>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </Content>
+                </Panel>
+            </div>
+        }
+    </div>
+</div>
+<div class="retro-grid">
+    <div class="retro-grid__columns">
+        <div class="retro-grid__column">
+            <Panel Header="@Localizer["Actions"]" IsOpen="true" HasActions="false">
+                <Content>
+                    <div class="retro-grid__column-items">
+                        @foreach (var actionItem in ActionItems.Where(a => Items.Any(i => i.Id == a.RetroItemId)))
+                        {
+                            <ActionItem
+                                @key="actionItem.Id"
+                                CanEdit="false"
+                                CanRemove="false"
+                                Value="actionItem"
+                                ValueChanged="@(_ => { })"
+                                ItemRemoved="@(_ => { })"/>
+                        }
+                    </div>
+                </Content>
+            </Panel>
+        </div>
+        <div class="retro-grid__column">
+            <Panel Header="@Localizer["RetroSummaryTitle"]" IsOpen="true" HasActions="false">
+                <Content>
+                    <ApexChart
+                        TItem="Tuple<int, int>"
+                        Options="ChartOptions">
+                        <ApexPointSeries
+                            TItem="Tuple<int, int>"
+                            Items="AssessmentsSummary"
+                            Name="Gross Value"
+                            XValue="@(e => e.Item1)"
+                            YValue="@(e => e.Item2)"
+                            SeriesType="SeriesType.Bar"/>
+                    </ApexChart>
+                </Content>
+            </Panel>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Items.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<RetroItemViewModel> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// ActionItems.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<ActionItemViewModel> ActionItems { get; set; } = default!;
+    
+    /// <summary>
+    /// Columns.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<RetroColumnDto> Columns { get; set; } = default!;
+    
+    /// <summary>
+    /// Assessments.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyCollection<int> Assessments { get; set; } = default!;
+
+    private ApexChartOptions<Tuple<int, int>> ChartOptions => ApexChartBaseOptionsBuilder.BuildBar<Tuple<int, int>>(
+        xMaxValue: 5,
+        xTitle: Localizer["RetroSummaryPeopleCount"],
+        yMaxValue: AssessmentsSummary.Max(a => a.Item2),
+        yTitle: Localizer["RetroSummaryRating"]);
+    
+    private Guid StartColumn => Columns.First().Id;
+
+    private IReadOnlyCollection<Tuple<int, int>> AssessmentsSummary => Enumerable.Range(1, 5)
+        .Select(i => new Tuple<int, int>(i, Assessments.Count(a => a == i)))
+        .ToArray();
+}

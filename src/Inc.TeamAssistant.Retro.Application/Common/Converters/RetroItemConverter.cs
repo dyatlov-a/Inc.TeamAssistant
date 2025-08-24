@@ -15,7 +15,7 @@ internal static class RetroItemConverter
         return ConvertFrom(
             item,
             currentPersonId: null,
-            state: null,
+            state: RetroSessionState.Finished,
             votesByPerson: null,
             retroType: RetroTypes.Opened);
     }

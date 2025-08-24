@@ -151,4 +151,13 @@ Review the list, pick what still matters, and add it to the work plan.</value>
     <data name="More" xml:space="preserve">
         <value>More</value>
     </data>
+    <data name="RetroSummaryTitle" xml:space="preserve">
+        <value>Was this retro worth our time?</value>
+    </data>
+    <data name="RetroSummaryPeopleCount" xml:space="preserve">
+        <value>Number of people</value>
+    </data>
+    <data name="RetroSummaryRating" xml:space="preserve">
+        <value>Rating</value>
+    </data>
 </root>

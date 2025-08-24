@@ -135,6 +135,48 @@ internal static class ApexChartBaseOptionsBuilder
             }
         };
     }
+    
+    public static ApexChartOptions<T> BuildBar<T>(int xMaxValue, string xTitle, int yMaxValue, string yTitle)
+        where T : class
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(xTitle);
+        ArgumentException.ThrowIfNullOrWhiteSpace(yTitle);
+        
+        return new()
+        {
+            Tooltip = new Tooltip
+            {
+                Enabled = false
+            },
+            Legend = new Legend
+            {
+                Show = false
+            },
+            Xaxis = new XAxis
+            {
+                Min = 0,
+                Max = xMaxValue,
+                TickAmount = xMaxValue,
+                Title = new AxisTitle
+                {
+                    Text = xTitle
+                }
+            },
+            Yaxis =
+            [
+                new YAxis
+                {
+                    Min = 0,
+                    Max = yMaxValue,
+                    TickAmount = yMaxValue,
+                    Title = new AxisTitle
+                    {
+                        Text = yTitle
+                    }
+                }
+            ]
+        };
+    }
 
     public static ApexChartOptions<T> CreateLineOptions<T>()
         where T : class
