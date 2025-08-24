@@ -8,18 +8,40 @@ internal static class RetroItemConverter
 {
     private static readonly Regex LetterPattern = new(@"\p{L}", RegexOptions.Compiled);
 
+    public static RetroItemDto ConvertFromHistory(RetroItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        return ConvertFrom(
+            item,
+            currentPersonId: null,
+            state: null,
+            votesByPerson: null,
+            retroType: RetroTypes.Opened);
+    }
+
     public static RetroItemDto ConvertFromCreated(RetroItem item, RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        return ConvertFrom(item, currentPersonId: null, state: null, votesByPerson: null, retroType);
+        return ConvertFrom(
+            item,
+            currentPersonId: null,
+            state: null,
+            votesByPerson: null,
+            retroType);
     }
     
     public static RetroItemDto ConvertFromChanged(RetroItem item, RetroSessionState? state, RetroTypes retroType)
     {
         ArgumentNullException.ThrowIfNull(item);
         
-        return ConvertFrom(item, currentPersonId: null, state, votesByPerson: null, retroType);
+        return ConvertFrom(
+            item,
+            currentPersonId: null,
+            state,
+            votesByPerson: null,
+            retroType);
     }
 
     public static RetroItemDto ConvertFromReadModel(
@@ -31,7 +53,12 @@ internal static class RetroItemConverter
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        return ConvertFrom(item, currentPersonId, state, votesByPerson, retroType);
+        return ConvertFrom(
+            item,
+            currentPersonId,
+            state,
+            votesByPerson,
+            retroType);
     }
     
     private static RetroItemDto ConvertFrom(

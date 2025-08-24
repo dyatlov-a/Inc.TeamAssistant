@@ -41,7 +41,7 @@ internal sealed class StartRetroCommandValidator : AbstractValidator<StartRetroC
     
     private async Task<bool> HasItems(Guid roomId, CancellationToken token)
     {
-        var items = await _retroSessionReader.ReadRetroItems(roomId, states: [], token);
+        var items = await _retroSessionReader.ReadAvailableItems(roomId, token);
         
         return items.Any(i => !string.IsNullOrWhiteSpace(i.Text));
     }

@@ -42,12 +42,13 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     {
         ArgumentNullException.ThrowIfNull(query);
         
-        var states = RetroSessionStateRules.Active;
         var currentPerson = _personResolver.GetCurrentPerson();
         var onlinePersons = _onlinePersonStore.GetTickets(RoomId.CreateForRetro(query.RoomId));
         
-        var session = await _retroSessionReader.FindSession(query.RoomId, states, token);
-        var items = await _retroSessionReader.ReadRetroItems(query.RoomId, states, token);
+        var session = await _retroSessionReader.FindSession(query.RoomId, RetroSessionStateRules.Active, token);
+        var items = session is not null
+            ? await _retroSessionReader.ReadItems(session.Id, token)
+            : await _retroSessionReader.ReadAvailableItems(query.RoomId, token);
         var actions = session is not null
             ? await _retroSessionReader.ReadActionItems(session.Id, token)
             : [];
@@ -82,14 +83,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
                 retroType))
             .ToArray();
         var actionItems = actions.Select(ActionItemConverter.ConvertTo).ToArray();
-        var retroColumns = columns
-            .Select(c => new RetroColumnDto(
-                c.Id,
-                c.Name,
-                c.Position,
-                c.Color,
-                c.Description))
-            .ToArray();
+        var retroColumns = columns.Select(RetroColumnConverter.ConvertTo).ToArray();
         var currentTimer = _timerService.TryGetValue(query.RoomId);
         
         return new GetRetroStateResult(

@@ -21,9 +21,15 @@ public sealed class RetroController : ControllerBase
     }
     
     [HttpGet("{roomId:Guid}/state")]
-    public async Task<IActionResult> Get(Guid roomId, CancellationToken token)
+    public async Task<IActionResult> GetState(Guid roomId, CancellationToken token)
     {
         return Ok(await _retroService.GetRetroState(roomId, token));
+    }
+    
+    [HttpGet("{sessionId:Guid}/history")]
+    public async Task<IActionResult> GetHistory(Guid sessionId, CancellationToken token)
+    {
+        return Ok(await _retroService.GetRetroHistory(sessionId, token));
     }
     
     [HttpPost]
