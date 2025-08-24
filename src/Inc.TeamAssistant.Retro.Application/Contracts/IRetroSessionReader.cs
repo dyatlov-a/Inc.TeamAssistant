@@ -2,7 +2,7 @@ using Inc.TeamAssistant.Retro.Domain;
 
 namespace Inc.TeamAssistant.Retro.Application.Contracts;
 
-public interface IRetroReader
+public interface IRetroSessionReader
 {
     Task<IReadOnlyCollection<RetroItem>> ReadRetroItems(
         Guid roomId,

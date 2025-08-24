@@ -5,11 +5,11 @@ using Inc.TeamAssistant.Retro.Domain;
 
 namespace Inc.TeamAssistant.Retro.DataAccess;
 
-internal sealed class RetroReader : IRetroReader
+internal sealed class RetroSessionReader : IRetroSessionReader
 {
     private readonly IConnectionFactory _connectionFactory;
 
-    public RetroReader(IConnectionFactory connectionFactory)
+    public RetroSessionReader(IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
@@ -67,6 +67,7 @@ internal sealed class RetroReader : IRetroReader
             SELECT
                 rs.id AS id,
                 rs.room_id AS roomid,
+                rs.template_id AS templateid,
                 rs.created AS created,
                 rs.state AS state
             FROM retro.retro_sessions AS rs

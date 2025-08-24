@@ -21,6 +21,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             SELECT
                 rs.id AS id,
                 rs.room_id AS roomid,
+                rs.template_id AS templateid,
                 rs.created AS created,
                 rs.state AS state
             FROM retro.retro_sessions AS rs
@@ -60,15 +61,18 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             INSERT INTO retro.retro_sessions (
                 id,
                 room_id,
+                template_id,
                 created,
                 state)
             VALUES (
                 @id,
                 @room_id,
+                @template_id,
                 @created,
                 @state)
             ON CONFLICT (id) DO UPDATE SET
                 room_id = EXCLUDED.room_id,
+                template_id = EXCLUDED.template_id,
                 created = EXCLUDED.created,
                 state = EXCLUDED.state;
             """,
@@ -76,6 +80,7 @@ internal sealed class RetroSessionRepository : IRetroSessionRepository
             {
                 id = retro.Id,
                 room_id = retro.RoomId,
+                template_id = retro.TemplateId,
                 created = retro.Created,
                 state = retro.State
             },

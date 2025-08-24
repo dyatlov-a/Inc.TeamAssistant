@@ -12,7 +12,7 @@ namespace Inc.TeamAssistant.Retro.Application.QueryHandlers.GetRetroState;
 
 internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQuery, GetRetroStateResult>
 {
-    private readonly IRetroReader _reader;
+    private readonly IRetroSessionReader _retroSessionReader;
     private readonly IPersonResolver _personResolver;
     private readonly IOnlinePersonStore _onlinePersonStore;
     private readonly IVoteStore _voteStore;
@@ -21,7 +21,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
     private readonly IRetroTemplateReader _retroTemplateReader;
 
     public GetRetroStateQueryHandler(
-        IRetroReader reader,
+        IRetroSessionReader retroSessionReader,
         IPersonResolver personResolver,
         IOnlinePersonStore onlinePersonStore,
         IVoteStore voteStore,
@@ -29,7 +29,7 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         IRoomPropertiesProvider propertiesProvider,
         IRetroTemplateReader retroTemplateReader)
     {
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _retroSessionReader = retroSessionReader ?? throw new ArgumentNullException(nameof(retroSessionReader));
         _personResolver = personResolver ?? throw new ArgumentNullException(nameof(personResolver));
         _onlinePersonStore = onlinePersonStore ?? throw new ArgumentNullException(nameof(onlinePersonStore));
         _voteStore = voteStore ?? throw new ArgumentNullException(nameof(voteStore));
@@ -46,13 +46,14 @@ internal sealed class GetRetroStateQueryHandler : IRequestHandler<GetRetroStateQ
         var currentPerson = _personResolver.GetCurrentPerson();
         var onlinePersons = _onlinePersonStore.GetTickets(RoomId.CreateForRetro(query.RoomId));
         
-        var session = await _reader.FindSession(query.RoomId, states, token);
-        var items = await _reader.ReadRetroItems(query.RoomId, states, token);
+        var session = await _retroSessionReader.FindSession(query.RoomId, states, token);
+        var items = await _retroSessionReader.ReadRetroItems(query.RoomId, states, token);
         var actions = session is not null
-            ? await _reader.ReadActionItems(session.Id, token)
+            ? await _retroSessionReader.ReadActionItems(session.Id, token)
             : [];
         var properties = await _propertiesProvider.Get(query.RoomId, token);
-        var columns = await _retroTemplateReader.GetColumns(properties.RetroTemplateId, token);
+        var retroTemplateId = session?.TemplateId ?? properties.RetroTemplateId;
+        var columns = await _retroTemplateReader.GetColumns(retroTemplateId, token);
         
         var retroType = properties.RequiredRetroType();
         var retroProperties = new RetroPropertiesDto(
