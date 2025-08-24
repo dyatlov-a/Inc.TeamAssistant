@@ -21,6 +21,6 @@
     font-weight: bold;
     font-size: .7rem;
 }
-.room-history-navbar__item:hover {
+.room-history-navbar__item:hover, .room-history-navbar__item_selected {
     background-color: var(--bg-secondary-color);
 }

@@ -1,10 +1,16 @@
 @page "/room-history/{RoomId:guid}"
 @page "/ru/room-history/{RoomId:guid}"
 @page "/en/room-history/{RoomId:guid}"
+@page "/room-history/{RoomId:guid}/{ItemId:guid}"
+@page "/ru/room-history/{RoomId:guid}/{ItemId:guid}"
+@page "/en/room-history/{RoomId:guid}/{ItemId:guid}"
+
+@attribute [Authorize]
 
 @inject TenantStore TenantStore
 @inject ITenantService TenantService
 @inject RequestProcessor RequestProcessor
+@inject NavRouter NavRouter
 
 <MetaDataModule />
 
@@ -19,7 +25,10 @@
 @code {
     [Parameter, EditorRequired]
     public Guid RoomId { get; set; }
-
+    
+    [Parameter, EditorRequired]
+    public Guid? ItemId { get; set; }
+    
     private RoomEntryDto? _item;
 
     private readonly LoadingState _state = LoadingState.Done();
@@ -38,8 +47,18 @@
         
         _items.Clear();
         _items.AddRange(result.Items.OrderByDescending(i => i.Date));
-        _item = _items.FirstOrDefault();
+        
+        _item = ItemId.HasValue
+            ? _items.Single(i => i.Id == ItemId.Value)
+            : _items.FirstOrDefault();
     }
 
-    private void OnItemChanged(RoomEntryDto item) => _item = item;
+    private async Task OnItemChanged(RoomEntryDto item)
+    {
+        var routeSegment = $"room-history/{RoomId:N}/{item.Id:N}".ToLowerInvariant();
+        
+        _item = item;
+        
+        await NavRouter.MoveToRoute(routeSegment, RoutingType.Browser);
+    }
 }

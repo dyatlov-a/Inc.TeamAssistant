@@ -10,8 +10,13 @@
                     <ul class="room-history-navbar">
                         @foreach (var item in Items)
                         {
-                            <li @key="item.Id" class="room-history-navbar__item" @onclick="@(() => EmitItemChanged(item))">
-                                <span class="room-history-navbar__title">@Localizer[item.Date.DayOfWeek.ToString()]</span>
+                            <li
+                                @key="item.Id"
+                                class="room-history-navbar__item @CssClass(item)"
+                                @onclick="@(() => EmitItemChanged(item))">
+                                <span class="room-history-navbar__title">
+                                    @Localizer[item.Date.DayOfWeek.ToString()]
+                                </span>
                                 @item.Date.ToString("dd.MM.yyyy") @Localizer[item.Type]
                             </li>
                         }
@@ -73,5 +78,9 @@
     [Parameter, EditorRequired]
     public EventCallback<RoomEntryDto> ItemChanged { get; set; }
 
+    private string CssClass(RoomEntryDto item) => Item?.Id == item.Id
+        ? "room-history-navbar__item_selected"
+        : string.Empty;
+    
     private async Task EmitItemChanged(RoomEntryDto item) => await ItemChanged.InvokeAsync(item);
 }
